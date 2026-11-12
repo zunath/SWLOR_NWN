@@ -30,6 +30,7 @@ internal static class FixtureGenerationBuilder
             private ConcurrentQueue<string> _record;
             private IHostCallbacks _callbacks;
             private Signals _signals;
+            private long _generation;
 
             public string BuildId => "fixture";
             public IScriptDispatcher Scripts { get; private set; }
@@ -39,16 +40,23 @@ internal static class FixtureGenerationBuilder
             public static string Directory;
 
             public ValueTask ValidateAsync(CancellationToken cancellationToken) =>
+        #if FAIL_VALIDATE
+                ValueTask.FromException(new InvalidOperationException("validation failed"));
+        #else
                 new(Task.Run(() => ValidatedOnThread = Environment.CurrentManagedThreadId));
+        #endif
             public static int ValidatedOnThread;
 
             public ValueTask ActivateAsync(GenerationActivation activation, CancellationToken cancellationToken)
             {
                 var services = activation.HostServices;
                 _record = (ConcurrentQueue<string>)services.Resolve(typeof(ConcurrentQueue<string>));
+                _generation = activation.Generation;
         #if FAIL_ACTIVATE
                 throw new InvalidOperationException("activation failed");
         #else
+                var lifecycle = services.Resolve(typeof(IHostLifecycle)) as IHostLifecycle;
+                _record.Enqueue($"lifecycle generation={activation.Generation} moduleLoaded={lifecycle?.ModuleLoaded}");
                 _record.Enqueue($"activate generation={activation.Generation} thread={Environment.CurrentManagedThreadId} validated={ValidatedOnThread} source={Directory}");
                 _callbacks = (IHostCallbacks)services.Resolve(typeof(IHostCallbacks));
                 var redis = (IRedisConnectionSource)services.Resolve(typeof(IRedisConnectionSource));
@@ -63,13 +71,21 @@ internal static class FixtureGenerationBuilder
         #endif
             }
 
-            public ValueTask BeginQuiescenceAsync(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+            public ValueTask BeginQuiescenceAsync(CancellationToken cancellationToken)
+            {
+                _record?.Enqueue($"quiesce generation={_generation} thread={Environment.CurrentManagedThreadId}");
+        #if SLOW_QUIESCE
+                System.Threading.Thread.Sleep(400);
+        #endif
+                return ValueTask.CompletedTask;
+            }
+
             public ValueTask DrainAsync(TimeSpan timeout, CancellationToken cancellationToken) => ValueTask.CompletedTask;
 
             public ValueTask DisposeAsync()
             {
                 if (_callbacks != null) _callbacks.UnbindSignals(_signals);
-                _record?.Enqueue("dispose");
+                _record?.Enqueue(_record != null && _generation != 0 ? $"dispose generation={_generation}" : "dispose");
                 return ValueTask.CompletedTask;
             }
 
@@ -103,13 +119,30 @@ internal static class FixtureGenerationBuilder
         """;
 
     /// <summary>Compiles the fixture build into a new folder under <paramref name="root"/> and returns the assembly's path.</summary>
-    public static string Build(string root, bool failActivation = false)
+    public static string Build(string root, bool failActivation = false, bool failValidation = false)
     {
         var directory = Path.Combine(root, Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, "HostFixture.dll");
+        return BuildInto(directory, "HostFixture.dll", failActivation, failValidation);
+    }
 
-        var symbols = failActivation ? new[] { "FAIL_ACTIVATE" } : Array.Empty<string>();
+    /// <summary>
+    /// Compiles the fixture build into <paramref name="directory"/> as <paramref name="fileName"/> (a reload candidate's
+    /// folder and the game assembly's file name) and returns the assembly's path. The assembly keeps its own name; the host
+    /// loads it from bytes.
+    /// </summary>
+    public static string BuildInto(string directory, string fileName, bool failActivation = false, bool failValidation = false,
+        bool slowQuiescence = false)
+    {
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, fileName);
+
+        var symbols = new List<string>();
+        if (failActivation)
+            symbols.Add("FAIL_ACTIVATE");
+        if (failValidation)
+            symbols.Add("FAIL_VALIDATE");
+        if (slowQuiescence)
+            symbols.Add("SLOW_QUIESCE");
         var tree = CSharpSyntaxTree.ParseText(Source, new CSharpParseOptions(LanguageVersion.Latest, preprocessorSymbols: symbols));
         var compilation = CSharpCompilation.Create(
             "HostFixture",

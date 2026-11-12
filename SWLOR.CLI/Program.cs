@@ -18,6 +18,7 @@ namespace SWLOR.CLI
         private static readonly DeployBuild _deployBuild = new();
         private static readonly BeastCodeBuilder _beastBuilder = new();
         private static readonly StoreInstanceSync _storeInstanceSync = new();
+        private static readonly HotReloadPublisher _hotReloadPublisher = new();
 
         static int Main(string[] args)
         {
@@ -49,7 +50,19 @@ namespace SWLOR.CLI
                 "Deploys DLLs in the bin folder to the NWN dotnet directory.");
             var serverOutputOption = new Option<string>("--server-output")
             {
-                Description = "Server build output to deploy. MSBuild supplies its TargetDir; standalone deployment defaults to the Release build produced by RunCLI.cmd."
+                Description = "Server build output to deploy. MSBuild supplies its TargetDir; standalone deployment defaults to the Release build produced by RunCLI.cmd. With --reload: a build output to publish as is, instead of building the Release output."
+            };
+            var reloadOption = new Option<bool>("--reload")
+            {
+                Description = "Hot reload: builds SWLOR.Game.Server in Release, publishes it as a candidate into the server home's dotnet/generations/<id>/, signals the running server (SWLOR_HOT_RELOAD=true) and prints its receipt."
+            };
+            var serverHomeOption = new Option<string>("--server-home")
+            {
+                Description = "With --reload: the server home (dotnet/, reload/). Defaults to the repository's debugserver/."
+            };
+            var reloadTimeoutOption = new Option<int>("--reload-timeout")
+            {
+                Description = $"With --reload: seconds to wait for the server's final receipt (default {HotReloadPublisher.DefaultTimeoutSeconds})."
             };
             var hostOutputOption = new Option<string>("--host-output")
             {
@@ -103,6 +116,9 @@ namespace SWLOR.CLI
             rootCommand.Options.Add(deployOption);
             rootCommand.Options.Add(serverOutputOption);
             rootCommand.Options.Add(hostOutputOption);
+            rootCommand.Options.Add(reloadOption);
+            rootCommand.Options.Add(serverHomeOption);
+            rootCommand.Options.Add(reloadTimeoutOption);
             rootCommand.Options.Add(modulePackerOption);
             rootCommand.Options.Add(recipeOption);
             rootCommand.Options.Add(structureOption);
@@ -170,6 +186,16 @@ namespace SWLOR.CLI
                 if (parseResult.GetValue(deployOption))
                 {
                     _deployBuild.Process(parseResult.GetValue(serverOutputOption), parseResult.GetValue(hostOutputOption));
+                }
+
+                if (parseResult.GetValue(reloadOption))
+                {
+                    var reloaded = _hotReloadPublisher.Process(
+                        parseResult.GetValue(serverOutputOption),
+                        parseResult.GetValue(serverHomeOption),
+                        parseResult.GetValue(reloadTimeoutOption));
+                    if (reloaded != 0)
+                        return reloaded;
                 }
 
                 if (parseResult.GetValue(beastBuilderOption))

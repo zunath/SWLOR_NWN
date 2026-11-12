@@ -26,6 +26,7 @@ Use `tools/SWLOR.CLI/RunCLI.cmd` from the repository (or `RunCLI.cmd` while in t
 |---------|------|-------------|
 | **HakBuilder** | `-k` or `--hak` | Builds hakpak files from source directories |
 | **DeployBuild** | `-o` or `--outputDeploy` | Deploys complete debug server environment |
+| **HotReload** | `--reload` | Replaces the game build of a running development or test server without a restart ([README_HotReload.md](README_HotReload.md)) |
 
 ### Module Management Commands
 

@@ -87,5 +87,124 @@ public class HostSettingsTests
         settings.Collectible.Should().Be(expected.Collectible);
         settings.IsProduction.Should().Be(expected.IsProduction);
         settings.RedisHost.Should().Be(expected.RedisHost);
+        settings.HotReload.Should().Be(expected.HotReload);
+        settings.HotReloadRefusal.Should().Be(expected.HotReloadRefusal);
+        settings.ReloadDirectory.Should().Be(expected.ReloadDirectory);
+        settings.GenerationRoot.Should().Be(expected.GenerationRoot);
+    }
+
+    [TestCase(null, "Development", false)]
+    [TestCase("dev", "Development", true)]
+    [TestCase(" Development ", "Development", true)]
+    [TestCase("test", "Test", true)]
+    [TestCase("TESTING", "Test", true)]
+    [TestCase("prod", "Production", true)]
+    [TestCase("production", "Production", true)]
+    [TestCase("prodction", "Development", false)]
+    public void The_environment_is_named_with_the_games_spellings(string? value, string name, bool isExplicit)
+    {
+        var settings = Read((HostSettings.EnvironmentVariable, value));
+
+        settings.EnvironmentName.Should().Be(name);
+        settings.EnvironmentIsExplicit.Should().Be(isExplicit);
+    }
+
+    [Test]
+    public void Hot_reload_is_off_by_default()
+    {
+        foreach (var environment in new[] { null, "dev", "test", "production" })
+        {
+            var settings = Read((HostSettings.EnvironmentVariable, environment));
+
+            settings.HotReloadRequested.Should().BeFalse();
+            settings.HotReload.Should().BeFalse();
+            settings.HotReloadRefusal.Should().BeNull("nothing asked for reload, so there is nothing to refuse");
+        }
+    }
+
+    [TestCase("true", "dev")]
+    [TestCase("1", "development")]
+    [TestCase("YES", "test")]
+    [TestCase(" true ", "testing")]
+    public void Hot_reload_is_on_when_set_on_a_development_or_test_server(string value, string environment)
+    {
+        var settings = Read((HostSettings.HotReloadVariable, value), (HostSettings.EnvironmentVariable, environment));
+
+        settings.HotReloadRequested.Should().BeTrue();
+        settings.HotReload.Should().BeTrue();
+        settings.HotReloadRefusal.Should().BeNull();
+    }
+
+    [TestCase("prod")]
+    [TestCase("production")]
+    [TestCase(" PRODUCTION ")]
+    public void Hot_reload_is_refused_in_production_even_when_set(string environment)
+    {
+        // Production's default build is non-collectible too; a collectible one is still refused.
+        foreach (var collectible in new[] { null, "true" })
+        {
+            var settings = Read(
+                (HostSettings.HotReloadVariable, "true"),
+                (HostSettings.EnvironmentVariable, environment),
+                (HostSettings.CollectibleVariable, collectible));
+
+            settings.HotReloadRequested.Should().BeTrue();
+            settings.HotReload.Should().BeFalse();
+            settings.HotReloadRefusal.Should().Contain("production never reloads");
+        }
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("prodction")]
+    public void Hot_reload_is_refused_when_the_environment_is_not_named_explicitly(string? environment)
+    {
+        var settings = Read((HostSettings.HotReloadVariable, "true"), (HostSettings.EnvironmentVariable, environment));
+
+        settings.HotReload.Should().BeFalse("a misspelled production environment must not reload");
+        settings.HotReloadRefusal.Should().Contain("missing or unrecognized");
+    }
+
+    [Test]
+    public void Hot_reload_is_refused_for_a_non_collectible_build()
+    {
+        var settings = Read(
+            (HostSettings.HotReloadVariable, "true"),
+            (HostSettings.EnvironmentVariable, "dev"),
+            (HostSettings.CollectibleVariable, "false"));
+
+        settings.HotReload.Should().BeFalse();
+        settings.HotReloadRefusal.Should().Contain(HostSettings.CollectibleVariable);
+    }
+
+    [TestCase("false")]
+    [TestCase("no")]
+    [TestCase("maybe")]
+    [TestCase(" ")]
+    public void A_switch_that_is_not_on_keeps_hot_reload_off(string value)
+    {
+        var settings = Read((HostSettings.HotReloadVariable, value), (HostSettings.EnvironmentVariable, "dev"));
+
+        settings.HotReloadRequested.Should().BeFalse();
+        settings.HotReload.Should().BeFalse();
+        settings.HotReloadRefusal.Should().BeNull();
+    }
+
+    [Test]
+    public void Candidates_go_under_the_host_and_the_reload_folder_is_reload_in_the_server_home()
+    {
+        var settings = Read();
+
+        settings.GenerationRoot.Should().Be(Path.GetFullPath(HostDirectory));
+        settings.ReloadDirectory.Should().Be(Path.Combine(Path.GetDirectoryName(HostDirectory)!, "reload"));
+    }
+
+    [Test]
+    public void A_configured_reload_folder_is_used_and_a_relative_one_is_resolved_against_the_host()
+    {
+        var absolute = Path.Combine(Path.GetTempPath(), "elsewhere", "reload");
+
+        Read((HostSettings.ReloadDirectoryVariable, absolute)).ReloadDirectory.Should().Be(absolute);
+        Read((HostSettings.ReloadDirectoryVariable, "signals")).ReloadDirectory.Should().Be(Path.Combine(HostDirectory, "signals"));
     }
 }

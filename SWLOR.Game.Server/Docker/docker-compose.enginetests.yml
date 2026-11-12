@@ -110,6 +110,9 @@ services:
             - NWNX_DOTNET_ENTRYPOINT=${SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT:-SWLOR.Game.Host.Bootstrap.NativeBootstrap}
             - NWNX_DOTNET_METHOD=${SWLOR_ENGINE_TEST_DOTNET_METHOD:-Initialize}
             - SWLOR_GAME_COLLECTIBLE=${SWLOR_ENGINE_TEST_GAME_COLLECTIBLE:-}
+            # Hot reload (host entry only): off for engine-test runs whatever the home's swlor.env says; the local
+            # reload check (scripts/run-hot-reload-check.sh) turns it on with SWLOR_ENGINE_TEST_HOT_RELOAD=true.
+            - SWLOR_HOT_RELOAD=${SWLOR_ENGINE_TEST_HOT_RELOAD:-false}
         links:
             - "redis:redis"
         volumes:

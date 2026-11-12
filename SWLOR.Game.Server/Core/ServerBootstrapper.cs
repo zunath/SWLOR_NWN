@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Loader;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Extension;
@@ -10,8 +11,11 @@ namespace SWLOR.Game.Server.Core
 {
     public class ServerBootstrapper
     {
-        private readonly ClosureManager _closureManager;
         private readonly ContainerHost _container;
+        private ClosureManager _closureManager;
+
+        // Set only on the host entry (BootstrapHosted); null on the native entry, whose steps then run exactly as before.
+        private HostedBoot _hostedBoot;
 
         public ServerBootstrapper()
             : this(CompositionRoot.ServerHost)
@@ -26,9 +30,15 @@ namespace SWLOR.Game.Server.Core
         {
             _closureManager = new ClosureManager();
             _container = container ?? throw new ArgumentNullException(nameof(container));
-            Steps = CreateSteps();
+            var shared = CreateSharedSteps();
+            Steps = CreateSteps(shared);
+            HostedSteps = CreateHostedSteps(shared);
         }
 
+        /// <summary>
+        /// The OBJECT_SELF owner and NWN.Core's closure handler: a <see cref="ClosureManager"/> on the native entry, a
+        /// <see cref="HostedClosureManager"/> once the host entry's first step has run.
+        /// </summary>
         public ClosureManager ClosureManager => _closureManager;
 
         /// <summary>The removable process-event subscriptions; available once the container is built.</summary>
@@ -40,9 +50,41 @@ namespace SWLOR.Game.Server.Core
         /// </summary>
         public IReadOnlyList<BootstrapStep> Steps { get; }
 
+        /// <summary>
+        /// The boot steps of the host entry (<c>SWLOR.Game.Host</c>), in the order <see cref="BootstrapHosted"/> runs them.
+        /// The host has already initialized NWN.Core and registered the native callbacks, so the two native steps of
+        /// <see cref="Steps"/> become <c>InitializeHostedNWNCore</c>; the other five are the same step objects.
+        /// </summary>
+        public IReadOnlyList<BootstrapStep> HostedSteps { get; }
+
         public void Bootstrap()
         {
             Run(Steps);
+        }
+
+        /// <summary>Boots the game build the host loaded as a generation: <see cref="HostedSteps"/>, with what the host hands it.</summary>
+        public void BootstrapHosted(HostedBoot boot)
+        {
+            _hostedBoot = boot ?? throw new ArgumentNullException(nameof(boot));
+            Run(HostedSteps);
+        }
+
+        /// <summary>
+        /// Lets go of the hosted game build: the server teardown (<see cref="IServerTeardown"/>: timers, queues, the
+        /// <c>app_shutdown</c> clean-up, the process-wide subscriptions, the script execution provider), then NWN.Core goes
+        /// back to the host's closure handler, so nothing of this build stays reachable from it.
+        /// </summary>
+        public void ShutdownHosted()
+        {
+            var boot = _hostedBoot ?? throw new InvalidOperationException("The server was not booted by the host.");
+            try
+            {
+                _container.Resolve<IServerTeardown>().Run();
+            }
+            finally
+            {
+                global::NWN.Core.NWNCore.Init(boot.HostClosures);
+            }
         }
 
         /// <summary>Runs the steps in order. A step that throws stops the boot; the exception is logged and rethrown.</summary>
@@ -71,12 +113,30 @@ namespace SWLOR.Game.Server.Core
         /// service's static facade resolves its instance from the container, so every handler, including those of
         /// <c>mod_preload</c>, finds it built.
         /// </summary>
-        private BootstrapStep[] CreateSteps()
+        private BootstrapStep[] CreateSteps(BootstrapStep[] shared)
+        {
+            var native = new[]
+            {
+                new BootstrapStep(nameof(InitializeNWNCore), InitializeNWNCore),
+                new BootstrapStep(nameof(RegisterNativeHandlers), RegisterNativeHandlers)
+            };
+            return native.Concat(shared).ToArray();
+        }
+
+        private BootstrapStep[] CreateHostedSteps(BootstrapStep[] shared)
+        {
+            var hosted = new[]
+            {
+                new BootstrapStep(nameof(InitializeHostedNWNCore), InitializeHostedNWNCore)
+            };
+            return hosted.Concat(shared).ToArray();
+        }
+
+        /// <summary>The steps both entries run, in this order, after their own NWN.Core step(s).</summary>
+        private BootstrapStep[] CreateSharedSteps()
         {
             return new[]
             {
-                new BootstrapStep(nameof(InitializeNWNCore), InitializeNWNCore),
-                new BootstrapStep(nameof(RegisterNativeHandlers), RegisterNativeHandlers),
                 new BootstrapStep(nameof(InitializeSWLORSystems), InitializeSWLORSystems),
                 new BootstrapStep(nameof(BuildServiceContainer), BuildServiceContainer),
                 new BootstrapStep(nameof(RegisterEventHandlers), RegisterEventHandlers),
@@ -89,6 +149,19 @@ namespace SWLOR.Game.Server.Core
         {
             global::NWN.Core.NWNCore.Init(_closureManager);
             Console.WriteLine("NWN.Core library initialized successfully.");
+        }
+
+        /// <summary>
+        /// The host entry's counterpart of <see cref="InitializeNWNCore"/>. The host initialized NWN.Core with its own
+        /// closure handler; the game puts its <see cref="HostedClosureManager"/> in front of it, so OBJECT_SELF stays the
+        /// game's, as on the native entry, while the host schedules the closures and tracks them for this generation.
+        /// </summary>
+        private void InitializeHostedNWNCore()
+        {
+            var boot = _hostedBoot ?? throw new InvalidOperationException("The host entry's steps run only through BootstrapHosted.");
+            _closureManager = new HostedClosureManager(boot.HostClosures);
+            global::NWN.Core.NWNCore.Init(_closureManager);
+            Console.WriteLine("NWN.Core library initialized successfully (hosted).");
         }
 
         private void RegisterNativeHandlers()
@@ -113,7 +186,11 @@ namespace SWLOR.Game.Server.Core
         private void BuildServiceContainer()
         {
             Console.WriteLine("Building the service container...");
-            var registrations = CompositionRoot.Build(_container);
+            // The host entry hands the game the host's Redis connection, which outlives the build; the native entry keeps
+            // the server's own (RedisConnectionSource).
+            var registrations = _hostedBoot == null
+                ? CompositionRoot.Build(_container)
+                : CompositionRoot.Build(_container, _hostedBoot.RedisConnection);
             Console.WriteLine($"Service container built ({registrations} registrations).");
         }
 
@@ -150,11 +227,20 @@ namespace SWLOR.Game.Server.Core
                 // directory, and using BaseDirectory silently finds nothing (the server then
                 // idles forever with no tests scheduled). BaseDirectory is kept only as a
                 // fallback for hosts where Location is empty.
-                var candidateDirectories = new[]
-                {
-                    Path.GetDirectoryName(gameAssembly.Location),
-                    AppContext.BaseDirectory
-                };
+                // The host loads the game build from bytes, so the assembly has no location; the host names the
+                // directory it loaded the build from instead, and it is probed first.
+                var candidateDirectories = _hostedBoot == null
+                    ? new[]
+                    {
+                        Path.GetDirectoryName(gameAssembly.Location),
+                        AppContext.BaseDirectory
+                    }
+                    : new[]
+                    {
+                        _hostedBoot.GameDirectory,
+                        Path.GetDirectoryName(gameAssembly.Location),
+                        AppContext.BaseDirectory
+                    };
 
                 var probed = new List<string>();
                 foreach (var directory in candidateDirectories)

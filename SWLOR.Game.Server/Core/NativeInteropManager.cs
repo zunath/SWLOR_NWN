@@ -92,7 +92,8 @@ namespace SWLOR.Game.Server.Core
         }
 
 
-        private static void ProcessSignal(string signal)
+        /// <summary>The signals the server acts on; the host entry's <see cref="HostedSignalHandler"/> uses the same table.</summary>
+        internal static void ProcessSignal(string signal)
         {
             switch (signal)
             {

@@ -25,6 +25,8 @@
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
     <!-- The contracts rules read this assembly's references from disk too. -->
     <ProjectReference Include="..\SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj" />
+    <!-- The host rule reads this assembly's references from disk too. -->
+    <ProjectReference Include="..\SWLOR.Game.Host\SWLOR.Game.Host.csproj" />
   </ItemGroup>
 
 </Project>

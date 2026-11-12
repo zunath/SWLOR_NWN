@@ -27,6 +27,8 @@
     <ProjectReference Include="..\SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj" />
     <!-- The host rule reads this assembly's references from disk too. -->
     <ProjectReference Include="..\SWLOR.Game.Host\SWLOR.Game.Host.csproj" />
+    <!-- The trampoline rules read this assembly's IL and references from disk too. -->
+    <ProjectReference Include="..\SWLOR.Game.NativeHooks\SWLOR.Game.NativeHooks.csproj" />
   </ItemGroup>
 
 </Project>

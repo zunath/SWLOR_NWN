@@ -60,18 +60,21 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>
         /// Builds <paramref name="host"/> from the server's registrations with <paramref name="redisConnection"/> as the
-        /// Redis connection: the host entry hands the game the connection it keeps for the life of the process.
-        /// <see cref="ServerBootstrapper"/> calls it in its <c>BuildServiceContainer</c> step on that entry.
+        /// Redis connection and <paramref name="hookControl"/> as the native hook control: the host entry hands the game the
+        /// connection and the hooks it keeps for the life of the process. <see cref="ServerBootstrapper"/> calls it in its
+        /// <c>BuildServiceContainer</c> step on that entry.
         /// </summary>
         /// <returns>The number of registrations.</returns>
-        public static int Build(ContainerHost host, IRedisConnectionSource redisConnection)
+        public static int Build(ContainerHost host, IRedisConnectionSource redisConnection, IHookControl hookControl)
         {
             if (host == null)
                 throw new ArgumentNullException(nameof(host));
             if (redisConnection == null)
                 throw new ArgumentNullException(nameof(redisConnection));
+            if (hookControl == null)
+                throw new ArgumentNullException(nameof(hookControl));
 
-            return host.Build(services => RegisterHostedServices(services, redisConnection));
+            return host.Build(services => RegisterHostedServices(services, redisConnection, hookControl));
         }
 
         /// <summary>
@@ -93,16 +96,19 @@ namespace SWLOR.Game.Server.Composition
         }
 
         /// <summary>
-        /// The server's registrations with the host's Redis connection in place of the server's own: the list the host
-        /// entry builds the container from. The registration count stays the same.
+        /// The server's registrations with the host's Redis connection and native hook control in place of the server's
+        /// own: the list the host entry builds the container from. The registration count stays the same.
         /// </summary>
-        public static void RegisterHostedServices(IServiceCollection services, IRedisConnectionSource redisConnection)
+        public static void RegisterHostedServices(IServiceCollection services, IRedisConnectionSource redisConnection, IHookControl hookControl)
         {
             if (redisConnection == null)
                 throw new ArgumentNullException(nameof(redisConnection));
+            if (hookControl == null)
+                throw new ArgumentNullException(nameof(hookControl));
 
             ServiceRegistrations.Register(services);
             services.Replace(ServiceDescriptor.Singleton(redisConnection));
+            services.Replace(ServiceDescriptor.Singleton(hookControl));
         }
 
         /// <summary>

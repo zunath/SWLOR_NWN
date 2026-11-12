@@ -4,7 +4,10 @@ using FluentAssertions;
 using Nwn.Hosting.Bootstrap;
 using NUnit.Framework;
 using StackExchange.Redis;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Host.Bootstrap;
+using SWLOR.Game.Host.Hooks;
+using SWLOR.Game.NativeHooks;
 
 namespace SWLOR.Game.Host.Tests.Bootstrap;
 
@@ -14,7 +17,7 @@ public class HostOptionsTests
     [Test]
     public void The_host_runs_frames_inline_drops_refused_closures_and_keeps_closures_unbounded()
     {
-        var options = HostOptions.Create(_ => throw new InvalidOperationException("not created here"));
+        var options = HostOptions.Create(_ => throw new InvalidOperationException("not created here"), new NativeHookTable());
 
         options.FrameDelivery.Should().Be(FrameDelivery.Inline,
             "the native entry runs its frame work at the start of the main loop with OBJECT_SELF invalid, from the first frame");
@@ -23,15 +26,28 @@ public class HostOptionsTests
         options.MaximumPendingClosures.Should().BeNull("the native entry's closure dictionary is unbounded");
         options.LogPrefix.Should().Be(HostOptions.LogPrefix);
         options.ModeName.Should().Be(HostOptions.ModeName);
-        options.Extensions.Should().BeEmpty("the game still installs its native hooks itself until P4-11");
     }
 
     [Test]
-    public void Creating_the_options_needs_a_mode_factory()
+    public void The_host_has_one_native_hook_extension_per_hook_file_in_the_order_of_the_ids()
     {
-        var create = () => HostOptions.Create(null!);
+        var hooks = new NativeHookTable();
 
-        create.Should().Throw<ArgumentNullException>();
+        var options = HostOptions.Create(_ => throw new InvalidOperationException("not created here"), hooks);
+
+        options.Extensions.Should().AllBeOfType<NativeHookExtension>();
+        options.Extensions.Cast<NativeHookExtension>().Select(extension => extension.Hook)
+            .Should().Equal(Enum.GetValues<NativeHookId>(), "the 17 hook files of the game, each resolved when the host starts");
+    }
+
+    [Test]
+    public void Creating_the_options_needs_a_mode_factory_and_the_hooks()
+    {
+        var withoutMode = () => HostOptions.Create(null!, new NativeHookTable());
+        var withoutHooks = () => HostOptions.Create(_ => throw new InvalidOperationException("not created here"), null!);
+
+        withoutMode.Should().Throw<ArgumentNullException>();
+        withoutHooks.Should().Throw<ArgumentNullException>();
     }
 
     [TestCase(true)]
@@ -50,9 +66,9 @@ public class HostOptionsTests
     }
 
     [Test]
-    public void The_shared_assemblies_are_the_contracts_and_the_redis_client_with_its_whole_dependency_closure()
+    public void The_shared_assemblies_are_the_contracts_the_native_hooks_and_the_redis_client_with_its_whole_dependency_closure()
     {
-        var expected = new SortedSet<string>(StringComparer.Ordinal) { "SWLOR.Game.Contracts" };
+        var expected = new SortedSet<string>(StringComparer.Ordinal) { "SWLOR.Game.Contracts", "SWLOR.Game.NativeHooks" };
         var visited = new HashSet<string>(StringComparer.Ordinal);
         var pending = new Stack<Assembly>([typeof(ConnectionMultiplexer).Assembly]);
         while (pending.TryPop(out var assembly))
@@ -71,7 +87,8 @@ public class HostOptionsTests
         }
 
         HostOptions.SharedAssemblyNames.Should().BeEquivalentTo(expected,
-            "a type the game and the host's Redis connection both use must come from one copy");
+            "a type the game and the host's Redis connection both use must come from one copy, and the game must reach the " +
+            "trampolines NWNX calls, not a copy of its own");
     }
 
     [Test]

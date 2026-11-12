@@ -143,11 +143,14 @@ public class ForceConversionStanceTests
 
         var attackSource = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
             "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"))).GetRoot();
-        var hook = attackSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var trampolineSource = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
+            "SWLOR.Game.NativeHooks", "ResolveAttackRollTrampolines.cs"))).GetRoot();
+        var hook = trampolineSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "OnResolveAttackRoll");
-        var delegation = hook.DescendantNodes().OfType<InvocationExpressionSyntax>().Should().ContainSingle().Which;
-        // The native hook only forwards to its sink (P4-9), which runs the shared roll.
-        delegation.Expression.ToString().Should().Be("_sink.ResolveAttackRoll");
+        // The trampoline forwards to the bound sink (P4-9, P4-11), which runs the shared roll; only with no sink bound
+        // does it run the engine function.
+        var delegation = hook.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Should().ContainSingle(node => node.Expression.ToString() == "sink.ResolveAttackRoll").Which;
         delegation.ArgumentList.Arguments.Select(argument => argument.ToString()).Should().Equal("thisPtr", "pTarget");
         File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "NativeSinks", "ResolveAttackRollSink.cs"))
             .Should().Contain("NativeResolveAttackRoll.ResolveWeaponRoll(thisPtr, pTarget)");

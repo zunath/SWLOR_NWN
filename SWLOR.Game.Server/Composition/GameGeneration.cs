@@ -5,6 +5,7 @@ using Nwn.Hosting.Contracts.Generations;
 using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.NativeSinks;
 
 namespace SWLOR.Game.Server.Composition
 {
@@ -23,6 +24,8 @@ namespace SWLOR.Game.Server.Composition
         private string _sourceDirectory;
         private IHostCallbacks _hostCallbacks;
         private HostedSignalHandler _signals;
+        private INativeSinkBinding _sinkBinding;
+        private NativeSinkSet _sinks;
         private bool _bootStarted;
 
         /// <summary>The generation the host loads: the server's own boot.</summary>
@@ -68,11 +71,11 @@ namespace SWLOR.Game.Server.Composition
         }
 
         /// <summary>
-        /// On the engine thread: boots the server with what the host hands it (its closure handler, its Redis connection,
-        /// the build's directory), which registers the loggers, sets the script execution provider, builds the container
-        /// and registers the script handlers, then exposes the script dispatcher and the main loop and binds the signal
-        /// handler. The native hooks are still installed by the game's own boot handlers, each with its own sink (P4-9);
-        /// P4-11 moves them into the host and binds the sinks here.
+        /// On the engine thread: binds this build's sinks to the host's native hooks, then boots the server with what the
+        /// host hands it (its closure handler, its Redis connection, its hook control, the build's directory), which
+        /// registers the loggers, sets the script execution provider, builds the container and registers the script
+        /// handlers, then exposes the script dispatcher and the main loop and binds the signal handler. The hooks stay
+        /// uninstalled until the game's boot handlers enable them, at the same moments as on the native entry.
         /// </summary>
         public ValueTask ActivateAsync(GenerationActivation activation, CancellationToken cancellationToken)
         {
@@ -83,9 +86,15 @@ namespace SWLOR.Game.Server.Composition
             var closures = Require<global::NWN.Core.ICoreFunctionHandler>(services);
             var redisConnection = Require<IRedisConnectionSource>(services);
             var hostCallbacks = Require<IHostCallbacks>(services);
+            var hookControl = Require<IHookControl>(services);
+            var sinkBinding = Require<INativeSinkBinding>(services);
+
+            _sinks = NativeSinkFactory.Create();
+            _sinkBinding = sinkBinding;
+            sinkBinding.Bind(_sinks);
 
             _bootStarted = true;
-            _boot.Activate(new HostedBoot(closures, redisConnection, _sourceDirectory));
+            _boot.Activate(new HostedBoot(closures, redisConnection, hookControl, _sourceDirectory));
 
             Scripts = new HostedScriptDispatcher();
             MainLoop = new HostedMainLoop(hostCallbacks);
@@ -112,11 +121,17 @@ namespace SWLOR.Game.Server.Composition
         }
 
         /// <summary>
-        /// On the engine thread: stops taking signals, scripts and frames, then lets go of the server
+        /// On the engine thread: unbinds this build's sinks, so every native hook runs the engine function again and none
+        /// references a type of this build, stops taking signals, scripts and frames, then lets go of the server
         /// (<see cref="IServerTeardown"/>) and gives NWN.Core back to the host.
         /// </summary>
         public ValueTask DisposeAsync()
         {
+            if (_sinkBinding != null && _sinks != null)
+                _sinkBinding.Unbind(_sinks);
+            _sinkBinding = null;
+            _sinks = null;
+
             if (_hostCallbacks != null && _signals != null)
                 _hostCallbacks.UnbindSignals(_signals);
 

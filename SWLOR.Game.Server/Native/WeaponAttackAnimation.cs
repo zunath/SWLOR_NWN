@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using NWN.Native.API;
-using NWNX.NET;
-using NWNX.NET.Native;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -27,9 +25,6 @@ public static unsafe class WeaponAttackAnimation
     // second long. The 1,750 ms gameplay cycle floor is not a clip duration.
     public const int SwingDuration = 1000;
     public const int TransitionDuration = 100;
-    private static FunctionHook* _computeHook;
-    private static FunctionHook* _writeHook;
-    private static IWeaponAttackAnimationSink _sink;
     internal static readonly Dictionary<uint, Playback> _playbacks = new();
 
     internal sealed class Playback
@@ -220,30 +215,12 @@ public static unsafe class WeaponAttackAnimation
     [NWNEventHandler(ScriptName.OnModuleLoad)]
     public static void RegisterHooks()
     {
-        if (_computeHook != null) return;
-        _sink ??= new WeaponAttackAnimationSink();
-        var library = NativeLibrary.GetMainProgramHandle();
-        delegate* unmanaged<void*, void*, void*, void*, int, uint> compute = &ComputeUpdate;
-        delegate* unmanaged<void*, void*, void*, void*, uint, uint, void> write = &WriteUpdate;
-        _computeHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(library,
-            "_ZN11CNWSMessage21ComputeUpdateRequiredEP10CNWSPlayerP10CNWSObjectP17CLastUpdateObjecti"),
-            (IntPtr)compute, HookOrder.Late);
-        _writeHook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(library,
-            "_ZN11CNWSMessage31WriteGameObjUpdate_UpdateObjectEP10CNWSPlayerP10CNWSObjectP17CLastUpdateObjectjj"),
-            (IntPtr)write, HookOrder.Late);
+        NativeHookAccess.Hooks.Enable(NativeHookId.WeaponAttackAnimation);
     }
-
-    [UnmanagedCallersOnly]
-    private static uint ComputeUpdate(void* message, void* player, void* obj, void* last, int playerObject)
-        => _sink.ComputeUpdate(message, player, obj, last, playerObject, (nint)_computeHook->m_trampoline);
 
     public static bool NeedsAnimationUpdate(CNWSObject obj, uint playerId) =>
         TryGetPlayback(obj, out var playback) &&
         (!playback.SentStages.TryGetValue(playerId, out var sent) || sent != ObserverStage(playback, playerId));
-
-    [UnmanagedCallersOnly]
-    private static void WriteUpdate(void* message, void* player, void* obj, void* last, uint updates, uint appearance)
-        => _sink.WriteUpdate(message, player, obj, last, updates, appearance, (nint)_writeHook->m_trampoline);
 
     public static Dictionary<string, string> ReadAnimationReplacements(CNWSObject obj) =>
         obj.m_lAnimationReplaceInfo.ToDictionary(

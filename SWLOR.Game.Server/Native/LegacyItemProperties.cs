@@ -1,16 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using NWN.Native.API;
-using NWNX.NET;
-using NWNX.NET.Native;
 using SWLOR.Game.Contracts;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NativeSinks;
-using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 
 namespace SWLOR.Game.Server.Native;
 
@@ -18,26 +10,20 @@ namespace SWLOR.Game.Server.Native;
 /// Converts retired item-property rows in serialized GFF before the native item loader
 /// validates them and discards properties that the current property tables no longer know.
 /// </summary>
-public static unsafe class LegacyItemProperties
+public static class LegacyItemProperties
 {
     public const string ConvertedVariable = "LEGACY_ITEM_PROPERTIES";
     private static readonly Dictionary<ushort, int> DamageBonusAmountByRow = new();
-    private static FunctionHook* _loadItemHook;
-    private static ILegacyItemPropertiesSink _sink;
 
+    /// <summary>
+    /// Fills the damage bonus table this build's conversions read, then enables the <c>CNWSItem::LoadItem</c> hook
+    /// (<c>SWLOR.Game.NativeHooks.LegacyItemPropertiesTrampolines</c>), which installs once for the process. Called from
+    /// module preload, before any native item load.
+    /// </summary>
     public static void RegisterHook()
     {
-        if (_loadItemHook != null)
-            return;
-
-        _sink ??= new LegacyItemPropertiesSink();
         CacheDamageBonusAmounts();
-        delegate* unmanaged<void*, void*, void*, int, int, int> loadItem = &LoadItem;
-        _loadItemHook = NWNXAPI.RequestFunctionHook(
-            NativeLibrary.GetExport(NativeLibrary.GetMainProgramHandle(),
-                "_ZN8CNWSItem8LoadItemEP7CResGFFP10CResStructii"),
-            (IntPtr)loadItem,
-            HookOrder.Early);
+        NativeHookAccess.Hooks.Enable(NativeHookId.LegacyItemProperties);
     }
 
     /// <summary>
@@ -59,8 +45,4 @@ public static unsafe class LegacyItemProperties
             DamageBonusAmountByRow[(ushort)row] = Math.Min(100, SaberRecalibration.CalculateLegacyDamageBonus(dice, die));
         }
     }
-
-    [UnmanagedCallersOnly]
-    private static int LoadItem(void* item, void* resource, void* structure, int firstFlag, int secondFlag)
-        => _sink.LoadItem(item, resource, structure, firstFlag, secondFlag, (nint)_loadItemHook->m_trampoline);
 }

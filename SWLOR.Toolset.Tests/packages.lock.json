@@ -670,6 +670,13 @@
           "StackExchange.Redis": "[3.0.17, )"
         }
       },
+      "swlor.game.nativehooks": {
+        "type": "Project",
+        "dependencies": {
+          "NWNX.NET": "[1.0.3, )",
+          "SWLOR.Game.Contracts": "[1.0.0, )"
+        }
+      },
       "swlor.game.server": {
         "type": "Project",
         "dependencies": {
@@ -680,6 +687,7 @@
           "NWN.Native": "[8193.37.8, )",
           "Newtonsoft.Json": "[13.0.4, )",
           "SWLOR.Game.Contracts": "[1.0.0, )",
+          "SWLOR.Game.NativeHooks": "[1.0.0, )",
           "SWLOR.NWN.API": "[1.0.0, )",
           "Serilog": "[4.4.0, )",
           "Serilog.Sinks.Console": "[6.1.1, )",

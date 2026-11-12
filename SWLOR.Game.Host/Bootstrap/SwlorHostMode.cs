@@ -1,6 +1,8 @@
 using Nwn.Hosting.Bootstrap;
 using Nwn.Hosting.Reload;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Host.Services;
+using SWLOR.Game.NativeHooks;
 
 namespace SWLOR.Game.Host.Bootstrap;
 
@@ -35,8 +37,9 @@ public sealed class SwlorHostMode : IHostMode
 
     /// <param name="coreFunctions">The package's closure handler, which the reload host tracks closures in per generation.</param>
     /// <param name="settings">The host's options.</param>
-    public SwlorHostMode(CoreFunctionHandler coreFunctions, HostSettings settings)
-        : this(coreFunctions, settings, new HostRedisConnectionSource(() => settings.RedisHost), NativeHost.Log)
+    /// <param name="hooks">The process's native hooks, which the game enables and binds its sinks to.</param>
+    public SwlorHostMode(CoreFunctionHandler coreFunctions, HostSettings settings, NativeHookTable hooks)
+        : this(coreFunctions, settings, new HostRedisConnectionSource(() => settings.RedisHost), hooks, NativeHost.Log)
     {
     }
 
@@ -44,18 +47,22 @@ public sealed class SwlorHostMode : IHostMode
     public SwlorHostMode(
         CoreFunctionHandler coreFunctions,
         HostSettings settings,
-        SWLOR.Game.Contracts.IRedisConnectionSource redisConnection,
+        IRedisConnectionSource redisConnection,
+        NativeHookTable hooks,
         Action<string, string> log)
     {
         _coreFunctions = coreFunctions ?? throw new ArgumentNullException(nameof(coreFunctions));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         ArgumentNullException.ThrowIfNull(redisConnection);
+        ArgumentNullException.ThrowIfNull(hooks);
         _log = log ?? throw new ArgumentNullException(nameof(log));
         _callbacks = new HostCallbacks();
         _services = new HostServices()
             .Add<global::NWN.Core.ICoreFunctionHandler>(coreFunctions)
             .Add(redisConnection)
-            .Add<SWLOR.Game.Contracts.IHostCallbacks>(_callbacks);
+            .Add<IHostCallbacks>(_callbacks)
+            .Add<IHookControl>(hooks)
+            .Add<INativeSinkBinding>(hooks);
     }
 
     /// <summary>The frame and signal callbacks the generations see.</summary>

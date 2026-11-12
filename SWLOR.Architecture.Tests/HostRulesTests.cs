@@ -11,7 +11,8 @@ public class HostRulesTests
 {
     private static readonly string[] AllowedHostReferences =
     [
-        "NWN.Core", "NWN.Native", "NWNX.NET", "Nwn.Hosting", "Nwn.Hosting.Contracts", "SWLOR.Game.Contracts", "StackExchange.Redis"
+        "NWN.Core", "NWN.Native", "NWNX.NET", "Nwn.Hosting", "Nwn.Hosting.Contracts", "SWLOR.Game.Contracts", "SWLOR.Game.NativeHooks",
+        "StackExchange.Redis"
     ];
 
     [Test]

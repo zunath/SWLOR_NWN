@@ -1192,6 +1192,7 @@ then
         SWLOR.Game.Server \
         ':(exclude)SWLOR.Game.Server/Readmes/**' \
         SWLOR.Game.Contracts \
+        SWLOR.Game.NativeHooks \
         SWLOR.NWN.API \
         global.json \
         Directory.Build.props \
@@ -1682,16 +1683,23 @@ if [[ "$SERVER_DOTNET_ENTRY" == host ]]; then
         die "$dotnet_check_label does not contain the host runtime configuration."
     [[ -s "$dotnet_check_root/game/SWLOR.Game.Server.dll" ]] ||
         die "$dotnet_check_label does not contain game/SWLOR.Game.Server.dll."
+    # The native hook trampolines load beside the host, which shares them with the game build.
+    [[ -s "$dotnet_check_root/SWLOR.Game.NativeHooks.dll" ]] ||
+        die "$dotnet_check_label does not contain SWLOR.Game.NativeHooks.dll."
 elif (( dotnet_inputs_changed == 1 )); then
     [[ -s "$staged_dotnet/SWLOR.Game.Server.dll" ]] ||
         die "Temporary .NET output does not contain SWLOR.Game.Server.dll."
     [[ -s "$staged_dotnet/SWLOR.Game.Server.runtimeconfig.json" ]] ||
         die "Temporary .NET output does not contain the server runtime configuration."
+    [[ -s "$staged_dotnet/SWLOR.Game.NativeHooks.dll" ]] ||
+        die "Temporary .NET output does not contain SWLOR.Game.NativeHooks.dll."
 else
     [[ -s "$SERVER_DOTNET_ROOT/SWLOR.Game.Server.dll" ]] ||
         die "Live .NET directory does not contain SWLOR.Game.Server.dll."
     [[ -s "$SERVER_DOTNET_ROOT/SWLOR.Game.Server.runtimeconfig.json" ]] ||
         die "Live .NET directory does not contain the server runtime configuration."
+    [[ -s "$SERVER_DOTNET_ROOT/SWLOR.Game.NativeHooks.dll" ]] ||
+        die "Live .NET directory does not contain SWLOR.Game.NativeHooks.dll."
 fi
 [[ -s "$NWSYNC_MODULE_ROOT/$MODULE_NAME" ]] ||
     die "NWSync modules directory does not contain the packed module."

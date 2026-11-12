@@ -1,15 +1,12 @@
 using NWN.Native.API;
-using NWNX.NET;
 using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NativeSinks;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
-using System.Runtime.InteropServices;
 using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
@@ -59,30 +56,12 @@ namespace SWLOR.Game.Server.Native
         private const int DefaultToHitMod = 1;
         private const int DefaultToHitRoll = 1;
 
-        internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
-
-        // ReSharper disable once NotAccessedField.Local
-        private static ResolveAttackRollHook _callOriginal;
-        private static IResolveAttackRollSink _sink;
-
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
-            _sink ??= new ResolveAttackRollSink();
-            delegate* unmanaged<void*, void*, void> pHook = &OnResolveAttackRoll;
-            var functionPtr = NativeLibrary.GetExport(
-                NativeLibrary.GetMainProgramHandle(), "_ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject");
-            var hookPtr = NWNXAPI.RequestFunctionHook(
-                functionPtr,
-                (IntPtr)pHook,
-                -1000000);
-            _callOriginal = Marshal.GetDelegateForFunctionPointer<ResolveAttackRollHook>((IntPtr)hookPtr);
+            NativeHookAccess.Hooks.Enable(NativeHookId.ResolveAttackRoll);
         }
-
-        [UnmanagedCallersOnly]
-        private static void OnResolveAttackRoll(void* thisPtr, void* pTarget)
-            => _sink.ResolveAttackRoll(thisPtr, pTarget);
 
         internal static void ResolveWeaponRoll(void* thisPtr, void* pTarget)
         {
@@ -108,7 +87,7 @@ namespace SWLOR.Game.Server.Native
                 var area = attacker.GetArea();
 
                 ProfilerPlugin.PushPerfScope("RunScript",
-                    "Script", $"NATIVE:{nameof(OnResolveAttackRoll)}",
+                    "Script", "NATIVE:OnResolveAttackRoll",
                     "Area", area.m_sTag.ToString(),
                     "ObjectType", "Creature");
 

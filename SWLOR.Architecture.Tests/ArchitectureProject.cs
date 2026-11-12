@@ -12,12 +12,14 @@ internal static class ArchitectureProject
     private const string ProjectFileName = "SWLOR.Architecture.Tests.csproj";
     private const string ServerAssemblyFileName = "SWLOR.Game.Server.dll";
     private const string ContractsAssemblyFileName = "SWLOR.Game.Contracts.dll";
+    private const string HooksAssemblyFileName = "SWLOR.Game.NativeHooks.dll";
     private const string ContractsNamespace = "SWLOR.Game.Contracts";
 
     private static readonly Lazy<TypeReferenceGraph> ServerGraph = new(ScanServerGraph);
     private static readonly Lazy<DomainDependencies> ServerDependencies = new(() => DomainDependencies.Build(ServerGraph.Value, DomainMap.Load(DomainMapPath)));
     private static readonly Lazy<AssemblyFacts> ServerAssemblyFacts = new(() => AssemblyFactScanner.Scan(ServerAssemblyPath));
     private static readonly Lazy<NativeHookFacts> ServerNativeHooks = new(() => NativeHookScanner.Scan(ServerAssemblyPath, ContractsNamespace));
+    private static readonly Lazy<NativeHookFacts> HooksAssemblyNativeHooks = new(() => NativeHookScanner.Scan(HooksAssemblyPath, ContractsNamespace));
 
     public static bool IsUpdating => Environment.GetEnvironmentVariable(UpdateVariable) == "1";
 
@@ -58,6 +60,12 @@ internal static class ArchitectureProject
 
     /// <summary>The native hook entry points, the sink implementations and the sink interfaces of the compiled server assembly.</summary>
     public static NativeHookFacts NativeHooks => ServerNativeHooks.Value;
+
+    /// <summary>The trampolines, the sink implementations and the sink interfaces of the compiled native hooks assembly.</summary>
+    public static NativeHookFacts HooksAssemblyHooks => HooksAssemblyNativeHooks.Value;
+
+    /// <summary>The compiled native hooks assembly (<c>SWLOR.Game.NativeHooks</c>), copied next to the tests.</summary>
+    public static string HooksAssemblyPath => Path.Combine(AppContext.BaseDirectory, HooksAssemblyFileName);
 
     /// <summary>The compiled contracts assembly (<c>SWLOR.Game.Contracts</c>), copied next to the tests.</summary>
     public static string ContractsAssemblyPath => Path.Combine(AppContext.BaseDirectory, ContractsAssemblyFileName);

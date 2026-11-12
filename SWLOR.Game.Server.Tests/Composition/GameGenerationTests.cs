@@ -53,16 +53,19 @@ public class GameGenerationTests
         public object Resolve(Type serviceType) => _services.GetValueOrDefault(serviceType);
     }
 
-    private static (Services Services, RecordingHostClosures Closures, UnopenedRedisConnectionSource Redis, RecordingHostCallbacks Callbacks) HostServices()
+    private static (Services Services, RecordingHostClosures Closures, UnopenedRedisConnectionSource Redis, RecordingHostCallbacks Callbacks, RecordingHookControl Hooks) HostServices()
     {
         var closures = new RecordingHostClosures();
         var redis = new UnopenedRedisConnectionSource();
         var callbacks = new RecordingHostCallbacks();
+        var hooks = new RecordingHookControl();
         var services = new Services()
             .With<global::NWN.Core.ICoreFunctionHandler>(closures)
             .With<IRedisConnectionSource>(redis)
-            .With<IHostCallbacks>(callbacks);
-        return (services, closures, redis, callbacks);
+            .With<IHostCallbacks>(callbacks)
+            .With<IHookControl>(hooks)
+            .With<INativeSinkBinding>(hooks);
+        return (services, closures, redis, callbacks, hooks);
     }
 
     private static GenerationActivation Activation(IHostServices services) => new(1, null, null, null, services);
@@ -86,7 +89,7 @@ public class GameGenerationTests
     {
         var boot = new RecordingBoot();
         var generation = new GameGeneration(boot);
-        var (services, closures, redis, callbacks) = HostServices();
+        var (services, closures, redis, callbacks, hooks) = HostServices();
         generation.ConfigureSourceDirectory("/nwn/home/dotnet/game");
 
         await generation.ValidateAsync(CancellationToken.None);
@@ -95,6 +98,7 @@ public class GameGenerationTests
         boot.Calls.Should().Equal("validate", "activate");
         boot.Boot.HostClosures.Should().BeSameAs(closures);
         boot.Boot.RedisConnection.Should().BeSameAs(redis);
+        boot.Boot.HookControl.Should().BeSameAs(hooks);
         boot.Boot.GameDirectory.Should().Be("/nwn/home/dotnet/game");
         generation.Scripts.Should().BeOfType<HostedScriptDispatcher>();
         generation.MainLoop.Should().BeOfType<HostedMainLoop>();
@@ -113,17 +117,36 @@ public class GameGenerationTests
     }
 
     [Test]
-    public async Task Dispose_unbinds_the_signals_stops_the_callbacks_and_lets_go_of_the_server_once()
+    public async Task Activation_binds_a_full_set_of_the_games_sinks_before_the_server_boots_and_enables_no_hook()
     {
         var boot = new RecordingBoot();
         var generation = new GameGeneration(boot);
-        var (services, _, _, callbacks) = HostServices();
+        var (services, _, _, _, hooks) = HostServices();
+
         await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        hooks.Calls.Should().Equal(new[] { "bind" }, "the game's boot handlers enable the hooks later, at their own moments");
+        hooks.Bound.Should().NotBeNull();
+        hooks.Bound.VitalityHitPoints.Should().BeOfType<SWLOR.Game.Server.NativeSinks.VitalityHitPointsSink>();
+        hooks.Bound.WeaponAttackAnimation.Should().BeOfType<SWLOR.Game.Server.NativeSinks.WeaponAttackAnimationSink>();
+    }
+
+    [Test]
+    public async Task Dispose_unbinds_the_sinks_and_signals_stops_the_callbacks_and_lets_go_of_the_server_once()
+    {
+        var boot = new RecordingBoot();
+        var generation = new GameGeneration(boot);
+        var (services, _, _, callbacks, hooks) = HostServices();
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+        var bound = hooks.Bound;
 
         await generation.DisposeAsync();
         await generation.DisposeAsync();
 
         boot.Calls.Should().Equal("activate", "retire");
+        hooks.Calls.Should().Equal("bind", "unbind");
+        hooks.Bound.Should().BeNull("no hook references a type of the retired build");
+        bound.Should().NotBeNull();
         callbacks.Calls.Should().Equal("bind", "unbind");
         callbacks.Bound.Should().BeNull();
         generation.Scripts.Should().BeNull();
@@ -147,13 +170,15 @@ public class GameGenerationTests
     {
         var boot = new RecordingBoot { ActivationFailure = new InvalidOperationException("container") };
         var generation = new GameGeneration(boot);
-        var (services, _, _, callbacks) = HostServices();
+        var (services, _, _, callbacks, hooks) = HostServices();
 
         var activate = async () => await generation.ActivateAsync(Activation(services), CancellationToken.None);
         await activate.Should().ThrowAsync<InvalidOperationException>().WithMessage("container");
         await generation.DisposeAsync();
 
         boot.Calls.Should().Equal("activate", "retire");
+        hooks.Calls.Should().Equal("bind", "unbind");
+        hooks.Bound.Should().BeNull();
         callbacks.Calls.Should().BeEmpty();
         generation.Scripts.Should().BeNull();
     }
@@ -161,20 +186,25 @@ public class GameGenerationTests
     [TestCase(typeof(global::NWN.Core.ICoreFunctionHandler))]
     [TestCase(typeof(IRedisConnectionSource))]
     [TestCase(typeof(IHostCallbacks))]
+    [TestCase(typeof(IHookControl))]
+    [TestCase(typeof(INativeSinkBinding))]
     public async Task Activation_without_a_host_service_fails_before_the_server_boots(Type missing)
     {
         var boot = new RecordingBoot();
         var generation = new GameGeneration(boot);
-        var (all, closures, redis, callbacks) = HostServices();
+        var (all, closures, redis, callbacks, hooks) = HostServices();
         var services = new Services();
         if (missing != typeof(global::NWN.Core.ICoreFunctionHandler)) services.With<global::NWN.Core.ICoreFunctionHandler>(closures);
         if (missing != typeof(IRedisConnectionSource)) services.With<IRedisConnectionSource>(redis);
         if (missing != typeof(IHostCallbacks)) services.With<IHostCallbacks>(callbacks);
+        if (missing != typeof(IHookControl)) services.With<IHookControl>(hooks);
+        if (missing != typeof(INativeSinkBinding)) services.With<INativeSinkBinding>(hooks);
 
         var activate = async () => await generation.ActivateAsync(Activation(services), CancellationToken.None);
 
         await activate.Should().ThrowAsync<InvalidOperationException>().WithMessage($"*no {missing.Name}*");
         boot.Calls.Should().BeEmpty();
+        hooks.Calls.Should().BeEmpty("nothing is bound when the generation cannot boot");
         all.Should().NotBeNull();
     }
 

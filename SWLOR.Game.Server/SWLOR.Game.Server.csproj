@@ -54,7 +54,11 @@
     <!-- The host entry (swlor.env SWLOR_DOTNET_ENTRY=host) also deploys SWLOR.Game.Host of the same configuration. It is
          built here, with this build's global properties, so a build of this project alone deploys a current host too; in
          a solution build the solution has already built it (ProjectDependencies in SWLOR.Game.Server.sln) and MSBuild
-         returns that result. The host has no post-build step, so this does not recurse. -->
+         returns that result. The host has no post-build step, so this does not recurse. This project does not reference
+         the host, so a build of it alone has not restored the host's packages: restore them first, in an evaluation of
+         its own (the session id), so the build evaluation below reads the restored assets. -->
+    <MSBuild Projects="$(MSBuildProjectDirectory)\..\SWLOR.Game.Host\SWLOR.Game.Host.csproj" Targets="Restore"
+             Properties="MSBuildRestoreSessionId=$([System.Guid]::NewGuid())" />
     <MSBuild Projects="$(MSBuildProjectDirectory)\..\SWLOR.Game.Host\SWLOR.Game.Host.csproj" Targets="Build">
       <Output TaskParameter="TargetOutputs" ItemName="SwlorHostAssembly" />
     </MSBuild>

@@ -47,7 +47,7 @@ if [ ${#PROJECTS[@]} -eq 0 ]; then
     FULL_RUN=1
     PROJECTS=(SWLOR.Game.Server.Tests SWLOR.Game.Server.CharacterizationTests SWLOR.Architecture.Tests
               SWLOR.NWN.API.Tests SWLOR.CombatSim.Tests SWLOR.CLI.Tests SWLOR.NWN.Formats.Tests
-              SWLOR.CraftSim.Tests)
+              SWLOR.CraftSim.Tests SWLOR.Game.Host.Tests)
 fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."

@@ -51,6 +51,8 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT' AND '$(RunPostBuildEvent)' != 'Never'">
-    <Exec Command="call &quot;..\tools\SWLOR.CLI\RunCLI.cmd&quot; -o --server-output &quot;$(TargetDir).&quot;" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
+    <!-- The host entry (swlor.env SWLOR_DOTNET_ENTRY=host) also deploys SWLOR.Game.Host of the same configuration; the
+         solution builds it before this project (ProjectDependencies in SWLOR.Game.Server.sln). -->
+    <Exec Command="call &quot;..\tools\SWLOR.CLI\RunCLI.cmd&quot; -o --server-output &quot;$(TargetDir).&quot; --host-output &quot;$(MSBuildProjectDirectory)\..\SWLOR.Game.Host\bin\$(Configuration)\$(TargetFramework)\.&quot;" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
   </Target>
 </Project>

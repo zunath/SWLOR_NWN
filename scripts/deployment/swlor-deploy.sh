@@ -61,6 +61,12 @@ SERVER_TLK_ROOT="${SERVER_TLK_ROOT:-$SERVER_ROOT/tlk}"
 SERVER_MODULE_ROOT="${SERVER_MODULE_ROOT:-$SERVER_ROOT/modules}"
 SERVER_DOTNET_ROOT="${SERVER_DOTNET_ROOT:-$SERVER_ROOT/dotnet}"
 SERVER_ENV_FILE="${SERVER_ENV_FILE:-$SERVER_ROOT/swlor.env}"
+# The NWNX .NET entry. native (the default): SWLOR.Game.Server's own entry, the game
+# build in SERVER_DOTNET_ROOT, exactly as before. host: SWLOR.Game.Host in
+# SERVER_DOTNET_ROOT and the game build in its game/ folder, with the matching
+# NWNX_DOTNET_* lines written into SERVER_ENV_FILE. Production stays native until the
+# host is measured no slower (MaintainabilityRefactorHotReload.md, P4-10).
+SERVER_DOTNET_ENTRY="${SERVER_DOTNET_ENTRY:-native}"
 NWSYNC_HASH_VARIABLE="${NWSYNC_HASH_VARIABLE:-NWN_NWSYNCHASH}"
 SERVER_RUNTIME_UID="${SERVER_RUNTIME_UID:-1000}"
 SERVER_RUNTIME_GID="${SERVER_RUNTIME_GID:-1000}"
@@ -283,6 +289,29 @@ then
 fi
 [[ "$NWSYNC_HASH_VARIABLE" =~ ^[A-Z][A-Z0-9_]*$ ]] ||
     die "NWSYNC_HASH_VARIABLE contains unsupported characters."
+[[ "$SERVER_DOTNET_ENTRY" == native || "$SERVER_DOTNET_ENTRY" == host ]] ||
+    die "SERVER_DOTNET_ENTRY must be native or host: $SERVER_DOTNET_ENTRY"
+
+game_release_output="$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0"
+host_release_output="$SOURCE_ROOT/SWLOR.Game.Host/bin/Release/net10.0"
+# The NWNX_DOTNET_* lines of the configured entry. A native server whose env file
+# never named an entry is left exactly as it is; one switched back from the host gets
+# the native lines again.
+if [[ "$SERVER_DOTNET_ENTRY" == host ]]; then
+    dotnet_entry_settings=(
+        "SWLOR_DOTNET_ENTRY=host"
+        "NWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Host"
+        "NWNX_DOTNET_ENTRYPOINT=SWLOR.Game.Host.Bootstrap.NativeBootstrap"
+        "NWNX_DOTNET_METHOD=Initialize"
+    )
+else
+    dotnet_entry_settings=(
+        "SWLOR_DOTNET_ENTRY=native"
+        "NWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Server"
+        "NWNX_DOTNET_ENTRYPOINT=SWLOR.Game.Server.Core.ServerManager"
+        "NWNX_DOTNET_METHOD=Bootstrap"
+    )
+fi
 
 install -d -o root -g root -m 0750 "$STATE_ROOT" "$CACHE_ROOT"
 
@@ -726,6 +755,70 @@ verify_directory_payloads()
     fi
 }
 
+# The host entry's .NET layout: SWLOR.Game.Host in the root, the game build in game/.
+stage_host_dotnet_layout()
+{
+    local destination_path="$1"
+
+    rsync --archive --delete --exclude='/game/' \
+        "$host_release_output/" "$destination_path/"
+    rsync --archive --delete \
+        "$game_release_output/" "$destination_path/game/"
+}
+
+# Succeeds when destination_path holds exactly the host entry's layout of the current
+# Release outputs; otherwise prints the differences, as verify_directory_payloads does.
+verify_host_dotnet_layout()
+{
+    local destination_path="$1"
+    local differences
+
+    differences="$(
+        rsync --recursive --links --checksum --delete --dry-run --itemize-changes \
+            --exclude='/game/' "$host_release_output/" "$destination_path/"
+        rsync --recursive --links --checksum --delete --dry-run --itemize-changes \
+            "$game_release_output/" "$destination_path/game/"
+    )"
+    if [[ -n "$differences" ]]; then
+        printf '%s\n' "$differences"
+        return 1
+    fi
+}
+
+dotnet_entry_env_required()
+{
+    local configured_entry
+    local setting
+    local setting_key
+    local line_count
+    local configured_value
+
+    configured_entry="$(
+        sed -n 's/^SWLOR_DOTNET_ENTRY=//p' "$SERVER_ENV_FILE" |
+            tail -n 1 |
+            tr -d '\r\n[:space:]'
+    )"
+    if [[ "$SERVER_DOTNET_ENTRY" == native &&
+          ( -z "$configured_entry" || "$configured_entry" == native ) ]]
+    then
+        return 1
+    fi
+
+    for setting in "${dotnet_entry_settings[@]}"; do
+        setting_key="${setting%%=*}"
+        line_count="$(grep -Ec "^${setting_key}=" "$SERVER_ENV_FILE" || true)"
+        configured_value="$(
+            sed -n "s/^${setting_key}=//p" "$SERVER_ENV_FILE" |
+                tail -n 1 |
+                tr -d '\r\n'
+        )"
+        if [[ "$line_count" != 1 || "$configured_value" != "${setting#*=}" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 verify_hak_payloads()
 {
     local source_path="$1"
@@ -806,6 +899,7 @@ show_status()
     printf 'Server manifest:  %s\n' "${configured_manifest:-not configured}"
     printf 'Server env:       %s\n' "$SERVER_ENV_FILE"
     printf 'Server dotnet:     %s\n' "$SERVER_DOTNET_ROOT"
+    printf 'Server .NET entry: %s\n' "$SERVER_DOTNET_ENTRY"
     printf 'HAK paths:         %s\n' \
         "$(separation_status "$NWSYNC_HAK_ROOT" "$SERVER_HAK_ROOT")"
     printf 'TLK paths:         %s\n' \
@@ -914,6 +1008,11 @@ if [[ "$required_tweak_line_count" != 1 ||
       "$configured_required_tweak" != "$REQUIRED_TWEAK_VALUE" ]]
 then
     server_env_migration_required=1
+fi
+
+dotnet_entry_env_migration_required=0
+if dotnet_entry_env_required; then
+    dotnet_entry_env_migration_required=1
 fi
 
 compose config --quiet
@@ -1092,8 +1191,23 @@ then
     then
         dotnet_inputs_changed=0
     fi
+
+    if [[ "$SERVER_DOTNET_ENTRY" == host ]] &&
+       (( dotnet_inputs_changed == 0 )) &&
+       git_paths_changed "$active_commit" "$target_commit" SWLOR.Game.Host
+    then
+        dotnet_inputs_changed=1
+    fi
 else
     log "No usable active-commit baseline exists; all content inputs will be rebuilt."
+fi
+
+# A server switched to the other entry needs the other .NET layout even when no
+# source changed. A deployment that never recorded an entry ran the native one.
+recorded_dotnet_entry="$(state_value dotnet-entry)"
+if [[ "${recorded_dotnet_entry:-native}" != "$SERVER_DOTNET_ENTRY" ]]; then
+    log "The .NET entry changes from ${recorded_dotnet_entry:-native} to $SERVER_DOTNET_ENTRY; the .NET layout will be rebuilt."
+    dotnet_inputs_changed=1
 fi
 
 neverwinter_tool_key="${NEVERWINTER_NIM_VERSION}:${NEVERWINTER_NIM_SHA256}"
@@ -1365,6 +1479,13 @@ if (( cli_build_required == 1 )); then
         --configuration Release \
         --property:OS=Unix \
         --property:RunPostBuildEvent=Never
+    if [[ "$SERVER_DOTNET_ENTRY" == host ]] && (( dotnet_inputs_changed == 1 )); then
+        log "Building SWLOR.Game.Host for the host entry."
+        dotnet build "$SOURCE_ROOT/SWLOR.Game.Host/SWLOR.Game.Host.csproj" \
+            --configuration Release \
+            --property:OS=Unix \
+            --property:RunPostBuildEvent=Never
+    fi
 else
     log "No build inputs changed; skipping the .NET build."
 fi
@@ -1398,7 +1519,10 @@ if (( haks_inputs_changed == 1 || module_inputs_changed == 1 )); then
     done
 fi
 
-if (( dotnet_inputs_changed == 1 )); then
+if (( dotnet_inputs_changed == 1 )) && [[ "$SERVER_DOTNET_ENTRY" == host ]]; then
+    log "Staging the host entry's .NET assemblies (host, then the game in game/) in temporary workspace."
+    stage_host_dotnet_layout "$staged_dotnet"
+elif (( dotnet_inputs_changed == 1 )); then
     log "Staging production .NET assemblies in temporary workspace."
     rsync \
         --archive \
@@ -1538,7 +1662,21 @@ else
     log "Client content is unchanged; reusing the active NWSync manifest."
 fi
 
-if (( dotnet_inputs_changed == 1 )); then
+if [[ "$SERVER_DOTNET_ENTRY" == host ]]; then
+    if (( dotnet_inputs_changed == 1 )); then
+        dotnet_check_root="$staged_dotnet"
+        dotnet_check_label="Temporary .NET output"
+    else
+        dotnet_check_root="$SERVER_DOTNET_ROOT"
+        dotnet_check_label="Live .NET directory"
+    fi
+    [[ -s "$dotnet_check_root/SWLOR.Game.Host.dll" ]] ||
+        die "$dotnet_check_label does not contain SWLOR.Game.Host.dll."
+    [[ -s "$dotnet_check_root/SWLOR.Game.Host.runtimeconfig.json" ]] ||
+        die "$dotnet_check_label does not contain the host runtime configuration."
+    [[ -s "$dotnet_check_root/game/SWLOR.Game.Server.dll" ]] ||
+        die "$dotnet_check_label does not contain game/SWLOR.Game.Server.dll."
+elif (( dotnet_inputs_changed == 1 )); then
     [[ -s "$staged_dotnet/SWLOR.Game.Server.dll" ]] ||
         die "Temporary .NET output does not contain SWLOR.Game.Server.dll."
     [[ -s "$staged_dotnet/SWLOR.Game.Server.runtimeconfig.json" ]] ||
@@ -1589,7 +1727,14 @@ if [[ -n "$(git -C "$SOURCE_ROOT" status --porcelain --untracked-files=all)" ]];
 fi
 
 dotnet_payload_changed=0
-if (( dotnet_inputs_changed == 1 )); then
+if (( dotnet_inputs_changed == 1 )) && [[ "$SERVER_DOTNET_ENTRY" == host ]]; then
+    if verify_host_dotnet_layout "$SERVER_DOTNET_ROOT" >/dev/null; then
+        log "Production .NET output is unchanged; the live .NET directory will be reused."
+    else
+        dotnet_payload_changed=1
+        log "Production .NET output changed and will be included in the cutover."
+    fi
+elif (( dotnet_inputs_changed == 1 )); then
     if verify_directory_payloads \
         "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0" \
         "$SERVER_DOTNET_ROOT" >/dev/null
@@ -1614,6 +1759,7 @@ if (( haks_inputs_changed == 1 ||
       dotnet_payload_changed == 1 ||
       manifest_changed == 1 ||
       server_env_migration_required == 1 ||
+      dotnet_entry_env_migration_required == 1 ||
       runtime_permission_migration_required == 1 ||
       server_image_changed == 1 ))
 then
@@ -1627,6 +1773,7 @@ if (( runtime_payload_changed == 0 )); then
     record_state server-runtime-permission-version "$SERVER_RUNTIME_PERMISSION_VERSION"
     record_state neverwinter-tool-key "$neverwinter_tool_key"
     record_state nwsync-build-script-sha "$nwsync_build_script_sha"
+    record_state dotnet-entry "$SERVER_DOTNET_ENTRY"
     record_state deployed-at "$(timestamp)"
     log "No deployable artifacts changed; the running Compose stack was left untouched."
     log "Deployment completed successfully."
@@ -1694,7 +1841,10 @@ if (( module_inputs_changed == 1 )); then
     verify_directory_payloads "$NWSYNC_MODULE_ROOT" "$staged_modules" ||
         die "Pre-staged module verification failed."
 fi
-if (( dotnet_payload_changed == 1 )); then
+if (( dotnet_payload_changed == 1 )) && [[ "$SERVER_DOTNET_ENTRY" == host ]]; then
+    verify_host_dotnet_layout "$staged_dotnet" ||
+        die "Pre-staged .NET verification failed."
+elif (( dotnet_payload_changed == 1 )); then
     verify_directory_payloads \
         "$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0" \
         "$staged_dotnet" ||
@@ -1721,6 +1871,15 @@ if (( server_env_migration_required == 1 )); then
         "$REQUIRED_TWEAK_VALUE"
 else
     log "$REQUIRED_TWEAK_VARIABLE is already configured."
+fi
+
+if (( dotnet_entry_env_migration_required == 1 )); then
+    log "Setting the $SERVER_DOTNET_ENTRY .NET entry in $SERVER_ENV_FILE."
+    for dotnet_entry_setting in "${dotnet_entry_settings[@]}"; do
+        write_server_env_setting \
+            "${dotnet_entry_setting%%=*}" \
+            "${dotnet_entry_setting#*=}"
+    done
 fi
 
 log "Switching the server to the independently staged artifact set."
@@ -1768,6 +1927,7 @@ record_state active-server-image "$SERVER_IMAGE"
 record_state server-runtime-permission-version "$SERVER_RUNTIME_PERMISSION_VERSION"
 record_state neverwinter-tool-key "$neverwinter_tool_key"
 record_state nwsync-build-script-sha "$nwsync_build_script_sha"
+record_state dotnet-entry "$SERVER_DOTNET_ENTRY"
 record_state deployed-at "$(timestamp)"
 
 cutover_started=0

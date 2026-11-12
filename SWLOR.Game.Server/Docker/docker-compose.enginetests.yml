@@ -101,6 +101,15 @@ services:
             - NWNX_THREADWATCHDOG_SKIP=n
             - NWNX_THREADWATCHDOG_PERIOD=30
             - NWNX_THREADWATCHDOG_KILL_THRESHOLD=20
+            # The .NET entry the runner staged (run-engine-tests -Entry / --entry), whatever the home's swlor.env
+            # says: the host (default; SWLOR.Game.Host in dotnet/, the game and the test assembly in dotnet/game/)
+            # or the native entry (SWLOR.Game.Server and the test assembly in dotnet/). The collectible setting
+            # applies to the host only; blank keeps the host's default (collectible outside production).
+            - SWLOR_DOTNET_ENTRY=${SWLOR_ENGINE_TEST_DOTNET_ENTRY:-host}
+            - NWNX_DOTNET_ASSEMBLY=${SWLOR_ENGINE_TEST_DOTNET_ASSEMBLY:-/nwn/home/dotnet/SWLOR.Game.Host}
+            - NWNX_DOTNET_ENTRYPOINT=${SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT:-SWLOR.Game.Host.Bootstrap.NativeBootstrap}
+            - NWNX_DOTNET_METHOD=${SWLOR_ENGINE_TEST_DOTNET_METHOD:-Initialize}
+            - SWLOR_GAME_COLLECTIBLE=${SWLOR_ENGINE_TEST_GAME_COLLECTIBLE:-}
         links:
             - "redis:redis"
         volumes:

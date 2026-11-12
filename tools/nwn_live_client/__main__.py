@@ -28,6 +28,11 @@ def parser() -> argparse.ArgumentParser:
                                       '(default: %%TEMP%%\\swlor-live\\<project>).')
     up.add_argument('--dotnet', help='Server build output (default: SWLOR.Game.Server/bin/<configuration>/net10.0).')
     up.add_argument('--configuration', default='Release', help='Build configuration for the default --dotnet.')
+    up.add_argument('--entry', choices=('host', 'native'), default='host',
+                    help='NWNX .NET entry: host (SWLOR.Game.Host in dotnet/, the game in dotnet/game/) or native '
+                         '(the game\'s own ServerManager.Bootstrap, the game in dotnet/).')
+    up.add_argument('--host-dotnet', help='SWLOR.Game.Host build output for --entry host '
+                                          '(default: SWLOR.Game.Host/bin/<configuration>/net10.0).')
     up.add_argument('--module', help='.mod file (default: <deploy home>/modules/Star Wars LOR v2.mod).')
     up.add_argument('--hak-dir', help='Deployed hak folder (default: debugserver/hak of the main checkout).')
     up.add_argument('--tlk-dir', help='Deployed TLK folder (default: debugserver/tlk of the main checkout).')

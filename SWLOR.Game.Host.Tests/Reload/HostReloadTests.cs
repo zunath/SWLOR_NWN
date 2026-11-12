@@ -167,6 +167,23 @@ public class HostReloadTests
     }
 
     [Test]
+    public async Task The_pause_counts_the_old_builds_quiescence_even_when_the_frame_runs_it_before_the_hold()
+    {
+        // The booted build takes 400 ms to quiesce; whichever pump of the holding frame runs it, the engine was blocked.
+        _build = FixtureGenerationBuilder.BuildInto(Path.Combine(_hostDirectory, "game"), "HostFixture.dll", slowQuiescence: true);
+        var fixture = await Boot(ReloadOn);
+        await OnEngine(() => fixture.Mode.OnSignal("ON_MODULE_LOAD_FINISH"));
+        await Frame(fixture);
+
+        var candidate = PublishCandidate(Guid.NewGuid());
+        var attempt = await FramesUntil(fixture, Task.Run(() => fixture.Mode.ReloadAsync(candidate, CancellationToken.None)));
+
+        attempt.Report.Outcome.Should().Be(ReloadOutcome.Applied, attempt.Report.Detail);
+        attempt.Pause.Should().NotBeNull().And.BeGreaterThanOrEqualTo(TimeSpan.FromMilliseconds(400),
+            "the old build's quiescence ran while the engine thread was held");
+    }
+
+    [Test]
     public async Task A_candidate_rejected_in_validation_leaves_the_old_build_running_and_the_frames_flowing()
     {
         var fixture = await Boot(ReloadOn);

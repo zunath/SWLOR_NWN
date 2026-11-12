@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AppearanceDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -45,6 +46,7 @@ namespace SWLOR.Game.Server.Feature
             var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
 
             HelmetModelRenderer.SetHeadScale(player, headScale);
+            HeadPosition.ApplySaved(player, dbPlayer);
         }
 
         private static void RemoveStaleActivityImmobility(uint player)

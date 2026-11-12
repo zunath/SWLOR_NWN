@@ -673,6 +673,14 @@ class EvidenceCleanupTests(unittest.TestCase):
         kernel=Mock();kernel.WaitForSingleObject.return_value=0;kernel.CloseHandle.return_value=True
         process=SimpleNamespace(hProcess=113,hThread=114)
         job=Mock();desktop=Mock();pid=0x7ffffffc
+
+        def write_shutdown_diagnostic():
+            log = owned / 'logs/nwengineLog1.txt'
+            log.parent.mkdir(exist_ok=True)
+            log.write_text('diagnostic written during shutdown')
+
+        job.close.side_effect = write_shutdown_diagnostic
+
         def failed_shutdown(*args,**kwargs):
             offline_client._retained_processes[pid]=(kernel,process,job,desktop,owned)
             (owned/'isolation.json').write_text(json.dumps({'pid':pid,'process_exited':False,'process_control_retained':True}))
@@ -688,6 +696,8 @@ class EvidenceCleanupTests(unittest.TestCase):
                 self.assertNotIn(pid,offline_client._retained_processes)
                 self.assertFalse(owned.exists())
                 self.assertEqual(kernel.CloseHandle.call_count,2)
+                self.assertEqual((root/'evidence/nwengineLog1.txt').read_text(),
+                                 'diagnostic written during shutdown')
                 manifest=json.loads((root/'evidence/manifest.json').read_text())
                 self.assertFalse(manifest['success'])
                 self.assertTrue(manifest['profile_removed'])
@@ -727,6 +737,46 @@ class EvidenceCleanupTests(unittest.TestCase):
                 self.assertEqual(manifest['evidence_failure'],'Evidence storage failed')
             finally:
                 if owned.exists():profile.cleanup(owned)
+
+    @unittest.skipUnless(sys.platform == 'win32', 'CLI requires Windows')
+    def test_engine_log_copy_failure_keeps_original_and_reports_recovery_path(self):
+        owned = profile.create_profile()
+        engine_log = owned / 'logs/nwengineLog1.txt'
+        engine_log.parent.mkdir(exist_ok=True)
+        engine_log.write_text('original diagnostic')
+        copy_input = profile.copy_input
+
+        def fail_engine_log(source, target):
+            if source == engine_log:
+                raise OSError('Engine log copy failed')
+            return copy_input(source, target)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            fixture = root / 'fixture.mod'
+            fixture.write_bytes(b'fixture')
+            output = root / 'evidence'
+            try:
+                with patch('nwn_visual_check.module.discover_client', return_value=Path('C:/nwmain.exe')), \
+                        patch('nwn_visual_check.profile.create_profile', return_value=owned), \
+                        patch('nwn_visual_check.offline_client.run', return_value=ClientRun(0, '', True, False)), \
+                        patch('nwn_visual_check.profile.copy_input', side_effect=fail_engine_log):
+                    with self.assertRaises(ExceptionGroup):
+                        main(['--module', str(fixture), '--output', str(output), '--capture', 'READY=close'])
+                manifest = json.loads((output / 'manifest.json').read_text())
+                self.assertEqual(manifest['engine_log_copy_failure'], 'Engine log copy failed')
+                self.assertEqual(manifest['retained_engine_log_profile'], str(owned))
+                self.assertFalse(manifest['profile_removed'])
+                self.assertEqual(engine_log.read_text(), 'original diagnostic')
+                with tempfile.TemporaryDirectory() as journal, \
+                        patch.object(cleanup_state, 'state_root', return_value=Path(journal)):
+                    cleanup_state.retain_profile(owned)
+                    offline_client.retry_retained_processes()
+                    self.assertEqual(cleanup_state.pending_profiles(), [])
+                    self.assertEqual(engine_log.read_text(), 'original diagnostic')
+            finally:
+                if owned.exists():
+                    profile.cleanup(owned)
 
     @unittest.skipUnless(sys.platform == 'win32', 'CLI requires Windows')
     def test_retained_process_profile_is_preserved_without_isolation_file(self):

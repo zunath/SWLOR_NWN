@@ -198,8 +198,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             foreach (var (part, partName) in BodyPartNames)
             {
-                // Heads keep their creature model but borrow the armor's global material dyes.
-                // Skin, hair and tattoos still resolve through CreaturePaletteSource.
+                // Head overrides belong to the creature. GetStandardColor separately
+                // resolves the outfit's native dyes when no override is saved.
                 var usesArmorModel = part != CreaturePart.Head && hasArmor;
                 var armorPart = usesArmorModel
                     ? (AppearanceArmor)(int)part
@@ -221,9 +221,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     selections,
                     seenSelections,
                     model,
-                    hasArmor ? armor : creature,
+                    usesArmorModel ? armor : creature,
                     creature,
-                    hasArmor,
+                    usesArmorModel,
                     armorPart);
             }
 

@@ -41,6 +41,91 @@ The generated tint materials share three fragment shaders in
 `fs_plt_hair_nm`. A change to palette lighting must cover all three, including
 materials shared by multiple models through `tintmap.2da`.
 
+Authored CU head materials use five profiles: `fs_head_legacy`,
+`fs_head_plain`, `fs_head_mapped`, `fs_head_hair` and `fs_head_full`.
+Each includes `inc_hd_tint`; the wrappers select lighting features while MTR
+parameters select cutoffs, hair filtering, eye limits, lip coverage and glow.
+`fs_head_plain` still receives lighting; it omits mapped textures and environment
+reflection. The three equipment shaders retain their existing behavior.
+Head materials that contain Metal 1 or Metal 2 use a profile with
+`ENVIRONMENT_MAP 1` (normally `fs_head_full`), so the engine receives the native
+palette's reflectance coverage. Removing specular-map bindings alone is not
+sufficient on an environment-disabled profile. `HeadTintAssets.py --check`
+validates both the metadata profile and the declared fragment shader.
+
+Female Human 316-318 use `metalReflectanceScale=0.04` to retain their subdued
+authored finish. This scales the native palette's environment coverage only on
+Metal 1/2 before the installed engine derives specularity and roughness. It does
+not bind authored specular or roughness maps or darken the color artwork. The
+default is 1.0, preserving every other head's lighting; generated MTRs explicitly
+reset the value to prevent it leaking between materials. Dedicated 512px normal
+maps retain the large panels' detail on 316 and 318.
+
+`tools/HeadTintAssets.json` owns the head MTR declarations, texture policies,
+compiled-model checksums and model/material/channel rows. Committed textures
+are authoritative. `HeadTintAssets.py --apply` regenerates the shared wrappers,
+MTRs and TXIs; it does not recover textures or shaders from historical commits.
+`GenerateTintMapAssets.py` preserves these declared head resources and rows
+instead of inferring or overwriting them.
+
+Head accessory overrides remain on the creature in `TMH_` state. Until an
+override is saved, Cloth, Leather and Metal use the equipped chest armor's
+global dyes, matching native NWN. With no armor, they use the creature default.
+Changing the outfit does not replace an explicit head palette or RGB choice.
+Right-click an accessory swatch to clear the saved choice and restore the
+authored default or outfit dye. Switching heads leaves inherited colors unset.
+The Appearance tab displays the four native channels and only the additional
+Cloth, Leather and Metal channels used by the current head. Labelled swatches
+pack into two columns, with at most five rows in the existing preview band.
+Changing heads removes unused channels; a removed selection falls back to Skin.
+The palette and RGB editor stay in place. Head size and X/Y/Z position remain
+in Settings, with a Reset Head button and saved player values.
+Authored lip surfaces use the approved muted rose RGB default (142, 65, 72)
+until edited; explicit palette choices, including palette 0, still win.
+`headtintdefs.2da`, generated from the head manifest, records these defaults by
+model, material and layer; other head accessories keep the outfit fallback.
+Its `COLOR` is a palette index (0-175) or a packed `TintMapColor` RGB value.
+
+Head color maps use BC1, normals use BC5, scalar masks/specularity use BC4 and
+two-channel masks use BC5. Ordinary maps retain full mip chains. Packed shade
+and categorical-layer maps retain a single BC5 level with `mipmap 0`, preventing
+interpolation of category IDs. Dimensions are powers of two. Authored head maps
+are DDS; all head profiles reuse the existing shared `plt_palette` resource
+without a head-specific palette copy or TGA exception. Texture roles and codecs
+are recorded and checked in the head manifest. Changed playable
+head models are checked against the per-model budgets in the manifest. The 60 CU
+heads restored from the initial 10,000-triangle reduction have a 30,000-triangle
+LOD 0 target; the other changed heads retain their 10,000 budget. ContentStandards
+currently requires LOD 1 at 10,000 and LOD 2 at 3,000 for every head above
+10,000. The owner's maintainer guidance instead specifies a 30,000-triangle
+close-model ceiling with LODs for performance. This update preserves that close
+ceiling and includes the 16 requested three-level sets, checked by
+`SWLOR_Haks/tools/HeadLodAssets.py`. It does not reduce other close models to
+10,000 or expand the requested LOD batch. The additional 49 catalog heads between
+10,000 and 30,000 without LODs are a guidance difference to clarify with the
+maintainer, rather than an agreed additional reduction task. The submission stays
+a draft pending that clarification. The scoped color replay below keeps loaded
+levels current, with a brief cached-color flash still possible on first load or
+helmet removal.
+
+When resizing packed head shades, use `HeadTintResampling.resize_shades` before
+encoding BC5. Lanczos on a floating-point plane can produce negative values and
+values above 255; encoding those values directly wraps endpoints and creates
+bright or dark patches. Round and clamp to uint8 first. For a shade-only repair,
+`replace_shades` preserves the existing compressed categorical plane byte for
+byte, keeping eye, lip and accessory channel ownership unchanged. The regression
+test reproduces the unsafe conversion and checks the repaired DDS with a separate
+decoder.
+
+Run `python -B tools/HeadTintAssets.py --check` and
+`python -B tools/GenerateTintMapAssets.py --check` from the HAK checkout.
+With the installed game data, run `python -B tools/TestHeadTintMaterials.py
+--game-data "<NWN install>/data"` and `python -B tools/TestTintShaderMaterials.py
+--game-data "<NWN install>/data"`. These compile the current profiles, validate
+material-state resets and compare native palette/RGB values against the installed
+original palettes. No pre-squash Git history
+is required. Native client evidence is also required for visual changes.
+
 The current item catalog includes helmet and cloak materials; weapons
 continue to use their native model/color choices. Hand-slot resolver support
 does not by itself introduce weapon tint assets. Before registering tintable
@@ -829,7 +914,7 @@ authoritative source checksum.
 
 The catalog currently covers 1,596 normal-body models across 184 robe styles.
 Phenotype IDs are a native byte, so generated IDs are reserved in the range
-34–255 and are never recycled. Normal body type 0 covers the current authored
+34-255 and are never recycled. Normal body type 0 covers the current authored
 NPC corpus; large and mounted body types retain the native fallback. Reserved
 rows are internal rendering metadata, not character-creation choices.
 
@@ -909,6 +994,35 @@ Generated MTRs declare the active row uniforms, mask dimensions, and applicable
 cutout settings. Obsolete RGB and custom-mode parameters are removed when
 refreshing materials; declaring uniforms absent from the shader creates repeated
 link warnings during model loading.
+
+### Keep head LOD colors current
+
+`HeadLodColorRefresh` replays only the named tint rows of normal-phenotype heads
+with a deployed `.lod` resource. It uses one half-second scheduler per affected
+creature, caches the head's material selections, and reads effective palette/RGB
+colors through `TintMapService` on every tick. Materials also used by non-head
+parts are excluded so this refresh cannot take over equipment dye ownership.
+Ordinary heads do not start a scheduler. Visible helmets, head/species/gender
+changes, logout, destruction, and module reload cancel the old scheduler.
+Helmet removal also publishes the eligible head's current tint rows in the
+post-unequip event and restores its head projection, before the normal deferred
+equipment refresh. The module unequip event is too early to inspect the changed
+head slot reliably. This removes an avoidable server-side delay, but the Windows
+helmet-removal check still shows initial head colors before replay corrects them.
+The timing change is not a complete visual fix.
+
+The first transport component retains the exact existing palette coordinate or
+encoded RGB scalar. A bounded positive counter in the unused second component
+makes an otherwise identical native override record change, so the client applies
+it to the active LOD. Keep the MTR declaration scalar: its GPU upload still uses
+only the first component. The periodic pass must not reset shaders, write a
+wildcard row, rebuild appearance, alter saved colors, or refresh outfit materials.
+Settled color matching does not establish transition latency; client checks must
+cover zooming, observers, all used layers, palette reset, and helmet/head changes.
+The initial appearance of an inactive LOD can still show a cached color until the
+next replay. A shorter replay interval alone cannot guarantee a correct first
+frame. Record this separately from sustained color divergence when reviewing
+client recordings, and do not mark transitions approved from settled screenshots.
 
 The `Tint` native engine tests cover automatic civilian spawn, repeated complete
 refreshes, and individual color edits. They inspect the native parameter list,

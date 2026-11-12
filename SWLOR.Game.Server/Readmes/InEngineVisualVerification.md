@@ -102,6 +102,7 @@ python tools/NwnLiveClient.py up --name my-check --character <test character>.bi
 python tools/NwnLiveClient.py capture <run dir> in-area
 python tools/NwnLiveClient.py record <run dir> instrument-loop --seconds 30 --fps 60
 python tools/NwnLiveClient.py ui <run dir> click 742 591   # also rightclick, doubleclick, drag, move, key, type
+python tools/NwnLiveClient.py ui <run dir> scroll up 8     # camera zoom; up/down, 1..20 wheel steps
 python tools/NwnLiveClient.py console <run dir> status      # one nwserver console line
 python tools/NwnLiveClient.py down <run dir>
 ```

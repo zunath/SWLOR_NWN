@@ -154,17 +154,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindText(Bind<string>($"Tile{tile}Number"))
                                 .SetBounds(5f, 3f, TileSize - 10f, 16f)
                                 .SetColor(220, 220, 220)));
-                });
+                }).SetMargin(0f);
                 cell.AddRow(labelRow =>
                 {
                     labelRow.AddLabel()
                         .BindText(Bind<string>($"Tile{tile}Label"))
                         .BindIsVisible(Bind<bool>($"Tile{tile}Visible"))
                         .SetWidth(TileSize + 10f)
-                        .SetHeight(18f)
+                        .SetHeight(14f).SetMargin(0f)
                         .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                });
-            }).SetWidth(TileSize + 10f);
+                }).SetMargin(0f);
+                cell.AddRow(labelRow => labelRow.AddLabel()
+                    .BindText(Bind<string>($"Tile{tile}Detail"))
+                    .BindIsVisible(Bind<bool>($"Tile{tile}Visible"))
+                    .SetWidth(TileSize + 10f).SetHeight(14f).SetMargin(0f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Center)).SetMargin(0f);
+            }).SetWidth(TileSize + 10f).SetMargin(0f);
         }
 
         private static void AddPageButtons(GuiRow<AppearancePartBrowserViewModel> row, float comboWidth)

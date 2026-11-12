@@ -170,6 +170,111 @@ class PlainTextureTests(unittest.TestCase):
         self.assertFalse(is_see_through("transparency 0\n"))
 
 
+class HeadPreviewTests(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.palette = self.root / "palette.png"
+        Image.new("RGBA", (256, 2048), (128, 128, 128, 255)).save(self.palette)
+        pixels = np.zeros((2, 2, 3), np.uint8)
+        pixels[..., 0] = 128
+        pixels[..., 1] = [[0, 38], [38, 0]]
+        self.tint = self.root / "tint.png"
+        Image.fromarray(pixels).save(self.tint)
+        self.mask = self.root / "mask.png"
+        Image.fromarray(np.array([[0, 0], [255, 0]], np.uint8)).save(self.mask)
+
+    def test_subdued_finish_changes_only_metal_and_keeps_the_default_appearance(self):
+        from appearance_previews.heads import colors
+        Image.new("RGBA", (256, 2048), (96, 120, 144, 127)).save(self.palette)
+        shade = np.full((2, 5), 128)
+        layer = np.arange(10).reshape(2, 5)
+        original, shine = colors(shade, layer, self.palette, {}, {})
+        default, default_shine = colors(shade, layer, self.palette, {}, {"metalReflectanceScale": 1})
+        np.testing.assert_array_equal(default, original)
+        np.testing.assert_array_equal(default_shine, shine)
+        subdued, subdued_shine = colors(shade, layer, self.palette, {}, {"metalReflectanceScale": .04})
+        metal = (layer == 2) | (layer == 3)
+        np.testing.assert_array_equal(subdued[~metal], original[~metal])
+        np.testing.assert_array_equal(subdued_shine[~metal], shine[~metal])
+        self.assertTrue((subdued_shine[metal] < shine[metal]).all())
+        native = np.array([96, 120, 144]) / 255
+        self.assertLess(np.linalg.norm(subdued[metal] - native), np.linalg.norm(original[metal] - native))
+
+    def test_eye_contour_blends_only_skin_and_tattoo_two(self):
+        from appearance_previews.heads import bake_head
+        palette = np.zeros((2048, 256, 4), np.uint8)
+        palette[..., 3] = 255
+        palette[-176:, :, 0] = 200
+        palette[-352:-176, :, 1] = 180
+        palette[-1232:-1056, :, 2] = 160
+        Image.fromarray(palette).save(self.palette)
+        pixels = np.zeros((2, 2, 3), np.uint8)
+        pixels[..., 0] = 128
+        pixels[..., 1] = [[0, 244], [38, 244]]
+        Image.fromarray(pixels).save(self.tint)
+        Image.new("L", (2, 2), 128).save(self.mask)
+        rgba, _ = bake_head(self.tint, self.palette, "parameter float eyeContour 1\n", {6: self.mask}, {})
+        expected = [[(99, 0, 80), (99, 0, 80)], [(0, 180, 0), (99, 0, 80)]]
+        np.testing.assert_allclose(rgba[..., :3], expected, atol=1)
+
+    def test_hair_only_mask_preserves_the_face(self):
+        from appearance_previews.heads import bake_head
+        rgba, _ = bake_head(self.tint, self.palette,
+                            "parameter float maskMode 4\nparameter float alphaCutoff 0.5\n",
+                            {6: self.mask}, {})
+        np.testing.assert_array_equal(rgba[..., 3], [[255, 0], [255, 255]])
+
+    def test_fixed_diffuse_skin_brightness_preserves_non_skin_details(self):
+        from appearance_previews.heads import bake_head
+        diffuse = self.root / "diffuse.png"
+        detail = self.root / "detail.png"
+        Image.new("RGB", (2, 2), (100, 80, 60)).save(diffuse)
+        Image.new("RGB", (2, 2), (255, 255, 255)).save(detail)
+        rgba, _ = bake_head(self.tint, self.palette,
+                            "parameter float detailDiffuse 1\nparameter float detailSkinGain 1.82\n",
+                            {0: diffuse, 8: detail}, {})
+        np.testing.assert_allclose(rgba[[0, 1], [0, 1], :3], [[182, 145, 109]] * 2, atol=1)
+        np.testing.assert_allclose(rgba[[0, 1], [1, 0], :3], [[100, 80, 60]] * 2, atol=1)
+
+    def test_head_tint_maps_do_not_require_a_tm_filename_prefix(self):
+        from appearance_previews.__main__ import prepare_textures
+        raw = self.root / "raw"
+        raw.mkdir()
+        (raw / "head_demo.mtr").write_text("customshaderFS fs_head_plain\ntexture7 head_demo\n")
+        Image.new("RGB", (2, 2), (128, 0, 0)).save(raw / "head_demo.tga")
+        class Index:
+            def extract(self, names, destination):
+                return []
+        textures = prepare_textures(Index(), ["head_demo"], self.root, self.palette)
+        with Image.open(textures["head_demo"]["color"]) as baked:
+            np.testing.assert_array_equal(np.asarray(baked)[..., :3], np.full((2, 2, 3), 128))
+
+    def test_whole_material_mask_clips_all_layers(self):
+        from appearance_previews.heads import bake_head
+        rgba, _ = bake_head(self.tint, self.palette, "parameter float maskMode 1\n", {6: self.mask}, {})
+        np.testing.assert_array_equal(rgba[..., 3], [[0, 0], [255, 0]])
+
+    def test_a_normal_alpha_is_not_used_without_its_parameter(self):
+        from appearance_previews.heads import bake_head
+        normal = self.root / "normal.png"
+        Image.new("RGBA", (2, 2), (128, 128, 255, 0)).save(normal)
+        rgba, _ = bake_head(self.tint, self.palette, "", {1: normal}, {})
+        self.assertTrue((rgba[..., 3] == 255).all())
+        rgba, _ = bake_head(self.tint, self.palette, "parameter float useTexture1Alpha 1\n", {1: normal}, {})
+        self.assertTrue((rgba[..., 3] == 0).all())
+
+    def test_soft_lip_overlay_uses_the_authored_rgb_default(self):
+        from appearance_previews.heads import bake_head
+        lips = self.root / "lips.png"
+        Image.new("RGB", (2, 2), (255, 128, 0)).save(lips)
+        rgba, _ = bake_head(self.tint, self.palette,
+                            "parameter float lipMode 3\nparameter float lipUSpan 1\nparameter float lipVSpan 1\n",
+                            {9: lips}, {7: 0x01000000 | 142 << 16 | 65 << 8 | 72})
+        np.testing.assert_allclose(rgba[..., :3], np.tile([142, 65, 72], (2, 2, 1)), atol=1)
+
+
 class CloakTileTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

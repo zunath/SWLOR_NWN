@@ -102,7 +102,7 @@ def take_shutdown_outcome(profile):
     return _shutdown_outcomes.pop(str(Path(profile).resolve()),None)
 
 
-def retry_retained_processes():
+def retry_retained_processes(*, preserve_profile=None):
     """Retry retained process/profile cleanup and failed container deletions."""
     errors=[]
     for pid,(kernel,process,job,desktop,profile) in list(_retained_processes.items()):
@@ -114,7 +114,7 @@ def retry_retained_processes():
                     raise RuntimeError(f'Owned process {pid} has not exited')
             outcome={'pid':pid,'process_exited':True,'process_control_retained':True,'shutdown_retried':True}
             _shutdown_outcomes[str(profile)]=outcome
-            if profile.exists():
+            if profile.exists() and profile != preserve_profile:
                 cleanup_state.remove_owned_profile(profile,cleanup=cleanup_profile)
             job.close()
             if desktop:
@@ -148,18 +148,19 @@ def retry_retained_processes():
         records=[]
     for record in records:
         try:
-            cleanup_state.recover_profile(record)
+            if Path(record['profile']) != preserve_profile:
+                cleanup_state.recover_profile(record)
         except BaseException as error:
             errors.append(error)
     if errors:
         raise BaseExceptionGroup('Retained native resources still need cleanup',errors)
 
 
-def retry_cleanup_before_exit(attempts=3):
+def retry_cleanup_before_exit(attempts=3, *, preserve_profile=None):
     """Retry transient releases; persistent container records survive exhaustion."""
     for attempt in range(attempts):
         try:
-            retry_retained_processes()
+            retry_retained_processes(preserve_profile=preserve_profile)
             return
         except BaseException:
             if attempt==attempts-1:

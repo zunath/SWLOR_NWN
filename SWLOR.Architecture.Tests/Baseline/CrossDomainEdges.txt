@@ -542,26 +542,29 @@ Feature/ItemDefinition -> Feature/GuiDefinition | 4
 Domain/Items -> Domain/World | 1
 Feature/ItemDefinition -> Domain/World | 3
 
-# Platform -> Abilities (3 edges)
+# Platform -> Abilities (4 edges)
 Platform/Entity -> Domain/Abilities | 4
-Platform/Native -> Domain/Abilities | 5
+Platform/Native -> Domain/Abilities | 4
 Platform/Native -> Feature/AbilityDefinition | 1
+Platform/NativeSinks -> Domain/Abilities | 1
 
 # Platform -> Administration (1 edge)
 Platform/Entity -> Domain/Administration | 8
 
-# Platform -> Character (6 edges)
+# Platform -> Character (7 edges)
 Platform/Entity -> Domain/Character | 40
 Platform/Enumeration -> Domain/Character | 7
-Platform/Native -> Domain/Character | 28
-Platform/Native -> Feature/AppearanceDefinition | 1
+Platform/Native -> Domain/Character | 26
 Platform/Native -> Feature/StatusEffectDefinition | 1
+Platform/NativeSinks -> Domain/Character | 2
+Platform/NativeSinks -> Feature/AppearanceDefinition | 1
 Platform/Root -> Domain/Character | 1
 
-# Platform -> Combat (3 edges)
-Platform/Core -> Domain/Combat | 1
+# Platform -> Combat (4 edges)
+Platform/Core -> Domain/Combat | 4
 Platform/Entity -> Domain/Combat | 21
-Platform/Native -> Domain/Combat | 67
+Platform/Native -> Domain/Combat | 63
+Platform/NativeSinks -> Domain/Combat | 4
 
 # Platform -> Companions (1 edge)
 Platform/Entity -> Domain/Companions | 22
@@ -576,9 +579,10 @@ Platform/Native -> Domain/Creatures | 1
 # Platform -> Economy (1 edge)
 Platform/Entity -> Domain/Economy | 10
 
-# Platform -> Gameplay (2 edges)
-Platform/Native -> Feature.TwinPistolEquipmentValidation | 1
-Platform/Native -> Feature.UsePerkFeat | 8
+# Platform -> Gameplay (3 edges)
+Platform/Native -> Feature.UsePerkFeat | 7
+Platform/NativeSinks -> Feature.TwinPistolEquipmentValidation | 1
+Platform/NativeSinks -> Feature.UsePerkFeat | 1
 
 # Platform -> Items (2 edges)
 Platform/Entity -> Domain/Items | 4
@@ -589,7 +593,7 @@ Platform/Entity -> Domain/Quests | 18
 
 # Platform -> Social (2 edges)
 Platform/Entity -> Domain/Social | 8
-Platform/Native -> Domain/Social | 1
+Platform/NativeSinks -> Domain/Social | 1
 
 # Platform -> Space (1 edge)
 Platform/Entity -> Domain/Space | 3
@@ -715,7 +719,7 @@ Feature/ShipModuleDefinition -> Domain/Items | 2
 Domain/Space -> Domain/UI | 4
 
 # Space -> World (1 edge)
-Domain/Space -> Domain/World | 17
+Domain/Space -> Domain/World | 19
 
 # UI -> Abilities (3 edges)
 Domain/UI -> Domain/Abilities | 13

@@ -117,6 +117,7 @@ Service/Craft.cs  # master-only (P2-ZK)
 Domain/Crafting/CraftService.cs
 Native/PairedRangedPresentation.cs
 Native/OnAIActionAttackObject.cs
+NativeSinks/OnAIActionAttackObjectSink.cs
 # Added by P0-4d3: other readers the engine characterization scenarios reach (recast timestamps, AI and attack delays,
 # melee techniques, the crafting window, entity creation times). Ambient server loops (Spawn, Space, Shuttle, Weather,
 # ServerTasks) are not listed: they are not part of a scenario and must keep reading the system clock.
@@ -148,6 +149,7 @@ Domain/Creatures/IAIProfileDefinition.cs
 Domain/Creatures/NPCAI.cs
 Domain/Creatures/AIService.cs
 Native/WeaponAttackAnimation.cs
+NativeSinks/WeaponAttackAnimationSink.cs
 Domain/Crafting/Minigame/CraftSessionLifecycle.cs
 Domain/Crafting/Minigame/NwnCraftSessionWorld.cs
 Entity/EntityBase.cs

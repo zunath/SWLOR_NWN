@@ -179,7 +179,7 @@ public class PlayerMigrationTests
         var original = saved;
         var saves = 0;
         var fileSaved = false;
-        var record = typeof(Server.Native.PlayerCreation).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var record = typeof(Server.NativeSinks.PlayerCreationSink).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
         void Run() => record.Invoke(null, new object[] { result, "creation-test", (Func<Player?>)(() => saved),
             (Action)(() => fileSaved = true),
             (Action<Player>)(player => { fileSaved.Should().BeTrue(); saved = player; saves++; }) });
@@ -197,7 +197,7 @@ public class PlayerMigrationTests
     [Test]
     public void FailedCreationIdentitySaveCannotAuthorizeDestructiveInitialization()
     {
-        var record = typeof(Server.Native.PlayerCreation).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var record = typeof(Server.NativeSinks.PlayerCreationSink).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
         Action run = () => record.Invoke(null, new object[] { 0u, "creation-test", (Func<Player?>)(() => null),
             (Action)(() => throw new InvalidOperationException("Injected identity export failure")),
             (Action<Player>)(_ => Assert.Fail("No initialization intent may be saved after an export failure")) });

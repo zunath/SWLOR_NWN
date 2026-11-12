@@ -17,8 +17,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Cached Vitality is discarded when native player stats are destroyed", Category = "VitalityHitPoints", TimeoutSeconds = 30f)]
         public static Task CacheLifetime(EngineTestContext ctx)
         {
-            var states = (System.Collections.IDictionary)typeof(Native.VitalityHitPoints)
-                .GetField("PlayerStates", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var sink = typeof(Native.VitalityHitPoints)
+                .GetField("_sink", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var states = (System.Collections.IDictionary)sink.GetType()
+                .GetField("_playerStates", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(sink);
             var originalCount = states.Count;
             for (var cycle = 0; cycle < 3; cycle++)
             {

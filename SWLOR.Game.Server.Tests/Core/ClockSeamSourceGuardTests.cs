@@ -30,6 +30,7 @@ public class ClockSeamSourceGuardTests
         "Domain/Crafting/CraftService.cs",
         "Native/PairedRangedPresentation.cs",
         "Native/OnAIActionAttackObject.cs",
+        "NativeSinks/OnAIActionAttackObjectSink.cs",
     };
 
     [Test]

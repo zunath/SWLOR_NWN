@@ -392,7 +392,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
         var attackSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs"));
+            root.FullName, "SWLOR.Game.Server", "NativeSinks", "OnAIActionAttackObjectSink.cs"));
 
         // Ordnance Stance: auto-attacks and single-target abilities share the single-target stage.
         combatSource.Should().Contain(
@@ -658,7 +658,7 @@ public class GeneratedWeaponPerkBehaviorTests
         deadMansHandSource.Should().Contain("ILimitedAttackNoDelayStatusEffect");
 
         var attackHookSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs"));
+            root.FullName, "SWLOR.Game.Server", "NativeSinks", "OnAIActionAttackObjectSink.cs"));
         var combatRoundGuardIndex = attackHookSource.IndexOf("if (pCombatRound == null)", StringComparison.Ordinal);
         var weaponLookupIndex = attackHookSource.IndexOf("pCombatRound.GetWeaponAttackType()", StringComparison.Ordinal);
         combatRoundGuardIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -693,7 +693,7 @@ public class GeneratedWeaponPerkBehaviorTests
     {
         var root = FindRepositoryRoot();
         var nativeAttackSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs"));
+            root.FullName, "SWLOR.Game.Server", "NativeSinks", "OnAIActionAttackObjectSink.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
 

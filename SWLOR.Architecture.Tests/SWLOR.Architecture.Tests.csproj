@@ -9,6 +9,8 @@
     <IsTestProject>true</IsTestProject>
     <!-- The scanner tests read the IL of this assembly; the optimizer would remove locals the tests look for. -->
     <Optimize>false</Optimize>
+    <!-- The hook fixtures (Fixtures/Hooks) include a function pointer. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +23,8 @@
   <ItemGroup>
     <!-- Only built and copied next to the tests; the tests read its IL from disk and never load it. -->
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+    <!-- The contracts rules read this assembly's references from disk too. -->
+    <ProjectReference Include="..\SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

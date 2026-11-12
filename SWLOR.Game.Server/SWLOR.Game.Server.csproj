@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj" />
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
   </ItemGroup>
 

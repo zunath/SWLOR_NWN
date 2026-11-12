@@ -71,6 +71,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.FacadeRemoval", "tool
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.TypeMoves", "tools\Refactor\SWLOR.TypeMoves\SWLOR.TypeMoves.csproj", "{62E48729-31DA-412F-956D-A80FC21ADED9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Contracts", "SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj", "{65FF89C3-0D75-4764-A725-A283F6D0E00C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -441,6 +443,18 @@ Global
 		{62E48729-31DA-412F-956D-A80FC21ADED9}.Release|x64.Build.0 = Release|Any CPU
 		{62E48729-31DA-412F-956D-A80FC21ADED9}.Release|x86.ActiveCfg = Release|Any CPU
 		{62E48729-31DA-412F-956D-A80FC21ADED9}.Release|x86.Build.0 = Release|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Debug|x64.Build.0 = Debug|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Debug|x86.Build.0 = Debug|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Release|x64.ActiveCfg = Release|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Release|x64.Build.0 = Release|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Release|x86.ActiveCfg = Release|Any CPU
+		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,8 @@
 using NWN.Native.API;
 using NWNX.NET;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.NativeSinks;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Combat;
@@ -61,11 +63,13 @@ namespace SWLOR.Game.Server.Native
 
         // ReSharper disable once NotAccessedField.Local
         private static ResolveAttackRollHook _callOriginal;
+        private static IResolveAttackRollSink _sink;
 
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
+            _sink ??= new ResolveAttackRollSink();
             delegate* unmanaged<void*, void*, void> pHook = &OnResolveAttackRoll;
             var functionPtr = NativeLibrary.GetExport(
                 NativeLibrary.GetMainProgramHandle(), "_ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject");
@@ -78,9 +82,7 @@ namespace SWLOR.Game.Server.Native
 
         [UnmanagedCallersOnly]
         private static void OnResolveAttackRoll(void* thisPtr, void* pTarget)
-        {
-            ResolveWeaponRoll(thisPtr, pTarget);
-        }
+            => _sink.ResolveAttackRoll(thisPtr, pTarget);
 
         internal static void ResolveWeaponRoll(void* thisPtr, void* pTarget)
         {

@@ -1,4 +1,5 @@
 using StackExchange.Redis;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Domain.Foundation

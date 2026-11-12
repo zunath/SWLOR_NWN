@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
@@ -32,7 +33,8 @@ public class WeaponGripMeasurementInputsTests
                 $"sw_weapon/wbwsh_m_{(model % 100) * 10 + model / 100:D3}.mdl"))
             .Concat(rifleHandles.Keys.Cast<int>().Select(model =>
                 $"sw_weapon/wbwxl_m_{(model % 100) * 10 + model / 100:D3}.mdl"))
-            .Concat(SocketInputs).Select(path => path.ToLowerInvariant()).Distinct().Order(StringComparer.Ordinal).ToArray();
+            .Concat(SocketInputs).Concat(RifleBankInputs(haks))
+            .Select(path => path.ToLowerInvariant()).Distinct().Order(StringComparer.Ordinal).ToArray();
         // Read the finished resources, including uncommitted hand repairs. A sparse
         // checkout may omit unchanged weapons/skeletons; resolve those in one Git batch.
         var files = paths.Select(path => path.Split('/')[0]).Distinct()
@@ -75,6 +77,19 @@ public class WeaponGripMeasurementInputsTests
         resources.Values.Should().OnlyContain(bytes => bytes.Length > 0);
         foreach (var path in paths.Where(path => File.Exists(Path.Combine(haks, path))).Take(3))
             resources[path].Should().Equal(File.ReadAllBytes(Path.Combine(haks, path)));
+    }
+
+    private static string[] RifleBankInputs(string haks)
+    {
+        const string recipe = "tools/RifleGripProfileMotions.json";
+        var path = Path.Combine(haks, recipe);
+        var bytes = File.Exists(path) ? File.ReadAllBytes(path) : ReadCommitted(haks, new[] { recipe })[recipe];
+        using var document = JsonDocument.Parse(bytes);
+        return document.RootElement.GetProperty("models").EnumerateArray()
+            .SelectMany(model => model.TryGetProperty("bankParts", out var parts)
+                ? parts.EnumerateArray().Select(part => part.GetProperty("output").GetString()!)
+                : new[] { model.GetProperty("output").GetString()! })
+            .ToArray();
     }
 
     private static Dictionary<string, byte[]> ReadCommitted(string haks, string[] paths)

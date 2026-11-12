@@ -6,9 +6,7 @@ using SWLOR.Game.NativeHooks;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NativeSinks;
-using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API;
 
 namespace SWLOR.Game.Server.Core
@@ -128,8 +126,8 @@ namespace SWLOR.Game.Server.Core
         {
             RequireContainer();
             var steps = PlayerReloadPlan.QuiescePlan(ServerManager.Scripts, PlayerReloadPlan.OnlinePlayers)
-                .Append(ScreenStep(ReloadStepKind.Quiesce, nameof(PlayerScreenCarry.Close),
-                    carry => ReloadCarry.Put(PlayerScreenCarry.Key, carry.Close(PlayerReloadPlan.OnlinePlayers()))));
+                .Append(ScreenStep(ReloadStepKind.Quiesce, nameof(IPlayerScreenCarry.Close),
+                    carry => ReloadCarry.Put(PlayerScreensKey, carry.Close(PlayerReloadPlan.OnlinePlayers()))));
             return ReloadBootstrap.Run(steps, RunInModuleContext);
         }
 
@@ -142,10 +140,13 @@ namespace SWLOR.Game.Server.Core
         {
             RequireContainer();
             var steps = PlayerReloadPlan.RestorePlan(ServerManager.Scripts, PlayerReloadPlan.OnlinePlayers)
-                .Append(ScreenStep(ReloadStepKind.Restore, nameof(PlayerScreenCarry.Reopen),
-                    carry => carry.Reopen(PlayerReloadPlan.OnlinePlayers(), ReloadCarry.Take(PlayerScreenCarry.Key))));
+                .Append(ScreenStep(ReloadStepKind.Restore, nameof(IPlayerScreenCarry.Reopen),
+                    carry => carry.Reopen(PlayerReloadPlan.OnlinePlayers(), ReloadCarry.Take(PlayerScreensKey))));
             return ReloadBootstrap.Run(steps, RunInModuleContext);
         }
+
+        /// <summary>The key of the players' carried screens on the module (<see cref="ReloadCarry"/>).</summary>
+        public const string PlayerScreensKey = "player-screens";
 
         /// <summary>The step that carries (<see cref="ReloadStepKind.Carry"/>) or puts back the <see cref="ReloadStateKind.Carried"/> fields.</summary>
         private ReloadStep StateStep(ReloadStepKind kind)
@@ -154,10 +155,7 @@ namespace SWLOR.Game.Server.Core
             var method = typeof(ReloadStateCarrier).GetMethod(carry ? nameof(ReloadStateCarrier.CarryAll) : nameof(ReloadStateCarrier.AdoptAll));
             return new ReloadStep(kind, "reload", nameof(ReloadStateCarrier), method, () =>
             {
-                var carrier = new ReloadStateCarrier(typeof(ServerBootstrapper).Assembly, new[]
-                {
-                    new AbilityDetailReloadConverter(() => _container.Resolve<IAbilityService>().GetAllAbilityDetails()),
-                });
+                var carrier = ReloadWiring.CreateStateCarrier(_container);
                 if (carry)
                     carrier.CarryAll(_container.ResolveHandlerOwner, ReloadCarry.Put);
                 else
@@ -165,10 +163,10 @@ namespace SWLOR.Game.Server.Core
             });
         }
 
-        private ReloadStep ScreenStep(ReloadStepKind kind, string methodName, Action<PlayerScreenCarry> run)
+        private ReloadStep ScreenStep(ReloadStepKind kind, string methodName, Action<IPlayerScreenCarry> run)
         {
-            return new ReloadStep(kind, "reload", nameof(PlayerScreenCarry), typeof(PlayerScreenCarry).GetMethod(methodName), () =>
-                run(new PlayerScreenCarry(_container.Resolve<IGuiService>(), _container.Resolve<IConversationService>())));
+            return new ReloadStep(kind, "reload", nameof(IPlayerScreenCarry), typeof(IPlayerScreenCarry).GetMethod(methodName), () =>
+                run(ReloadWiring.CreateScreenCarry(_container)));
         }
 
         /// <summary>The cache digests of the classes that own rerun boot handlers (<see cref="ReloadDigests.Cache"/>).</summary>

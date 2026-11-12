@@ -3,24 +3,22 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Core;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Game.Server.Domain.UI
 {
     /// <summary>
     /// The NUI windows and conversations of the players online during a hot reload (MaintainabilityRefactorHotReload.md, P4-15,
     /// owner decision Q3: keep them where reasonable). While the old build quiesces, each player's open conversation is taken out
     /// as data when it can be (<see cref="IConversationService.CarryForReload"/>) and every open window is closed the way the player
     /// closes it (<see cref="IGuiService.CloseWindowsForReload"/>), because the new build's element ids and view models differ;
-    /// the list is left on the module (<see cref="ReloadCarry"/>, keyed by player id). When the new build activates, after the
-    /// players' restore steps have made their view models, the same windows open again and the conversation resumes at its line.
+    /// the text, keyed by player id, is left on the module (<see cref="ReloadCarry"/>, <see cref="ServerBootstrapper.PlayerScreensKey"/>).
+    /// When the new build activates, after the players' restore steps have made their view models, the same windows open again and the
+    /// conversation resumes at its line.
     /// </summary>
-    public sealed class PlayerScreenCarry
+    public sealed class PlayerScreenCarry : IPlayerScreenCarry
     {
-        /// <summary>The key of the carried screens on the module (<see cref="ReloadCarry"/>).</summary>
-        public const string Key = "player-screens";
-
-        private static readonly JsonSerializerSettings Settings = new()
+        private readonly JsonSerializerSettings _settings = new()
         {
             Converters = { new StringEnumConverter() },
             DateParseHandling = DateParseHandling.None,
@@ -60,7 +58,7 @@ namespace SWLOR.Game.Server.Core
                 // RunForEach logged each player that failed; the other players' screens are still carried.
             }
 
-            return JsonConvert.SerializeObject(screens, Settings);
+            return JsonConvert.SerializeObject(screens, _settings);
         }
 
         /// <summary>
@@ -74,7 +72,7 @@ namespace SWLOR.Game.Server.Core
             if (string.IsNullOrEmpty(text))
                 return;
 
-            var screens = JsonConvert.DeserializeObject<Dictionary<string, PlayerScreen>>(text, Settings)
+            var screens = JsonConvert.DeserializeObject<Dictionary<string, PlayerScreen>>(text, _settings)
                           ?? new Dictionary<string, PlayerScreen>();
             PlayerReloadPlan.RunForEach(players, player =>
             {

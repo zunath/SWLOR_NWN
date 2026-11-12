@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.UI;
 
-namespace SWLOR.Game.Server.Core
+namespace SWLOR.Game.Server.Domain.UI
 {
     /// <summary>What one player had on screen when a hot reload quiesced the old build (<see cref="PlayerScreenCarry"/>).</summary>
     public sealed class PlayerScreen

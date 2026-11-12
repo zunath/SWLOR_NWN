@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Composition
             return ValueTask.CompletedTask;
         }
 
-        /// <summary>Nothing yet: the server owns no work that outlives a callback (the engine thread runs every callback).</summary>
+        /// <summary>Nothing yet: the server drains no work of its own before its dispose.</summary>
         public ValueTask DrainAsync(TimeSpan timeout, CancellationToken cancellationToken)
         {
             return ValueTask.CompletedTask;

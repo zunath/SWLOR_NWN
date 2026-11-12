@@ -19,8 +19,11 @@ namespace SWLOR.Game.Host.Tests.Support;
 /// </remarks>
 internal sealed class GenerationEngineFakes
 {
+    private const string GameAssemblyName = "SWLOR.Game.Server";
+
     private readonly byte[] _fakesAssembly;
     private readonly string _contextNamePrefix;
+    private readonly HashSet<string> _earlierContexts;
     private readonly List<Generation> _generations = [];
     private readonly object _gate = new();
 
@@ -30,6 +33,8 @@ internal sealed class GenerationEngineFakes
     {
         _fakesAssembly = File.ReadAllBytes(fakesAssemblyPath);
         _contextNamePrefix = contextNamePrefix;
+        // Contexts with the same prefix that other tests of the process left behind (their fixture builds) are not ours.
+        _earlierContexts = AssemblyLoadContext.All.Select(context => context.Name).OfType<string>().ToHashSet(StringComparer.Ordinal);
     }
 
     /// <summary>The load context of every generation seen so far, by weak reference, in load order.</summary>
@@ -60,7 +65,8 @@ internal sealed class GenerationEngineFakes
         foreach (var context in AssemblyLoadContext.All)
         {
             if (context.Name is not { } name || !name.StartsWith(_contextNamePrefix, StringComparison.Ordinal) ||
-                _generations.Any(generation => generation.Name == name))
+                _earlierContexts.Contains(name) || _generations.Any(generation => generation.Name == name) ||
+                !context.Assemblies.Any(assembly => assembly.GetName().Name == GameAssemblyName))
             {
                 continue;
             }

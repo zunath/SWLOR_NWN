@@ -97,6 +97,7 @@ public class TintMapSavedColorTests
                     TintMapLayerType layer, TintMapColorSelection color) { }
                 private static void ApplyCurrentColorsAndPublish(uint creature) { }
                 private static void RemoveDroidOverrides(uint creature, IReadOnlyList<string> names) { }
+                private static void SaveDroidOverrides(uint creature, IReadOnlyList<string> names, int value) { }
                 private static class TintMapMaterialRegistry
                 {
                     public const int PaletteColorCount =
@@ -108,7 +109,7 @@ public class TintMapSavedColorTests
                         SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapMaterialRegistry
                             .AreEquipmentMaterialSlotsEquivalent(source, model, destination, layer);
                     public static HashSet<string> GetHeadMaterialResrefs(TintMapLayerType layer) =>
-                        new(StringComparer.OrdinalIgnoreCase) { "head_accessory", "inactive_head_accessory" };
+                        new(StringComparer.OrdinalIgnoreCase) { "head_accessory", "old_head_mat" };
                 }
                 private static class TintMapModelResolver
                 {
@@ -323,7 +324,7 @@ public class TintMapSavedColorTests
         _harness.GetField("HasArmor")!.SetValue(null, true);
         var stateKey = TintMapVariable.GetHeadColorStateName(layer);
         var active = TintMapVariable.GetName("head_accessory", layer);
-        var inactive = TintMapVariable.GetName("inactive_head_accessory", layer);
+        var inactive = TintMapVariable.GetName("old_head_mat", layer);
         var unrelated = TintMapVariable.GetName("body_material", layer);
         var outfitRgb = new TintMapColor(214, 92, 17);
         var outfitKey = TintMapVariable.GetItemGlobalColorStateName(layer);
@@ -333,17 +334,27 @@ public class TintMapSavedColorTests
         Locals[inactive] = 5;
         Locals[unrelated] = 6;
         Invoke("ResetHeadColorToInheritance", 1u, layer);
-        Locals.Should().NotContainKeys(stateKey, active, inactive);
+        Locals.Should().NotContainKeys(active, inactive);
+        Locals[stateKey].Should().Be(TintMapVariable.HeadColorInheritance);
         Locals[unrelated].Should().Be(6);
         EquippedArmorLocals[outfitKey].Should().Be(outfitRgb.ToStoredValue());
         ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer)).CustomColor.Should().Be(outfitRgb);
         Invoke("CaptureCurrentHeadColors", 1u);
-        Locals.Should().NotContainKey(stateKey);
+        Locals[stateKey].Should().Be(TintMapVariable.HeadColorInheritance);
         var player = (SWLOR.Game.Server.Entity.Player)_harness.GetField("Player")!.GetValue(null)!;
-        player.CreatureTintOverrides.Should().NotContainKey(stateKey);
+        player.CreatureTintOverrides[stateKey].Should().Be(TintMapVariable.HeadColorInheritance);
+        var restored = JsonConvert.DeserializeObject<SWLOR.Game.Server.Entity.Player>(JsonConvert.SerializeObject(player))!;
+        _harness.GetField("Player")!.SetValue(null, restored);
         Locals[stateKey] = 42;
+        Locals[active] = 5;
+        Locals[inactive] = 17;
         Invoke("RestorePlayerOverrides", 1u);
-        Locals.Should().NotContainKey(stateKey);
+        Locals[stateKey].Should().Be(TintMapVariable.HeadColorInheritance);
+        ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, head, layer)).CustomColor.Should().Be(outfitRgb);
+        var switchedHead = Head("pmh0_head312", "old_head_mat", layer);
+        ((TintMapColorSelection)Invoke("GetEffectiveColor", 1u, switchedHead, layer)).CustomColor.Should().Be(outfitRgb);
+        Invoke("SetPaletteColor", 1u, head, layer, 0);
+        restored.CreatureTintOverrides[stateKey].Should().Be(1);
     }
 
     [Test]

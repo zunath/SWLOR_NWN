@@ -445,7 +445,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                          .Where(layer => !TintMapVariable.IsCreatureColorLayer(layer)).Distinct())
             {
                 var stateVariable = TintMapVariable.GetHeadColorStateName(layer);
-                if (GetLocalInt(creature, stateVariable) > 0)
+                if (GetLocalInt(creature, stateVariable) != 0)
                     continue;
 
                 // Carry legacy explicit material edits, leaving defaults and outfit dyes inherited.
@@ -468,12 +468,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 .Where(name => TintMapVariable.TryParse(name, out var material, out var savedLayer) &&
                                savedLayer == layer && headMaterials.Contains(material))
                 .ToList();
-            variables.Add(TintMapVariable.GetHeadColorStateName(layer));
-
             foreach (var variable in variables)
                 DeleteLocalInt(creature, variable);
 
             RemoveDroidOverrides(creature, variables);
+            var state = TintMapVariable.GetHeadColorStateName(layer);
+            SetLocalInt(creature, state, TintMapVariable.HeadColorInheritance);
+            SaveDroidOverrides(creature, new[] { state }, TintMapVariable.HeadColorInheritance);
             SavePlayerOverrides(creature);
             ApplyCurrentColorsAndPublish(creature);
         }
@@ -1624,6 +1625,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var headColor = GetLocalInt(paletteSource, TintMapVariable.GetHeadColorStateName(layer));
                 if (headColor > 0)
                     return headColor;
+                // The character export may predate the player's saved inheritance reset.
+                if (headColor == TintMapVariable.HeadColorInheritance)
+                    return 0;
             }
 
             var savedColor = GetLocalInt(
@@ -2090,7 +2094,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             var colors = GetCreatureTintSnapshotVariables(creature)
                 .Select(name => new KeyValuePair<string, int>(name, GetLocalInt(creature, name)))
-                .Where(entry => entry.Value > 0)
+                .Where(entry => entry.Value > 0 ||
+                    entry.Value == TintMapVariable.HeadColorInheritance && TintMapVariable.IsHeadColorStateName(entry.Key))
                 .ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.Ordinal);
             if (UpdatePlayerTintOverrides(player, colors))
                 DB.Set(player);
@@ -2123,9 +2128,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 DeleteLocalInt(creature, name);
             foreach (var (name, value) in player.CreatureTintOverrides)
             {
-                if (value > 0 && (TintMapVariable.IsCreatureColorStateName(name) ||
-                    TintMapVariable.IsHeadColorStateName(name) ||
-                    TintMapVariable.TryGetLayer(name, out var layer) && TintMapVariable.IsCreatureColorLayer(layer)))
+                var isHeadState = TintMapVariable.IsHeadColorStateName(name);
+                if (value <= 0 && (!isHeadState || value != TintMapVariable.HeadColorInheritance))
+                    continue;
+
+                if (isHeadState || TintMapVariable.IsCreatureColorStateName(name) ||
+                    TintMapVariable.TryGetLayer(name, out var layer) && TintMapVariable.IsCreatureColorLayer(layer))
                     SetLocalInt(creature, name, value);
             }
         }

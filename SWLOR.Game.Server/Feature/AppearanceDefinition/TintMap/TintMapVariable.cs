@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     public static class TintMapVariable
     {
         public const string Prefix = "TM_";
+        public const int HeadColorInheritance = -1;
         private const string CreatureColorStatePrefix = "TMC_";
         private const string HeadColorStatePrefix = "TMH_";
         private const string ItemGlobalColorStatePrefix = "TMG_";

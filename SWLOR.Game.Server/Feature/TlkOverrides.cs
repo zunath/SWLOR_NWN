@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public class TlkOverrides
     {
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The TLK overrides stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void OverrideTlks()
         {

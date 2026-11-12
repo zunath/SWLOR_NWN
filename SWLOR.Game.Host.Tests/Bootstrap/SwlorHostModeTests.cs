@@ -94,6 +94,47 @@ public class SwlorHostModeTests
         fixture.Record.Should().Contain($"script {script} self={0x42}");
     }
 
+    [TestCase("act", NativeHost.ScriptHandled)]
+    [TestCase("cond_t", NativeHost.ScriptConditionTrue)]
+    [TestCase("unknown", NativeHost.ScriptNotHandled)]
+    [TestCase("throw", NativeHost.ScriptNotHandled)]
+    public void While_a_generation_activates_by_a_reload_its_bound_dispatcher_takes_the_scripts(string script, int expected)
+    {
+        var fixture = new HostedFixture(_build);
+        fixture.StartAndLoad();
+        var activating = new ActivatingDispatcher();
+
+        fixture.Mode.Callbacks.BindActivationScripts(activating);
+        var during = fixture.Mode.OnRunScriptResult(script, 0x42);
+        fixture.Mode.Callbacks.UnbindActivationScripts(activating);
+        fixture.ClearRecord();
+        var after = fixture.Mode.OnRunScriptResult("act", 0x43);
+
+        during.Should().Be(expected);
+        activating.Scripts.Should().Equal(script);
+        after.Should().Be(NativeHost.ScriptHandled);
+        fixture.Record.Should().Contain($"script act self={0x43}", "once unbound, the package's active generation takes the scripts again");
+        if (script == "throw")
+            fixture.Log.Should().Contain(line => line.StartsWith("script-dispatch-failure throw (activating generation): ", StringComparison.Ordinal));
+    }
+
+    private sealed class ActivatingDispatcher : Nwn.Hosting.Contracts.Generations.IScriptDispatcher
+    {
+        public List<string> Scripts { get; } = [];
+
+        public bool TryHandle(string scriptName, uint objectSelf, out bool conditionalResult)
+        {
+            Scripts.Add(scriptName);
+            conditionalResult = scriptName == "cond_t";
+            return scriptName switch
+            {
+                "act" or "cond_t" => true,
+                "throw" => throw new InvalidOperationException("dispatcher failed"),
+                _ => false,
+            };
+        }
+    }
+
     [Test]
     public void A_script_before_the_game_is_loaded_is_not_handled()
     {

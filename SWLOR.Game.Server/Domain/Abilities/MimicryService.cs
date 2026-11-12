@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Administration;
@@ -33,8 +35,13 @@ namespace SWLOR.Game.Server.Domain.Abilities
         // window never has to read the 2da per-row on open (mirrors how perks cache detail.IconResref).
         private readonly Dictionary<FeatType, string> _techniqueIcons = new();
 
-        // Authored text resolved at boot, before hotbar TLK overrides add resource and recast headers.
+        // Authored text resolved at boot, before hotbar TLK overrides add resource and recast headers. A hot reload reads the
+        // overridden text, so it keeps the old build's (CarryTechniqueDescriptions, AdoptTechniqueDescriptions).
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<FeatType, string> _techniqueDescriptions = new();
+
+        /// <summary>The key the technique descriptions are carried under across a hot reload (<see cref="ReloadCarry"/>).</summary>
+        private const string DescriptionCarryKey = "mimicryDescriptions";
 
         // Source NPC feat -> the technique feat it teaches.
         private readonly Dictionary<FeatType, FeatType> _techniqueByNpcFeat = new();
@@ -47,9 +54,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly Dictionary<ResistanceType, Dictionary<FeatType, int>> _traitResistancesByResistance = new();
 
         // In-memory witness tracker: npc -> playerId -> technique feats witnessed but not yet learned.
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, Dictionary<string, HashSet<FeatType>>> _witnesses = new();
 
         // Observation is passive: keep its credit out of the combat points used to share active skill XP.
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, HashSet<string>> _analysisObservers = new();
 
         private bool _witnessSweepScheduled;
@@ -120,9 +129,10 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// Caches technique lookups. Runs on OnModuleCacheAfter so Ability's cache (built on
         /// OnModuleCacheBefore) has already populated every AbilityDetail, including the
-        /// Mimicry-specific fields set by AbilityBuilder.MimicryTechnique.
+        /// Mimicry-specific fields set by AbilityBuilder.MimicryTechnique. A hot reload reruns it after the TLK overrides, so
+        /// <see cref="AdoptTechniqueDescriptions"/> puts back the authored descriptions the boot read.
         /// </summary>
-        [BootPhase(BootReload.Rerun)]
+        [BootPhase(BootReload.Rerun, AdoptedBy = nameof(AdoptTechniqueDescriptions), CarriedBy = nameof(CarryTechniqueDescriptions))]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void CacheData()
         {
@@ -310,6 +320,38 @@ namespace SWLOR.Game.Server.Domain.Abilities
         public string GetTechniqueIcon(FeatType feat)
         {
             return _techniqueIcons.TryGetValue(feat, out var icon) ? icon : string.Empty;
+        }
+
+        /// <summary>
+        /// When a hot reload quiesces this build: leaves the authored technique descriptions it read at boot on the module for the
+        /// next build (<see cref="AdoptTechniqueDescriptions"/>), which can only read the text the TLK overrides changed. It
+        /// changes nothing.
+        /// </summary>
+        public void CarryTechniqueDescriptions()
+        {
+            var carry = new JObject();
+            foreach (var (feat, description) in _techniqueDescriptions)
+                carry[((int)feat).ToString(System.Globalization.CultureInfo.InvariantCulture)] = description;
+
+            ReloadCarry.Put(DescriptionCarryKey, carry.ToString(Formatting.None));
+        }
+
+        /// <summary>
+        /// On a hot reload, after the rerun <see cref="CacheData"/>: puts back the authored description the old build read for each
+        /// technique this build still has. A technique new in this build keeps the text the rerun read.
+        /// </summary>
+        public void AdoptTechniqueDescriptions()
+        {
+            var text = ReloadCarry.Take(DescriptionCarryKey);
+            if (text == null)
+                return;
+
+            foreach (var (key, description) in JObject.Parse(text))
+            {
+                var feat = (FeatType)int.Parse(key, System.Globalization.CultureInfo.InvariantCulture);
+                if (_techniques.ContainsKey(feat))
+                    _techniqueDescriptions[feat] = description.Value<string>();
+            }
         }
 
         /// <summary>

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
@@ -19,21 +21,42 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IAreaService _area;
         private readonly IPropertyCatalogService _catalog;
 
+        // A hot reload rebuilds the instances, placeables and spawn actions from the live world and takes the rest of the
+        // bookkeeping from the old build (CarryLoadState, AdoptLiveProperties). The queued jobs are carried by property id and
+        // read their property again, and the progress figures only shorten the log, so their digests are not compared.
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<string, PropertyInstance> _propertyInstances = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<string, PropertyLoadState> _propertyLoadStates = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<string, string> _propertyLoadFailures = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<string, HashSet<string>> _propertyLoadWaiters = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly HashSet<string> _completedInstanceSpawnActions = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly List<PropertyLoadJob> _propertyLoadJobs = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly List<string> _pendingStartupWorldPropertyIds = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly HashSet<string> _startupPropertyLoadIds = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly HashSet<string> _completedStartupPropertyLoadIds = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly HashSet<string> _failedStartupPropertyLoadIds = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private bool _propertyLoadProcessorScheduled;
+        [ReloadState(ReloadStateKind.Runtime)]
         private int _lastStartupPropertyLoadProgressLoaded = -1;
+        [ReloadState(ReloadStateKind.Runtime)]
         private int _lastStartupPropertyLoadProgressRemaining = -1;
+        [ReloadState(ReloadStateKind.Runtime)]
         private int _lastStartupPropertyLoadProgressFailed = -1;
+
+        /// <summary>The key the loader's bookkeeping is carried under across a hot reload (<see cref="ReloadCarry"/>).</summary>
+        private const string PropertyCarryKey = "properties";
 
         private const string LastDescribedPropertyVariable = "PROPERTY_LAST_DESCRIBED";
         private const int PropertyLoadBatchSize = 5;
@@ -1029,6 +1052,185 @@ namespace SWLOR.Game.Server.Domain.World
             Log.Write(LogGroup.Property, $"Queued {_pendingStartupWorldPropertyIds.Count} startup world properties.", true);
             Log.Write(LogGroup.Property, $"Loaded {areaProperties.Count} area properties.", true);
             LogStartupPropertyLoadProgress(true);
+        }
+
+        /// <inheritdoc />
+        public void CarryLoadState()
+        {
+            var carry = new JObject
+            {
+                ["states"] = new JObject(_propertyLoadStates.Select(pair => new JProperty(pair.Key, (int)pair.Value))),
+                ["failures"] = new JObject(_propertyLoadFailures.Select(pair => new JProperty(pair.Key, pair.Value))),
+                ["waiters"] = new JObject(_propertyLoadWaiters.Select(pair => new JProperty(pair.Key, JArray.FromObject(pair.Value)))),
+                ["jobs"] = new JArray(_propertyLoadJobs.Select(job => new JObject
+                {
+                    ["id"] = job.PropertyId,
+                    ["priority"] = (int)job.Priority,
+                    ["phase"] = (int)job.Phase,
+                })),
+                ["pendingWorld"] = JArray.FromObject(_pendingStartupWorldPropertyIds),
+                ["startup"] = JArray.FromObject(_startupPropertyLoadIds),
+                ["startupLoaded"] = JArray.FromObject(_completedStartupPropertyLoadIds),
+                ["startupFailed"] = JArray.FromObject(_failedStartupPropertyLoadIds),
+            };
+
+            ReloadCarry.Put(PropertyCarryKey, carry.ToString(Formatting.None));
+        }
+
+        /// <inheritdoc />
+        public void AdoptLiveProperties()
+        {
+            var carried = ReloadCarry.Take(PropertyCarryKey);
+            var properties = LoadSpawnedTypeProperties();
+            var instances = 0;
+            var structures = 0;
+
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                var areaPropertyId = GetPropertyId(area);
+                if (!string.IsNullOrEmpty(areaPropertyId) &&
+                    properties.TryGetValue(areaPropertyId, out var areaProperty) &&
+                    _catalog.GetPropertyDetail(areaProperty.PropertyType).SpawnType == PropertySpawnType.Instance)
+                {
+                    AdoptInstance(areaProperty, area);
+                    instances++;
+                }
+
+                for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+                {
+                    if (GetObjectType(obj) != ObjectType.Placeable)
+                        continue;
+
+                    // A building's door carries the building's id too; only the placeable of the structure's own resref is it.
+                    var propertyId = GetPropertyId(obj);
+                    if (string.IsNullOrEmpty(propertyId) ||
+                        !properties.TryGetValue(propertyId, out var structure) ||
+                        structure.PropertyType != PropertyType.Structure ||
+                        GetResRef(obj) != _catalog.GetStructureByType(structure.StructureType).Resref)
+                    {
+                        continue;
+                    }
+
+                    _structurePropertyIdToPlaceable[propertyId] = obj;
+                    structures++;
+                }
+            }
+
+            if (carried != null)
+            {
+                RestoreLoadState(JObject.Parse(carried));
+            }
+            else
+            {
+                Log.Write(LogGroup.Error, "Hot reload: the build this one replaced carried no property load state; the properties in the " +
+                                          "world are loaded, the other instanced properties load when they are entered.", true);
+                foreach (var property in properties.Values)
+                {
+                    var spawnType = _catalog.GetPropertyDetail(property.PropertyType).SpawnType;
+                    if (spawnType == PropertySpawnType.Instance)
+                        SetPropertyLoadState(property.Id, _propertyInstances.ContainsKey(property.Id) ? PropertyLoadState.Loaded : PropertyLoadState.Unloaded);
+                    else if (spawnType == PropertySpawnType.Area)
+                        SetPropertyLoadState(property.Id, PropertyLoadState.Loaded);
+                }
+            }
+
+            if (_propertyLoadJobs.Count > 0 || _pendingStartupWorldPropertyIds.Count > 0)
+                EnsurePropertyLoadProcessor();
+
+            Log.Write(LogGroup.Property, $"Hot reload: adopted {instances} property instances and {structures} structures from the world; " +
+                                         $"{_propertyLoadJobs.Count} instance loads and {_pendingStartupWorldPropertyIds.Count} world structures are still queued.", true);
+        }
+
+        /// <summary>Every property of the instance, world and area spawn types, by id: what the boot's load reads.</summary>
+        private Dictionary<string, WorldProperty> LoadSpawnedTypeProperties()
+        {
+            var types = _catalog.PropertyTypes
+                .Where(x => x.Value.SpawnType is PropertySpawnType.Instance or PropertySpawnType.World or PropertySpawnType.Area)
+                .Select(s => (int)s.Key)
+                .ToList();
+            var query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), types);
+            var count = _db.SearchCount(query);
+            var properties = new Dictionary<string, WorldProperty>();
+            foreach (var property in _db.Search(query.AddPaging((int)count, 0)))
+                properties[property.Id] = property;
+            return properties;
+        }
+
+        /// <summary>
+        /// Registers a live property instance as the boot's load left it: its area, the players in it, its spawn action done, and
+        /// whatever its layout keeps outside the world (<see cref="PropertyLayout.OnReloadAdoptAction"/>, a starport's dock).
+        /// </summary>
+        private void AdoptInstance(WorldProperty property, uint area)
+        {
+            var instance = new PropertyInstance(area, property.Layout);
+            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+            {
+                if (GetIsPC(obj) && !GetIsDM(obj))
+                    instance.Players.Add(obj);
+            }
+
+            _propertyInstances[property.Id] = instance;
+            _completedInstanceSpawnActions.Add(property.Id);
+
+            var adopt = _catalog.GetLayoutByType(property.Layout).OnReloadAdoptAction;
+            if (adopt == null)
+                return;
+
+            try
+            {
+                adopt(area);
+            }
+            catch (Exception ex)
+            {
+                Log.Write(LogGroup.Error, $"Hot reload: adopting property '{property.CustomName}' ({property.Id}) failed: {ex}", true);
+            }
+        }
+
+        /// <summary>
+        /// Takes the bookkeeping the old build carried and resumes its queued loads: a load that had created its area spawns only
+        /// the structures that are not in the world yet, so nothing is spawned twice.
+        /// </summary>
+        private void RestoreLoadState(JObject carry)
+        {
+            foreach (var (propertyId, state) in (JObject)carry["states"])
+                _propertyLoadStates[propertyId] = (PropertyLoadState)state.Value<int>();
+            foreach (var (propertyId, failure) in (JObject)carry["failures"])
+                _propertyLoadFailures[propertyId] = failure.Value<string>();
+            foreach (var (propertyId, waiters) in (JObject)carry["waiters"])
+                _propertyLoadWaiters[propertyId] = new HashSet<string>(waiters.ToObject<List<string>>());
+
+            _pendingStartupWorldPropertyIds.AddRange(carry["pendingWorld"].ToObject<List<string>>());
+            _startupPropertyLoadIds.UnionWith(carry["startup"].ToObject<List<string>>());
+            _completedStartupPropertyLoadIds.UnionWith(carry["startupLoaded"].ToObject<List<string>>());
+            _failedStartupPropertyLoadIds.UnionWith(carry["startupFailed"].ToObject<List<string>>());
+
+            foreach (var carriedJob in carry["jobs"])
+            {
+                var job = new PropertyLoadJob
+                {
+                    PropertyId = carriedJob["id"].Value<string>(),
+                    Priority = (PropertyLoadPriority)carriedJob["priority"].Value<int>(),
+                    Phase = (PropertyLoadJobPhase)carriedJob["phase"].Value<int>(),
+                };
+
+                if (job.Phase == PropertyLoadJobPhase.SpawnStructures)
+                {
+                    if (_propertyInstances.TryGetValue(job.PropertyId, out var instance))
+                    {
+                        job.Area = instance.Area;
+                        job.Structures = GetPropertyStructures(job.PropertyId)
+                            .Where(structure => !(_structurePropertyIdToPlaceable.TryGetValue(structure.Id, out var placeable) && GetIsObjectValid(placeable)))
+                            .ToList();
+                    }
+                    else
+                    {
+                        job.Phase = PropertyLoadJobPhase.CreateArea;
+                    }
+                }
+
+                _propertyLoadJobs.Add(job);
+            }
         }
 
         /// <summary>

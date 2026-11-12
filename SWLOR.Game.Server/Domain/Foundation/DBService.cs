@@ -59,12 +59,15 @@ namespace SWLOR.Game.Server.Domain.Foundation
         private readonly Dictionary<Type, Client> _searchClientsByType = new();
         private readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
         private IConnectionMultiplexer _multiplexer;
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<string, EntityBase> _cachedEntities = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly ConcurrentDictionary<Type, long> _writeVersionsByType = new();
         private const int MaxJsonAcrossFrames = 2000;
         // Built once so a search does not allocate a delegate (the static class used a non-capturing lambda).
         private readonly Action<int> _waitBeforeSearchRetry;
         // Redis key -> stored JSON for types marked JsonCachedAcrossFrames. Kept current by Set, Delete and partial writes.
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<string, string> _jsonAcrossFrames = new();
         private readonly HashSet<Type> _jsonCachedTypes = new();
 
@@ -106,8 +109,36 @@ namespace SWLOR.Game.Server.Domain.Foundation
             _connected = true;
         }
 
+        /// <summary>
+        /// On a hot reload, in place of <see cref="SyncIndexes"/>: compares each entity type's search index in Redis with the one
+        /// this build would create and reports every index it would rebuild. It rebuilds and writes nothing and runs no
+        /// <c>db_loaded</c>: searches keep the index the boot built until the server restarts.
+        /// </summary>
+        public void CheckIndexes()
+        {
+            if (!_connected)
+                throw new InvalidOperationException("The search indexes cannot be checked: Connect did not finish.");
+
+            var stale = new List<string>();
+            foreach (var type in _entityTypes)
+            {
+                var createArgs = SearchIndexDefinition.BuildCreateArgs(
+                    type.Name,
+                    _keyPrefixByType[type],
+                    IndexedProperties(type).Select(prop => (prop.Name, SearchIndexDefinition.IsNumeric(prop.PropertyType))));
+                if (!IsIndexCurrent(type, SearchIndexDefinition.Fingerprint(createArgs)))
+                    stale.Add(type.Name);
+            }
+
+            if (stale.Count > 0)
+            {
+                Log.Write(LogGroup.Error, $"Hot reload: this build changes the search index of {string.Join(", ", stale)}. " +
+                                          "Searches use the index the boot built until the server restarts.", true);
+            }
+        }
+
         /// <inheritdoc/>
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, AdoptedBy = nameof(CheckIndexes))]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public void SyncIndexes()
         {

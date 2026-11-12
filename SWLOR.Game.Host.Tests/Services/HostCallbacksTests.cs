@@ -15,6 +15,32 @@ public class HostCallbacksTests
         public void OnSignal(string signal) => Signals.Add(signal);
     }
 
+    private sealed class Dispatcher : Nwn.Hosting.Contracts.Generations.IScriptDispatcher
+    {
+        public bool TryHandle(string scriptName, uint objectSelf, out bool conditionalResult)
+        {
+            conditionalResult = false;
+            return true;
+        }
+    }
+
+    [Test]
+    public void An_activation_dispatcher_is_held_until_it_is_unbound_and_another_cannot_unbind_it()
+    {
+        var callbacks = new HostCallbacks();
+        var activating = new Dispatcher();
+
+        callbacks.ActivationScripts.Should().BeNull();
+        callbacks.BindActivationScripts(activating);
+        callbacks.UnbindActivationScripts(new Dispatcher());
+        callbacks.ActivationScripts.Should().BeSameAs(activating);
+        callbacks.UnbindActivationScripts(activating);
+        callbacks.ActivationScripts.Should().BeNull();
+
+        var bindNothing = () => callbacks.BindActivationScripts(null!);
+        bindNothing.Should().Throw<ArgumentNullException>();
+    }
+
     [Test]
     public void Signals_go_to_the_bound_handler_until_it_is_unbound()
     {

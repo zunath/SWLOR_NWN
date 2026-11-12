@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature
         /// When the server starts up, a log message will be written, the play options and bans are set in the engine and
         /// the boot-complete notification is sent. Boot only; <see cref="StartRestartReminders"/> runs right after it.
         /// </summary>
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The play options and bans stay set in the engine, and a reload sends no boot notification.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessBootUp()
         {
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature
             ScheduleRestartReminder();
         }
 
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "A reload sends no boot notification.")]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void ProcessBootStart()
         {

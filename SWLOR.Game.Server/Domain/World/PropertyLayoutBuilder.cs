@@ -158,6 +158,19 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <summary>
+        /// Runs an action on a hot reload for each live instance of the layout, in place of the spawn action: it puts back what
+        /// the spawn action keeps outside the world, reading the world and writing nothing.
+        /// </summary>
+        /// <param name="action">The action to perform on the live instance.</param>
+        /// <returns>A PropertyLayoutBuilder with the configured options.</returns>
+        public PropertyLayoutBuilder OnReloadAdopt(Action<uint> action)
+        {
+            _currentLayout.OnReloadAdoptAction = action;
+
+            return this;
+        }
+
+        /// <summary>
         /// Runs an action when the layout's parent city is upgraded.
         /// </summary>
         /// <param name="action"></param>

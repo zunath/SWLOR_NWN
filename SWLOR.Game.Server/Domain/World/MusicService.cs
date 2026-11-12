@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Domain.World
         // Ability-only fights can leave the engine's combat state off, so combat also lasts this long
         // after the player's last attack, damage, or hostile ability.
         private const float BattleThemeCombatGraceSeconds = 12f;
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, DateTime> _lastBattleThemeCombat = new();
 
         private readonly Dictionary<int, Song> _songs = new Dictionary<int,Song>();

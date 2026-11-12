@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -32,8 +34,15 @@ namespace SWLOR.Game.Server.Domain.Economy
             { 4, 45000 },
             { 5, 60000 }
         };
+        // The day's guild tasks, picked at random when the quests register: a hot reload keeps the old build's pick and its date
+        // (CarryGuildTasks, AdoptGuildTasks), so the task boards and the tasks hidden after completion do not change.
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new Dictionary<GuildType, Dictionary<int, List<QuestDetail>>>();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new Dictionary<GuildType, Dictionary<string, QuestDetail>>();
+
+        /// <summary>The key the guild tasks are carried under across a hot reload (<see cref="ReloadCarry"/>).</summary>
+        private const string GuildTaskCarryKey = "guildTasks";
 
         public GuildService(IDBService db, IPerkService perk, IQuestService quest)
         {
@@ -44,9 +53,14 @@ namespace SWLOR.Game.Server.Domain.Economy
 
         public int MaxRank { get; private set; }
 
+        [field: ReloadState(ReloadStateKind.Adopted)]
         public DateTime? DateTasksLoaded { get; private set; }
 
-        [BootPhase(BootReload.Rerun)]
+        /// <summary>
+        /// Caches the active guilds and the highest rank. A hot reload reruns it; the quests then register again and roll new guild
+        /// tasks, which <see cref="AdoptGuildTasks"/> replaces with the old build's.
+        /// </summary>
+        [BootPhase(BootReload.Rerun, AdoptedBy = nameof(AdoptGuildTasks), CarriedBy = nameof(CarryGuildTasks))]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void LoadData()
         {
@@ -173,6 +187,64 @@ namespace SWLOR.Game.Server.Domain.Economy
             }
 
             DateTasksLoaded = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// When a hot reload quiesces this build: leaves the guild tasks it picked (by quest id, per guild and rank) and the time it
+        /// picked them on the module for the next build (<see cref="AdoptGuildTasks"/>). It changes nothing.
+        /// </summary>
+        public void CarryGuildTasks()
+        {
+            if (DateTasksLoaded == null)
+                return;
+
+            var carry = new JObject
+            {
+                ["loaded"] = DateTasksLoaded.Value,
+                ["tasks"] = new JArray(_activeGuildTasksByRank.SelectMany(guild => guild.Value.Select(rank => new JObject
+                {
+                    ["guild"] = (int)guild.Key,
+                    ["rank"] = rank.Key,
+                    ["quests"] = new JArray(rank.Value.Select(quest => quest.QuestId)),
+                }))),
+            };
+
+            ReloadCarry.Put(GuildTaskCarryKey, carry.ToString(Formatting.None));
+        }
+
+        /// <summary>
+        /// On a hot reload, after the rerun handlers (the quests registered again and rolled new tasks): puts back the tasks the old
+        /// build picked and the time it picked them, so the task boards and the tasks hidden after completion stay as they were. A
+        /// quest this build no longer has is left out. Without carried tasks the newly rolled ones stay.
+        /// </summary>
+        public void AdoptGuildTasks()
+        {
+            var text = ReloadCarry.Take(GuildTaskCarryKey);
+            if (text == null)
+                return;
+
+            var carry = JObject.Parse(text);
+            _activeGuildTasks.Clear();
+            _activeGuildTasksByRank.Clear();
+            foreach (var entry in carry["tasks"])
+            {
+                var guild = (GuildType)entry["guild"].Value<int>();
+                var tasks = entry["quests"].Values<string>()
+                    .Select(questId => _quest.GetQuestByIdOrDefault(questId))
+                    .Where(quest => quest != null)
+                    .ToList();
+
+                if (!_activeGuildTasks.ContainsKey(guild))
+                    _activeGuildTasks[guild] = new Dictionary<string, QuestDetail>();
+                if (!_activeGuildTasksByRank.ContainsKey(guild))
+                    _activeGuildTasksByRank[guild] = new Dictionary<int, List<QuestDetail>>();
+
+                foreach (var task in tasks)
+                    _activeGuildTasks[guild][task.QuestId] = task;
+                _activeGuildTasksByRank[guild][entry["rank"].Value<int>()] = tasks;
+            }
+
+            DateTasksLoaded = carry["loaded"].ToObject<DateTime>();
         }
 
         public bool IsCompletedTaskHidden(GuildType guild, DateTime? dateLastCompleted, DateTime? dateTasksLoaded)

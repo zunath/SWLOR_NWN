@@ -63,6 +63,20 @@ public class MigrationServiceTests
 
     private static int Retired => MigrationService.RetiredServerMigrationVersion;
 
+    // ---- A hot reload ----------------------------------------------------------------------------------------------
+
+    [Test]
+    public void On_a_reload_the_character_check_runs_no_migration_upgrades_no_character_and_writes_nothing()
+    {
+        _db.With(new ServerConfiguration { MigrationVersion = Retired, CharacterFileVersion = 0 });
+        Server(Retired + 1, MigrationExecutionType.PostCacheLoad);
+
+        _service.CheckCharacterVersion();
+
+        _service.Steps.Should().BeEmpty("migrations and the vault upgrade run only at boot");
+        _db.Saved.Should().BeEmpty();
+    }
+
     // ---- The boot phases -------------------------------------------------------------------------------------------
 
     [Test]

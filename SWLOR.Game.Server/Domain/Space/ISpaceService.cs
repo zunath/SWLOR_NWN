@@ -56,6 +56,15 @@ namespace SWLOR.Game.Server.Domain.Space
         void RegisterLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId);
 
         /// <summary>
+        /// On a hot reload: registers a landing point under the id its waypoint already carries, never a new one.
+        /// </summary>
+        /// <param name="waypoint">The dock waypoint.</param>
+        /// <param name="area">The area whose planet the dock belongs to.</param>
+        /// <param name="isNPC">If true, the dock is an NPC dock; otherwise a player's.</param>
+        /// <param name="propertyId">The world property Id of the dock, if any.</param>
+        void AdoptLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId);
+
+        /// <summary>
         /// Removes a waypoint from the landing point registration.
         /// Once removed, this location will no longer be available to land at.
         /// </summary>

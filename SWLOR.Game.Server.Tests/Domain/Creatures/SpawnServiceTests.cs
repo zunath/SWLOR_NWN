@@ -308,6 +308,86 @@ public class SpawnServiceTests
         _service.Errors.Should().ContainSingle().Which.Should().Contain("failed 10 times consecutively");
     }
 
+    // ---------------------------------------------------------------- hot reload: carried registry, adopted spawns
+
+    [Test]
+    public void A_reload_carries_the_registry_so_the_live_spawns_keep_their_ids_and_the_area_spawns_no_second_set()
+    {
+        UseCreatureTable(RatTable, 2);
+        _bench.AddCreature("guard", _area, new Vector3(1f, 2f, 3f), 90f);
+        CacheData();
+        EnterAndSpawn();
+        var spawnedAtBoot = CreatedObjects().Count;
+        spawnedAtBoot.Should().Be(3, "two rats and the hand-placed guard");
+        var before = AdoptedDigest(_service);
+
+        _service.CarrySpawns();
+        var calls = _bench.Engine.Calls.Count;
+        var reloaded = Reload();
+
+        AdoptedDigest(reloaded).Should().Be(before, "the new build holds the registry the old one had");
+        _bench.Engine.Calls.Skip(calls).Select(call => call.Member)
+            .Should().NotContain(new[] { "CreateObject", "DestroyObject", "SetLocalString" }, "adopting creates, destroys and marks nothing");
+        _bench.Objects.CountOf("Serialize").Should().Be(1, "only the boot captured the guard");
+        reloaded.Errors.Should().BeEmpty();
+
+        EnterAndSpawn();
+
+        CreatedObjects().Should().HaveCount(spawnedAtBoot, "the area's spawns are live, so entering it spawns no second set");
+    }
+
+    [Test]
+    public void After_a_reload_an_empty_area_spawns_its_hand_placed_creatures_and_a_dead_spawn_respawns()
+    {
+        var empty = _bench.AddArea("cave");
+        _bench.AddCreature("hermit", empty, new Vector3(4f, 4f, 0f));
+        UseCreatureTable(RatTable, 1);
+        CacheData();
+        EnterAndSpawn();
+        var rat = CreatedObjects().Single(o => o.ResRef == "woods_rat");
+
+        _service.CarrySpawns();
+        Reload();
+        _bench.Self = rat.Id;
+        _service.QueueRespawn();
+        Pass(TimeSpan.FromMinutes(6));
+        Enter(empty);
+        Pass(TimeSpan.FromSeconds(1));
+
+        CreatedObjects().Count(o => o.ResRef == "woods_rat").Should().Be(2, "the dead rat's spawn id is known to the new build, so it respawns");
+        CreatedObjects().Should().Contain(o => o.Tag == "hermit", "the hand-placed creature the boot captured comes from the carried registry");
+    }
+
+    [Test]
+    public void Without_a_carried_registry_the_adoption_says_so_and_no_area_spawns()
+    {
+        UseCreatureTable(RatTable, 2);
+        CacheData();
+
+        var reloaded = Reload();
+        EnterAndSpawn();
+
+        reloaded.Errors.Should().ContainSingle().Which.Should().Contain("carried no spawn registry");
+        CreatedObjects().Should().BeEmpty();
+    }
+
+    /// <summary>The new build of a hot reload: its own instance, the rerun table load, then the adoption step.</summary>
+    private TestSpawnService Reload()
+    {
+        var reloaded = new TestSpawnService(_service.Now);
+        reloaded.Definitions.AddRange(_service.Definitions);
+        reloaded.LoadSpawnTables();
+        reloaded.AdoptSpawns();
+        _service = reloaded;
+        return reloaded;
+    }
+
+    private static ReloadDigestLine AdoptedDigest(SpawnService service)
+    {
+        return new ReloadDigestHasher(typeof(SpawnService).Assembly).Describe(ReloadDigests.AdoptedKind, "spawns", typeof(SpawnService), service,
+            field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted);
+    }
+
     // ---------------------------------------------------------------- entering and leaving an area
 
     [Test]

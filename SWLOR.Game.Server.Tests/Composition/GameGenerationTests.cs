@@ -39,6 +39,58 @@ public class GameGenerationTests
 
         public void ResumeAfterModuleLoad() => Calls.Add("resume");
 
+        public List<string> Signals { get; } = new();
+
+        public void ProcessSignal(string signal) => Signals.Add(signal);
+
+        public IReadOnlyList<ReloadStepResult> Rebuilt { get; set; } = Array.Empty<ReloadStepResult>();
+        public IReadOnlyList<ReloadDigestLine> Caches { get; set; } = new[] { new ReloadDigestLine("cache", "Cache.Owner", 3, "00000000000000aa") };
+        public IReadOnlyList<ReloadDigestLine> Adopted { get; set; } = new[] { new ReloadDigestLine("world", "world.dockIds", 2, "00000000000000bb") };
+        public Exception CarryFailure { get; set; }
+        public Exception RebuildFailure { get; set; }
+        public List<Action> NextFrame { get; } = new();
+
+        /// <summary>Asked while the rebuild runs: what the host would hand a script the engine runs then.</summary>
+        public Func<object> DuringRebuild { get; set; } = () => null;
+
+        /// <summary>What <see cref="DuringRebuild"/> answered.</summary>
+        public object SeenDuringRebuild { get; private set; }
+
+        public IReadOnlyList<ReloadStepResult> RebuildAfterReload()
+        {
+            Calls.Add("rebuild");
+            SeenDuringRebuild = DuringRebuild();
+            if (RebuildFailure != null)
+                throw RebuildFailure;
+            return Rebuilt;
+        }
+
+        public IReadOnlyList<ReloadStepResult> CarryForReload()
+        {
+            Calls.Add("carry");
+            if (CarryFailure != null)
+                throw CarryFailure;
+            return Array.Empty<ReloadStepResult>();
+        }
+
+        public IReadOnlyList<ReloadDigestLine> DescribeCaches()
+        {
+            Calls.Add("caches");
+            return Caches;
+        }
+
+        public IReadOnlyList<ReloadDigestLine> DescribeAdoptedState()
+        {
+            Calls.Add("adopted");
+            return Adopted;
+        }
+
+        public void RunNextFrame(Action action)
+        {
+            Calls.Add("next-frame");
+            NextFrame.Add(action);
+        }
+
         public void Retire() => Calls.Add("retire");
     }
 
@@ -46,7 +98,7 @@ public class GameGenerationTests
     {
         public bool ModuleLoaded { get; init; }
         public string Environment => "Test";
-        public bool ReloadEnabled => true;
+        public bool ReloadEnabled { get; init; } = true;
     }
 
     private sealed class Services : IHostServices
@@ -130,25 +182,183 @@ public class GameGenerationTests
     }
 
     [Test]
-    public async Task A_generation_activated_after_the_module_loaded_rebuilds_the_container_and_dispatch_only_and_says_so()
+    public async Task A_generation_activated_after_the_module_loaded_runs_the_reload_bootstrap_and_logs_its_digests()
     {
-        var boot = new RecordingBoot();
+        var boot = new RecordingBoot
+        {
+            Rebuilt = new[]
+            {
+                new ReloadStepResult(Step(ReloadStepKind.Rerun, nameof(FixtureOwner.Rerun)), 12, null),
+                new ReloadStepResult(Step(ReloadStepKind.Adopt, nameof(FixtureOwner.Adopt)), 3, null),
+            }
+        };
         var log = new List<string>();
         var generation = new GameGeneration(boot, log.Add);
         var (services, _, _, callbacks, hooks) = HostServices();
         services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = true });
+        boot.DuringRebuild = () => callbacks.Activating;
 
         await generation.ActivateAsync(new GenerationActivation(3, null, null, null, services), CancellationToken.None);
 
-        boot.Calls.Should().Equal(new[] { "activate", "resume" },
-            "the engine does not signal the module load again, so the new build takes it after its boot steps");
+        boot.Calls.Should().Equal(new[] { "activate", "resume", "rebuild", "adopted", "next-frame" },
+            "the engine signals the module load and runs the boot scripts only for generation 1, so a reload takes the signal, " +
+            "reruns and adopts, and logs the adopted and world digests inside the pause and the cache digests a frame later");
         hooks.Calls.Should().Equal(new[] { "bind" });
         generation.Scripts.Should().BeOfType<HostedScriptDispatcher>();
         generation.MainLoop.Should().BeOfType<HostedMainLoop>();
         callbacks.Bound.Should().BeOfType<HostedSignalHandler>();
-        log.Should().ContainSingle().Which.Should()
-            .MatchRegex(@"^Generation 3 activated by a reload in \d+ ms: rebuilt the service container and the script dispatch only; " +
-                        "no boot handler reran and nothing was adopted\\.$");
+        boot.SeenDuringRebuild.Should().BeSameAs(generation.Scripts,
+            "the package makes the build active only after its activation, so the scripts the engine runs from the rebuild come here");
+        callbacks.Activating.Should().BeNull();
+        callbacks.Calls.Should().Equal("bind-activation", "unbind-activation", "bind");
+        log[0].Should().MatchRegex(@"^Generation 3 activated by a reload in \d+ ms: rebuilt the service container and the script dispatch, " +
+                                   @"then the reload bootstrap reran=1 adopted=1 carried=0 failed=0 totalMs=15 slowest=.*FixtureOwner\.Rerun:12,.*FixtureOwner\.Adopt:3$");
+        log.Should().Contain("SWLOR_RELOAD_DIGEST generation=3 phase=reload kind=world name=world.dockIds count=2 hash=00000000000000bb");
+
+        boot.NextFrame.Should().ContainSingle();
+        boot.NextFrame[0]();
+        log.Should().Contain("SWLOR_RELOAD_DIGEST generation=3 phase=reload kind=cache name=Cache.Owner count=3 hash=00000000000000aa");
+    }
+
+    [Test]
+    public async Task A_rebuild_that_throws_still_unbinds_the_activation_scripts()
+    {
+        var boot = new RecordingBoot { RebuildFailure = new InvalidOperationException("rebuild") };
+        var generation = new GameGeneration(boot, _ => { });
+        var (services, _, _, callbacks, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = true });
+
+        var activate = async () => await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        await activate.Should().ThrowAsync<InvalidOperationException>().WithMessage("rebuild");
+        callbacks.Activating.Should().BeNull("no script may reach a build the package will not make active");
+        callbacks.Calls.Should().Equal("bind-activation", "unbind-activation");
+    }
+
+    [Test]
+    public async Task A_boot_binds_no_activation_scripts()
+    {
+        var generation = new GameGeneration(new RecordingBoot(), _ => { });
+        var (services, _, _, callbacks, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = false });
+
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        callbacks.Calls.Should().Equal("bind");
+    }
+
+    [Test]
+    public async Task A_reload_with_hot_reload_off_rebuilds_but_logs_no_digest()
+    {
+        var boot = new RecordingBoot();
+        var log = new List<string>();
+        var generation = new GameGeneration(boot, log.Add);
+        var (services, _, _, _, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = true, ReloadEnabled = false });
+
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+        await generation.BeginQuiescenceAsync(CancellationToken.None);
+
+        boot.Calls.Should().Equal("activate", "resume", "rebuild");
+        log.Should().ContainSingle().Which.Should().StartWith("Generation 1 activated by a reload");
+    }
+
+    [Test]
+    public async Task The_boot_of_a_server_with_hot_reload_on_logs_its_cache_digests_the_frame_after_the_module_load_script()
+    {
+        var boot = new RecordingBoot();
+        var log = new List<string>();
+        var generation = new GameGeneration(boot, log.Add);
+        var (services, _, _, callbacks, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = false });
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        // The signal handler counts the managed entry through the combat recorder, a facade.
+        using var container = new FacadeContainer();
+        using var scope = container.Install();
+        callbacks.Bound.OnSignal(HostedServerBoot.ModuleLoadFinishSignal);
+
+        boot.Signals.Should().Equal(HostedServerBoot.ModuleLoadFinishSignal);
+        boot.NextFrame.Should().BeEmpty("NWNX signals the module load before the boot scripts run");
+        generation.Scripts.Should().BeOfType<ModuleLoadedScriptDispatcher>();
+    }
+
+    [Test]
+    public async Task The_boot_of_a_server_with_hot_reload_off_dispatches_scripts_as_before_and_schedules_no_digest()
+    {
+        var boot = new RecordingBoot();
+        var generation = new GameGeneration(boot, _ => { });
+        var (services, _, _, callbacks, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = false, ReloadEnabled = false });
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        // The signal handler counts the managed entry through the combat recorder, a facade.
+        using var container = new FacadeContainer();
+        using var scope = container.Install();
+        callbacks.Bound.OnSignal("SOME_OTHER_SIGNAL");
+
+        generation.Scripts.Should().BeOfType<HostedScriptDispatcher>();
+        boot.NextFrame.Should().BeEmpty();
+        boot.Calls.Should().Equal("activate");
+    }
+
+    [Test]
+    public async Task Quiescence_with_hot_reload_on_logs_the_adopted_digests_then_carries()
+    {
+        var boot = new RecordingBoot();
+        var log = new List<string>();
+        var generation = new GameGeneration(boot, log.Add);
+        var (services, _, _, _, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = false });
+        await generation.ActivateAsync(new GenerationActivation(4, null, null, null, services), CancellationToken.None);
+
+        await generation.BeginQuiescenceAsync(CancellationToken.None);
+
+        boot.Calls.Should().Equal("activate", "adopted", "carry");
+        log.Should().Contain("SWLOR_RELOAD_DIGEST generation=4 phase=quiesce kind=world name=world.dockIds count=2 hash=00000000000000bb");
+        log.Should().Contain(line => line.StartsWith("Generation 4 quiesced for a reload: reran=0 adopted=0 carried=0 failed=0", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public async Task A_carry_that_fails_is_logged_and_the_quiescence_goes_on()
+    {
+        var boot = new RecordingBoot { CarryFailure = new InvalidOperationException("carry") };
+        var log = new List<string>();
+        var generation = new GameGeneration(boot, log.Add);
+        var (services, _, _, _, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = false });
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        var quiesce = async () => await generation.BeginQuiescenceAsync(CancellationToken.None);
+
+        await quiesce.Should().NotThrowAsync();
+        log.Should().Contain(line => line.StartsWith("Generation 1 could not carry its state for the reload: System.InvalidOperationException: carry", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public async Task A_digest_that_fails_is_logged_and_the_activation_goes_on()
+    {
+        var boot = new RecordingBoot { Adopted = null };
+        var log = new List<string>();
+        var generation = new GameGeneration(boot, log.Add);
+        var (services, _, _, _, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = true });
+
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        log.Should().Contain(line => line.StartsWith("SWLOR_RELOAD_DIGESTS generation=1 phase=reload failed: ", StringComparison.Ordinal));
+        generation.Scripts.Should().NotBeNull();
+    }
+
+    private static ReloadStep Step(ReloadStepKind kind, string method)
+    {
+        return new ReloadStep(kind, ScriptName.OnModuleLoad, "Fixture.Handler", typeof(FixtureOwner).GetMethod(method), () => { });
+    }
+
+    private sealed class FixtureOwner
+    {
+        public static void Rerun() { }
+        public static void Adopt() { }
     }
 
     [Test]
@@ -279,10 +489,17 @@ public class GameGenerationTests
     [Test]
     public async Task Quiescence_and_drain_have_nothing_to_do_while_reload_is_off()
     {
-        var generation = new GameGeneration(new RecordingBoot());
+        var boot = new RecordingBoot();
+        var generation = new GameGeneration(boot);
+        var (services, _, _, _, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = false, ReloadEnabled = false });
 
         await generation.BeginQuiescenceAsync(CancellationToken.None);
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+        await generation.BeginQuiescenceAsync(CancellationToken.None);
         await generation.DrainAsync(TimeSpan.FromSeconds(1), CancellationToken.None);
+
+        boot.Calls.Should().Equal("activate");
     }
 
     [Test]

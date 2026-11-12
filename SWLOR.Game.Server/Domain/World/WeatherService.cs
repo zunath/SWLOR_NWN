@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
@@ -30,12 +32,21 @@ namespace SWLOR.Game.Server.Domain.World
             public bool MistInitialized { get; set; }
         }
 
+        // The weather front, the regional storms and each area's conditions: rolled at boot and on the hour; a hot reload
+        // carries them to the new build (CarryWeather, AdoptWeather), so the weather does not change.
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<uint, AreaWeather> _areas = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly WeatherRegionCache _regions = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, WeatherExposure> _exposures = new();
         private Dictionary<PlanetType, WeatherClimate> _planetClimates;
         private Dictionary<string, WeatherClimate> _namedClimates;
+        [ReloadState(ReloadStateKind.Adopted)]
         private WeatherPattern _pattern = new();
+
+        /// <summary>The key the weather is carried under across a hot reload (<see cref="ReloadCarry"/>).</summary>
+        private const string WeatherCarryKey = "weather";
 
         private const string VAR_WEATHER_HEAT = "VAR_WEATHER_HEAT";
         private const string VAR_WEATHER_HUMIDITY = "VAR_WEATHER_HUMIDITY";
@@ -113,11 +124,131 @@ namespace SWLOR.Game.Server.Domain.World
                    _db.Get<WorldProperty>(propertyId)?.PropertyType != PropertyType.City;
         }
 
-        [BootPhase(BootReload.BootOnly)]
+        /// <summary>
+        /// When the module loads, rolls the first weather front and applies it to every area. Boot only: a hot reload keeps the
+        /// weather the old build had (<see cref="CarryWeather"/>, <see cref="AdoptWeather"/>).
+        /// </summary>
+        [BootPhase(BootReload.BootOnly, AdoptedBy = nameof(AdoptWeather), CarriedBy = nameof(CarryWeather))]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void InitializeWeather()
         {
             AdjustWeather();
+        }
+
+        /// <summary>
+        /// When a hot reload quiesces this build: leaves the weather front, the regional storms and each area's conditions,
+        /// lightning time and mist on the module for the next build (<see cref="AdoptWeather"/>). It changes nothing.
+        /// </summary>
+        public void CarryWeather()
+        {
+            var carry = new JObject
+            {
+                ["pattern"] = new JObject
+                {
+                    ["heat"] = _pattern.Heat,
+                    ["humidity"] = _pattern.Humidity,
+                    ["wind"] = _pattern.Wind,
+                    ["revision"] = _pattern.Revision,
+                    ["next"] = _pattern.NextChangeUtc,
+                },
+                ["areas"] = new JArray(_areas.Select(pair => new JObject
+                {
+                    ["area"] = pair.Key,
+                    ["state"] = CarryState(pair.Value),
+                    ["lightning"] = pair.Value.NextLightningUtc,
+                    ["mist"] = JArray.FromObject(pair.Value.MistPlaceables),
+                    ["mistInitialized"] = pair.Value.MistInitialized,
+                })),
+                ["regions"] = new JArray(_regions.Entries().Select(region => new JObject
+                {
+                    ["climate"] = ClimateName(region.Climate),
+                    ["heat"] = region.HeatModifier,
+                    ["humidity"] = region.HumidityModifier,
+                    ["wind"] = region.WindModifier,
+                    ["state"] = CarryState(region.State),
+                })),
+            };
+
+            ReloadCarry.Put(WeatherCarryKey, carry.ToString(Formatting.None));
+        }
+
+        /// <summary>
+        /// On a hot reload, after the rerun <see cref="LoadData"/>: stands in for <see cref="InitializeWeather"/> by taking the
+        /// weather the old build carried (<see cref="CarryWeather"/>), so no area's weather, sky or fog changes and the next front
+        /// comes when it would have. Without carried weather it reports that the next heartbeat rolls a new front.
+        /// </summary>
+        public void AdoptWeather()
+        {
+            var text = ReloadCarry.Take(WeatherCarryKey);
+            if (text == null)
+            {
+                Log.Write(LogGroup.Error, "Hot reload: the build this one replaced carried no weather, so the next heartbeat rolls a new front.", true);
+                return;
+            }
+
+            var carry = JObject.Parse(text);
+            var pattern = carry["pattern"];
+            _pattern = new WeatherPattern();
+            _pattern.Restore(pattern["heat"].Value<int>(), pattern["humidity"].Value<int>(), pattern["wind"].Value<int>(),
+                pattern["revision"].Value<int>(), pattern["next"].ToObject<DateTime>());
+
+            _areas.Clear();
+            foreach (var entry in carry["areas"])
+            {
+                var state = new AreaWeather
+                {
+                    NextLightningUtc = entry["lightning"].ToObject<DateTime>(),
+                    MistInitialized = entry["mistInitialized"].Value<bool>(),
+                };
+                RestoreState(state, entry["state"]);
+                state.MistPlaceables.AddRange(entry["mist"].ToObject<List<uint>>());
+                _areas[entry["area"].ToObject<uint>()] = state;
+            }
+
+            _regions.Clear();
+            foreach (var entry in carry["regions"])
+            {
+                var climate = _namedClimates.GetValueOrDefault(entry["climate"].Value<string>() ?? string.Empty);
+                if (climate == null)
+                    continue;
+
+                var state = new WeatherAreaState();
+                RestoreState(state, entry["state"]);
+                _regions.Restore(climate, entry["heat"].Value<int>(), entry["humidity"].Value<int>(), entry["wind"].Value<int>(), state);
+            }
+
+            Log.Write(LogGroup.Server, $"Hot reload: kept the weather front (revision {_pattern.Revision}) and the weather of {_areas.Count} areas.", true);
+        }
+
+        private static JObject CarryState(WeatherAreaState state)
+        {
+            return new JObject
+            {
+                ["revision"] = state.Revision,
+                ["conditions"] = state.Conditions == null ? JValue.CreateNull() : JObject.FromObject(state.Conditions),
+                ["applied"] = state.AppliedWeather.HasValue ? new JValue((int)state.AppliedWeather.Value) : JValue.CreateNull(),
+            };
+        }
+
+        private static void RestoreState(WeatherAreaState state, JToken carried)
+        {
+            var conditions = carried["conditions"];
+            var applied = carried["applied"];
+            state.Restore(carried["revision"].Value<int>(),
+                conditions == null || conditions.Type == JTokenType.Null ? null : conditions.ToObject<WeatherConditions>(),
+                applied == null || applied.Type == JTokenType.Null ? null : (WeatherType)applied.Value<int>());
+        }
+
+        /// <summary>The name the climate is known by in <see cref="_namedClimates"/>, which holds every climate an area resolves to.</summary>
+        private string ClimateName(WeatherClimate climate)
+        {
+            foreach (var (name, named) in _namedClimates)
+            {
+                if (ReferenceEquals(named, climate))
+                    return name;
+            }
+
+            return string.Empty;
         }
 
         public bool AdjustWeather()

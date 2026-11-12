@@ -32,11 +32,16 @@ namespace SWLOR.Game.Server.Domain.Character
         private const string StatusEffectTag = "STATUS_EFFECT";
         private const float Interval = 1f;
 
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly HashSet<string> _suppressedStatusEffectRemovalIds = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, int> _nativeAttackSwingDepth = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, List<Action>> _deferredNativeAttackStatusEffects = new();
         private static readonly FrozenDictionary<EffectIconType, AbilityType> _abilityIncreaseIconType = new Dictionary<EffectIconType, AbilityType>
         {

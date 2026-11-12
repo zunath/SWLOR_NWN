@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         public SavedCharacterDataStore CharacterData { get; } = new();
 
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "Nothing reads the migration state after boot, and the host's schema gate refuses a build that needs a server migration.")]
         [NWNEventHandler(ScriptName.OnDatabaseLoaded)]
         public void AfterDatabaseLoaded()
         {
@@ -78,13 +78,29 @@ namespace SWLOR.Game.Server.Domain.Foundation
             RunServerMigrationsPostDatabase();
         }
 
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, AdoptedBy = nameof(CheckCharacterVersion))]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public void AfterCacheLoaded()
         {
             RunServerMigrationsPostCache();
             UpdateMigrationVersion();
             UpgradeCharacters();
+        }
+
+        /// <summary>
+        /// On a hot reload, in place of <see cref="AfterCacheLoaded"/>: runs no migration and upgrades no character (the host's
+        /// schema gate refuses a build that needs a server migration), and reports when this build expects saved characters at a
+        /// newer version than the boot upgraded them to, since those are refused at login until the server restarts.
+        /// </summary>
+        public void CheckCharacterVersion()
+        {
+            var latest = GetLatestPlayerVersion();
+            var upgradedTo = _db.Get<ServerConfiguration>("SWLOR_CONFIG")?.CharacterFileVersion ?? 0;
+            if (upgradedTo < latest)
+            {
+                Log.Write(LogGroup.Error, $"Hot reload: this build expects saved characters at version {latest}, but the boot upgraded " +
+                                          $"them to {upgradedTo}. Characters below {latest} are refused at login until the server restarts.", true);
+            }
         }
 
         /// <summary>

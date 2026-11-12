@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Nwn.Hosting.Bootstrap;
 using Nwn.Hosting.Testing.Fixtures;
 using SWLOR.Game.Host.Bootstrap;
+using SWLOR.Game.Host.Reload;
 using SWLOR.Game.NativeHooks;
 
 namespace SWLOR.Game.Host.Tests.Support;
@@ -17,12 +18,17 @@ internal sealed class HostedFixture
     /// <param name="variables">More settings the host reads (the environment, the reload switch).</param>
     /// <param name="hostDirectory">The host's own folder (relative settings resolve against it); the build's folder when null.</param>
     /// <param name="reloadPollInterval">How often the reload trigger looks at the signal file.</param>
+    /// <param name="databaseSchemaVersion">
+    /// The server migration version the reload's schema gate reads from the database (null: none stored). The fixture builds
+    /// require 0 unless built with a version of their own.
+    /// </param>
     public HostedFixture(
         string gameAssemblyPath,
         bool collectible = true,
         IReadOnlyDictionary<string, string?>? variables = null,
         string? hostDirectory = null,
-        TimeSpan? reloadPollInterval = null)
+        TimeSpan? reloadPollInterval = null,
+        int? databaseSchemaVersion = 0)
     {
         Scheduler = new RecordingClosureScheduler();
         CoreFunctions = new CoreFunctionHandler(Environment.CurrentManagedThreadId, null, Scheduler, RejectedClosureHandling.Drop);
@@ -38,7 +44,7 @@ internal sealed class HostedFixture
         Redis = new FakeRedisConnectionSource();
         Hooks = new NativeHookTable();
         Mode = new SwlorHostMode(CoreFunctions, Settings, Redis, Hooks, (category, message) => Log.Enqueue($"{category} {message}"),
-            reloadPollInterval ?? TimeSpan.FromSeconds(1));
+            reloadPollInterval ?? TimeSpan.FromSeconds(1), new ReloadSchemaGate(_ => ValueTask.FromResult(databaseSchemaVersion)));
         Mode.Services.Add(Record);
     }
 

@@ -15,25 +15,41 @@ namespace SWLOR.Game.Server.Domain.Foundation
     {
         private const int TopHandlerCount = 5;
         private const int CaptureTopHandlerCount = 12;
+        [ReloadState(ReloadStateKind.Runtime)]
         private static readonly FrameCounters _frame = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private static readonly FrameCounters _window = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private static readonly FrameCounters _capture = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private static readonly List<float> _windowFrames = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private static readonly List<float> _captureFrames = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private static readonly Dictionary<string, (int Calls, long Ticks)> _handlers = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private static readonly Dictionary<string, (int Calls, long Ticks)> _captureHandlers = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private static readonly Dictionary<string, (int Calls, long Ticks)> _captureNamed = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private static readonly Dictionary<string, (int Calls, long Ticks)> _frameNamed = new();
         private static bool _configured;
+        [ReloadState(ReloadStateKind.Runtime)]
         private static bool _capturing;
         // True only for frames that started after BeginCapture, so a capture never includes earlier work.
+        [ReloadState(ReloadStateKind.Runtime)]
         private static bool _captureFrame;
         private static double _slowFrameMilliseconds = 50;
         private static double _summarySeconds = 60;
+        [ReloadState(ReloadStateKind.Runtime)]
         private static long _frameStart;
+        [ReloadState(ReloadStateKind.Runtime)]
         private static long _windowStart;
+        [ReloadState(ReloadStateKind.Runtime)]
         private static long _captureTicks;
+        [ReloadState(ReloadStateKind.Runtime)]
         private static int _managedDepth;
+        [ReloadState(ReloadStateKind.Runtime)]
         private static long _excludedTicks;
 
         public static bool IsEnabled { get; private set; }

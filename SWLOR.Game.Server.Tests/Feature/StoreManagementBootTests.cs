@@ -37,6 +37,7 @@ public class StoreManagementBootTests
 
     private FakeNWScript _engine = null!;
     private FakeItemPlugin _items = null!;
+    private ItemWorld _world = null!;
     private readonly List<IDisposable> _scopes = new();
     private List<object> _scheduledBefore = null!;
 
@@ -47,7 +48,7 @@ public class StoreManagementBootTests
         _scheduledBefore = ScheduledItems().Cast<object>().ToList();
 
         _engine = new FakeNWScript();
-        var world = new ItemWorld(_engine);
+        var world = _world = new ItemWorld(_engine);
         foreach (var obj in new[] { Cantina, Market, BarStore, Crate, MarketStore, Blaster, Bread, Vibroblade })
             world.Add(obj);
         world.Carry(BarStore, Blaster, Bread);
@@ -112,6 +113,57 @@ public class StoreManagementBootTests
         _engine.CountOf("SetLocalBool").Should().Be(0, "a hot reload reruns this part, so it must not mark the items again");
         _engine.CountOf("GetFirstItemInInventory").Should().Be(0);
         _items.CountOf("SetBaseGoldPieceValue").Should().Be(0, "a second price increase would compound the prices");
+    }
+
+    [Test]
+    public void A_reload_keeps_the_stores_of_the_module_areas_and_leaves_out_the_copies_in_area_instances()
+    {
+        // An instance of the cantina made after boot (CreateArea copies its template, store included, items unmarked).
+        const uint CantinaCopy = 104;
+        const uint CopyStore = 204;
+        _world.Add(CantinaCopy);
+        _world.Add(CopyStore);
+        var areas = new[] { Cantina, Market, CantinaCopy };
+        var cursor = 0;
+        // A queued sequence answers before a handler; clear the set-up's two-area one.
+        _engine.SetReturnSequence("GetFirstArea");
+        _engine.SetReturnSequence("GetNextArea");
+        _engine.SetReturnHandler("GetFirstArea", _ =>
+        {
+            cursor = 0;
+            return areas[0];
+        });
+        _engine.SetReturnHandler("GetNextArea", _ => ++cursor < areas.Length ? areas[cursor] : ObjectInvalid);
+        var contents = new Dictionary<uint, Queue<uint>>();
+        _engine.SetReturnHandler("GetFirstObjectInArea", arguments =>
+        {
+            var area = (uint)arguments[0]!;
+            contents[area] = new Queue<uint>(area switch
+            {
+                Cantina => new[] { BarStore, Crate },
+                Market => new[] { MarketStore },
+                _ => new[] { CopyStore },
+            });
+            return contents[area].Dequeue();
+        });
+        _engine.SetReturnHandler("GetNextObjectInArea", arguments =>
+            contents[(uint)arguments[0]!].TryDequeue(out var next) ? next : ObjectInvalid);
+        _engine.SetReturnHandler("GetResRef", arguments => (uint)arguments[0]! == Market ? "market" : "cantina");
+        _engine.SetReturnHandler("GetArea", arguments => (uint)arguments[0]! switch
+        {
+            BarStore => Cantina,
+            MarketStore => Market,
+            _ => CantinaCopy,
+        });
+
+        StoreManagement.LoadStores();
+        Stores().Cast<uint>().Should().Equal(new[] { BarStore, MarketStore, CopyStore }, "the rerun finds every store in the world");
+        StoreManagement.AdoptStores();
+
+        Stores().Cast<uint>().Should().Equal(BarStore, MarketStore);
+        _engine.CountOf("SetLocalBool").Should().Be(0, "the items keep the marks the boot gave them");
+        _items.CountOf("SetBaseGoldPieceValue").Should().Be(0, "the prices are never raised again");
+        NewScheduledItems().Should().ContainSingle("the hourly cleanup the boot starts runs again");
     }
 
     private static IList Stores() =>

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature
         /// environment variables. This will hook all module/global events, which stay bound in the engine, run
         /// mod_content_chg when the module file changed and run the cache scripts. Boot only: a hot reload never runs it again.
         /// </summary>
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The module, area and NWNX event bindings and the legacy item property hook stay in the engine; the reload bootstrap reruns the cache scripts' rerun handlers itself.")]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void OnModulePreload()
         {

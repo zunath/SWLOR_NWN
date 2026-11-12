@@ -124,6 +124,54 @@ public class WeatherServiceTests
         _world.NativeWeatherSent(Meadow).Should().Equal(WeatherType.Rain, WeatherType.Rain);
     }
 
+    // ---- hot reload: the weather is carried, not rolled again
+
+    [Test]
+    public void A_reload_keeps_the_front_the_regional_storms_and_each_areas_weather_and_rolls_nothing()
+    {
+        _world.AddArea(Meadow);
+        _world.AddArea(Dunes, PlanetType.Tatooine);
+        StormyFront();
+        Service.InitializeWeather();
+        var before = AdoptedDigest(Service);
+        var heat = Service.GetHeatIndex(Meadow);
+
+        Service.CarryWeather();
+        var reloaded = new WeatherWorld.WeatherServiceUnderTest(_world.Db, _world.Planets);
+        reloaded.LoadData();
+        var rolls = Rolled;
+        var sends = NativeSends;
+        reloaded.AdoptWeather();
+
+        AdoptedDigest(reloaded).Should().Be(before, "the new build holds the front, storms and area conditions the old one had");
+        Rolled.Should().Be(rolls, "adopting rolls nothing");
+        NativeSends.Should().Be(sends, "and sends no weather");
+        reloaded.AdjustWeather().Should().BeFalse("the carried front lasts its hour");
+        reloaded.SetWeather(Meadow);
+        NativeSends.Should().Be(sends, "an area keeps its weather");
+        reloaded.GetHeatIndex(Meadow).Should().Be(heat);
+        reloaded.GetWeather(Dunes).Should().Be(Service.GetWeather(Dunes));
+    }
+
+    [Test]
+    public void Without_carried_weather_the_adoption_leaves_the_next_heartbeat_to_roll_a_front()
+    {
+        _world.AddArea(Meadow);
+        var reloaded = new WeatherWorld.WeatherServiceUnderTest(_world.Db, _world.Planets);
+        reloaded.LoadData();
+
+        reloaded.AdoptWeather();
+
+        Rolled.Should().Be(0);
+        reloaded.AdjustWeather().Should().BeTrue();
+    }
+
+    private static ReloadDigestLine AdoptedDigest(WeatherService service)
+    {
+        return new ReloadDigestHasher(typeof(WeatherService).Assembly).Describe(ReloadDigests.AdoptedKind, "weather", typeof(WeatherService), service,
+            field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted);
+    }
+
     // ---- which areas have weather
 
     [Test]

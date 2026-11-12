@@ -24,8 +24,11 @@ public static class PairedRangedPresentation
     // spot, such as where the actor stood earlier. Free anchors therefore wait at the hand they
     // serve (even slots at the main muzzle, odd slots at the companion muzzle) before they fire.
     private const float ParkToleranceMeters = .05f;
+    [ReloadState(ReloadStateKind.Runtime)]
     private static readonly Dictionary<uint, (uint[] Sources, long[] BusyUntil, long ReadyAt, uint Area)> Anchors = new();
+    [ReloadState(ReloadStateKind.Runtime)]
     private static readonly Dictionary<uint, (NumericsVector3 Position, float Facing)> LastPoses = new();
+    [ReloadState(ReloadStateKind.Runtime)]
     private static readonly Dictionary<uint, int> LaunchCounts = new();
 
     // The authored firing pose and registered 11/201/11 pistol appearance define

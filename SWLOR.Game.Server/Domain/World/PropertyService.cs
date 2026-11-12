@@ -70,9 +70,11 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <summary>
-        /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
+        /// When the module loads, clean up any deleted data, refreshes permissions and then load properties. Boot only: a
+        /// hot reload runs no upkeep, election or lease clean-up and spawns nothing; it adopts the properties already in the
+        /// world (<see cref="CarryProperties"/>, <see cref="AdoptProperties"/>).
         /// </summary>
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, AdoptedBy = nameof(AdoptProperties), CarriedBy = nameof(CarryProperties))]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void OnModuleLoad()
         {
@@ -80,6 +82,18 @@ namespace SWLOR.Game.Server.Domain.World
             _city.ProcessCities();
             CleanUpData();
             _loader.LoadProperties();
+        }
+
+        /// <summary>When a hot reload quiesces this build: <see cref="IPropertyLoaderService.CarryLoadState"/>.</summary>
+        public void CarryProperties()
+        {
+            _loader.CarryLoadState();
+        }
+
+        /// <summary>On a hot reload, in place of <see cref="OnModuleLoad"/>: <see cref="IPropertyLoaderService.AdoptLiveProperties"/>.</summary>
+        public void AdoptProperties()
+        {
+            _loader.AdoptLiveProperties();
         }
 
         /// <inheritdoc />

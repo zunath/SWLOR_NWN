@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
 #
-# The local hot reload check (MaintainabilityRefactorHotReload.md, P4-13). Boots the engine-test stack
-# (SWLOR.Game.Server/Docker/docker-compose.enginetests.yml, its own Compose project and a throwaway tmpfs
-# Redis) on the host entry with SWLOR_HOT_RELOAD=true, waits until the server watches the reload signal,
-# then replaces the running game build --reloads times with SWLOR.CLI --reload (publish a candidate into
-# dotnet/generations/<id>/, signal it, wait for the receipt) and prints each receipt and the pause the
-# server logged. The game is staged without the engine-test assembly, so no engine test runs: the server
-# boots, logs "ENGINE TEST HARNESS MISSING" and idles until the check tears it down.
+# The local hot reload check (MaintainabilityRefactorHotReload.md, P4-13 and P4-14). Boots the engine-test
+# stack (SWLOR.Game.Server/Docker/docker-compose.enginetests.yml, its own Compose project and a throwaway
+# tmpfs Redis) on the host entry with SWLOR_HOT_RELOAD=true, waits until the server watches the reload signal
+# and has logged its boot digests, then replaces the running game build --reloads times with SWLOR.CLI
+# --reload (publish a candidate into dotnet/generations/<id>/, signal it, wait for the receipt) and prints
+# each receipt, the pause the server logged and the reload bootstrap's slowest steps. The game is staged
+# without the engine-test assembly, so no engine test runs: the server boots, logs "ENGINE TEST HARNESS
+# MISSING" and idles until the check tears it down.
+#
+# The reload digests (P4-14, SWLOR_RELOAD_DIGEST lines, logged only with hot reload on) are then compared:
+#   - cache: after every reload, the digest of each class that owns a rerun boot handler equals the boot's;
+#   - adopted and world: after every reload, the adopted state (spawns, properties, docks, flights, weather,
+#     stores) and the world the boot-only handlers wrote (store prices and flags, dock ids, spawned objects per
+#     area, property objects, weather, sky and fog per area, objects per area) equal what the build it
+#     replaced logged at quiescence, so no boot-only side effect happened again;
+#   - every digest was taken (none is error:<exception> or unresolved).
 #
 # Usage:
 #   scripts/run-hot-reload-check.sh [--server-home <dir>] [--reloads <n>] [--skip-build]
@@ -16,15 +25,17 @@
 # repo's enginetests-home/, the repo's debugserver/. Its dotnet/ is restaged (the host in dotnet/, the game
 # in dotnet/game/) and its reload/ is recreated; everything else is left as it was.
 #
-# Exit status 0 only when every reload's receipt says Applied and the server is still running after them.
+# Exit status 0 only when every reload's receipt says Applied, every digest matches and the server is still
+# running after them.
 #
-# Requires: dotnet SDK, docker compose, timeout.
+# Requires: dotnet SDK, docker compose, timeout, awk.
 
 set -uo pipefail
 
 SKIP_BUILD=0
 SERVER_HOME="${SWLOR_ENGINE_TEST_SERVER_HOME:-}"
-RELOADS=2
+RELOADS=3
+DIGEST_TIMEOUT_SECONDS=300
 BOOT_TIMEOUT_MINUTES=20
 RELOAD_TIMEOUT_SECONDS=900
 
@@ -106,6 +117,17 @@ native_path() {
     fi
 }
 
+# Docker is a Windows program under Git Bash too: the host paths it gets are in Windows form with forward slashes, and
+# compose() keeps Git Bash from rewriting the container paths it is given (/bin/bash, /nwn/home/...) into Windows ones.
+# Elsewhere both are no-ops.
+docker_path() {
+    if command -v cygpath > /dev/null 2>&1; then
+        cygpath -m "$1"
+    else
+        printf '%s\n' "$1"
+    fi
+}
+
 if [ "$SKIP_BUILD" -eq 0 ]; then
     section "Building the game, the host and SWLOR.CLI (Release)"
     for project in SWLOR.Game.Server/SWLOR.Game.Server.csproj SWLOR.Game.Host/SWLOR.Game.Host.csproj SWLOR.CLI/SWLOR.CLI.csproj; do
@@ -134,7 +156,8 @@ if ! mkdir -p "$DOTNET_DIR/game" "$RELOAD_DIR/receipts" ||
     exit 1
 fi
 
-export SWLOR_ENGINE_TEST_HOME="$SERVER_HOME"
+SWLOR_ENGINE_TEST_HOME="$(docker_path "$SERVER_HOME")"
+export SWLOR_ENGINE_TEST_HOME
 export SWLOR_ENGINE_TEST_HOT_RELOAD=true
 export SWLOR_ENGINE_TEST_SHUTDOWN=false
 export SWLOR_ENGINE_TEST_DOTNET_ENTRY=host
@@ -157,9 +180,64 @@ if [ -z "${SWLOR_ENGINE_TEST_HAK_DIR:-}" ] && ! ls "$SERVER_HOME"/hak/*.hak > /d
         exit 1
     fi
 fi
+if [ -n "${SWLOR_ENGINE_TEST_HAK_DIR:-}" ]; then
+    SWLOR_ENGINE_TEST_HAK_DIR="$(docker_path "$SWLOR_ENGINE_TEST_HAK_DIR")"
+    export SWLOR_ENGINE_TEST_HAK_DIR
+fi
 
 compose() {
-    docker compose -p "$COMPOSE_PROJECT" -f "$COMPOSE_FILE" "$@"
+    MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' MSYS2_ENV_CONV_EXCL='*' \
+        docker compose -p "$COMPOSE_PROJECT" -f "$(docker_path "$COMPOSE_FILE")" "$@"
+}
+
+# The SWLOR_RELOAD_DIGEST lines the server logged, one per line as "<generation> <phase> <kind> <name> <count> <hash>".
+# The summary lines (SWLOR_RELOAD_DIGESTS) do not match.
+digest_lines() {
+    compose logs --no-color swlor-server 2>/dev/null |
+        sed -n 's/.*SWLOR_RELOAD_DIGEST \(generation=.*\)$/\1/p' |
+        tr -d '\r' |
+        awk '{
+            for (i = 1; i <= NF; i++) {
+                split($i, pair, "=")
+                value[pair[1]] = substr($i, length(pair[1]) + 2)
+            }
+            print value["generation"], value["phase"], value["kind"], value["name"], value["count"], value["hash"]
+        }'
+}
+
+# How many digest sets generation $1 has logged in phase $2 (one SWLOR_RELOAD_DIGESTS summary line per set).
+digest_sets() {
+    compose logs --no-color swlor-server 2>/dev/null | grep -c "SWLOR_RELOAD_DIGESTS generation=$1 phase=$2 "
+}
+
+# Waits until generation $1 has logged $3 digest sets in phase $2: a boot logs one (cache), a reload two (adopted and
+# world inside the pause, cache at the next frame).
+wait_for_digests() {
+    local deadline=$(( $(date +%s) + DIGEST_TIMEOUT_SECONDS ))
+    until [ "$(digest_sets "$1" "$2")" -ge "$3" ]; do
+        if [ "$(date +%s)" -ge "$deadline" ]; then
+            echo "Generation $1 did not log $3 $2 digest set(s) within $DIGEST_TIMEOUT_SECONDS second(s)." >&2
+            return 1
+        fi
+        sleep 2
+    done
+}
+
+# Prints the differences between two digest sets ("<kind> <name> <count> <hash>" lines) and fails when there are any.
+compare_digest_sets() {
+    local label="$1" expected="$2" actual="$3"
+    if [ -z "$expected" ]; then
+        echo "$label: nothing to compare against." >&2
+        return 1
+    fi
+    local differences
+    differences="$(diff <(printf '%s\n' "$expected" | sort) <(printf '%s\n' "$actual" | sort))"
+    if [ -n "$differences" ]; then
+        echo "$label: the digests differ (< expected, > after the reload):" >&2
+        printf '%s\n' "$differences" >&2
+        return 1
+    fi
+    echo "$label: $(printf '%s\n' "$expected" | wc -l | tr -d ' ') digest(s) match."
 }
 
 pushd "$SERVER_HOME" > /dev/null
@@ -306,6 +384,12 @@ done
 compose logs --no-color swlor-server | grep "SWLOR_HOST \(generation\|reload-on\|reload-watching\)"
 
 failed=0
+# The boot logs its cache digests at the frame after the module has loaded.
+if ! wait_for_digests 1 boot 1; then
+    exit 1
+fi
+
+applied=0
 for reload in $(seq 1 "$RELOADS"); do
     section "Reload $reload of $RELOADS: SWLOR.CLI --reload"
     if ! dotnet "$CLI_ASSEMBLY" --reload \
@@ -316,10 +400,40 @@ for reload in $(seq 1 "$RELOADS"); do
         failed=1
         break
     fi
+    applied=$reload
+    # Generation <reload + 1> logs its adopted and world digests inside the pause and its cache digests a frame later.
+    if ! wait_for_digests "$((reload + 1))" reload 2; then
+        failed=1
+        break
+    fi
 done
 
 section "What the server logged about the reloads"
-compose logs --no-color swlor-server | grep "SWLOR_HOST reload-\|SWLOR_HOST restart-required\|activated by a reload"
+compose logs --no-color swlor-server |
+    grep "SWLOR_HOST reload-\|SWLOR_HOST restart-required\|activated by a reload\|quiesced for a reload\|could not carry\|SWLOR_RELOAD_DIGESTS \|Hot reload: "
+
+section "Comparing the reload digests"
+digests="$(digest_lines)"
+not_taken="$(printf '%s\n' "$digests" | awk '$6 ~ /^error:/ || $6 == "unresolved"')"
+if [ -n "$not_taken" ]; then
+    echo "Digests that could not be taken (generation phase kind name count hash):" >&2
+    printf '%s\n' "$not_taken" >&2
+    failed=1
+fi
+if compose logs --no-color swlor-server 2>/dev/null | grep -q "SWLOR_RELOAD_DIGESTS .* failed: "; then
+    echo "A digest set failed:" >&2
+    compose logs --no-color swlor-server | grep "SWLOR_RELOAD_DIGESTS .* failed: " >&2
+    failed=1
+fi
+boot_cache="$(printf '%s\n' "$digests" | awk '$1 == 1 && $2 == "boot" && $3 == "cache" { print $3, $4, $5, $6 }')"
+for generation in $(seq 2 $((applied + 1))); do
+    reload_cache="$(printf '%s\n' "$digests" | awk -v g="$generation" '$1 == g && $2 == "reload" && $3 == "cache" { print $3, $4, $5, $6 }')"
+    compare_digest_sets "Generation $generation cache against the boot" "$boot_cache" "$reload_cache" || failed=1
+    quiesced="$(printf '%s\n' "$digests" | awk -v g="$((generation - 1))" '$1 == g && $2 == "quiesce" { print $3, $4, $5, $6 }')"
+    adopted="$(printf '%s\n' "$digests" | awk -v g="$generation" '$1 == g && $2 == "reload" && $3 != "cache" { print $3, $4, $5, $6 }')"
+    compare_digest_sets "Generation $generation adopted state and world against generation $((generation - 1)) at quiescence" \
+        "$quiesced" "$adopted" || failed=1
+done
 
 if [ -z "$(compose ps --status running -q swlor-server)" ]; then
     echo "The server is no longer running after the reloads." >&2
@@ -328,7 +442,7 @@ if [ -z "$(compose ps --status running -q swlor-server)" ]; then
 fi
 
 if [ "$failed" -eq 0 ]; then
-    echo "Hot reload check passed: $RELOADS reload(s) applied and the server is still running."
+    echo "Hot reload check passed: $RELOADS reload(s) applied, every digest matched and the server is still running."
     exit 0
 fi
 echo "Hot reload check failed." >&2

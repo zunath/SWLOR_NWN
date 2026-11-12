@@ -1,3 +1,4 @@
+using Nwn.Hosting.Contracts.Generations;
 using SWLOR.Game.Contracts;
 
 namespace SWLOR.Game.Server.Tests.Support;
@@ -22,5 +23,21 @@ public sealed class RecordingHostCallbacks : IHostCallbacks
         Calls.Add("unbind");
         if (ReferenceEquals(Bound, handler))
             Bound = null;
+    }
+
+    /// <summary>The dispatcher bound for an activation, while it is.</summary>
+    public IScriptDispatcher Activating { get; private set; }
+
+    public void BindActivationScripts(IScriptDispatcher dispatcher)
+    {
+        Calls.Add("bind-activation");
+        Activating = dispatcher;
+    }
+
+    public void UnbindActivationScripts(IScriptDispatcher dispatcher)
+    {
+        Calls.Add("unbind-activation");
+        if (ReferenceEquals(Activating, dispatcher))
+            Activating = null;
     }
 }

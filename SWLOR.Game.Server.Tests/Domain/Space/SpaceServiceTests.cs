@@ -293,6 +293,30 @@ public class SpaceServiceTests
     }
 
     [Test]
+    public void On_a_reload_AdoptLandingPoint_registers_a_starport_dock_under_the_id_its_waypoint_carries_and_writes_nothing()
+    {
+        PlaceTheDockWaypoints(_space);
+        _space.AssignLandingPointIds();
+        _space.LoadLandingPoints();
+        var booted = Registry(_space);
+        var starportId = _locals.String(Waypoint4, DockIdVariable);
+        const uint UnmarkedWaypoint = 2005;
+
+        // The new build reruns LoadLandingPoints, then the property adoption puts the starport dock back.
+        var reloaded = NewSpace();
+        _locals.ClearCalls();
+        reloaded.LoadLandingPoints();
+        reloaded.AdoptLandingPoint(Waypoint4, ViscaraArea, false, "property-1");
+        reloaded.AdoptLandingPoint(UnmarkedWaypoint, ViscaraArea, false, "property-2");
+
+        _engine.CountOf("SetLocalString").Should().Be(0, "a dock id ships and properties hold is never rewritten");
+        _engine.CountOf("DeleteLocalString").Should().Be(0);
+        Registry(reloaded).Should().BeEquivalentTo(booted, "a waypoint without an id is left out");
+        _locals.String(Waypoint4, DockIdVariable).Should().Be(starportId);
+        reloaded.GetDockPointsByPlanet(PlanetType.Viscara)[starportId].IsNPC.Should().BeFalse();
+    }
+
+    [Test]
     public void LandingPoints_AreOwnedByTheInstance()
     {
         var other = NewSpace();

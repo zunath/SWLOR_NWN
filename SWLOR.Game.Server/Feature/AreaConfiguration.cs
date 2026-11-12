@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, load the tile magic configured on every area.
         /// </summary>
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The tile changes stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ApplyAreaConfiguration()
         {

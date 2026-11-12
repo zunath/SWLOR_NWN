@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Core
@@ -24,6 +25,42 @@ namespace SWLOR.Game.Server.Core
         public void ResumeAfterModuleLoad()
         {
             NativeInteropManager.ProcessSignal(ModuleLoadFinishSignal);
+        }
+
+        /// <summary>The signal table both entries share (<see cref="NativeInteropManager.ProcessSignal"/>).</summary>
+        public void ProcessSignal(string signal)
+        {
+            NativeInteropManager.ProcessSignal(signal);
+        }
+
+        /// <inheritdoc cref="ServerBootstrapper.RebuildAfterReload"/>
+        public IReadOnlyList<ReloadStepResult> RebuildAfterReload()
+        {
+            return ServerManager.Bootstrapper.RebuildAfterReload();
+        }
+
+        /// <inheritdoc cref="ServerBootstrapper.CarryForReload"/>
+        public IReadOnlyList<ReloadStepResult> CarryForReload()
+        {
+            return ServerManager.Bootstrapper.CarryForReload();
+        }
+
+        /// <inheritdoc cref="ServerBootstrapper.DescribeCaches"/>
+        public IReadOnlyList<ReloadDigestLine> DescribeCaches()
+        {
+            return ServerManager.Bootstrapper.DescribeCaches();
+        }
+
+        /// <inheritdoc cref="ServerBootstrapper.DescribeAdoptedState"/>
+        public IReadOnlyList<ReloadDigestLine> DescribeAdoptedState()
+        {
+            return ServerManager.Bootstrapper.DescribeAdoptedState();
+        }
+
+        /// <summary>Schedules <paramref name="action"/> on the server's scheduler, which runs at the start of the next frame.</summary>
+        public void RunNextFrame(Action action)
+        {
+            Scheduler.Schedule(action, TimeSpan.Zero);
         }
 
         /// <inheritdoc cref="ServerBootstrapper.ShutdownHosted"/>

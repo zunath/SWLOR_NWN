@@ -276,6 +276,29 @@ public class MimicryServiceTests
     }
 
     [Test]
+    public void AHotReload_KeepsTheAuthoredDescriptionsTheBootReadBeforeTheTlkOverrides()
+    {
+        _ = new LocalVariables(_engine);
+        _engine.SetReturn("GetModule", 1u);
+        Technique(Fire1);
+        _twoDa[("DESCRIPTION", (int)Fire1)] = "7";
+        _mimicry.CacheData();
+        _mimicry.CarryTechniqueDescriptions();
+
+        // The TLK overrides of the boot add hotbar headers, so the rerun reads changed text.
+        _engine.SetReturnHandler("GetStringByStrRef", args => $"header + text-{(int)args[0]!}");
+        Technique(Ice1);
+        _twoDa[("DESCRIPTION", (int)Ice1)] = "8";
+        _mimicry.CacheData();
+        _mimicry.AdoptTechniqueDescriptions();
+
+        _mimicry.GetTechniqueDescription(Fire1).Should().Be("text-7");
+        _mimicry.GetTechniqueDescription(Ice1).Should().Be("header + text-8", "a technique new in the build keeps what it read");
+        _mimicry.AdoptTechniqueDescriptions();
+        _mimicry.GetTechniqueDescription(Fire1).Should().Be("text-7", "the carry is taken once and nothing else changes");
+    }
+
+    [Test]
     public void CacheData_RebuildsTheCacheAndSchedulesTheWitnessSweepOnce()
     {
         Technique(Fire1);

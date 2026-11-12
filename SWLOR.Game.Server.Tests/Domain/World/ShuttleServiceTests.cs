@@ -1,5 +1,6 @@
 using System.Numerics;
 using FluentAssertions;
+using SWLOR.Game.Server.Core;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
@@ -253,6 +254,84 @@ public class ShuttleServiceTests
         stored.LocationAreaResref.Should().Be("old_area");
         Service.TryGetFlightInfo(console, out _, out var arrivalUtc).Should().BeTrue();
         arrivalUtc.Should().Be(arrival);
+    }
+
+    // ---- hot reload: AdoptFlights in place of DeliverOfflinePassengers
+
+    /// <summary>The new build of a hot reload: its own instance, the rerun LoadShuttleFlights, then the adoption step.</summary>
+    private ClockedShuttleService Reload()
+    {
+        var reloaded = new ClockedShuttleService(_bench.Db, _bench.Planets, _bench.Areas, Service.Now);
+        reloaded.LoadShuttleFlights();
+        reloaded.AdoptFlights();
+        return reloaded;
+    }
+
+    private static ReloadDigestLine AdoptedDigest(ShuttleService service)
+    {
+        return new ReloadDigestHasher(typeof(ShuttleService).Assembly).Describe(ReloadDigests.AdoptedKind, "flights", typeof(ShuttleService), service,
+            field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted);
+    }
+
+    [Test]
+    public void A_reload_gives_a_flight_in_the_air_its_live_interior_so_the_arrival_moves_only_whoever_is_aboard()
+    {
+        var ride = BoardThePassenger();
+        var area = FlightArea();
+        var other = _bench.AddPlayer(OtherPassengerId, _starport);
+        InTransit(OtherPassengerId, ride.ArrivalUtc, ride.FlightId);
+        _passenger.Area = area;
+        var before = AdoptedDigest(Service);
+        var interiors = _bench.Objects.Count(sim => sim.IsArea);
+        var saved = _bench.Db.Store.Saved.Count;
+
+        var reloaded = Reload();
+
+        AdoptedDigest(reloaded).Should().Be(before, "the flight has its interior, console and boarding point back");
+        _bench.Objects.Count(sim => sim.IsArea).Should().Be(interiors, "the live interior is adopted, not made again");
+        _bench.Db.Store.Saved.Should().HaveCount(saved, "adopting writes nothing");
+
+        reloaded.Now = ride.ArrivalUtc;
+        reloaded.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Should().Contain("The shuttle touches down at Tatooine.");
+        _bench.MessagesTo(other.Id).Should().NotContain("The shuttle touches down at Tatooine.",
+            "a passenger who left the flight before it landed is not moved, which only the adopted interior can tell");
+        reloaded.GetRide(PassengerId).Should().BeNull();
+    }
+
+    [Test]
+    public void A_flight_that_landed_just_before_the_reload_is_delivered_once_by_the_new_build()
+    {
+        var ride = BoardThePassenger();
+        _passenger.Area = FlightArea();
+        Service.Now = ride.ArrivalUtc.AddSeconds(1);
+        var saved = _bench.Db.Store.Saved.Count;
+
+        var reloaded = Reload();
+
+        _bench.Db.Store.Saved.Should().HaveCount(saved, "the boot's offline delivery does not run on a reload");
+        reloaded.Tick!();
+        reloaded.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Count(message => message == "The shuttle touches down at Tatooine.").Should().Be(1);
+        reloaded.GetRide(PassengerId).Should().BeNull();
+    }
+
+    [Test]
+    public void The_interior_of_a_flight_that_landed_before_the_reload_is_still_torn_down()
+    {
+        var ride = BoardThePassenger();
+        var area = FlightArea();
+        Service.Now = ride.ArrivalUtc;
+        Service.Tick!();
+        Service.Scheduled.Should().ContainSingle("the old build scheduled the teardown, which goes with it");
+
+        var reloaded = Reload();
+
+        reloaded.Scheduled.Should().ContainSingle().Which.Delay.Should().Be(TimeSpan.FromSeconds(30));
+        reloaded.Scheduled[0].Task();
+        _bench.Engine.CallsTo("DestroyArea").Select(call => (uint)call.Arguments[0]!).Should().Contain(area);
     }
 
     // ---- buying a ticket

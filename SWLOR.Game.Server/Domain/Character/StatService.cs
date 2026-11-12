@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private const float DeflectionEvasionBoostDurationSeconds = 30f;
         private const float DeflectionEnmityBoostDurationSeconds = 30f;
         private const float DeflectionDefenseBoostDurationSeconds = 30f;
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, bool> _outOfCombatMovementCombatState = new();
         private readonly Dictionary<ItemPropertyType, StatEquipmentAction> _equipmentStatActions = new();
 

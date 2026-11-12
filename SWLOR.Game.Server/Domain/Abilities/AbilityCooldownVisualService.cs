@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         private readonly Dictionary<RecastGroup, List<string>> _texturesByRecastGroup = new();
         private readonly Dictionary<RecastGroup, List<AbilityDetail>> _abilitiesByRecastGroup = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<string, Dictionary<RecastGroup, ActiveRecastVisual>> _activeVisuals = new();
         private bool _isCached;
 

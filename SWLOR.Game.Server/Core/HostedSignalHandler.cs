@@ -18,7 +18,10 @@ namespace SWLOR.Game.Server.Core
         {
         }
 
-        /// <summary>For tests: <paramref name="processSignal"/> stands in for <see cref="NativeInteropManager.ProcessSignal"/>.</summary>
+        /// <summary>
+        /// <paramref name="processSignal"/> handles the signal: a test's stand-in, or <c>GameGeneration</c>'s
+        /// (<c>IGenerationBoot.ProcessSignal</c>, which is <see cref="NativeInteropManager.ProcessSignal"/>).
+        /// </summary>
         public HostedSignalHandler(Action<string> processSignal)
         {
             _processSignal = processSignal ?? throw new ArgumentNullException(nameof(processSignal));

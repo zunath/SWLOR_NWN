@@ -269,6 +269,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public static int CreditableRepair(int ledger, int restored) => Math.Max(0, Math.Min(ledger, restored));
 
+        /// <summary>
+        /// The incursion damage a ship still carries: never more than the shield and hull it was missing
+        /// (<paramref name="missing"/>), so damage a recharge, a dock or the ship's own repairs already restored is gone.
+        /// </summary>
+        public static int OutstandingDamage(int ledger, int missing) => Math.Max(0, Math.Min(ledger, missing));
+
         /// <summary>Points for repairing an ally in an area of this tier.</summary>
         public static double RepairPoints(int restored, int tier)
         {

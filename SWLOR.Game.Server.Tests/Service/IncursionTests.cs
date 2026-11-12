@@ -409,6 +409,13 @@ public class IncursionTests
         IncursionRules.CreditableRepair(0, 500).Should().Be(0, "damage from players or anything else earns nothing");
         IncursionRules.CreditableRepair(ledger, 120).Should().Be(120);
 
+        // Damage the ship restored itself (repairs, recharge, a dock) is no longer outstanding for an ally to redeem.
+        IncursionRules.OutstandingDamage(300, 0).Should().Be(0, "a ship back at full strength carries no incursion damage");
+        IncursionRules.OutstandingDamage(300, 120).Should().Be(120);
+        IncursionRules.OutstandingDamage(300, 500).Should().Be(300);
+        IncursionRules.OutstandingDamage(300, -40).Should().Be(0);
+
+
         var aboard = IncursionRules.ShareAboard(3.0, new[] { "pilot", "gunner", "gunner", "engineer" });
         aboard.Should().HaveCount(3).And.OnlyContain(x => Math.Abs(x.Value - 1.0) < 1e-9);
 
@@ -425,6 +432,13 @@ public class IncursionTests
         space.Should().Contain("RecordIncursionDamage(attacker, target, shieldDamage + hullDamage);")
             .And.Contain("RecordIncursionDamage(attacker, target, hullBefore - targetShipStatus.Hull);");
         ReadSource("Service", "SpaceThreat.cs").Should().Contain("RecordIncursionRepair(source, repaired, restored);");
+        var incursions = ReadSource("Service", "SpaceIncursions.cs");
+        incursions.Should().Contain("ledger = IncursionRules.OutstandingDamage(ledger, GetMissingPools(repaired) + restored);")
+            .And.Contain("SetIncursionDamageTaken(target, IncursionRules.OutstandingDamage(outstanding, GetMissingPools(target) - amount));");
+        var repair = incursions.Substring(incursions.IndexOf("private static void RecordIncursionRepair(", StringComparison.Ordinal));
+        repair.IndexOf("SetIncursionDamageTaken(repaired, ledger - credited);", StringComparison.Ordinal)
+            .Should().BeLessThan(repair.IndexOf("if (ship == repaired)", StringComparison.Ordinal), "a self-repair retires the damage too");
+
         ReadSource("Service", "SpaceIncursions.cs").Should().Contain("[NWNEventHandler(ScriptName.OnCreatureDeathBefore)]")
             .And.Contain("GetShipCrewPlayers(pilot)");
     }

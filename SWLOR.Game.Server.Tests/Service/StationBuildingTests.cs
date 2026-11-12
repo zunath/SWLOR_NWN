@@ -531,6 +531,25 @@ public class StationBuildingTests
         InOrder(settle, "DelayCommand(1f, () =>", "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<StationDroidReceipt>(receiptId);");
     }
 
+    [Test]
+    public void ADroidChange_SettlesTheDrillAtItsOldRateFirst()
+    {
+        // A day at no droid, then a day at +50%: settling at the change keeps each day at its own rate.
+        var start = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var (before, mid) = StationBuildingRules.AccrueDrill(0, start, start.AddHours(24), 0);
+        var (after, _) = StationBuildingRules.AccrueDrill(before, mid, start.AddHours(48), 50);
+        var (wholeAtNew, _) = StationBuildingRules.AccrueDrill(0, start, start.AddHours(48), 50);
+        (before + after).Should().BeLessThan(wholeAtNew, "the droid never boosts the time before it was posted");
+
+        var service = ReadServer("Service", "StationBuildings.cs").Replace("\r\n", "\n");
+        InOrder(Section(service, "public static bool AssignDroid(", "public static void RecallDroid("),
+            "Space.GetPostableDroids(player).Contains(controller)", "SettleDrillBeforeDroidChange(building, state);", "state.SerializedDroid = serialized;");
+        InOrder(Section(service, "public static void RecallDroid(", "private static string OverflowDroidId("),
+            "SettleDrillBeforeDroidChange(building, state);", "ReturnDroidToOverflow(state);", "ObjectPlugin.Deserialize(state.SerializedDroid)");
+        Section(service, "private static void SettleDrillBeforeDroidChange(", "public static bool AssignDroid(")
+            .Should().Contain("building.StructureType != StructureType.AsteroidDrill").And.Contain("AccrueDrill(station, state);");
+    }
+
     private static string Section(string source, string start, string end)
     {
         var from = source.IndexOf(start, StringComparison.Ordinal);

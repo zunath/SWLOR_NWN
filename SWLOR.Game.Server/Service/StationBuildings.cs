@@ -483,6 +483,20 @@ namespace SWLOR.Game.Server.Service
             return (Math.Max(0, details.Industry), DroidIndustryRules.GetProtocolValue(protocols, PerkType.EfficiencyProtocol));
         }
 
+        /// <summary>
+        /// Mines a drill's ore up to now at the rate it has before its droid changes, so a droid assigned or recalled while
+        /// the drill menu was open never changes the output of the time before.
+        /// </summary>
+        private static void SettleDrillBeforeDroidChange(WorldProperty building, StationBuildingState state)
+        {
+            if (building.StructureType != StructureType.AsteroidDrill)
+                return;
+
+            var station = GetStation(building);
+            if (station != null)
+                AccrueDrill(station, state);
+        }
+
         /// <summary>Assigns one of the player's droids to the building: its controller is kept with the building.</summary>
         public static bool AssignDroid(uint player, WorldProperty building, uint controller)
         {
@@ -502,6 +516,8 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Red("You no longer carry that droid, or it is busy."));
                 return false;
             }
+
+            SettleDrillBeforeDroidChange(building, state);
 
             // The controller is marked and saved with the character before the building takes it, so a restart in between
             // leaves a marked controller the next login settles: it stays if the building never saved the droid, and goes
@@ -547,6 +563,8 @@ namespace SWLOR.Game.Server.Service
             var state = GetState(building);
             if (string.IsNullOrWhiteSpace(state.SerializedDroid))
                 return;
+
+            SettleDrillBeforeDroidChange(building, state);
 
             if (GetObjectUUID(player) != state.DroidOwnerPlayerId)
             {

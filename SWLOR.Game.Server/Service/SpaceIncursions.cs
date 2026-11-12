@@ -712,11 +712,33 @@ namespace SWLOR.Game.Server.Service
             return contribution;
         }
 
+        /// <summary>The shield and hull a ship is missing now.</summary>
+        private static int GetMissingPools(uint ship)
+        {
+            var status = GetShipStatus(ship);
+            return status == null
+                ? 0
+                : Math.Max(0, status.GetEffectiveMaxShield(DateTime.UtcNow) - status.Shield) + Math.Max(0, status.MaxHull - status.Hull);
+        }
+
+        private static void SetIncursionDamageTaken(uint ship, int ledger)
+        {
+            if (ledger > 0)
+                _incursionDamageTaken[ship] = ledger;
+            else
+                _incursionDamageTaken.Remove(ship);
+        }
+
         /// <summary>Called by both ship damage paths: a player ship's damage to an incursion ship counts toward its kill.</summary>
         private static void RecordIncursionDamage(uint attacker, uint target, int amount)
         {
             if (amount <= 0)
                 return;
+
+            // Incursion damage the ship restored before this hit is no longer outstanding.
+            if (_incursionDamageTaken.TryGetValue(target, out var outstanding))
+                SetIncursionDamageTaken(target, IncursionRules.OutstandingDamage(outstanding, GetMissingPools(target) - amount));
+
 
             if (!GetIsPC(attacker))
             {
@@ -781,11 +803,23 @@ namespace SWLOR.Game.Server.Service
             _incursionDirty = true;
         }
 
-        /// <summary>Called when a module repairs a ship: repairing an ally in an incursion area counts.</summary>
+        /// <summary>
+        /// Called when a module repairs a ship. Any repair retires the incursion damage it restores, the ship's own included;
+        /// only repairing an ally in an incursion area earns contribution.
+        /// </summary>
         private static void RecordIncursionRepair(uint source, uint repaired, int restored)
         {
+            if (restored <= 0 || !_incursionDamageTaken.TryGetValue(repaired, out var ledger))
+                return;
+
+            // Only damage incursion ships dealt counts, and each point of it only once. Damage restored since it was dealt
+            // (by recharge, a dock or any repair) is no longer outstanding.
+            ledger = IncursionRules.OutstandingDamage(ledger, GetMissingPools(repaired) + restored);
+            var credited = IncursionRules.CreditableRepair(ledger, restored);
+            SetIncursionDamageTaken(repaired, ledger - credited);
+
             var incursion = IncursionRecord.Active;
-            if (incursion == null || restored <= 0 || !GetIsPC(source) || !GetIsPC(repaired))
+            if (credited <= 0 || incursion == null || !GetIsPC(source) || !GetIsPC(repaired))
                 return;
 
             var ship = GetFiringShip(source);
@@ -796,12 +830,6 @@ namespace SWLOR.Game.Server.Service
             if (area == null)
                 return;
 
-            // Only damage incursion ships dealt counts, and each point of it only once.
-            var credited = IncursionRules.CreditableRepair(_incursionDamageTaken.GetValueOrDefault(repaired), restored);
-            if (credited <= 0)
-                return;
-
-            _incursionDamageTaken[repaired] -= credited;
             var aboard = GetShipCrewPlayers(ship);
             var points = IncursionRules.RepairPoints(credited, area.Tier);
             foreach (var player in aboard)

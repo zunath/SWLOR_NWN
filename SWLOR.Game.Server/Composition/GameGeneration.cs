@@ -100,7 +100,9 @@ namespace SWLOR.Game.Server.Composition
         /// uninstalled until the game's boot handlers enable them, at the same moments as on the native entry.
         /// When the host says the module has already loaded (<see cref="IHostLifecycle.ModuleLoaded"/>, a reload), the
         /// server also takes the module-load signal the engine will not send again and runs the reload bootstrap (the rerun
-        /// boot handlers, then the adoption steps), and the activation is logged with how long it took and its slowest steps:
+        /// boot handlers, then the adoption steps and the carried state), then restores the online players (their restore steps,
+        /// windows and conversations, <see cref="IGenerationBoot.RestorePlayers"/>), and the activation is logged with how long it
+        /// took and its slowest steps:
         /// it is the new build's part of the reload pause. With hot reload on, the adopted-state and world digests are logged
         /// before the pause ends and the cache digests at the next frame.
         /// </summary>
@@ -180,11 +182,11 @@ namespace SWLOR.Game.Server.Composition
         }
 
         /// <summary>
-        /// On the engine thread, when a reload replaces this build and hot reload is on: logs the adopted-state and world digests
-        /// the next build's must equal, then runs the carry steps, which leave on the module what the next build's adoption
-        /// steps cannot read back from the world. The old build's dispose then stops its timers and queues
-        /// (<see cref="IServerTeardown"/>), and the host drops its pending closures. P4-15 saves online players' state and closes
-        /// windows and conversations here.
+        /// On the engine thread, when a reload replaces this build and hot reload is on: runs the online players' quiescence steps
+        /// and takes their windows and conversations down (<see cref="IGenerationBoot.QuiescePlayers"/>, P4-15), logs the
+        /// adopted-state and world digests the next build's must equal, then runs the carry steps, which leave on the module what
+        /// the next build's adoption steps cannot read back from the world, and the carried runtime state. The old build's dispose
+        /// then stops its timers and queues (<see cref="IServerTeardown"/>), and the host drops its pending closures.
         /// </summary>
         public ValueTask BeginQuiescenceAsync(CancellationToken cancellationToken)
         {

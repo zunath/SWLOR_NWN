@@ -40,12 +40,62 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             public void TransferOwnershipToServer() => swigCMemOwn = false;
         }
 
+        /// <summary>The fake client; its native memory can be handed to the server so it outlives the build that made it.</summary>
+        private sealed class WorldPlayerClient : CNWSPlayer
+        {
+            public WorldPlayerClient(uint clientId) : base(clientId) { }
+            public void TransferOwnershipToServer() => swigCMemOwn = false;
+        }
+
+        /// <summary>
+        /// Leaves the player online when this generation of the build is unloaded by a hot reload: the fake client's native memory
+        /// is no longer freed by this generation's wrapper (whose finalizer would otherwise free it while the server still lists
+        /// it). The next generation takes the player back with <see cref="Reattach"/>; its dispose takes the client off the list
+        /// (the client's few hundred bytes are then not freed, a test-only leak).
+        /// </summary>
+        public void KeepAcrossReloads()
+        {
+            (_client as WorldPlayerClient)?.TransferOwnershipToServer();
+        }
+
         private unsafe PlayerAbilityFixture(uint creature)
         {
             Creature = creature;
             Id = GetObjectUUID(creature);
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature).AsNWSCreature();
             _wasPlayer = native.m_bPlayerCharacter;
+        }
+
+        private PlayerAbilityFixture(uint creature, int wasPlayer)
+        {
+            Creature = creature;
+            Id = GetObjectUUID(creature);
+            _wasPlayer = wasPlayer;
+        }
+
+        /// <summary>The id the fake client is registered under in the server's player list.</summary>
+        public uint ClientId { get; private set; }
+
+        /// <summary>The creature's native player flag before the fixture installed the identity, restored on dispose.</summary>
+        public int WasPlayer => _wasPlayer;
+
+        /// <summary>
+        /// The fixture of a player an earlier generation of the build created and left online (a scenario that spans hot reloads,
+        /// <c>HotReloadPlayersEngineTests</c>): its fake client is still registered under <paramref name="clientId"/>, so disposing
+        /// this releases the client, the player flag and the record as the original fixture would have.
+        /// </summary>
+        public static PlayerAbilityFixture Reattach(uint creature, uint clientId, int wasPlayer)
+        {
+            var fixture = new PlayerAbilityFixture(creature, wasPlayer) { ClientId = clientId };
+            var client = NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByPlayerId(clientId);
+            if (client != null && client.Pointer != nint.Zero)
+            {
+                fixture._client = client;
+                fixture._clientRegistrationAttempted = true;
+            }
+
+            fixture._recordWriteAttempted = true;
+            return fixture;
         }
 
         /// <summary>
@@ -95,7 +145,8 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             uint clientId = 1;
             while (server.GetClientObjectByPlayerId(clientId) is { } existing && existing.Pointer != nint.Zero)
                 clientId++;
-            _client = new CNWSPlayer(clientId);
+            _client = new WorldPlayerClient(clientId);
+            ClientId = clientId;
             afterStage?.Invoke(this, IdentitySetupStage.ClientCreated);
             _client.SetGameObject(server.GetGameObject(Creature).AsNWSObject());
             _client.m_oidPCObject = Creature;

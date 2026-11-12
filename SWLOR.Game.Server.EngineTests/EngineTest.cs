@@ -30,6 +30,15 @@ namespace SWLOR.Game.Server.EngineTests
         private const string ReportFileName = "engine-test-results.json";
         private const float TimeoutGraceSeconds = 10f;
 
+        /// <summary>
+        /// Set to 1 on the module by a scenario that spans hot reloads: the run keeps its instanced arena (and what the scenario left
+        /// in it) and the next generation's run reuses it (<see cref="ArenaVariable"/>). The scenario's last phase clears it.
+        /// </summary>
+        public const string KeepArenaVariable = "SWLOR_ENGINE_TEST_KEEP_ARENA";
+
+        /// <summary>The kept arena, on the module, for the next generation's run.</summary>
+        public const string ArenaVariable = "SWLOR_ENGINE_TEST_ARENA";
+
         private static bool _hasRun;
         private static bool _suiteAborted;
 
@@ -50,6 +59,12 @@ namespace SWLOR.Game.Server.EngineTests
             Log.Write(LogGroup.EngineTest, $"Suite abort requested: {reason}", true);
         }
 
+        /// <summary>
+        /// Schedules the suite after the module loads. A hot reload reruns it in the new build (it only reads settings and starts a
+        /// timer, <see cref="BootReload.Rerun"/>), so a server that reloads with engine tests on runs the filtered suite again in each
+        /// generation: the <c>HotReloadPlayers</c> scenario checks its player there (P4-15). Reload is off in the normal sweep.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ScheduleEngineTests()
         {
@@ -176,7 +191,14 @@ namespace SWLOR.Game.Server.EngineTests
                 // case runs in the real starting area, which is never destroyed.
                 if (arenaIsInstanced && GetIsObjectValid(arena))
                 {
-                    DestroyArea(arena);
+                    // A scenario that spans hot reloads keeps its player in the arena for the next generation's run.
+                    if (GetLocalInt(GetModule(), KeepArenaVariable) == 1)
+                        SetLocalObject(GetModule(), ArenaVariable, arena);
+                    else
+                    {
+                        DeleteLocalObject(GetModule(), ArenaVariable);
+                        DestroyArea(arena);
+                    }
                 }
             }
 
@@ -256,7 +278,8 @@ namespace SWLOR.Game.Server.EngineTests
                 : GetResRef(startingArea);
 
             var isInstanced = true;
-            var arena = CreateArea(arenaResref);
+            var kept = GetLocalObject(GetModule(), ArenaVariable);
+            var arena = GetIsObjectValid(kept) ? kept : CreateArea(arenaResref);
             if (!GetIsObjectValid(arena))
             {
                 Console.WriteLine($"{ConsolePrefix} WARNING - Could not instance arena from resref '{arenaResref}'. Falling back to the module starting area.");

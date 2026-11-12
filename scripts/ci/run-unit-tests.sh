@@ -267,6 +267,7 @@ run_pass() {
 # SWLOR.Game.Host.Tests (RealBuildReloadTests) reloads the Release build of the game, copied from its build output, with
 # the Release engine fakes inside each generation; neither is a project reference of the test project. A Release solution
 # build leaves both; any other run builds them here. The test fails, naming the build command, when they are missing.
+# Returns non-zero when a build fails, so the host tests never run against an older output.
 ensure_release_game_build() {
     if [ "$CONFIGURATION" = Release ] &&
        [ -f SWLOR.Game.Server/bin/Release/net10.0/SWLOR.Game.Server.dll ] &&
@@ -274,17 +275,26 @@ ensure_release_game_build() {
         return 0
     fi
     echo "::group::dotnet build SWLOR.Game.Server and SWLOR.NWN.API.Testing (Release, for SWLOR.Game.Host.Tests)"
-    local project
+    local project code=0
     for project in SWLOR.Game.Server/SWLOR.Game.Server.csproj SWLOR.NWN.API.Testing/SWLOR.NWN.API.Testing.csproj; do
-        dotnet build "$project" -c Release -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly || echo "Release build of $project failed."
+        if ! dotnet build "$project" -c Release -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly; then
+            echo "Release build of $project failed."
+            code=1
+        fi
     done
     echo "::endgroup::"
+    return "$code"
 }
 
 failed=()
 summary_rows=()
 for project in "${PROJECTS[@]}"; do
-    [ "$project" = SWLOR.Game.Host.Tests ] && ensure_release_game_build
+    if [ "$project" = SWLOR.Game.Host.Tests ] && ! ensure_release_game_build; then
+        echo "$project: not run, the Release build it loads failed"
+        summary_rows+=("| $project | - | not run: the Release build of the game or the engine fakes failed | - |")
+        failed+=("$project (Release build)")
+        continue
+    fi
     exclusions="$(exclusions_for "$project")"
     EXCLUDED_CLASSES="$(grep -v '\.' <<< "$exclusions" || true)"
     uninstrumented="$(uninstrumented_for "$project")"

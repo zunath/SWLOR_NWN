@@ -587,7 +587,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(94f).SetHeight(24f).SetMargin(0f)
                                 .BindIsVisible(Bind<GuiBindingList<bool>>(name + "Visible"))
                                 .BindIsEncouraged(selected)
+                                .SetTooltip("Right-click an accessory color to restore its default or outfit color.")
                                 .BindOnClicked(model => model.OnClickHeadColorSwatch(copy))
+                                .BindOnMouseDown(model => model.OnMouseDownHeadColorSwatch(copy))
                                 .AddDrawList(list =>
                                 {
                                     list.AddText(label => label

@@ -202,6 +202,23 @@ class HeadPreviewTests(unittest.TestCase):
         native = np.array([96, 120, 144]) / 255
         self.assertLess(np.linalg.norm(subdued[metal] - native), np.linalg.norm(original[metal] - native))
 
+    def test_eye_contour_blends_only_skin_and_tattoo_two(self):
+        from appearance_previews.heads import bake_head
+        palette = np.zeros((2048, 256, 4), np.uint8)
+        palette[..., 3] = 255
+        palette[-176:, :, 0] = 200
+        palette[-352:-176, :, 1] = 180
+        palette[-1232:-1056, :, 2] = 160
+        Image.fromarray(palette).save(self.palette)
+        pixels = np.zeros((2, 2, 3), np.uint8)
+        pixels[..., 0] = 128
+        pixels[..., 1] = [[0, 244], [38, 244]]
+        Image.fromarray(pixels).save(self.tint)
+        Image.new("L", (2, 2), 128).save(self.mask)
+        rgba, _ = bake_head(self.tint, self.palette, "parameter float eyeContour 1\n", {6: self.mask}, {})
+        expected = [[(99, 0, 80), (99, 0, 80)], [(0, 180, 0), (99, 0, 80)]]
+        np.testing.assert_allclose(rgba[..., :3], expected, atol=1)
+
     def test_hair_only_mask_preserves_the_face(self):
         from appearance_previews.heads import bake_head
         rgba, _ = bake_head(self.tint, self.palette,

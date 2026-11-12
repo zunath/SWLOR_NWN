@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -88,6 +89,23 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return MaterialsByModel.TryGetValue(modelResref, out var materials)
                 ? materials
                 : Array.Empty<TintMapMaterialDefinition>();
+        }
+
+        internal static HashSet<string> GetHeadMaterialResrefs(TintMapLayerType layer)
+        {
+            var materials = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var (model, definitions) in MaterialsByModel)
+            {
+                if (!HeadTintChannels.IsHeadModel(model))
+                    continue;
+
+                foreach (var definition in definitions)
+                {
+                    if (definition.Layers.Contains(layer))
+                        materials.Add(definition.Resref);
+                }
+            }
+            return materials;
         }
 
         public static bool AreEquipmentMaterialSlotsEquivalent(

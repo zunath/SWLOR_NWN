@@ -597,7 +597,10 @@ public class AppearanceEditorLayoutTests
             ReadProperty<string>(items[2], "IsEnabledBindName").Should().Be(name + "Custom");
             ReadProperty<string>(items[2], "ColorBindName").Should().Be(name + "Tint");
             ReadProperty<string>(items[3], "IsEnabledBindName").Should().Be(name + "Selected");
-            AssertSingleHandler(swatch, "click", nameof(AppearanceEditorViewModel.OnClickHeadColorSwatch),
+            swatch.Events.Keys.Should().BeEquivalentTo("click", "mousedown");
+            AssertHandler(swatch.Events["mousedown"], nameof(AppearanceEditorViewModel.OnMouseDownHeadColorSwatch),
+                (typeof(int), side == "Left" ? 0 : 1));
+            AssertHandler(swatch.Events["click"], nameof(AppearanceEditorViewModel.OnClickHeadColorSwatch),
                 (typeof(int), side == "Left" ? 0 : 1));
         }
         Walk(main).Where(widget => widget.Id?.Contains("_swatch_") == true).Should().HaveCount(2);

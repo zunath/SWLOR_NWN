@@ -26,8 +26,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshHeadColorSwatches()
         {
-            // Every list binding has the same row count, including the empty right-hand cell
-            // when a head has an odd number of channels. Unused channels have no list row.
+            // NUI retains the largest published row count. Bind visibility for every
+            // retained row, including the empty right cell when the channel count is odd.
+            var retainedRows = HeadSwatchLeftLabel?.MaxSize ?? 0;
             var pendingLabels = new Dictionary<string, GuiBindingList<string>>();
             foreach (var side in new[] { "Left", "Right" })
             {
@@ -89,6 +90,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Set(tints, prefix + "Tint");
                 Set(customs, prefix + "Custom");
                 Set(selected, prefix + "Selected");
+                while (visible.Count < retainedRows)
+                    visible.Add(false);
                 Set(visible, prefix + "Visible");
                 pendingLabels[side] = labels;
             }
@@ -96,6 +99,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // The left labels drive row count; publish them after both columns are ready.
             Set(pendingLabels["Left"], nameof(HeadSwatchLeftLabel));
         }
+
+        public Action OnMouseDownHeadColorSwatch(int column) => () =>
+        {
+            if (!IsAppearanceSelected || column is < 0 or > 1 ||
+                JsonGetInt(JsonObjectGet(NuiGetEventPayload(), "mouse_btn")) != 2)
+                return;
+
+            var row = NuiGetEventArrayIndex();
+            if (row < 0 || row >= (_appearanceColorLayers.Count + 1) / 2)
+                return;
+
+            var index = row * 2 + column;
+            if (index >= _appearanceColorLayers.Count)
+                return;
+
+            var layer = _appearanceColorLayers[index];
+            if (TintMapVariable.IsCreatureColorLayer(layer))
+                return;
+
+            FlushPendingPickerColor();
+            CommitCustomTintComponents();
+            TintMapService.ResetHeadColorToInheritance(_target, layer);
+            OnClickBodySwatch(index)();
+        };
 
         public Action OnClickHeadColorSwatch(int column) => () =>
         {

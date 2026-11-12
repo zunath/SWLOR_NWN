@@ -72,6 +72,8 @@ Head accessory overrides remain on the creature in `TMH_` state. Until an
 override is saved, Cloth, Leather and Metal use the equipped chest armor's
 global dyes, matching native NWN. With no armor, they use the creature default.
 Changing the outfit does not replace an explicit head palette or RGB choice.
+Right-click an accessory swatch to clear the saved choice and restore the
+authored default or outfit dye. Switching heads leaves inherited colors unset.
 The Appearance tab displays the four native channels and only the additional
 Cloth, Leather and Metal channels used by the current head. Labelled swatches
 pack into two columns, with at most five rows in the existing preview band.
@@ -912,7 +914,7 @@ authoritative source checksum.
 
 The catalog currently covers 1,596 normal-body models across 184 robe styles.
 Phenotype IDs are a native byte, so generated IDs are reserved in the range
-34ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“255 and are never recycled. Normal body type 0 covers the current authored
+34-255 and are never recycled. Normal body type 0 covers the current authored
 NPC corpus; large and mounted body types retain the native fallback. Reserved
 rows are internal rendering metadata, not character-creation choices.
 

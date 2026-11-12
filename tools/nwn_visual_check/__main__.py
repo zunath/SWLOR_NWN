@@ -137,6 +137,8 @@ def main(argv=None):
                 if owned.exists():
                     cleanup_state.retain_profile(owned,offline_client.retained_profile_pid(owned))
                 raise RuntimeError('Owned process control retained; preserve profile for shutdown retry')
+            if 'engine_log_copy_failure' in manifest:
+                return
             if owned.exists():
                 cleanup_state.remove_owned_profile(owned)
             manifest['profile_removed']=True
@@ -161,7 +163,11 @@ def main(argv=None):
                    profile.copy_input(path,output/path.name))
         if (owned/'isolation.json').exists():
             finish('isolation_copy_failure',lambda: profile.copy_input(owned/'isolation.json',output/'isolation.json'))
-        finish('shutdown_retry_failure',offline_client.retry_cleanup_before_exit)
+        preserved = owned if 'engine_log_copy_failure' in manifest else None
+        if preserved is not None:
+            manifest['retained_engine_log_profile'] = str(preserved)
+            finish('engine_log_recovery_marker_failure',lambda: (preserved / profile.ENGINE_LOG_RECOVERY).touch())
+        finish('shutdown_retry_failure',lambda: offline_client.retry_cleanup_before_exit(preserve_profile=preserved))
         finish('cleanup_failure',remove_profile)
         finish('isolation_refresh_failure',refresh_isolation)
         finish('manifest_failure',lambda: (output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf8'))

@@ -84,6 +84,12 @@ def bake_head(source, palette, text, inputs, defaults):
     u, v = np.meshgrid((np.arange(width) + 0.5) / width, 1 - (np.arange(height) + 0.5) / height)
     loaded = {slot: open_texture(path) for slot, path in inputs.items()}
     sampled = {slot: sample(image, u, v) for slot, image in loaded.items()}
+    if params.get("eyeContour", 0) > 0.5 and 6 in sampled:
+        coverage = np.clip(sampled[6][..., 0], 0, 1)[..., None]
+        skin, _ = colors(shade, np.zeros_like(layer), palette, defaults, params)
+        tattoo, _ = colors(shade, np.full_like(layer, 9), palette, defaults, params)
+        eligible = ((layer == 0) | (layer == 9))[..., None]
+        rgb = np.where(eligible, skin * (1 - coverage) + tattoo * coverage, rgb)
     mode = params.get("lipMode", 0)
     if mode > 0.5:
         lu = (u - params.get("lipU0", 0)) / max(params.get("lipUSpan", 1), 1e-6)
@@ -104,7 +110,7 @@ def bake_head(source, palette, text, inputs, defaults):
         coverage *= eligible
         base, _ = colors(shade, np.where(layer == 7, 0, layer), palette, defaults, params)
         lips, _ = colors(lip_shade, np.full(layer.shape, 7), palette, defaults, params)
-        rgb = base * (1 - coverage[..., None]) + lips * coverage[..., None]
+        rgb = np.where(eligible[..., None], base * (1 - coverage[..., None]) + lips * coverage[..., None], rgb)
     if params.get("detailDiffuse", 0) > 0.5 and 8 in sampled and 0 in sampled:
         detail = sampled[8][..., 0, None]
         detail_color = sampled[0][..., :3].copy()

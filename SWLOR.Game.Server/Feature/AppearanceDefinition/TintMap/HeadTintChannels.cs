@@ -19,8 +19,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         };
 
         public static bool IsHead(TintMapMaterialSelection selection) =>
-            !selection.UsesItemColors &&
-            selection.ModelResref.IndexOf("_head", StringComparison.OrdinalIgnoreCase) == 4;
+            !selection.UsesItemColors && IsHeadModel(selection.ModelResref);
+
+        internal static bool IsHeadModel(string modelResref) =>
+            modelResref.IndexOf("_head", StringComparison.OrdinalIgnoreCase) == 4;
 
         public static IReadOnlyList<TintMapLayerType> GetLayers(IEnumerable<TintMapMaterialSelection> selections)
         {

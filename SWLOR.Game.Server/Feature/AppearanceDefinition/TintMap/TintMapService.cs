@@ -448,14 +448,34 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 if (GetLocalInt(creature, stateVariable) > 0)
                     continue;
 
+                // Carry legacy explicit material edits, leaving defaults and outfit dyes inherited.
                 var colors = selections.Where(selection => selection.Material.Layers.Contains(layer))
-                    .Select(selection => GetEffectiveColor(creature, selection, layer))
-                    .Select(color => color.CustomColor?.ToStoredValue() ?? color.PaletteColorId + 1)
+                    .Select(selection => GetSavedColor(selection, layer, includeGlobalColor: false))
                     .Distinct().ToList();
-                if (colors.Count == 1)
+                if (colors.Count == 1 && colors[0] > 0)
                     SetLocalInt(creature, stateVariable, colors[0]);
             }
             SavePlayerOverrides(creature);
+        }
+
+        public static void ResetHeadColorToInheritance(uint creature, TintMapLayerType layer)
+        {
+            if (!GetIsObjectValid(creature) || TintMapVariable.IsCreatureColorLayer(layer))
+                return;
+
+            var headMaterials = TintMapMaterialRegistry.GetHeadMaterialResrefs(layer);
+            var variables = GetItemTintOverrides(creature).Keys
+                .Where(name => TintMapVariable.TryParse(name, out var material, out var savedLayer) &&
+                               savedLayer == layer && headMaterials.Contains(material))
+                .ToList();
+            variables.Add(TintMapVariable.GetHeadColorStateName(layer));
+
+            foreach (var variable in variables)
+                DeleteLocalInt(creature, variable);
+
+            RemoveDroidOverrides(creature, variables);
+            SavePlayerOverrides(creature);
+            ApplyCurrentColorsAndPublish(creature);
         }
 
         private static void SetStoredColor(

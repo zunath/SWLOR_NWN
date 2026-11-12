@@ -28,7 +28,8 @@ public class HeadTintChannelsTests
         }
         var refresh = type.GetMethod("RefreshHeadColorSwatches", BindingFlags.Instance | BindingFlags.NonPublic)!;
         var layersField = type.GetField("_appearanceColorLayers", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        foreach (var count in new[] { 4, 7, 10, 5, 4 })
+        var retainedRows = 0;
+        foreach (var count in new[] { 4, 7, 10, 5, 4, 10 })
         {
             var layers = HeadTintChannels.GetLayers(new[] { Selection("pfh0_head327", false,
                 Enum.GetValues<TintMapLayerType>()) }).Take(count).ToArray();
@@ -38,12 +39,16 @@ public class HeadTintChannelsTests
             var rows = (count + 1) / 2;
             editor.HeadSwatchLeftLabel.Should().HaveCount(rows);
             editor.HeadSwatchRightLabel.Should().HaveCount(rows);
-            editor.HeadSwatchLeftVisible.Should().OnlyContain(value => value);
-            editor.HeadSwatchRightVisible.Last().Should().Be(count % 2 == 0);
+            retainedRows = Math.Max(retainedRows, rows);
+            editor.HeadSwatchLeftVisible.Should().Equal(Enumerable.Range(0, retainedRows).Select(row => row * 2 < count));
+            editor.HeadSwatchRightVisible.Should().Equal(Enumerable.Range(0, retainedRows).Select(row => row * 2 + 1 < count));
+            // The headless view model does not publish to NUI. Mirror the maximum the
+            // real binding retains after a successful publication.
+            editor.HeadSwatchLeftLabel.MaxSize = retainedRows;
             editor.HeadSwatchRightLabel.Last().Should().Be(count % 2 == 0
                 ? HeadTintChannels.GetLabel(layers[^1]).Replace(" Color", "") : "");
             foreach (var side in new[] { "Left", "Right" })
-                foreach (var suffix in new[] { "Texture", "Region", "Tint", "Custom", "Selected", "Visible" })
+                foreach (var suffix in new[] { "Texture", "Region", "Tint", "Custom", "Selected" })
                     ((System.Collections.IEnumerable)type.GetProperty($"HeadSwatch{side}{suffix}")!.GetValue(editor)!)
                         .Cast<object>().Count().Should().Be(rows);
             (editor.HeadSwatchLeftSelected.Count(value => value) + editor.HeadSwatchRightSelected.Count(value => value))

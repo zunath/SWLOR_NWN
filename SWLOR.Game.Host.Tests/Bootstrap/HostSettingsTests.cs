@@ -78,9 +78,14 @@ public class HostSettingsTests
     [Test]
     public void The_process_environment_is_read_against_the_hosts_own_directory()
     {
+        // Compared with an explicit read of the same environment, so a SWLOR_GAME_ASSEMBLY set on the machine changes both sides.
+        var expected = HostSettings.Read(Environment.GetEnvironmentVariable, Path.GetDirectoryName(typeof(HostSettings).Assembly.Location)!);
+
         var settings = HostSettings.FromEnvironment();
 
-        Path.GetDirectoryName(Path.GetDirectoryName(settings.GameAssemblyPath))
-            .Should().Be(Path.GetDirectoryName(typeof(HostSettings).Assembly.Location));
+        settings.GameAssemblyPath.Should().Be(expected.GameAssemblyPath);
+        settings.Collectible.Should().Be(expected.Collectible);
+        settings.IsProduction.Should().Be(expected.IsProduction);
+        settings.RedisHost.Should().Be(expected.RedisHost);
     }
 }

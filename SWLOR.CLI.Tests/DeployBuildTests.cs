@@ -134,12 +134,14 @@ public sealed class DeployBuildTests
         });
     }
 
-    [Test]
-    public async Task TheNativeEntryKeepsTheGameInTheDotnetFolderAndNeedsNoHost()
+    [TestCase("SWLOR_DOTNET_ENTRY=native")]
+    [TestCase("SWLOR_DOTNET_ENTRY=\"native\"")]
+    [TestCase("SWLOR_DOTNET_ENTRY= 'Native' ")]
+    public async Task TheNativeEntryKeepsTheGameInTheDotnetFolderAndNeedsNoHost(string entryLine)
     {
         Directory.CreateDirectory(Path.Combine(_root, "debugserver"));
         File.WriteAllText(Path.Combine(_root, "debugserver/swlor.env"),
-            "TEST=true\nSWLOR_DOTNET_ENTRY=native\nNWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Host\n");
+            $"TEST=true\n{entryLine}\nNWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Host\n");
         Directory.Delete(_hostOutput, true);
 
         var result = await Deploy();

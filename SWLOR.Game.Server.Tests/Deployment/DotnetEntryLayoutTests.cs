@@ -100,12 +100,19 @@ public class DotnetEntryLayoutTests
         "NWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Server \nNWNX_DOTNET_ENTRYPOINT=SWLOR.Game.Server.Core.ServerManager\n" +
         "NWNX_DOTNET_METHOD=Bootstrap\n";
 
+    private const string ExactNativeLines =
+        "NWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Server\nNWNX_DOTNET_ENTRYPOINT=SWLOR.Game.Server.Core.ServerManager\n" +
+        "NWNX_DOTNET_METHOD=Bootstrap\n";
+
     private const string HostLines =
         "NWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Host\nNWNX_DOTNET_ENTRYPOINT=SWLOR.Game.Host.Bootstrap.NativeBootstrap\n" +
         "NWNX_DOTNET_METHOD=Initialize\n";
 
     [TestCase("native", NativeLines, false, "a native server whose env file never named an entry is left as it is")]
-    [TestCase("native", "SWLOR_DOTNET_ENTRY=native\n" + NativeLines, false, "a native server that names its entry needs nothing")]
+    [TestCase("native", "SWLOR_DOTNET_ENTRY=native\n" + ExactNativeLines, false,
+        "a native server that names its entry and has its lines needs nothing")]
+    [TestCase("native", "SWLOR_DOTNET_ENTRY=native\n" + HostLines, true,
+        "a server that names the native entry but still points NWNX at the host gets the native lines")]
     [TestCase("native", "SWLOR_DOTNET_ENTRY=host\n" + HostLines, true, "a server switched back from the host gets the native lines again")]
     [TestCase("host", NativeLines, true, "a server switched to the host gets the host lines")]
     [TestCase("host", "SWLOR_DOTNET_ENTRY=host\n" + HostLines, false, "a host server with the host lines needs nothing")]

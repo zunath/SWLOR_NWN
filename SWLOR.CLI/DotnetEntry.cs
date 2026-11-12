@@ -79,7 +79,7 @@ namespace SWLOR.CLI
                     if (!line.StartsWith(prefix, StringComparison.Ordinal))
                         continue;
 
-                    value = line.Substring(prefix.Length).Trim();
+                    value = Unquote(line.Substring(prefix.Length).Trim());
                     break;
                 }
             }
@@ -90,6 +90,15 @@ namespace SWLOR.CLI
                 "native" => Native,
                 _ => throw new InvalidOperationException($"{envPath} sets {Variable}={value}; use host or native.")
             };
+        }
+
+        // Docker Compose reads a value in matching single or double quotes as the text inside them.
+        private static string Unquote(string value)
+        {
+            if (value.Length >= 2 && (value[0] == '"' || value[0] == '\'') && value[^1] == value[0])
+                return value.Substring(1, value.Length - 2).Trim();
+
+            return value;
         }
     }
 }

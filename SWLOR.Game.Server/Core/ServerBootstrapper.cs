@@ -79,11 +79,33 @@ namespace SWLOR.Game.Server.Core
             var boot = _hostedBoot ?? throw new InvalidOperationException("The server was not booted by the host.");
             try
             {
-                _container.Resolve<IServerTeardown>().Run();
+                if (_container.IsBuilt)
+                    _container.Resolve<IServerTeardown>().Run();
+                else
+                    ReleasePartialBoot(new ServerStaticState());
             }
             finally
             {
                 global::NWN.Core.NWNCore.Init(boot.HostClosures);
+            }
+        }
+
+        /// <summary>
+        /// The clean-up of a boot that stopped before the container was built: the steps before it only registered the
+        /// loggers and set the script execution provider (<c>InitializeSWLORSystems</c>), so those are let go of.
+        /// </summary>
+        public static void ReleasePartialBoot(IServerStaticState state)
+        {
+            if (state == null)
+                throw new ArgumentNullException(nameof(state));
+
+            try
+            {
+                state.FlushLogs();
+            }
+            finally
+            {
+                state.ClearScriptExecutionProvider();
             }
         }
 

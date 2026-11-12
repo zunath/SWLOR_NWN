@@ -798,9 +798,9 @@ dotnet_entry_env_required()
             tail -n 1 |
             tr -d '\r\n[:space:]'
     )"
-    if [[ "$SERVER_DOTNET_ENTRY" == native &&
-          ( -z "$configured_entry" || "$configured_entry" == native ) ]]
-    then
+    # A native server whose env file never named an entry keeps its lines exactly as
+    # they are; one that names an entry gets every line checked.
+    if [[ "$SERVER_DOTNET_ENTRY" == native && -z "$configured_entry" ]]; then
         return 1
     fi
 

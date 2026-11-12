@@ -26,5 +26,10 @@ namespace SWLOR.Game.Server.Core
         {
             ScriptExecutionProvider.SetProvider(null);
         }
+
+        public void ReleaseFrameworkTypeCaches()
+        {
+            TypeDescriptorCaches.ReleaseCollectibleTypes();
+        }
     }
 }

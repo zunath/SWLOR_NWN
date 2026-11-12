@@ -39,6 +39,9 @@ namespace SWLOR.Game.Server.Core
             Step(_processEvents.UnsubscribeAll, failures);
             Step(_staticState.ClearScriptExecutionProvider, failures);
 
+            // Last: nothing after it may ask System.ComponentModel about the build's types again.
+            Step(_staticState.ReleaseFrameworkTypeCaches, failures);
+
             if (failures.Count == 1)
                 throw failures[0];
             if (failures.Count > 1)

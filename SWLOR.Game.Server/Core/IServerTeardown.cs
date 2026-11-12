@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Core
         /// <summary>
         /// Runs every step, in order: cancel the scheduler timers and queue, drop the <c>NwTask</c> queue, run the
         /// <c>app_shutdown</c> clean-up (combat recorder files closed, then logs flushed), remove the process-wide event
-        /// subscriptions, clear the script execution provider. A step that throws does not stop the later ones; the
-        /// exceptions are rethrown together afterwards.
+        /// subscriptions, clear the script execution provider, release the build's types from the framework's type caches.
+        /// A step that throws does not stop the later ones; the exceptions are rethrown together afterwards.
         /// </summary>
         void Run();
     }

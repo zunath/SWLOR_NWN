@@ -47,6 +47,29 @@ public class HostRedisConnectionSourceTests
     }
 
     [Test]
+    public void A_later_open_while_the_connection_is_down_waits_for_it_to_reconnect()
+    {
+        var connects = 0;
+        var multiplexer = FakeMultiplexer.ConnectedAfter(0);
+        var delays = new List<int>();
+        var source = new HostRedisConnectionSource(() => "redis", _ =>
+        {
+            connects++;
+            return multiplexer;
+        }, delays.Add);
+        source.Open();
+        delays.Clear();
+
+        // Down for the next three checks: the one that finds it down, then two waits.
+        FakeMultiplexer.DisconnectFor(multiplexer, 3);
+        var again = source.Open();
+
+        again.Should().BeSameAs(multiplexer);
+        connects.Should().Be(1, "the same connection reconnects by itself");
+        delays.Should().Equal(100, 100);
+    }
+
+    [Test]
     public void The_source_needs_its_parts()
     {
         var withoutEndpoint = () => new HostRedisConnectionSource(null!);
@@ -69,6 +92,9 @@ public class HostRedisConnectionSourceTests
             ((FakeMultiplexer)(object)proxy)._checksUntilConnected = checks;
             return proxy;
         }
+
+        public static void DisconnectFor(IConnectionMultiplexer multiplexer, int checks) =>
+            ((FakeMultiplexer)(object)multiplexer)._checksUntilConnected = checks;
 
         protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
         {

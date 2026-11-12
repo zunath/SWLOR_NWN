@@ -8,7 +8,7 @@ namespace SWLOR.Game.Host.Services;
 /// The one Redis connection of the process, owned by the host so it outlives every game build. The first
 /// <see cref="Open"/> connects exactly as the game's own <c>RedisConnectionSource</c> does (same options, the same
 /// ten-minute wait and console lines), at the same moment (the game's <c>DBService.Connect</c> boot handler); every later
-/// call returns that connection. It is never disposed, like the native entry's.
+/// call returns that connection, waiting the same way while it is down. It is never disposed, like the native entry's.
 /// </summary>
 public sealed class HostRedisConnectionSource : IRedisConnectionSource
 {
@@ -40,22 +40,28 @@ public sealed class HostRedisConnectionSource : IRedisConnectionSource
     {
         lock (_gate)
         {
-            if (_connection is not null)
-                return _connection;
-
-            var options = new ConfigurationOptions
+            if (_connection is null)
             {
-                AbortOnConnectFail = false,
-                // NRediSearch decodes search results using the RESP2 array layout.
-                Protocol = RedisProtocol.Resp2,
-                EndPoints = { _endpoint() }
-            };
+                var options = new ConfigurationOptions
+                {
+                    AbortOnConnectFail = false,
+                    // NRediSearch decodes search results using the RESP2 array layout.
+                    Protocol = RedisProtocol.Resp2,
+                    EndPoints = { _endpoint() }
+                };
 
-            var multiplexer = _connect(options);
+                _connection = _connect(options);
+            }
+            else if (_connection.IsConnected)
+            {
+                return _connection;
+            }
 
+            // The first open, or a later one while the connection is down (it reconnects by itself): block until it is
+            // up, as the contract says.
             Console.WriteLine($"Waiting for database connection. If this takes longer than 10 minutes, there's a problem.");
             var stopwatch = Stopwatch.StartNew();
-            while (!multiplexer.IsConnected)
+            while (!_connection.IsConnected)
             {
                 if (stopwatch.Elapsed >= ConnectTimeout)
                     throw new TimeoutException($"Timed out after {ConnectTimeout} waiting for database connection.");
@@ -64,8 +70,7 @@ public sealed class HostRedisConnectionSource : IRedisConnectionSource
             }
             Console.WriteLine($"Database connection established.");
 
-            _connection = multiplexer;
-            return multiplexer;
+            return _connection;
         }
     }
 }

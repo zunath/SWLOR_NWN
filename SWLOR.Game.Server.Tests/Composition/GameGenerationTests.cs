@@ -68,15 +68,17 @@ public class GameGenerationTests
     private static GenerationActivation Activation(IHostServices services) => new(1, null, null, null, services);
 
     [Test]
-    public async Task Validation_runs_the_container_check_off_the_calling_thread()
+    public void Validation_runs_the_container_check_off_the_calling_thread()
     {
         var boot = new RecordingBoot();
         var generation = new GameGeneration(boot);
+        var caller = Environment.CurrentManagedThreadId;
 
-        await generation.ValidateAsync(CancellationToken.None);
+        // The calling thread stays blocked until validation is done, so the validation can only have run on another one.
+        generation.ValidateAsync(CancellationToken.None).AsTask().Wait();
 
         boot.Calls.Should().Equal("validate");
-        boot.ValidatedOnThread.Should().NotBe(0);
+        boot.ValidatedOnThread.Should().NotBe(0).And.NotBe(caller);
     }
 
     [Test]

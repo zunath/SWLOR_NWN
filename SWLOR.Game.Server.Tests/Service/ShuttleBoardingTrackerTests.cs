@@ -18,7 +18,7 @@ public sealed class ShuttleBoardingTrackerTests
         tracker.IsBoarding("p1", "1>2@1").Should().BeTrue();
         tracker.IsBoarding("p1", "1>4@1").Should().BeFalse();
         tracker.IsBoarding("p2", "1>2@1").Should().BeFalse();
-        tracker.GetPending().Should().Equal(("p1", "1>2@1"));
+        tracker.GetPending().Should().Equal(("p1", "1>2@1", false));
     }
 
     [Test]
@@ -58,6 +58,37 @@ public sealed class ShuttleBoardingTrackerTests
         tracker.IsBoarding("p1", "1>2@1").Should().BeFalse();
         tracker.GetPending().Should().BeEmpty();
         tracker.TryStartRetry("p1", Departure.AddMinutes(1), out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void APassengerTheFlightLandedWithoutIsFollowedUntilDelivered()
+    {
+        var tracker = new ShuttleBoardingTracker();
+        tracker.Start("p1", "1>2@1", Departure);
+        var arrival = Departure.AddMinutes(5);
+
+        tracker.StartDelivery("p1", "1>2@1", arrival);
+
+        tracker.IsDelivering("p1").Should().BeTrue();
+        tracker.IsBoarding("p1", "1>2@1").Should().BeFalse("the flight has landed; the passenger now goes to the destination");
+        tracker.GetPending().Should().Equal(("p1", "1>2@1", true));
+        tracker.TryStartRetry("p1", arrival.AddSeconds(1), out _).Should().BeFalse("the delivery jump gets time to load");
+        tracker.TryStartRetry("p1", arrival + ShuttleBoardingTracker.RetryInterval, out var attempt).Should().BeTrue();
+        attempt.Should().Be(2);
+
+        tracker.Clear("p1");
+        tracker.IsDelivering("p1").Should().BeFalse();
+    }
+
+    [Test]
+    public void BoardingPassengersAreNotDelivering()
+    {
+        var tracker = new ShuttleBoardingTracker();
+        tracker.Start("p1", "1>2@1", Departure);
+
+        tracker.IsDelivering("p1").Should().BeFalse();
+        tracker.IsDelivering("p2").Should().BeFalse();
+        tracker.GetPending().Should().Equal(("p1", "1>2@1", false));
     }
 
     [Test]

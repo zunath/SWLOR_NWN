@@ -7,7 +7,9 @@ namespace SWLOR.Game.Server.Service.ShuttleService
     /// <summary>
     /// Follows passengers from the moment they are booked onto a departing flight until they are
     /// actually standing in its shuttle. The boarding jump is a queued action that can be dropped,
-    /// so a passenger still outside the shuttle after the retry interval is sent again.
+    /// so a passenger still outside the shuttle after the retry interval is sent again. A passenger
+    /// still not aboard when the flight lands switches to delivery and is followed until they
+    /// reach the destination.
     /// </summary>
     public class ShuttleBoardingTracker
     {
@@ -21,6 +23,7 @@ namespace SWLOR.Game.Server.Service.ShuttleService
             public string FlightId { get; init; } = string.Empty;
             public DateTime LastAttemptUtc { get; set; }
             public int Attempts { get; set; }
+            public bool Delivering { get; set; }
         }
 
         private readonly Dictionary<string, PendingBoarding> _pending = new();
@@ -39,6 +42,21 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         }
 
         /// <summary>
+        /// Switches a passenger who never made it aboard to delivery at the destination after the
+        /// flight landed, recording the delivery jump as the first attempt.
+        /// </summary>
+        public void StartDelivery(string playerId, string flightId, DateTime now)
+        {
+            _pending[playerId] = new PendingBoarding
+            {
+                FlightId = flightId,
+                LastAttemptUtc = now,
+                Attempts = 1,
+                Delivering = true
+            };
+        }
+
+        /// <summary>
         /// Stops following the passenger: they reached the shuttle, left the server, or the ride ended.
         /// </summary>
         public void Clear(string playerId)
@@ -51,20 +69,30 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         /// </summary>
         public bool IsBoarding(string playerId, string flightId)
         {
-            return _pending.TryGetValue(playerId, out var pending) && pending.FlightId == flightId;
+            return _pending.TryGetValue(playerId, out var pending) && pending.FlightId == flightId && !pending.Delivering;
         }
 
         /// <summary>
-        /// Returns the passengers still outside their shuttle, with the flight each one is booked on.
+        /// Returns true if the passenger's flight landed without them and they are being delivered.
         /// </summary>
-        public IReadOnlyList<(string PlayerId, string FlightId)> GetPending()
+        public bool IsDelivering(string playerId)
         {
-            return _pending.Select(x => (x.Key, x.Value.FlightId)).ToList();
+            return _pending.TryGetValue(playerId, out var pending) && pending.Delivering;
+        }
+
+        /// <summary>
+        /// Returns the passengers still outside their shuttle or destination, with the flight each
+        /// one is booked on and whether they are being delivered after it landed.
+        /// </summary>
+        public IReadOnlyList<(string PlayerId, string FlightId, bool Delivering)> GetPending()
+        {
+            return _pending.Select(x => (x.Key, x.Value.FlightId, x.Value.Delivering)).ToList();
         }
 
         /// <summary>
         /// Returns true and records a new attempt when the passenger's last boarding jump is older
         /// than the retry interval. The returned attempt number counts the original jump as 1.
+        /// Applies to boarding and delivery jumps alike.
         /// </summary>
         public bool TryStartRetry(string playerId, DateTime now, out int attempt)
         {

@@ -176,7 +176,7 @@ public class ReloadDigestTests
         first.Select(line => line.Name).Should().OnlyHaveUniqueItems().And.Contain(new[]
         {
             "SWLOR.Game.Server.Domain.Foundation.CacheService.ItemNamesByResref",
-            "SWLOR.Game.Server.Domain.UI.GuiService._windowTemplates",
+            "SWLOR.Game.Server.Domain.UI.GuiService._windowTypesByKey",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawnTablesLoaded",
             "SWLOR.Game.Server.Domain.Crafting.CraftService._recipes",
             "SWLOR.Game.Server.Domain.Economy.GuildService._activeGuilds",
@@ -235,6 +235,7 @@ public class ReloadDigestTests
         var lines = ReloadDigests.Adopted(ScriptHandlerTestSupport.ServerContainer.ResolveHandlerOwner);
 
         lines.Select(line => line.Name.Substring(0, line.Name.LastIndexOf('.'))).Distinct().Should().Equal(
+            "SWLOR.Game.Server.Domain.Abilities.MimicryService",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService",
             "SWLOR.Game.Server.Domain.Economy.GuildService",
             "SWLOR.Game.Server.Domain.Space.SpaceService",

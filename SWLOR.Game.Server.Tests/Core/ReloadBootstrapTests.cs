@@ -228,6 +228,7 @@ public class ReloadBootstrapTests
             "SWLOR.Game.Server.Domain.Economy.GuildService.AdoptGuildTasks",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService.AdoptSpawns",
             "SWLOR.Game.Server.Domain.Foundation.MigrationService.CheckCharacterVersion",
+            "SWLOR.Game.Server.Domain.Abilities.MimicryService.AdoptTechniqueDescriptions",
             "SWLOR.Game.Server.Domain.World.PropertyService.AdoptProperties",
             "SWLOR.Game.Server.Domain.World.ShuttleService.AdoptFlights",
             "SWLOR.Game.Server.Domain.World.WeatherService.AdoptWeather",
@@ -235,6 +236,7 @@ public class ReloadBootstrapTests
         carry.Select(step => step.Name).Should().Equal(
             "SWLOR.Game.Server.Domain.Economy.GuildService.CarryGuildTasks",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService.CarrySpawns",
+            "SWLOR.Game.Server.Domain.Abilities.MimicryService.CarryTechniqueDescriptions",
             "SWLOR.Game.Server.Domain.World.PropertyService.CarryProperties",
             "SWLOR.Game.Server.Domain.World.WeatherService.CarryWeather");
         plan.Where(step => !step.Method.IsStatic).Should().OnlyContain(step => step.Run.Target != null,

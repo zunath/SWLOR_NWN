@@ -50,8 +50,11 @@ mod_load SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
 == RERUN HANDLERS WITH AN ADOPTION STEP ==
 mod_cache_bef SWLOR.Game.Server.Domain.Economy.GuildService.LoadData
   adopt AdoptGuildTasks carry CarryGuildTasks
+mod_cache_aft SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
+  adopt AdoptTechniqueDescriptions carry CarryTechniqueDescriptions
 
 == ADOPTED STATE ==
+SWLOR.Game.Server.Domain.Abilities.MimicryService._techniqueDescriptions
 SWLOR.Game.Server.Domain.Creatures.SpawnService._activeSpawnsByArea
 SWLOR.Game.Server.Domain.Creatures.SpawnService._allSpawnsByArea
 SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedAreaDespawns
@@ -82,5 +85,7 @@ SWLOR.Game.Server.Feature.StoreManagement._stores
 
 == REROLLED STATE ==
 SWLOR.Game.Server.Domain.Creatures.SpawnService._spawnTables
+SWLOR.Game.Server.Domain.UI.GuiService._elementEvents
+SWLOR.Game.Server.Domain.UI.GuiService._windowTemplates
 SWLOR.Game.Server.Domain.World.FishingService._fishResrefsByLocation
 SWLOR.Game.Server.Domain.World.FishingService._fishingLocations

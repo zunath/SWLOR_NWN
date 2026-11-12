@@ -1094,9 +1094,19 @@ if [[ "$active_server_image" != "$SERVER_IMAGE" ]]; then
     server_image_changed=1
     log "Server image will change from '${active_server_image:-not recorded}' to '$SERVER_IMAGE'."
 fi
+# A server switched to the other entry needs the other .NET layout even when no
+# source changed. A deployment that never recorded an entry ran the native one.
+recorded_dotnet_entry="$(state_value dotnet-entry)"
+dotnet_entry_changed=0
+if [[ "${recorded_dotnet_entry:-native}" != "$SERVER_DOTNET_ENTRY" ]]; then
+    dotnet_entry_changed=1
+    log "The .NET entry changes from ${recorded_dotnet_entry:-native} to $SERVER_DOTNET_ENTRY; the .NET layout will be rebuilt."
+fi
 if [[ "$MODE" == if-changed &&
        "$active_commit" == "$target_commit" &&
        "$server_env_migration_required" == 0 &&
+       "$dotnet_entry_env_migration_required" == 0 &&
+       "$dotnet_entry_changed" == 0 &&
        "$runtime_permission_migration_required" == 0 &&
        "$server_image_changed" == 0 ]]
 then
@@ -1202,11 +1212,7 @@ else
     log "No usable active-commit baseline exists; all content inputs will be rebuilt."
 fi
 
-# A server switched to the other entry needs the other .NET layout even when no
-# source changed. A deployment that never recorded an entry ran the native one.
-recorded_dotnet_entry="$(state_value dotnet-entry)"
-if [[ "${recorded_dotnet_entry:-native}" != "$SERVER_DOTNET_ENTRY" ]]; then
-    log "The .NET entry changes from ${recorded_dotnet_entry:-native} to $SERVER_DOTNET_ENTRY; the .NET layout will be rebuilt."
+if (( dotnet_entry_changed == 1 )); then
     dotnet_inputs_changed=1
 fi
 

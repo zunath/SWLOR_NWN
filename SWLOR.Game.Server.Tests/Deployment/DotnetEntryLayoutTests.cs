@@ -90,6 +90,11 @@ public class DotnetEntryLayoutTests
 
         deploy.Should().Contain("SERVER_DOTNET_ENTRY=\"${SERVER_DOTNET_ENTRY:-native}\"");
         example.Should().Contain("SERVER_DOTNET_ENTRY=native");
+        // An if-changed run on an active commit still deploys when only the entry or its env lines changed.
+        var alreadyActive = Regex.Match(deploy, @"if \[\[ ""\$MODE"" == if-changed &&.*?nothing to deploy", RegexOptions.Singleline).Value;
+        alreadyActive.Should().Contain("\"$dotnet_entry_changed\" == 0").And.Contain("\"$dotnet_entry_env_migration_required\" == 0");
+        deploy.IndexOf("dotnet_entry_changed=0", StringComparison.Ordinal)
+            .Should().BeLessThan(deploy.IndexOf("nothing to deploy", StringComparison.Ordinal));
         // The native branch stages exactly what it staged before the switch existed.
         deploy.Should().Contain(
             "elif (( dotnet_inputs_changed == 1 )); then\n    log \"Staging production .NET assemblies in temporary workspace.\"\n    rsync \\\n" +

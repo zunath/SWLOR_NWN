@@ -13,11 +13,17 @@ namespace SWLOR.Game.Server.Core
         /// schedules every closure with NWNX and tracks it for the active generation.
         /// </param>
         /// <param name="redisConnection">The host's Redis connection, which outlives the game build.</param>
+        /// <param name="hookControl">The host's native hook control, which the game's hook files enable the hooks through.</param>
         /// <param name="gameDirectory">The directory the game build was loaded from, or null when unknown.</param>
-        public HostedBoot(global::NWN.Core.ICoreFunctionHandler hostClosures, IRedisConnectionSource redisConnection, string gameDirectory)
+        public HostedBoot(
+            global::NWN.Core.ICoreFunctionHandler hostClosures,
+            IRedisConnectionSource redisConnection,
+            IHookControl hookControl,
+            string gameDirectory)
         {
             HostClosures = hostClosures ?? throw new ArgumentNullException(nameof(hostClosures));
             RedisConnection = redisConnection ?? throw new ArgumentNullException(nameof(redisConnection));
+            HookControl = hookControl ?? throw new ArgumentNullException(nameof(hookControl));
             GameDirectory = gameDirectory;
         }
 
@@ -26,6 +32,9 @@ namespace SWLOR.Game.Server.Core
 
         /// <summary>The host's Redis connection.</summary>
         public IRedisConnectionSource RedisConnection { get; }
+
+        /// <summary>The host's native hook control: the hooks it installs once for the process.</summary>
+        public IHookControl HookControl { get; }
 
         /// <summary>
         /// The directory the game build was loaded from. The host loads the build from bytes, so the assembly has no

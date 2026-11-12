@@ -1,8 +1,6 @@
-using System.Runtime.InteropServices;
 using NWN.Native.API;
-using NWNX.NET;
-using NWNX.NET.Native;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.NativeSinks;
 
@@ -15,8 +13,6 @@ namespace SWLOR.Game.Server.Native
     /// </summary>
     public static unsafe class PlayerSlotAssignment
     {
-        private const string SetSlidingWindowSymbol = "_ZN17CNetLayerInternal16SetSlidingWindowE16CNetConnectionIdPj";
-
         /// <summary>CNetLayer::MAX_PLAYERS: the engine's sliding windows, one per connection slot.</summary>
         public const int SlotCount = 255;
 
@@ -34,26 +30,17 @@ namespace SWLOR.Game.Server.Native
         // SetSlidingWindow passes over a window whose flag is neither 0 (free) nor 1 (in use).
         internal const int HeldBack = 2;
 
-        private static FunctionHook* _hook;
-        private static IPlayerSlotAssignmentSink _sink;
-
         /// <summary>Set once the hook has turned itself off (written by <see cref="PlayerSlotAssignmentSink"/>).</summary>
         internal static bool HookDisabled;
 
         /// <summary>True once the hook is in place and has not turned itself off.</summary>
-        public static bool IsActive => _hook != null && !HookDisabled;
+        public static bool IsActive => NativeHookAccess.Hooks.IsEnabled(NativeHookId.PlayerSlotAssignment) && !HookDisabled;
 
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
-            if (_hook != null)
-                return;
-
-            _sink ??= new PlayerSlotAssignmentSink();
-            delegate* unmanaged<void*, uint, uint*, int> setSlidingWindow = &SetSlidingWindow;
-            _hook = NWNXAPI.RequestFunctionHook(NativeLibrary.GetExport(NativeLibrary.GetMainProgramHandle(), SetSlidingWindowSymbol),
-                (IntPtr)setSlidingWindow, HookOrder.Earliest);
+            NativeHookAccess.Hooks.Enable(NativeHookId.PlayerSlotAssignment);
         }
 
         /// <summary>The server's CNetLayerInternal, which owns the connection slots.</summary>
@@ -83,10 +70,6 @@ namespace SWLOR.Game.Server.Native
 
         /// <summary>Whether the engine has this slot in use.</summary>
         public static bool IsSlotInUse(IntPtr netLayer, int slot) => InUseFlag((void*)netLayer, slot) != 0;
-
-        [UnmanagedCallersOnly]
-        private static int SetSlidingWindow(void* netLayer, uint connectionId, uint* windowId)
-            => _sink.SetSlidingWindow(netLayer, connectionId, windowId, (nint)_hook->m_trampoline);
 
         internal static int InUseFlag(void* netLayer, int slot) => *(int*)(Window(netLayer, slot) + WindowInUseOffset);
 

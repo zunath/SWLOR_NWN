@@ -22,14 +22,21 @@ public sealed class DeployBuildTests
         _hostOutput = Path.Combine(_root, "custom host output");
         foreach (var path in new[] { "Build", "SWLOR.Game.Server/Docker", "Module", "assets", "custom Debug output", "custom host output" })
             Directory.CreateDirectory(Path.Combine(_root, path));
-        foreach (var name in new[] { "SWLOR.Game.Host.dll", "SWLOR.Game.Host.deps.json", "SWLOR.Game.Host.runtimeconfig.json", "Nwn.Hosting.dll" })
+        foreach (var name in new[]
+                 {
+                     "SWLOR.Game.Host.dll", "SWLOR.Game.Host.deps.json", "SWLOR.Game.Host.runtimeconfig.json", "Nwn.Hosting.dll",
+                     "SWLOR.Game.NativeHooks.dll"
+                 })
             File.WriteAllText(Path.Combine(_hostOutput, name), "current host build " + name);
         File.WriteAllText(Path.Combine(_root, "SWLOR.Game.Server/Docker/swlor.env"), "TEST=true\n");
         File.WriteAllText(Path.Combine(_root, "SWLOR.Game.Server/Docker/docker-compose.yml"), "compose fixture");
         File.WriteAllText(Path.Combine(_root, "Module/Star Wars LOR v2.mod"), "module fixture");
         File.WriteAllText(Path.Combine(_root, "test.tlk"), "tlk fixture");
         File.WriteAllText(Path.Combine(_root, "assets/test.mdl"), "first model");
-        foreach (var name in new[] { "SWLOR.Game.Server.dll", "SWLOR.Game.Server.deps.json", "SWLOR.Game.Server.runtimeconfig.json" })
+        foreach (var name in new[]
+                 {
+                     "SWLOR.Game.Server.dll", "SWLOR.Game.Server.deps.json", "SWLOR.Game.Server.runtimeconfig.json", "SWLOR.Game.NativeHooks.dll"
+                 })
             File.WriteAllText(Path.Combine(_output, name), "current Debug build " + name);
         var release = Path.Combine(_root, "SWLOR.Game.Server/bin/Release/net10.0");
         Directory.CreateDirectory(release);
@@ -125,6 +132,9 @@ public sealed class DeployBuildTests
         File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/game/SWLOR.Game.Server.dll"))
             .Should().Be("current Debug build SWLOR.Game.Server.dll");
         File.Exists(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Server.dll")).Should().BeFalse();
+        // The native hook trampolines load beside the host, which shares them with the game build.
+        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.NativeHooks.dll"))
+            .Should().Be("current host build SWLOR.Game.NativeHooks.dll");
         File.ReadAllLines(Path.Combine(_root, "debugserver/swlor.env")).Should().Contain(new[]
         {
             "SWLOR_DOTNET_ENTRY=host",
@@ -149,6 +159,8 @@ public sealed class DeployBuildTests
         result.ExitCode.Should().Be(0, result.Output);
         File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Server.dll"))
             .Should().Be("current Debug build SWLOR.Game.Server.dll");
+        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.NativeHooks.dll"))
+            .Should().Be("current Debug build SWLOR.Game.NativeHooks.dll", "the native entry loads the trampolines beside the game");
         Directory.Exists(Path.Combine(_root, "debugserver/dotnet/game")).Should().BeFalse();
         File.Exists(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Host.dll")).Should().BeFalse();
         File.ReadAllLines(Path.Combine(_root, "debugserver/swlor.env")).Should().Contain(new[]

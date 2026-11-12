@@ -31,6 +31,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj" />
+    <!-- The native hook trampolines: the native entry installs them through it; under the host the game resolves the
+         host's copy (a shared assembly), so both entries run the same trampolines. -->
+    <ProjectReference Include="..\SWLOR.Game.NativeHooks\SWLOR.Game.NativeHooks.csproj" />
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
   </ItemGroup>
 

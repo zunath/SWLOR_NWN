@@ -1,4 +1,5 @@
 using Nwn.Hosting.Bootstrap;
+using SWLOR.Game.NativeHooks;
 
 namespace SWLOR.Game.Host.Bootstrap;
 
@@ -33,8 +34,11 @@ public static class NativeBootstrap
             throw;
         }
 
+        // The process's native hooks: the host's extensions find their engine functions, the game installs them through
+        // the same table at its boot moments and binds its sinks to it.
+        var hooks = new NativeHookTable();
         SwlorHostMode? mode = null;
-        NativeHost.Initialize(HostOptions.Create(coreFunctions => mode = new SwlorHostMode(coreFunctions, settings)));
+        NativeHost.Initialize(HostOptions.Create(coreFunctions => mode = new SwlorHostMode(coreFunctions, settings, hooks), hooks));
 
         // NativeHost reports a failed start through the mode instead of throwing; LoadGame rethrows it.
         if (mode is null)

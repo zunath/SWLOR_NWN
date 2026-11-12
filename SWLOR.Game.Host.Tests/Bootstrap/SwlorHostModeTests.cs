@@ -67,6 +67,16 @@ public class SwlorHostModeTests
         fixture.Scheduler.Scheduled.Should().ContainSingle(closure => closure.Kind == "DelayCommand" && closure.Object == 7);
     }
 
+    [Test]
+    public void The_generation_gets_the_hosts_native_hooks_to_enable_them_and_bind_its_sinks()
+    {
+        var fixture = new HostedFixture(_build);
+
+        fixture.Mode.Services.Resolve(typeof(SWLOR.Game.Contracts.IHookControl)).Should().BeSameAs(fixture.Hooks);
+        fixture.Mode.Services.Resolve(typeof(SWLOR.Game.Contracts.INativeSinkBinding)).Should().BeSameAs(fixture.Hooks,
+            "the game installs and binds through the one table whose extensions resolved the engine functions");
+    }
+
     [TestCase("act", NativeHost.ScriptHandled)]
     [TestCase("cond_t", NativeHost.ScriptConditionTrue)]
     [TestCase("cond_f", NativeHost.ScriptHandled)]

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.NativeHooks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
@@ -37,6 +38,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IProcessEventSubscriptions, ProcessEventSubscriptions>();
             services.AddSingleton<IServerStaticState, ServerStaticState>();
             services.AddSingleton<IServerTeardown, ServerTeardown>();
+            // The native hooks the hook files enable at their boot moments: the process's own on the native entry; the host
+            // registers the one it installs the hooks through (P4-11).
+            services.AddSingleton<IHookControl, NativeHookTable>();
 
             // Core
             // The Redis connection DBService takes; a host that keeps it across hot reloads registers its own (P4-10).

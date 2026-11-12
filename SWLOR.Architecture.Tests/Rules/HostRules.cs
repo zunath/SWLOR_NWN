@@ -3,7 +3,8 @@ namespace SWLOR.Architecture.Tests.Rules;
 /// <summary>
 /// The rule of the permanent host (P4-10): <c>SWLOR.Game.Host</c> outlives every game build, so it references no game
 /// type. It may reference only the framework, the engine bindings, the hosting package and its contracts, the SWLOR
-/// contracts and Redis; it reaches the game only through those contracts.
+/// contracts, the native hook trampolines (which reference no game type either) and Redis; it reaches the game only through
+/// those contracts.
 /// </summary>
 internal static class HostRules
 {

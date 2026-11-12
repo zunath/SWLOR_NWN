@@ -63,4 +63,72 @@ internal static class IlOperandReader
 
         return handles;
     }
+
+    /// <summary>The static fields <paramref name="body"/> loads with the <c>volatile.</c> prefix (<c>volatile. ldsfld</c>).</summary>
+    public static IReadOnlyList<EntityHandle> ReadVolatileStaticFieldLoads(MethodBodyBlock body)
+    {
+        const ushort VolatilePrefix = 0xFE13;
+        const ushort LoadStaticField = 0x7E;
+
+        var handles = new List<EntityHandle>();
+        var il = body.GetILReader();
+        var afterVolatile = false;
+        while (il.RemainingBytes > 0)
+        {
+            var code = (ushort)il.ReadByte();
+            if (code == TwoByteOpCodePrefix)
+                code = (ushort)(TwoByteOpCodePrefix << 8 | il.ReadByte());
+
+            var operand = OpCodeTable.OperandOf(code);
+            if (code == LoadStaticField && afterVolatile)
+            {
+                handles.Add(MetadataTokens.EntityHandle(il.ReadInt32()));
+                afterVolatile = false;
+                continue;
+            }
+
+            afterVolatile = code == VolatilePrefix;
+            SkipOperand(ref il, operand, code);
+        }
+
+        return handles;
+    }
+
+    private static void SkipOperand(ref BlobReader il, OperandType operand, ushort code)
+    {
+        switch (operand)
+        {
+            case OperandType.InlineNone:
+                break;
+            case OperandType.ShortInlineBrTarget:
+            case OperandType.ShortInlineI:
+            case OperandType.ShortInlineVar:
+                il.Offset += 1;
+                break;
+            case OperandType.InlineVar:
+                il.Offset += 2;
+                break;
+            case OperandType.InlineI:
+            case OperandType.InlineBrTarget:
+            case OperandType.ShortInlineR:
+            case OperandType.InlineString:
+            case OperandType.InlineField:
+            case OperandType.InlineMethod:
+            case OperandType.InlineType:
+            case OperandType.InlineTok:
+            case OperandType.InlineSig:
+                il.Offset += 4;
+                break;
+            case OperandType.InlineI8:
+            case OperandType.InlineR:
+                il.Offset += 8;
+                break;
+            case OperandType.InlineSwitch:
+                var targets = il.ReadInt32();
+                il.Offset += 4 * targets;
+                break;
+            default:
+                throw new InvalidOperationException($"Unsupported CIL operand type for opcode 0x{code:X4}.");
+        }
+    }
 }

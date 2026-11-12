@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Nwn.Hosting.Bootstrap;
 using Nwn.Hosting.Testing.Fixtures;
 using SWLOR.Game.Host.Bootstrap;
+using SWLOR.Game.NativeHooks;
 
 namespace SWLOR.Game.Host.Tests.Support;
 
@@ -23,7 +24,8 @@ internal sealed class HostedFixture
         };
         Settings = HostSettings.Read(name => variables.GetValueOrDefault(name), Path.GetDirectoryName(gameAssemblyPath)!);
         Redis = new FakeRedisConnectionSource();
-        Mode = new SwlorHostMode(CoreFunctions, Settings, Redis, (category, message) => Log.Enqueue($"{category} {message}"));
+        Hooks = new NativeHookTable();
+        Mode = new SwlorHostMode(CoreFunctions, Settings, Redis, Hooks, (category, message) => Log.Enqueue($"{category} {message}"));
         Mode.Services.Add(Record);
     }
 
@@ -31,6 +33,9 @@ internal sealed class HostedFixture
     public CoreFunctionHandler CoreFunctions { get; }
     public HostSettings Settings { get; }
     public FakeRedisConnectionSource Redis { get; }
+
+    /// <summary>The native hooks the host hands the game; a fixture build never enables them.</summary>
+    public NativeHookTable Hooks { get; }
     public SwlorHostMode Mode { get; }
 
     /// <summary>What the fixture build recorded.</summary>

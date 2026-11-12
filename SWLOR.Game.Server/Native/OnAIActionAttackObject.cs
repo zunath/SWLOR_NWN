@@ -1,11 +1,8 @@
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NativeSinks;
 using SWLOR.Game.Server.Feature;
-using NWNX.NET;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
@@ -58,30 +55,12 @@ namespace SWLOR.Game.Server.Native
         internal static readonly Dictionary<uint, DateTime> _creatureAttackDelays = new();
         internal static readonly Dictionary<uint, float> _rangedRepositionDirections = new();
 
-        internal delegate int AIActionAttackObjectHook(void* pCreature, void* pNode);
-
-        // ReSharper disable once NotAccessedField.Local
-        private static AIActionAttackObjectHook _callOriginal;
-        private static IOnAIActionAttackObjectSink _sink;
-
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
-            _sink ??= new OnAIActionAttackObjectSink();
-            delegate* unmanaged<void*, void*, int> pHook = &HandleOnAIActionAttackObject;
-            var functionPtr = NativeLibrary.GetExport(
-                NativeLibrary.GetMainProgramHandle(), "_ZN12CNWSCreature20AIActionAttackObjectEP20CNWSObjectActionNode");
-            var hookPtr = NWNXAPI.RequestFunctionHook(
-                functionPtr,
-                (IntPtr)pHook,
-                -1000000);
-            _callOriginal = Marshal.GetDelegateForFunctionPointer<AIActionAttackObjectHook>((IntPtr)hookPtr);
+            NativeHookAccess.Hooks.Enable(NativeHookId.OnAIActionAttackObject);
         }
-
-        [UnmanagedCallersOnly]
-        internal static int HandleOnAIActionAttackObject(void* creature, void* node)
-            => _sink.AttackObject(creature, node);
 
         internal static BlockedLineMovementPlan CreateBlockedLineMovementPlan(
             float attackerX,

@@ -3,8 +3,8 @@
   <!-- The permanent NWNX DotNET entry (MaintainabilityRefactorHotReload.md, section 3): NWNX loads this assembly and calls
        SWLOR.Game.Host.Bootstrap.NativeBootstrap.Initialize, which starts the Nwn.Hosting native host and loads the game
        build (SWLOR.Game.Server, deployed beside it in game/) as a generation. It references nothing of the game: the
-       game is reached only through Nwn.Hosting.Contracts and SWLOR.Game.Contracts (a rule in SWLOR.Architecture.Tests
-       keeps it that way). -->
+       game is reached only through Nwn.Hosting.Contracts and SWLOR.Game.Contracts, and the native hooks live in
+       SWLOR.Game.NativeHooks (a rule in SWLOR.Architecture.Tests keeps it that way). -->
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -24,6 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj" />
+    <!-- The native hook trampolines: the host resolves their engine functions when it starts and shares the assembly
+         with every generation (HostOptions.SharedAssemblyNames), so the hooks NWNX calls outlive each game build. -->
+    <ProjectReference Include="..\SWLOR.Game.NativeHooks\SWLOR.Game.NativeHooks.csproj" />
   </ItemGroup>
 
   <ItemGroup>

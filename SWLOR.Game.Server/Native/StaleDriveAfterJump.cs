@@ -1,13 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using NWN.Native.API;
-using NWNX.NET;
-using NWNX.NET.Native;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NativeSinks;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -19,33 +13,17 @@ namespace SWLOR.Game.Server.Native
     /// starts far from the creature's server position starts from the server position instead,
     /// until the client sends a path from the server position.
     /// </summary>
-    public static unsafe class StaleDriveAfterJump
+    public static class StaleDriveAfterJump
     {
         public const float StaleStartDistanceMeters = 2f;
         public const long JumpWindowMilliseconds = 1500;
         public const long CorrectionTimeoutMilliseconds = 10000;
 
-        private static FunctionHook* _jumpHook;
-        private static FunctionHook* _driveHook;
-        private static IStaleDriveAfterJumpSink _sink;
-
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHooks()
         {
-            if (_jumpHook != null)
-                return;
-
-            _sink ??= new StaleDriveAfterJumpSink();
-            var library = NativeLibrary.GetMainProgramHandle();
-            delegate* unmanaged<void*, void*, uint> jump = &OnAIActionJumpToPoint;
-            delegate* unmanaged<void*, ushort, void*, int, int, int, int, int> drive = &OnAddDriveAction;
-            _jumpHook = NWNXAPI.RequestFunctionHook(
-                NativeLibrary.GetExport(library, "_ZN12CNWSCreature19AIActionJumpToPointEP20CNWSObjectActionNode"),
-                (IntPtr)jump, HookOrder.Late);
-            _driveHook = NWNXAPI.RequestFunctionHook(
-                NativeLibrary.GetExport(library, "_ZN12CNWSCreature14AddDriveActionEtRK6Vectoriiii"),
-                (IntPtr)drive, HookOrder.Late);
+            NativeHookAccess.Hooks.Enable(NativeHookId.StaleDriveAfterJump);
         }
 
         /// <summary>
@@ -105,15 +83,5 @@ namespace SWLOR.Game.Server.Native
             var dy = ay - by;
             return MathF.Sqrt(dx * dx + dy * dy);
         }
-
-        [UnmanagedCallersOnly]
-        private static uint OnAIActionJumpToPoint(void* creature, void* node)
-            => _sink.JumpToPoint(creature, node, (nint)_jumpHook->m_trampoline);
-
-        [UnmanagedCallersOnly]
-        private static int OnAddDriveAction(void* creature, ushort groupId, void* pathStart, int bearing,
-            int clientPathNumber, int driveFlags, int wayPointsToGenerate)
-            => _sink.AddDriveAction(creature, groupId, pathStart, bearing, clientPathNumber, driveFlags,
-                wayPointsToGenerate, (nint)_driveHook->m_trampoline);
     }
 }

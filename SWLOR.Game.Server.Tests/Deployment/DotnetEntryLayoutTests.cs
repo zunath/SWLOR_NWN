@@ -101,6 +101,18 @@ public class DotnetEntryLayoutTests
             "        --archive \\\n        --delete \\\n        \"$SOURCE_ROOT/SWLOR.Game.Server/bin/Release/net10.0/\" \\\n        \"$staged_dotnet/\"");
     }
 
+    [Test]
+    public void The_production_deployer_rebuilds_on_a_native_hooks_change_and_requires_the_trampolines_on_both_entries()
+    {
+        var deploy = Read("scripts", "deployment", "swlor-deploy.sh");
+
+        // The trampolines are a .NET input of both entries, and both layouts carry them next to their entry assembly.
+        deploy.Should().Contain("SWLOR.Game.Contracts \\\n        SWLOR.Game.NativeHooks \\\n        SWLOR.NWN.API \\\n");
+        deploy.Should().Contain("[[ -s \"$dotnet_check_root/SWLOR.Game.NativeHooks.dll\" ]]");
+        deploy.Should().Contain("[[ -s \"$staged_dotnet/SWLOR.Game.NativeHooks.dll\" ]]");
+        deploy.Should().Contain("[[ -s \"$SERVER_DOTNET_ROOT/SWLOR.Game.NativeHooks.dll\" ]]");
+    }
+
     private const string NativeLines =
         "NWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Server \nNWNX_DOTNET_ENTRYPOINT=SWLOR.Game.Server.Core.ServerManager\n" +
         "NWNX_DOTNET_METHOD=Bootstrap\n";

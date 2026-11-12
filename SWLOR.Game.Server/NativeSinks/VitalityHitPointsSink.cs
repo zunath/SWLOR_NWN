@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.NativeHooks;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Native;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -9,16 +10,15 @@ namespace SWLOR.Game.Server.NativeSinks;
 
 /// <summary>
 /// Gives player Vitality its half-level HP contribution at odd scores. Each player's cached Vitality state, the
-/// creature-by-stats index and the stats being destroyed live here; the nested recalculation of the current thread
-/// stays a thread-static field, as it was in the hook file.
+/// creature-by-stats index and the stats being destroyed live here; the nested recalculation of the current thread is
+/// thread-static and lives beside the trampolines (<see cref="VitalityRecalculation.Current"/>), because the engine thread
+/// outlives every game build.
 /// </summary>
 public sealed unsafe class VitalityHitPointsSink : IVitalityHitPointsSink
 {
     private readonly Dictionary<nint, VitalityPlayerState> _playerStates = new();
     private readonly Dictionary<nint, nint> _creaturePointersByStats = new();
     private readonly HashSet<nint> _destroyingStats = new();
-
-    [ThreadStatic] private static VitalityRecalculation _recalculation;
 
     public short GetMaximum(void* pointer, int includeToughness, nint original)
     {
@@ -31,7 +31,8 @@ public sealed unsafe class VitalityHitPointsSink : IVitalityHitPointsSink
                 state.Stats.m_bIsPC == 0 || state.Creature.GetIsPossessedFamiliar() != 0)
                 return maximum;
             var stats = state.Stats;
-            var vitality = _recalculation != null && _recalculation.TryGetScore(stats.Pointer, out var score)
+            var recalculation = VitalityRecalculation.Current;
+            var vitality = recalculation != null && recalculation.TryGetScore(stats.Pointer, out var score)
                 ? score : state.Score;
             if ((vitality & 1) == 0) return maximum;
 
@@ -130,18 +131,19 @@ public sealed unsafe class VitalityHitPointsSink : IVitalityHitPointsSink
     private nint BeginRecalculation(CNWSCreatureStats stats)
     {
         if (stats == null || stats.m_bIsPC == 0) return 0;
-        _recalculation ??= new VitalityRecalculation();
-        if (_recalculation.TryGetScore(stats.Pointer, out _)) return 0;
+        var recalculation = VitalityRecalculation.ForCurrentThread();
+        if (recalculation.TryGetScore(stats.Pointer, out _)) return 0;
         GetPlayerState(stats.m_pBaseCreature);
-        return _recalculation.Begin(stats.Pointer, stats.GetCONStat()) ? stats.Pointer : 0;
+        return recalculation.Begin(stats.Pointer, stats.GetCONStat()) ? stats.Pointer : 0;
     }
 
     private void EndRecalculation(nint scope)
     {
         if (scope == 0) return;
+        var recalculation = VitalityRecalculation.Current;
         try
         {
-            if (_recalculation.TryGetScore(scope, out _) &&
+            if (recalculation.TryGetScore(scope, out _) &&
                 _creaturePointersByStats.TryGetValue(scope, out var creature) &&
                 _playerStates.TryGetValue(creature, out var state))
             {
@@ -154,7 +156,7 @@ public sealed unsafe class VitalityHitPointsSink : IVitalityHitPointsSink
             ForgetStats(scope);
             Log.WriteError(exception, "Could not finish Vitality HP recalculation");
         }
-        finally { _recalculation.End(scope); }
+        finally { recalculation.End(scope); }
     }
 
     private VitalityPlayerState GetPlayerState(CNWSCreature creature)
@@ -185,7 +187,7 @@ public sealed unsafe class VitalityHitPointsSink : IVitalityHitPointsSink
         {
             _destroyingStats.Add((nint)pointer);
             ForgetStats((nint)pointer);
-            _recalculation?.End((nint)pointer);
+            VitalityRecalculation.Current?.End((nint)pointer);
         }
         catch (Exception exception) { Log.WriteError(exception, "Could not discard destroyed player Vitality state"); }
         try { ((delegate* unmanaged<void*, void>)original)(pointer); }
@@ -208,9 +210,10 @@ public sealed unsafe class VitalityHitPointsSink : IVitalityHitPointsSink
         // fractional contribution at that same boundary without changing the modifier.
         try
         {
-            if (_recalculation != null && _recalculation.TryGetScore((nint)pointer, out _) &&
+            var recalculation = VitalityRecalculation.Current;
+            if (recalculation != null && recalculation.TryGetScore((nint)pointer, out _) &&
                 score == CNWSCreatureStats.FromPointer(pointer).GetCONStat())
-                _recalculation.Update((nint)pointer, score);
+                recalculation.Update((nint)pointer, score);
         }
         catch (Exception exception) { Log.WriteError(exception, "Could not track the recalculated Vitality score"); }
         return result;

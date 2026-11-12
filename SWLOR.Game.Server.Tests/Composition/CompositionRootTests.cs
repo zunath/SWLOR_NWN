@@ -35,18 +35,22 @@ public class CompositionRootTests
     }
 
     [Test]
-    public void The_host_entry_builds_the_same_registrations_with_the_hosts_redis_connection()
+    public void The_host_entry_builds_the_same_registrations_with_the_hosts_redis_connection_and_hooks()
     {
         var redis = new SWLOR.Game.Server.Tests.Support.UnopenedRedisConnectionSource();
+        var hooks = new SWLOR.Game.Server.Tests.Support.RecordingHookControl();
         var hosted = new ContainerHost();
         var native = new ContainerHost();
 
-        var hostedCount = CompositionRoot.Build(hosted, redis);
+        var hostedCount = CompositionRoot.Build(hosted, redis, hooks);
         var nativeCount = CompositionRoot.Build(native);
 
-        hostedCount.Should().Be(nativeCount, "the host's connection replaces the server's own; nothing is added");
+        hostedCount.Should().Be(nativeCount, "the host's connection and hooks replace the server's own; nothing is added");
         hosted.Resolve<SWLOR.Game.Contracts.IRedisConnectionSource>().Should().BeSameAs(redis);
+        hosted.Resolve<SWLOR.Game.Contracts.IHookControl>().Should().BeSameAs(hooks);
         native.Resolve<SWLOR.Game.Contracts.IRedisConnectionSource>().Should().BeOfType<SWLOR.Game.Server.Domain.Foundation.RedisConnectionSource>();
+        native.Resolve<SWLOR.Game.Contracts.IHookControl>().Should().BeOfType<SWLOR.Game.NativeHooks.NativeHookTable>(
+            "the native entry installs the hooks through the process's own table");
         CompositionRoot.IsBuilt.Should().BeFalse("the server's own container is untouched");
     }
 
@@ -62,15 +66,21 @@ public class CompositionRootTests
     }
 
     [Test]
-    public void The_host_entry_build_needs_a_container_and_a_connection()
+    public void The_host_entry_build_needs_a_container_a_connection_and_the_hooks()
     {
-        var withoutHost = () => CompositionRoot.Build(null, new SWLOR.Game.Server.Tests.Support.UnopenedRedisConnectionSource());
-        var withoutConnection = () => CompositionRoot.Build(new ContainerHost(), null);
-        var registerWithoutConnection = () => CompositionRoot.RegisterHostedServices(new ServiceCollection(), null);
+        var redis = new SWLOR.Game.Server.Tests.Support.UnopenedRedisConnectionSource();
+        var hooks = new SWLOR.Game.Server.Tests.Support.RecordingHookControl();
+        var withoutHost = () => CompositionRoot.Build(null, redis, hooks);
+        var withoutConnection = () => CompositionRoot.Build(new ContainerHost(), null, hooks);
+        var withoutHooks = () => CompositionRoot.Build(new ContainerHost(), redis, null);
+        var registerWithoutConnection = () => CompositionRoot.RegisterHostedServices(new ServiceCollection(), null, hooks);
+        var registerWithoutHooks = () => CompositionRoot.RegisterHostedServices(new ServiceCollection(), redis, null);
 
         withoutHost.Should().Throw<ArgumentNullException>();
         withoutConnection.Should().Throw<ArgumentNullException>();
+        withoutHooks.Should().Throw<ArgumentNullException>();
         registerWithoutConnection.Should().Throw<ArgumentNullException>();
+        registerWithoutHooks.Should().Throw<ArgumentNullException>();
     }
 
     [Test]

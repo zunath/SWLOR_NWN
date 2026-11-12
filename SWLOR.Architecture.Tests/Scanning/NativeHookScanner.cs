@@ -53,17 +53,22 @@ internal static class NativeHookScanner
                     continue;
 
                 var operations = new List<HookOperation>();
+                var volatileReads = new List<string>();
                 if (method.RelativeVirtualAddress != 0)
                 {
-                    foreach (var operand in IlOperandReader.ReadEntityOperands(pe.GetMethodBody(method.RelativeVirtualAddress)))
+                    var body = pe.GetMethodBody(method.RelativeVirtualAddress);
+                    foreach (var operand in IlOperandReader.ReadEntityOperands(body))
                     {
                         var operation = Describe(metadata, operand, sinkNamespace);
                         if (operation != null)
                             operations.Add(operation);
                     }
+
+                    foreach (var field in IlOperandReader.ReadVolatileStaticFieldLoads(body))
+                        volatileReads.Add(FieldName(metadata, field));
                 }
 
-                hooks.Add(new NativeHook(owner, metadata.GetString(method.Name), operations));
+                hooks.Add(new NativeHook(owner, metadata.GetString(method.Name), operations, volatileReads));
             }
         }
 
@@ -100,7 +105,7 @@ internal static class NativeHookScanner
             case HandleKind.MethodSpecification:
                 return new HookOperation("a generic method call", false);
             case HandleKind.StandaloneSignature:
-                return new HookOperation("a call through a function pointer", false);
+                return new HookOperation("a call through a function pointer", false, true);
             default:
                 return null;
         }
@@ -125,6 +130,13 @@ internal static class NativeHookScanner
                 return (string.Empty, "(" + handle.Kind + ")");
         }
     }
+
+    private static string FieldName(MetadataReader metadata, EntityHandle handle) => handle.Kind switch
+    {
+        HandleKind.FieldDefinition => metadata.GetString(metadata.GetFieldDefinition((FieldDefinitionHandle)handle).Name),
+        HandleKind.MemberReference => metadata.GetString(metadata.GetMemberReference((MemberReferenceHandle)handle).Name),
+        _ => "(" + handle.Kind + ")"
+    };
 
     private static string Join(string @namespace, string name) => @namespace.Length == 0 ? name : @namespace + "." + name;
 

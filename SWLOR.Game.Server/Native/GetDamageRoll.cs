@@ -1,8 +1,6 @@
 using NWN.Native.API;
-using NWNX.NET;
 using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NativeSinks;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Domain.Combat;
@@ -11,7 +9,6 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using System.Runtime.InteropServices;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using ObjectType = NWN.Native.API.ObjectType;
@@ -35,37 +32,12 @@ namespace SWLOR.Game.Server.Native
         private const string ForceConversionAttackIndex = "FORCE_CONVERSION_ATTACK_INDEX";
         private const string ForceConversionAttackTarget = "FORCE_CONVERSION_ATTACK_TARGET";
 
-        internal delegate int GetDamageRollHook(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax);
-        // ReSharper disable once NotAccessedField.Local
-        private static GetDamageRollHook _callOriginal;
-        private static IGetDamageRollSink _sink;
-
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
-            _sink ??= new GetDamageRollSink();
-            delegate* unmanaged<void*, void*, int, int, int, int, int, int> pHook = &OnGetDamageRoll;
-            var functionPtr = NativeLibrary.GetExport(
-                NativeLibrary.GetMainProgramHandle(), "_ZN17CNWSCreatureStats13GetDamageRollEP10CNWSObjectiiiii");
-            var hookPtr = NWNXAPI.RequestFunctionHook(
-                functionPtr,
-                (IntPtr)pHook,
-                -1000000);
-
-            _callOriginal = Marshal.GetDelegateForFunctionPointer<GetDamageRollHook>((IntPtr)hookPtr);
+            NativeHookAccess.Hooks.Enable(NativeHookId.GetDamageRoll);
         }
-
-        [UnmanagedCallersOnly]
-        private static int OnGetDamageRoll(
-            void* thisPtr,
-            void* pTarget,
-            int bOffHand,
-            int bCritical,
-            int bSneakAttack,
-            int bDeathAttack,
-            int bForceMax)
-            => _sink.GetDamageRoll(thisPtr, pTarget, bOffHand, bCritical, bSneakAttack, bDeathAttack, bForceMax);
 
         internal static int ResolveWeaponDamage(void* thisPtr, void* pTarget, int bOffHand,
             int bCritical, int bSneakAttack = 0, int bDeathAttack = 0, int bForceMax = 0,
@@ -80,7 +52,7 @@ namespace SWLOR.Game.Server.Native
 
                 var area = attacker.GetArea();
                 ProfilerPlugin.PushPerfScope("RunScript",
-                    "Script", $"NATIVE:{nameof(OnGetDamageRoll)}",
+                    "Script", "NATIVE:OnGetDamageRoll",
                     "Area", area == null ? "Unknown" : area.m_sTag.ToString(),
                     "ObjectType", "Creature");
 

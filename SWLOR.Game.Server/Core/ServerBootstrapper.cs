@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Loader;
+using SWLOR.Game.NativeHooks;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.NativeSinks;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API;
 
@@ -186,9 +188,15 @@ namespace SWLOR.Game.Server.Core
             Console.WriteLine("NWN.Core library initialized successfully (hosted).");
         }
 
+        /// <summary>
+        /// Registers the NWNX callbacks and binds this build's sinks to the native hooks, which stay uninstalled until
+        /// their handlers enable them as before. The host entry binds the sinks when it activates the generation instead
+        /// (<see cref="GameGeneration"/>); both entries run the same trampolines (<c>SWLOR.Game.NativeHooks</c>).
+        /// </summary>
         private void RegisterNativeHandlers()
         {
             ServerManager.NativeInterop.RegisterHandlers();
+            new NativeHookTable().Bind(NativeSinkFactory.Create());
         }
 
         private void InitializeSWLORSystems()
@@ -208,11 +216,11 @@ namespace SWLOR.Game.Server.Core
         private void BuildServiceContainer()
         {
             Console.WriteLine("Building the service container...");
-            // The host entry hands the game the host's Redis connection, which outlives the build; the native entry keeps
-            // the server's own (RedisConnectionSource).
+            // The host entry hands the game the host's Redis connection and native hook control, which outlive the build;
+            // the native entry keeps the server's own (RedisConnectionSource, NativeHookTable).
             var registrations = _hostedBoot == null
                 ? CompositionRoot.Build(_container)
-                : CompositionRoot.Build(_container, _hostedBoot.RedisConnection);
+                : CompositionRoot.Build(_container, _hostedBoot.RedisConnection, _hostedBoot.HookControl);
             Console.WriteLine($"Service container built ({registrations} registrations).");
         }
 

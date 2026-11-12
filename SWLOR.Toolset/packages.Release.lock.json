@@ -433,8 +433,8 @@
       },
       "Nwn.Hosting.Contracts": {
         "type": "Transitive",
-        "resolved": "0.1.0-preview.2",
-        "contentHash": "OyN1zsyvrz7L0/lJzXzC8GNyB3BZWgZzK39cJjHTy9bK1sn9TYpZmOaojIhnQIKglKs3z89cHbM5c9K+EGD7QQ=="
+        "resolved": "0.1.0-preview.3",
+        "contentHash": "kPLIBIpCxmIycMLuhZlVcYTJaEQ1RZcv1UTQ3nuOLGwWZkf6GkTqFfoiLmSZWU36xu9zL39N8pNPYDZJmCdyvA=="
       },
       "NWN.Native": {
         "type": "Transitive",
@@ -549,7 +549,7 @@
       "swlor.game.contracts": {
         "type": "Project",
         "dependencies": {
-          "Nwn.Hosting.Contracts": "[0.1.0-preview.2, )",
+          "Nwn.Hosting.Contracts": "[0.1.0-preview.3, )",
           "StackExchange.Redis": "[3.0.17, )"
         }
       },

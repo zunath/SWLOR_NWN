@@ -12,14 +12,18 @@ public sealed class DeployBuildTests
 {
     private string _root = null!;
     private string _output = null!;
+    private string _hostOutput = null!;
 
     [SetUp]
     public void SetUp()
     {
         _root = Path.Combine(Path.GetTempPath(), "SWLOR deploy tests", Guid.NewGuid().ToString("N"));
         _output = Path.Combine(_root, "custom Debug output");
-        foreach (var path in new[] { "Build", "SWLOR.Game.Server/Docker", "Module", "assets", "custom Debug output" })
+        _hostOutput = Path.Combine(_root, "custom host output");
+        foreach (var path in new[] { "Build", "SWLOR.Game.Server/Docker", "Module", "assets", "custom Debug output", "custom host output" })
             Directory.CreateDirectory(Path.Combine(_root, path));
+        foreach (var name in new[] { "SWLOR.Game.Host.dll", "SWLOR.Game.Host.deps.json", "SWLOR.Game.Host.runtimeconfig.json", "Nwn.Hosting.dll" })
+            File.WriteAllText(Path.Combine(_hostOutput, name), "current host build " + name);
         File.WriteAllText(Path.Combine(_root, "SWLOR.Game.Server/Docker/swlor.env"), "TEST=true\n");
         File.WriteAllText(Path.Combine(_root, "SWLOR.Game.Server/Docker/docker-compose.yml"), "compose fixture");
         File.WriteAllText(Path.Combine(_root, "Module/Star Wars LOR v2.mod"), "module fixture");
@@ -45,7 +49,7 @@ public sealed class DeployBuildTests
     {
         var first = await Deploy();
         first.ExitCode.Should().Be(0, first.Output);
-        var deployed = Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Server.dll");
+        var deployed = Path.Combine(_root, "debugserver/dotnet/game/SWLOR.Game.Server.dll");
         File.ReadAllBytes(deployed).Should().Equal(File.ReadAllBytes(Path.Combine(_output, "SWLOR.Game.Server.dll")));
         var hak = Path.Combine(_root, "debugserver/hak/test.hak");
         var firstHash = SHA256.HashData(File.ReadAllBytes(hak));
@@ -70,7 +74,7 @@ public sealed class DeployBuildTests
 
         result.ExitCode.Should().Be(0, result.Output);
         result.Output.Should().Contain("Skipping module deployment");
-        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Server.dll"))
+        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/game/SWLOR.Game.Server.dll"))
             .Should().Be("current Debug build SWLOR.Game.Server.dll");
         File.ReadAllText(Path.Combine(_root, "debugserver/docker-compose.yml")).Should().Be("compose fixture");
         File.Exists(Path.Combine(_root, "debugserver/hak/test.hak")).Should().BeTrue();
@@ -94,7 +98,7 @@ public sealed class DeployBuildTests
 
         result.ExitCode.Should().Be(0, result.Output);
         result.Output.Should().Contain("Skipping HAK/TLK deployment");
-        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Server.dll"))
+        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/game/SWLOR.Game.Server.dll"))
             .Should().Be("current Debug build SWLOR.Game.Server.dll");
         File.ReadAllText(Path.Combine(_root, "debugserver/modules/Star Wars LOR v2.mod")).Should().Be("module fixture");
         File.ReadAllText(Path.Combine(_root, "debugserver/hak/test.hak")).Should().Be("existing hak");
@@ -111,6 +115,76 @@ public sealed class DeployBuildTests
         Directory.Exists(Path.Combine(_root, "debugserver")).Should().BeFalse();
     }
 
+    [Test]
+    public async Task AServerWithoutAnEntrySettingGetsTheHostWithTheGameInItsGameFolder()
+    {
+        var result = await Deploy();
+
+        result.ExitCode.Should().Be(0, result.Output);
+        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Host.dll")).Should().Be("current host build SWLOR.Game.Host.dll");
+        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/game/SWLOR.Game.Server.dll"))
+            .Should().Be("current Debug build SWLOR.Game.Server.dll");
+        File.Exists(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Server.dll")).Should().BeFalse();
+        File.ReadAllLines(Path.Combine(_root, "debugserver/swlor.env")).Should().Contain(new[]
+        {
+            "SWLOR_DOTNET_ENTRY=host",
+            "NWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Host",
+            "NWNX_DOTNET_ENTRYPOINT=SWLOR.Game.Host.Bootstrap.NativeBootstrap",
+            "NWNX_DOTNET_METHOD=Initialize"
+        });
+    }
+
+    [TestCase("SWLOR_DOTNET_ENTRY=native")]
+    [TestCase("SWLOR_DOTNET_ENTRY=\"native\"")]
+    [TestCase("SWLOR_DOTNET_ENTRY= 'Native' ")]
+    public async Task TheNativeEntryKeepsTheGameInTheDotnetFolderAndNeedsNoHost(string entryLine)
+    {
+        Directory.CreateDirectory(Path.Combine(_root, "debugserver"));
+        File.WriteAllText(Path.Combine(_root, "debugserver/swlor.env"),
+            $"TEST=true\n{entryLine}\nNWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Host\n");
+        Directory.Delete(_hostOutput, true);
+
+        var result = await Deploy();
+
+        result.ExitCode.Should().Be(0, result.Output);
+        File.ReadAllText(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Server.dll"))
+            .Should().Be("current Debug build SWLOR.Game.Server.dll");
+        Directory.Exists(Path.Combine(_root, "debugserver/dotnet/game")).Should().BeFalse();
+        File.Exists(Path.Combine(_root, "debugserver/dotnet/SWLOR.Game.Host.dll")).Should().BeFalse();
+        File.ReadAllLines(Path.Combine(_root, "debugserver/swlor.env")).Should().Contain(new[]
+        {
+            "TEST=true",
+            "SWLOR_DOTNET_ENTRY=native",
+            "NWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Server",
+            "NWNX_DOTNET_ENTRYPOINT=SWLOR.Game.Server.Core.ServerManager",
+            "NWNX_DOTNET_METHOD=Bootstrap"
+        }).And.NotContain("NWNX_DOTNET_ASSEMBLY=/nwn/home/dotnet/SWLOR.Game.Host");
+    }
+
+    [Test]
+    public async Task IncompleteHostOutputFailsBeforeTouchingDeployment()
+    {
+        File.Delete(Path.Combine(_hostOutput, "SWLOR.Game.Host.runtimeconfig.json"));
+
+        var result = await Deploy();
+
+        result.ExitCode.Should().NotBe(0);
+        result.Output.Should().Contain("Host build output is incomplete");
+        Directory.Exists(Path.Combine(_root, "debugserver")).Should().BeFalse();
+    }
+
+    [Test]
+    public async Task AnUnknownEntryFailsBeforeTouchingDeployment()
+    {
+        File.WriteAllText(Path.Combine(_root, "SWLOR.Game.Server/Docker/swlor.env"), "SWLOR_DOTNET_ENTRY=hosted\n");
+
+        var result = await Deploy();
+
+        result.ExitCode.Should().NotBe(0);
+        result.Output.Should().Contain("SWLOR_DOTNET_ENTRY=hosted; use host or native");
+        Directory.Exists(Path.Combine(_root, "debugserver")).Should().BeFalse();
+    }
+
     private async Task<(int ExitCode, string Output)> Deploy()
     {
         var info = new ProcessStartInfo("dotnet")
@@ -122,6 +196,8 @@ public sealed class DeployBuildTests
         info.ArgumentList.Add("-o");
         info.ArgumentList.Add("--server-output");
         info.ArgumentList.Add(_output);
+        info.ArgumentList.Add("--host-output");
+        info.ArgumentList.Add(_hostOutput);
         using var process = Process.Start(info)!;
         var stdout = process.StandardOutput.ReadToEndAsync();
         var stderr = process.StandardError.ReadToEndAsync();

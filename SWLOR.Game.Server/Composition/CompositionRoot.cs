@@ -1,5 +1,7 @@
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SWLOR.Game.Contracts;
 
 namespace SWLOR.Game.Server.Composition
 {
@@ -54,6 +56,53 @@ namespace SWLOR.Game.Server.Composition
                 throw new ArgumentNullException(nameof(host));
 
             return host.Build(ServiceRegistrations.Register);
+        }
+
+        /// <summary>
+        /// Builds <paramref name="host"/> from the server's registrations with <paramref name="redisConnection"/> as the
+        /// Redis connection: the host entry hands the game the connection it keeps for the life of the process.
+        /// <see cref="ServerBootstrapper"/> calls it in its <c>BuildServiceContainer</c> step on that entry.
+        /// </summary>
+        /// <returns>The number of registrations.</returns>
+        public static int Build(ContainerHost host, IRedisConnectionSource redisConnection)
+        {
+            if (host == null)
+                throw new ArgumentNullException(nameof(host));
+            if (redisConnection == null)
+                throw new ArgumentNullException(nameof(redisConnection));
+
+            return host.Build(services => RegisterHostedServices(services, redisConnection));
+        }
+
+        /// <summary>
+        /// Builds a container from the server's registrations with the server's options (<c>ValidateOnBuild</c>,
+        /// <c>ValidateScopes</c>, every singleton created) and disposes it, without touching <see cref="ServerHost"/>. The
+        /// host validates a game build this way off the engine thread before activating it: constructors may not call the
+        /// engine (<c>DependencyInjection.md</c>).
+        /// </summary>
+        /// <returns>The number of registrations.</returns>
+        public static int ValidateServerServices()
+        {
+            var services = new ServiceCollection();
+            RegisterServerServices(services);
+            using (ContainerHost.Create(services))
+            {
+            }
+
+            return services.Count;
+        }
+
+        /// <summary>
+        /// The server's registrations with the host's Redis connection in place of the server's own: the list the host
+        /// entry builds the container from. The registration count stays the same.
+        /// </summary>
+        public static void RegisterHostedServices(IServiceCollection services, IRedisConnectionSource redisConnection)
+        {
+            if (redisConnection == null)
+                throw new ArgumentNullException(nameof(redisConnection));
+
+            ServiceRegistrations.Register(services);
+            services.Replace(ServiceDescriptor.Singleton(redisConnection));
         }
 
         /// <summary>

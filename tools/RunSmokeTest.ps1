@@ -60,11 +60,14 @@ if (-not $SkipBuild) {
     $previousServer = $env:MSBUILDUSESERVER
     $env:MSBUILDUSESERVER = "0"
     try {
-        & dotnet build (Join-Path $repository "SWLOR.Game.Server\SWLOR.Game.Server.csproj") -c Release `
-            -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
-        if ($LASTEXITCODE -ne 0) {
-            [Console]::Error.WriteLine("The Release build failed (exit $LASTEXITCODE); the smoke run did not start.")
-            exit 2
+        # The stack boots the host entry: SWLOR.Game.Host loads the game build as a generation.
+        foreach ($project in @("SWLOR.Game.Server\SWLOR.Game.Server.csproj", "SWLOR.Game.Host\SWLOR.Game.Host.csproj")) {
+            & dotnet build (Join-Path $repository $project) -c Release `
+                -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
+            if ($LASTEXITCODE -ne 0) {
+                [Console]::Error.WriteLine("The Release build of $project failed (exit $LASTEXITCODE); the smoke run did not start.")
+                exit 2
+            }
         }
     }
     finally {

@@ -76,6 +76,10 @@ namespace SWLOR.Game.Server.EngineTests
                 return;
             _hasRun = true;
 
+            // Boot-time scheduled work for the frame-delivery scenario; started here rather than from a handler of its
+            // own so the engine-test handler list stays master's.
+            Definitions.FrameDeliveryEngineTests.StartBootProbe();
+
             var delay = settings.EngineTestStartupDelaySeconds;
             Console.WriteLine($"{ConsolePrefix} Engine tests scheduled to start in {delay} seconds.");
             DelayCommand(delay, () => _ = RunAllTestsAsync());

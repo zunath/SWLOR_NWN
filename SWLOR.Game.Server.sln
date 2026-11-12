@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Runner", "SWLOR.Runner\SWLOR.Runner.csproj", "{CAD52F45-F4DC-4EE3-8008-068CC00E27B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Game.Server", "SWLOR.Game.Server\SWLOR.Game.Server.csproj", "{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402} = {2810F095-EC31-47DA-AAFE-ACB13F32E402}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Web", "SWLOR.Web\SWLOR.Web.csproj", "{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}"
 EndProject
@@ -72,6 +75,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.TypeMoves", "tools\Refactor\SWLOR.TypeMoves\SWLOR.TypeMoves.csproj", "{62E48729-31DA-412F-956D-A80FC21ADED9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Contracts", "SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj", "{65FF89C3-0D75-4764-A725-A283F6D0E00C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Host", "SWLOR.Game.Host\SWLOR.Game.Host.csproj", "{2810F095-EC31-47DA-AAFE-ACB13F32E402}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Host.Tests", "SWLOR.Game.Host.Tests\SWLOR.Game.Host.Tests.csproj", "{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -455,6 +462,30 @@ Global
 		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Release|x64.Build.0 = Release|Any CPU
 		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Release|x86.ActiveCfg = Release|Any CPU
 		{65FF89C3-0D75-4764-A725-A283F6D0E00C}.Release|x86.Build.0 = Release|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Debug|x64.Build.0 = Debug|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Debug|x86.Build.0 = Debug|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Release|x64.ActiveCfg = Release|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Release|x64.Build.0 = Release|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Release|x86.ActiveCfg = Release|Any CPU
+		{2810F095-EC31-47DA-AAFE-ACB13F32E402}.Release|x86.Build.0 = Release|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Debug|x64.Build.0 = Debug|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Debug|x86.Build.0 = Debug|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Release|x64.ActiveCfg = Release|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Release|x64.Build.0 = Release|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Release|x86.ActiveCfg = Release|Any CPU
+		{08BF5005-BBD0-430A-B4CE-DBBD51C70ED6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -62,7 +62,10 @@ internal static class ArchitectureProject
     /// <summary>The compiled contracts assembly (<c>SWLOR.Game.Contracts</c>), copied next to the tests.</summary>
     public static string ContractsAssemblyPath => Path.Combine(AppContext.BaseDirectory, ContractsAssemblyFileName);
 
-    private static string ServerAssemblyPath => Path.Combine(AppContext.BaseDirectory, ServerAssemblyFileName);
+    /// <summary>The compiled permanent host (<c>SWLOR.Game.Host</c>), copied next to the tests.</summary>
+    public static string HostAssemblyPath => Path.Combine(AppContext.BaseDirectory, "SWLOR.Game.Host.dll");
+
+    private static string ServerAssemblyPath =>Path.Combine(AppContext.BaseDirectory, ServerAssemblyFileName);
 
     private static TypeReferenceGraph ScanServerGraph() => AssemblyScanner.Scan(ServerAssemblyPath);
 }

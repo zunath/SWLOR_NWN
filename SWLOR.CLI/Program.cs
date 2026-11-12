@@ -51,6 +51,10 @@ namespace SWLOR.CLI
             {
                 Description = "Server build output to deploy. MSBuild supplies its TargetDir; standalone deployment defaults to the Release build produced by RunCLI.cmd."
             };
+            var hostOutputOption = new Option<string>("--host-output")
+            {
+                Description = "SWLOR.Game.Host build output to deploy when swlor.env's SWLOR_DOTNET_ENTRY is host. MSBuild supplies the host's output for the server's configuration; standalone deployment defaults to its Release build."
+            };
             var modulePackerOption = CreateValueOption(
                 "--pack",
                 "-p",
@@ -98,6 +102,7 @@ namespace SWLOR.CLI
             rootCommand.Options.Add(languageBuilderOption);
             rootCommand.Options.Add(deployOption);
             rootCommand.Options.Add(serverOutputOption);
+            rootCommand.Options.Add(hostOutputOption);
             rootCommand.Options.Add(modulePackerOption);
             rootCommand.Options.Add(recipeOption);
             rootCommand.Options.Add(structureOption);
@@ -164,7 +169,7 @@ namespace SWLOR.CLI
 
                 if (parseResult.GetValue(deployOption))
                 {
-                    _deployBuild.Process(parseResult.GetValue(serverOutputOption));
+                    _deployBuild.Process(parseResult.GetValue(serverOutputOption), parseResult.GetValue(hostOutputOption));
                 }
 
                 if (parseResult.GetValue(beastBuilderOption))

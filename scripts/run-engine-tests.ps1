@@ -34,6 +34,18 @@
     receives dotnet/ and app_logs/). Defaults to SWLOR_ENGINE_TEST_SERVER_HOME,
     then the repo's debugserver/ directory if present, then SWLOR.Game.Server/Docker.
 
+.PARAMETER Entry
+    The .NET entry the server boots through. host (the default): SWLOR.Game.Host is staged in
+    dotnet/ and loads the game and the test assembly from dotnet/game/ as a generation. native:
+    SWLOR.Game.Server's own ServerManager.Bootstrap, the game and the test assembly in dotnet/
+    (production's entry until the host is measured no slower). The compose file boots the
+    entry staged here, whatever the home's swlor.env says.
+
+.PARAMETER Collectible
+    Host entry only: true loads the game into a collectible context, false into a
+    non-collectible one. Empty (the default) keeps the host's default: collectible outside
+    production, so collectible for engine tests.
+
 .PARAMETER TimeoutMinutes
     Hard wall-clock limit for the containerized run. On expiry the stack is torn
     down and the run is reported as failed. This is a backstop against a server
@@ -47,6 +59,10 @@
     ./scripts/run-engine-tests.ps1 -SkipBuild -Filter Combat
 .EXAMPLE
     ./scripts/run-engine-tests.ps1 -Filter Harness -TimeoutMinutes 10
+.EXAMPLE
+    ./scripts/run-engine-tests.ps1 -Filter CombatLoad -Entry native
+.EXAMPLE
+    ./scripts/run-engine-tests.ps1 -Filter CombatLoad -Entry host -Collectible false
 #>
 [CmdletBinding()]
 param(
@@ -55,6 +71,10 @@ param(
     [string]$ArenaResref = "",
     [string]$Configuration = "Release",
     [string]$ServerHome = "",
+    [ValidateSet("host", "native")]
+    [string]$Entry = "host",
+    [ValidateSet("", "true", "false")]
+    [string]$Collectible = "",
     [int]$TimeoutMinutes = 90
 )
 
@@ -103,7 +123,12 @@ $ComposeFile = Join-Path $RepoRoot "SWLOR.Game.Server\Docker\docker-compose.engi
 # stack even though both may use the same server home directory.
 $ComposeProject = "swlor-engine-tests"
 $DotnetOutputDir = Join-Path $ServerHome "dotnet"
-$ReportPath = Join-Path $ServerHome "app_logs\engine_tests\engine-test-results.json"
+# The host entry stages the host in dotnet/ and the game build (with the test assembly) in
+# dotnet/game/; the native entry stages the game build in dotnet/ itself.
+$HostProject = Join-Path $RepoRoot "SWLOR.Game.Host\SWLOR.Game.Host.csproj"
+$GameStagingDir = if ($Entry -eq "host") { Join-Path $DotnetOutputDir "game" } else { $DotnetOutputDir }
+$EntryAssemblyName = if ($Entry -eq "host") { "SWLOR.Game.Host" } else { "SWLOR.Game.Server" }
+$ReportPath =Join-Path $ServerHome "app_logs\engine_tests\engine-test-results.json"
 
 function Write-Section($message) {
     Write-Host ""
@@ -126,6 +151,12 @@ if (-not $SkipBuild) {
     if ($LASTEXITCODE -ne 0) {
         throw "dotnet build failed with exit code $LASTEXITCODE"
     }
+    if ($Entry -eq "host") {
+        & dotnet build $HostProject -c $Configuration -p:RunPostBuildEvent=Never
+        if ($LASTEXITCODE -ne 0) {
+            throw "dotnet build of SWLOR.Game.Host failed with exit code $LASTEXITCODE"
+        }
+    }
 
     # BOTH outputs are staged, game project first. A referenced project's DLL is copied
     # into the referencing project's output, but its runtimeconfig.json/deps.json are NOT -
@@ -140,14 +171,23 @@ if (-not $SkipBuild) {
         }
     }
 
-    Write-Section "Deploying build output to $DotnetOutputDir"
+    $hostOutputDir = Join-Path $RepoRoot "SWLOR.Game.Host\bin\$Configuration\net10.0"
+    if ($Entry -eq "host" -and -not (Test-Path $hostOutputDir)) {
+        throw "Expected build output directory not found: $hostOutputDir"
+    }
+
+    Write-Section "Deploying build output to $DotnetOutputDir ($Entry entry)"
     if (Test-Path $DotnetOutputDir) {
         Remove-Item $DotnetOutputDir -Recurse -Force
     }
-    New-Item -ItemType Directory -Path $DotnetOutputDir -Force | Out-Null
+    New-Item -ItemType Directory -Path $GameStagingDir -Force | Out-Null
+    if ($Entry -eq "host") {
+        Copy-Item (Join-Path $hostOutputDir "*") $DotnetOutputDir -Recurse -Force
+        Write-Host "Copied $hostOutputDir -> $DotnetOutputDir"
+    }
     foreach ($dir in @($gameOutputDir, $engineTestOutputDir)) {
-        Copy-Item (Join-Path $dir "*") $DotnetOutputDir -Recurse -Force
-        Write-Host "Copied $dir -> $DotnetOutputDir"
+        Copy-Item (Join-Path $dir "*") $GameStagingDir -Recurse -Force
+        Write-Host "Copied $dir -> $GameStagingDir"
     }
 
 }
@@ -160,14 +200,19 @@ else {
 # this script, before the harness was its own assembly) the server would boot,
 # schedule nothing, and burn the entire wall clock before failing. Fail here in a
 # second instead.
-$stagedTestAssembly = Join-Path $DotnetOutputDir "SWLOR.Game.Server.EngineTests.dll"
-$stagedRuntimeConfig = Join-Path $DotnetOutputDir "SWLOR.Game.Server.runtimeconfig.json"
+$stagedTestAssembly = Join-Path $GameStagingDir "SWLOR.Game.Server.EngineTests.dll"
+$stagedGameAssembly = Join-Path $GameStagingDir "SWLOR.Game.Server.dll"
+$stagedRuntimeConfig = Join-Path $DotnetOutputDir "$EntryAssemblyName.runtimeconfig.json"
 if (-not (Test-Path $stagedTestAssembly)) {
-    Write-Host "$DotnetOutputDir is missing SWLOR.Game.Server.EngineTests.dll - no engine tests would run. Re-run without -SkipBuild to stage it." -ForegroundColor Red
+    Write-Host "$GameStagingDir is missing SWLOR.Game.Server.EngineTests.dll - no engine tests would run. Re-run without -SkipBuild (with -Entry $Entry) to stage it." -ForegroundColor Red
+    exit 1
+}
+if (-not (Test-Path $stagedGameAssembly)) {
+    Write-Host "$GameStagingDir is missing SWLOR.Game.Server.dll - the $Entry entry has no game to load. Re-run without -SkipBuild (with -Entry $Entry) to stage it." -ForegroundColor Red
     exit 1
 }
 if (-not (Test-Path $stagedRuntimeConfig)) {
-    Write-Host "$DotnetOutputDir is missing SWLOR.Game.Server.runtimeconfig.json - the NWNX .NET host cannot boot. Re-run without -SkipBuild to stage it." -ForegroundColor Red
+    Write-Host "$DotnetOutputDir is missing $EntryAssemblyName.runtimeconfig.json - the NWNX .NET host cannot boot the $Entry entry. Re-run without -SkipBuild (with -Entry $Entry) to stage it." -ForegroundColor Red
     exit 1
 }
 
@@ -181,6 +226,13 @@ $previousFilter = $env:SWLOR_ENGINE_TEST_FILTER
 $previousArenaResref = $env:SWLOR_ENGINE_TEST_ARENA_RESREF
 $previousHakDir = $env:SWLOR_ENGINE_TEST_HAK_DIR
 $previousHome = $env:SWLOR_ENGINE_TEST_HOME
+$entryVariables = @(
+    "SWLOR_ENGINE_TEST_DOTNET_ENTRY", "SWLOR_ENGINE_TEST_DOTNET_ASSEMBLY", "SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT",
+    "SWLOR_ENGINE_TEST_DOTNET_METHOD", "SWLOR_ENGINE_TEST_GAME_COLLECTIBLE")
+$previousEntryValues = @{}
+foreach ($name in $entryVariables) {
+    $previousEntryValues[$name] = [Environment]::GetEnvironmentVariable($name)
+}
 $permissionSnapshotName = ".swlor-engine-test-permissions.$PID.snapshot"
 $permissionSnapshotContainer = "/nwn/home/$permissionSnapshotName"
 $permissionsPrepared = $false
@@ -201,6 +253,21 @@ if ([System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Unix) {
 try {
     $env:SWLOR_ENGINE_TEST_FILTER = $Filter
     $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $ArenaResref
+
+    # The compose file boots the entry staged above (docker-compose.enginetests.yml).
+    $env:SWLOR_ENGINE_TEST_DOTNET_ENTRY = $Entry
+    if ($Entry -eq "host") {
+        $env:SWLOR_ENGINE_TEST_DOTNET_ASSEMBLY = "/nwn/home/dotnet/SWLOR.Game.Host"
+        $env:SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT = "SWLOR.Game.Host.Bootstrap.NativeBootstrap"
+        $env:SWLOR_ENGINE_TEST_DOTNET_METHOD = "Initialize"
+    }
+    else {
+        $env:SWLOR_ENGINE_TEST_DOTNET_ASSEMBLY = "/nwn/home/dotnet/SWLOR.Game.Server"
+        $env:SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT = "SWLOR.Game.Server.Core.ServerManager"
+        $env:SWLOR_ENGINE_TEST_DOTNET_METHOD = "Bootstrap"
+    }
+    $env:SWLOR_ENGINE_TEST_GAME_COLLECTIBLE = $Collectible
+    Write-Host "Booting the $Entry entry ($env:SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT.$env:SWLOR_ENGINE_TEST_DOTNET_METHOD), collectible='$Collectible'."
 
     # The compose file's mounts interpolate SWLOR_ENGINE_TEST_HOME rather than PWD:
     # native Windows PowerShell never exports a PWD environment variable (Push-Location
@@ -399,6 +466,9 @@ finally {
     $env:SWLOR_ENGINE_TEST_ARENA_RESREF = $previousArenaResref
     $env:SWLOR_ENGINE_TEST_HAK_DIR = $previousHakDir
     $env:SWLOR_ENGINE_TEST_HOME = $previousHome
+    foreach ($name in $entryVariables) {
+        [Environment]::SetEnvironmentVariable($name, $previousEntryValues[$name])
+    }
 }
 
 if ($cleanupFailures.Count -gt 0) {

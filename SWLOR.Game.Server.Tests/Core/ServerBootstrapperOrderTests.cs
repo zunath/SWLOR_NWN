@@ -35,6 +35,74 @@ public class ServerBootstrapperOrderTests
     }
 
     [Test]
+    public void The_host_entry_replaces_the_two_native_steps_and_runs_the_same_five_after_them()
+    {
+        var bootstrapper = new ServerBootstrapper(new ContainerHost());
+
+        bootstrapper.HostedSteps.Select(step => step.Name).Should().Equal(
+            new[] { "InitializeHostedNWNCore" }.Concat(StepOrder.Skip(2)),
+            "the host has initialized NWN.Core and registered the native callbacks; everything after that is shared");
+        bootstrapper.HostedSteps.Skip(1).Should().Equal(bootstrapper.Steps.Skip(2),
+            "both entries run the very same step objects, so a shared step cannot drift between them");
+    }
+
+    [Test]
+    public void The_host_entry_needs_what_the_host_hands_it()
+    {
+        var bootstrapper = new ServerBootstrapper(new ContainerHost());
+
+        var withoutBoot = () => bootstrapper.BootstrapHosted(null);
+        var hostedStepAlone = () => bootstrapper.HostedSteps[0].Run();
+        var shutdownWithoutHost = () => bootstrapper.ShutdownHosted();
+
+        withoutBoot.Should().Throw<ArgumentNullException>();
+        hostedStepAlone.Should().Throw<InvalidOperationException>().WithMessage("*only through BootstrapHosted*");
+        shutdownWithoutHost.Should().Throw<InvalidOperationException>().WithMessage("*not booted by the host*");
+        bootstrapper.ClosureManager.Should().BeOfType<ClosureManager>("the native entry keeps today's closure manager");
+    }
+
+    private sealed class RecordingStaticState : IServerStaticState
+    {
+        public List<string> Calls { get; } = new();
+        public bool FailFlush { get; init; }
+
+        public void ClearScheduler() => Calls.Add(nameof(ClearScheduler));
+        public void ClearNwTaskQueue() => Calls.Add(nameof(ClearNwTaskQueue));
+
+        public void FlushLogs()
+        {
+            Calls.Add(nameof(FlushLogs));
+            if (FailFlush)
+                throw new InvalidOperationException("flush");
+        }
+
+        public void ClearScriptExecutionProvider() => Calls.Add(nameof(ClearScriptExecutionProvider));
+    }
+
+    [Test]
+    public void A_hosted_boot_that_stopped_before_the_container_lets_go_of_the_loggers_and_the_script_provider()
+    {
+        var state = new RecordingStaticState();
+
+        ServerBootstrapper.ReleasePartialBoot(state);
+
+        state.Calls.Should().Equal("FlushLogs", "ClearScriptExecutionProvider");
+    }
+
+    [Test]
+    public void The_script_provider_is_cleared_even_when_the_log_flush_fails()
+    {
+        var state = new RecordingStaticState { FailFlush = true };
+
+        var release = () => ServerBootstrapper.ReleasePartialBoot(state);
+
+        release.Should().Throw<InvalidOperationException>().WithMessage("flush");
+        state.Calls.Should().Equal("FlushLogs", "ClearScriptExecutionProvider");
+        var withoutState = () => ServerBootstrapper.ReleasePartialBoot(null);
+        withoutState.Should().Throw<ArgumentNullException>();
+    }
+
+    [Test]
     public void The_container_is_built_before_the_script_handlers_are_registered()
     {
         var container = new ContainerHost();

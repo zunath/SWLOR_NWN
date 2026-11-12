@@ -1081,6 +1081,11 @@ namespace SWLOR.Game.Server.Service
                 if (TryGetLoginRedirect(current, out var location))
                 {
                     var redirect = location;
+
+                    // Follow a passenger sent back to a flight still in the air, so a dropped jump is retried.
+                    if (ride.ArrivalUtc > DateTime.UtcNow)
+                        _boardings.Start(playerId, ride.FlightId, DateTime.UtcNow);
+
                     AssignCommand(current, () =>
                     {
                         ClearAllActions();

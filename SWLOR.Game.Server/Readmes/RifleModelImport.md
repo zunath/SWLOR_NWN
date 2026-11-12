@@ -97,6 +97,16 @@ directory> --output <review folder>` reproduces the native banks and verifies
 their pinned hashes. After source and client verification, use `--apply` to
 install them and `--check` to check the installed payloads. The generic hold
 generator excludes these registered banks during generation and finalization.
+Large profile sets can use hash-pinned gzip `profileArchives` under
+`SWLOR_Haks/tools/rifle_profile_motions/`. Each bounded archive owns only its
+body, motion curves and ability curves; private scratch files remain excluded.
+The owner compiles these batches separately, joins their native programs
+losslessly, and pins both the complete bank and its ordered `bankParts`. Each
+installed part stays below 15 MiB and inherits the next part through the owned
+`a_rfl_<body>_bNN` chain. Check the complete chain with
+`TestRifleProfileArchives.py` and `TestRifleAnimationBanks.py`; the normal body
+root must inherit the final part's original parent when another owner is rebuilt.
+
 Each profile retains the original three stock clips, bone lengths and all other
 hook tracks. Its support-arm and right-wrist rotation keys are authored. Custom
 ready/shot `rhand` orientations use only the pinned idle basis, so a qualified

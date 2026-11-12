@@ -1795,7 +1795,7 @@ namespace SWLOR.Game.Server.Service
                 if (areaVisualEffect != VisualEffect.None &&
                     GetIsObjectValid(GetAreaFromLocation(center)))
                 {
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), center);
+                    VisualEffectPlayback.ApplyAtLocation(areaVisualEffect, center);
                 }
 
                 totalDamage = ApplyCombatImpactToCreatures(
@@ -2137,7 +2137,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (areaVisualEffect != VisualEffect.None)
                 {
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), origin);
+                    VisualEffectPlayback.ApplyAtLocation(areaVisualEffect, origin);
                 }
             }
 
@@ -2240,7 +2240,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         if (alwaysApplyAreaVisualEffect && areaVisualEffect != VisualEffect.None)
                         {
-                            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), areaVisualLocation);
+                            VisualEffectPlayback.ApplyAtLocation(areaVisualEffect, areaVisualLocation);
                         }
 
                         if (sendsNoTargetMessage)
@@ -2270,7 +2270,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (areaVisualEffect != VisualEffect.None)
                     {
-                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), areaVisualLocation);
+                        VisualEffectPlayback.ApplyAtLocation(areaVisualEffect, areaVisualLocation);
                     }
 
                     ApplyCombatImpactToCreatures(
@@ -2844,7 +2844,7 @@ namespace SWLOR.Game.Server.Service
                 if (trackedImpact?.VisualEffects.Effect is { } authoredEffect && authoredEffect != VisualEffect.None)
                     PlaySuccessfulImpactVisualEffect(activator, target);
                 else if (targetVisualEffect != VisualEffect.None)
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), target);
+                    VisualEffectPlayback.ApplyToObject(targetVisualEffect, target);
             }
 
             afterSuccessfulHit?.Invoke(target);

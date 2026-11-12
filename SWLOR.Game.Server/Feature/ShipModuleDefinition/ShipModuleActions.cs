@@ -211,11 +211,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
         {
             var result = Space.RollWeaponShot(activator, activatorStatus, target, targetStatus, shot);
 
-            var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
             var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, sound, target);
+                ShipSound.Play(target, ShipSound.Laser);
                 ApplyEffectToObject(DurationType.Instant, missile, target);
                 if (explosionOnHit && result.IsHit)
                 {
@@ -245,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 {
                     var effect = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
                     ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
+                    ShipSound.Play(activator, ShipSound.Ion);
                 });
 
                 DelayCommand(0.1f, () =>
@@ -307,7 +306,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
                 if (result.IsHit)
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
+                    ShipSound.Play(activator, ShipSound.Ion);
                 }
             });
 
@@ -378,7 +377,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             // Shoot some missiles out to the target.
             AssignCommand(activator, () =>
             {
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Trp), activator);
+                ShipSound.Play(activator, ShipSound.Torpedo);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Mirv_Torpedo, !isHit), target);
             });
 
@@ -388,7 +387,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             {
                 if (heavy)
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake, !isHit), target);
+                    ShipSound.Play(target, ShipSound.ImpactRumble);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summondragon, !isHit), target);
                 }
                 else

@@ -21,10 +21,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private readonly GuiWindowBuilder<ConversationViewModel> _builder = new();
 
-        // NUI labels draw a single line, so the speaker name is wrapped by the view model onto three label rows of the
-        // 150 px portrait column; "Docking Point: CZ-220" or "Docking Point: Smuggler's Moon Station" fits without clipping.
-        private const float SpeakerNameRowHeight = 18f;
-
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Conversation)
@@ -36,34 +32,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindOnClosed(model => model.OnWindowClosed())
                 .AddColumn(root =>
                 {
+                    // The speaker's name spans the whole window. A one-line label inside the portrait column clipped any
+                    // name wider than the portrait, such as "Nar Shaddaa Security".
+                    root.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .BindText(model => model.SpeakerName)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(28f);
+                    });
+
                     root.AddRow(header =>
                     {
                         header.AddColumn(portrait =>
                         {
-                            portrait.AddRow(row =>
-                            {
-                                row.AddLabel()
-                                    .BindText(model => model.SpeakerNameLine1)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                    .SetHeight(SpeakerNameRowHeight);
-                            });
-                            portrait.AddRow(row =>
-                            {
-                                row.AddLabel()
-                                    .BindText(model => model.SpeakerNameLine2)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                    .SetHeight(SpeakerNameRowHeight);
-                            });
-                            portrait.AddRow(row =>
-                            {
-                                row.AddLabel()
-                                    .BindText(model => model.SpeakerNameLine3)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                    .SetHeight(SpeakerNameRowHeight);
-                            });
                             portrait.AddRow(row =>
                             {
                                 row.AddImage()
@@ -73,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetWidth(128f)
                                     .SetHeight(200f);
                             });
-                        }).SetWidth(150f);
+                        }).SetWidth(140f);
 
                         header.AddColumn(dialogue =>
                         {

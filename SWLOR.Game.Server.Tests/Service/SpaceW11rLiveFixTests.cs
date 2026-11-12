@@ -1,6 +1,5 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.SpaceService;
 
@@ -26,51 +25,6 @@ public class SpaceW11rLiveFixTests
 
     private static string ReadSource(params string[] relativePath) =>
         File.ReadAllText(relativePath.Aggregate(Path.Combine(Root(), "SWLOR.Game.Server"), Path.Combine));
-
-    // Conversation speaker name
-
-    [TestCase("Docking Point: CZ-220", "Docking Point:", "CZ-220", "")]
-    [TestCase("Requisitions Officer Mira Kell", "Requisitions", "Officer Mira Kell", "")]
-    [TestCase("Docking Point: Smuggler's Moon Station", "Docking Point:", "Smuggler's Moon", "Station")]
-    public void ALongSpeakerName_WrapsOntoTheRowsWithoutLosingWords(string name, string first, string second, string third)
-    {
-        var lines = ConversationViewModel.WrapSpeakerName(name);
-
-        lines.Should().Equal(first, second, third);
-        lines.Should().OnlyContain(x => x.Length <= ConversationViewModel.SpeakerNameLineCharacters);
-        string.Join(" ", lines.Where(x => x.Length > 0)).Should().Be(name);
-    }
-
-    [Test]
-    public void AShortSpeakerName_SitsOnTheMiddleRow()
-    {
-        ConversationViewModel.WrapSpeakerName("Dockhand").Should().Equal("", "Dockhand", "");
-        ConversationViewModel.WrapSpeakerName("").Should().Equal("", "", "");
-        ConversationViewModel.WrapSpeakerName(null).Should().Equal("", "", "");
-    }
-
-    [Test]
-    public void AnOverlongSpeakerName_IsCutOnTheThirdRow_AndALongWordIsSplit()
-    {
-        var lines = ConversationViewModel.WrapSpeakerName("The Exceedingly Long Named Captain Of The Very Distant Outer Rim Frontier");
-        lines.Should().HaveCount(3);
-        lines[2].Should().EndWith("...");
-        lines.Should().OnlyContain(x => x.Length <= ConversationViewModel.SpeakerNameLineCharacters);
-
-        ConversationViewModel.WrapSpeakerName("Supercalifragilisticexpialidocious").Should()
-            .Equal("Supercalifragilist", "icexpialidocious", "");
-    }
-
-    [Test]
-    public void TheConversationWindow_DrawsTheSpeakerNameOnThreeLabelRows()
-    {
-        var source = ReadSource("Feature", "GuiDefinition", "ConversationWindowDefinition.cs");
-        source.Should().Contain("model.SpeakerNameLine1").And.Contain("model.SpeakerNameLine2").And.Contain("model.SpeakerNameLine3");
-        source.Should().NotContain("BindText(model => model.SpeakerName)", "a single NUI label clips the name to one line");
-
-        ReadSource("Feature", "GuiDefinition", "ViewModel", "ConversationViewModel.cs").Should()
-            .Contain("var speakerLines = WrapSpeakerName(SpeakerName);");
-    }
 
     // DM-placed derelict
 

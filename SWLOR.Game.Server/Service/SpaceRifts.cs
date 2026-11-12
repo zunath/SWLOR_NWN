@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Service
             status.Hull = RiftRules.HullAfterEjection(status.Hull, status.MaxHull);
             SaveShipStatus(pilot, status);
 
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), pilot);
+            ShipSound.Play(pilot, ShipSound.Explosion);
             AssignCommand(pilot, () =>
             {
                 ClearAllActions();

@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public int PerkLevel { get; init; }
         public InventorySlot InstrumentSlot { get; init; } = InventorySlot.Invalid;
         public uint Instrument { get; init; }
+        public uint InstrumentBow { get; init; } = OBJECT_INVALID;
         public PerformanceKind Kind { get; }
         public PerformanceInstrumentFamily InstrumentFamily { get; }
         public PerformanceRoutineType Routine { get; set; }

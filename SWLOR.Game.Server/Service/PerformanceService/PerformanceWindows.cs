@@ -158,11 +158,17 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             var track = PerformanceSongs.ChooseSong(session.PlayerId, preference.SongTrackId);
             return setup with
             {
+                InstrumentFamily = session.InstrumentFamily,
                 SetText = hasSecondSet ? $"{set} + {PerformanceRiderText.GetName(preference.SecondSet)}" : set,
                 SongText = track >= 0 ? Music.GetTrackName(track) : "No song",
-                InstrumentText = GetIsObjectValid(session.Instrument)
-                    ? GetName(session.Instrument)
-                    : DescribeFamily(session.InstrumentFamily)
+                InstrumentText = session.InstrumentFamily switch
+                {
+                    PerformanceInstrumentFamily.Vocals => "Microphone",
+                    PerformanceInstrumentFamily.Pipes => "Panpipes",
+                    _ => GetIsObjectValid(session.Instrument)
+                        ? GetName(session.Instrument)
+                        : DescribeFamily(session.InstrumentFamily)
+                }
             };
         }
 
@@ -266,7 +272,15 @@ namespace SWLOR.Game.Server.Service.PerformanceService
 
         private static string DescribeFamily(PerformanceInstrumentFamily family)
         {
-            return family == PerformanceInstrumentFamily.Horns ? "Horn" : "Strings";
+            return family switch
+            {
+                PerformanceInstrumentFamily.Horns => "Horn",
+                PerformanceInstrumentFamily.Vocals => "Vocals",
+                PerformanceInstrumentFamily.Pipes => "Pipes",
+                PerformanceInstrumentFamily.BowedStrings => "Violin",
+                PerformanceInstrumentFamily.Percussion => "Percussion",
+                _ => "Strings"
+            };
         }
     }
 }

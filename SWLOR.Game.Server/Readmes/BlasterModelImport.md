@@ -177,6 +177,16 @@ from the existing native connectors, plus the complete assembly's
 joint sleeves, and preserves the source surface UVs and corner frames. Its
 output selects complete authored `source_nodes` for each part and shares maps
 across roles. Node selectors cannot overlap or be combined with clipping.
+Each envelope must stay within the part's own cut section (or, where the surfaces stop
+short of the cut, their end section); the tool rejects a wider or off-axis one. A sleeve
+outside the part reads as a metal bar: the fitted vibroblades sit 20 mm off the stock axis,
+and their stock-centred 48 x 72 mm sleeves stuck out of every part, as did most fitted
+greatsword, knife, polearm and twinblade sleeves, until
+`tools/FitBladeJointInterfaces.py` removed them from the compiled parts. The flat cut caps
+close each cut; four vibroblade bottoms that stop 3.5 mm short keep a collar of their own
+grip end. Quarterstaffs are left as they are: a few of their sleeves stick out 1-5 mm, too
+little to see, and the staff widening left some caps partly open behind them. Add a new family's measured joint planes to `FAMILIES` (or `PAIRED` for
+staff-style roles), which build both `JOINTS` and the model name filter. `tools/tests/test_fit_blade_joint_interfaces.py` audits every shipped part.
 Keep each part's own cross-section all the way to its cut. Never taper a source
 surface down to the connector envelope near a joint: two such parts meet tip to
 tip and the staff pinches at every boundary (the October 2026 staffs did this

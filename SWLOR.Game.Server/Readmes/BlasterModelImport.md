@@ -185,8 +185,8 @@ greatsword, knife, polearm and twinblade sleeves, until
 `tools/FitBladeJointInterfaces.py` removed them from the compiled parts. The flat cut caps
 close each cut; four vibroblade bottoms that stop 3.5 mm short keep a collar of their own
 grip end. Quarterstaffs are left as they are: a few of their sleeves stick out 1-5 mm, too
-little to see, and the staff widening left some caps partly open behind them. Its `JOINTS` table holds each family's measured joint planes; add a new
-family there. `tools/tests/test_fit_blade_joint_interfaces.py` audits every shipped part.
+little to see, and the staff widening left some caps partly open behind them. Add a new family's measured joint planes to `FAMILIES` (or `PAIRED` for
+staff-style roles), which build both `JOINTS` and the model name filter. `tools/tests/test_fit_blade_joint_interfaces.py` audits every shipped part.
 Keep each part's own cross-section all the way to its cut. Never taper a source
 surface down to the connector envelope near a joint: two such parts meet tip to
 tip and the staff pinches at every boundary (the October 2026 staffs did this

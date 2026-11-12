@@ -61,6 +61,7 @@ def sleeve_triangles(joint,bound,outward,segments=32):
 
 
 SECTION_TOLERANCE=.0005
+MAX_JOINT_DEPTH=.008  # FitBladeJointInterfaces recognises sleeves up to this deep.
 END_SAMPLE=.002
 
 
@@ -169,6 +170,7 @@ def validate_joints(joints):
         if len(joint['center_xz'])!=2 or len(joint['radii_xz'])!=2 or any(type(v) not in (int,float) or not math.isfinite(v) for v in values):
             raise ValueError('Finite measured joint envelope required')
         if joint['depth']<=0 or min(joint['radii_xz'])<=0 or joint['y'] in seen:raise ValueError('Positive unique joint envelope required')
+        if joint['depth']>MAX_JOINT_DEPTH:raise ValueError(f"Joint envelope at {joint['y']} is deeper than {MAX_JOINT_DEPTH*1000:g} mm")
         seen.add(joint['y'])
 
 

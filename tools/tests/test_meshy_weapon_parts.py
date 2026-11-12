@@ -184,7 +184,7 @@ class MeshyWeaponPartsTests(unittest.TestCase):
                 for key in source:np.testing.assert_allclose(data['metal__'+key],source[key],atol=1e-7)
 
     def test_invalid_unmeasured_or_repeated_joint_data_is_rejected(self):
-        for update in ({'depth':0},{'radii_xz':[-1,.02]},{'center_xz':[0]}, {'y':float('nan')},{'unknown':1}):
+        for update in ({'depth':0},{'depth':parts.MAX_JOINT_DEPTH+.001},{'radii_xz':[-1,.02]},{'center_xz':[0]}, {'y':float('nan')},{'unknown':1}):
             joint={**self.joint,**update}
             with self.subTest(update=update),self.assertRaises(ValueError):parts.validate_joints([joint])
         with self.assertRaises(ValueError):parts.validate_joints([self.joint,self.joint])

@@ -51,9 +51,10 @@ for _family, (_outer_low, _inner_low, _inner_high, _outer_high) in PAIRED.items(
     JOINTS[_family + "_t"] = ((_outer_low, -1), (_outer_high, 1))
     JOINTS[_family + "_m"] = ((_outer_low, 1), (_inner_low, -1), (_inner_high, 1), (_outer_high, -1))
     JOINTS[_family + "_b"] = ((_inner_low, 1), (_inner_high, -1))
-SLEEVE_DEPTH = 0.0085  # Authored interface geometry ends within this depth of a joint.
 COLLAR_SAMPLE = 0.002  # A short grip's end cross-section is sampled over this length.
 FIT_TOLERANCE = 0.0005
+# Authored interface geometry ends within this depth of a joint (the authoring limit).
+SLEEVE_DEPTH = MeshyWeaponParts.MAX_JOINT_DEPTH + FIT_TOLERANCE
 CAP_COVERAGE = 0.98  # Share of the cut outline a cap must fill.
 PLANE = 1e-5
 POSITION, UV, NORMAL, TANGENT, SIGN = 444, 452, 468, 488, 496
@@ -186,11 +187,21 @@ def _area(polygon):
     return abs(float(np.sum(polygon[:, 0] * following[:, 1] - following[:, 0] * polygon[:, 1]))) / 2
 
 
-def _end_section(sources, joint):
+def _end_section(sources, joint, role):
     """Convex outline (x, z) of the source surfaces' end nearest a joint they stop short of,
-    and that end's distance from the joint."""
+    and that end's distance from the joint.
+
+    Only the interval the joint bounds is sampled: from the joint into the part, up to the
+    next joint on that side (a paired top's other end lies past the opposite joint).
+    """
     verts = np.vstack([m["streams"][POSITION][np.unique(m["faces"])] for m in sources]).astype(float)
     d = _distance(verts, joint)
+    beyond = [_distance(np.array([[0.0, other[0], 0.0]]), joint)[0] for other in JOINTS[role]]
+    limit = min([b for b in beyond if b > PLANE], default=np.inf)
+    inside = (d > -PLANE) & (d < limit)
+    if not inside.any():
+        raise ValueError(f"No source surface ends near the joint at y={joint[0]}")
+    d, verts = d[inside], verts[inside]
     end = verts[d <= d.min() + COLLAR_SAMPLE]
     return np.asarray(MeshyWeaponParts.convex_hull(end[:, [0, 2]].tolist())), float(d.min())
 
@@ -251,7 +262,7 @@ def plan(meshes, role):
             keep.extend(caps)
         elif tubes:
             keep.extend(caps)
-            outline, gap = _end_section(sources, joint)
+            outline, gap = _end_section(sources, joint, role)
             tube = positions[np.unique(faces[tubes])]
             if _hull_contains(outline, tube[:, [0, 2]]):
                 keep.extend(tubes)
@@ -391,7 +402,7 @@ def interface_problems(meshes, role):
                     problems.append(f"cap at y={joint[0]} leaves part of the cut open")
             outline = hull
         elif tubes or caps:
-            outline = _end_section(sources, joint)[0]
+            outline = _end_section(sources, joint, role)[0]
             if caps and not _hull_contains(outline, positions[np.unique(np.vstack(caps))][:, [0, 2]]):
                 problems.append(f"cap at y={joint[0]} reaches past the part section")
         else:

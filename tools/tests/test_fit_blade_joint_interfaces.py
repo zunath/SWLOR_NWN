@@ -156,6 +156,24 @@ class BladeJointInterfaceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "leaves part of the cut open"):
             fit.fit_bytes(before, "wswls_m")
 
+    def test_a_paired_short_end_keeps_its_own_outline(self):
+        # A twinblade top: the lower blade stops 3.5 mm short of its joint; the upper one,
+        # past the opposite joint, is wider and must not shape the lower collar.
+        low, high = fit.PAIRED["wdbsw"][0], fit.PAIRED["wdbsw"][3]
+        lower = tube(low - 0.1, low - 0.0035, GRIP, closed=True)
+        upper = tube(high, high + 0.1, (0.03, 0.03), closed=True)
+        wide_cap = ring(high, (0.03, 0.03))
+        upper_cap = (np.vstack([[CENTRE[0], high, CENTRE[1]], wide_cap]),
+                     np.asarray([[0, 1 + i, 1 + (i + 1) % SEGMENTS] for i in range(SEGMENTS)]))
+        sleeve = tube(low - DEPTH, low, SLEEVE, np.zeros(2), True)
+        before = compiled([combine([lower, upper]), combine([upper_cap, sleeve])])
+        after, report = fit.fit_bytes(before, "wdbsw_t")
+        self.assertGreater(report[str(low)]["collar_triangles"], 0)
+        collar = interface_positions(after, "wdbsw_t")
+        collar = collar[collar[:, 1] < low + 1e-6]
+        self.assertLess(np.abs(collar[:, 0] - CENTRE[0]).max(), GRIP[0] + 1e-4)
+        self.assertEqual([], fit.interface_problems(meshes(after), "wdbsw_t"))
+
     def test_audit_reports_a_cap_wider_than_a_short_end(self):
         grip = tube(-0.1, 0.0815, GRIP, closed=True)
         wide = cap(0.085, -1)

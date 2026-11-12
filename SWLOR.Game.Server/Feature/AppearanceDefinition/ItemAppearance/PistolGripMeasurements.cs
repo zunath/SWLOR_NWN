@@ -1152,5 +1152,5 @@ internal static class PistolGripMeasurements
         [701] = new FitVector(0.0000005f, 0.02f, -0.0195619f),
     };
 
-    internal const string InputFingerprint = "b54a8d5e49ef0823b9de8003e1ab460eb6f911ec53b18737e5f176d7e4b6458e";
+    internal const string InputFingerprint = "70a2a1e5041f38b73435a7ef1c85bfaf140c2fc9e7257f7fc217416df0990c52";
 }

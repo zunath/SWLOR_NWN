@@ -3655,7 +3655,21 @@
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
+          "value": "sw_anim_m1"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
           "value": "sw_anim_f"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_anim_f1"
         }
       },
       {
@@ -3817,6 +3831,13 @@
         "Mod_Hak": {
           "type": "cexostring",
           "value": "sw_cr_creature"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_cr_creature1"
         }
       },
       {

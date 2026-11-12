@@ -79,8 +79,18 @@
       "CompileModels": false
     },
     {
+      "Name": "sw_anim_m1",
+      "Path": "../SWLOR_Haks/sw_anim_m1/",
+      "CompileModels": false
+    },
+    {
       "Name": "sw_anim_f",
       "Path": "../SWLOR_Haks/sw_anim_f/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_anim_f1",
+      "Path": "../SWLOR_Haks/sw_anim_f1/",
       "CompileModels": false
     },
     {
@@ -196,6 +206,11 @@
     {
       "Name": "sw_cr_creature",
       "Path": "../SWLOR_Haks/sw_cr_creature/",
+      "CompileModels": false
+    },
+    {
+      "Name": "sw_cr_creature1",
+      "Path": "../SWLOR_Haks/sw_cr_creature1/",
       "CompileModels": false
     },
     {

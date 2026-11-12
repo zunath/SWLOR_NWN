@@ -149,6 +149,8 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When a player enters the module, load their quests.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The journal entries stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void LoadPlayerQuests()
         {

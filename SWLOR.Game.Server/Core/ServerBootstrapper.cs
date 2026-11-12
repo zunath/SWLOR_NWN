@@ -6,7 +6,9 @@ using SWLOR.Game.NativeHooks;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.NativeSinks;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API;
 
 namespace SWLOR.Game.Server.Core
@@ -101,17 +103,72 @@ namespace SWLOR.Game.Server.Core
         public IReadOnlyList<ReloadStepResult> RebuildAfterReload()
         {
             RequireContainer();
-            return ReloadBootstrap.Run(ReloadBootstrap.Plan(ServerManager.Scripts), RunInModuleContext);
+            var steps = ReloadBootstrap.Plan(ServerManager.Scripts).Append(StateStep(ReloadStepKind.Adopt));
+            return ReloadBootstrap.Run(steps, RunInModuleContext);
         }
 
         /// <summary>
         /// On the engine thread, while a reload quiesces this build: the carry steps (<see cref="ReloadBootstrap.CarryPlan"/>),
-        /// which leave on the module what the next build's adoption steps cannot read back from the world.
+        /// which leave on the module what the next build's adoption steps cannot read back from the world, then the carried runtime
+        /// state (<see cref="ReloadStateCarrier"/>).
         /// </summary>
         public IReadOnlyList<ReloadStepResult> CarryForReload()
         {
             RequireContainer();
-            return ReloadBootstrap.Run(ReloadBootstrap.CarryPlan(ServerManager.Scripts), RunInModuleContext);
+            var steps = ReloadBootstrap.CarryPlan(ServerManager.Scripts).Append(StateStep(ReloadStepKind.Carry));
+            return ReloadBootstrap.Run(steps, RunInModuleContext);
+        }
+
+        /// <summary>
+        /// On the engine thread, while a reload quiesces this build and before <see cref="CarryForReload"/>: the
+        /// <see cref="PlayerReload.Quiesce"/> steps of <c>mod_exit</c> for every online player (<see cref="PlayerReloadPlan"/>), then
+        /// their screens (<see cref="PlayerScreenCarry"/>): conversations taken out as data, windows closed.
+        /// </summary>
+        public IReadOnlyList<ReloadStepResult> QuiescePlayers()
+        {
+            RequireContainer();
+            var steps = PlayerReloadPlan.QuiescePlan(ServerManager.Scripts, PlayerReloadPlan.OnlinePlayers)
+                .Append(ScreenStep(ReloadStepKind.Quiesce, nameof(PlayerScreenCarry.Close),
+                    carry => ReloadCarry.Put(PlayerScreenCarry.Key, carry.Close(PlayerReloadPlan.OnlinePlayers()))));
+            return ReloadBootstrap.Run(steps, RunInModuleContext);
+        }
+
+        /// <summary>
+        /// On the engine thread, after <see cref="RebuildAfterReload"/> on a reload: the <see cref="PlayerReload.Restore"/> steps of
+        /// <c>mod_enter</c> for every online player (<see cref="PlayerReloadPlan"/>), then their windows and conversations again
+        /// (<see cref="PlayerScreenCarry"/>), before the first frame of the new build.
+        /// </summary>
+        public IReadOnlyList<ReloadStepResult> RestorePlayers()
+        {
+            RequireContainer();
+            var steps = PlayerReloadPlan.RestorePlan(ServerManager.Scripts, PlayerReloadPlan.OnlinePlayers)
+                .Append(ScreenStep(ReloadStepKind.Restore, nameof(PlayerScreenCarry.Reopen),
+                    carry => carry.Reopen(PlayerReloadPlan.OnlinePlayers(), ReloadCarry.Take(PlayerScreenCarry.Key))));
+            return ReloadBootstrap.Run(steps, RunInModuleContext);
+        }
+
+        /// <summary>The step that carries (<see cref="ReloadStepKind.Carry"/>) or puts back the <see cref="ReloadStateKind.Carried"/> fields.</summary>
+        private ReloadStep StateStep(ReloadStepKind kind)
+        {
+            var carry = kind == ReloadStepKind.Carry;
+            var method = typeof(ReloadStateCarrier).GetMethod(carry ? nameof(ReloadStateCarrier.CarryAll) : nameof(ReloadStateCarrier.AdoptAll));
+            return new ReloadStep(kind, "reload", nameof(ReloadStateCarrier), method, () =>
+            {
+                var carrier = new ReloadStateCarrier(typeof(ServerBootstrapper).Assembly, new[]
+                {
+                    new AbilityDetailReloadConverter(() => _container.Resolve<IAbilityService>().GetAllAbilityDetails()),
+                });
+                if (carry)
+                    carrier.CarryAll(_container.ResolveHandlerOwner, ReloadCarry.Put);
+                else
+                    carrier.AdoptAll(_container.ResolveHandlerOwner, ReloadCarry.Take);
+            });
+        }
+
+        private ReloadStep ScreenStep(ReloadStepKind kind, string methodName, Action<PlayerScreenCarry> run)
+        {
+            return new ReloadStep(kind, "reload", nameof(PlayerScreenCarry), typeof(PlayerScreenCarry).GetMethod(methodName), () =>
+                run(new PlayerScreenCarry(_container.Resolve<IGuiService>(), _container.Resolve<IConversationService>())));
         }
 
         /// <summary>The cache digests of the classes that own rerun boot handlers (<see cref="ReloadDigests.Cache"/>).</summary>

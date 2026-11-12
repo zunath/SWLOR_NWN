@@ -46,6 +46,8 @@ namespace SWLOR.Game.Server.Domain.Foundation
             }
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The visibility overrides stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void LoadPlayerVisibilityObjects()
         {

@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly Dictionary<uint, AreaWeather> _areas = new();
         [ReloadState(ReloadStateKind.Adopted)]
         private readonly WeatherRegionCache _regions = new();
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, WeatherExposure> _exposures = new();
         private Dictionary<PlanetType, WeatherClimate> _planetClimates;
         private Dictionary<string, WeatherClimate> _namedClimates;

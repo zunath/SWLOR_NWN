@@ -43,5 +43,8 @@ namespace SWLOR.Game.Server.Domain.World
 
         /// <summary>An angler who logs out loses the fish at once.</summary>
         void AbandonOnExit();
+
+        /// <summary>The work of <see cref="AbandonOnExit"/> for one player (a hot reload's quiescence step).</summary>
+        void AbandonFor(uint player);
     }
 }

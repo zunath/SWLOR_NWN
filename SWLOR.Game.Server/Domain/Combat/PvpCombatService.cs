@@ -20,8 +20,9 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// event handlers run on the container's instance. Calls into the unconverted <c>StatusEffect</c>, <c>CombatRecorder</c> and
     /// <c>Scheduler</c> sit behind one-line <c>protected virtual</c> methods whose bodies are the original calls.
     /// </summary>
-    public class PvpCombatService : IPvpCombatService
+    public class PvpCombatService : IPvpCombatService, IReloadStateAdopter
     {
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, PvpCombatState> _states = new();
         private IDisposable _updateSchedule;
 
@@ -177,6 +178,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             End(GetLastPlayerDied(), false);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets the player's PvP state; it is carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetExitingPlayer()
         {
@@ -207,6 +210,13 @@ namespace SWLOR.Game.Server.Domain.Combat
         private bool IsLapsed(PvpCombatState state, DateTime now)
         {
             return (now - state.LastActivityAt).TotalSeconds > PvpCombatRules.CombatWindowSeconds;
+        }
+
+        /// <summary>A hot reload carried the PvP states; the update that ends them is started again.</summary>
+        public void OnCarriedStateAdopted()
+        {
+            if (_states.Count > 0)
+                _updateSchedule ??= ScheduleRepeating(UpdateAll, TimeSpan.FromSeconds(1));
         }
 
         // Runs while damage is being calculated, sometimes inside a native hook, so it only records

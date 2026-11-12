@@ -171,6 +171,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             WriteAudit(player, xpLost);
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Writes a missing respawn point to Redis; the login already did.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void InitializeRespawnPoint()
         {

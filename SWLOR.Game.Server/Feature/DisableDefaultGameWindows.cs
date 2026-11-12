@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Feature
         /// When the player enters the server, disable default game windows.
         /// In most cases, these windows are replaced with custom versions.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The disabled panels stay disabled in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void DisableWindows()
         {

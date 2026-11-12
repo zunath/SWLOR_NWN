@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,9 @@ namespace SWLOR.Game.Server.Domain.Abilities;
 /// </summary>
 public class ForceControlCooldownsService : IForceControlCooldownsService
 {
+    [ReloadState(ReloadStateKind.Carried)]
     private readonly Dictionary<(uint, uint), DateTime> _forceMendCooldowns = new();
+    [ReloadState(ReloadStateKind.Carried)]
     private readonly Dictionary<uint, DateTime> _harmonicRestorationCooldowns = new();
 
     public bool TryUseForceMend(uint activator, uint target, DateTime now, float cooldownSeconds)

@@ -140,6 +140,8 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new TargetStatusRefreshEvent());
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Opens the vitals window at login; the reload reopens the windows that were open.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void LoadPlayerStatusWindow()

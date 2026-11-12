@@ -67,6 +67,8 @@ namespace SWLOR.Game.Server.Feature
             PairedRangedPresentation.Release(actor);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Ends channels and forgets in-flight shots; those go with the old build and expire within a round.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void OnExit()
         {

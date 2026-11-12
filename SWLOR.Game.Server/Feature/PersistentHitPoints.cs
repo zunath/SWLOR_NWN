@@ -10,10 +10,20 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player leaves the server, save their persistent HP.
         /// </summary>
+        [PlayerSession(PlayerReload.Quiesce,
+            "Saves the HP to Redis as at logout, so a restart after a failed reload loses nothing; no world effect.",
+            Step = nameof(SaveHPFor))]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void SaveHP()
         {
-            var player = GetExitingObject();
+            SaveHPFor(GetExitingObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="SaveHP"/> for <paramref name="player"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+        /// </summary>
+        public static void SaveHPFor(uint player)
+        {
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
@@ -27,6 +37,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters the server, load their persistent HP.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Sets HP to the value saved at logout; HP stays in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void LoadHP()
         {

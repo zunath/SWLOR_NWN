@@ -133,6 +133,7 @@ namespace SWLOR.Game.Server.Core
             text.Append(string.Create(CultureInfo.InvariantCulture,
                 $"reran={results.Count(r => r.Step.Kind == ReloadStepKind.Rerun)} adopted={results.Count(r => r.Step.Kind == ReloadStepKind.Adopt)} " +
                 $"carried={results.Count(r => r.Step.Kind == ReloadStepKind.Carry)} failed={results.Count(r => r.Error != null)} " +
+                $"quiesced={results.Count(r => r.Step.Kind == ReloadStepKind.Quiesce)} restored={results.Count(r => r.Step.Kind == ReloadStepKind.Restore)} " +
                 $"totalMs={results.Sum(r => r.Milliseconds):F0} slowest="));
             text.Append(string.Join(",", results
                 .OrderByDescending(r => r.Milliseconds)

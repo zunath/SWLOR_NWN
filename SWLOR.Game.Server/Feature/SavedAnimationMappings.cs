@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Feature
     /// </summary>
     public static class SavedAnimationMappings
     {
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The animation mappings stay in the engine; a rerun would cancel one in use.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnClientEnter()
         {

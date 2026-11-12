@@ -48,12 +48,16 @@ public static class PowerGlovePairLifecycle
             PowerGloveEquipment.RemovePair(OBJECT_SELF, item);
     }
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "Recreates the companion glove at login; the glove stays equipped and the pairs are carried.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnEnter() => PowerGloveEquipment.RestorePair(GetEnteringObject());
 
     [NWNEventHandler(ScriptName.OnPlayerSpawn)]
     public static void OnSpawn() => PowerGloveEquipment.RestorePair(OBJECT_SELF);
 
+    [PlayerSession(PlayerReload.LogoutOnly,
+        "Destroys the companion glove at logout; it stays equipped and the pairs are carried.")]
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => PowerGloveEquipment.ReleaseCompanions(GetExitingObject());
 

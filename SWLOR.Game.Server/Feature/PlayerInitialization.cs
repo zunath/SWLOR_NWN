@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Initializes or upgrades a character at login; the schema gate refuses a build that needs a migration.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void InitializePlayer()
         {

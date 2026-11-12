@@ -193,6 +193,8 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>
         /// When a player leaves the server, any droids they have actives are despawned.
         /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Despawns the player's droid; it stays in the world.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void OnPlayerExit()
         {

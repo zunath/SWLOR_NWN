@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Domain.Character
     /// script-context hook that clears the descriptor setting cache is registered the first time the cache is filled
     /// (the static class registered it when it was first used), not in the constructor.
     /// </remarks>
-    public class PlayerNameService : IPlayerNameService
+    public class PlayerNameService : IPlayerNameService, IReloadStateAdopter
     {
         public const int MaxKnownNameLength = 64;
         public const string UnknownName = PlayerDescriptorService.DefaultUnknownDisplayName;
@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly Dictionary<string, PlayerKnownName> KnownNamesByObserverId = new();
         private long _knownNamesWriteVersion;
         private readonly Dictionary<string, bool> ShowDescriptorsForNamedPlayersByObserverId = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, (uint Area, Vector3 Position)> AfkPlayers = new();
         private IDisposable _afkMovementCheck;
         private bool _scriptContextHooked;
@@ -59,6 +60,8 @@ namespace SWLOR.Game.Server.Domain.Character
             _playerDescriptor = playerDescriptor;
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Drops the player's name cache, which goes with the old build.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ReleaseKnownNamesOnExit()
         {
@@ -67,6 +70,8 @@ namespace SWLOR.Game.Server.Domain.Character
                 KnownNamesByObserverId.Remove(observerId);
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The name overrides stay in the engine, the name caches refill from Redis on use, and the AFK flags are carried.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyNameOverridesOnEnter()
         {
@@ -89,6 +94,8 @@ namespace SWLOR.Game.Server.Domain.Character
             DelayCommand(1.0f, () => ApplyNameOverridesForPlayer(player));
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Clears the AFK flag; the flags are carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearAfkOnExit()
         {
@@ -96,6 +103,13 @@ namespace SWLOR.Game.Server.Domain.Character
         }
 
         public bool IsAfk(uint player) => AfkPlayers.ContainsKey(player);
+
+        /// <summary>A hot reload carried the AFK players; the movement check that clears them is started again.</summary>
+        public void OnCarriedStateAdopted()
+        {
+            if (AfkPlayers.Count > 0)
+                _afkMovementCheck ??= ScheduleRepeating(CheckAfkMovement, TimeSpan.FromSeconds(1));
+        }
 
         public bool ToggleAfk(uint player)
         {

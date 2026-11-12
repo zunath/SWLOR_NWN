@@ -1591,10 +1591,20 @@ namespace SWLOR.Game.Server.Feature
             Ability.RemoveQueuedWeaponAttack(creature);
         }
 
+        [PlayerSession(PlayerReload.Restore,
+            "A queued weapon ability's managed half (with the ability's callbacks) goes with the old build, so its engine half is cleared as a login clears it.",
+            Step = nameof(ClearTemporaryQueuedVariablesFor))]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ClearTemporaryQueuedVariables()
         {
-            var player = GetEnteringObject();
+            ClearTemporaryQueuedVariablesFor(GetEnteringObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="ClearTemporaryQueuedVariables"/> for <paramref name="player"/>: the login's handler, and a hot reload's restore step for a player who stays online.
+        /// </summary>
+        public static void ClearTemporaryQueuedVariablesFor(uint player)
+        {
 
             ClearQueuedAbility(player);
         }

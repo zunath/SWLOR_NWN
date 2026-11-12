@@ -544,6 +544,8 @@ public class ConversationMenuServiceTests
         public void EndOnAreaExit() => throw new NotSupportedException();
         public void EndOnAreaEnter() => throw new NotSupportedException();
         public void End(uint player, uint uiTarget = ConversationBench.Invalid) => throw new NotSupportedException();
+        public ConversationReloadState CarryForReload(uint player) => throw new NotSupportedException();
+        public void ResumeAfterReload(uint player, ConversationReloadState state) => throw new NotSupportedException();
     }
 
     /// <summary>The menu instance with the seams answered: no assemblies searched, the error log recorded.</summary>

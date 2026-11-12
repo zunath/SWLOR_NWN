@@ -1301,6 +1301,8 @@ namespace SWLOR.Game.Server.Domain.Crafting
         }
 
         /// <summary>Applies the player's selected crafting styles again when they log in; the effects are not kept across a logout.</summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The crafting style status effects are carried.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RestoreCraftingStylesOnEnter()
         {

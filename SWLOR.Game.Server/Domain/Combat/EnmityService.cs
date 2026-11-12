@@ -71,12 +71,15 @@ namespace SWLOR.Game.Server.Domain.Combat
         public const int MaximumEnmityPercentAdjustment = 50;
         public const int SecureThreatLeadPercent = 25;
         // Enemy -> Creature -> EnmityAmount mapping
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
 
         // Creature -> EnemyList mapping
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
 
         // Enemy -> Creature -> proximity enmity contribution mapping
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, Dictionary<uint, int>> _proximityEnmityAmounts = new();
         private readonly Dictionary<uint, DateTime> _attackCommandTimes = new();
         private readonly Dictionary<uint, uint> _attackCommandTargets = new();
@@ -208,6 +211,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When a player leaves, remove them from all enmity tables.
         /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Makes enemies drop the player; a reload carries the enmity tables.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         [NWNEventHandler(ScriptName.OnAreaExit)]
         public void PlayerExit()

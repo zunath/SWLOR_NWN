@@ -35,6 +35,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     {
         private const float RefreshDelaySeconds = 0.2f;
         private const string AreaCompatibilityRefreshVariable = "TINT_MAP_COMPAT_REFRESHED";
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The tint state stays in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnModuleEnter()
         {

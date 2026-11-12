@@ -90,6 +90,8 @@ namespace SWLOR.Game.Server.Domain.Economy
             }
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "A login message.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void CheckMarketTill()
         {

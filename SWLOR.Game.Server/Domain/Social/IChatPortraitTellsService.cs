@@ -14,6 +14,9 @@ namespace SWLOR.Game.Server.Domain.Social
         /// </summary>
         void RememberEnteringPlayer();
 
+        /// <summary>The work of <see cref="RememberEnteringPlayer"/> for one player (a hot reload's restore step).</summary>
+        void RememberPlayer(uint player);
+
         /// <summary>
         /// When a player leaves, forgets what their client saw and the character behind the login object.
         /// </summary>

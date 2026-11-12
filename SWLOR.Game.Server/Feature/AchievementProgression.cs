@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters the mod, increase their number of logins
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Counts a login.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void LogIn()
         {

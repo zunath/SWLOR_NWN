@@ -21,5 +21,14 @@ namespace SWLOR.Game.Server.Core
         /// old roll would also hide the reloaded code's changes to the same cache. The cache digest leaves it out.
         /// </summary>
         Rerolled = 2,
+
+        /// <summary>
+        /// Runtime state the game builds up as it runs (status effects, parties, enmity, combat times, cooldowns held in memory) that
+        /// a reload hands from the old build to the new one as data: the old build serializes the field while it quiesces
+        /// (<see cref="ReloadStateCarrier"/>) and the new build puts it back after its rerun and adoption steps, before any player
+        /// is restored. The field's type must be carriable (<see cref="ReloadStateCarrier.Problems"/>: no delegates, no foreign
+        /// objects). Its reload digest is compared with the old build's at quiescence, as <see cref="Adopted"/> is.
+        /// </summary>
+        Carried = 3,
     }
 }

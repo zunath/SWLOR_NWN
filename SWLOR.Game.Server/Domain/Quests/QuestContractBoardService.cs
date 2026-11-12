@@ -145,6 +145,8 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// <summary>
         /// When a player enters the module, let them know if they have quest contract deliveries waiting.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "A login message.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void NotifyPendingDeliveries()
         {

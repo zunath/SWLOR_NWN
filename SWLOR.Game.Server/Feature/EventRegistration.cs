@@ -77,6 +77,8 @@ namespace SWLOR.Game.Server.Feature
         /// When a player enters the server, hook their event scripts.
         /// Also add them to a UI processor list.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The creature event scripts stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void EnterServer()
         {

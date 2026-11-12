@@ -60,6 +60,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        /// <summary>The session this window shows, or null once it closed: a hot reload carries it to the next build.</summary>
+        public IConversationSession GetActiveSession() => _session;
+
         protected override void Initialize(ConversationPayload initialPayload)
         {
             if (initialPayload?.Session == null)

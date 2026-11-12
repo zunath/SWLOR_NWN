@@ -398,11 +398,21 @@ namespace SWLOR.Game.Server.Domain.Crafting
             return integrity <= 0 && GetLocalInt(target, FailuresVariable) == 0 ? 100 : integrity;
         }
 
+        [PlayerSession(PlayerReload.Quiesce,
+            "A slicing attempt cannot be carried, so it is abandoned as at logout and the claim on the target is released instead of locking it.",
+            Step = nameof(AbandonFor))]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         [NWNEventHandler(ScriptName.OnAreaExit)]
         public void OnPlayerExit()
         {
-            var player = GetExitingObject();
+            AbandonFor(GetExitingObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="OnPlayerExit"/> for <paramref name="player"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+        /// </summary>
+        public void AbandonFor(uint player)
+        {
             if (GetIsPC(player))
                 Abort(player);
         }

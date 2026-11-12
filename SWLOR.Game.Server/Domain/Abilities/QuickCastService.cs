@@ -127,6 +127,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
             finally { _applying.Remove(player); }
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The quick-cast feats and quickbar stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyOnEnter() => ApplyPreferences(GetEnteringObject());
 

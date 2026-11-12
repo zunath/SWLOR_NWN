@@ -32,9 +32,9 @@ namespace SWLOR.Game.Server.Domain.Character
         private const string StatusEffectTag = "STATUS_EFFECT";
         private const float Interval = 1f;
 
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
         [ReloadState(ReloadStateKind.Runtime)]
@@ -298,6 +298,8 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player enters the server, apply the NWN effect system
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Moves the effects held since logout back to the player; a reload carries the status effects themselves, and a rerun would take the food bonus off max HP.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void OnPlayerEnter()
         {
@@ -405,6 +407,8 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player exits the server, hold their status effects until they return.
         /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Holds the effects for the player's return and takes them off the creature; a reload carries the status effects of every creature instead.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void OnPlayerExit()
         {

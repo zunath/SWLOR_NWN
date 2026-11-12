@@ -34,6 +34,8 @@ namespace SWLOR.Game.Server.Domain.Character
             DeleteLocalInt(target, "BUSY_TYPE");
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Clears a busy flag left by a crash at login; a player who stays online may really be busy.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void WipeStatusOnEntry()
         {

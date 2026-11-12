@@ -50,10 +50,20 @@ namespace SWLOR.Game.Server.Domain.Abilities
             CacheAbilityCooldownTextures();
         }
 
+        [PlayerSession(PlayerReload.Restore,
+            "Rebuilds the hotbar cooldown overlays and their tick timers from Player.RecastTimes; both lived in the old build's memory and closures.",
+            Step = nameof(RestoreCooldownVisualsFor))]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RestoreCooldownVisuals()
         {
-            var player = GetEnteringObject();
+            RestoreCooldownVisualsFor(GetEnteringObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="RestoreCooldownVisuals"/> for <paramref name="player"/>: the login's handler, and a hot reload's restore step for a player who stays online.
+        /// </summary>
+        public void RestoreCooldownVisualsFor(uint player)
+        {
             if (!CanShowCooldownVisuals(player))
                 return;
 
@@ -81,6 +91,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
             }
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Resets the hotbar icons; the restore step rebuilds the overlays.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearCooldownVisualsOnExit()
         {

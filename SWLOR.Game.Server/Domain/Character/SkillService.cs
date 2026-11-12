@@ -496,6 +496,8 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// If a player is missing any skills in their DB record, they will be added here.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Adds missing skills in Redis; the login already did.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void AddMissingSkills()
         {

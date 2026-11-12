@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -34,6 +35,7 @@ namespace SWLOR.Game.Server.Domain.Administration
         // How far from its target the engine's jump action looks for a safe point.
         private const float JumpSearchRadius = 20f;
 
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<(string DMId, GuiWindowType Type), uint> _windowTargets = new();
 
         public bool GetIsManifested(uint dm)

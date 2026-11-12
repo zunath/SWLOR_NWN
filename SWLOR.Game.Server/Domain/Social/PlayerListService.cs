@@ -288,12 +288,16 @@ namespace SWLOR.Game.Server.Domain.Social
             Scheduler.Schedule(RefreshOpenWindows, TimeSpan.Zero);
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Refreshes other players' lists for an arrival; nobody arrives.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RefreshOnEnter()
         {
             QueueRefresh();
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Refreshes other players' lists for a departure; nobody leaves.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void RefreshOnExit()
         {

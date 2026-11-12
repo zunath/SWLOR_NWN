@@ -35,7 +35,9 @@ namespace SWLOR.Game.Server.Domain.Quests
         private const int DefaultIdleDespawnMinutes = 10;
         private const float ParticipantCreditRange = 50.0f;
 
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<string, uint> _activeCreaturesByEncounterId = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, DateTime> _lastActivityByCreature = new();
 
         private readonly IDBService _db;
@@ -51,6 +53,8 @@ namespace SWLOR.Game.Server.Domain.Quests
             _quest = quest;
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The encounter visibility overrides stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void OnModuleEnter()
         {

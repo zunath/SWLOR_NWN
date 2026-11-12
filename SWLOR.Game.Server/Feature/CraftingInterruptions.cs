@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Feature
         /// writes the file's sequence: the Search return's export must come after the craft and harvest recoveries have put their items
         /// back, or a crash right after it would leave a file whose sequence claims transfers it does not hold.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Settles crafts a crash left open in a freshly loaded character file; on a player who stays online it would duplicate items.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void SettleOnLogin()
         {
@@ -55,10 +57,20 @@ namespace SWLOR.Game.Server.Feature
             });
         }
 
+        [PlayerSession(PlayerReload.Quiesce,
+            "A quick-craft batch cannot be carried (its timer is a closure), so it stops as at logout and the craft immobilize comes off instead of sticking.",
+            Step = nameof(StopQuickCraftFor))]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void StopQuickCraftOnLogout()
         {
-            var player = GetExitingObject();
+            StopQuickCraftFor(GetExitingObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="StopQuickCraftOnLogout"/> for <paramref name="player"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+        /// </summary>
+        public static void StopQuickCraftFor(uint player)
+        {
             if (!GetIsPC(player))
                 return;
 

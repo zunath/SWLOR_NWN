@@ -38,9 +38,13 @@ public static class TwinPistolPairLifecycle
             TwinPistolEquipment.RemovePair(OBJECT_SELF, item);
     }
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "Recreates the spare pistol at login; the spare stays equipped and the pairs are carried.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnEnter() => TwinPistolEquipment.RestorePair(GetEnteringObject());
 
+    [PlayerSession(PlayerReload.LogoutOnly,
+        "Destroys the spare pistol at logout; it stays equipped and the pairs are carried.")]
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => TwinPistolEquipment.ReleaseCompanions(GetExitingObject());
 

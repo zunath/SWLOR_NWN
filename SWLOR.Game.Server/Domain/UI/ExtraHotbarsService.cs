@@ -136,15 +136,27 @@ namespace SWLOR.Game.Server.Domain.UI
         {
             ApplyVisibility(GetEnteringObject());
         }
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Clears the unlocked flag of a fresh login; the quiescence step locked the bars and the new build starts with none unlocked.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void LockBarsOnEnter()
         {
             _unlockedPlayers.Remove(GetEnteringObject());
         }
+        [PlayerSession(PlayerReload.Quiesce,
+            "Locks bars the player unlocked and saves their geometry, which only the old build's view models hold, before the windows close.",
+            Step = nameof(LockBarsFor))]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void LockBarsOnExit()
         {
-            var player = GetExitingObject();
+            LockBarsFor(GetExitingObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="LockBarsOnExit"/> for <paramref name="player"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+        /// </summary>
+        public void LockBarsFor(uint player)
+        {
             if (!_unlockedPlayers.Remove(player))
                 return;
 

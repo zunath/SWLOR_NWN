@@ -45,6 +45,18 @@ namespace SWLOR.Game.Server.Core
             return ServerManager.Bootstrapper.CarryForReload();
         }
 
+        /// <inheritdoc cref="ServerBootstrapper.QuiescePlayers"/>
+        public IReadOnlyList<ReloadStepResult> QuiescePlayers()
+        {
+            return ServerManager.Bootstrapper.QuiescePlayers();
+        }
+
+        /// <inheritdoc cref="ServerBootstrapper.RestorePlayers"/>
+        public IReadOnlyList<ReloadStepResult> RestorePlayers()
+        {
+            return ServerManager.Bootstrapper.RestorePlayers();
+        }
+
         /// <inheritdoc cref="ServerBootstrapper.DescribeCaches"/>
         public IReadOnlyList<ReloadDigestLine> DescribeCaches()
         {

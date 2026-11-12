@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffect.RemoveStatusEffect(player, typeof(RestStatusEffect));
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Ends rest at login; the carried rest status stays.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void RemoveRestOnLogin()
         {

@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Domain.Space
         private readonly HashSet<string> _shipModuleItemTags = new();
         private readonly HashSet<AppearanceType> _shipAppearances = new();
 
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<string, uint> _shipClones = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, PendingShipLaunch> _pendingShipLaunches = new();
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Domain.Space
         [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
 
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly HashSet<uint> _playersInSpace = new();
 
         private const float NPCShipKeepDistance = 15f;
@@ -132,6 +132,8 @@ namespace SWLOR.Game.Server.Domain.Space
             Scheduler.ScheduleRepeating(PlayerShipRecovery, TimeSpan.FromSeconds(1), TimeSpan.FromMilliseconds(100d));
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Takes a pilot out of space at login; the players in space and the ship clones are carried.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void EnterServer()
         {
@@ -140,6 +142,8 @@ namespace SWLOR.Game.Server.Domain.Space
             WarpPlayerInsideShip(player);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Leaves the ship clone at logout; the players in space and the clones are carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ExitServer()
         {

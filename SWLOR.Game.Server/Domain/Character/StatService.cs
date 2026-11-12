@@ -205,6 +205,8 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player enters the server, reapply HP and temporary stats.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The movement rate and walk setting stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyPlayerStats()
         {
@@ -1065,6 +1067,8 @@ namespace SWLOR.Game.Server.Domain.Character
             ApplyCreatureMovementRate(player);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets a value the next movement refresh recomputes.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetOutOfCombatMovementState()
         {

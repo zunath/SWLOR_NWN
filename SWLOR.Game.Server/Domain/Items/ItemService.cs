@@ -282,6 +282,8 @@ namespace SWLOR.Game.Server.Domain.Items
             EnsureItemAndContentsActivations(GetModuleItemAcquired());
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The activation item properties stay on the items.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void EnsureInventoryItemActivations()
         {

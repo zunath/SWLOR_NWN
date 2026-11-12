@@ -504,6 +504,8 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player enters the server, apply the proper scaling to their character.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The scale stays in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyWookieeScaling()
         {

@@ -36,6 +36,18 @@ namespace SWLOR.Game.Server.Core
         /// </summary>
         IReadOnlyList<ReloadStepResult> CarryForReload();
 
+        /// <summary>
+        /// On the engine thread, while a reload quiesces this build and before <see cref="CarryForReload"/>: the online players'
+        /// quiescence steps and screens (<see cref="PlayerReloadPlan"/>, <see cref="PlayerScreenCarry"/>).
+        /// </summary>
+        IReadOnlyList<ReloadStepResult> QuiescePlayers();
+
+        /// <summary>
+        /// On the engine thread, after <see cref="RebuildAfterReload"/> on a reload and before the first frame: the online players'
+        /// restore steps and screens.
+        /// </summary>
+        IReadOnlyList<ReloadStepResult> RestorePlayers();
+
         /// <summary>The cache digests (<see cref="ReloadDigests.Cache"/>). Engine thread, hot reload on only.</summary>
         IReadOnlyList<ReloadDigestLine> DescribeCaches();
 

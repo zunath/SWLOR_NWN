@@ -54,11 +54,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly Dictionary<ResistanceType, Dictionary<FeatType, int>> _traitResistancesByResistance = new();
 
         // In-memory witness tracker: npc -> playerId -> technique feats witnessed but not yet learned.
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, Dictionary<string, HashSet<FeatType>>> _witnesses = new();
 
         // Observation is passive: keep its credit out of the combat points used to share active skill XP.
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, HashSet<string>> _analysisObservers = new();
 
         private bool _witnessSweepScheduled;
@@ -467,6 +467,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 GetDeltaXP(npcLevel - mimicryRank) * AnalysisXPPercent / 100);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets the player as an observer; the observers are carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         [NWNEventHandler(ScriptName.OnAreaExit)]
         public void ClearAnalysisOnPlayerExit()
@@ -1025,6 +1027,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// On login, re-grants every equipped technique's feat (in case it was lost, e.g. a fresh
         /// character load) and enforces rank and slot limits in case progression changed since logout.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The technique feats and hotbar slots stay in the engine; a rerun would put back techniques the player removed from the hotbar.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void OnPlayerLogin()
         {

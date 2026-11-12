@@ -350,12 +350,16 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Local variables are saved with the character, but the window's timer belongs to the old
         /// creature object, so a grant never outlives the session that received it.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Clears a granted-stealth window left by a crash at login; it would end a live one.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ClearGrantedStealthOnEnter()
         {
             ClearGrantedStealth(GetEnteringObject());
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Clears granted-stealth locals at logout; they stay valid for a player who stays online.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearGrantedStealthOnExit()
         {

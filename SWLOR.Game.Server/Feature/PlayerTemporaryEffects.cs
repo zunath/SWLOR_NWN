@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Feature
 {
     public class PlayerTemporaryEffects
     {
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The ghost, scale and movement effects stay in the engine; a rerun would free a player held by a craft, a call or a refinery.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void ApplyTemporaryEffects()
         {

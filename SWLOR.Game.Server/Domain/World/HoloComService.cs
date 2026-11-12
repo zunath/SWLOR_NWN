@@ -66,6 +66,8 @@ namespace SWLOR.Game.Server.Domain.World
 
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Frees a HoloCom immobilize left by a crash at login; it would break a call in progress.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void OnModuleEnter()
         {
@@ -73,6 +75,8 @@ namespace SWLOR.Game.Server.Domain.World
             RemoveEffectByTag(player, PlayerActivityEffectTag.HoloComImmobilize);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Ends the player's call; the call state stays in engine locals.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void OnModuleLeave()
         {

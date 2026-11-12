@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Domain.Combat;
 /// </summary>
 public class OrdinaryAttackTraitsService : IOrdinaryAttackTraitsService
 {
+    [ReloadState(ReloadStateKind.Carried)]
     private readonly Dictionary<uint, OrdinaryAttackHasteState> _states = new();
     private readonly IStatService _stat;
     private readonly IStatusEffectService _statusEffect;

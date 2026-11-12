@@ -502,6 +502,8 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (IsControlledCompanion(companion))
                 ResetToFollow(companion, false, true);
         }
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The TLK override stays in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RenameToggleAbilitiesCommand()
         {

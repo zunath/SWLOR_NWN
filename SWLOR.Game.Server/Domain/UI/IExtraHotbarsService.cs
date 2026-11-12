@@ -30,6 +30,9 @@ namespace SWLOR.Game.Server.Domain.UI
 
         void LockBarsOnExit();
 
+        /// <summary>The work of <see cref="LockBarsOnExit"/> for one player (a hot reload's quiescence step).</summary>
+        void LockBarsFor(uint player);
+
         /// <summary>
         /// Opens the bars the player has turned on and closes the rest.
         /// </summary>

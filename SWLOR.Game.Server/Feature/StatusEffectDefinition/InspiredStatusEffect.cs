@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         };
 
         // Standing Ovation's ten-minute cooldown is kept by player, so rebuilding or re-banking Inspired does not reset it.
+        [ReloadState(ReloadStateKind.Carried)]
         private static readonly Dictionary<string, DateTime> _lastOvationByPlayer = new();
 
         private bool _requiemUsed;

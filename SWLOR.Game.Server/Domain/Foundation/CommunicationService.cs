@@ -101,6 +101,8 @@ namespace SWLOR.Game.Server.Domain.Foundation
             ColonBackward
         };
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The TLK override stays in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyCommsChannelName()
         {
@@ -113,6 +115,8 @@ namespace SWLOR.Game.Server.Domain.Foundation
             PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The TLK override stays in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyShoutChannelName()
         {

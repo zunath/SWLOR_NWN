@@ -54,6 +54,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// When a player enters the server, apply any defense and resistance entries they don't already have.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Fills missing defense and resistance keys in Redis; the login already did.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void AddDamageTypeResistances()
         {

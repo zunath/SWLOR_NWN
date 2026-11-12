@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         }
 
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
@@ -1662,6 +1662,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// When a player enters the server, apply the Aura AOE effect.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The aura's area of effect stays on the player; the aura lists are carried (AbilityService._playerAuras).")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyAuraAOE()
         {
@@ -1673,6 +1675,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// When a player exits the server, remove all of their Aura effects.
         /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Takes the player's auras off everyone; the aura lists are carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearAurasOnExit()
         {

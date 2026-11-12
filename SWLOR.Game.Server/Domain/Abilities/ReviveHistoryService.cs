@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +11,9 @@ namespace SWLOR.Game.Server.Domain.Abilities;
 /// </summary>
 public class ReviveHistoryService : IReviveHistoryService
 {
+    [ReloadState(ReloadStateKind.Carried)]
     private readonly Dictionary<string, DateTime> _lastMidFightReviveAt = new();
+    [ReloadState(ReloadStateKind.Carried)]
     private readonly Dictionary<string, DateTime> _deathAt = new();
 
     public void RecordDeath(string key, DateTime diedAt)

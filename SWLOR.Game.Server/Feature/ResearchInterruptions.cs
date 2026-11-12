@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature
     /// </summary>
     public class ResearchInterruptions
     {
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Settles open experiments with a roll at logout; they stay open in Redis and the player carries on.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void SettleOnLogout()
         {
@@ -21,6 +23,8 @@ namespace SWLOR.Game.Server.Feature
             CraftResearchExperiment.SettleOpenExperiments(GetObjectUUID(player));
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Settles research a crash left open in a freshly loaded character file; on a player who stays online it would delete jobs started this session.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void SettleOnLogin()
         {

@@ -1,0 +1,220 @@
+# SWLOR login and logout handler classification for hot reload (P4-15): SWLOR.Game.Server only
+# One block per handler of mod_enter and mod_exit, in the order the registry runs them: class, Namespace.Type.Method, the step a
+# reload runs for each online player (Restore at activation, Quiesce at quiescence), then the reason.
+# Classes (PlayerReload): Restore and LoginOnly for mod_enter, Quiesce and LogoutOnly for mod_exit. UNCLASSIFIED fails
+# EveryLoginAndLogoutHandlerHasAPlayerSession. The rule is in SWLOR.Game.Server/Readmes/MaintainabilityRefactorHotReload.md (P4-15).
+# Regenerate (build first so the handlers are current): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~PlayerSessionClassificationTests"   (PowerShell: $env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS)   (build SWLOR.Game.Server.Tests first so the generator sees your handler)
+
+mod_enter (57)
+  LoginOnly   SWLOR.Game.Server.Domain.Abilities.AbilityService.ApplyAuraAOE
+              The aura's area of effect stays on the player; the aura lists are carried (AbilityService._playerAuras).
+  Restore     SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.RestoreCooldownVisuals -> RestoreCooldownVisualsFor
+              Rebuilds the hotbar cooldown overlays and their tick timers from Player.RecastTimes; both lived in the old build's memory and closures.
+  LoginOnly   SWLOR.Game.Server.Domain.Character.ActivityService.WipeStatusOnEntry
+              Clears a busy flag left by a crash at login; a player who stays online may really be busy.
+  Restore     SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.RememberEnteringPlayer -> RememberPlayer
+              Maps the login object to its character id, which only the old build's memory held.
+  LoginOnly   SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.AddDamageTypeResistances
+              Fills missing defense and resistance keys in Redis; the login already did.
+  Restore     SWLOR.Game.Server.Domain.Combat.CombatActivityService.RestoreIdleReadinessOnPlayerEnter -> RestoreIdleReadiness
+              Re-arms the idle readiness timers, closures of the old build that a reload drops, from the carried combat times.
+  LoginOnly   SWLOR.Game.Server.Domain.Foundation.CommunicationService.ApplyCommsChannelName
+              The TLK override stays in the engine.
+  LoginOnly   SWLOR.Game.Server.Domain.Foundation.CommunicationService.ApplyShoutChannelName
+              The TLK override stays in the engine.
+  LoginOnly   SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
+              Writes a missing respawn point to Redis; the login already did.
+  LoginOnly   SWLOR.Game.Server.Domain.Character.DisguiseService.ApplyActiveDisguiseOnEnter
+              The disguise's portrait, soundset and description stay in the engine.
+  LoginOnly   SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnEnter
+              Clears the unlocked flag of a fresh login; the quiescence step locked the bars and the new build starts with none unlocked.
+  Restore     SWLOR.Game.Server.Domain.UI.GuiService.CreatePlayerWindows -> CreatePlayerWindowsFor
+              Creates the player's window view models (memory only) with their saved geometry; every window needs them.
+  LoginOnly   SWLOR.Game.Server.Domain.World.HoloComService.OnModuleEnter
+              Frees a HoloCom immobilize left by a crash at login; it would break a call in progress.
+  LoginOnly   SWLOR.Game.Server.Domain.Items.ItemService.EnsureInventoryItemActivations
+              The activation item properties stay on the items.
+  LoginOnly   SWLOR.Game.Server.Domain.Abilities.MimicryService.OnPlayerLogin
+              The technique feats and hotbar slots stay in the engine; a rerun would put back techniques the player removed from the hotbar.
+  LoginOnly   SWLOR.Game.Server.Domain.Foundation.ObjectVisibilityService.LoadPlayerVisibilityObjects
+              The visibility overrides stay in the engine.
+  LoginOnly   SWLOR.Game.Server.Domain.Social.PerformanceService.RecoverOnLogin
+              Repairs a hotbar a crash left swapped at login; on a player who stays online it would overwrite the hotbar. The quiescence step ends a performance cleanly instead.
+  LoginOnly   SWLOR.Game.Server.Domain.Social.PlayerListService.RefreshOnEnter
+              Refreshes other players' lists for an arrival; nobody arrives.
+  LoginOnly   SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CheckMarketTill
+              A login message.
+  LoginOnly   SWLOR.Game.Server.Domain.Character.PlayerNameService.ApplyNameOverridesOnEnter
+              The name overrides stay in the engine, the name caches refill from Redis on use, and the AFK flags are carried.
+  LoginOnly   SWLOR.Game.Server.Domain.Quests.QuestService.LoadPlayerQuests
+              The journal entries stay in the engine.
+  LoginOnly   SWLOR.Game.Server.Domain.Quests.QuestContractBoardService.NotifyPendingDeliveries
+              A login message.
+  LoginOnly   SWLOR.Game.Server.Domain.Abilities.QuickCastService.ApplyOnEnter
+              The quick-cast feats and quickbar stay in the engine.
+  LoginOnly   SWLOR.Game.Server.Domain.Character.RaceService.ApplyWookieeScaling
+              The scale stays in the engine.
+  LoginOnly   SWLOR.Game.Server.Domain.World.ShuttleService.EnterServer
+              Resumes a ticket or a flight at login with messages and a jump; the ticket holders and flights are adopted and the boarding times carried.
+  LoginOnly   SWLOR.Game.Server.Domain.Character.SkillService.AddMissingSkills
+              Adds missing skills in Redis; the login already did.
+  LoginOnly   SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
+              Takes a pilot out of space at login; the players in space and the ship clones are carried.
+  LoginOnly   SWLOR.Game.Server.Domain.Character.StatService.ApplyPlayerStats
+              The movement rate and walk setting stay in the engine.
+  LoginOnly   SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter
+              Moves the effects held since logout back to the player; a reload carries the status effects themselves, and a rerun would take the food bonus off max HP.
+  LoginOnly   SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnEnter
+              Clears a granted-stealth window left by a crash at login; it would end a live one.
+  LoginOnly   SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
+              The encounter visibility overrides stay in the engine.
+  LoginOnly   SWLOR.Game.Server.Domain.Crafting.CraftService.RestoreCraftingStylesOnEnter
+              The crafting style status effects are carried.
+  LoginOnly   SWLOR.Game.Server.Domain.Creatures.CompanionControlService.RenameToggleAbilitiesCommand
+              The TLK override stays in the engine.
+  LoginOnly   SWLOR.Game.Server.Feature.AchievementProgression.LogIn
+              Counts a login.
+  LoginOnly   SWLOR.Game.Server.Feature.Auditing.AuditClientConnection
+              Writes a connection audit line.
+  LoginOnly   SWLOR.Game.Server.Feature.CraftingInterruptions.SettleOnLogin
+              Settles crafts a crash left open in a freshly loaded character file; on a player who stays online it would duplicate items.
+  LoginOnly   SWLOR.Game.Server.Feature.DisableDefaultGameWindows.DisableWindows
+              The disabled panels stay disabled in the engine.
+  LoginOnly   SWLOR.Game.Server.Feature.DMAuthorization.VerifyDM
+              Authorizes a DM at login and starts DMFI; the DM stays authorized.
+  LoginOnly   SWLOR.Game.Server.Feature.DMToolbarWindow.OpenToolbar
+              Opens the toolbar at login; the reload reopens the windows that were open.
+  LoginOnly   SWLOR.Game.Server.Feature.EventRegistration.EnterServer
+              The creature event scripts stay in the engine.
+  LoginOnly   SWLOR.Game.Server.Feature.PersistentHitPoints.LoadHP
+              Sets HP to the value saved at logout; HP stays in the engine.
+  LoginOnly   SWLOR.Game.Server.Feature.PersistentMapPin.LoadMapPins
+              The map pins stay in the engine.
+  LoginOnly   SWLOR.Game.Server.Feature.PlayerInitialization.InitializePlayer
+              Initializes or upgrades a character at login; the schema gate refuses a build that needs a migration.
+  LoginOnly   SWLOR.Game.Server.Feature.PlayerStatusWindow.LoadPlayerStatusWindow
+              Opens the vitals window at login; the reload reopens the windows that were open.
+  LoginOnly   SWLOR.Game.Server.Feature.PlayerTemporaryEffects.ApplyTemporaryEffects
+              The ghost, scale and movement effects stay in the engine; a rerun would free a player held by a craft, a call or a refinery.
+  LoginOnly   SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnEnter
+              Recreates the companion glove at login; the glove stays equipped and the pairs are carried.
+  LoginOnly   SWLOR.Game.Server.Feature.ResearchInterruptions.SettleOnLogin
+              Settles research a crash left open in a freshly loaded character file; on a player who stays online it would delete jobs started this session.
+  LoginOnly   SWLOR.Game.Server.Feature.SavedAnimationMappings.OnClientEnter
+              The animation mappings stay in the engine; a rerun would cancel one in use.
+  LoginOnly   SWLOR.Game.Server.Feature.ServerTasks.WelcomeMessage
+              A login message.
+  LoginOnly   SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEnter
+              Validates the hands at login; the equipment has not changed.
+  LoginOnly   SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnEnter
+              Recreates the spare pistol at login; the spare stays equipped and the pairs are carried.
+  Restore     SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariables -> ClearTemporaryQueuedVariablesFor
+              A queued weapon ability's managed half (with the ability's callbacks) goes with the old build, so its engine half is cleared as a login clears it.
+  LoginOnly   SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnLogin
+              Ends rest at login; the carried rest status stays.
+  LoginOnly   SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEnter
+              The tint state stays in the engine.
+  LoginOnly   SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEnter
+              The horn fit stays in the engine.
+  LoginOnly   SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEnter
+              The glove fit stays in the engine.
+  LoginOnly   SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnEnter
+              The client targeting data stays in the engine.
+
+mod_exit (45)
+  LogoutOnly  SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnExit
+              Takes the player's auras off everyone; the aura lists are carried.
+  LogoutOnly  SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.ClearCooldownVisualsOnExit
+              Resets the hotbar icons; the restore step rebuilds the overlays.
+  LogoutOnly  SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.ForgetExitingPlayer
+              Forgets the player in memory, which goes with the old build.
+  LogoutOnly  SWLOR.Game.Server.Domain.Combat.CombatService.ClearStatTriggerState
+              Forgets the player's combat trackers and takes pressure effects off others; the trackers go with the old build.
+  LogoutOnly  SWLOR.Game.Server.Domain.Combat.CombatPointService.ClearPendingWeaponAttackPoints
+              Forgets hits in flight, which go with the old build.
+  LogoutOnly  SWLOR.Game.Server.Domain.Combat.CombatPointService.OnPlayerExit
+              Forfeits the player's combat points at logout; a reload carries them.
+  LogoutOnly  SWLOR.Game.Server.Domain.Companions.DroidService.OnPlayerExit
+              Despawns the player's droid; it stays in the world.
+  LogoutOnly  SWLOR.Game.Server.Domain.Combat.EnmityService.PlayerExit
+              Makes enemies drop the player; a reload carries the enmity tables.
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnPlayerExit
+              Cancels an infiltration attempt held in memory, which goes with the old build.
+  Quiesce     SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnExit -> LockBarsFor
+              Locks bars the player unlocked and saves their geometry, which only the old build's view models hold, before the windows close.
+  Quiesce     SWLOR.Game.Server.Domain.UI.GuiService.SavePlayerWindowGeometry -> SavePlayerWindowGeometryFor
+              Saves the geometry of the open windows, which only the old build's view models hold, so the reopened windows keep their place.
+  LogoutOnly  SWLOR.Game.Server.Domain.World.HoloComService.OnModuleLeave
+              Ends the player's call; the call state stays in engine locals.
+  Quiesce     SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnExit -> ClearTechniquesFor
+              The technique chains cannot be carried (they hold ability definitions), so their status effects are taken off as at logout instead of outliving their owner.
+  LogoutOnly  SWLOR.Game.Server.Domain.Abilities.MimicryService.ClearAnalysisOnPlayerExit
+              Forgets the player as an observer; the observers are carried.
+  LogoutOnly  SWLOR.Game.Server.Domain.World.MusicService.ForgetBattleThemeCombat
+              Forgets the player's battle music time; it is carried.
+  LogoutOnly  SWLOR.Game.Server.Domain.Social.PartyService.LeaveServer
+              Takes the player out of their party; the parties are carried.
+  Quiesce     SWLOR.Game.Server.Domain.Social.PerformanceService.EndOnLogout -> EndOnLogoutFor
+              A performance (song, beat timer) cannot be carried, so it ends as at logout: the hotbar is restored and the mode feats removed instead of staying swapped.
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.PlayerIntroductionService.ClearOnExit
+              Drops the player's introduction offers; the offers are carried.
+  LogoutOnly  SWLOR.Game.Server.Domain.Social.PlayerListService.RefreshOnExit
+              Refreshes other players' lists for a departure; nobody leaves.
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.PlayerNameService.ReleaseKnownNamesOnExit
+              Drops the player's name cache, which goes with the old build.
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.PlayerNameService.ClearAfkOnExit
+              Clears the AFK flag; the flags are carried.
+  LogoutOnly  SWLOR.Game.Server.Domain.Combat.PvpCombatService.ForgetExitingPlayer
+              Forgets the player's PvP state; it is carried.
+  LogoutOnly  SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
+              Forgets the boarding time; the boarding times are carried.
+  LogoutOnly  SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer
+              Leaves the ship clone at logout; the players in space and the clones are carried.
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.StatService.ForgetOutOfCombatMovementState
+              Forgets a value the next movement refresh recomputes.
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerExit
+              Holds the effects for the player's return and takes them off the creature; a reload carries the status effects of every creature instead.
+  LogoutOnly  SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnExit
+              Clears granted-stealth locals at logout; they stay valid for a player who stays online.
+  LogoutOnly  SWLOR.Game.Server.Domain.Combat.TelegraphService.ForgetShaderStateOnExit
+              Forgets which shaders the client has; the new build starts without that cache.
+  Quiesce     SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerExit -> AbandonFor
+              A slicing attempt cannot be carried, so it is abandoned as at logout and the claim on the target is released instead of locking it.
+  Quiesce     SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService.AbandonOnExit -> AbandonFor
+              A search cannot be carried, so it ends as at logout (finds saved, site cleared) instead of leaving the site claimed.
+  Quiesce     SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService.AbandonOnExit -> AbandonFor
+              A prospecting session cannot be carried, so it ends as at logout and the busy flag clears instead of sticking.
+  LogoutOnly  SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.ForgetExitingPlayer
+              Forgets the watcher in memory, which goes with the old build.
+  Quiesce     SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnExit -> AbandonFor
+              A fishing fight cannot be carried, so it ends as at logout and the busy flag clears instead of sticking.
+  LogoutOnly  SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.ClearExitingObject
+              Drops the player's temporary modifiers; they are carried.
+  Quiesce     SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit -> ReleaseFor
+              The muzzle anchors are tracked only in the old build, so they are destroyed as at logout instead of being left in the world.
+  LogoutOnly  SWLOR.Game.Server.Feature.Auditing.AuditClientDisconnection
+              Writes a disconnection audit line.
+  Quiesce     SWLOR.Game.Server.Feature.CraftingInterruptions.StopQuickCraftOnLogout -> StopQuickCraftFor
+              A quick-craft batch cannot be carried (its timer is a closure), so it stops as at logout and the craft immobilize comes off instead of sticking.
+  LogoutOnly  SWLOR.Game.Server.Feature.OrdinaryAttackCombatLifecycle.OnExit
+              Takes the haste trait off at logout; the trait state is carried.
+  Quiesce     SWLOR.Game.Server.Feature.PersistentHitPoints.SaveHP -> SaveHPFor
+              Saves the HP to Redis as at logout, so a restart after a failed reload loses nothing; no world effect.
+  Quiesce     SWLOR.Game.Server.Feature.PersistentMapProgression.SaveMapProgression -> SaveMapProgressionFor
+              Saves the map exploration to Redis as at logout, so a restart after a failed reload loses nothing; no world effect.
+  LogoutOnly  SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnExit
+              Destroys the companion glove at logout; it stays equipped and the pairs are carried.
+  LogoutOnly  SWLOR.Game.Server.Feature.ResearchInterruptions.SettleOnLogout
+              Settles open experiments with a roll at logout; they stay open in Redis and the player carries on.
+  LogoutOnly  SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnExit
+              Ends channels and forgets in-flight shots; those go with the old build and expire within a round.
+  LogoutOnly  SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnExit
+              Forgets a failed re-equip notice, which goes with the old build.
+  LogoutOnly  SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnExit
+              Destroys the spare pistol at logout; it stays equipped and the pairs are carried.
+
+== TOTALS ==
+LoginOnly   52
+LogoutOnly  33
+Quiesce     12
+Restore     5

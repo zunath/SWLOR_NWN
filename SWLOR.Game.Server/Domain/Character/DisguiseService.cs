@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Domain.Character
             _stat = stat;
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The disguise's portrait, soundset and description stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyActiveDisguiseOnEnter()
         {

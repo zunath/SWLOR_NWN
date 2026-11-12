@@ -9,6 +9,8 @@
     <IsTestProject>true</IsTestProject>
     <!-- The native hook extension tests stand in for NWNX's FunctionHook pointers. -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- RealBuildReloadTests needs the JIT setting it holds (the file says why). -->
+    <RunSettingsFilePath>$(MSBuildProjectDirectory)/SWLOR.Game.Host.Tests.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup>

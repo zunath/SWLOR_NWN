@@ -77,6 +77,7 @@ public class ServerBootstrapperOrderTests
         }
 
         public void ClearScriptExecutionProvider() => Calls.Add(nameof(ClearScriptExecutionProvider));
+        public void ReleaseFrameworkTypeCaches() => Calls.Add(nameof(ReleaseFrameworkTypeCaches));
     }
 
     [Test]

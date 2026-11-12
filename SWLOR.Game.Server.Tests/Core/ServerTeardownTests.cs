@@ -20,7 +20,8 @@ public class ServerTeardownTests
         "StopCombatRecorder",
         "FlushLogs",
         "UnsubscribeProcessEvents",
-        "ClearScriptExecutionProvider"
+        "ClearScriptExecutionProvider",
+        "ReleaseFrameworkTypeCaches"
     };
 
     private List<string> _log = null!;
@@ -88,7 +89,7 @@ public class ServerTeardownTests
         var act = () => Teardown().Run();
 
         act.Should().Throw<AggregateException>().Which.InnerExceptions.Should().HaveCount(2);
-        _log.Should().Contain("UnsubscribeProcessEvents").And.Contain("ClearScriptExecutionProvider");
+        _log.Should().Contain("UnsubscribeProcessEvents").And.Contain("ClearScriptExecutionProvider").And.Contain("ReleaseFrameworkTypeCaches");
     }
 
     [Test]
@@ -120,6 +121,8 @@ public class ServerTeardownTests
         }
 
         public void ClearScriptExecutionProvider() => _log.Add("ClearScriptExecutionProvider");
+
+        public void ReleaseFrameworkTypeCaches() => _log.Add("ReleaseFrameworkTypeCaches");
     }
 
     private sealed class ProcessEventsDouble : IProcessEventSubscriptions

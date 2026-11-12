@@ -68,10 +68,6 @@ namespace SWLOR.CLI
             {
                 Description = "SWLOR.Game.Host build output to deploy when swlor.env's SWLOR_DOTNET_ENTRY is host. MSBuild supplies the host's output for the server's configuration; standalone deployment defaults to its Release build."
             };
-            var hostOutputOption = new Option<string>("--host-output")
-            {
-                Description = "SWLOR.Game.Host build output to deploy when swlor.env's SWLOR_DOTNET_ENTRY is host. MSBuild supplies the host's output for the server's configuration; standalone deployment defaults to its Release build."
-            };
             var modulePackerOption = CreateValueOption(
                 "--pack",
                 "-p",

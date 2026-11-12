@@ -51,6 +51,17 @@ public class CompositionRootTests
     }
 
     [Test]
+    public void Validating_the_server_services_builds_and_discards_a_container_of_its_own()
+    {
+        var count = CompositionRoot.ValidateServerServices();
+
+        var services = new ServiceCollection();
+        CompositionRoot.RegisterServerServices(services);
+        count.Should().Be(services.Count);
+        CompositionRoot.IsBuilt.Should().BeFalse("the server's own container is untouched");
+    }
+
+    [Test]
     public void The_host_entry_build_needs_a_container_and_a_connection()
     {
         var withoutHost = () => CompositionRoot.Build(null, new SWLOR.Game.Server.Tests.Support.UnopenedRedisConnectionSource());

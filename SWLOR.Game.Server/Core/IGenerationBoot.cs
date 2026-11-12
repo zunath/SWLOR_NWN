@@ -1,8 +1,9 @@
-using SWLOR.Game.Server.Core;
-
-namespace SWLOR.Game.Server.Composition
+namespace SWLOR.Game.Server.Core
 {
-    /// <summary>The server work <see cref="GameGeneration"/> runs at each step of its life; tests replace it.</summary>
+    /// <summary>
+    /// The server work the game build does at each step of its life as the host's generation
+    /// (<c>Composition.GameGeneration</c>); tests replace it.
+    /// </summary>
     public interface IGenerationBoot
     {
         /// <summary>Builds the service container with validation and discards it. Runs off the engine thread.</summary>

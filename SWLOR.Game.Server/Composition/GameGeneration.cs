@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>The generation the host loads: the server's own boot.</summary>
         public GameGeneration()
-            : this(new ServerGenerationBoot())
+            : this(new HostedServerBoot())
         {
         }
 

@@ -673,6 +673,14 @@ class EvidenceCleanupTests(unittest.TestCase):
         kernel=Mock();kernel.WaitForSingleObject.return_value=0;kernel.CloseHandle.return_value=True
         process=SimpleNamespace(hProcess=113,hThread=114)
         job=Mock();desktop=Mock();pid=0x7ffffffc
+
+        def write_shutdown_diagnostic():
+            log = owned / 'logs/nwengineLog1.txt'
+            log.parent.mkdir(exist_ok=True)
+            log.write_text('diagnostic written during shutdown')
+
+        job.close.side_effect = write_shutdown_diagnostic
+
         def failed_shutdown(*args,**kwargs):
             offline_client._retained_processes[pid]=(kernel,process,job,desktop,owned)
             (owned/'isolation.json').write_text(json.dumps({'pid':pid,'process_exited':False,'process_control_retained':True}))
@@ -688,6 +696,8 @@ class EvidenceCleanupTests(unittest.TestCase):
                 self.assertNotIn(pid,offline_client._retained_processes)
                 self.assertFalse(owned.exists())
                 self.assertEqual(kernel.CloseHandle.call_count,2)
+                self.assertEqual((root/'evidence/nwengineLog1.txt').read_text(),
+                                 'diagnostic written during shutdown')
                 manifest=json.loads((root/'evidence/manifest.json').read_text())
                 self.assertFalse(manifest['success'])
                 self.assertTrue(manifest['profile_removed'])

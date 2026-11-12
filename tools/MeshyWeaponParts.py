@@ -60,6 +60,59 @@ def sleeve_triangles(joint,bound,outward,segments=32):
     return result
 
 
+SECTION_TOLERANCE=.0005
+MAX_JOINT_DEPTH=.008  # FitBladeJointInterfaces recognises sleeves up to this deep.
+END_SAMPLE=.002
+
+
+def end_section(groups,bound,outward,interval):
+    """(x, z) points of a part's end nearest a cut its surfaces stop short of.
+
+    Only the clip interval that owns the cut is sampled, so another disjoint
+    interval of the same part never stands in for this end.
+    """
+    low,high=interval
+    points=np.vstack([clipped['positions'].reshape(-1,3) for _,clipped in groups])
+    points=points[(points[:,1]>=low-1e-9)&(points[:,1]<=high+1e-9)]
+    if not len(points):
+        return []
+    distance=outward*(bound-points[:,1])
+    return points[distance<=distance.min()+END_SAMPLE][:,[0,2]].tolist()
+
+
+def inside_convex(hull,points,tolerance=SECTION_TOLERANCE):
+    """True when every (x, z) point lies inside the convex polygon `hull`, within tolerance."""
+    hull=np.asarray(hull,dtype=float)
+    points=np.asarray(points,dtype=float).reshape(-1,2)
+    if len(hull)<3:
+        return False
+    following=np.roll(hull,-1,axis=0)
+    area=np.sum(hull[:,0]*following[:,1]-following[:,0]*hull[:,1])
+    sign=1 if area>0 else -1
+    for a,b in zip(hull,following):
+        edge=b-a
+        cross=sign*(edge[0]*(points[:,1]-a[1])-edge[1]*(points[:,0]-a[0]))/np.linalg.norm(edge)
+        if np.any(cross<-tolerance):
+            return False
+    return True
+
+
+def sleeve_fits(joint,section,segments=64):
+    """A joint sleeve must stay within the part's own cross-section at that joint.
+
+    A sleeve wider than, or off the axis of, the fitted part reads as a metal bar
+    (the November 2026 vibroblades); FitBladeJointInterfaces.py repairs shipped parts.
+    The whole ellipse is tested against the section's convex outline, not its box.
+    """
+    if not len(section):
+        return False
+    angles=2*math.pi*np.arange(segments)/segments
+    centre=np.asarray(joint['center_xz'],dtype=float)
+    radii=np.asarray(joint['radii_xz'],dtype=float)
+    ellipse=centre+np.column_stack([radii[0]*np.cos(angles),radii[1]*np.sin(angles)])
+    return inside_convex(convex_hull(section),ellipse)
+
+
 def flat_basis(triangles):
     positions=np.asarray(triangles,dtype=float)
     edge=positions[:,1]-positions[:,0]
@@ -117,6 +170,7 @@ def validate_joints(joints):
         if len(joint['center_xz'])!=2 or len(joint['radii_xz'])!=2 or any(type(v) not in (int,float) or not math.isfinite(v) for v in values):
             raise ValueError('Finite measured joint envelope required')
         if joint['depth']<=0 or min(joint['radii_xz'])<=0 or joint['y'] in seen:raise ValueError('Positive unique joint envelope required')
+        if joint['depth']>MAX_JOINT_DEPTH:raise ValueError(f"Joint envelope at {joint['y']} is deeper than {MAX_JOINT_DEPTH*1000:g} mm")
         seen.add(joint['y'])
 
 
@@ -173,7 +227,7 @@ def author(manifest,output,repo):
             'pbrMetallicRoughness':{'baseColorFactor':[.22,.25,.28,1],'metallicFactor':.85,'roughnessFactor':.34}})
         models={};part_reports=[];mesh_groups=[];native_parts=[]
         for part in asset['parts']:
-            role=part['model'].rsplit('_',2)[-2];models[role]=part['model'];groups=[];cut_points={};source_triangles=0
+            role=part['model'].rsplit('_',2)[-2];models[role]=part['model'];groups=[];cut_points={};owners={};source_triangles=0
             intervals=e.part_intervals(part)
             for material,source_basis in sources.items():
                 clipped=clip_source_basis(source_basis,intervals);positions=clipped['positions']
@@ -182,6 +236,7 @@ def author(manifest,output,repo):
                 for low,high in intervals:
                     for bound,outward in ((low,-1),(high,1)):
                         if not math.isfinite(bound):continue
+                        owners[(bound,outward)]=(low,high)
                         points=positions.reshape(-1,3);rim=points[np.abs(points[:,1]-bound)<1e-7]
                         cut_points.setdefault((bound,outward),[]).extend(rim[:,[0,2]].tolist())
             if not groups:raise ValueError('Empty authored native part '+part['model'])
@@ -190,6 +245,9 @@ def author(manifest,output,repo):
                 interfaces.extend(cap_triangles(points,bound,outward))
                 joint=next((joint for joint in joints if abs(joint['y']-bound)<1e-9),None)
                 if joint is None:raise ValueError('Missing reviewed joint envelope at '+str(bound))
+                section=points or end_section(groups,bound,outward,owners[(bound,outward)])
+                if not sleeve_fits(joint,section):
+                    raise ValueError(part['model']+': joint envelope at '+str(bound)+' reaches past the part section and would show as a bar')
                 interfaces.extend(sleeve_triangles(joint,bound,outward))
             if interfaces:groups.append((cap_material,flat_basis(interfaces)))
             mesh_groups.append((part['model'],groups))

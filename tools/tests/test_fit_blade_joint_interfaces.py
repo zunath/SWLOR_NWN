@@ -148,27 +148,13 @@ class BladeJointInterfaceTests(unittest.TestCase):
         self.assertEqual([], fit.interface_problems(meshes(after), "wswls_m"))
         self.assertLess(interface_positions(after, "wswls_m")[:, 1].min(), 0.085 + DEPTH + 1e-6)
 
-    def test_a_partial_cap_is_rebuilt_when_its_sleeve_leaves(self):
+    def test_a_partial_cap_is_refused_when_its_sleeve_leaves(self):
         positions, faces = cap(0.085, 1)
         before = compiled([tube(0.085, 0.135, GRIP),
                            combine([(positions[:5], faces[:3]), cap(0.135, -1),
                                     tube(0.085, 0.085 + DEPTH, SLEEVE, np.zeros(2), True)])])
-        after, report = fit.fit_bytes(before, "wswls_m")
-        self.assertTrue(report["0.085"]["cap_rebuilt"])
-        self.assertFalse(report["0.135"]["cap_rebuilt"])
-        self.assertEqual([], fit.interface_problems(meshes(after), "wswls_m"))
-
-    def test_a_rebuilt_cap_validates_beside_a_kept_inner_sleeve(self):
-        positions, faces = cap(0.085, 1)
-        inner = (GRIP[0] * 0.8, GRIP[1] * 0.8)
-        before = compiled([tube(0.085, 0.135, GRIP),
-                           combine([(positions[:5], faces[:3]), cap(0.135, -1),
-                                    tube(0.085, 0.085 + DEPTH, SLEEVE, np.zeros(2), True),
-                                    tube(0.085, 0.085 + DEPTH / 2, inner, CENTRE + [0.001, 0.0], closed=True)])])
-        after, report = fit.fit_bytes(before, "wswls_m")
-        self.assertTrue(report["0.085"]["cap_rebuilt"])
-        self.assertEqual(4 * SEGMENTS, report["0.085"]["sleeve_triangles_removed"])
-        self.assertEqual([], fit.interface_problems(meshes(after), "wswls_m"))
+        with self.assertRaisesRegex(ValueError, "leaves part of the cut open"):
+            fit.fit_bytes(before, "wswls_m")
 
     def test_audit_reports_a_cap_wider_than_a_short_end(self):
         grip = tube(-0.1, 0.0815, GRIP, closed=True)
@@ -222,7 +208,7 @@ class ShippedBladeJointAuditTests(unittest.TestCase):
             issues = fit.interface_problems(found, fit.role_of(path.stem))
             if issues:
                 problems[path.stem] = issues
-        self.assertGreater(checked, 350)
+        self.assertGreater(checked, 300)
         self.assertEqual(set(self.UNCUT), uncut)
         self.assertEqual({}, problems)
 

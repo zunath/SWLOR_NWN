@@ -5,8 +5,7 @@ elliptical sleeve measured from the stock connectors (vibroblades: 48 x 72 mm, 7
 deep, centred on the stock axis). The fitted parts sit off that axis or are slimmer,
 so on most fitted parts the sleeves read as metal bars sticking out at each joint:
 on a vibroblade middle one at its top and one at its bottom, on a top or bottom one
-where it meets the middle. Greatswords, knives, polearms, twinblades and a few
-quarterstaffs had the same. The flat caps already close each cut, so the sleeves add
+where it meets the middle. Greatswords, knives, polearms and twinblades had the same. The flat caps already close each cut, so the sleeves add
 nothing but the bars.
 
 This edits only the interface trimesh of each compiled part, in place of a decompile
@@ -31,9 +30,9 @@ import NativeTangentSeams
 
 # Native part roles per weapon family, measured from the cut caps of the fitted parts
 # (BlasterModelImport.md). Each joint is (y, side), side +1 when the part lies above it.
-# Single-blade weapons stack bottom, middle and top along +Y. Staffs and twinblades use
-# paired roles: the bottom is the central grip, the middle both adjacent bands and the
-# top both ends.
+# Single-blade weapons stack bottom, middle and top along +Y. Twinblades use paired
+# roles: the bottom is the central grip, the middle both adjacent bands and the top
+# both ends.
 FAMILIES = {
     "wswls": (0.085, 0.135),  # Vibroblade and electroblade
     "wswgs": (0.111, 0.17),  # Greatsword
@@ -41,7 +40,6 @@ FAMILIES = {
     "wplss": (-0.442, 0.746),  # Polearm
 }
 PAIRED = {
-    "wdbqs": (-0.6, -0.3, 0.9, 1.2),  # Quarterstaff
     "wdbsw": (-0.128, -0.0833, 0.7885, 0.8323),  # Twinblade
 }
 JOINTS = {}
@@ -216,17 +214,6 @@ def collar_triangles(outline, low, high):
     return triangles
 
 
-def cap_fits(positions, caps, hull):
-    """A cut cap lies within the cut's outline and fills it."""
-    if not len(caps):
-        return False
-    corners = positions[caps][:, :, [0, 2]]
-    if not _hull_contains(hull, corners.reshape(-1, 2)):
-        return False
-    (ax, az), (bx, bz) = (corners[:, 1] - corners[:, 0]).T, (corners[:, 2] - corners[:, 0]).T
-    return float(np.sum(np.abs(ax * bz - az * bx))) / 2 >= _area(hull) * CAP_COVERAGE
-
-
 def plan(meshes, role):
     """The interface edit for a part, or None when its interfaces already fit.
 
@@ -249,7 +236,7 @@ def plan(meshes, role):
     for joint in JOINTS[role]:
         caps = [i for i, kind in enumerate(kinds) if kind == ("cap", joint)]
         tubes = [i for i, kind in enumerate(kinds) if kind == ("tube", joint)]
-        entry = {"cap_triangles": len(caps), "cap_rebuilt": False, "sleeve_triangles_removed": 0, "collar_triangles": 0}
+        entry = {"cap_triangles": len(caps), "sleeve_triangles_removed": 0, "collar_triangles": 0}
         rim = rim_points(sources, joint)
         if len(rim):
             hull = MeshyWeaponParts.convex_hull(rim.tolist())
@@ -261,14 +248,7 @@ def plan(meshes, role):
                 else:
                     removed.extend(members)
             entry["sleeve_triangles_removed"] = len(removed)
-            if not removed or cap_fits(positions, faces[caps], hull):
-                keep.extend(caps)
-            else:
-                # The sleeve was hiding a cut an earlier edit (the staff joint widening)
-                # left partly open: close it with a fresh fan over the cut, as authoring does.
-                fan = MeshyWeaponParts.cap_triangles(rim.tolist(), joint[0], -joint[1])
-                triangles.extend(fan)
-                entry.update(cap_triangles=len(fan), cap_rebuilt=True)
+            keep.extend(caps)
         elif tubes:
             keep.extend(caps)
             outline, gap = _end_section(sources, joint)
@@ -360,7 +340,7 @@ def fit_bytes(before, role):
     if not changed <= allowed:
         raise ValueError("Interface fitting changed unrelated native metadata")
     after, _ = NativeTangentSeams.compact_model_bytes(bytes(after))
-    validate(before, after, role, {float(y) for y, entry in report.items() if entry["cap_rebuilt"]})
+    validate(before, after, role)
     return after, report
 
 
@@ -421,9 +401,9 @@ def interface_problems(meshes, role):
     return problems
 
 
-def validate(before, after, role, rebuilt=()):
-    """Source trimeshes keep every rendered corner, caps stay as authored except at the
-    `rebuilt` joint heights, and every interface fits its part."""
+def validate(before, after, role):
+    """Source trimeshes keep every rendered corner, caps stay as authored, and every
+    interface fits its part."""
     _, old_meshes = NativeTangentSeams.mesh_headers(before)
     _, new_meshes = NativeTangentSeams.mesh_headers(after)
     if len(old_meshes) != len(new_meshes):
@@ -435,8 +415,6 @@ def validate(before, after, role, rebuilt=()):
         if position != index and not np.array_equal(_corner_rows(old), _corner_rows(new)):
             raise ValueError("Interface fitting changed a source trimesh")
     for joint in JOINTS[role]:
-        if joint[0] in rebuilt:
-            continue  # interface_problems checks the rebuilt cap.
         if not np.array_equal(_cap_rows(old_meshes[index], role, joint), _cap_rows(new_meshes[index], role, joint)):
             raise ValueError(f"Interface fitting changed the cut cap at y={joint[0]}")
     problems = interface_problems(new_meshes, role)

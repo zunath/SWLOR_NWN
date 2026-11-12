@@ -77,6 +77,9 @@ internal static class FixtureGenerationBuilder
             public ValueTask BeginQuiescenceAsync(CancellationToken cancellationToken)
             {
                 _record?.Enqueue($"quiesce generation={_generation} thread={Environment.CurrentManagedThreadId}");
+        #if SLOW_QUIESCE
+                System.Threading.Thread.Sleep(400);
+        #endif
                 return ValueTask.CompletedTask;
             }
 
@@ -135,7 +138,7 @@ internal static class FixtureGenerationBuilder
     /// loads it from bytes.
     /// </summary>
     public static string BuildInto(string directory, string fileName, bool failActivation = false, bool failValidation = false,
-        int? requiredSchemaVersion = null)
+        int? requiredSchemaVersion = null, bool slowQuiescence = false)
     {
         Directory.CreateDirectory(directory);
         var path = Path.Combine(directory, fileName);
@@ -145,6 +148,8 @@ internal static class FixtureGenerationBuilder
             symbols.Add("FAIL_ACTIVATE");
         if (failValidation)
             symbols.Add("FAIL_VALIDATE");
+        if (slowQuiescence)
+            symbols.Add("SLOW_QUIESCE");
         var source = Source;
         if (requiredSchemaVersion is { } version)
         {

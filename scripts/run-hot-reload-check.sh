@@ -86,6 +86,10 @@ if [ -z "$SERVER_HOME" ]; then
         exit 1
     fi
 fi
+# Absolute from here on: the script later changes directory (pushd) and hands the path to the CLI.
+if [ -d "$SERVER_HOME" ]; then
+    SERVER_HOME="$(cd "$SERVER_HOME" && pwd)"
+fi
 if [ ! -f "$SERVER_HOME/swlor.env" ]; then
     echo "Server home '$SERVER_HOME' has no swlor.env - it doesn't look like an NWN home directory." >&2
     exit 1

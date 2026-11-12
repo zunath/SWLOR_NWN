@@ -235,11 +235,14 @@ public sealed class SwlorHostMode : IHostMode
     /// </remarks>
     public void RunFrame(ulong frame)
     {
+        // The hold is timed from the start of this frame: the pump below can already run the reload's engine-thread work
+        // (the old build's quiescence) once the hold is armed, and the engine is blocked for that too.
+        var frameStart = Stopwatch.GetTimestamp();
         _callbacks.BeginFrame(frame);
         _bindings?.Pump(OperationsPerFrame);
         var pause = Volatile.Read(ref _pause);
         if (pause is not null)
-            HoldForReload(pause, frame);
+            HoldForReload(pause, frame, frameStart);
         _reloadHost?.PumpMainLoop();
     }
 
@@ -339,9 +342,8 @@ public sealed class SwlorHostMode : IHostMode
     /// Keeps the engine thread in this frame until the reload ends, running its engine-thread work (the old build's
     /// quiescence and dispose, the new build's activation) as it arrives.
     /// </summary>
-    private void HoldForReload(ReloadPause pause, ulong frame)
+    private void HoldForReload(ReloadPause pause, ulong frame, long frameStart)
     {
-        var held = Stopwatch.StartNew();
         while (!pause.Finished)
         {
             _bindings!.Pump(int.MaxValue);
@@ -349,11 +351,11 @@ public sealed class SwlorHostMode : IHostMode
                 Thread.Sleep(PumpPollInterval);
         }
 
-        held.Stop();
+        var held = Stopwatch.GetElapsedTime(frameStart);
         Interlocked.CompareExchange(ref _pause, null, pause);
-        pause.Release(held.Elapsed, frame);
+        pause.Release(held, frame);
         _log("reload-pause", string.Create(CultureInfo.InvariantCulture,
-            $"frame={frame} heldMs={held.Elapsed.TotalMilliseconds:F0}: the engine thread stayed in this frame from the old build's quiescence to the end of the reload"));
+            $"frame={frame} heldMs={held.TotalMilliseconds:F0}: the engine thread stayed in this frame from the old build's quiescence to the end of the reload"));
     }
 
     private static async Task<bool> LeftHoldAsync(ReloadPause pause)

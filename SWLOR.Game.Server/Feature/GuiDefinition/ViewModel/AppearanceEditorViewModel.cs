@@ -905,19 +905,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    var topId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top);
-                    var middleId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
-                    var bottomId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Bottom);
-                    var topColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top);
-                    var middleColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle);
-                    var bottomColor = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Bottom);
-
-                    var topPartId = topId + topColor * 100;
-                    var middlePartId = middleId + middleColor * 100;
-                    var bottomPartId = bottomId + bottomColor * 100;
-
-                    if (!AllowsWeaponParts(appearance, topPartId, middlePartId, bottomPartId))
-                        return false;
+                    // A part missing from the shared list is accepted as this weapon's own part.
+                    foreach (var part in new[] { AppearanceWeapon.Top, AppearanceWeapon.Middle, AppearanceWeapon.Bottom })
+                    {
+                        if (!GetWeaponPartOptions(item, appearance, part).Contains(GetWeaponPartId(item, part)))
+                            return false;
+                    }
                 }
             }
 
@@ -931,10 +924,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return !isCursed && (!isPlot || TrainingSaberCatalog.IsTrainingSaber(itemType, resref));
         }
 
-        private static bool AllowsWeaponParts(IWeaponAppearanceDefinition appearance, int top, int middle, int bottom)
+        private static int GetWeaponPartId(uint item, AppearanceWeapon part) =>
+            GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)part) * 100 +
+            GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)part);
+
+        // The shared parts for the weapon type. A type that keeps its own parts adds the part this weapon came
+        // with when the shared list lacks it; other types refuse such a weapon.
+        private static int[] GetWeaponPartOptions(uint item, IWeaponAppearanceDefinition appearance, AppearanceWeapon part)
         {
-            return appearance.TopParts.Contains(top) && appearance.MiddleParts.Contains(middle) &&
-                   appearance.BottomParts.Contains(bottom);
+            var shared = part switch
+            {
+                AppearanceWeapon.Top => appearance.TopParts,
+                AppearanceWeapon.Middle => appearance.MiddleParts,
+                AppearanceWeapon.Bottom => appearance.BottomParts,
+                _ => throw new ArgumentOutOfRangeException(nameof(part))
+            };
+            if (!appearance.KeepsOwnParts)
+                return shared;
+
+            var original = WeaponOriginalParts.Remember(item, part, GetWeaponPartId(item, part), shared);
+            return WeaponOriginalParts.GetOptions(shared, original);
         }
 
         private void ToggleItemEquippedFlags()
@@ -2109,8 +2118,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
             {
-                int offset;
-
                 if (_weaponAppearances[type].IsSimple)
                 {
                     partIds = _weaponAppearances[type].SimpleParts;
@@ -2118,28 +2125,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    switch (SelectedPartCategoryIndex)
+                    var weaponPart = SelectedPartCategoryIndex switch
                     {
-                        case 0: // 0 = Top
-                            partIds = _weaponAppearances[type].TopParts;
-                            selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Top);
-                            offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top);
-                            break;
-                        case 1: // 1 = Middle
-                            partIds = _weaponAppearances[type].MiddleParts;
-                            selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Middle);
-                            offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Middle);
-                            break;
-                        case 2: // 2 = Bottom
-                            partIds = _weaponAppearances[type].BottomParts;
-                            selectedPartId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)AppearanceWeapon.Bottom);
-                            offset = GetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Bottom);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
-                    }
-
-                    selectedPartId = offset * 100 + selectedPartId;
+                        0 => AppearanceWeapon.Top,
+                        1 => AppearanceWeapon.Middle,
+                        2 => AppearanceWeapon.Bottom,
+                        _ => throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex))
+                    };
+                    partIds = GetWeaponPartOptions(item, _weaponAppearances[type], weaponPart);
+                    selectedPartId = GetWeaponPartId(item, weaponPart);
                 }
             }
             else
@@ -2676,36 +2670,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
             {
-                int color;
-                int partId;
-
                 if (_weaponAppearances[itemType].IsSimple)
                 {
-                    partId = _weaponAppearances[itemType].SimpleParts[SelectedPartIndex];
-                    ModifyItemPart((int)ItemAppearanceType.SimpleModel, partId);
+                    ModifyItemPart((int)ItemAppearanceType.SimpleModel, _weaponAppearances[itemType].SimpleParts[SelectedPartIndex]);
                 }
                 else
                 {
-                    switch (SelectedPartCategoryIndex)
+                    var weaponPart = SelectedPartCategoryIndex switch
                     {
-                        case 0: // Top
-                            color = _weaponAppearances[itemType].TopParts[SelectedPartIndex] / 100;
-                            partId = _weaponAppearances[itemType].TopParts[SelectedPartIndex] % 100;
-                            ModifyItemPart((int)AppearanceWeapon.Top, partId, color);
-                            break;
-                        case 1: // Middle
-                            color = _weaponAppearances[itemType].MiddleParts[SelectedPartIndex] / 100;
-                            partId = _weaponAppearances[itemType].MiddleParts[SelectedPartIndex] % 100;
-                            ModifyItemPart((int)AppearanceWeapon.Middle, partId, color);
-                            break;
-                        case 2: // Bottom
-                            color = _weaponAppearances[itemType].BottomParts[SelectedPartIndex] / 100;
-                            partId = _weaponAppearances[itemType].BottomParts[SelectedPartIndex] % 100;
-                            ModifyItemPart((int)AppearanceWeapon.Bottom, partId, color);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
-                    }
+                        0 => AppearanceWeapon.Top,
+                        1 => AppearanceWeapon.Middle,
+                        2 => AppearanceWeapon.Bottom,
+                        _ => throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex))
+                    };
+                    var selected = GetWeaponPartOptions(item, _weaponAppearances[itemType], weaponPart)[SelectedPartIndex];
+                    ModifyItemPart((int)weaponPart, selected % 100, selected / 100);
                 }
             }
         }

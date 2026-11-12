@@ -32,7 +32,9 @@ namespace SWLOR.Game.Server.Domain.Space
         private readonly Dictionary<string, ShipModuleDetail> _shipModules = new();
         private readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new();
 
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, ShipStatus> _shipNPCs = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, ShipStatus> _spaceObjectInstances = new();
 
         public Dictionary<FeatType, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
@@ -41,11 +43,17 @@ namespace SWLOR.Game.Server.Domain.Space
         private readonly HashSet<string> _shipModuleItemTags = new();
         private readonly HashSet<AppearanceType> _shipAppearances = new();
 
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<string, uint> _shipClones = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, PendingShipLaunch> _pendingShipLaunches = new();
 
+        // NPC docks (the rerun LoadLandingPoints) and player starports (the property adoption) come back under the ids their
+        // waypoints carry; the starports load after boot, so these are compared with the old build's, not the boot's.
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
 
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly HashSet<uint> _playersInSpace = new();
 
         private const float NPCShipKeepDistance = 15f;
@@ -151,7 +159,7 @@ namespace SWLOR.Game.Server.Domain.Space
         /// whose id is not registered yet a new id (a new GUID in its STARSHIP_DOCKPOINT_ID local, replacing any earlier
         /// one), as <see cref="RegisterLandingPoint"/> does for an NPC dock. Boot only: ships and properties hold these ids.
         /// </summary>
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The dock waypoints keep the ids it gave them: the rerun LoadLandingPoints registers them, and the property adoption registers the starport docks under theirs.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void AssignLandingPointIds()
         {
@@ -273,6 +281,33 @@ namespace SWLOR.Game.Server.Domain.Space
             _dockPoints[planet][dockPointId] = dockPoint;
 
             SetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID", dockPointId);
+        }
+
+        /// <summary>
+        /// On a hot reload: registers a landing point the old build registered (<see cref="RegisterLandingPoint"/>) under the id
+        /// its waypoint already carries. It never gives the waypoint a new id; a waypoint without one is left out.
+        /// </summary>
+        /// <param name="waypoint">The dock waypoint.</param>
+        /// <param name="area">The area whose planet the dock belongs to.</param>
+        /// <param name="isNPC">If true, the dock is an NPC dock; otherwise a player's.</param>
+        /// <param name="propertyId">The world property Id of the dock, if any.</param>
+        public void AdoptLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId)
+        {
+            var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+            var planet = _planet.GetPlanetType(area);
+            if (planet == PlanetType.Invalid || string.IsNullOrWhiteSpace(dockPointId))
+                return;
+
+            if (!_dockPoints.ContainsKey(planet))
+                _dockPoints[planet] = new Dictionary<string, ShipDockPoint>();
+
+            _dockPoints[planet][dockPointId] = new ShipDockPoint
+            {
+                Location = GetLocation(waypoint),
+                Name = string.IsNullOrWhiteSpace(propertyId) ? GetName(waypoint) : string.Empty,
+                PropertyId = propertyId,
+                IsNPC = isNPC
+            };
         }
 
         /// <summary>

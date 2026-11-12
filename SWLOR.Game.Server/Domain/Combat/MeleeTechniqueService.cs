@@ -16,9 +16,13 @@ namespace SWLOR.Game.Server.Domain.Combat
     public class MeleeTechniqueService : IMeleeTechniqueService
     {
         private readonly Dictionary<SkillType, MeleeTechniqueProfile> Profiles = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, OwnerState> Owners = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, Activation> Activations = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, OrdinaryAttempt> OrdinaryAttempts = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, DirectDamageSnapshot> DirectDamage = new();
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<IAbilityService> _ability;

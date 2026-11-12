@@ -47,9 +47,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly Dictionary<ResistanceType, Dictionary<FeatType, int>> _traitResistancesByResistance = new();
 
         // In-memory witness tracker: npc -> playerId -> technique feats witnessed but not yet learned.
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, Dictionary<string, HashSet<FeatType>>> _witnesses = new();
 
         // Observation is passive: keep its credit out of the combat points used to share active skill XP.
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, HashSet<string>> _analysisObservers = new();
 
         private bool _witnessSweepScheduled;

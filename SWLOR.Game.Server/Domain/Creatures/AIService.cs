@@ -55,8 +55,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Lazy<IStatusEffectService> _statusEffect;
         private readonly Lazy<IStealthService> _stealth;
 
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new();
         private readonly Dictionary<AIProfileType, AIProfile> _profiles = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, AIState> _states = new();
         private readonly Dictionary<FeatType, AITargetSelector> _defaultTargetSelectors = new();
 

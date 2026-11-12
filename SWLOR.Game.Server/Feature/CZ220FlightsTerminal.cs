@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature
     {
         private const string HangarAreaResref = "czs220_hangar";
 
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The terminal it placed stays in the world.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void SpawnHangarFlightsTerminal()
         {

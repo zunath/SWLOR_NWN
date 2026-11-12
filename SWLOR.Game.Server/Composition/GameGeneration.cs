@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -16,11 +17,18 @@ namespace SWLOR.Game.Server.Composition
     /// <see cref="IGameplayGeneration"/> in it), validates it off the engine thread and activates it on the engine thread.
     /// Generation 1 activates while NWNX's bootstrap call is still running; the engine then runs the boot scripts as it
     /// does for the native entry (<c>ServerManager.Bootstrap</c>). A generation that activates after the module has loaded
-    /// (a hot reload on a development or test server) rebuilds the service container and the script dispatch only: the
-    /// engine runs no boot script for it, and rerunning the boot handlers and adopting the live world come later (P4-14).
+    /// (a hot reload on a development or test server) rebuilds the service container and the script dispatch, then runs the
+    /// reload bootstrap: the engine runs no boot script for it, so it reruns the rerun boot handlers and adopts the live world
+    /// (<see cref="ReloadBootstrap"/>); the build it replaces carried what the world cannot tell while it quiesced. With hot
+    /// reload on, every generation also logs its reload digests (<see cref="ReloadDigests"/>) for
+    /// <c>scripts/run-hot-reload-check.sh</c>; with it off none of this runs.
     /// </summary>
     public sealed class GameGeneration : IGameplayGeneration
     {
+        private const string BootPhase = "boot";
+        private const string QuiescePhase = "quiesce";
+        private const string ReloadPhase = "reload";
+
         private static readonly Lazy<int> SchemaVersion = new(() => NewestServerMigration(typeof(GameGeneration).Assembly.GetTypes()));
 
         private readonly IGenerationBoot _boot;
@@ -31,6 +39,10 @@ namespace SWLOR.Game.Server.Composition
         private INativeSinkBinding _sinkBinding;
         private NativeSinkSet _sinks;
         private bool _bootStarted;
+        private long _generation;
+        private bool _reloadEnabled;
+        private bool _activatedByReload;
+        private bool _bootDigestScheduled;
 
         /// <summary>The generation the host loads: the server's own boot.</summary>
         public GameGeneration()
@@ -61,8 +73,9 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>
         /// The newest server migration this build carries (<see cref="IServerMigration.Version"/>), or
-        /// <see cref="MigrationService.RetiredServerMigrationVersion"/> when it carries none: a reload gate (P4-14) compares
-        /// it with the database's <c>MigrationVersion</c>. The host does not gate the first activation.
+        /// <see cref="MigrationService.RetiredServerMigrationVersion"/> when it carries none: the host's schema gate
+        /// (<c>SWLOR.Game.Host.Reload.ReloadSchemaGate</c>) rejects a reload candidate whose version is newer than the database's
+        /// <c>MigrationVersion</c>. The host does not gate the first activation.
         /// </summary>
         public int RequiredSchemaVersion => SchemaVersion.Value;
 
@@ -88,8 +101,10 @@ namespace SWLOR.Game.Server.Composition
         /// handlers, then exposes the script dispatcher and the main loop and binds the signal handler. The hooks stay
         /// uninstalled until the game's boot handlers enable them, at the same moments as on the native entry.
         /// When the host says the module has already loaded (<see cref="IHostLifecycle.ModuleLoaded"/>, a reload), the
-        /// server also takes the module-load signal the engine will not send again, and the activation is logged with how
-        /// long it took: it is the new build's part of the reload pause.
+        /// server also takes the module-load signal the engine will not send again and runs the reload bootstrap (the rerun
+        /// boot handlers, then the adoption steps), and the activation is logged with how long it took and its slowest steps:
+        /// it is the new build's part of the reload pause. With hot reload on, the adopted-state and world digests are logged
+        /// before the pause ends and the cache digests at the next frame.
         /// </summary>
         public ValueTask ActivateAsync(GenerationActivation activation, CancellationToken cancellationToken)
         {
@@ -103,8 +118,12 @@ namespace SWLOR.Game.Server.Composition
             var hookControl = Require<IHookControl>(services);
             var sinkBinding = Require<INativeSinkBinding>(services);
             // A host that hands no lifecycle never reloads: every activation is a boot.
-            var reload = services.Resolve(typeof(IHostLifecycle)) is IHostLifecycle { ModuleLoaded: true };
+            var lifecycle = services.Resolve(typeof(IHostLifecycle)) as IHostLifecycle;
+            var reload = lifecycle is { ModuleLoaded: true };
             var activationTime = reload ? Stopwatch.StartNew() : null;
+            _generation = activation.Generation;
+            _reloadEnabled = lifecycle is { ReloadEnabled: true };
+            _activatedByReload = reload;
 
             _sinks = NativeSinkFactory.Create();
             _sinkBinding = sinkBinding;
@@ -112,12 +131,16 @@ namespace SWLOR.Game.Server.Composition
 
             _bootStarted = true;
             _boot.Activate(new HostedBoot(closures, redisConnection, hookControl, _sourceDirectory));
+            IReadOnlyList<ReloadStepResult> rebuilt = null;
             if (reload)
+            {
                 _boot.ResumeAfterModuleLoad();
+                rebuilt = _boot.RebuildAfterReload();
+            }
 
             Scripts = new HostedScriptDispatcher();
             MainLoop = new HostedMainLoop(hostCallbacks);
-            _signals = new HostedSignalHandler();
+            _signals = new HostedSignalHandler(OnSignal);
             hostCallbacks.BindSignals(_signals);
             _hostCallbacks = hostCallbacks;
 
@@ -125,18 +148,43 @@ namespace SWLOR.Game.Server.Composition
             {
                 _log(FormattableString.Invariant(
                     $"Generation {activation.Generation} activated by a reload in {activationTime.Elapsed.TotalMilliseconds:F0} ms: ") +
-                    "rebuilt the service container and the script dispatch only; no boot handler reran and nothing was adopted.");
+                    "rebuilt the service container and the script dispatch, then the reload bootstrap " +
+                    ReloadBootstrap.Describe(rebuilt ?? Array.Empty<ReloadStepResult>()));
+
+                if (_reloadEnabled)
+                {
+                    LogDigests(ReloadPhase, _boot.DescribeAdoptedState);
+                    _boot.RunNextFrame(() => LogDigests(ReloadPhase, _boot.DescribeCaches));
+                }
             }
 
             return ValueTask.CompletedTask;
         }
 
         /// <summary>
-        /// Nothing yet: the old build's dispose stops its timers and queues (<see cref="IServerTeardown"/>), and the host
-        /// drops its pending closures. P4-15 saves online players' state and closes windows and conversations here.
+        /// On the engine thread, when a reload replaces this build and hot reload is on: logs the adopted-state and world digests
+        /// the next build's must equal, then runs the carry steps, which leave on the module what the next build's adoption
+        /// steps cannot read back from the world. The old build's dispose then stops its timers and queues
+        /// (<see cref="IServerTeardown"/>), and the host drops its pending closures. P4-15 saves online players' state and closes
+        /// windows and conversations here.
         /// </summary>
         public ValueTask BeginQuiescenceAsync(CancellationToken cancellationToken)
         {
+            if (!_reloadEnabled || !_bootStarted)
+                return ValueTask.CompletedTask;
+
+            LogDigests(QuiescePhase, _boot.DescribeAdoptedState);
+            try
+            {
+                var carried = _boot.CarryForReload();
+                _log(FormattableString.Invariant($"Generation {_generation} quiesced for a reload: ") + ReloadBootstrap.Describe(carried));
+            }
+            catch (Exception exception)
+            {
+                // The next build's adoption steps find nothing carried and say so; the reload itself goes on.
+                _log(FormattableString.Invariant($"Generation {_generation} could not carry its state for the reload: ") + exception);
+            }
+
             return ValueTask.CompletedTask;
         }
 
@@ -187,6 +235,42 @@ namespace SWLOR.Game.Server.Composition
             return versions.Count == 0
                 ? MigrationService.RetiredServerMigrationVersion
                 : Math.Max(versions.Max(), MigrationService.RetiredServerMigrationVersion);
+        }
+
+        /// <summary>
+        /// The signal callback: the server's own handling (<see cref="IGenerationBoot.ProcessSignal"/>), then, for the boot of a
+        /// server with hot reload on, the boot's cache digests at the frame after the module has loaded.
+        /// </summary>
+        private void OnSignal(string signal)
+        {
+            _boot.ProcessSignal(signal);
+            if (signal != HostedServerBoot.ModuleLoadFinishSignal || !_reloadEnabled || _activatedByReload || _bootDigestScheduled)
+                return;
+
+            _bootDigestScheduled = true;
+            _boot.RunNextFrame(() => LogDigests(BootPhase, _boot.DescribeCaches));
+        }
+
+        /// <summary>
+        /// Logs every digest <paramref name="describe"/> returns for this generation and <paramref name="phase"/>, then how long
+        /// it took. A digest that fails is logged and skipped: it is a check, never part of what the server does.
+        /// </summary>
+        private void LogDigests(string phase, Func<IReadOnlyList<ReloadDigestLine>> describe)
+        {
+            var time = Stopwatch.StartNew();
+            try
+            {
+                var lines = describe();
+                foreach (var line in lines)
+                    _log(line.Format(_generation, phase));
+
+                _log(FormattableString.Invariant(
+                    $"{ReloadDigestLine.LogPrefix}S generation={_generation} phase={phase} lines={lines.Count} ms={time.Elapsed.TotalMilliseconds:F0}"));
+            }
+            catch (Exception exception)
+            {
+                _log(FormattableString.Invariant($"{ReloadDigestLine.LogPrefix}S generation={_generation} phase={phase} failed: ") + exception);
+            }
         }
 
         private static TService Require<TService>(IHostServices services)

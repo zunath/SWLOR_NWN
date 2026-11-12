@@ -2,8 +2,9 @@ namespace SWLOR.Game.Server.Core
 {
     /// <summary>
     /// What a hot reload does with a boot handler. After a reload the module is already loaded, so the engine runs none of the
-    /// boot scripts again; the new build reruns the handlers that only rebuild its own state and skips the rest.
-    /// Nothing reads this at runtime yet; <see cref="BootPhaseAttribute"/> records the decision.
+    /// boot scripts again; the new build reruns the handlers that only rebuild its own state, then runs the adoption step of each
+    /// boot-only handler that has one (<see cref="BootPhaseAttribute.AdoptedBy"/>), and skips the rest
+    /// (<see cref="ReloadBootstrap"/>). <see cref="BootPhaseAttribute"/> records the decision; the boot never reads it.
     /// </summary>
     public enum BootReload
     {
@@ -14,7 +15,10 @@ namespace SWLOR.Game.Server.Core
         /// </summary>
         Rerun = 0,
 
-        /// <summary>Changes the world, saved data or engine state that survives a reload. It never runs again after boot.</summary>
+        /// <summary>
+        /// Changes the world, saved data or engine state that survives a reload. It never runs again after boot; a reload runs
+        /// its adoption step instead, or nothing (<see cref="BootPhaseAttribute.NothingToAdopt"/>).
+        /// </summary>
         BootOnly = 1,
 
         // 2 was Split, a handler that mixed both. P4-8 split each one into a Rerun handler and a BootOnly handler that run

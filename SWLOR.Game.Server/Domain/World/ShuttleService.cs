@@ -49,13 +49,22 @@ namespace SWLOR.Game.Server.Domain.World
         private const float BoardingRangeMeters = 15f;
         private const int BoardingCallSeconds = 60;
 
+        // The flights and tickets come back from Redis (the rerun LoadShuttleFlights) and the live shuttle interiors (AdoptFlights)
+        // on a hot reload; the boarding calls and permissions belong to the players' session.
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<string, ActiveFlight> _activeFlights = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<string, (PlanetType Origin, PlanetType Destination)> _ticketHolders = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<string, DateTime> _boardingNotBeforeUtc = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<(PlanetType Origin, PlanetType Destination), DateTime> _announcedBoardings = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly ShuttleMissedBoardingTracker _missedBoardings = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private DateTime _lastTickUtc;
         // The in-transit rides LoadShuttleFlights found already landed; DeliverOfflinePassengers delivers them at boot.
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly List<ShuttleRide> _ridesLandedWhileDown = new();
 
         private readonly IDBService _db;
@@ -106,9 +115,9 @@ namespace SWLOR.Game.Server.Domain.World
         /// <summary>
         /// After <see cref="LoadShuttleFlights"/>, delivers the passengers whose flight landed while the server was down
         /// (the rides it found arrived by the time it read them) to their destination on their offline record. Boot only:
-        /// it writes the player records.
+        /// it writes the player records. A hot reload runs <see cref="AdoptFlights"/> instead.
         /// </summary>
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, AdoptedBy = nameof(AdoptFlights))]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void DeliverOfflinePassengers()
         {
@@ -120,6 +129,78 @@ namespace SWLOR.Game.Server.Domain.World
             }
 
             _ridesLandedWhileDown.Clear();
+        }
+
+        /// <summary>
+        /// On a hot reload, after the rerun <see cref="LoadShuttleFlights"/> (which read the tickets and flights from Redis and
+        /// started the flight tick): stands in for <see cref="DeliverOfflinePassengers"/> without writing anything. A ride the
+        /// rerun found landed belongs to a flight that landed in the old build's last moments, so its flight goes back on the
+        /// schedule and the next tick delivers it as it delivers any arrival (once, online or offline). Each flight in the air
+        /// gets back its live shuttle interior, console and boarding point. An interior whose flight has landed is torn down
+        /// as the old build had scheduled.
+        /// </summary>
+        public void AdoptFlights()
+        {
+            var now = UtcNow();
+            foreach (var ride in _ridesLandedWhileDown)
+            {
+                if (_activeFlights.ContainsKey(ride.FlightId))
+                    continue;
+
+                _activeFlights[ride.FlightId] = new ActiveFlight
+                {
+                    FlightId = ride.FlightId,
+                    Origin = ride.Origin,
+                    Destination = ride.Destination,
+                    DepartureUtc = ride.DepartureUtc,
+                    ArrivalUtc = ride.ArrivalUtc,
+                    LastBroadcastUtc = now
+                };
+            }
+
+            _ridesLandedWhileDown.Clear();
+
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                var flightId = GetLocalString(area, ShuttleFlightIdVariable);
+                if (string.IsNullOrEmpty(flightId))
+                    continue;
+
+                if (_activeFlights.TryGetValue(flightId, out var flight))
+                {
+                    AttachFlightInstance(flight, area);
+                }
+                else if (ShuttleSchedule.TryParseFlightId(flightId, out _, out var destination, out _))
+                {
+                    var landingLocation = GetLandingLocation(destination);
+                    Schedule(() => DestroyFlightInstance(area, landingLocation), TimeSpan.FromSeconds(30));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gives a flight its live shuttle interior back: the area, the status console and the boarding point that
+        /// <see cref="EnsureFlightInstance"/> found or made in it.
+        /// </summary>
+        private void AttachFlightInstance(ActiveFlight flight, uint area)
+        {
+            var entrancePosition = Vector3(1f, 1f, 0f);
+            var entranceFacing = 0f;
+            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+            {
+                if (GetTag(obj) == EntranceWaypointTag)
+                {
+                    entrancePosition = GetPosition(obj);
+                    entranceFacing = GetFacing(obj);
+                }
+                else if (GetObjectType(obj) == ObjectType.Placeable && GetLocalString(obj, ShuttleFlightIdVariable) == flight.FlightId)
+                {
+                    flight.Console = obj;
+                }
+            }
+
+            flight.Area = area;
+            flight.EntranceLocation = Location(area, entrancePosition, entranceFacing);
         }
 
         /// <summary>

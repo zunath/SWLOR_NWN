@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         public const string BeastLevelVariable = "BEAST_LEVEL";
 
         private readonly IDBService _db;
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly ConcurrentDictionary<string, DayOfWeek> _incubationDayOverrides = new();
         private readonly IIncubationFieldNoteService _incubationFieldNotes;
         private readonly IPropertyService _property;

@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Domain.UI
     public class GuiService : IGuiService
     {
         private readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
         private readonly Dictionary<string, Dictionary<string, GuiMethodDetail>> _elementEvents = new();
         private readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
@@ -218,6 +219,7 @@ namespace SWLOR.Game.Server.Domain.UI
         }
 
         private const float GeometrySaveDebounceSeconds = 2f;
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly HashSet<string> _pendingGeometrySaves = new();
 
         /// <summary>

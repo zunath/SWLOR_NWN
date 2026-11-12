@@ -34,10 +34,14 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly ISkillService _skill;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, PerformanceAudienceState> _states = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, PerformancePerformerState> _performerStates = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly List<PerformerSnapshot> _scratchPartners = new();
         private IDisposable _tickSchedule;
+        [ReloadState(ReloadStateKind.Runtime)]
         private int _tickNumber;
 
         public PerformanceAudienceService(

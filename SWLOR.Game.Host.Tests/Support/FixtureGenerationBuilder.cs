@@ -33,6 +33,9 @@ internal static class FixtureGenerationBuilder
             private long _generation;
 
             public string BuildId => "fixture";
+        #if REQUIRED_SCHEMA
+            public int RequiredSchemaVersion => REQUIRED_SCHEMA_VERSION;
+        #endif
             public IScriptDispatcher Scripts { get; private set; }
             public IMainLoopSink MainLoop { get; private set; }
 
@@ -115,11 +118,15 @@ internal static class FixtureGenerationBuilder
         }
         """;
 
-    /// <summary>Compiles the fixture build into a new folder under <paramref name="root"/> and returns the assembly's path.</summary>
-    public static string Build(string root, bool failActivation = false, bool failValidation = false)
+    /// <summary>
+    /// Compiles the fixture build into a new folder under <paramref name="root"/> and returns the assembly's path. With
+    /// <paramref name="requiredSchemaVersion"/> the build declares that server migration version; otherwise it keeps the
+    /// contract's default (0).
+    /// </summary>
+    public static string Build(string root, bool failActivation = false, bool failValidation = false, int? requiredSchemaVersion = null)
     {
         var directory = Path.Combine(root, Guid.NewGuid().ToString("N"));
-        return BuildInto(directory, "HostFixture.dll", failActivation, failValidation);
+        return BuildInto(directory, "HostFixture.dll", failActivation, failValidation, requiredSchemaVersion);
     }
 
     /// <summary>
@@ -127,7 +134,8 @@ internal static class FixtureGenerationBuilder
     /// folder and the game assembly's file name) and returns the assembly's path. The assembly keeps its own name; the host
     /// loads it from bytes.
     /// </summary>
-    public static string BuildInto(string directory, string fileName, bool failActivation = false, bool failValidation = false)
+    public static string BuildInto(string directory, string fileName, bool failActivation = false, bool failValidation = false,
+        int? requiredSchemaVersion = null)
     {
         Directory.CreateDirectory(directory);
         var path = Path.Combine(directory, fileName);
@@ -137,7 +145,14 @@ internal static class FixtureGenerationBuilder
             symbols.Add("FAIL_ACTIVATE");
         if (failValidation)
             symbols.Add("FAIL_VALIDATE");
-        var tree = CSharpSyntaxTree.ParseText(Source, new CSharpParseOptions(LanguageVersion.Latest, preprocessorSymbols: symbols));
+        var source = Source;
+        if (requiredSchemaVersion is { } version)
+        {
+            symbols.Add("REQUIRED_SCHEMA");
+            source = source.Replace("REQUIRED_SCHEMA_VERSION", version.ToString(System.Globalization.CultureInfo.InvariantCulture), StringComparison.Ordinal);
+        }
+
+        var tree = CSharpSyntaxTree.ParseText(source, new CSharpParseOptions(LanguageVersion.Latest, preprocessorSymbols: symbols));
         var compilation = CSharpCompilation.Create(
             "HostFixture",
             [tree],

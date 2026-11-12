@@ -93,6 +93,53 @@ namespace SWLOR.Game.Server.Core
         }
 
         /// <summary>
+        /// On the engine thread, for a build that activated after the module has loaded (a hot reload): the reload bootstrap
+        /// (<see cref="ReloadBootstrap.Plan"/>), the rerun boot handlers in manifest order and then the adoption steps, each in a
+        /// script context of the module as the engine runs the boot scripts. Boot-only handlers never run. The native entry and
+        /// generation 1 never call it.
+        /// </summary>
+        public IReadOnlyList<ReloadStepResult> RebuildAfterReload()
+        {
+            RequireContainer();
+            return ReloadBootstrap.Run(ReloadBootstrap.Plan(ServerManager.Scripts), RunInModuleContext);
+        }
+
+        /// <summary>
+        /// On the engine thread, while a reload quiesces this build: the carry steps (<see cref="ReloadBootstrap.CarryPlan"/>),
+        /// which leave on the module what the next build's adoption steps cannot read back from the world.
+        /// </summary>
+        public IReadOnlyList<ReloadStepResult> CarryForReload()
+        {
+            RequireContainer();
+            return ReloadBootstrap.Run(ReloadBootstrap.CarryPlan(ServerManager.Scripts), RunInModuleContext);
+        }
+
+        /// <summary>The cache digests of the classes that own rerun boot handlers (<see cref="ReloadDigests.Cache"/>).</summary>
+        public IReadOnlyList<ReloadDigestLine> DescribeCaches()
+        {
+            RequireContainer();
+            return ReloadDigests.Cache(ServerManager.Scripts);
+        }
+
+        /// <summary>The adopted-state digests (<see cref="ReloadDigests.Adopted(Func{Type, object})"/>) and the world digests (<see cref="WorldDigest"/>).</summary>
+        public IReadOnlyList<ReloadDigestLine> DescribeAdoptedState()
+        {
+            RequireContainer();
+            return ReloadDigests.Adopted(_container.ResolveHandlerOwner).Concat(WorldDigest.Capture()).ToArray();
+        }
+
+        private void RequireContainer()
+        {
+            if (!_container.IsBuilt)
+                throw new ContainerNotBuiltException("The reload steps need the service container the boot built.");
+        }
+
+        private static void RunInModuleContext(Action action)
+        {
+            ServerManager.Executor.ExecuteInScriptContext(action, GetModule());
+        }
+
+        /// <summary>
         /// The clean-up of a boot that stopped before the container was built: the steps before it only registered the
         /// loggers and set the script execution provider (<c>InitializeSWLORSystems</c>), so those are let go of.
         /// </summary>

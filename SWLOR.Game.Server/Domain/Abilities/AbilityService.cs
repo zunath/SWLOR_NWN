@@ -64,8 +64,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatQueriesService _queries;
         private readonly Lazy<ICombatResourcesService> _resources;
 
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, AbilityActiveActivation> _activeAbilityActivations = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, WeaponAbilityTraitActivation> _queuedWeaponTraits = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, AbilityQueuedWeaponAttack> _queuedWeaponAttacks = new();
 
         private readonly Lazy<ISpaceService> _space;
@@ -137,7 +140,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
         }
 
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
 
         /// <summary>
@@ -580,6 +585,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             return impact.Summary;
         }
 
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, AbilityImpactSummary> _lastCompletedImpactSummaries = new();
 
         /// <summary>
@@ -861,6 +867,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <param name="effectivePerkLevel">The activator's effective perk level.</param>
         /// <param name="targetLocation">The target location of the perk feat.</param>
         /// <returns>true if successful, false otherwise</returns>
+        [ReloadState(ReloadStateKind.Runtime)]
         private string _lastActivationDenial = string.Empty;
 
         /// <summary>

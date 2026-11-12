@@ -39,6 +39,17 @@ namespace SWLOR.Game.Server.Domain.World
 
         public void Invalidate() => Revision = 0;
 
+        /// <summary>
+        /// Takes the state a hot reload carried from the build it replaced (<c>WeatherService.AdoptWeather</c>). Nothing else
+        /// calls it.
+        /// </summary>
+        public void Restore(int revision, WeatherConditions conditions, WeatherType? appliedWeather)
+        {
+            Revision = revision;
+            Conditions = conditions;
+            AppliedWeather = appliedWeather;
+        }
+
         public bool TryUpdate(WeatherPattern pattern, WeatherClimate climate,
             int heatModifier, int humidityModifier, int windModifier, bool isNatural, WeatherStorm regionalStorm)
         {

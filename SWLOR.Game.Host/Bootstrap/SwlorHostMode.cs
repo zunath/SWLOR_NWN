@@ -37,13 +37,8 @@ public sealed class SwlorHostMode : IHostMode
     /// <summary>How long a reload waits for the engine thread to leave its hold before it reports without the pause.</summary>
     private static readonly TimeSpan PauseReleaseTimeout = TimeSpan.FromSeconds(30);
 
-    /// <summary>
-    /// What a reload's schema gate answers until P4-14 compares the candidate's migration version with the database's.
-    /// </summary>
-    private static readonly ReloadSchemaGateResult SchemaGateOpen =
-        ReloadSchemaGateResult.Ok("No schema gate yet: the candidate's migration version is not compared with the database's.");
-
     private readonly CoreFunctionHandler _coreFunctions;
+    private readonly ReloadSchemaGate _schemaGate;
     private readonly HostSettings _settings;
     private readonly HostCallbacks _callbacks;
     private readonly HostLifecycle _lifecycle;
@@ -85,12 +80,26 @@ public sealed class SwlorHostMode : IHostMode
         NativeHookTable hooks,
         Action<string, string> log,
         TimeSpan reloadPollInterval)
+        : this(coreFunctions, settings, redisConnection, hooks, log, reloadPollInterval, new ReloadSchemaGate(redisConnection ?? throw new ArgumentNullException(nameof(redisConnection))))
+    {
+    }
+
+    /// <summary>For tests: also the reload's schema gate (by default it reads the database's version through <paramref name="redisConnection"/>).</summary>
+    public SwlorHostMode(
+        CoreFunctionHandler coreFunctions,
+        HostSettings settings,
+        IRedisConnectionSource redisConnection,
+        NativeHookTable hooks,
+        Action<string, string> log,
+        TimeSpan reloadPollInterval,
+        ReloadSchemaGate schemaGate)
     {
         _coreFunctions = coreFunctions ?? throw new ArgumentNullException(nameof(coreFunctions));
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         ArgumentNullException.ThrowIfNull(redisConnection);
         ArgumentNullException.ThrowIfNull(hooks);
         _log = log ?? throw new ArgumentNullException(nameof(log));
+        _schemaGate = schemaGate ?? throw new ArgumentNullException(nameof(schemaGate));
         _reloadPollInterval = reloadPollInterval;
         _callbacks = new HostCallbacks();
         _lifecycle = new HostLifecycle(settings);
@@ -190,7 +199,8 @@ public sealed class SwlorHostMode : IHostMode
         ReloadReport report;
         try
         {
-            report = await reloadHost.ReloadAsync(candidatePath, ReloadDrainTimeout, (_, _) => ArmPause(pause), cancellationToken)
+            report = await reloadHost.ReloadAsync(candidatePath, ReloadDrainTimeout,
+                    (requiredSchemaVersion, token) => GateAndArmPauseAsync(pause, requiredSchemaVersion, token), cancellationToken)
                 .ConfigureAwait(false);
         }
         finally
@@ -281,14 +291,21 @@ public sealed class SwlorHostMode : IHostMode
     public void OnFrameScheduleFailure(Exception exception) => _log("failure", $"main-loop-schedule: {exception}");
 
     /// <summary>
-    /// The reload's schema gate, called once the candidate has passed validation and right before the running build is
-    /// quiesced: arms the hold, so the next frame (or the one running) keeps the engine thread until the reload ends.
+    /// The reload's schema gate, called off the engine thread once the candidate has passed validation and right before the
+    /// running build is quiesced. A candidate that needs a server migration (<see cref="ReloadSchemaGate"/>) is rejected and the
+    /// running build keeps serving; otherwise the hold is armed, so the next frame (or the one running) keeps the engine thread
+    /// until the reload ends.
     /// </summary>
-    private ValueTask<ReloadSchemaGateResult> ArmPause(ReloadPause pause)
+    private async ValueTask<ReloadSchemaGateResult> GateAndArmPauseAsync(ReloadPause pause, int requiredSchemaVersion, CancellationToken cancellationToken)
     {
+        var gate = await _schemaGate.CheckAsync(requiredSchemaVersion, cancellationToken).ConfigureAwait(false);
+        _log("reload-schema", gate.Detail);
+        if (!gate.Compatible)
+            return gate;
+
         pause.Arm();
         Volatile.Write(ref _pause, pause);
-        return ValueTask.FromResult(SchemaGateOpen);
+        return gate;
     }
 
     /// <summary>

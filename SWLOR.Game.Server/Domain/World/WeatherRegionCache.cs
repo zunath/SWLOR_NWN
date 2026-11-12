@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SWLOR.Game.Server.Domain.World
 {
@@ -22,5 +23,17 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         public void Clear() => _regions.Clear();
+
+        /// <summary>Every region with its state, for a hot reload to carry (<c>WeatherService.CarryWeather</c>).</summary>
+        public IEnumerable<(WeatherClimate Climate, int HeatModifier, int HumidityModifier, int WindModifier, WeatherAreaState State)> Entries()
+        {
+            return _regions.Select(pair => (pair.Key.Climate, pair.Key.Heat, pair.Key.Humidity, pair.Key.Wind, pair.Value));
+        }
+
+        /// <summary>Puts back a region a hot reload carried (<c>WeatherService.AdoptWeather</c>). Nothing else calls it.</summary>
+        public void Restore(WeatherClimate climate, int heatModifier, int humidityModifier, int windModifier, WeatherAreaState state)
+        {
+            _regions[(climate, heatModifier, humidityModifier, windModifier)] = state;
+        }
     }
 }

@@ -1038,6 +1038,7 @@ namespace SWLOR.Game.Server.Domain.Character
             return weaponType == BaseItem.CompanionPistol ? SkillType.Invalid : GetAttackSkillTypeByBaseItem(weaponType);
         }
 
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly SkillXPMessageQueue _xpMessages;
 
         /// <summary>

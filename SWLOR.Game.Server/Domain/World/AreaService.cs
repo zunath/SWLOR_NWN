@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly Lazy<IPropertyService> _property;
 
         private Dictionary<string, uint> AreasByResref { get; } = new();
+        [field: ReloadState(ReloadStateKind.Runtime)]
         private Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
         public AreaService(IDBService db, Lazy<IPropertyService> property)

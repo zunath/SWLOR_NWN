@@ -13,6 +13,19 @@ namespace SWLOR.Game.Server.Domain.World
         public int Revision { get; private set; }
         public DateTime NextChangeUtc { get; private set; }
 
+        /// <summary>
+        /// Takes the front a hot reload carried from the build it replaced (<c>WeatherService.AdoptWeather</c>). Nothing else
+        /// calls it.
+        /// </summary>
+        public void Restore(int heat, int humidity, int wind, int revision, DateTime nextChangeUtc)
+        {
+            Heat = heat;
+            Humidity = humidity;
+            Wind = wind;
+            Revision = revision;
+            NextChangeUtc = nextChangeUtc;
+        }
+
         public bool TryAdvance(DateTime now, int month, bool isNight, Func<int, int> random)
         {
             if (Revision > 0 && now < NextChangeUtc)

@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             (-1f, 0f), (-0.7071f, -0.7071f), (0f, -1f), (0.7071f, -0.7071f),
         };
         private const int AreaBakeStep = 2;
+        [ReloadState(ReloadStateKind.Runtime)]
         private bool _bakingRan;
 
         public WalkmeshService(IDBService db)
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
             _db = db;
         }
 
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The walkmeshes it stored stay in Redis; the rerun RetrieveWalkmeshes reads them.")]
         [NWNEventHandler(ScriptName.OnModuleContentChange)]
         public void LoadWalkmeshes()
         {

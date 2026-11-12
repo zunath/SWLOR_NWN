@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             LoadMarkets();
         }
 
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "It deletes expired listings in Redis; the next boot does it again.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void RemoveOldListings()
         {

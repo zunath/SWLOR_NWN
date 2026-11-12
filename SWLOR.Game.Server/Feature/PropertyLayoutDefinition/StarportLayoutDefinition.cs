@@ -188,6 +188,18 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
                     var dockPoint = GetLandingWaypoint(instance);
                     Space.RegisterLandingPoint(dockPoint, cityArea, false, propertyId);
+                })
+                // On a hot reload the terminals and dockhands are still in the instance; only the dock is registered again,
+                // under the id its waypoint already carries.
+                .OnReloadAdopt(instance =>
+                {
+                    var propertyId = Property.GetPropertyId(instance);
+                    var dbProperty = DB.Get<WorldProperty>(propertyId);
+                    var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+                    var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+                    var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
+
+                    Space.AdoptLandingPoint(GetLandingWaypoint(instance), cityArea, false, propertyId);
                 });
         }
     }

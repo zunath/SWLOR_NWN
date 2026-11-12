@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Character;
@@ -34,6 +36,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
         public const int LeftoverResourceDespawnMinutes = 5;
+
+        /// <summary>The key the spawn registry is carried under across a hot reload (<see cref="ReloadCarry"/>).</summary>
+        private const string SpawnCarryKey = "spawns";
 
         private class SpawnDetail
         {
@@ -76,13 +81,22 @@ namespace SWLOR.Game.Server.Domain.Creatures
             public Guid SpawnDetailId { get; set; }
         }
 
+        // The spawn registry: filled by the boot-only StoreSpawns and the spawn system as it runs; a hot reload carries it to
+        // the new build (CarrySpawns, AdoptSpawns), so the live spawns keep their ids and no area spawns a second set.
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<Guid, SpawnDetail> _spawns = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly List<QueuedSpawn> _queuedSpawns = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<uint, List<QueuedSpawn>> _queuedSpawnsByArea = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<uint, DateTime> _queuedAreaDespawns = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly List<ResourceDespawn> _queuedResourceDespawns = new();
         private readonly Dictionary<string, SpawnTable> _spawnTables = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
+        [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
         // True once LoadSpawnTables ran to its end. StoreSpawns refuses to run otherwise: the single CacheData stopped at its
         // first failure, so the hand-placed creatures were never captured against a partly loaded table cache.
@@ -161,9 +175,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
         /// Resource spawn tables use 'RESOURCE_SPAWN_TABLE_ID' for the table name and 'RESOURCE_SPAWN_COUNT' for the number of spawns.
         /// Creature spawn tables use 'CREATURE_SPAWN_TABLE_ID' for the table name and 'CREATURE_SPAWN_COUNT' for the number of spawns.
         /// Runs after <see cref="LoadSpawnTables"/>. Boot only: it destroys the hand-placed creatures and gives every spawn a
-        /// new id, so a second run would capture and destroy the creatures the spawn system placed.
+        /// new id, so a second run would capture and destroy the creatures the spawn system placed. A hot reload carries the
+        /// registry instead (<see cref="CarrySpawns"/>, <see cref="AdoptSpawns"/>).
         /// </summary>
-        [BootPhase(BootReload.BootOnly)]
+        [BootPhase(BootReload.BootOnly, AdoptedBy = nameof(AdoptSpawns), CarriedBy = nameof(CarrySpawns))]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void StoreSpawns()
         {
@@ -283,6 +298,84 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 var slicingTerminalCount = Math.Max(1, GetLocalInt(area, "SLICING_TERMINAL_SPAWN_COUNT"));
                 RegisterAreaSpawnTable(area, "SLICING_TERMINAL_SPAWN_TABLE_ID", slicingTerminalCount);
             }
+        }
+
+        /// <summary>
+        /// When a hot reload quiesces this build: leaves the spawn registry on the module for the next build
+        /// (<see cref="AdoptSpawns"/>): every spawn with its id and detail (the hand-placed creatures that boot destroyed live
+        /// only here), the spawns of each area, the live spawned objects, the queued respawns, area despawns and resource
+        /// despawns. It changes nothing.
+        /// </summary>
+        public void CarrySpawns()
+        {
+            var queuedIndex = new Dictionary<QueuedSpawn, int>(ReferenceEqualityComparer.Instance);
+            for (var index = 0; index < _queuedSpawns.Count; index++)
+                queuedIndex[_queuedSpawns[index]] = index;
+
+            var carry = new JObject
+            {
+                ["spawns"] = new JArray(_spawns.Select(pair => new JObject { ["id"] = pair.Key, ["detail"] = JObject.FromObject(pair.Value) })),
+                ["byArea"] = new JArray(_allSpawnsByArea.Select(pair => new JObject { ["area"] = pair.Key, ["ids"] = JArray.FromObject(pair.Value) })),
+                ["active"] = new JArray(_activeSpawnsByArea.Select(pair => new JObject { ["area"] = pair.Key, ["spawns"] = JArray.FromObject(pair.Value) })),
+                ["queued"] = JArray.FromObject(_queuedSpawns),
+                ["queuedByArea"] = new JArray(_queuedSpawnsByArea.Select(pair => new JObject
+                {
+                    ["area"] = pair.Key,
+                    ["indexes"] = JArray.FromObject(pair.Value.Select(queued => queuedIndex.TryGetValue(queued, out var index) ? index : -1))
+                })),
+                ["areaDespawns"] = new JArray(_queuedAreaDespawns.Select(pair => new JObject { ["area"] = pair.Key, ["time"] = pair.Value })),
+                ["resourceDespawns"] = JArray.FromObject(_queuedResourceDespawns),
+            };
+
+            ReloadCarry.Put(SpawnCarryKey, carry.ToString(Formatting.None));
+        }
+
+        /// <summary>
+        /// On a hot reload, after the rerun <see cref="LoadSpawnTables"/>: stands in for <see cref="StoreSpawns"/> by taking the
+        /// registry the old build carried (<see cref="CarrySpawns"/>), so the live spawned objects keep their spawn ids, an
+        /// occupied area does not spawn a second set and an empty one spawns its hand-placed creatures as before. It creates and
+        /// destroys nothing. Without a carried registry it reports that no area spawns until a restart.
+        /// </summary>
+        public void AdoptSpawns()
+        {
+            var text = ReloadCarry.Take(SpawnCarryKey);
+            if (text == null)
+            {
+                WriteError("Hot reload: the build this one replaced carried no spawn registry, so no area spawns until the server restarts.");
+                return;
+            }
+
+            var carry = JObject.Parse(text);
+            _spawns.Clear();
+            _allSpawnsByArea.Clear();
+            _activeSpawnsByArea.Clear();
+            _queuedSpawns.Clear();
+            _queuedSpawnsByArea.Clear();
+            _queuedAreaDespawns.Clear();
+            _queuedResourceDespawns.Clear();
+
+            foreach (var entry in carry["spawns"])
+                _spawns[entry["id"].ToObject<Guid>()] = entry["detail"].ToObject<SpawnDetail>();
+            foreach (var entry in carry["byArea"])
+                _allSpawnsByArea[entry["area"].ToObject<uint>()] = entry["ids"].ToObject<List<Guid>>();
+            foreach (var entry in carry["active"])
+                _activeSpawnsByArea[entry["area"].ToObject<uint>()] = entry["spawns"].ToObject<List<ActiveSpawn>>();
+
+            _queuedSpawns.AddRange(carry["queued"].ToObject<List<QueuedSpawn>>());
+            foreach (var entry in carry["queuedByArea"])
+            {
+                _queuedSpawnsByArea[entry["area"].ToObject<uint>()] = entry["indexes"].ToObject<List<int>>()
+                    .Where(index => index >= 0 && index < _queuedSpawns.Count)
+                    .Select(index => _queuedSpawns[index])
+                    .ToList();
+            }
+
+            foreach (var entry in carry["areaDespawns"])
+                _queuedAreaDespawns[entry["area"].ToObject<uint>()] = entry["time"].ToObject<DateTime>();
+            _queuedResourceDespawns.AddRange(carry["resourceDespawns"].ToObject<List<ResourceDespawn>>());
+
+            Log.Write(LogGroup.Server, $"Hot reload: adopted {_spawns.Count} spawns in {_allSpawnsByArea.Count} areas, " +
+                                       $"{_activeSpawnsByArea.Sum(area => area.Value.Count)} live and {_queuedSpawns.Count} queued.", true);
         }
 
         /// <summary>

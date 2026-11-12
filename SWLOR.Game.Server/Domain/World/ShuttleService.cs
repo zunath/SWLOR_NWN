@@ -172,8 +172,10 @@ namespace SWLOR.Game.Server.Domain.World
                 }
                 else if (ShuttleSchedule.TryParseFlightId(flightId, out _, out var destination, out _))
                 {
+                    // A for loop's variable is shared by every iteration, so the scheduled teardown takes its own copy.
+                    var landedArea = area;
                     var landingLocation = GetLandingLocation(destination);
-                    Schedule(() => DestroyFlightInstance(area, landingLocation), TimeSpan.FromSeconds(30));
+                    Schedule(() => DestroyFlightInstance(landedArea, landingLocation), TimeSpan.FromSeconds(30));
                 }
             }
         }

@@ -84,12 +84,13 @@ public class HostReloadTests
         }
     }
 
-    private async Task<HostedFixture> Boot(IReadOnlyDictionary<string, string?>? variables)
+    private async Task<HostedFixture> Boot(IReadOnlyDictionary<string, string?>? variables, int? databaseSchemaVersion = 0)
     {
         HostedFixture? fixture = null;
         await OnEngine(() =>
         {
-            fixture = new HostedFixture(_build, variables: variables, hostDirectory: _hostDirectory, reloadPollInterval: Poll);
+            fixture = new HostedFixture(_build, variables: variables, hostDirectory: _hostDirectory, reloadPollInterval: Poll,
+                databaseSchemaVersion: databaseSchemaVersion);
             fixture.StartAndLoad();
         });
         _fixtures.Add(fixture!);
@@ -125,8 +126,49 @@ public class HostReloadTests
         return await work;
     }
 
-    private string PublishCandidate(Guid id, bool failValidation = false, bool failActivation = false) =>
-        FixtureGenerationBuilder.BuildInto(_layout.CandidateDirectory(id), ReloadLayout.GameAssemblyFileName, failActivation, failValidation);
+    private string PublishCandidate(Guid id, bool failValidation = false, bool failActivation = false, int? requiredSchemaVersion = null) =>
+        FixtureGenerationBuilder.BuildInto(_layout.CandidateDirectory(id), ReloadLayout.GameAssemblyFileName, failActivation, failValidation,
+            requiredSchemaVersion);
+
+    [Test]
+    public async Task A_candidate_that_needs_a_server_migration_is_rejected_with_a_receipt_saying_a_restart_is_required()
+    {
+        var fixture = await Boot(ReloadOn, databaseSchemaVersion: 42);
+        await OnEngine(() => fixture.Mode.OnSignal("ON_MODULE_LOAD_FINISH"));
+        fixture.ClearRecord();
+        var id = Guid.NewGuid();
+        PublishCandidate(id, requiredSchemaVersion: 43);
+        var temporary = _layout.SignalPath + ".tmp";
+        await DevelopmentReloadFiles.WriteRequestAsync(temporary,
+            new DevelopmentReloadRequest(DevelopmentReloadFiles.CurrentFormatVersion, id), CancellationToken.None);
+        File.Move(temporary, _layout.SignalPath);
+
+        var receipt = await FramesUntil(fixture, FinalReceipt(id));
+        await OnEngine(() => fixture.Mode.OnRunScriptResult("act", 3).Should().Be(NativeHost.ScriptHandled));
+
+        receipt.Status.Should().Be(ReloadReceiptStatus.Rejected, receipt.Detail);
+        receipt.Detail.Should().Contain("needs server migration 43, but the database is at 42").And.Contain("a restart is required");
+        receipt.PauseMilliseconds.Should().BeNull("a rejected candidate never holds the engine thread");
+        fixture.Mode.ActiveGeneration.Should().Be(1);
+        fixture.Record.Should().NotContain(line => line.StartsWith("quiesce", StringComparison.Ordinal));
+        fixture.Record.Should().Contain("script act self=3", "the running build keeps serving");
+        fixture.Log.Should().Contain(line => line.StartsWith("reload-schema The candidate needs server migration 43", StringComparison.Ordinal));
+    }
+
+    [TestCase(42)]
+    [TestCase(41)]
+    public async Task A_candidate_at_or_below_the_databases_migration_passes_the_schema_gate(int required)
+    {
+        var fixture = await Boot(ReloadOn, databaseSchemaVersion: 42);
+        await OnEngine(() => fixture.Mode.OnSignal("ON_MODULE_LOAD_FINISH"));
+
+        var candidate = PublishCandidate(Guid.NewGuid(), requiredSchemaVersion: required);
+        var attempt = await FramesUntil(fixture, Task.Run(() => fixture.Mode.ReloadAsync(candidate, CancellationToken.None)));
+
+        attempt.Report.Outcome.Should().Be(ReloadOutcome.Applied, attempt.Report.Detail);
+        attempt.Pause.Should().NotBeNull();
+        fixture.Log.Should().Contain($"reload-schema The candidate's newest server migration ({required}) is at or below the database's (42).");
+    }
 
     [Test]
     public async Task No_engine_frame_runs_between_the_old_builds_quiescence_and_the_new_builds_activation()

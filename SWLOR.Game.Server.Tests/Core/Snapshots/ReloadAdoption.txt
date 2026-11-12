@@ -1,0 +1,72 @@
+# SWLOR reload decisions: what a hot reload runs in place of each boot-only handler, and the state it adopts.
+# Boot-only handlers in manifest order: adopt <step> [carry <step>] = the reload bootstrap runs the adoption step after
+# the rerun handlers (and the old build ran the carry step while it quiesced); nothing = why a reload needs nothing.
+# Adopted state: the fields marked [ReloadState(ReloadStateKind.Adopted)], compared with the old build's at quiescence.
+# The rule is in SWLOR.Game.Server/Readmes/MaintainabilityRefactorHotReload.md sections 2 and 3.
+# Regenerate (build first): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ReloadAdoptionTests"   (PowerShell: $env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS)
+
+== BOOT-ONLY HANDLERS ==
+mod_preload SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes
+  adopt CheckIndexes
+mod_preload SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
+  nothing: The module, area and NWNX event bindings and the legacy item property hook stay in the engine; the reload bootstrap reruns the cache scripts' rerun handlers itself.
+mod_preload SWLOR.Game.Server.Feature.ServerTasks.ProcessBootStart
+  nothing: A reload sends no boot notification.
+db_loaded SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterDatabaseLoaded
+  nothing: Nothing reads the migration state after boot, and the host's schema gate refuses a build that needs a server migration.
+mod_content_chg SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
+  nothing: The walkmeshes it stored stay in Redis; the rerun RetrieveWalkmeshes reads them.
+mod_cache_bef SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
+  adopt AdoptSpawns carry CarrySpawns
+mod_cache_aft SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterCacheLoaded
+  adopt CheckCharacterVersion
+mod_load SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
+  nothing: It deletes expired listings in Redis; the next boot does it again.
+mod_load SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad
+  adopt AdoptProperties carry CarryProperties
+mod_load SWLOR.Game.Server.Domain.World.ShuttleService.DeliverOfflinePassengers
+  adopt AdoptFlights
+mod_load SWLOR.Game.Server.Domain.Space.SpaceService.AssignLandingPointIds
+  nothing: The dock waypoints keep the ids it gave them: the rerun LoadLandingPoints registers them, and the property adoption registers the starport docks under theirs.
+mod_load SWLOR.Game.Server.Domain.World.WeatherService.InitializeWeather
+  adopt AdoptWeather carry CarryWeather
+mod_load SWLOR.Game.Server.Feature.AreaConfiguration.ApplyAreaConfiguration
+  nothing: The tile changes stay in the engine.
+mod_load SWLOR.Game.Server.Feature.CZ220FlightsTerminal.SpawnHangarFlightsTerminal
+  nothing: The terminal it placed stays in the world.
+mod_load SWLOR.Game.Server.Feature.FeatConfiguration.ConfigureFeats
+  nothing: The feat settings stay in the engine.
+mod_load SWLOR.Game.Server.Feature.FeedbackMessageConfiguration.ConfigureFeedbackMessages
+  nothing: The feedback message settings stay in the engine.
+mod_load SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp
+  nothing: The play options and bans stay set in the engine, and a reload sends no boot notification.
+mod_load SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
+  adopt AdoptStores
+mod_load SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
+  nothing: The TLK overrides stay in the engine.
+
+== ADOPTED STATE ==
+SWLOR.Game.Server.Domain.Creatures.SpawnService._activeSpawnsByArea
+SWLOR.Game.Server.Domain.Creatures.SpawnService._allSpawnsByArea
+SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedAreaDespawns
+SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedResourceDespawns
+SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedSpawns
+SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedSpawnsByArea
+SWLOR.Game.Server.Domain.Creatures.SpawnService._spawns
+SWLOR.Game.Server.Domain.Space.SpaceService._dockPoints
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._completedInstanceSpawnActions
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._completedStartupPropertyLoadIds
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._failedStartupPropertyLoadIds
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._pendingStartupWorldPropertyIds
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._propertyInstances
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._propertyLoadFailures
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._propertyLoadStates
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._propertyLoadWaiters
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._startupPropertyLoadIds
+SWLOR.Game.Server.Domain.World.PropertyLoaderService._structurePropertyIdToPlaceable
+SWLOR.Game.Server.Domain.World.ShuttleService._activeFlights
+SWLOR.Game.Server.Domain.World.ShuttleService._ticketHolders
+SWLOR.Game.Server.Domain.World.WeatherService._areas
+SWLOR.Game.Server.Domain.World.WeatherService._pattern
+SWLOR.Game.Server.Domain.World.WeatherService._regions
+SWLOR.Game.Server.Feature.StoreManagement._stores

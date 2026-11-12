@@ -1177,4 +1177,127 @@ public class PropertyLoaderServiceTests
 
         _world.MessagesTo(Player).Should().Equal("This property could not be loaded. Please notify staff.");
     }
+    // ---- hot reload: the loader adopts the properties in the world (PropertyService.OnModuleLoad is boot only)
+
+    [Test]
+    public void A_reload_adopts_the_live_instances_and_structures_keeps_the_carried_failures_and_spawns_nothing()
+    {
+        var broken = _world.StoreApartment(PropertyLayoutType.ApartmentMediumStyle1);
+        _world.Areas.FailCreation = true;
+        RequestEntry(broken);
+        Loader.RunAllBatches();
+        var failure = Loader.GetPropertyLoadFailure(broken.Id);
+        _world.Areas.FailCreation = false;
+
+        var apartment = _world.StoreApartment();
+        var structure = StoreStructure(apartment.Id);
+        RequestEntry(apartment);
+        Loader.RunAllBatches();
+        var area = _world.Areas.Instances.Single();
+        var placeable = Loader.GetPlaceableByPropertyId(structure.Id);
+        _world.SetResRef(placeable, _world.Catalog.GetStructureByType(structure.StructureType).Resref);
+        // A building's door carries the building's id too, and comes first in the area.
+        var door = _world.NewObject();
+        _world.SetResRef(door, "building_ent1");
+        Loader.AssignPropertyId(door, structure.Id);
+        LiveWorld(new Dictionary<uint, List<uint>> { [area] = new() { door, placeable } });
+        var before = AdoptedDigest(Loader);
+
+        Loader.CarryLoadState();
+        var reloaded = new PropertyWorld.LoaderUnderTest(Db, _world.Areas, _world.Recorded);
+        var created = _world.Engine.CountOf("CreateObject");
+        var saved = Db.Store.Saved.Count;
+        reloaded.AdoptLiveProperties();
+
+        AdoptedDigest(reloaded).Should().Be(before, "the new build's loader holds what the old one held");
+        reloaded.TryGetLoadedInstance(apartment.Id, out var instance).Should().BeTrue();
+        instance.Area.Should().Be(area);
+        reloaded.GetPlaceableByPropertyId(structure.Id).Should().Be(placeable, "the door is not the structure");
+        reloaded.GetPropertyLoadState(broken.Id).Should().Be(PropertyLoadState.Failed);
+        reloaded.GetPropertyLoadFailure(broken.Id).Should().Be(failure);
+        _world.Engine.CountOf("CreateObject").Should().Be(created);
+        _world.Areas.Created.Should().HaveCount(2, "the failed attempt and the boot's load; the reload creates no area");
+        Db.Store.Saved.Should().HaveCount(saved, "adopting writes nothing");
+        reloaded.Scheduled.Should().BeEmpty("nothing is left to load");
+    }
+
+    [Test]
+    public void A_reload_during_a_load_resumes_it_and_spawns_only_the_structures_not_in_the_world_yet()
+    {
+        var apartment = _world.StoreApartment();
+        var placed = StoreStructure(apartment.Id);
+        var waiting = StoreStructure(apartment.Id);
+        RequestEntry(apartment);
+        Loader.RunNextBatch().Should().BeTrue("the first batch creates the area");
+        var area = _world.Areas.Instances.Single();
+        Loader.SpawnIntoWorld(placed, area);
+        var placeable = Loader.GetPlaceableByPropertyId(placed.Id);
+        _world.SetResRef(placeable, _world.Catalog.GetStructureByType(placed.StructureType).Resref);
+        LiveWorld(new Dictionary<uint, List<uint>> { [area] = new() { placeable } });
+
+        Loader.CarryLoadState();
+        var reloaded = new PropertyWorld.LoaderUnderTest(Db, _world.Areas, _world.Recorded);
+        reloaded.AdoptLiveProperties();
+        var created = _world.Engine.CountOf("CreateObject");
+
+        reloaded.GetPropertyLoadState(apartment.Id).Should().Be(PropertyLoadState.Loading);
+        reloaded.RunAllBatches();
+
+        _world.Engine.CountOf("CreateObject").Should().Be(created + 1, "only the structure that was not in the world yet is spawned");
+        reloaded.GetPlaceableByPropertyId(waiting.Id).Should().NotBe(PropertyWorld.Invalid);
+        reloaded.GetPlaceableByPropertyId(placed.Id).Should().Be(placeable);
+        reloaded.GetPropertyLoadState(apartment.Id).Should().Be(PropertyLoadState.Loaded);
+        _world.Areas.Created.Should().ContainSingle("the area the old build created is kept");
+    }
+
+    [Test]
+    public void Without_carried_bookkeeping_the_live_instances_are_loaded_and_the_others_load_when_entered()
+    {
+        var live = _world.StoreApartment();
+        RequestEntry(live);
+        Loader.RunAllBatches();
+        var area = _world.Areas.Instances.Single();
+        var other = _world.StoreApartment(PropertyLayoutType.ApartmentMediumStyle1);
+        LiveWorld(new Dictionary<uint, List<uint>> { [area] = new() });
+
+        var reloaded = new PropertyWorld.LoaderUnderTest(Db, _world.Areas, _world.Recorded);
+        reloaded.AdoptLiveProperties();
+
+        reloaded.GetPropertyLoadState(live.Id).Should().Be(PropertyLoadState.Loaded);
+        reloaded.GetPropertyLoadState(other.Id).Should().Be(PropertyLoadState.Unloaded);
+        reloaded.Scheduled.Should().BeEmpty();
+    }
+
+    /// <summary>The areas the engine iterates and the objects in each, in order.</summary>
+    private void LiveWorld(Dictionary<uint, List<uint>> world)
+    {
+        var areas = world.Keys.ToList();
+        var areaCursor = 0;
+        var objectCursor = new Dictionary<uint, int>();
+        _world.Engine.SetReturnHandler("GetFirstArea", _ =>
+        {
+            areaCursor = 0;
+            return areas.Count > 0 ? areas[0] : PropertyWorld.Invalid;
+        });
+        _world.Engine.SetReturnHandler("GetNextArea", _ => ++areaCursor < areas.Count ? areas[areaCursor] : PropertyWorld.Invalid);
+        _world.Engine.SetReturnHandler("GetFirstObjectInArea", arguments =>
+        {
+            var area = (uint)arguments[0]!;
+            objectCursor[area] = 0;
+            return world.TryGetValue(area, out var objects) && objects.Count > 0 ? objects[0] : PropertyWorld.Invalid;
+        });
+        _world.Engine.SetReturnHandler("GetNextObjectInArea", arguments =>
+        {
+            var area = (uint)arguments[0]!;
+            var index = ++objectCursor[area];
+            return index < world[area].Count ? world[area][index] : PropertyWorld.Invalid;
+        });
+        _world.Engine.SetReturnHandler("GetObjectType", _ => ObjectType.Placeable);
+    }
+
+    private static ReloadDigestLine AdoptedDigest(PropertyLoaderService loader)
+    {
+        return new ReloadDigestHasher(typeof(PropertyLoaderService).Assembly).Describe(ReloadDigests.AdoptedKind, "properties",
+            typeof(PropertyLoaderService), loader, field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted);
+    }
 }

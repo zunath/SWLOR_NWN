@@ -35,9 +35,24 @@ namespace SWLOR.Game.Server.Core
 
             var hasher = new ReloadDigestHasher(typeof(ReloadDigests).Assembly);
             return owners
-                .Select(owner => hasher.Describe(CacheKind, owner.Type.FullName, owner.Type, owner.Instance,
-                    field => ReloadDigestHasher.StateOf(field) == null))
+                .Select(owner => Describe(hasher, CacheKind, owner.Type, owner.Instance, field => ReloadDigestHasher.StateOf(field) == null))
                 .ToArray();
+        }
+
+        /// <summary>
+        /// One digest, or a line that never matches (<see cref="ReloadDigestLine.Matches"/>) naming the exception when reading the
+        /// class failed (a static initializer that throws, say), so one class cannot hide the others' digests.
+        /// </summary>
+        private static ReloadDigestLine Describe(ReloadDigestHasher hasher, string kind, Type type, object instance, Func<FieldInfo, bool> include)
+        {
+            try
+            {
+                return hasher.Describe(kind, type.FullName, type, instance, include);
+            }
+            catch (Exception exception)
+            {
+                return new ReloadDigestLine(kind, type.FullName, -1, ReloadDigestLine.ErrorHashPrefix + exception.GetBaseException().GetType().Name);
+            }
         }
 
         /// <summary>
@@ -73,12 +88,12 @@ namespace SWLOR.Game.Server.Core
                     instance = resolveOwner(type);
                     if (instance == null)
                     {
-                        lines.Add(new ReloadDigestLine(AdoptedKind, type.FullName, -1, "unresolved"));
+                        lines.Add(new ReloadDigestLine(AdoptedKind, type.FullName, -1, ReloadDigestLine.UnresolvedHash));
                         continue;
                     }
                 }
 
-                lines.Add(hasher.Describe(AdoptedKind, type.FullName, type, instance,
+                lines.Add(Describe(hasher, AdoptedKind, type, instance,
                     field => field.DeclaringType == type && ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted));
             }
 

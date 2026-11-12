@@ -161,6 +161,30 @@ public class DBServiceTests
     }
 
     [Test]
+    public void On_a_reload_CheckIndexes_reads_the_indexes_and_rebuilds_none_writes_nothing_and_runs_no_db_loaded()
+    {
+        var redis = new FakeRedis();
+        var reloaded = new TestDbService(redis);
+        reloaded.Connect();
+        var before = redis.Commands.Count;
+
+        reloaded.CheckIndexes();
+
+        redis.Commands.Skip(before).Select(command => command[0]).Should()
+            .NotContain(new[] { "FT.CREATE", "FT.DROPINDEX", "SET", "JSON.SET", "HSET", "DEL" });
+        redis.Strings.Should().BeEmpty("no fingerprint is stored on a reload");
+        reloaded.Events.Should().Equal("open", "subscribe");
+    }
+
+    [Test]
+    public void CheckIndexes_needs_the_connection_Connect_opens()
+    {
+        var check = () => new TestDbService(new FakeRedis()).CheckIndexes();
+
+        check.Should().Throw<InvalidOperationException>().WithMessage("*Connect did not finish*");
+    }
+
+    [Test]
     public void SyncIndexes_runs_nothing_when_Connect_did_not_finish()
     {
         // The registry runs the next handler after one that threw; the single Load stopped at its first failure, so

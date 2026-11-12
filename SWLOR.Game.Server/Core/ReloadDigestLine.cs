@@ -17,6 +17,12 @@ namespace SWLOR.Game.Server.Core
         /// <summary>What each server log line of a digest starts with; <c>scripts/run-hot-reload-check.sh</c> reads these lines.</summary>
         public const string LogPrefix = "SWLOR_RELOAD_DIGEST";
 
+        /// <summary>The hash of a digest that could not be taken: <c>error:</c> and the exception's type. It never matches.</summary>
+        public const string ErrorHashPrefix = "error:";
+
+        /// <summary>The hash of an adopted digest whose class the container does not hold. It never matches.</summary>
+        public const string UnresolvedHash = "unresolved";
+
         /// <summary>The server log line: generation, phase (<c>boot</c>, <c>quiesce</c> or <c>reload</c>), kind, name, count and hash.</summary>
         public string Format(long generation, string phase)
         {
@@ -24,10 +30,14 @@ namespace SWLOR.Game.Server.Core
                 $"{LogPrefix} generation={generation} phase={phase} kind={Kind} name={Name} count={Count} hash={Hash}");
         }
 
-        /// <summary>True when <paramref name="other"/> has the same kind, name, count and hash.</summary>
+        /// <summary>True when both digests were taken and <paramref name="other"/> has the same kind, name, count and hash.</summary>
         public bool Matches(ReloadDigestLine other)
         {
-            return other != null && Kind == other.Kind && Name == other.Name && Count == other.Count && Hash == other.Hash;
+            return other != null && IsTaken && other.IsTaken &&
+                   Kind == other.Kind && Name == other.Name && Count == other.Count && Hash == other.Hash;
         }
+
+        /// <summary>False for a digest that could not be taken (<see cref="ErrorHashPrefix"/>, <see cref="UnresolvedHash"/>).</summary>
+        public bool IsTaken => Hash != UnresolvedHash && !Hash.StartsWith(ErrorHashPrefix, StringComparison.Ordinal);
     }
 }

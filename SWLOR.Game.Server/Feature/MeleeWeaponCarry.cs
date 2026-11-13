@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.PerformanceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -13,11 +14,15 @@ public static class MeleeWeaponCarry
     private static readonly string[] Sources = { "plpause1", "walk_swordr", "run_swordr" };
 
     public static bool AppliesTo(uint creature) => GetIsObjectValid(creature) &&
-        UsesLoweredCarry(AbilityAnimationEquipment.ReadGrip(
-            GetItemInSlot(InventorySlot.RightHand, creature), (int)GetCreatureSize(creature)));
+        UsesLoweredCarry(GetItemInSlot(InventorySlot.RightHand, creature), (int)GetCreatureSize(creature));
 
-    public static bool UsesLoweredCarry(AnimationWeaponGrip grip) =>
-        grip is AnimationWeaponGrip.TwoHanded or AnimationWeaponGrip.Polearm;
+    private static bool UsesLoweredCarry(uint item, int creatureSize) =>
+        GetIsObjectValid(item) && UsesLoweredCarry(
+            AbilityAnimationEquipment.ReadGrip(item, creatureSize), GetResRef(item));
+
+    public static bool UsesLoweredCarry(AnimationWeaponGrip grip, string resref) =>
+        (grip is AnimationWeaponGrip.TwoHanded or AnimationWeaponGrip.Polearm) &&
+        !PerformanceInstrumentCatalog.TryGetFamily(resref, out _);
 
     public static string RestoreMapping(uint creature, string source, string replacement) =>
         source == "plpause1" && string.IsNullOrEmpty(replacement) && AppliesTo(creature)
@@ -28,7 +33,7 @@ public static class MeleeWeaponCarry
     {
         if ((InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT")) != InventorySlot.RightHand) return;
         var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-        Apply(OBJECT_SELF, UsesLoweredCarry(AbilityAnimationEquipment.ReadGrip(item, (int)GetCreatureSize(OBJECT_SELF))));
+        Apply(OBJECT_SELF, UsesLoweredCarry(item, (int)GetCreatureSize(OBJECT_SELF)));
     }
 
     [NWNEventHandler(ScriptName.OnModuleEquip)]

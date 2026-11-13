@@ -872,7 +872,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         MdrnModernFemaleC = 925,
         MdrnModernFemaleD = 926,
         MdrnModernFemaleE = 927,
-        MdrnDeathclawbronze = 930,
         MdrnTerminatorBig = 933,
         MdrnTerminatorSmall = 934,
         MdrnShieldGuardMetal = 935,

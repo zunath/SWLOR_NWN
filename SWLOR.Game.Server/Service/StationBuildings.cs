@@ -818,6 +818,7 @@ namespace SWLOR.Game.Server.Service
         {
             return record != null &&
                    !Space.IsDockedAboardHost(record, out _) &&
+                   !Space.IsDockedAtDerelict(record, out _) &&
                    !Space.IsShipLaunchPending(record.Id) &&
                    !ship.Positions.ContainsKey(PropertyLocationType.CurrentPosition) &&
                    ship.Positions.TryGetValue(PropertyLocationType.DockPosition, out var dock) &&

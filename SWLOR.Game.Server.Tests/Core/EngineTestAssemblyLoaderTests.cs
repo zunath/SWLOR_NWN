@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using FluentAssertions;
 using NUnit.Framework;
@@ -69,15 +70,31 @@ public class EngineTestAssemblyLoaderTests
     }
 
     [Test]
-    public void Load_puts_the_assembly_into_the_given_context_and_leaves_the_file_free()
+    public void Load_puts_the_assembly_into_the_given_context_leaves_the_file_free_and_unloads_with_the_context()
     {
         var path = CopyEngineTestAssembly(_folder);
+        var context = LoadDeleteAndUnload(path);
+
+        // Other tests scan every assembly in the process (GameAssembliesTests), so the copy must be gone before this test ends.
+        for (var attempt = 0; attempt < 20 && context.IsAlive; attempt++)
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
+        context.IsAlive.Should().BeFalse("a collectible context unloads the engine-test code it loaded");
+    }
+
+    // Not inlined: no reference to the context or its assembly may stay on the caller's stack, or the context never unloads.
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static WeakReference LoadDeleteAndUnload(string path)
+    {
         var context = new CollectibleContext();
         try
         {
             var assembly = EngineTestAssemblyLoader.Load(context, path);
 
-            AssemblyLoadContext.GetLoadContext(assembly).Should().BeSameAs(context);
+            (AssemblyLoadContext.GetLoadContext(assembly) == context).Should().BeTrue("the assembly goes into the given context");
             assembly.GetName().Name.Should().Be(EngineTestAssemblyLoader.AssemblyName);
             File.Delete(path);
             File.Exists(path).Should().BeFalse("the context holds the bytes, not the file");
@@ -86,5 +103,7 @@ public class EngineTestAssemblyLoaderTests
         {
             context.Unload();
         }
+
+        return new WeakReference(context);
     }
 }

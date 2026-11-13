@@ -62,10 +62,10 @@ A candidate id is tried once, also after a restart. Other log lines: `SWLOR_HOST
 
 **Lost, so expect it after a reload:**
 
-- Delayed actions the old build scheduled (`DelayCommand`, `AssignCommand`, `ActionDoCommand`): they are code of the old build and are dropped. An ability impact in flight, a respawn countdown or a queued ability does not happen.
+- Delayed actions the old build scheduled (`DelayCommand`, `AssignCommand`, `ActionDoCommand`): they are code of the old build and are dropped. Where one kept a state alive or was due to end one, the reload ends that state in the old build or restarts the work in the new one (a cast is interrupted, so the caster is not left busy; rest's movement check, pending ship launches and door relocks restart; section 3 of the design guide lists them). The rest are lost: an ability impact in flight, a respawn countdown or a queued ability does not happen.
 - Windows that take a payload (an item, a target, a session, a callback) are closed. Windows without one reopen where they were, with their selections, scroll and typed text reset. A conversation on a registered graph resumes at its line; one built in code ends as when the player closes it.
 - Activities in flight: casting, melee technique chains, twin pistol channels, quick crafts, crafting, slicing, searching, prospecting, fishing, performances, espionage infiltration, combat recordings, an open targeting cursor. Most are ended cleanly at quiescence (as at logout).
-- Short-lived combat bookkeeping (swing debts, hit sequences, proc cooldowns, healing budgets, stealth rolls, telegraph shapes on the ground), AI state (boss phases, NPC ability cooldowns, pet command modes, NPC ship status in space), placed traps' firing, appearance projections (the next equip change recomputes them), chat portrait history.
+- Short-lived combat bookkeeping (swing debts, hit sequences, proc cooldowns, healing budgets, stealth rolls, telegraph shapes on the ground), AI state (boss phases, NPC ability cooldowns, pet command modes, NPC ship status in space), placed traps and Field Engineer emitters (removed at quiescence), appearance projections (the next equip change recomputes them), chat portrait history.
 - The connection of a client that does not outlast the pause (above).
 
 The reasons for each are in `MaintainabilityRefactorHotReload.md`, section 3.
@@ -90,6 +90,7 @@ A generation must be able to leave memory and the world must come through it. Wr
 8. **Do not touch the host, contracts or trampolines for a game change.** Hook bodies live in `NativeSinks/`, the trampolines forward to them (`CoreSystems.md`, "Native hooks and sinks").
 9. **Constructors do not call the engine** and do not start work: the container is built and validated off the engine thread while the old build runs.
 10. **Persisted names stay simple class names** (Redis keys, index names, `EntityType`); renaming one is the same break it always was.
+11. **A delayed action that keeps or ends a state the reload keeps needs a reload path.** When a `DelayCommand`, `AssignCommand` or scheduler closure clears a busy flag, removes an effect, turns off an action mode, relocks a door or reschedules itself while a carried field or engine state stays, add a `[ReloadHook(ReloadHookPhase.Quiesce)]` method that ends the state in the old build, or a `[ReloadHook(ReloadHookPhase.Resume)]` method (or `IReloadStateAdopter.OnCarriedStateAdopted`) that restarts the work in the new one. An id a carried field remembers must not restart from a per-build counter: carry the counter too.
 
 ## What enforces the rules
 
@@ -105,5 +106,6 @@ A generation must be able to leave memory and the world must come through it. Wr
 | 8 Host, contracts, trampolines | `HostRulesTests` (the host references nothing of the game) and `NativeHookRulesTests`. |
 | 9 Constructors | Container validation at build (`ValidateOnBuild`, `ValidateScopes`); calls to the engine in a constructor are not scanned. |
 | 10 Persisted names | The guide only. |
+| 11 Delayed actions with a reload path | `ReloadHooksTests` cover how hooks are found and run, and each hook has a unit test. Finding a closure that needs one is review; section 3 of the design guide records the P4-15 audit. |
 
 Also pinned: the handler manifest and its order (`ScriptHandlerOrderTests`), the entry layout of every tool that stages a server (`DotnetEntryLayoutTests`), the engine-test runners (`EngineRunnerParityTests`), and the parity tool's handling of split handlers (`ParityHandlerMappingTests`).

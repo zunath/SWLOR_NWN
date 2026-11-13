@@ -564,6 +564,9 @@ the generator deletes tails the head no longer chains to. If anything else still
 inherits from the bank (a retired phenotype's root, or the unselected wearers of a
 `--model` build), the family gets a new name and the old bank stays unchanged for those
 models until `PruneRobeAnimationBridges.py` removes it. Retired names are never reassigned.
+A family whose older bank is pinned that way can have several banks installed. The
+generator then revises the one installed bank that nothing outside the build inherits
+from, and allocates a new name only when none, or more than one, is free.
 `--update-animation` is the exception: it revises a named clip in the installed bank
 without that check, so every model inheriting from the bank gets the revision, retired
 wearers included.
@@ -841,7 +844,9 @@ attachments and animation parents for retired phenotypes so saved creatures
 keep their complete dependency chain. Retired bridge names remain reserved.
 A body whose base root (`p<gender><race>0`) exists in neither the HAKs nor the base
 game cannot be worn, so regeneration deletes that body's generated roots,
-attachments and banks after verifying each one. The unused `b` race letter was
+attachments and banks. It verifies every one of them, and every dropped tail bank,
+before deleting any file. A robe registered only on such a body takes no phenotype.
+The unused `b` race letter was
 removed this way in November 2026: no `appearance.2da` row used it.
 Bridge identities include the generated hierarchy, bind transforms and animation
 controllers, so removing one member of a shared family cannot overwrite tracks

@@ -616,6 +616,29 @@ public class QuestServiceTests
     }
 
     [Test]
+    public void A_reload_gives_every_item_collector_its_sweep_again()
+    {
+        // P4-15 closure audit: the sweep, and the removal of a closed collector, are closures the reload drops.
+        const uint area = 950;
+        const uint chest = 951;
+        _resrefs[Collector] = "qst_item_collect";
+        _engine.SetReturn("GetFirstArea", area);
+        _engine.SetReturn("GetNextArea", ObjectInvalid);
+        _engine.SetReturn("GetFirstObjectInArea", chest);
+        _engine.SetReturnSequence("GetNextObjectInArea", Collector, ObjectInvalid);
+        SetLocal(Collector, owner: Giver, player: Hero);
+        SetLocalObject(Hero, "ACTIVE_QUEST_COLLECTOR", Collector);
+
+        _service.ResumeItemCollectorSweepsForReload(Array.Empty<uint>());
+
+        var sweep = _engine.CallsTo("DelayCommand").Should().ContainSingle("only the collector is swept").Subject;
+        sweep.Arguments[0].Should().Be(300f);
+        Run(sweep);
+        _engine.CallsTo("DestroyObject").Should().ContainSingle().Which.Arguments[0].Should().Be(Collector);
+        _locals.Object(Hero, "ACTIVE_QUEST_COLLECTOR").Should().Be(ObjectInvalid, "the sweep releases the player");
+    }
+
+    [Test]
     public void The_collector_sweep_leaves_a_collector_that_is_already_gone()
     {
         Register();

@@ -442,6 +442,43 @@ public class AbilityCooldownVisualServiceTests
     }
 
     [Test]
+    public void A_reload_resets_a_recharge_that_ends_during_the_pause_and_redraws_only_those_still_running()
+    {
+        // P4-15: the old build drew two recharges; the closure that would reset the Flash icon at its deadline is dropped.
+        CacheTwoAbilities();
+        _visual.ApplyRecastDelay(Player, RecastGroup.Earthshatter, T0, T0.AddSeconds(60));
+        _visual.ApplyRecastDelay(Player, RecastGroup.Flash, T0, T0.AddSeconds(5));
+        _db.Get<Player>(PlayerId).RecastTimes = new Dictionary<RecastGroup, DateTime>
+        {
+            [RecastGroup.Earthshatter] = T0.AddSeconds(60),
+            [RecastGroup.Flash] = T0.AddSeconds(5)
+        };
+        var session = typeof(AbilityCooldownVisualService).GetMethod(nameof(AbilityCooldownVisualService.ClearCooldownVisualsOnExit))!
+            .GetCustomAttributes(typeof(SWLOR.Game.Server.Core.PlayerSessionAttribute), false)
+            .Cast<SWLOR.Game.Server.Core.PlayerSessionAttribute>().Single();
+        session.Reload.Should().Be(SWLOR.Game.Server.Core.PlayerReload.Quiesce);
+        var (_, quiesce) = SWLOR.Game.Server.Core.PlayerReloadPlan.BindStep(_visual.ClearCooldownVisualsOnExit, session.Step);
+        _engine.ClearCalls();
+
+        quiesce(Player);
+
+        Overrides().Should().BeEquivalentTo(new[] { "ife_alpha>", "ife_beta>" }, "the old build resets every icon it drew while it quiesces");
+
+        // The pause outlasts Flash's recharge; the new build's restore step redraws only the one still running.
+        _now = T0.AddSeconds(30);
+        var restored = new TestVisual(_db, ScriptedGui(new List<uint>()));
+        restored.Abilities[(FeatType)100] = Ability(RecastGroup.Earthshatter, 60f);
+        restored.Abilities[(FeatType)101] = Ability(RecastGroup.Flash, 5f);
+        _engine.ClearCalls();
+
+        restored.RestoreCooldownVisualsFor(Player);
+
+        Overrides().Should().OnlyContain(entry => entry.StartsWith("ife_alpha>pr", StringComparison.Ordinal),
+            "Flash's icon stays reset; only Earthshatter shows a recharge frame again");
+        restored.GetCooldownStage(Player, RecastGroup.Flash).Should().Be(-1);
+    }
+
+    [Test]
     public void RestoreCooldownVisuals_ResumesTheRechargesStillRunningAtLogin()
     {
         _icons[100] = "ife_alpha";

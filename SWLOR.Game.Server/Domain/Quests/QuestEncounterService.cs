@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Domain.Quests
     /// unchanged. The event handlers run on the container's instance; static callers reach it through
     /// <c>GameServices.QuestEncounter</c>. The two dictionaries are this instance's own state.
     /// </summary>
-    public class QuestEncounterService : IQuestEncounterService
+    public class QuestEncounterService : IQuestEncounterService, IReloadStateAdopter
     {
         public const string EncounterIdVariable = "QUEST_ENCOUNTER_ID";
         public const string CreatureResrefVariable = "QUEST_ENCOUNTER_RESREF";
@@ -461,6 +461,22 @@ namespace SWLOR.Game.Server.Domain.Quests
         private void MarkEncounterActivity(uint encounterCreature)
         {
             _lastActivityByCreature[encounterCreature] = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// When a hot reload has carried the encounters in progress: each one's idle check runs again. The check was a closure the reload
+        /// dropped; without it an encounter creature left uncontested would stay out, and its activator would refuse every player, until
+        /// the creature dies or the server restarts. The check clears an encounter whose creature is gone and fades one already idle too long.
+        /// </summary>
+        public void OnCarriedStateAdopted()
+        {
+            foreach (var (encounterId, encounterCreature) in _activeCreaturesByEncounterId.ToList())
+            {
+                var activator = GetIsObjectValid(encounterCreature)
+                    ? GetLocalObject(encounterCreature, ActivatorVariable)
+                    : OBJECT_INVALID;
+                CheckIdleDespawn(activator, encounterCreature, encounterId);
+            }
         }
 
         private void ScheduleIdleDespawnCheck(uint activator, uint encounterCreature, string encounterId)

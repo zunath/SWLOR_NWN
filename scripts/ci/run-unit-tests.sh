@@ -226,6 +226,9 @@ run_pass() {
                 --logger "trx;LogFileName=$project$suffix.trx" --results-directory "$results")
     [ -n "$filter" ] && args+=(--filter "$filter")
     [ "$coverage" = 1 ] && args+=(--collect "XPlat Code Coverage" --settings coverlet.runsettings)
+    # A deadlocked test stops the pass instead of holding it forever (a SWLOR.Game.Host.Tests run once hung for 8 hours on a
+    # loaded machine and never reproduced): the blame collector ends the test host after 20 minutes in one test and names it.
+    args+=(--blame-hang-timeout 20m --blame-hang-dump-type none)
 
     echo "::group::dotnet test $label ($terms filter terms)"
     local start=$SECONDS

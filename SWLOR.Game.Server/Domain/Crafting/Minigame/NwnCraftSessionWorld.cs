@@ -415,6 +415,25 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
         }));
     }
 
+    /// <summary>
+    /// When a hot reload has activated a new build: a character export the old build had scheduled (and so marked pending) is made now.
+    /// The scheduled export was a closure the reload dropped, and while the mark stays every later <see cref="PersistCharacter"/> returns
+    /// early, so no craft, performance or research result would reach the character file for the rest of the session.
+    /// </summary>
+    [ReloadHook(ReloadHookPhase.Resume)]
+    public static void ExportPendingCharactersForReload(IReadOnlyList<uint> players)
+    {
+        foreach (var player in players)
+        {
+            if (!GetLocalBool(player, PersistPendingVariable))
+                continue;
+
+            DeleteLocalBool(player, PersistPendingVariable);
+            if (IsExportable(player))
+                ExportAndRecord(player);
+        }
+    }
+
     private static bool IsExportable(uint player) =>
         GetIsObjectValid(player) && GetIsPC(player) && !GetIsDM(player) && !GetIsDMPossessed(player);
 

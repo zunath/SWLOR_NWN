@@ -159,6 +159,13 @@ namespace SWLOR.Game.Server.Domain.Character
             Reapply(creature);
         }
 
+        /// <summary>
+        /// After a hot reload has carried this effect into a new build (<see cref="StatusEffectService.OnCarriedStateAdopted"/>):
+        /// restarts what the effect keeps going through its own closures, which the reload dropped (a polling check, say). Its
+        /// native effect, its ticks and its stats are already back. Nothing by default; a normal apply never calls it.
+        /// </summary>
+        public virtual void ResumeAfterReload(uint creature) { }
+
         protected virtual void Remove(uint creature) { }
         public void RemoveEffect(uint creature, bool isReplacement = false)
         {

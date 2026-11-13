@@ -844,6 +844,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                    GetIsObjectValid(GetAreaFromLocation(emitter.Location));
         }
 
+        /// <summary>
+        /// While a hot reload quiesces the old build: every Field Engineer emitter ends now. Its pulses and its marker's removal are
+        /// closures the reload drops, and the emitters hold the pulse callbacks, so they cannot be carried; without this each marker
+        /// placeable (and its visual) would stay in the area for good. Markers whose emitter already ended but still waited on a beacon
+        /// in flight are found by their tag.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
+        public static void EndFieldEngineerPulsesForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var emitter in FieldEngineerPulseEmitters.TakeAll())
+            {
+                if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
+                    Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
+                if (GetIsObjectValid(emitter.MarkerObject))
+                    DestroyObject(emitter.MarkerObject);
+            }
+
+            var markers = new List<uint>();
+            for (var index = 0; ; index++)
+            {
+                var marker = GetObjectByTag(FieldEngineerPulseMarkerTag, index);
+                if (!GetIsObjectValid(marker))
+                    break;
+                markers.Add(marker);
+            }
+
+            foreach (var marker in markers)
+                DestroyObject(marker);
+        }
+
         private static void RemoveFieldEngineerPulseEmitter(FieldEngineerPulseEmitter emitter)
         {
             if (!FieldEngineerPulseEmitters.TryRemove(emitter))

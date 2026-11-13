@@ -525,6 +525,29 @@ namespace SWLOR.Game.Server.Domain.World
             return LineAnglerEffects.FromStatTotals(stat => _stat.GetStatAdjustment(player, stat));
         }
 
+        /// <summary>
+        /// While a hot reload quiesces this build (a <see cref="ReloadHookPhase.Quiesce"/> hook): a cast still waiting on its timer is interrupted, as
+        /// moving interrupts it (its timing bar stops, its animation, busy flag and attempt clear). The closure that would land the cast
+        /// is dropped by the reload, so the player would otherwise stay busy fishing. A fight already under way is ended by
+        /// <c>FishingFightsService</c>'s quiescence step.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
+        public void QuiesceForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var player in players)
+            {
+                if (string.IsNullOrEmpty(GetLocalString(player, FishingAttemptVariable)))
+                    continue;
+
+                if (_activity.GetBusyType(player) == ActivityStatusType.Fishing)
+                    StopTimingBarForReload(player);
+                ClearFishingAttempt(player);
+            }
+        }
+
+        /// <summary>Stops a player's timing bar; on its own so a unit test can answer it.</summary>
+        protected virtual void StopTimingBarForReload(uint player) => PlayerPlugin.StopGuiTimingBar(player);
+
         /// <summary>Releases this attempt's animation and state without clearing a replacement activity.</summary>
         private void ClearFishingAttempt(uint player)
         {

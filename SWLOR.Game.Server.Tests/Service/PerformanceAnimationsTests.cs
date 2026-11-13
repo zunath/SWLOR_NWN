@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -138,5 +139,45 @@ public class PerformanceAnimationsTests
     public void AdditionalInstrumentsOpenInTheirOwnPlayingPose(PerformanceInstrumentFamily family, string expected)
     {
         PerformanceAnimations.GetOpeningClip(PerformanceKind.Music, family).Name.Should().Be(expected);
+    }
+
+    [Test]
+    public void UgnaughtsSingWithTheMicrophoneLoweredToTheirMouth()
+    {
+        var sung = new[]
+        {
+            (PerformanceAnimations.GetOpeningClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals), "sw_vlm_loop"),
+            (PerformanceAnimations.GetLoopClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, PerformanceRoutineType.CantinaShuffle), "sw_vlm_loop"),
+            (PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, PerformanceCue.Low), "sw_vlm_low"),
+            (PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, PerformanceCue.Mid), "sw_vlm_mid"),
+            (PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, PerformanceCue.High), "sw_vlm_high"),
+            (PerformanceAnimations.GetFlourishClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, 0), "sw_vlm_flour"),
+        };
+        foreach (var (clip, lowered) in sung)
+        {
+            var fitted = PerformanceAnimations.FitToBody(clip, AppearanceType.Ugnaught);
+            fitted.Name.Should().Be(lowered);
+            fitted.Duration.Should().Be(clip.Duration, "the lowered copy keeps the clip's timing");
+        }
+    }
+
+    [TestCase(AppearanceType.Human)]
+    [TestCase(AppearanceType.Ewok)]
+    [TestCase(AppearanceType.Cathar)]
+    [TestCase(AppearanceType.Droid)]
+    public void BodiesWhoseMouthMeetsTheMicrophoneKeepTheOrdinarySingingClips(AppearanceType appearance)
+    {
+        foreach (var clip in new[] { AuthoredAnimation.VocalsLoop, AuthoredAnimation.VocalsLow, AuthoredAnimation.VocalsMid,
+                     AuthoredAnimation.VocalsHigh, AuthoredAnimation.VocalsFlourish })
+            PerformanceAnimations.FitToBody(clip, appearance).Should().BeSameAs(clip);
+    }
+
+    [Test]
+    public void OnlySingingIsRefittedForUgnaughts()
+    {
+        foreach (var clip in new[] { AuthoredAnimation.PipesLoop, AuthoredAnimation.TambourineFlourish, AuthoredAnimation.HornLoop,
+                     AuthoredAnimation.CantinaShuffle, AuthoredAnimation.PerformanceBow })
+            PerformanceAnimations.FitToBody(clip, AppearanceType.Ugnaught).Should().BeSameAs(clip);
+        PerformanceAnimations.FitToBody(null, AppearanceType.Ugnaught).Should().BeNull();
     }
 }

@@ -3668,5 +3668,55 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/VocalsFlourish.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthLoop",
+    "AnimationName": "sw_vlm_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthLoop.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthLow",
+    "AnimationName": "sw_vlm_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthLow.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthMid",
+    "AnimationName": "sw_vlm_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthMid.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthHigh",
+    "AnimationName": "sw_vlm_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthHigh.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthFlourish",
+    "AnimationName": "sw_vlm_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthFlourish.swlanim"
   }
 ]

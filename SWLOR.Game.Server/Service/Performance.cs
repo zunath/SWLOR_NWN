@@ -776,7 +776,9 @@ namespace SWLOR.Game.Server.Service
         // Every performance clip plays on the looping carrier, so the routine loop repeats in place for minutes at a time.
         private static void StartLoopingAnimation(PerformanceSession session)
         {
-            var clip = PerformanceAnimations.GetLoopClip(session.Kind, session.InstrumentFamily, session.Routine);
+            var clip = PerformanceAnimations.FitToBody(
+                PerformanceAnimations.GetLoopClip(session.Kind, session.InstrumentFamily, session.Routine),
+                GetAppearanceType(session.Performer));
             session.AnimationToken = NamedAnimation.Play(session.Performer, clip, LoopPlaybackSeconds, holdMode: HoldMode(session));
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(LoopRenewSeconds);
         }
@@ -791,6 +793,7 @@ namespace SWLOR.Game.Server.Service
         private static void PlayThenLoop(PerformanceSession session, AnimationClip clip, NamedAnimationHold holdMode)
         {
             var player = session.Performer;
+            clip = PerformanceAnimations.FitToBody(clip, GetAppearanceType(player));
             var token = NamedAnimation.Play(player, clip, holdMode: holdMode);
             session.AnimationToken = token;
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(clip.Duration + AccentRecoverySeconds);

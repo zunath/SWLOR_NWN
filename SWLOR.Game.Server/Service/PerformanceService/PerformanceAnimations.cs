@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.PerformanceService
 {
@@ -8,6 +10,27 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     /// </summary>
     public static class PerformanceAnimations
     {
+        // The same singing motion with the microphone hand lowered.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _lowMouthVocals = new()
+        {
+            [AuthoredAnimation.VocalsLoop] = AuthoredAnimation.VocalsLowMouthLoop,
+            [AuthoredAnimation.VocalsLow] = AuthoredAnimation.VocalsLowMouthLow,
+            [AuthoredAnimation.VocalsMid] = AuthoredAnimation.VocalsLowMouthMid,
+            [AuthoredAnimation.VocalsHigh] = AuthoredAnimation.VocalsLowMouthHigh,
+            [AuthoredAnimation.VocalsFlourish] = AuthoredAnimation.VocalsLowMouthFlourish,
+        };
+
+        /// <summary>
+        /// One clip serves every body, and the singing clips hold the microphone at a Human-height mouth. An Ugnaught's
+        /// mouth sits lower on its head, where that hand lands over the eyes, so Ugnaughts play the lowered copies. Held
+        /// wind instruments are fitted per species by moving the item instead (<c>HornFit</c>); a microphone held too
+        /// high needs the hand moved.
+        /// </summary>
+        public static AnimationClip FitToBody(AnimationClip clip, AppearanceType appearance) =>
+            appearance == AppearanceType.Ugnaught && clip != null && _lowMouthVocals.TryGetValue(clip, out var lowered)
+                ? lowered
+                : clip;
+
         /// <summary>
         /// Performance clips loop for minutes, so they stay on the looping carrier. The instruments' base item is wielded
         /// like a polearm: horns and the new held props pose their arms themselves, while the plucked strings were authored

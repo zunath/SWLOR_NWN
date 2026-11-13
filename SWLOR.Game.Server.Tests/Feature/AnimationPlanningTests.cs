@@ -30,6 +30,8 @@ public class AnimationPlanningTests
         ["PerformanceBow"] = "sw_pf_bow",
         ["VocalsLoop"] = "sw_voc_loop", ["VocalsLow"] = "sw_voc_low", ["VocalsMid"] = "sw_voc_mid",
         ["VocalsHigh"] = "sw_voc_high", ["VocalsFlourish"] = "sw_voc_flour",
+        ["VocalsLowMouthLoop"] = "sw_vlm_loop", ["VocalsLowMouthLow"] = "sw_vlm_low", ["VocalsLowMouthMid"] = "sw_vlm_mid",
+        ["VocalsLowMouthHigh"] = "sw_vlm_high", ["VocalsLowMouthFlourish"] = "sw_vlm_flour",
         ["PipesLoop"] = "sw_pip_loop", ["PipesLow"] = "sw_pip_low", ["PipesMid"] = "sw_pip_mid",
         ["PipesHigh"] = "sw_pip_high", ["PipesFlourish"] = "sw_pip_flour",
         ["ViolinLoop"] = "sw_vio_loop", ["ViolinLow"] = "sw_vio_low", ["ViolinMid"] = "sw_vio_mid",

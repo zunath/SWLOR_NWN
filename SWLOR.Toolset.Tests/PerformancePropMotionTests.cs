@@ -81,14 +81,46 @@ public class PerformancePropMotionTests
     }
 
     [TestCaseSource(nameof(States))]
-    public void MicrophoneWristsFollowTheirForearmsAndTheMicrophoneStaysAtTheLips(string state)
+    public void MicrophoneWristsFollowTheirForearmsAndTheMicrophoneStaysAtTheLips(string state) =>
+        MicrophoneStaysAtTheLips("Vocals", state, 1.63f);
+
+    [TestCaseSource(nameof(States))]
+    public void LowMouthMicrophoneSitsTenCentimetresLowerAndStaysThere(string state) =>
+        MicrophoneStaysAtTheLips("VocalsLowMouth", state, 1.53f);
+
+    [TestCaseSource(nameof(States))]
+    public void LowMouthSingingDiffersFromOrdinarySingingOnlyInTheMicrophoneArm(string state)
     {
-        var project = Project("Vocals", state);
+        // The robe layers copy the ordinary clip's garment tracks, so nothing else may move.
+        var ordinary = Project("Vocals", state);
+        var lowered = Project("VocalsLowMouth", state);
+        lowered.Keys.Count.Should().Be(ordinary.Keys.Count);
+        var arm = new HashSet<string> { "lbicep_g", "lforearm_g", "lhand_g" };
+        var moved = new HashSet<string>();
+        for (var key = 0; key < ordinary.Keys.Count; key++)
+        {
+            lowered.Keys[key].Time.Should().Be(ordinary.Keys[key].Time);
+            for (var joint = 0; joint < ordinary.Joints.Count; joint++)
+            {
+                var expected = ordinary.Keys[key].Pose[joint];
+                var actual = lowered.Keys[key].Pose[joint];
+                Vector3.Distance(actual.Position, expected.Position).Should().BeLessThan(.000001f, ordinary.Joints[joint].Name);
+                if (MathF.Abs(Quaternion.Dot(actual.Orientation, expected.Orientation)) < .999999f)
+                    moved.Add(ordinary.Joints[joint].Name);
+            }
+        }
+        moved.Should().BeSubsetOf(arm);
+        moved.Should().Contain("lbicep_g");
+    }
+
+    private static void MicrophoneStaysAtTheLips(string family, string state, float height)
+    {
+        var project = Project(family, state);
         var wrist = project.Joints.FindIndex(j => j.Name == "rhand_g");
         var microphone = project.Joints.FindIndex(j => j.Name == "lhand_g");
         var head = project.Joints.FindIndex(j => j.Name == "head_g");
         var hold = AnimationRig.World(project.Joints, project.Keys[0].Pose);
-        Vector3.Distance(hold[microphone].Translation, new(-.11f, .225f, 1.63f)).Should().BeLessThan(.001f);
+        Vector3.Distance(hold[microphone].Translation, new(-.11f, .225f, height)).Should().BeLessThan(.001f);
         var atLips = InHeadSpace(hold[microphone].Translation, hold[head]);
         foreach (var key in project.Keys)
         {
@@ -161,7 +193,8 @@ public class PerformancePropMotionTests
         var folder = Path.Combine(Root, "design/animations/performance");
         var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(folder, "props-recipe.json")), Recipe.Json)!;
         recipe.Motions.Select(motion => motion.Id).Should().BeEquivalentTo(
-            new[] { "Vocals", "Pipes", "Violin", "Tambourine" }.SelectMany(family => States.Select(state => family + state)));
+            new[] { "Vocals", "Pipes", "Violin", "Tambourine", "VocalsLowMouth" }
+                .SelectMany(family => States.Select(state => family + state)));
         foreach (var motion in recipe.Motions)
         {
             var committed = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(folder, motion.Id + ".swlanim")));
@@ -216,6 +249,7 @@ public class PerformancePropMotionTests
     }
 
     [TestCase("Vocals")]
+    [TestCase("VocalsLowMouth")]
     [TestCase("Pipes")]
     [TestCase("Violin")]
     [TestCase("Tambourine")]

@@ -202,6 +202,11 @@ def accent(phase, peak=.4):
 
 # --- Vocals -------------------------------------------------------------------------------------
 MIC_HAND = (-.11, .225, 1.63)
+# One singing clip serves every body, fitted to a Human-height mouth. An Ugnaught's mouth sits lower on its
+# head, so its singers play a copy with the microphone hand lowered by this much on the authoring rig.
+LOW_MOUTH = "VocalsLowMouth"
+LOW_MOUTH_DROP = .10
+STATES = ("Loop", "Low", "Mid", "High", "Flourish")
 MIC_GRIP = (.3, -.72, .62)
 MIC_PALM = (.3317419670, -.5323938892, -.7787839094)
 FREE_HAND = (.28, .10, 1.08)
@@ -212,6 +217,7 @@ VOCAL_GESTURE = [
 
 
 def vocals_pose(name, time, duration):
+    drop = LOW_MOUTH_DROP if name.startswith(LOW_MOUTH) else 0
     phase = time/duration
     hand = list(FREE_HAND)
     if name.endswith("Loop"):
@@ -243,7 +249,8 @@ def vocals_pose(name, time, duration):
         controls = body(chest=[v*level for v in chest], head=[v*level for v in head], left_heel=heel*level,
                      root=(0, -.006*level if name.endswith("Low") else 0))
     controls.update({
-        "leftHand": list(MIC_HAND), "leftGrip": list(MIC_GRIP), "leftPalmFacing": list(MIC_PALM),
+        "leftHand": [MIC_HAND[0], MIC_HAND[1], MIC_HAND[2] - drop], "leftGrip": list(MIC_GRIP),
+        "leftPalmFacing": list(MIC_PALM),
         "rightHand": hand, "rightElbow": [.37 + .5*(hand[0]-FREE_HAND[0]), -.04, 1.21 + .35*(hand[2]-FREE_HAND[2])],
         "blade": [.1, .597, -.796], "shield": [0, 0, 0]})
     return controls
@@ -436,6 +443,12 @@ def tambourine_pose(name, time, duration):
 
 def refine(source):
     result = copy.deepcopy(source)
+    # The low-mouth singing clips are copies of the ordinary ones, authored again with the lowered hand.
+    result["motions"] = [motion for motion in result["motions"] if not motion["id"].startswith(LOW_MOUTH)]
+    for state in STATES:
+        variant = copy.deepcopy(next(motion for motion in result["motions"] if motion["id"] == "Vocals" + state))
+        variant["id"], variant["name"] = LOW_MOUTH + state, "Vocals Low Mouth " + state
+        result["motions"].append(variant)
     for motion in result["motions"]:
         name = motion["id"]
         duration = motion["beats"][-1]["time"]
@@ -444,6 +457,8 @@ def refine(source):
             motion["leftHandFollowsHead"] = True
             author(motion, RATES["Vocals"], lambda time, length, name=name: vocals_pose(name, time, length))
             motion["interpretation"] = "The singer shifts weight, turns and lifts the head with each phrase and gestures from the elbow with the free hand; the microphone stays at the lips as the head moves."
+            if name.startswith(LOW_MOUTH):
+                motion["interpretation"] += " The hand is lowered for a mouth set low on the head."
         elif name.startswith("Pipes"):
             motion["naturalGrip"] = False
             motion["leftHandFollowsHead"] = True

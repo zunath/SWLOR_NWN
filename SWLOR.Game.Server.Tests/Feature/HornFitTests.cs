@@ -63,8 +63,17 @@ public class HornFitTests
     [TestCase(AppearanceType.Ugnaught, Gender.Female, .04f, -.03f, -.06f)]
     [TestCase(AppearanceType.Ewok, Gender.Male, .04f, -.03f, -.06f)]
     [TestCase(AppearanceType.Ewok, Gender.Female, .04f, -.03f, -.06f)]
-    [TestCase(AppearanceType.Cathar, Gender.Female, 0f, 0f, 0f)]
+    [TestCase(AppearanceType.Cathar, Gender.Female, .085f, 0f, 0f)]
+    [TestCase(AppearanceType.Human, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.Cyborg, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.Twilek, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.Trandoshan, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.MonCalamari, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.Wookiee, Gender.Female, 0f, .03f, 0f)]
+    [TestCase(AppearanceType.Twilek, Gender.Male, 0f, 0f, 0f)]
     [TestCase(AppearanceType.Bothan, Gender.Male, 0f, 0f, 0f)]
+    [TestCase(AppearanceType.Droid, Gender.Male, .085f, 0f, 0f)]
+    [TestCase(AppearanceType.Droid, Gender.Female, .085f, 0f, 0f)]
     public void PanpipesMoveToTheMouthOnlyOnBodiesWhoseHandsMissIt(AppearanceType appearance, Gender gender,
         float x, float y, float z) =>
         Fit("panpipes", appearance, 0, gender, true).Should().Be(new HornFitOffset(x, y, z, 0f, 180f));

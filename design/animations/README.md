@@ -430,10 +430,12 @@ or equipment changes; other animation callers keep their existing torch behavior
 Panpipes, tambourines and violin bows lift the polearm carry layer at the opening, then stay
 on the looping carrier. All clips in each new family return to their common playing hold.
 The pipes use an outer-edge grip with the row turned inward by a native item-part Z rotation,
-with Human offsets in `HornFit` checked from front and side against the default male and female heads.
-The Cathar male's longer arms carry the pipes to his cheek, and the short Ugnaught and Ewok bodies hold
-them beside the mouth, so `HornFit` also moves the pipes to the mouth on those bodies; every other
-playable body was checked in the client and needs no offset.
+with offsets in `HornFit` checked close up from front, side and angle on every playable body.
+The female body holds the pipes at the chin, so every full-height female species raises them three
+centimetres; Cathar and droid arms stop short of the mouth (his cheek, her neck, the droid's jaw), and the
+short Ugnaught and Ewok bodies hold them beside the mouth, so `HornFit` moves the pipes to the mouth on
+those bodies too. The other male bodies line up without an offset. Judge the fit in close-ups: a few
+centimetres below the mouth does not show in a full-body view.
 These middle-part offsets apply only while music
 plays and are removed on stop or unequip. Tambourine clips hold the drum in front of the chest
 with its face outward and its ribbons down, with free-hand strikes and wrist shakes.

@@ -36,9 +36,11 @@ public static class HornFit
         {
             // Native front/side checks against Human head 1: turn the row inward, then fit mouth contact.
             [(panpipes, AppearanceType.Human, Gender.Male)] = new(.02f, 0f, 0f, 0f, 180f),
-            [(panpipes, AppearanceType.Human, Gender.Female)] = new(.025f, -.025f, 0f, 0f, 180f),
-            // His wider shoulders and longer arms carry the pipes past his mouth to the cheek.
+            // Cathar and droid arms hold the pipes short of the mouth: at his cheek, and against her neck and its jaw.
             [(panpipes, AppearanceType.Cathar, Gender.Male)] = new(.085f, 0f, 0f, 0f, 180f),
+            [(panpipes, AppearanceType.Cathar, Gender.Female)] = new(.085f, 0f, 0f, 0f, 180f),
+            [(panpipes, AppearanceType.Droid, Gender.Male)] = new(.085f, 0f, 0f, 0f, 180f),
+            [(panpipes, AppearanceType.Droid, Gender.Female)] = new(.085f, 0f, 0f, 0f, 180f),
             [(kloo, AppearanceType.MonCalamari, Gender.Male)] = new(0f, 0f, 0f, -8f),
             [(kloo, AppearanceType.MonCalamari, Gender.Female)] = new(0f, 0f, 0f, -10f),
             [(kloo, AppearanceType.Wookiee, Gender.Male)] = new(0f, 0f, 0f, -8f),
@@ -57,6 +59,17 @@ public static class HornFit
         foreach (var appearance in new[] { AppearanceType.Ugnaught, AppearanceType.Ewok })
         foreach (var gender in new[] { Gender.Male, Gender.Female })
             fits[(panpipes, appearance, gender)] = shortBodyPanpipes;
+
+        // The female body holds the pipes at the chin; raising them three centimetres reaches the mouth.
+        var femalePanpipes = new HornFitOffset(0f, .03f, 0f, 0f, 180f);
+        foreach (var appearance in new[]
+                 {
+                     AppearanceType.Human, AppearanceType.Chiss, AppearanceType.Zabrak, AppearanceType.Twilek,
+                     AppearanceType.Mirialan, AppearanceType.Echani, AppearanceType.KelDor, AppearanceType.Cyborg,
+                     AppearanceType.Trandoshan, AppearanceType.Togruta, AppearanceType.Nautolan,
+                     AppearanceType.Bothan, AppearanceType.Rodian, AppearanceType.MonCalamari, AppearanceType.Wookiee
+                 })
+            fits[(panpipes, appearance, Gender.Female)] = femalePanpipes;
 
         var femaleKloo = new HornFitOffset(.02f, 0f, 0f, -13f);
         foreach (var appearance in new[]

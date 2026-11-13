@@ -84,15 +84,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    SetName(blueprint, $"Blueprint: {match.Name}");
+                    SetName(blueprint, $"Blueprint: {Cache.GetItemNameByResref(Craft.GetRecipe(match.Recipe).Resref)}");
                     Craft.SetBlueprintDetails(blueprint, BuildResearchedBlueprint(match.Recipe));
                     SendMessageToPC(user, $"Gave you a fully researched blueprint: {match.Name} (recipe level {Craft.GetRecipe(match.Recipe).Level}).");
                 });
         }
 
         /// <summary>
-        /// The recipes of exactly this level whose item name contains the filter, ordered by name.
-        /// A name equal to the filter wins over longer names that contain it.
+        /// The recipes of exactly this level that match the filter, ordered by name. A recipe whose item name another
+        /// recipe of the level shares is labelled "Name - Skill". A label or name equal to the filter wins;
+        /// otherwise every word of the filter must appear in the label.
         /// </summary>
         public static List<(RecipeType Recipe, string Name)> FindRecipes(
             IReadOnlyDictionary<RecipeType, RecipeDetail> recipes,
@@ -100,22 +101,34 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             int level,
             string filter)
         {
-            var found = recipes
+            var named = recipes
                 .Where(pair => pair.Value.IsActive && pair.Value.Level == level)
-                .Select(pair => (Recipe: pair.Key, Name: itemName(pair.Value.Resref)))
-                .Where(pair => !string.IsNullOrWhiteSpace(pair.Name))
-                .OrderBy(pair => pair.Name, System.StringComparer.OrdinalIgnoreCase)
+                .Select(pair => (Recipe: pair.Key, Item: itemName(pair.Value.Resref), pair.Value.Skill))
+                .Where(pair => !string.IsNullOrWhiteSpace(pair.Item))
+                .ToList();
+
+            var found = named
+                .Select(pair => (pair.Recipe, pair.Item, Label: named.Count(other => string.Equals(other.Item, pair.Item, System.StringComparison.OrdinalIgnoreCase)) > 1
+                    ? $"{pair.Item} - {pair.Skill}"
+                    : pair.Item))
+                .OrderBy(pair => pair.Label, System.StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
             if (string.IsNullOrWhiteSpace(filter))
-                return found;
+                return found.Select(pair => (pair.Recipe, pair.Label)).ToList();
 
             var text = filter.Trim();
-            var exact = found.Where(pair => string.Equals(pair.Name, text, System.StringComparison.OrdinalIgnoreCase)).ToList();
+            var exact = found.Where(pair =>
+                string.Equals(pair.Label, text, System.StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(pair.Item, text, System.StringComparison.OrdinalIgnoreCase)).ToList();
             if (exact.Count > 0)
-                return exact;
+                return exact.Select(pair => (pair.Recipe, pair.Label)).ToList();
 
-            return found.Where(pair => pair.Name.Contains(text, System.StringComparison.OrdinalIgnoreCase)).ToList();
+            var words = text.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+            return found
+                .Where(pair => words.All(word => pair.Label.Contains(word, System.StringComparison.OrdinalIgnoreCase)))
+                .Select(pair => (pair.Recipe, pair.Label))
+                .ToList();
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Research;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -68,6 +69,22 @@ public class TestBlueprintChatCommandTests
         TestBlueprintChatCommand.FindRecipes(Recipes(), Name, 52, "plasteel").Select(match => match.Recipe).Should().Equal(Third);
         TestBlueprintChatCommand.FindRecipes(Recipes(), Name, 52, "carbine").Select(match => match.Recipe).Should().Equal(Second);
         TestBlueprintChatCommand.FindRecipes(Recipes(), Name, 50, "carbine").Should().BeEmpty();
+    }
+
+    [Test]
+    public void FindRecipes_SeparatesRecipesThatShareAnItemNameBySkill()
+    {
+        var recipes = new Dictionary<RecipeType, RecipeDetail>
+        {
+            [First] = new RecipeDetail { Resref = "t", Level = 52, Skill = SkillType.Engineering },
+            [Second] = new RecipeDetail { Resref = "t", Level = 52, Skill = SkillType.Smithery }
+        };
+
+        var both = TestBlueprintChatCommand.FindRecipes(recipes, _ => "Token", 52, "token");
+        both.Select(match => match.Name).Should().Equal("Token - Engineering", "Token - Smithery");
+
+        TestBlueprintChatCommand.FindRecipes(recipes, _ => "Token", 52, "Token - Smithery").Select(match => match.Recipe).Should().Equal(Second);
+        TestBlueprintChatCommand.FindRecipes(recipes, _ => "Token", 52, "token engineering").Select(match => match.Recipe).Should().Equal(First);
     }
 
     [Test]

@@ -4,7 +4,7 @@
   "Sheet": "Animations",
   "Model": "a_ba",
   "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
-  "RecipeSha256": "36632d7f311dbcf9e2d7e2c3c9b91e846dbc1eaaeb0d2eb8052cd0620fecb483",
+  "RecipeSha256": "315e5b42671d446f01d5f9892a819f2337f06707486fac0ae60878238a9723ce",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -13,14 +13,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
+      "Interpretation": "The singer shifts weight, turns and lifts the head with each phrase and gestures from the elbow with the free hand; the microphone stays at the lips as the head moves.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsLoop.swlanim",
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.5886748E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.751676E-07,
       "Beats": [
         {
           "Time": 0,
@@ -443,7 +443,7 @@
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "5b524483ea6fbfc4aa5191c88881765a1523f346436e7d1f6806ac70203ba7f6"
+      "ProjectSha256": "f29a2cee72d9beb5567804ae703047fddc984abbcf3b89826b703de990cde329"
     },
     {
       "Id": "VocalsLow",
@@ -451,14 +451,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
+      "Interpretation": "The singer shifts weight, turns and lifts the head with each phrase and gestures from the elbow with the free hand; the microphone stays at the lips as the head moves.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsLow.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.2489448E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.5840152E-07,
       "Beats": [
         {
           "Time": 0,
@@ -505,7 +505,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "6503c6fab061fcd64e7ada65a3f55faa6472c45c365919aaf8690f67183baf70"
+      "ProjectSha256": "782802a88117710211af66b46dac7cea5b5a9fc09c627f7cdc19505255926a1d"
     },
     {
       "Id": "VocalsMid",
@@ -513,14 +513,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
+      "Interpretation": "The singer shifts weight, turns and lifts the head with each phrase and gestures from the elbow with the free hand; the microphone stays at the lips as the head moves.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsMid.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.365714E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4575624E-07,
       "Beats": [
         {
           "Time": 0,
@@ -567,7 +567,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "d581cd36ade4ede3d8bfdb72714934eaeede5043f2b57d8698fe5ac90e76fafb"
+      "ProjectSha256": "3be9fae8fefafdc4d47f7e0eb4bce12193a499666585a3fcad70cbabc8b97134"
     },
     {
       "Id": "VocalsHigh",
@@ -575,14 +575,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
+      "Interpretation": "The singer shifts weight, turns and lifts the head with each phrase and gestures from the elbow with the free hand; the microphone stays at the lips as the head moves.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsHigh.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.3411045E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.4466411E-07,
       "Beats": [
         {
           "Time": 0,
@@ -629,7 +629,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "33f9f895df107bdddbcbf7a3490485c533464082ff50929078267dfb57e8bfd6"
+      "ProjectSha256": "eb21760b51d5cfc8bc5959fbbd6ff1faadbdbfd3d5b5f3a11f6e96a4f6bf7d92"
     },
     {
       "Id": "VocalsFlourish",
@@ -637,14 +637,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Vocals performance with the existing held prop.",
-      "Interpretation": "The microphone stays at the lips while the free arm follows a restrained elbow-led gesture, with a neutral wrist and soft breathing motion.",
+      "Interpretation": "The singer shifts weight, turns and lifts the head with each phrase and gestures from the elbow with the free hand; the microphone stays at the lips as the head moves.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "VocalsFlourish.swlanim",
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.9599418E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.7120131E-07,
       "Beats": [
         {
           "Time": 0,
@@ -771,7 +771,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "6ca62d531cef906082fb43c4b7b77810a14888ee76e14464e8e0c56e72311203"
+      "ProjectSha256": "c327b162ca52741439d3d368b453a9aa6feba51ff795639ac323f4a673f2a76b"
     },
     {
       "Id": "PipesLoop",
@@ -779,14 +779,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Corrected playing hold for the existing panpipes model.",
-      "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
+      "Interpretation": "The pipes slide under the lips from note to note and rest on each one, with a breath between phrases; the head leads each slide and both hands stay with the mouth.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "PipesLoop.swlanim",
       "Duration": 5.2,
       "Keyframes": 105,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5484906E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.9474558E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1209,7 +1209,7 @@
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "bc54bb61a6f704d96496aa3b2b3cdadd0ea2cda4bc36573636d57e59ed582fee"
+      "ProjectSha256": "6dd6988bf90b24056e0a9315e03e9e43b621cd587391417fede2229cd28de0dc"
     },
     {
       "Id": "PipesLow",
@@ -1217,14 +1217,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Corrected playing hold for the existing panpipes model.",
-      "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
+      "Interpretation": "The pipes slide under the lips from note to note and rest on each one, with a breath between phrases; the head leads each slide and both hands stay with the mouth.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "PipesLow.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.6049042E-07,
+      "MdlRoundTripMaximumErrorMetres": 1.7772408E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1271,7 +1271,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "6624527023625f5a8f31b85add57a75c767ab4ba6bed80d629443b5daf97249f"
+      "ProjectSha256": "13a949d7b3e68c51604723b7a7464e638a1eae1e8e63c498c565db5aadc15c4c"
     },
     {
       "Id": "PipesMid",
@@ -1279,14 +1279,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Corrected playing hold for the existing panpipes model.",
-      "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
+      "Interpretation": "The pipes slide under the lips from note to note and rest on each one, with a breath between phrases; the head leads each slide and both hands stay with the mouth.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "PipesMid.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4770201E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.0553342E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1333,7 +1333,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "6226ec6f46cee3f02c63d4087b49114d6cda30c06e198093a06b86928585dbc0"
+      "ProjectSha256": "ed58931ab5f1f87cff9b5059a716a6c2e8f58e4b2f6ee9cd1265e9156f742f82"
     },
     {
       "Id": "PipesHigh",
@@ -1341,14 +1341,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Corrected playing hold for the existing panpipes model.",
-      "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
+      "Interpretation": "The pipes slide under the lips from note to note and rest on each one, with a breath between phrases; the head leads each slide and both hands stay with the mouth.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "PipesHigh.swlanim",
       "Duration": 0.5,
       "Keyframes": 11,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.1023975E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6783258E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1395,7 +1395,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "83d3742533c68676e55854f110ca7d8974d5b759acbec03ddd08cc49b9c22ba1"
+      "ProjectSha256": "6689ddcee4d27a65b2e8e8b29b420c07a2656351268e9595bebff5ba7544d7e7"
     },
     {
       "Id": "PipesFlourish",
@@ -1403,14 +1403,14 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Corrected playing hold for the existing panpipes model.",
-      "Interpretation": "A closed pipes playing pose with grounded feet and a continuous hand gesture.",
+      "Interpretation": "The pipes slide under the lips from note to note and rest on each one, with a breath between phrases; the head leads each slide and both hands stay with the mouth.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "PipesFlourish.swlanim",
       "Duration": 1.5,
       "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4665812E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6404925E-07,
       "Beats": [
         {
           "Time": 0,
@@ -1537,7 +1537,7 @@
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "65ecfeb962ee48c50a6c962a7376a91f114e6415249b094c5b4449e173c2372b"
+      "ProjectSha256": "2b017d31a14805a4c0ed80b84321cc7724077677c3a2fa9061a61a6e27ebb259"
     },
     {
       "Id": "ViolinLoop",
@@ -3623,17 +3623,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
+      "Interpretation": "The drum is held in front of the chest with its face outward and its ribbons down; the free palm draws back, strikes and bounces off the skin on the beat while the knees, head and a tapping heel keep time, and the wrist shakes the jingles between strikes.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineLoop.swlanim",
       "Duration": 5.2,
-      "Keyframes": 105,
+      "Keyframes": 313,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5375763E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.7069302E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Playing"
         },
         {
@@ -3641,7 +3649,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Playing"
         },
         {
@@ -3649,7 +3673,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Playing"
         },
         {
@@ -3657,7 +3697,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Playing"
         },
         {
@@ -3665,7 +3721,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Playing"
         },
         {
@@ -3673,7 +3745,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.51666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.53333336,
           "Label": "Playing"
         },
         {
@@ -3681,7 +3769,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.56666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.5833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.6166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.6333333,
           "Label": "Playing"
         },
         {
@@ -3689,7 +3793,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.6666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.68333334,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.71666664,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.73333335,
           "Label": "Playing"
         },
         {
@@ -3697,7 +3817,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.76666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.78333336,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.81666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.8333333,
           "Label": "Playing"
         },
         {
@@ -3705,7 +3841,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.8666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.8833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 0.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.9166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.93333334,
           "Label": "Playing"
         },
         {
@@ -3713,7 +3865,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 0.96666664,
+          "Label": "Playing"
+        },
+        {
+          "Time": 0.98333335,
+          "Label": "Playing"
+        },
+        {
           "Time": 1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.0166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.0333333,
           "Label": "Playing"
         },
         {
@@ -3721,7 +3889,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.0666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.0833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.1166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.1333333,
           "Label": "Playing"
         },
         {
@@ -3729,7 +3913,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.1666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.1833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.2166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.2333333,
           "Label": "Playing"
         },
         {
@@ -3737,7 +3937,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.2666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.2833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.3166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.3333334,
           "Label": "Playing"
         },
         {
@@ -3745,7 +3961,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.3666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.3833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.4166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.4333333,
           "Label": "Playing"
         },
         {
@@ -3753,7 +3985,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.4666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.4833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.5166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.5333333,
           "Label": "Playing"
         },
         {
@@ -3761,7 +4009,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.5666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.5833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.6166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.6333333,
           "Label": "Playing"
         },
         {
@@ -3769,7 +4033,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.6666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.6833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.7166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.7333333,
           "Label": "Playing"
         },
         {
@@ -3777,7 +4057,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.7666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.7833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.8166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.8333334,
           "Label": "Playing"
         },
         {
@@ -3785,7 +4081,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.8666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.8833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 1.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.9166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.9333333,
           "Label": "Playing"
         },
         {
@@ -3793,7 +4105,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 1.9666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 1.9833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.0166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.0333333,
           "Label": "Playing"
         },
         {
@@ -3801,7 +4129,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.0666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.0833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.1166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.1333334,
           "Label": "Playing"
         },
         {
@@ -3809,7 +4153,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.1666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.1833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.2166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.2333333,
           "Label": "Playing"
         },
         {
@@ -3817,7 +4177,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.2666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.2833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.3166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.3333333,
           "Label": "Playing"
         },
         {
@@ -3825,7 +4201,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.3666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.3833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.4166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.4333334,
           "Label": "Playing"
         },
         {
@@ -3833,7 +4225,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.4666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.4833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.5166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.5333333,
           "Label": "Playing"
         },
         {
@@ -3841,7 +4249,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.5666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.5833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.6166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.6333334,
           "Label": "Playing"
         },
         {
@@ -3849,7 +4273,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.6666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.6833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.7166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.7333333,
           "Label": "Playing"
         },
         {
@@ -3857,7 +4297,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.7666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.7833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.8166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.8333333,
           "Label": "Playing"
         },
         {
@@ -3865,7 +4321,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.8666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.8833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 2.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.9166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.9333334,
           "Label": "Playing"
         },
         {
@@ -3873,7 +4345,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 2.9666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 2.9833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.0166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.0333333,
           "Label": "Playing"
         },
         {
@@ -3881,7 +4369,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.0666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.0833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.1166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.1333334,
           "Label": "Playing"
         },
         {
@@ -3889,7 +4393,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.1666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.1833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.2166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.2333333,
           "Label": "Playing"
         },
         {
@@ -3897,7 +4417,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.2666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.2833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.3166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.3333333,
           "Label": "Playing"
         },
         {
@@ -3905,7 +4441,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.3666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.3833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.4166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.4333334,
           "Label": "Playing"
         },
         {
@@ -3913,7 +4465,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.4666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.4833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.5166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.5333333,
           "Label": "Playing"
         },
         {
@@ -3921,7 +4489,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.5666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.5833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.6166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.6333334,
           "Label": "Playing"
         },
         {
@@ -3929,7 +4513,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.6666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.6833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.7166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.7333333,
           "Label": "Playing"
         },
         {
@@ -3937,7 +4537,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.7666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.7833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.8166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.8333333,
           "Label": "Playing"
         },
         {
@@ -3945,7 +4561,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.8666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.8833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 3.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.9166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.9333334,
           "Label": "Playing"
         },
         {
@@ -3953,7 +4585,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 3.9666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 3.9833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.016667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.0333333,
           "Label": "Playing"
         },
         {
@@ -3961,7 +4609,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.0666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.0833335,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.116667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.133333,
           "Label": "Playing"
         },
         {
@@ -3969,7 +4633,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.1666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.1833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.2,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.2166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.233333,
           "Label": "Playing"
         },
         {
@@ -3977,7 +4657,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.266667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.2833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.3,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.3166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.3333335,
           "Label": "Playing"
         },
         {
@@ -3985,7 +4681,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.366667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.383333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.4,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.4166665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.4333334,
           "Label": "Playing"
         },
         {
@@ -3993,7 +4705,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.4666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.483333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.516667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.5333333,
           "Label": "Playing"
         },
         {
@@ -4001,7 +4729,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.5666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.5833335,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.6,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.616667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.633333,
           "Label": "Playing"
         },
         {
@@ -4009,7 +4753,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.6666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.6833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.7,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.7166667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.733333,
           "Label": "Playing"
         },
         {
@@ -4017,7 +4777,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.766667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.7833333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.8,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.8166666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.8333335,
           "Label": "Playing"
         },
         {
@@ -4025,7 +4801,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.866667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.883333,
+          "Label": "Playing"
+        },
+        {
           "Time": 4.9,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.9166665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.9333334,
           "Label": "Playing"
         },
         {
@@ -4033,7 +4825,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 4.9666667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 4.983333,
+          "Label": "Playing"
+        },
+        {
           "Time": 5,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.016667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.0333333,
           "Label": "Playing"
         },
         {
@@ -4041,7 +4849,23 @@
           "Label": "Playing"
         },
         {
+          "Time": 5.0666666,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.0833335,
+          "Label": "Playing"
+        },
+        {
           "Time": 5.1,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.116667,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.133333,
           "Label": "Playing"
         },
         {
@@ -4049,11 +4873,19 @@
           "Label": "Playing"
         },
         {
+          "Time": 5.1666665,
+          "Label": "Playing"
+        },
+        {
+          "Time": 5.1833334,
+          "Label": "Playing"
+        },
+        {
           "Time": 5.2,
           "Label": "Playing"
         }
       ],
-      "ProjectSha256": "1cdc06d3ea13555aa37b169e8e277f30897fde56c3f08147f945b092a3b97d9b"
+      "ProjectSha256": "3f9aa783e05c5b3625b3a666fd911b6d9890176be38d95c683e31653dfbcd80c"
     },
     {
       "Id": "TambourineLow",
@@ -4061,17 +4893,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
+      "Interpretation": "The drum is held in front of the chest with its face outward and its ribbons down; the free palm draws back, strikes and bounces off the skin on the beat while the knees, head and a tapping heel keep time, and the wrist shakes the jingles between strikes.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineLow.swlanim",
       "Duration": 0.5,
-      "Keyframes": 11,
+      "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4057727E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5156055E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Accent"
         },
         {
@@ -4079,7 +4919,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Accent"
         },
         {
@@ -4087,7 +4943,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Accent"
         },
         {
@@ -4095,7 +4967,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Accent"
         },
         {
@@ -4103,7 +4991,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Accent"
         },
         {
@@ -4111,11 +5015,19 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.5,
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "866fe96896899bdc24c3c557c9e201b01c264ed6a5fa4574bda700293d5ce181"
+      "ProjectSha256": "377a2525217aa59774d284f05f59d5c372dc7ddc9b3b8118178894165a590610"
     },
     {
       "Id": "TambourineMid",
@@ -4123,17 +5035,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
+      "Interpretation": "The drum is held in front of the chest with its face outward and its ribbons down; the free palm draws back, strikes and bounces off the skin on the beat while the knees, head and a tapping heel keep time, and the wrist shakes the jingles between strikes.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineMid.swlanim",
       "Duration": 0.5,
-      "Keyframes": 11,
+      "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4057727E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6404925E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Accent"
         },
         {
@@ -4141,7 +5061,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Accent"
         },
         {
@@ -4149,7 +5085,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Accent"
         },
         {
@@ -4157,7 +5109,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Accent"
         },
         {
@@ -4165,7 +5133,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Accent"
         },
         {
@@ -4173,11 +5157,19 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.5,
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "2d8e391ab8d2efd22d00745dd9895cfbf7efea0218946ab252c483432fde9bf6"
+      "ProjectSha256": "ad96ca0da4d1cd407089c285294e30126f7ab5bdba6fc74a8668e841091c2dc3"
     },
     {
       "Id": "TambourineHigh",
@@ -4185,17 +5177,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
+      "Interpretation": "The drum is held in front of the chest with its face outward and its ribbons down; the free palm draws back, strikes and bounces off the skin on the beat while the knees, head and a tapping heel keep time, and the wrist shakes the jingles between strikes.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineHigh.swlanim",
       "Duration": 0.5,
-      "Keyframes": 11,
+      "Keyframes": 31,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.4057727E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Accent"
         },
         {
@@ -4203,7 +5203,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Accent"
         },
         {
@@ -4211,7 +5227,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Accent"
         },
         {
@@ -4219,7 +5251,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Accent"
         },
         {
@@ -4227,7 +5275,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Accent"
         },
         {
@@ -4235,11 +5299,19 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.5,
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "90363bae5b3725d422dca1a7bbc6d24daaa5c44179816e6baf180c1d2ad84fd1"
+      "ProjectSha256": "5887cdc2a6dd8b63bbab99aae95f574a89ec3e1dc56ca00eea0a2d234f1bd60c"
     },
     {
       "Id": "TambourineFlourish",
@@ -4247,17 +5319,25 @@
       "BibleRow": 0,
       "Reference": "",
       "Observation": "Raised rim hold with deliberate free-hand taps and small wrist shakes.",
-      "Interpretation": "An authored hand attachment keeps the wrist neutral while the measured drum face points outward and its ribbon strips hang down; the free palm approaches the skin and recoils.",
+      "Interpretation": "The drum is held in front of the chest with its face outward and its ribbons down; the free palm draws back, strikes and bounces off the skin on the beat while the knees, head and a tapping heel keep time, and the wrist shakes the jingles between strikes.",
       "Activity": "Performing",
       "Status": "Draft: visual review required",
       "Project": "TambourineFlourish.swlanim",
       "Duration": 1.5,
-      "Keyframes": 31,
+      "Keyframes": 91,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 1.6049042E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.7069302E-07,
       "Beats": [
         {
           "Time": 0,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.016666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.033333335,
           "Label": "Accent"
         },
         {
@@ -4265,7 +5345,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.06666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.083333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.11666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.13333334,
           "Label": "Accent"
         },
         {
@@ -4273,7 +5369,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.16666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.18333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.21666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.23333333,
           "Label": "Accent"
         },
         {
@@ -4281,7 +5393,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.26666668,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.28333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.31666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.33333334,
           "Label": "Accent"
         },
         {
@@ -4289,7 +5417,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.36666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.38333333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.41666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.43333334,
           "Label": "Accent"
         },
         {
@@ -4297,7 +5441,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.46666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.48333332,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.5,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.51666665,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.53333336,
           "Label": "Accent"
         },
         {
@@ -4305,7 +5465,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.56666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.5833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.6,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.6166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.6333333,
           "Label": "Accent"
         },
         {
@@ -4313,7 +5489,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.6666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.68333334,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.7,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.71666664,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.73333335,
           "Label": "Accent"
         },
         {
@@ -4321,7 +5513,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.76666665,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.78333336,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.8,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.81666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.8333333,
           "Label": "Accent"
         },
         {
@@ -4329,7 +5537,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.8666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.8833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 0.9,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.9166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.93333334,
           "Label": "Accent"
         },
         {
@@ -4337,7 +5561,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 0.96666664,
+          "Label": "Accent"
+        },
+        {
+          "Time": 0.98333335,
+          "Label": "Accent"
+        },
+        {
           "Time": 1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.0166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.0333333,
           "Label": "Accent"
         },
         {
@@ -4345,7 +5585,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.0666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.0833334,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.1,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.1166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.1333333,
           "Label": "Accent"
         },
         {
@@ -4353,7 +5609,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.1666666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.1833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.2,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.2166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.2333333,
           "Label": "Accent"
         },
         {
@@ -4361,7 +5633,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.2666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.2833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.3,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.3166667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.3333334,
           "Label": "Accent"
         },
         {
@@ -4369,7 +5657,23 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.3666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.3833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.4,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.4166666,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.4333333,
           "Label": "Accent"
         },
         {
@@ -4377,11 +5681,19 @@
           "Label": "Accent"
         },
         {
+          "Time": 1.4666667,
+          "Label": "Accent"
+        },
+        {
+          "Time": 1.4833333,
+          "Label": "Accent"
+        },
+        {
           "Time": 1.5,
           "Label": "Accent"
         }
       ],
-      "ProjectSha256": "651e1a415723b7e2ec32f0162fb8924ccc72077c496e170a13388c4741cf5cf6"
+      "ProjectSha256": "da5223a6d13bec8225147fbe9594ad7782424e5094f8252b1e22cdc2129510be"
     }
   ]
 }

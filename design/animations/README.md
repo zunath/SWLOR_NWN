@@ -377,6 +377,24 @@ prop frame; it does not rotate the inventory item. `leftElbow` and `rightElbow` 
 the bend planes for instrument contact. Omitted controls preserve existing recipes.
 `leftPalmFacing`, together with `leftGrip`, aims the tapping palm's native +X normal;
 forearm roll carries the twist while the wrist follows the contact angle.
+`head` optionally turns the head in degrees (nod forward, yaw, side tilt) on top of its level default.
+`leftHeel` and `rightHeel` lift a heel in degrees and pitch the toes down; the recipe moves the ankle
+target so the foot pivots on its ball. The motion-level `leftHandFollowsHead` and `rightHandFollowsHead`
+carry a hand's targets rigidly with the head, relative to the first pose, so a prop authored at the mouth
+stays there while the head nods, turns and sways. Recipes that omit these controls bake unchanged.
+
+`RefinePerformancePropMotion.py` authors the microphone, panpipes and tambourine clips from scratch
+(`--output` writes the recipe, `--check` confirms the committed one is current). A performer who moves
+only the hands reads as a statue holding a prop, so each family shares one relaxed stance (feet under
+the shoulders, hips 2 cm above the combat-ready crouch) and layers weight shift, a knee dip, hip and
+chest counter-rotation, head motion and a heel lift under the hands. The singer delivers two phrases
+per loop with an elbow-led free hand. The pipes slide under the lips from note to note, rest on each
+one and breathe between phrases; their hold keeps the fitted angle at the mouth through a directed grip
+frame, with both elbows below the hands. The tambourine is held in front of the chest: the palm draws
+back, accelerates in, bounces off the skin and settles, the drum gives under the hit and its jingles
+ring on, and two bars of each loop are shaken instead of struck. Tambourine keys run at 60 Hz for the
+strikes and shakes; vocals and pipes keep the 20 Hz grid. The three accents of a family differ, and
+every clip still starts and ends in its family's hold.
 Microphones and violins occupy the left hand; a violin also requires its bow in the right.
 Violin play retains the native `torchl` hold on the left arm. Fit its bow against that
 composed hold, not the draft's hidden left-arm pose. `RefinePerformancePropMotion.py`
@@ -413,8 +431,15 @@ on the looping carrier. All clips in each new family return to their common play
 The pipes use an outer-edge grip with the row turned inward by a native item-part Z rotation,
 with Human offsets in `HornFit` checked from front and side against the default male and female heads.
 These middle-part offsets apply only while music
-plays and are removed on stop or unequip. Tambourine clips hold the upper rim near the ribs,
-with free-hand taps and small shakes.
+plays and are removed on stop or unequip. Tambourine clips hold the drum in front of the chest
+with its face outward and its ribbons down, with free-hand strikes and wrist shakes.
+
+To publish a revision of these three families, generate the recipe into a staging directory, copy the
+fifteen changed projects and the manifest, `install-active` them into `a_ba` and `a_fa`, and compile
+`an_a_ba` and `an_a_fa`. Then revise the robe layers from `SWLOR_Haks` with
+`ExtendRobeAnimations.py --revise-rotations --baseline <pre-change-sha> --clip <internal-name> ...`:
+besides bone rotations it now carries the root dummy's translation, which these clips use for weight
+shift and the knee dip. A bone translation is still rejected. Finish with `--check`.
 
 Every dance clip starts and ends in one relaxed dance stance (`readyBlade` in the recipe), and the
 strings and horns clips start and end in their playing hold, so loops, steps and flourishes chain
@@ -825,10 +850,11 @@ coverage and pose checks. `--check` revalidates the installed layers against tho
 blobs, including the unchanged parent banks and every byte outside the wearer parent
 name. Package `sw_anim_m`, `sw_anim_f` and `sw_pt_root` with the changed body bank HAK.
 
-For a rotation-only correction to clips already in an extension, use
+For a correction to clips already in an extension that changes only bone rotations and the root
+dummy's translation, use
 `--revise-rotations --baseline <pre-correction-sha> --clip <internal-name> --output <new-output> --apply`
-with `--game-data`. It requires identical body nodes, channel layouts, non-rotation tracks, clip
-headers and rig data. Selected quaternion tracks may gain solve samples. The old layer's values
+with `--game-data`. It requires identical body nodes, channel layouts, other tracks, clip
+headers and rig data. Selected tracks may gain solve samples. The old layer's values
 must match the pinned body bank, and every unselected native component stays byte-identical.
 All extension body poses are checked again before installation. Then rerun `--check`.
 

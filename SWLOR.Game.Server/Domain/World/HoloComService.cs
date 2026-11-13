@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// HoloCom calls between players: the logic and state that used to be a static class, moved here unchanged. The
     /// event handlers run on the container's instance; static callers reach it through <c>GameServices.HoloCom</c>.
     /// </summary>
-    public class HoloComService : IHoloComService
+    public class HoloComService : IHoloComService, IReloadStateAdopter
     {
         // Local variable name constants
         private const string HolocomCallConnected = "HOLOCOM_CALL_CONNECTED";
@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IDMPresenceService _dmPresence;
         private readonly IPlayerNameService _playerName;
         private readonly IStealthService _stealth;
+        [ReloadState(ReloadStateKind.Carried)]
         private int _nextCallToken;
 
         // Whether a creature is in stealth or invisible. Reads the creature's effects through the native library, so a unit
@@ -240,6 +241,30 @@ namespace SWLOR.Game.Server.Domain.World
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// When a hot reload has put back this build's carried token counter (<see cref="IReloadStateAdopter"/>): every call attempt
+        /// still ringing goes on ringing. The ring is a closure the reload dropped, but the attempt (its caller, receiver, token and
+        /// ring count) is held in engine locals, so the new build schedules the next ring from them, as the old build would have.
+        /// </summary>
+        public void OnCarriedStateAdopted()
+        {
+            for (var sender = GetFirstPC(); GetIsObjectValid(sender); sender = GetNextPC())
+            {
+                if (!IsCallSender(sender) || IsInCall(sender))
+                    continue;
+
+                var receiver = GetCallReceiver(sender);
+                var token = GetLocalInt(sender, HolocomCallToken);
+                ScheduleRing(sender, receiver, token);
+            }
+        }
+
+        /// <summary>The next ring of an attempt, five seconds from now; on its own so a unit test can answer it.</summary>
+        protected virtual void ScheduleRing(uint sender, uint receiver, int token)
+        {
+            DelayCommand(5.0f, () => CallPlayer(sender, receiver, token));
         }
 
         private void CallPlayer(uint sender, uint receiver, int token)

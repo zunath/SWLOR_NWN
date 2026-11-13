@@ -237,6 +237,42 @@ public class HoloComServiceTests
     // ---- starting a call
 
     [Test]
+    public void A_reload_goes_on_ringing_an_unanswered_call_from_its_locals()
+    {
+        // P4-15: the next ring is a closure the reload drops; the attempt itself is in engine locals.
+        AliceIsRingingBob();
+        var buzzes = MessagesTo(Bob).Count;
+        _engine.SetReturn("GetFirstPC", Alice);
+        _engine.SetReturnSequence("GetNextPC", Bob, ObjectInvalid);
+        var newBuild = new TestHoloCom((IPlayerListService)RecordingProxy.Create(typeof(IPlayerListService), out _));
+        _engine.ClearCalls();
+
+        newBuild.OnCarriedStateAdopted();
+
+        var ring = _engine.CallsTo("DelayCommand").Should().ContainSingle("only the caller of an unanswered attempt rings").Subject;
+        ring.Arguments[0].Should().Be(5.0f);
+        ((Action)ring.Arguments[1]!)();
+        MessagesTo(Bob).Should().ContainSingle(message => message.StartsWith("Your HoloCom buzzes", StringComparison.Ordinal),
+            "Bob's HoloCom goes on buzzing");
+        newBuild.GetCallState(Alice).Should().Be(PlayerListCallState.Outgoing);
+        buzzes.Should().BeGreaterThan(0);
+    }
+
+    [Test]
+    public void A_reload_leaves_a_connected_call_alone()
+    {
+        AliceAndBobAreConnected();
+        _engine.SetReturn("GetFirstPC", Alice);
+        _engine.SetReturnSequence("GetNextPC", Bob, ObjectInvalid);
+        _engine.ClearCalls();
+
+        _service.OnCarriedStateAdopted();
+
+        _engine.CallsTo("DelayCommand").Should().BeEmpty();
+        _service.GetCallState(Alice).Should().Be(PlayerListCallState.Connected);
+    }
+
+    [Test]
     public void StartCall_marks_the_caller_as_ringing_and_delivers_the_first_ring_after_a_second()
     {
         _service.StartCall(Alice, Bob);

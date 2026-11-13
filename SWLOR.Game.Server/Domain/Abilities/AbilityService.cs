@@ -4042,6 +4042,25 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         public void RemoveActiveAbilityActivation(uint activator) => _activeAbilityActivations.Remove(activator);
 
+        /// <summary>
+        /// While a hot reload quiesces this build (a <see cref="ReloadHookPhase.Quiesce"/> hook): every creature's cast or delayed impact is
+        /// interrupted, as damage or movement interrupts it, which releases its busy flag, timing bar, channel and stamina context.
+        /// The closures that would finish it are dropped by the reload and the activations are not carried, so the new build could
+        /// neither finish nor interrupt it, and the caster would stay busy.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
+        public void QuiesceForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var activator in _activeAbilityActivations.Keys.ToArray())
+                InterruptActivationForReload(activator);
+        }
+
+        /// <summary>The interruption of one activation (<c>UsePerkFeat</c>'s), on its own so a unit test can answer it.</summary>
+        protected virtual void InterruptActivationForReload(uint activator)
+        {
+            UsePerkFeat.InterruptAbilityActivation(activator);
+        }
+
         public bool TryGetQueuedWeaponTraits(uint activator, out WeaponAbilityTraitActivation traits) =>
             _queuedWeaponTraits.TryGetValue(activator, out traits);
 

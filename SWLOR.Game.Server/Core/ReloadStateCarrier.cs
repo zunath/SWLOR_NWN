@@ -211,7 +211,8 @@ namespace SWLOR.Game.Server.Core
         private static void CheckType(Type type, string path, Assembly gameAssembly, Func<Type, bool> converted, HashSet<Type> visited, List<string> problems)
         {
             type = Nullable.GetUnderlyingType(type) ?? type;
-            if (converted(type) || IsValue(type) || typeof(Type).IsAssignableFrom(type) || type == typeof(Vector3) || type == typeof(Vector2))
+            if (converted(type) || IsValue(type) || typeof(Type).IsAssignableFrom(type) ||
+                typeof(SWLOR.NWN.API.Engine.Location).IsAssignableFrom(type) || type == typeof(Vector3) || type == typeof(Vector2))
                 return;
 
             if (typeof(Delegate).IsAssignableFrom(type))
@@ -339,6 +340,7 @@ namespace SWLOR.Game.Server.Core
             settings.Converters.Add(new StringEnumConverter());
             settings.Converters.Add(new ReloadCarryPairDictionaryConverter());
             settings.Converters.Add(new ReloadCarryTypeConverter(_gameAssembly));
+            settings.Converters.Add(new ReloadCarryLocationConverter());
             foreach (var converter in _converters)
                 settings.Converters.Add(converter);
 

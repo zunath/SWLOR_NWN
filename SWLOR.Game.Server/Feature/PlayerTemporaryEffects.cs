@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Character;
@@ -10,6 +11,8 @@ namespace SWLOR.Game.Server.Feature
 {
     public class PlayerTemporaryEffects
     {
+        private const string GhostRestorePendingVariable = "GHOST_RESTORE_PENDING";
+
         [PlayerSession(PlayerReload.LoginOnly,
             "The ghost, scale and movement effects stay in the engine; a rerun would free a player held by a craft, a call or a refinery.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -77,14 +80,19 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         public static void RestoreGhostAfterRevive(uint creature)
         {
-            DelayCommand(0.1f, () =>
+            // Marked until the restore runs, so a hot reload that drops the closure can run it (RestoreGhostForReload).
+            SetLocalBool(creature, GhostRestorePendingVariable, true);
+            DelayCommand(0.1f, () => RestoreGhostNow(creature));
+        }
+
+        private static void RestoreGhostNow(uint creature)
+        {
+            DeleteLocalBool(creature, GhostRestorePendingVariable);
+            if (ShouldHaveGhost(creature) && !GetIsDead(creature))
             {
-                if (ShouldHaveGhost(creature) && !GetIsDead(creature))
-                {
-                    ApplyCutsceneGhostToPlayer(creature);
-                    CraftStyleEffects.Restore(creature);
-                }
-            });
+                ApplyCutsceneGhostToPlayer(creature);
+                CraftStyleEffects.Restore(creature);
+            }
         }
 
         /// <summary>Entering space mode strips every effect, so the login ghost returns on leaving it.</summary>
@@ -95,6 +103,20 @@ namespace SWLOR.Game.Server.Feature
             var player = OBJECT_SELF;
             if (ShouldHaveGhost(player) && !GetIsDead(player))
                 ApplyCutsceneGhostToPlayer(player);
+        }
+
+        /// <summary>
+        /// When a hot reload has activated a new build: a player revived just before the reload gets the ghost and crafting styles the
+        /// revive's restore (a closure the reload dropped) would have given back. The revive marks the player until the restore runs.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Resume)]
+        public static void RestoreGhostForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var player in players)
+            {
+                if (GetLocalBool(player, GhostRestorePendingVariable))
+                    RestoreGhostNow(player);
+            }
         }
 
         private static bool ShouldHaveGhost(uint creature)

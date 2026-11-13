@@ -377,6 +377,31 @@ namespace SWLOR.Game.Server.Domain.Items
             });
         }
 
+        /// <summary>
+        /// When a hot reload has activated a new build: every corpse and DNA extraction corpse the old build left gets its cleanup again.
+        /// The cleanup was a closure the reload dropped; without it the corpse, its items and the body it keeps would stay until the
+        /// server restarts. Each corpse gets the full lifespan again from the reload.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Resume)]
+        public void ResumeCorpseCleanupForReload(IReadOnlyList<uint> players)
+        {
+            var corpses = new List<uint>();
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                for (var placeable = GetFirstObjectInArea(area, ObjectType.Placeable); GetIsObjectValid(placeable);
+                     placeable = GetNextObjectInArea(area, ObjectType.Placeable))
+                {
+                    if (GetIsObjectValid(GetLocalObject(placeable, CorpseBodyVariable)))
+                        corpses.Add(placeable);
+                }
+            }
+
+            foreach (var corpse in corpses)
+            {
+                ScheduleCorpseCleanup(corpse);
+            }
+        }
+
         [NWNEventHandler(ScriptName.OnCorpseClosed)]
         public void CloseCorpseContainer()
         {

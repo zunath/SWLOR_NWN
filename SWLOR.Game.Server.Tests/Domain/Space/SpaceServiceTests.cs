@@ -325,4 +325,38 @@ public class SpaceServiceTests
 
         other.GetDockPointsByPlanet(PlanetType.Viscara).Should().BeEmpty();
     }
+
+    // ---- hot reload
+
+    [Test]
+    public void A_reload_restarts_the_poll_of_every_carried_launch_whose_closure_it_dropped()
+    {
+        var space = new LaunchRecordingSpace();
+        var first = new PendingShipLaunch { PlayerId = "first", ShipId = "ship-1", SpaceArea = 4001 };
+        var second = new PendingShipLaunch { PlayerId = "second", ShipId = "ship-2", SpaceArea = 4002, HasDeparted = true };
+        var launches = (Dictionary<uint, PendingShipLaunch>)typeof(SpaceService)
+            .GetField("_pendingShipLaunches", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+            .GetValue(space)!;
+        launches[11] = first;
+        launches[12] = second;
+
+        space.OnCarriedStateAdopted();
+
+        space.Checks.Should().BeEquivalentTo(new[] { (11u, first), (12u, second) },
+            "a pilot already loading the space area still enters space mode when they arrive");
+    }
+
+    private sealed class LaunchRecordingSpace : SpaceService
+    {
+        public LaunchRecordingSpace()
+            : base(ability: null!, abilityCooldownVisual: null!, ai: null!, area: null!, db: null!, enmity: null!, gui: null!,
+                messaging: null!, perk: null!, planet: null!, playerName: null!, property: null!, race: null!, recast: null!,
+                stat: null!, statusEffect: null!)
+        {
+        }
+
+        public List<(uint Player, PendingShipLaunch Launch)> Checks { get; } = new();
+
+        protected override void ScheduleShipLaunchCheck(uint player, PendingShipLaunch launch) => Checks.Add((player, launch));
+    }
 }

@@ -24,7 +24,7 @@ using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Domain.Space
 {
-    public class SpaceService : ISpaceService
+    public class SpaceService : ISpaceService, IReloadStateAdopter
     {
         public const int MaxRegisteredShips = 10;
 
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Domain.Space
 
         [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<string, uint> _shipClones = new();
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, PendingShipLaunch> _pendingShipLaunches = new();
 
         // NPC docks (the rerun LoadLandingPoints) and player starports (the property adoption) come back under the ids their
@@ -767,6 +767,23 @@ namespace SWLOR.Game.Server.Domain.Space
                 ClearAllActions();
                 ActionJumpToLocation(location);
             });
+        }
+
+        /// <summary>
+        /// After a hot reload has carried the pending ship launches (<see cref="IReloadStateAdopter"/>): each launch's poll, a closure
+        /// the reload dropped, starts again, so a pilot whose jump is under way still enters space mode on arrival (the area-enter
+        /// completion reads the same carried launch), and a jump that never starts still expires.
+        /// </summary>
+        public void OnCarriedStateAdopted()
+        {
+            foreach (var (player, launch) in _pendingShipLaunches.ToList())
+                ScheduleShipLaunchCheck(player, launch);
+        }
+
+        /// <summary>The next poll of a pending launch, 100 ms from now; on its own so a unit test can answer it.</summary>
+        protected virtual void ScheduleShipLaunchCheck(uint player, PendingShipLaunch launch)
+        {
+            Scheduler.Schedule(() => CheckShipLaunch(player, launch), TimeSpan.FromMilliseconds(100));
         }
 
         /// <summary>Commits ship state only after the player reaches the requested destination area.</summary>

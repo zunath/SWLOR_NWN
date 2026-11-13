@@ -91,8 +91,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
             }
         }
 
-        [PlayerSession(PlayerReload.LogoutOnly,
-            "Resets the hotbar icons; the restore step rebuilds the overlays.")]
+        [PlayerSession(PlayerReload.Quiesce,
+            "Resets every recharge icon the old build drew: the closure that would reset one whose cooldown ends during the reload is dropped, so the restore step only redraws the cooldowns still running.",
+            Step = nameof(ClearAllRecastDelays))]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearCooldownVisualsOnExit()
         {

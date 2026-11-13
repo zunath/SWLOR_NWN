@@ -100,8 +100,8 @@ mod_enter (57)
               Recreates the companion glove at login; the glove stays equipped and the pairs are carried.
   LoginOnly   SWLOR.Game.Server.Feature.ResearchInterruptions.SettleOnLogin
               Settles research a crash left open in a freshly loaded character file; on a player who stays online it would delete jobs started this session.
-  LoginOnly   SWLOR.Game.Server.Feature.SavedAnimationMappings.OnClientEnter
-              The animation mappings stay in the engine; a rerun would cancel one in use.
+  Restore     SWLOR.Game.Server.Feature.SavedAnimationMappings.OnClientEnter -> RestoreOnLogin
+              Clears the animation mappings whose owners (queued swings, ability and emote clips, held in the old build's memory and closures) went with the old build, then reapplies the equipment remaps, as at login.
   LoginOnly   SWLOR.Game.Server.Feature.ServerTasks.WelcomeMessage
               A login message.
   LoginOnly   SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEnter
@@ -124,8 +124,8 @@ mod_enter (57)
 mod_exit (45)
   LogoutOnly  SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnExit
               Takes the player's auras off everyone; the aura lists are carried.
-  LogoutOnly  SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.ClearCooldownVisualsOnExit
-              Resets the hotbar icons; the restore step rebuilds the overlays.
+  Quiesce     SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.ClearCooldownVisualsOnExit -> ClearAllRecastDelays
+              Resets every recharge icon the old build drew: the closure that would reset one whose cooldown ends during the reload is dropped, so the restore step only redraws the cooldowns still running.
   LogoutOnly  SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.ForgetExitingPlayer
               Forgets the player in memory, which goes with the old build.
   LogoutOnly  SWLOR.Game.Server.Domain.Combat.CombatService.ClearStatTriggerState
@@ -175,7 +175,7 @@ mod_exit (45)
   LogoutOnly  SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerExit
               Holds the effects for the player's return and takes them off the creature; a reload carries the status effects of every creature instead.
   LogoutOnly  SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnExit
-              Clears granted-stealth locals at logout; they stay valid for a player who stays online.
+              Clears granted-stealth locals at logout; for a player who stays online a reload ends only a timed window, through StealthService.QuiesceForReload.
   LogoutOnly  SWLOR.Game.Server.Domain.Combat.TelegraphService.ForgetShaderStateOnExit
               Forgets which shaders the client has; the new build starts without that cache.
   Quiesce     SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerExit -> AbandonFor
@@ -214,7 +214,7 @@ mod_exit (45)
               Destroys the spare pistol at logout; it stays equipped and the pairs are carried.
 
 == TOTALS ==
-LoginOnly   52
-LogoutOnly  33
-Quiesce     12
-Restore     5
+LoginOnly   51
+LogoutOnly  32
+Quiesce     13
+Restore     6

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Domain.Items
     /// definition cache, the 2DA cache, the weapon ability mappings and the base item type groups are this instance's
     /// state. The facade keeps the event handlers and forwards every call to the container's instance.
     /// </summary>
-    public class ItemService : IItemService
+    public class ItemService : IItemService, IReloadQuiescer
     {
         private readonly IBeastMasteryService _beastMastery;
         private readonly IDBService _db;
@@ -281,6 +281,26 @@ namespace SWLOR.Game.Server.Domain.Items
         {
             EnsureItemAndContentsActivations(GetModuleItemAcquired());
         }
+
+        /// <summary>
+        /// While a hot reload quiesces this build (<see cref="IReloadQuiescer"/>): an item use that is still waiting on its delay is
+        /// interrupted, as moving interrupts it (its timing bar stops and the busy flag clears). The closure that would apply the item
+        /// and release the player is dropped by the reload, so the player would otherwise stay busy.
+        /// </summary>
+        public void QuiesceForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var player in players)
+            {
+                if (_activity.GetBusyType(player) != ActivityStatusType.UseItem)
+                    continue;
+
+                _activity.ClearBusy(player);
+                StopTimingBarForReload(player);
+            }
+        }
+
+        /// <summary>Stops a player's timing bar; on its own so a unit test can answer it.</summary>
+        protected virtual void StopTimingBarForReload(uint player) => PlayerPlugin.StopGuiTimingBar(player, string.Empty);
 
         [PlayerSession(PlayerReload.LoginOnly,
             "The activation item properties stay on the items.")]

@@ -123,6 +123,7 @@ SWLOR.Game.Server.Domain.Combat.EnmityService._proximityEnmityAmounts
 SWLOR.Game.Server.Domain.Combat.OrdinaryAttackTraitsService._states
 SWLOR.Game.Server.Domain.Combat.PowerGloveEquipmentService._pairs
 SWLOR.Game.Server.Domain.Combat.PvpCombatService._states
+SWLOR.Game.Server.Domain.Combat.StealthService._lastTimedExitGeneration
 SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService._modifiers
 SWLOR.Game.Server.Domain.Combat.TwinPistolEquipmentService._pairs
 SWLOR.Game.Server.Domain.Quests.QuestEncounterService._activeCreaturesByEncounterId
@@ -133,9 +134,11 @@ SWLOR.Game.Server.Domain.Social.PartyService._partyLeaders
 SWLOR.Game.Server.Domain.Space.SpaceService._playersInSpace
 SWLOR.Game.Server.Domain.Space.SpaceService._shipClones
 SWLOR.Game.Server.Domain.World.AreaService.<PlayersByArea>k__BackingField
+SWLOR.Game.Server.Domain.World.HoloComService._nextCallToken
 SWLOR.Game.Server.Domain.World.MusicService._lastBattleThemeCombat
 SWLOR.Game.Server.Domain.World.ShuttleService._announcedBoardings
 SWLOR.Game.Server.Domain.World.ShuttleService._boardingNotBeforeUtc
 SWLOR.Game.Server.Domain.World.ShuttleService._missedBoardings
 SWLOR.Game.Server.Domain.World.WeatherService._exposures
 SWLOR.Game.Server.Feature.StatusEffectDefinition.InspiredStatusEffect._lastOvationByPlayer
+SWLOR.Game.Server.Native.RangedWeaponAttackContext._nextRoll

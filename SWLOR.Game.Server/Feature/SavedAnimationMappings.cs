@@ -13,8 +13,9 @@ namespace SWLOR.Game.Server.Feature
     /// </summary>
     public static class SavedAnimationMappings
     {
-        [PlayerSession(PlayerReload.LoginOnly,
-            "The animation mappings stay in the engine; a rerun would cancel one in use.")]
+        [PlayerSession(PlayerReload.Restore,
+            "Clears the animation mappings whose owners (queued swings, ability and emote clips, held in the old build's memory and closures) went with the old build, then reapplies the equipment remaps, as at login.",
+            Step = nameof(RestoreOnLogin))]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnClientEnter()
         {

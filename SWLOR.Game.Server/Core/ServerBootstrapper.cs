@@ -118,14 +118,19 @@ namespace SWLOR.Game.Server.Core
         }
 
         /// <summary>
-        /// On the engine thread, while a reload quiesces this build and before <see cref="CarryForReload"/>: the
-        /// <see cref="PlayerReload.Quiesce"/> steps of <c>mod_exit</c> for every online player (<see cref="PlayerReloadPlan"/>), then
-        /// their screens (<see cref="PlayerScreenCarry"/>): conversations taken out as data, windows closed.
+        /// On the engine thread, while a reload quiesces this build and before <see cref="CarryForReload"/>: the work in flight that a
+        /// dropped closure would have finished ends (<see cref="ReloadQuiescers"/>: casts, item uses, fishing casts, timed stealth),
+        /// then the <see cref="PlayerReload.Quiesce"/> steps of <c>mod_exit</c> for every online player (<see cref="PlayerReloadPlan"/>),
+        /// then their screens (<c>Domain.UI.PlayerScreenCarry</c>): conversations taken out as data, windows closed.
         /// </summary>
         public IReadOnlyList<ReloadStepResult> QuiescePlayers()
         {
             RequireContainer();
-            var steps = PlayerReloadPlan.QuiescePlan(ServerManager.Scripts, PlayerReloadPlan.OnlinePlayers)
+            var inFlight = new ReloadStep(ReloadStepKind.Quiesce, "reload", nameof(ReloadQuiescers),
+                typeof(ReloadQuiescers).GetMethod(nameof(ReloadQuiescers.Run)),
+                () => ReloadQuiescers.Run(typeof(ServerBootstrapper).Assembly, _container.ResolveHandlerOwner, PlayerReloadPlan.OnlinePlayers()));
+            var steps = new[] { inFlight }
+                .Concat(PlayerReloadPlan.QuiescePlan(ServerManager.Scripts, PlayerReloadPlan.OnlinePlayers))
                 .Append(ScreenStep(ReloadStepKind.Quiesce, nameof(IPlayerScreenCarry.Close),
                     carry => ReloadCarry.Put(PlayerScreensKey, carry.Close(PlayerReloadPlan.OnlinePlayers()))));
             return ReloadBootstrap.Run(steps, RunInModuleContext);

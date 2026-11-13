@@ -391,6 +391,30 @@ public class StealthServiceTests
     }
 
     [Test]
+    public void A_reload_ends_a_timed_stealth_window_whose_timer_it_drops_and_leaves_other_players_alone()
+    {
+        // P4-15: the timer that would end the window is a closure the reload drops.
+        _stealthed.Add(Player);
+        _stealthed.Add(Other);
+        var generation = _stealth.ScheduleTimedExit(Player, 30f);
+        _engine.SetLocalInt(Player, "STEALTH_GRANTED_WINDOW", generation);
+        _engine.SetLocalInt(Player, "STEALTH_GRANTED_BONUS", 12);
+        var modesBefore = _engine.CallsTo("SetActionMode").Count;
+        var assignsBefore = _engine.CallsTo("AssignCommand").Count;
+
+        _stealth.QuiesceForReload(new[] { Player, Other });
+
+        _locals.Has(Player, "STEALTH_TIMED_EXIT_ACTIVE").Should().BeFalse();
+        _locals.Has(Player, "STEALTH_GRANTED_WINDOW").Should().BeFalse("the granted bonus does not outlive its window");
+        _locals.Has(Player, "STEALTH_GRANTED_BONUS").Should().BeFalse();
+        var leave = _engine.CallsTo("SetActionMode").Skip(modesBefore).Should().ContainSingle(
+            "only the player with a window leaves stealth, at once, not through a command the reload would drop").Subject;
+        leave.Arguments[0].Should().Be(Player);
+        leave.Arguments[2].Should().Be(false);
+        _engine.CallsTo("AssignCommand").Should().HaveCount(assignsBefore);
+    }
+
+    [Test]
     public void ScheduleTimedExit_ClearsAGrantWhoseEntryNeverHappenedAndSkipsInvalidCreatures()
     {
         var generation = _stealth.ScheduleTimedExit(Player, 5f);

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// so verdicts are cached and re-rolled at most once per pair per detection window. Listen
     /// detection is suppressed entirely; Detection vs Stealth is the only stat pair.
     /// </summary>
-    public class StealthService : IStealthService
+    public class StealthService : IStealthService, IReloadQuiescer
     {
         public const string CombatEntryWindowVariable = "STEALTH_COMBAT_ENTRY_WINDOW";
 
@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Dictionary<(uint Observer, uint Target), (bool Detected, DateTime RolledAt)> _verdicts = new();
 
         // Server-wide so a timer outliving its creature never matches a window on a reused object ID.
+        [ReloadState(ReloadStateKind.Carried)]
         private int _lastTimedExitGeneration;
 
         private readonly Lazy<IPerkService> _perk;
@@ -320,6 +321,30 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         /// <summary>
+        /// While a hot reload quiesces this build (<see cref="IReloadQuiescer"/>): a player's timed stealth window (a granted stealth or
+        /// an ability's timed exit) ends now, as its timer would end it. The timer is a closure the reload drops, so the window would
+        /// otherwise never close and a granted stealth bonus would stay. The window generation counter is carried, so the new build's
+        /// windows never match a stale one.
+        /// </summary>
+        public void QuiesceForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var player in players)
+            {
+                var generation = GetLocalInt(player, TimedExitActiveVariable);
+                if (generation == 0)
+                    continue;
+
+                if (GetLocalInt(player, GrantedStealthVariable) == generation)
+                    ClearGrantedStealth(player);
+
+                DeleteLocalInt(player, TimedExitActiveVariable);
+                // Directly, not through AssignCommand: a command this build queues is dropped with it.
+                if (GetActionMode(player, ActionMode.Stealth))
+                    SetActionMode(player, ActionMode.Stealth, false);
+            }
+        }
+
+        /// <summary>
         /// Returns whether the creature's current stealth window was granted by another player.
         /// </summary>
         public bool HasGrantedStealth(uint creature)
@@ -359,7 +384,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         [PlayerSession(PlayerReload.LogoutOnly,
-            "Clears granted-stealth locals at logout; they stay valid for a player who stays online.")]
+            "Clears granted-stealth locals at logout; for a player who stays online a reload ends only a timed window, through StealthService.QuiesceForReload.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearGrantedStealthOnExit()
         {

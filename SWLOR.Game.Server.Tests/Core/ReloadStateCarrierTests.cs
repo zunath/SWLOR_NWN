@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Core;
@@ -162,6 +163,8 @@ public class ReloadStateCarrierTests
     [Test]
     public void CarryAllPutsEachClassAndAdoptAllTakesItBackAndStartsTimers()
     {
+        // An adopter (HoloComService) looks for the players online; there are none.
+        using var engine = NoPlayersOnline();
         var store = new Dictionary<string, string>();
         var owners = new Dictionary<Type, object>();
         object Resolve(Type type) => owners.TryGetValue(type, out var owner) ? owner : null;
@@ -215,6 +218,8 @@ public class ReloadStateCarrierTests
     [Test]
     public void AClassTheOldBuildLeftNothingForKeepsWhatTheNewBuildMade()
     {
+        // An adopter (HoloComService) looks for the players online; there are none.
+        using var engine = NoPlayersOnline();
         var store = new Dictionary<string, string>();
         object Resolve(Type type)
         {
@@ -237,6 +242,88 @@ public class ReloadStateCarrierTests
     }
 
     [Test]
+    public void TheRangedRollIdsGoOnFromTheOldBuildSoTheCarriedHasteHistoryAcceptsNewHits()
+    {
+        var type = typeof(SWLOR.Game.Server.Native.RangedWeaponAttackContext);
+        var counter = type.GetField("_nextRoll", BindingFlags.NonPublic | BindingFlags.Static)!;
+        var fields = ReloadStateCarrier.CarriedClasses(Game).Single(entry => entry.Type == type).Fields;
+        fields.Should().ContainSingle().Which.Should().BeSameAs(counter);
+        var saved = counter.GetValue(null);
+        try
+        {
+            // The old build recorded hit 5 in a haste history it carries.
+            var configuration = new SWLOR.Game.Server.Domain.Combat.OrdinaryAttackHasteConfiguration(10, 3, 0, 30);
+            var haste = new SWLOR.Game.Server.Domain.Combat.OrdinaryAttackHasteState();
+            counter.SetValue(null, 4L);
+            var oldHit = new SWLOR.Game.Server.Native.RangedWeaponAttackContext.Roll();
+            haste.RecordHit(ReloadCarrySamples.SampleTime, configuration, 77u, oldHit.Id).Should().BeTrue();
+            var text = Carrier().Write(fields, null);
+
+            // The new build's counter starts again at 0 until the carry puts it back.
+            counter.SetValue(null, 0L);
+            Carrier().Read(fields, null, text);
+            var newHit = new SWLOR.Game.Server.Native.RangedWeaponAttackContext.Roll();
+
+            newHit.Id.Should().BeGreaterThan(oldHit.Id);
+            haste.RecordHit(ReloadCarrySamples.SampleTime.AddSeconds(1), configuration, 77u, newHit.Id).Should().BeTrue(
+                "a new hit's id never repeats one the carried history holds");
+        }
+        finally
+        {
+            counter.SetValue(null, saved);
+        }
+    }
+
+    [Test]
+    public void TheHoloComTokensAndStealthWindowsGoOnFromTheOldBuild()
+    {
+        ReloadStateCarrier.CarriedClasses(Game).Should().Contain(entry =>
+            entry.Type.Name == "HoloComService" && entry.Fields.Any(field => field.Name == "_nextCallToken"),
+            "a ringing attempt's token is kept in engine locals, so new tokens must not repeat it");
+        ReloadStateCarrier.CarriedClasses(Game).Should().Contain(entry =>
+            entry.Type.Name == "StealthService" && entry.Fields.Any(field => field.Name == "_lastTimedExitGeneration"),
+            "a stealth window's generation is kept in engine locals, so new windows must not repeat it");
+    }
+
+    [Test]
+    public void TheQuiescersEndTheWorkInFlightOfEveryDiscoveredClassAndNameTheOnesThatFail()
+    {
+        ReloadQuiescers.Discover(Game).Select(type => type.Name).Should().Contain(new[]
+        {
+            nameof(AbilityService), "ItemService", "FishingService", "StealthService",
+        });
+
+        var called = new List<Type>();
+        var players = new uint[] { 9 };
+        object Resolve(Type type) => type == typeof(AbilityService) ? null : new RecordingQuiescer(type, called, players);
+
+        var run = () => ReloadQuiescers.Run(Game, Resolve, players);
+
+        run.Should().Throw<InvalidOperationException>().WithMessage("*AbilityService*", "a class the container cannot give is named");
+        called.Should().HaveCount(ReloadQuiescers.Discover(Game).Count - 1, "every other class still ends its work");
+    }
+
+    private sealed class RecordingQuiescer : IReloadQuiescer
+    {
+        private readonly Type _type;
+        private readonly List<Type> _called;
+        private readonly IReadOnlyList<uint> _players;
+
+        public RecordingQuiescer(Type type, List<Type> called, IReadOnlyList<uint> players)
+        {
+            _type = type;
+            _called = called;
+            _players = players;
+        }
+
+        public void QuiesceForReload(IReadOnlyList<uint> players)
+        {
+            players.Should().BeSameAs(_players);
+            _called.Add(_type);
+        }
+    }
+
+    [Test]
     public void TheAbilityConverterWritesTheFeatAndReadsTheNewBuildsDefinition()
     {
         var oldDetail = new AbilityDetail();
@@ -248,6 +335,15 @@ public class ReloadStateCarrierTests
         text.Should().Be("[\"PowerAttack\",null]", "a definition the cache does not hold is written as null");
         JsonConvert.DeserializeObject<AbilityDetail[]>(text, new JsonSerializerSettings { Converters = { read } })
             .Should().Equal(newDetail, null);
+    }
+
+    private static PlayerEngine NoPlayersOnline()
+    {
+        var engine = new PlayerEngine();
+        engine.Engine.SetReturn("GetFirstPC", 0x7F000000u);
+        engine.Engine.SetReturn("GetNextPC", 0x7F000000u);
+        engine.Engine.SetReturnHandler("GetIsObjectValid", args => (uint)args[0]! != 0x7F000000u);
+        return engine;
     }
 
     private static IReadOnlyList<FieldInfo> FieldsOf(Type type)

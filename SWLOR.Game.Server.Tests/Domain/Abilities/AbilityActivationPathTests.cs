@@ -291,6 +291,51 @@ public class AbilityActivationPathTests
     }
 
     [Test]
+    public void A_reload_interrupts_a_cast_in_progress_so_the_caster_is_not_left_busy()
+    {
+        // P4-15: the closure that would finish the cast and clear the busy flag is dropped by the reload.
+        _catalog[Feat] = Ability_(AbilityActivationType.Casted, delay: 2f);
+        UsePerkFeat.TryUseAbility(Caster, Target, Feat, Nowhere()).Should().BeTrue();
+        _log.Clear();
+
+        ((SWLOR.Game.Server.Core.IReloadQuiescer)Ability).QuiesceForReload(Array.Empty<uint>());
+
+        _log.Should().Equal("ClearBusy");
+        Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse("the new build has no activation to finish or interrupt");
+    }
+
+    [Test]
+    public void A_reload_interrupts_an_impact_still_waiting_on_its_delay()
+    {
+        var ability = Ability_(AbilityActivationType.Casted);
+        ability.ImpactDelay = 1.5f;
+        _catalog[Feat] = ability;
+        UsePerkFeat.TryUseAbility(Caster, Target, Feat, Nowhere()).Should().BeTrue();
+        RunDelayed(0f);
+        _log.Should().EndWith("SetBusy", "the caster waits on the impact");
+        _log.Clear();
+
+        ((SWLOR.Game.Server.Core.IReloadQuiescer)Ability).QuiesceForReload(Array.Empty<uint>());
+
+        _log.Should().Contain("ClearBusy");
+        Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
+        _log.Clear();
+        RunDelayed(1.5f);
+        _log.Should().NotContain("Impact", "an interrupted impact never lands");
+    }
+
+    [Test]
+    public void A_reload_leaves_a_creature_without_a_cast_alone()
+    {
+        _catalog[Feat] = Ability_(AbilityActivationType.Casted, delay: 2f);
+        _log.Clear();
+
+        ((SWLOR.Game.Server.Core.IReloadQuiescer)Ability).QuiesceForReload(new[] { Caster });
+
+        _log.Should().BeEmpty("only a cast clears a busy flag; any other activity keeps its own");
+    }
+
+    [Test]
     public void A_delayed_impact_starts_its_recast_first_and_hits_after_its_own_delay()
     {
         var ability = Ability_(AbilityActivationType.Casted);

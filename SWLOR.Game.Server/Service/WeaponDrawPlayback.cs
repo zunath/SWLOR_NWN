@@ -12,7 +12,8 @@ public sealed class WeaponDrawPlayback
     public WeaponDrawPlayback(IWeaponDrawRuntime runtime) =>
         _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
 
-    public const string EmptyDraw = "sw_nohold";
+    // The clip has no joint controllers but retains native draw_weapon events.
+    public const string EmptyDraw = "sw_gundraw";
     private const string Right = "drwright";
     private const string Left = "drwleft";
     private sealed record Lease(long Token, string PreviousRight, string PreviousLeft);

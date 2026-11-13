@@ -14,7 +14,7 @@ public class WeaponDrawPlaybackTests
         var runtime = new Runtime();
         var playback = new WeaponDrawPlayback(runtime);
         playback.Begin(1);
-        runtime.Events.Should().Equal("drwright=sw_nohold", "drwleft=sw_nohold", "send", "schedule");
+        runtime.Events.Should().Equal("drwright=sw_gundraw", "drwleft=sw_gundraw", "send", "schedule");
         playback.Begin(1);
         runtime.Callbacks[0]();
         runtime.Replacement(1, "drwright").Should().Be(WeaponDrawPlayback.EmptyDraw);

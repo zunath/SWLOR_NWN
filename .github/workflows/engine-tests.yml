@@ -8,6 +8,10 @@ name: Engine tests
 #   engine-tests-characterization label  only the Characterization scenarios that lock today's outputs; about 40 minutes
 #   workflow_dispatch                    the whole suite, or the tests whose name or category contains `filter`
 #
+# The server boots through the host (SWLOR.Game.Host, the entry development and test servers use) unless a manual run
+# sets `entry` to native (production's entry), and `collectible` sets the host's collectible switch. The runner's
+# --entry and --collectible do the staging (Readmes/EngineTesting.md).
+#
 # The tests need a real nwserver, so the job runs the same scripts as a cloud session or a dev machine:
 #   scripts/ci/fetch-engine-test-haks.sh        the SWLOR_Haks content the server-only HAKs are built from (50 MB)
 #   scripts/prepare-engine-test-home.sh         server-only HAKs, packed module, Docker images
@@ -47,6 +51,21 @@ on:
         description: 'Branch, tag or commit to test'
         required: false
         default: feature/maintainability-refactor
+      entry:
+        description: '.NET entry the server boots through: host (SWLOR.Game.Host loads the game as a generation) or native (production''s entry).'
+        type: choice
+        options:
+          - host
+          - native
+        default: host
+      collectible:
+        description: 'Host entry only: load the game into a collectible context (true), a normal one (false), or the host default (empty).'
+        type: choice
+        options:
+          - ''
+          - 'true'
+          - 'false'
+        default: ''
 
 permissions:
   contents: read
@@ -86,6 +105,8 @@ jobs:
         env:
           INPUT_FILTER: ${{ inputs.filter }}
           INPUT_TIMEOUT: ${{ inputs.timeout_minutes }}
+          INPUT_ENTRY: ${{ inputs.entry }}
+          INPUT_COLLECTIBLE: ${{ inputs.collectible }}
           LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
         run: |
           set -euo pipefail
@@ -104,12 +125,26 @@ jobs:
             fi
             timeout="$INPUT_TIMEOUT"
           fi
+          # The entry is the host unless a manual run asks for the native one (scheduled and labelled runs use the host,
+          # the entry development and test servers boot through; production's entry is measured by the manual runs).
+          entry="${INPUT_ENTRY:-host}"
+          collectible="$INPUT_COLLECTIBLE"
+          case "$entry" in
+            host|native) ;;
+            *) echo "::error::entry must be host or native, not '$entry'."; exit 1 ;;
+          esac
+          case "$collectible" in
+            ""|true|false) ;;
+            *) echo "::error::collectible must be true, false or empty, not '$collectible'."; exit 1 ;;
+          esac
           # The restart check plans for the worst case: setup (30) and the build (5) plus the run's whole wall clock.
           projection=$((35 + timeout))
           {
             echo "ENGINE_HOME=$RUNNER_TEMP/engine-tests-home"
             echo "CI_OUT=$RUNNER_TEMP/engine-tests-out"
             echo "ENGINE_TEST_FILTER=$filter"
+            echo "ENGINE_TEST_ENTRY=$entry"
+            echo "ENGINE_TEST_COLLECTIBLE=$collectible"
             echo "ENGINE_TEST_TIMEOUT_MINUTES=$timeout"
             echo "ENGINE_TEST_PROJECTION_MINUTES=$projection"
           } >> "$GITHUB_ENV"
@@ -119,6 +154,7 @@ jobs:
             echo
             echo "- Event: \`$GITHUB_EVENT_NAME\`"
             echo "- Filter: \`${filter:-(all tests)}\`"
+            echo "- .NET entry: \`$entry\` (collectible: \`${collectible:-default}\`)"
             echo "- Wall clock for the test run: $timeout minutes"
             echo
           } >> "$GITHUB_STEP_SUMMARY"
@@ -186,6 +222,8 @@ jobs:
           set -uo pipefail
           args=(--server-home "$ENGINE_HOME" --timeout-minutes "$ENGINE_TEST_TIMEOUT_MINUTES")
           if [ -n "$ENGINE_TEST_FILTER" ]; then args+=(--filter "$ENGINE_TEST_FILTER"); fi
+          args+=(--entry "$ENGINE_TEST_ENTRY")
+          if [ -n "$ENGINE_TEST_COLLECTIBLE" ]; then args+=(--collectible "$ENGINE_TEST_COLLECTIBLE"); fi
           # The exit code of run-engine-tests.sh is the job's result: 0 only when the server exited cleanly, at least
           # one test ran and none failed.
           bash scripts/run-engine-tests.sh "${args[@]}" 2>&1 | tee "$CI_OUT/engine-tests.log"

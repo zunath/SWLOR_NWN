@@ -14,8 +14,9 @@
       4. Prepares a throwaway server home outside the repository (swlor.env and settings.tml from
          SWLOR.Game.Server/Docker, the packed module, the TLK) and a hak set: every other hak is a NTFS hard link to the
          hak set of the shared dev server (see -BaseHakDirectory), so the 11 GB are not copied.
-      5. Update pass: scripts/run-engine-tests.ps1 -Filter Characterization with SWLOR_UPDATE_SNAPSHOTS=1. The runner copies
-         every snapshot that differs into SWLOR.Game.Server.EngineTests/Characterization/Snapshots.
+      5. Update pass: scripts/run-engine-tests.ps1 -Filter Characterization with SWLOR_UPDATE_SNAPSHOTS=1, booted through the
+         .NET entry -Entry names (the host by default, as the runner does). The runner copies every snapshot that differs
+         into SWLOR.Game.Server.EngineTests/Characterization/Snapshots. The snapshots are the same under both entries.
       6. Prints the snapshot files that changed (git status and the changed row count of each).
       7. Confirm pass: the same run without SWLOR_UPDATE_SNAPSHOTS (it builds again, so the new snapshots are embedded).
          Skipped when the update pass changed nothing, because that pass already compared every snapshot.
@@ -71,10 +72,19 @@
 .PARAMETER TimeoutMinutes
     Wall-clock limit of each engine run, passed to scripts/run-engine-tests.ps1. Default 60.
 
+.PARAMETER Entry
+    The .NET entry the engine runs boot through, passed to scripts/run-engine-tests.ps1 as -Entry: host (the default, as
+    in the runner) or native (production's entry, SWLOR.Game.Server's own bootstrap). The snapshots must not depend on it.
+
+.PARAMETER Collectible
+    Host entry only, passed to scripts/run-engine-tests.ps1 as -Collectible: true or false. Empty (the default) keeps the
+    host's default.
+
 .EXAMPLE
     powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1
     powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -WaitMinutes 45
     powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -CheckOnly
+    powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -Entry native
 #>
 [CmdletBinding()]
 param(
@@ -84,7 +94,11 @@ param(
     [string]$WorkDirectory,
     [string]$BaseHakDirectory,
     [int]$WaitMinutes = 0,
-    [int]$TimeoutMinutes = 60
+    [int]$TimeoutMinutes = 60,
+    [ValidateSet('host', 'native')]
+    [string]$Entry = 'host',
+    [ValidateSet('', 'true', 'false')]
+    [string]$Collectible = ''
 )
 
 Set-StrictMode -Version Latest
@@ -310,7 +324,8 @@ function Invoke-EngineRun {
         DOTNET_NOLOGO                           = '1'
     }
     $arguments = @('-NoProfile', '-NonInteractive', '-File', (Join-Path $Root 'scripts/run-engine-tests.ps1'),
-        '-Filter', 'Characterization', '-ServerHome', $HomePath, '-TimeoutMinutes', [string]$TimeoutMinutes)
+        '-Filter', 'Characterization', '-ServerHome', $HomePath, '-TimeoutMinutes', [string]$TimeoutMinutes, '-Entry', $Entry)
+    if ($Collectible) { $arguments += @('-Collectible', $Collectible) }
     $started = Get-Date
     $run = Invoke-Process -FilePath (Get-HostExecutable) -Arguments $arguments -WorkingDirectory $Root -Environment $environment -Stream
     $seconds = [int]((Get-Date) - $started).TotalSeconds

@@ -116,6 +116,47 @@ public class EquipmentAnimationPlaybackTests
         playback.CanStartEquipmentPlayback(1, request).Should().BeFalse();
     }
 
+    [TestCase(false)] [TestCase(true)]
+    public void NativeRecoveryDoesNotDelayRifleChangesOrUnequip(bool unequip)
+    {
+        var runtime = new Runtime();
+        var named = new NamedAnimationPlayback(runtime);
+        runtime.NamedPlayback = named;
+        var rifles = new RifleSupportAnimationPlayback(runtime);
+        rifles.Apply(1, new RifleSupportPoses("oldi", "oldr", "olds"));
+        runtime.Callbacks[^1]();
+        named.Begin(1, AuthoredAnimation.ConduitStance, 2, weaponHold: AnimationWeaponHold.Rifle);
+        named.IsMappedPlaybackActive(1).Should().BeTrue();
+        named.InvalidateEquipmentPlayback(1).Should().BeTrue();
+        var recovery = named.BeginNative(1);
+
+        var next = unequip ? null : new RifleSupportPoses("newi", "newr", "news");
+        rifles.Apply(1, next);
+
+        named.IsCurrent(1, recovery).Should().BeTrue("the native recovery has not timed out");
+        named.IsMappedPlaybackActive(1).Should().BeFalse();
+        runtime.Maps["xbowr"].Should().Be(next?.Idle ?? "");
+        runtime.Maps["xbowrdy"].Should().Be(next?.Ready ?? "");
+        runtime.Maps["xbowshot"].Should().Be(next?.Shot ?? "");
+        runtime.Maps["pause1"].Should().Be(next?.BaseIdle ?? "");
+    }
+
+    [Test]
+    public void MappedPlaybackKeepsOwnershipThroughItsExitAndReleasesItBeforeEquipmentRestoration()
+    {
+        var runtime = new Runtime();
+        NamedAnimationPlayback playback = null;
+        var mappingOwnershipAtRestore = true;
+        playback = new NamedAnimationPlayback(runtime, restoreEquipmentMappings:
+            creature => mappingOwnershipAtRestore = playback.IsMappedPlaybackActive(creature));
+        var token = playback.Begin(1, AuthoredAnimation.Provoke, 2);
+        playback.Complete(1, token);
+        playback.IsMappedPlaybackActive(1).Should().BeTrue();
+        runtime.Callbacks[^1]();
+        playback.IsMappedPlaybackActive(1).Should().BeFalse();
+        mappingOwnershipAtRestore.Should().BeFalse();
+    }
+
     [Test]
     public void GameplayExecutionPathsCannotBypassEquipmentAwareBindingOrPlaybackOwnership()
     {
@@ -181,13 +222,16 @@ public class EquipmentAnimationPlaybackTests
         throw new FileNotFoundException(path);
     }
 
-    private sealed class Runtime : INamedAnimationRuntime
+    private sealed class Runtime : INamedAnimationRuntime, IRifleSupportAnimationRuntime
     {
+        public NamedAnimationPlayback NamedPlayback;
         public string Token = "";
         public int ActionsCleared;
         public Dictionary<string, string> Maps = new();
         public List<Action> Callbacks = new();
         public bool IsValid(uint creature) => true;
+        public bool IsTemporaryPlaybackActive(uint creature) => NamedPlayback.IsMappedPlaybackActive(creature);
+        public void ClearHold(uint creature) { }
         public string GetToken(uint creature) => Token;
         public string Replacement(uint creature, string source) => Maps.GetValueOrDefault(source, "");
         public void SetToken(uint creature, string token) => Token = token;

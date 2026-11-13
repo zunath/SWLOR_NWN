@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Native;
 internal sealed class RifleSupportAnimationRuntime : IRifleSupportAnimationRuntime
 {
     public bool IsValid(uint creature) => GetIsObjectValid(creature) && GetObjectType(creature) == ObjectType.Creature;
-    public bool IsTemporaryPlaybackActive(uint creature) => NamedAnimation.IsPlaybackActive(creature);
+    public bool IsTemporaryPlaybackActive(uint creature) => NamedAnimation.IsMappedPlaybackActive(creature);
     public string Replacement(uint creature, string source)
     {
         var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature)?.AsNWSObject();

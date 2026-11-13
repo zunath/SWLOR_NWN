@@ -24,6 +24,7 @@ public sealed class NamedAnimationPlayback
     private readonly Action<uint, Func<bool>> _releasePose;
     private readonly Action<uint> _restoreEquipmentMappings;
     private readonly Dictionary<uint, EquipmentRequest> _equipmentRequests = new();
+    private readonly Dictionary<uint, string> _mappedPlaybackTokens = new();
     private readonly Dictionary<uint, string> _restrictedPlaybackTokens = new();
     // Hold mappings match the weapon equipped at start, so any equipment change releases them.
     private readonly Dictionary<uint, string> _heldPlaybackTokens = new();
@@ -108,6 +109,7 @@ public sealed class NamedAnimationPlayback
         var physicalRifleHold = weaponHold == AnimationWeaponHold.Rifle ? ReadPhysicalRifleHold(creature) : RifleHoldSource;
         var token = Guid.NewGuid().ToString("N");
         _runtime.SetToken(creature, token);
+        _mappedPlaybackTokens[creature] = token;
         try
         {
             _runtime.Replace(creature, StartSource, start);
@@ -232,6 +234,7 @@ public sealed class NamedAnimationPlayback
     private void Restore(uint creature, string endingToken)
     {
         if (!OwnsExit(creature, endingToken)) return;
+        _mappedPlaybackTokens.Remove(creature);
         if (_restrictedPlaybackTokens.TryGetValue(creature, out var activeToken) &&
             (activeToken == endingToken || EndingPrefix + activeToken == endingToken))
             _restrictedPlaybackTokens.Remove(creature);
@@ -269,6 +272,7 @@ public sealed class NamedAnimationPlayback
     public void ResetOnLogin(uint creature)
     {
         _equipmentRequests.Remove(creature);
+        _mappedPlaybackTokens.Remove(creature);
         _restrictedPlaybackTokens.Remove(creature);
         _heldPlaybackTokens.Remove(creature);
         _torchPlaybackTokens.Remove(creature);
@@ -301,4 +305,8 @@ public sealed class NamedAnimationPlayback
     public bool IsCurrent(uint creature, string token) =>
         !string.IsNullOrEmpty(token) && !token.StartsWith(EndingPrefix, StringComparison.Ordinal) &&
         _runtime.IsValid(creature) && _runtime.GetToken(creature) == token;
+
+    public bool IsMappedPlaybackActive(uint creature) =>
+        _runtime.IsValid(creature) && _mappedPlaybackTokens.TryGetValue(creature, out var token) &&
+        (_runtime.GetToken(creature) == token || _runtime.GetToken(creature) == EndingPrefix + token);
 }

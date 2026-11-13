@@ -13,6 +13,7 @@ public static class NamedAnimation
 {
     private const string PlaybackTokenVariable = "_NAMED_ANIMATION_PLAYBACK";
     public static bool IsPlaybackActive(uint creature) => !string.IsNullOrEmpty(GetLocalString(creature, PlaybackTokenVariable));
+    public static bool IsMappedPlaybackActive(uint creature) => Playback.IsMappedPlaybackActive(creature);
     public static event Action<uint> EquipmentMappingsReleased;
     private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose,
         creature => EquipmentMappingsReleased?.Invoke(creature));

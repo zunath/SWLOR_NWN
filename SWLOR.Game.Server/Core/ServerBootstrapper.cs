@@ -375,18 +375,13 @@ namespace SWLOR.Game.Server.Core
                     };
 
                 var probed = new List<string>();
-                foreach (var directory in candidateDirectories)
+                var path = EngineTestAssemblyLoader.FindPath(candidateDirectories, probed);
+                if (path != null)
                 {
-                    if (string.IsNullOrWhiteSpace(directory))
-                        continue;
-
-                    var path = Path.Combine(directory, $"{EngineTestAssemblyName}.dll");
-                    probed.Add(path);
-                    if (!File.Exists(path))
-                        continue;
-
+                    // From bytes, into the game's own context: the test code unloads with its generation, and a reload
+                    // loads the new build's test assembly.
                     var loadContext = AssemblyLoadContext.GetLoadContext(gameAssembly) ?? AssemblyLoadContext.Default;
-                    loadContext.LoadFromAssemblyPath(path);
+                    EngineTestAssemblyLoader.Load(loadContext, path);
                     Console.WriteLine($"{EngineTestAssemblyName} loaded from {path} - engine tests will be discovered.");
                     return;
                 }

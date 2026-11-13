@@ -74,7 +74,10 @@ internal static unsafe class RifleSupportHoldClear
             {
                 mappings = WeaponAttackAnimation.ReadAnimationReplacements(native);
                 // A temporary ability, another mapping owner, or unequip takes precedence.
-                if (NamedAnimation.IsMappedPlaybackActive(actor) ||
+                // Native network updates can run outside a script; token reads use NWScript.
+                var mappedPlaybackActive = ServerManager.Executor.ExecuteInScriptContext(
+                    () => NamedAnimation.IsMappedPlaybackActive(actor), actor);
+                if (mappedPlaybackActive ||
                     !mappings.GetValueOrDefault("xbowr", "").StartsWith("rf", StringComparison.Ordinal) ||
                     !CarrierAvailable(mappings, NamedAnimationPlayback.HoldCarrierSource, NamedAnimationPlayback.NoHoldName) ||
                     !CarrierAvailable(mappings, NamedAnimationPlayback.ShoulderHoldSource, Projection.PhysicalIdle(actor)))

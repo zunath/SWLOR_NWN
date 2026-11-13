@@ -10,11 +10,14 @@ namespace SWLOR.Game.Server.Service.PerformanceService
     {
         /// <summary>
         /// Performance clips loop for minutes, so they stay on the looping carrier. The instruments' base item is wielded
-        /// like a polearm: the horn clips pose the arm around the horn themselves, so that hold is lifted for them, while
-        /// the strings clips were authored around it. Dancers keep whatever their weapon holds.
+        /// like a polearm: horns and the new held props pose their arms themselves, while the plucked strings were authored
+        /// around the native carry layer. Singers lift the microphone's left torch layer. Dancers keep their weapon holds.
         /// </summary>
         public static NamedAnimationHold GetHoldMode(PerformanceKind kind, PerformanceInstrumentFamily family) =>
-            kind == PerformanceKind.Music && family == PerformanceInstrumentFamily.Horns
+            kind == PerformanceKind.Music && family == PerformanceInstrumentFamily.Vocals
+                ? NamedAnimationHold.LiftTorchInPlace :
+            kind == PerformanceKind.Music &&
+            family is PerformanceInstrumentFamily.Horns or PerformanceInstrumentFamily.Pipes or PerformanceInstrumentFamily.Percussion or PerformanceInstrumentFamily.BowedStrings
                 ? NamedAnimationHold.LiftInPlace
                 : NamedAnimationHold.Keep;
 
@@ -25,19 +28,33 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         /// </summary>
         public static NamedAnimationHold GetOpeningHoldMode(
             PerformanceKind kind, PerformanceInstrumentFamily family, string instrumentResref) =>
+            kind == PerformanceKind.Music && family == PerformanceInstrumentFamily.Vocals
+                ? NamedAnimationHold.ClearTorch :
             kind == PerformanceKind.Music && PerformanceInstrumentCatalog.PlaysWithoutCarryLayer(instrumentResref)
                 ? NamedAnimationHold.Auto
                 : GetHoldMode(kind, family);
 
-        public static AnimationClip GetOpeningClip(PerformanceKind kind)
+        public static AnimationClip GetOpeningClip(PerformanceKind kind, PerformanceInstrumentFamily family = PerformanceInstrumentFamily.None)
         {
+            if (kind == PerformanceKind.Music &&
+                family is PerformanceInstrumentFamily.Vocals or PerformanceInstrumentFamily.Pipes or PerformanceInstrumentFamily.BowedStrings or PerformanceInstrumentFamily.Percussion)
+                return GetLoopClip(kind, family, PerformanceRoutineType.CantinaShuffle);
+
             return kind == PerformanceKind.Dance ? AuthoredAnimation.Dance : AuthoredAnimation.PlayInstrument;
         }
 
         public static AnimationClip GetLoopClip(PerformanceKind kind, PerformanceInstrumentFamily family, PerformanceRoutineType routine)
         {
             if (kind == PerformanceKind.Music)
-                return family == PerformanceInstrumentFamily.Horns ? AuthoredAnimation.HornLoop : AuthoredAnimation.StringsLoop;
+                return family switch
+                {
+                    PerformanceInstrumentFamily.Horns => AuthoredAnimation.HornLoop,
+                    PerformanceInstrumentFamily.Vocals => AuthoredAnimation.VocalsLoop,
+                    PerformanceInstrumentFamily.Pipes => AuthoredAnimation.PipesLoop,
+                    PerformanceInstrumentFamily.BowedStrings => AuthoredAnimation.ViolinLoop,
+                    PerformanceInstrumentFamily.Percussion => AuthoredAnimation.TambourineLoop,
+                    _ => AuthoredAnimation.StringsLoop
+                };
 
             return routine switch
             {
@@ -64,12 +81,26 @@ namespace SWLOR.Game.Server.Service.PerformanceService
                 };
             }
 
-            var horns = family == PerformanceInstrumentFamily.Horns;
-            return cue switch
+            return (family, cue) switch
             {
-                PerformanceCue.Low => horns ? AuthoredAnimation.HornLow : AuthoredAnimation.StringsLow,
-                PerformanceCue.Mid => horns ? AuthoredAnimation.HornMid : AuthoredAnimation.StringsMid,
-                PerformanceCue.High => horns ? AuthoredAnimation.HornHigh : AuthoredAnimation.StringsHigh,
+                (PerformanceInstrumentFamily.Horns, PerformanceCue.Low) => AuthoredAnimation.HornLow,
+                (PerformanceInstrumentFamily.Horns, PerformanceCue.Mid) => AuthoredAnimation.HornMid,
+                (PerformanceInstrumentFamily.Horns, PerformanceCue.High) => AuthoredAnimation.HornHigh,
+                (PerformanceInstrumentFamily.Vocals, PerformanceCue.Low) => AuthoredAnimation.VocalsLow,
+                (PerformanceInstrumentFamily.Vocals, PerformanceCue.Mid) => AuthoredAnimation.VocalsMid,
+                (PerformanceInstrumentFamily.Vocals, PerformanceCue.High) => AuthoredAnimation.VocalsHigh,
+                (PerformanceInstrumentFamily.Pipes, PerformanceCue.Low) => AuthoredAnimation.PipesLow,
+                (PerformanceInstrumentFamily.Pipes, PerformanceCue.Mid) => AuthoredAnimation.PipesMid,
+                (PerformanceInstrumentFamily.Pipes, PerformanceCue.High) => AuthoredAnimation.PipesHigh,
+                (PerformanceInstrumentFamily.BowedStrings, PerformanceCue.Low) => AuthoredAnimation.ViolinLow,
+                (PerformanceInstrumentFamily.BowedStrings, PerformanceCue.Mid) => AuthoredAnimation.ViolinMid,
+                (PerformanceInstrumentFamily.BowedStrings, PerformanceCue.High) => AuthoredAnimation.ViolinHigh,
+                (PerformanceInstrumentFamily.Percussion, PerformanceCue.Low) => AuthoredAnimation.TambourineLow,
+                (PerformanceInstrumentFamily.Percussion, PerformanceCue.Mid) => AuthoredAnimation.TambourineMid,
+                (PerformanceInstrumentFamily.Percussion, PerformanceCue.High) => AuthoredAnimation.TambourineHigh,
+                (_, PerformanceCue.Low) => AuthoredAnimation.StringsLow,
+                (_, PerformanceCue.Mid) => AuthoredAnimation.StringsMid,
+                (_, PerformanceCue.High) => AuthoredAnimation.StringsHigh,
                 _ => null
             };
         }
@@ -78,7 +109,15 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         public static AnimationClip GetFlourishClip(PerformanceKind kind, PerformanceInstrumentFamily family, int flourishesPlayed)
         {
             if (kind == PerformanceKind.Music)
-                return family == PerformanceInstrumentFamily.Horns ? AuthoredAnimation.HornFlourish : AuthoredAnimation.StringsFlourish;
+                return family switch
+                {
+                    PerformanceInstrumentFamily.Horns => AuthoredAnimation.HornFlourish,
+                    PerformanceInstrumentFamily.Vocals => AuthoredAnimation.VocalsFlourish,
+                    PerformanceInstrumentFamily.Pipes => AuthoredAnimation.PipesFlourish,
+                    PerformanceInstrumentFamily.BowedStrings => AuthoredAnimation.ViolinFlourish,
+                    PerformanceInstrumentFamily.Percussion => AuthoredAnimation.TambourineFlourish,
+                    _ => AuthoredAnimation.StringsFlourish
+                };
 
             return flourishesPlayed % 2 == 0 ? AuthoredAnimation.DanceSpin : AuthoredAnimation.DanceDip;
         }

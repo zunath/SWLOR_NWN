@@ -186,6 +186,48 @@ public class PerformancePropMotionTests
             "a heel lifts in time");
     }
 
+    [TestCase(90f, false)]
+    [TestCase(360f, true)]
+    public void AWholeBodyTurnCarriesTheMicrophoneWithTheHeadOnce(float yaw, bool ramp)
+    {
+        var folder = Path.Combine(Root, "design/animations/performance");
+        var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(folder, "props-recipe.json")), Recipe.Json)!;
+        var motion = recipe.Motions.Single(m => m.Id == "VocalsLoop");
+        motion.LeftHandFollowsHead.Should().BeTrue();
+        var duration = motion.Beats[^1].Time;
+        var turning = motion with
+        {
+            Beats = motion.Beats.Select(beat =>
+            {
+                var pose = System.Text.Json.Nodes.JsonNode.Parse(beat.Pose.ToJsonString())!.AsObject();
+                pose["rootYaw"] = ramp ? yaw * beat.Time / duration : yaw;
+                return beat with { Pose = pose };
+            }).ToArray()
+        };
+        var rig = Project("Vocals", "Loop");
+        var still = MotionAuthor.Bake(rig, rig.Sample(0), recipe, motion);
+        var turned = MotionAuthor.Bake(rig, rig.Sample(0), recipe, turning);
+        var microphone = rig.Joints.FindIndex(j => j.Name == "lhand_g");
+        var head = rig.Joints.FindIndex(j => j.Name == "head_g");
+        Matrix4x4 InHead(AnimationProject project, int key)
+        {
+            var world = AnimationRig.World(project.Joints, project.Keys[key].Pose);
+            Matrix4x4.Invert(world[head], out var inverse).Should().BeTrue();
+            return world[microphone] * inverse;
+        }
+        turned.Keys.Count.Should().Be(still.Keys.Count);
+        for (var key = 0; key < still.Keys.Count; key++)
+        {
+            var expected = InHead(still, key);
+            var actual = InHead(turned, key);
+            Vector3.Distance(actual.Translation, expected.Translation).Should().BeLessThan(.003f,
+                $"a turn must not move the microphone off the lips at {still.Keys[key].Time:0.000}s");
+            foreach (var axis in new[] { Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ })
+                Vector3.Distance(Vector3.TransformNormal(axis, actual), Vector3.TransformNormal(axis, expected)).Should().BeLessThan(.02f,
+                    $"a turn must not twist the grip at {still.Keys[key].Time:0.000}s");
+        }
+    }
+
     [Test]
     public void TheRecipeBakesEveryCommittedProject()
     {

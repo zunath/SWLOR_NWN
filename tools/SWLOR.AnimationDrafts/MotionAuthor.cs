@@ -61,9 +61,10 @@ internal static class MotionAuthor
         if (poses.Any(p => p.Head.HasValue) && poses.Any(p => !p.Head.HasValue))
             throw new InvalidDataException($"{motion.Id}: head must be present on every pose or none.");
         // A prop held at the mouth is authored against the first pose's head and carried by later head motion.
+        // Targets are authored in the unturned frame, so the reference head is taken there too.
         Matrix4x4? headReference = null;
         if (motion.LeftHandFollowsHead || motion.RightHandFollowsHead)
-            headReference = AnimationRig.World(rig.Joints, PoseRig(rig, poses[0], motion.Id, 0, motion.NaturalGrip,
+            headReference = AnimationRig.World(rig.Joints, PoseRig(rig, poses[0] with { RootYaw = 0 }, motion.Id, 0, motion.NaturalGrip,
                 motion.RelaxRightHand, attachment, null, false, false))[Index(rig, "head_g")];
         var result = rig.Clone(); result.Keys.Clear(); result.Events.Clear(); result.Name = motion.Id;
         result.Duration = beats[^1].Time; result.Transition = .15f;
@@ -193,8 +194,13 @@ internal static class MotionAuthor
         if (headReference.HasValue)
         {
             // Carry the hands that hold a prop at the mouth rigidly with the head's authored motion.
+            // The whole-body turn is applied to every target once, below, so it is taken out of the head here.
             Matrix4x4.Invert(headReference.Value, out var inverse);
-            var carried = inverse * AnimationRig.World(rig.Joints, pose)[Index(rig, "head_g")];
+            var head = AnimationRig.World(rig.Joints, pose)[Index(rig, "head_g")];
+            if (p.RootYaw != 0)
+                head *= Matrix4x4.CreateTranslation(-centre) * Matrix4x4.CreateFromQuaternion(Quaternion.Inverse(turn)) *
+                        Matrix4x4.CreateTranslation(centre);
+            var carried = inverse * head;
             Vector3 Direction(Vector3 v) => Vector3.TransformNormal(v, carried);
             if (leftHandFollowsHead)
                 p = p with

@@ -50,6 +50,9 @@ namespace SWLOR.Game.Server.Service
                 : entry;
         }
 
+        /// <summary>Whether the player flies their own ship, not crewing another's station or viewport.</summary>
+        private static bool IsFlyingOwnShip(uint player) => IsPlayerInSpaceMode(player) && IsShipInSpace(player);
+
         /// <summary>
         /// Why a ship cannot go into a pocket now, or empty. The key user and every party ship entering with them pass
         /// these checks, so a party member never pulls a ship out of an Interdictor's hold or a fight.
@@ -62,7 +65,7 @@ namespace SWLOR.Game.Server.Service
                 return hold;
 
             var refusal = RiftRunRules.GetEntryRefusal(
-                IsPlayerInSpaceMode(pilot),
+                IsFlyingOwnShip(pilot),
                 GetCloakPhase(pilot) != ShipCloakPhase.Off,
                 IsShipInCombat(pilot),
                 FindRiftRun(pilot) != null || IsRiftPocket(GetArea(pilot)));
@@ -94,7 +97,9 @@ namespace SWLOR.Game.Server.Service
             var nearby = new List<(uint Ship, float Distance)>();
             for (var member = GetFirstFactionMember(user); GetIsObjectValid(member); member = GetNextFactionMember(user))
             {
-                if (member == user || GetIsDM(member) || !IsPlayerInSpaceMode(member) || GetArea(member) != GetArea(user) ||
+                // Only a pilot flying their own ship is a party ship: crew at a station or viewport keep an active ship
+                // but are aboard the pilot's, and would count as a phantom ship.
+                if (member == user || GetIsDM(member) || !IsFlyingOwnShip(member) || GetArea(member) != GetArea(user) ||
                     FindRiftRun(member) != null)
                 {
                     continue;

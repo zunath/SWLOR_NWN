@@ -273,6 +273,11 @@ public class RiftRunTests
         runs.Should().Contain("var (pilots, leftOut) = RiftRunRules.PickParty(user, nearby, GetRiftEntryRefusal);")
             .And.Contain("SendMessageToPC(pilot, ColorToken.Red(refusal));")
             .And.NotContain("RiftRunRules.PickParty(user, nearby);");
+        // Crew at a station or viewport keep an active ship but fly aboard the pilot's: they are not party ships.
+        runs.Should().Contain("private static bool IsFlyingOwnShip(uint player) => IsPlayerInSpaceMode(player) && IsShipInSpace(player);")
+            .And.Contain("!IsFlyingOwnShip(member)")
+            .And.Contain("RiftRunRules.GetEntryRefusal(\n                IsFlyingOwnShip(pilot),")
+            .And.NotContain("!IsPlayerInSpaceMode(member)");
         var open = runs.Substring(runs.IndexOf("private static string GetRiftOpenRefusal(", StringComparison.Ordinal));
         open.Substring(0, open.IndexOf("\n        }", StringComparison.Ordinal))
             .Should().Contain("GetRiftEntryRefusal(user)", "the key user and the party ships share one set of entry checks");

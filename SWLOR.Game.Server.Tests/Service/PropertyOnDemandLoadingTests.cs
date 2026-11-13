@@ -529,6 +529,8 @@ public class PropertyOnDemandLoadingTests
         locationBody.Should().Contain("isDockInstanceLoading = false;");
         locationBody.Should().Contain("Property.TryGetLoadedInstance(landingLocation.InstancePropertyId, out var instance)");
         locationBody.Should().Contain("isDockInstanceLoading = true;");
+        locationBody.Should().Contain("Space.IsDockedAtDerelict(ship, out _)",
+            "a ship docked at a derelict is not at the starport it last landed at, so it cannot be boarded or refit there");
     }
 
     [Test]

@@ -387,7 +387,8 @@ namespace SWLOR.Game.Server.Service
                 var currentTarget = GetLocalObject(playerCrewed ? crewMember : creature, "SPACE_TARGET");
                 var target =ShipToggleRules.ChooseTarget(mode, currentTarget, active.TargetId, creature);
                 var targetStatus = target == creature ? status : GetShipStatus(target);
-                var targetValid = GetIsObjectValid(target) && !IsShipHiddenFrom(creature, target);
+                // A target that left for another system is out of reach: distance across areas is not a real range.
+                var targetValid = GetIsObjectValid(target) && GetArea(target) == GetArea(creature) && !IsShipHiddenFrom(creature, target);
                 var required = GetModuleCapacitorCost(creature, status, module, detail);
                 var needsTarget = mode != ShipToggleTargetMode.SelfCentered;
 

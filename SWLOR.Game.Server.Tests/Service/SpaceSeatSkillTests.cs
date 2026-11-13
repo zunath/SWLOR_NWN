@@ -304,7 +304,8 @@ public class SpaceSeatSkillTests
     public void TheIonWebAndInterdictor_NeedTheShipInSight_AndBreakOrBlockACloak()
     {
         // Neither reaches a ship it cannot see: a toggle's target must not be hidden, and a cloaked target is no target.
-        ReadSource("Service", "SpaceToggles.cs").Should().Contain("var targetValid = GetIsObjectValid(target) && !IsShipHiddenFrom(creature, target);");
+        ReadSource("Service", "SpaceToggles.cs").Should().Contain("var targetValid = GetIsObjectValid(target) && GetArea(target) == GetArea(creature) && !IsShipHiddenFrom(creature, target);",
+            "a target that jumped to another system is out of reach");
         ExtractMethod(ReadSource("Service", "Space.cs"), "public static (uint, ShipStatus) GetCurrentTarget(").Should().Contain("IsShipHiddenFrom(player, target)");
 
         var ewar = ReadSource("Service", "SpaceElectronicWarfare.cs");

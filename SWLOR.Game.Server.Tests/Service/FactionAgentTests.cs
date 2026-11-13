@@ -327,6 +327,12 @@ public class FactionAgentTests
         events.Should().Contain("FactionAgentRules.IsKillCredit(x, areaResref, tier, role)");
         events.Should().Contain("[NWNEventHandler(ScriptName.OnAreaEnter)]\n        public static void StartMissionsInSystem()");
         events.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureDeathAfter)]\n        public static void FailLostEscort()");
+        var lostEscort = events[events.IndexOf("public static void FailLostEscort()", StringComparison.Ordinal)..];
+        lostEscort[..lostEscort.IndexOf("// Leads: scan-down and data heist", StringComparison.Ordinal)]
+            .Should().Contain("DropOfflineMission(playerId, missionId, \"AGENT CONVOY LOST\");",
+                "a convoy lost while its owner is offline stays a failed mission when they return");
+        events.Should().Contain("DropOfflineMission(playerId, missionId, \"AGENT COURIER LOST\");")
+            .And.Contain("dbPlayer.AgentMissions.RemoveAll(x => x.Id == missionId)").And.Contain("dbPlayer.Quests.Remove(missionId);");
         events.Should().Contain("Space.PlaceSignature(signature);");
 
         ServerSource("Service", "TradeConvoys.cs").Should().Contain("FactionAgents.OnConvoyArrived(hauler);")

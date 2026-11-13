@@ -178,6 +178,8 @@ namespace SWLOR.Game.Server.Service
             var player = FindOnlinePlayer(playerId);
             if (GetIsObjectValid(player))
                 FailMission(player, missionId, "Your convoy was destroyed. The agent's mission has failed.");
+            else
+                DropOfflineMission(playerId, missionId, "AGENT CONVOY LOST");
         }
 
         // Leads: scan-down and data heist
@@ -306,13 +308,22 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            DropOfflineMission(playerId, missionId, "AGENT COURIER LOST");
+        }
+
+        /// <summary>
+        /// Fails a mission whose holder is offline: it leaves their saved record, so logging out never saves a mission
+        /// that failed meanwhile.
+        /// </summary>
+        private static void DropOfflineMission(string playerId, string missionId, string logLabel)
+        {
             var dbPlayer = DB.Get<Player>(playerId);
             if (dbPlayer == null || dbPlayer.AgentMissions.RemoveAll(x => x.Id == missionId) == 0)
                 return;
 
             dbPlayer.Quests.Remove(missionId);
             DB.Set(dbPlayer);
-            Log.Write(LogGroup.Space, $"AGENT COURIER LOST - player {playerId} - {missionId}");
+            Log.Write(LogGroup.Space, $"{logLabel} - player {playerId} - {missionId}");
         }
     }
 }

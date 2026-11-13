@@ -1679,9 +1679,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             isDockInstanceLoading = false;
 
-            // A ship docked aboard another travels with it and is reached through that ship.
+            // A ship docked aboard another travels with it and is reached through that ship. One docked at a derelict is
+            // out at the derelict, not at the starport it last landed at.
             if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition) ||
-                Space.IsDockedAboardHost(ship, out _))
+                Space.IsDockedAboardHost(ship, out _) ||
+                Space.IsDockedAtDerelict(ship, out _))
             {
                 return OBJECT_INVALID;
             }

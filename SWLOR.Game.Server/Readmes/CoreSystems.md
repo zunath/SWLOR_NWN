@@ -130,7 +130,7 @@ Each engine function the server hooks (`NWNXAPI.RequestFunctionHook`) belongs to
 - **Add or change a hook.** Add the trampoline (symbol, order, guard, the sink-or-original body) to its `<Name>Trampolines` class and the id to `NativeHookId` for a new file, the method to the sink interface, the body to the sink class, and enable it from the hook file's handler. State that other code reads (a public counter, a table a test calls) stays on the hook file; state only the body uses moves to the sink.
 - **Hot paths.** `ComputeUpdate`, `WriteUpdate`, `GetMaximum` and `CalculateModifier` run per object per frame: a trampoline takes no lock, lease or allocation, only a volatile read and one interface call (`SWLOR.Game.NativeHooks.Tests` pins every trampoline at 0 bytes, bound and unbound, and checks each one's symbol, order and fallback).
 - **Rules.** `SWLOR.Architecture.Tests` (`NativeHookRulesTests`) fails when a trampoline calls anything but its sink and the engine function's pointer or reads no volatile field, when the game holds an `[UnmanagedCallersOnly]` method outside `Core` (the native entry's NWNX callbacks), when a sink implementation is outside `NativeSinks`, when `SWLOR.Game.Contracts` references anything but the framework, `Nwn.Hosting.Contracts` and `StackExchange.Redis`, or when `SWLOR.Game.NativeHooks` references anything but the framework, `NWNX.NET` and the contracts.
-- **Other contracts.** `IRedisConnectionSource` (the default `Domain.Foundation.RedisConnectionSource` opens Redis as before), `IScriptContext` and `IHostLifecycle` (implemented by the host in a later phase) live in the same project.
+- **Other contracts.** `IRedisConnectionSource` (the default `Domain.Foundation.RedisConnectionSource` opens Redis as before), `IHostLifecycle` (the host's `HostLifecycle`: module loaded, environment, reload on) and `IScriptContext` (declared, not used yet) live in the same project. The host entry boots the game as a reloadable generation: `HotReload.md`.
 
 ### 3. Async System
 
@@ -430,7 +430,7 @@ public void OnPlayerDamaged(uint player, uint attacker, int damage)
 
 ### 4. Script Handler Order
 
-At boot `ScriptRegistry.LoadHandlersFromAssembly` finds every `[NWNEventHandler(ScriptName.X)]` method by reflection and registers it under its script name. A script runs its handlers front to back (a failing action handler is logged and the rest still run; every conditional handler runs and the results are ANDed). **The order is declared in `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt`, the script handler manifest, and nowhere else.** Reflection order follows namespaces and file paths, so it is never consulted for a handler the manifest lists: moving a file, renaming a namespace or adding an unrelated file cannot reorder handlers. Some order is load-bearing: `Domain.Foundation.DBService.Connect` and `DBService.SyncIndexes` (the two parts of the old `DBService.Load`) must stay ahead of `Feature.EventRegistration.OnModulePreload` in `mod_preload`, because the first connects Redis, the second brings its indexes up to date and the third reads it.
+At boot `ScriptRegistry.LoadHandlersFromAssembly` finds every `[NWNEventHandler(ScriptName.X)]` method by reflection, in the assemblies `GameAssemblies.GetAssemblies()` lists (the game build and, when engine tests are on, the engine-test assembly, which the bootstrapper loads from bytes into the game's load context), and registers it under its script name. A script runs its handlers front to back (a failing action handler is logged and the rest still run; every conditional handler runs and the results are ANDed). **The order is declared in `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt`, the script handler manifest, and nowhere else.** Reflection order follows namespaces and file paths, so it is never consulted for a handler the manifest lists: moving a file, renaming a namespace or adding an unrelated file cannot reorder handlers. Some order is load-bearing: `Domain.Foundation.DBService.Connect` and `DBService.SyncIndexes` (the two parts of the old `DBService.Load`) must stay ahead of `Feature.EventRegistration.OnModulePreload` in `mod_preload`, because the first connects Redis, the second brings its indexes up to date and the third reads it.
 
 **Where handlers live.** A handler is a public, parameterless instance method (`void`, or `bool` for a conditional script) of a service's instance class or of one of its listed parts, never of a static class: at boot the registry builds the container, binds each handler to the singleton of its class and registers it under its script name. The manifest names the instance class (`SWLOR.Game.Server.Domain.Foundation.DBService.Connect`), and `SWLOR.Architecture.Tests` fail a handler on any other type in the domain namespace of a converted service (`Domain.<Domain>` and its topics, where the services and their support types live since P2-Z2). The exceptions are the static helpers P2-Z3 moved out of `Service` that keep a boot handler: `Domain.Foundation.FrameProfiler.Load` and `Domain.Foundation.Log.OnApplicationShutdown` (listed in `StaticHelpersMovedOutOfService` of `ConvertedServicesTests`). Moving a handler to another class edits its manifest line in place (and, until the cutover, adds a line to `tools/Refactor/HandlerRenames.txt`).
 
@@ -446,7 +446,7 @@ mod_preload  # run by the engine before the module loads
 
 **Adding a handler.**
 
-1. Write the `[NWNEventHandler]` method.
+1. Write the `[NWNEventHandler]` method. A handler of a boot script (`mod_preload`, `mod_content_chg`, `mod_cache_bef`, `mod_cache_aft`, `mod_load`, `db_loaded`, `app_shutdown`) also needs `[BootPhase(BootReload.<class>)]`, and a handler of `mod_enter` or `mod_exit` needs `[PlayerSession(PlayerReload.<class>, "<reason>")]` (`HotReload.md`, "Rules for new code"); `BootHandlerClassificationTests` and `PlayerSessionClassificationTests` fail without it.
 2. Build, so the generator sees the new handler: `dotnet build SWLOR.Game.Server.Tests -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
 3. Run the manifest generator: `SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"`
    (PowerShell: `$env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS`). It rewrites the manifest from what the server would load, so existing handlers keep their order and a new handler is **appended to the end of its script's block**.
@@ -500,6 +500,8 @@ public static Area GetCachedArea(uint object)
 ```
 
 ### 3. Thread Safety
+
+The server runs on the engine thread and the thread pool. Do not start a thread or a runtime timer (`System.Threading.Timer`, `System.Timers.Timer`, `PeriodicTimer`) and do not subscribe to a process-wide event: a build that a hot reload retires could not let go of them. Use `Scheduler`, `NwTask` and pool work (`HotReload.md`, "Rules for new code"; `ProcessWideRegistrationTests` enforces it).
 
 ```csharp
 // Thread-safe operations

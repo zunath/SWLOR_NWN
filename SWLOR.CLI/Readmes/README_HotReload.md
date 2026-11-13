@@ -57,12 +57,11 @@ UID 1000, make `reload/` writable by both (the local check below does).
 3. A failure after quiescence leaves no game build running: the log says `SWLOR_HOST restart-required ...`, the receipt
    says `RestartRequired`, and the server must be restarted.
 
-## Limits (maintainability refactor, Phase 4)
-- A reloaded build rebuilds its service container and script dispatch only. Its boot handlers do not rerun and nothing of
-  the live world is adopted (P4-14), so caches and timers the boot scripts fill are empty after a reload: use it to try the
-  reload mechanics, not to play.
-- The old build's pending delayed actions (`DelayCommand`, `AssignCommand`, `ActionDoCommand`) are dropped. Online
-  players, open NUI windows and conversations are handled in P4-15.
+## Limits
+- The new build reruns the rerunnable boot handlers, adopts the live world and restores online players, and the pause
+  is about a minute (a client may drop). What a reload keeps and loses, and the rules for code that must survive it, are
+  in `SWLOR.Game.Server/Readmes/HotReload.md`.
+- The old build's pending delayed actions (`DelayCommand`, `AssignCommand`, `ActionDoCommand`) are dropped.
 - Module, hak, TLK and 2DA changes still need a repack or hak rebuild and a restart; a build that needs a migration needs
   a restart.
 
@@ -70,5 +69,5 @@ UID 1000, make `reload/` writable by both (the local check below does).
 `scripts/run-hot-reload-check.sh [--server-home <dir>] [--reloads <n>] [--skip-build]` builds the game, the host and the
 CLI, stages the host entry into the server home (without the engine-test assembly), boots the engine-test Compose stack
 (its own project, a throwaway Redis) with `SWLOR_HOT_RELOAD=true`, waits for `reload-watching`, runs `--reload` the given
-number of times (default 2), prints the receipts and the logged pauses, and tears the stack down. It exits 0 only when
+number of times (default 3), prints the receipts and the logged pauses, and tears the stack down. It exits 0 only when
 every reload applied and the server is still running.

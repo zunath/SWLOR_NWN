@@ -81,8 +81,10 @@ Because nothing references it, the test assembly is never loaded implicitly. `Se
 loads it explicitly - only when `SWLOR_ENGINE_TESTS_ENABLED` is set, and only if the file exists
 (so it is a silent no-op in production) - just before `LoadScripts()`, so the script registry's
 assembly scan finds its `[NWNEventHandler]` methods. It is loaded into the game assembly's own
-`AssemblyLoadContext`; a plain `Assembly.LoadFrom` would land in the default context and hand the
-test code a second, incompatible copy of every game type it references.
+`AssemblyLoadContext` from its bytes (`Core/EngineTestAssemblyLoader`); a plain `Assembly.LoadFrom` would land in
+the default context and hand the test code a second, incompatible copy of every game type it references.
+On the host entry that context is the generation's, so the test code unloads with the generation and a hot reload
+that publishes the engine-test assembly with its candidate runs the new build's tests (`HotReload.md`).
 
 What *does* live in game code is a small set of public observability/determinism seams the tests
 consume: `Combat.SetAbilityHitResolutionOverride` / `SetAutoAttackHitResolutionOverride`,
@@ -482,9 +484,11 @@ the normal `SWLOR.Runner` flow), and finally
 `SWLOR.Game.Server/Docker/` (a last resort: that folder is tracked compose
 *configuration*, not a runtime home; the CI workflow passes its own `--server-home`). Both scripts:
 
-1. Build `SWLOR.Game.Server` in `Release` (unless skipped) with `-p:RunPostBuildEvent=Never` (so
-   the normal Windows-only CLI post-build deploy step doesn't run), then copy the build output from
-   `SWLOR.Game.Server.EngineTests/bin/{Configuration}/net10.0` into `<server home>/dotnet`.
+1. Build `SWLOR.Game.Server.EngineTests` (and, for the host entry, `SWLOR.Game.Host`) in `Release` (unless skipped) with
+   `-p:RunPostBuildEvent=Never` (so the normal Windows-only CLI post-build deploy step doesn't run), then stage the
+   output into `<server home>/dotnet` for the chosen entry (see "The .NET entry" below): the game build and the
+   engine-test assembly from `SWLOR.Game.Server/bin/{Configuration}/net10.0` and
+   `SWLOR.Game.Server.EngineTests/bin/{Configuration}/net10.0`.
 2. Delete any stale `engine-test-results.json` from a previous run.
 3. Run `docker compose -p swlor-engine-tests -f <repo>/SWLOR.Game.Server/Docker/docker-compose.enginetests.yml
    up --abort-on-container-exit --exit-code-from swlor-server` from the server home (the dedicated
@@ -533,6 +537,26 @@ scripts/run-engine-tests.sh --server-home /opt/nwn/home
 `-Filter`/`--filter` and `-ArenaResref`/`--arena-resref` are passed straight through as
 `SWLOR_ENGINE_TEST_FILTER` and `SWLOR_ENGINE_TEST_ARENA_RESREF` env vars picked up by
 `docker-compose.enginetests.yml`.
+
+**The .NET entry.** Both runners boot the server through the host by default (`-Entry host` / `--entry host`), as
+development servers do; `-Entry native` / `--entry native` boots `SWLOR.Game.Server`'s own bootstrap, production's entry.
+The compose file boots the entry the runner staged, whatever the home's `swlor.env` says. `-Collectible true|false` /
+`--collectible true|false` sets the host's collectible switch (blank keeps the host's default, collectible outside
+production). A run on either entry is a full run: the suite, the report and the exit code are the same.
+
+| | host (default) | native |
+|---|---|---|
+| Staged into `<home>/dotnet` | `SWLOR.Game.Host` | the game build |
+| Staged into `<home>/dotnet/game` | the game build and `SWLOR.Game.Server.EngineTests.dll` | nothing |
+| NWNX entry (`NWNX_DOTNET_*`) | `SWLOR.Game.Host`, `SWLOR.Game.Host.Bootstrap.NativeBootstrap`, `Initialize` | `SWLOR.Game.Server`, `SWLOR.Game.Server.Core.ServerManager`, `Bootstrap` |
+
+The runners hand the choice to compose through `SWLOR_ENGINE_TEST_DOTNET_ENTRY`, `_ASSEMBLY`, `_ENTRYPOINT`, `_METHOD` and
+`SWLOR_ENGINE_TEST_GAME_COLLECTIBLE`; hot reload is off in every engine run (`SWLOR_ENGINE_TEST_HOT_RELOAD`, default
+`false`; only `scripts/run-hot-reload-check.sh` turns it on, and with `--engine-filter` each new generation schedules the filtered suite
+again; the `HotReloadPlayers` scenario keeps a headless player across those reloads). Compare the two entries with the same filter, for example
+`-Filter CombatLoad -Entry host` and `-Filter CombatLoad -Entry native`, and read the tails, not p50 ("Combat load
+measurement"). `EngineRunnerParityTests` keeps the two runners, the compose file, the workflow and
+`Update-EngineCharacterization.ps1` on the same switches and values.
 
 `docker-compose.enginetests.yml` itself only starts the two services actually needed to run tests
 (`redis`, `swlor-server`) - not the full dev stack in `docker-compose.yml`. Redis uses a `tmpfs`
@@ -685,7 +709,12 @@ brought in step with the branch after each sync. In the worktree that holds the 
 powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1            # update, then confirm
 powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -WaitMinutes 45   # queue behind another run
 powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -CheckOnly        # compare only, change nothing
+powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -Entry native     # boot the runs through the native entry
 ```
+
+The runs boot through the host entry unless `-Entry native` says otherwise (`-Collectible true|false` is passed on to the
+runner for the host); both pass the same `-Entry` to `scripts/run-engine-tests.ps1`. The snapshots must be identical under
+both entries, so a refresh on either entry that changes them is a finding, not a result.
 
 It runs the procedure above without the manual preparation, in about 30 minutes (measured 28: module pack 3.5 minutes,
 hak build 10 seconds, each of the two engine runs 12 minutes including its build):
@@ -742,8 +771,10 @@ out of the measure (it needs Docker and Redis and runs in its own job).
   refactor's output lock and take about 40 minutes with setup. With both labels the whole suite runs. A run starts when the
   label is added and again on every push while it is on; adding some other label does not restart it.
 - `workflow_dispatch` with an optional `filter` (the same text `--filter` takes; a short one such as `a` matches nearly every
-  test), a `timeout_minutes` wall clock (10 to 270, default 270; a narrow filter can ask for less) and a `ref` (default
-  `feature/maintainability-refactor`).
+  test), a `timeout_minutes` wall clock (10 to 270, default 270; a narrow filter can ask for less), a `ref` (default
+  `feature/maintainability-refactor`), an `entry` (`host`, the default, or `native`, passed to the runner as `--entry`) and a
+  `collectible` (blank, `true` or `false`, passed as `--collectible`). The nightly and the labelled pull requests always boot
+  the host.
 
 GitHub fires `schedule` and lists `workflow_dispatch` only for workflow files on the default branch (`master`), and the refactor
 branch does not merge there until the end. The workflow therefore checks out the refactor branch itself for those two triggers,
@@ -768,7 +799,7 @@ What a run does, all through the scripts a cloud session or dev machine uses (ru
 4. `scripts/prepare-engine-test-home.sh` builds the server-only HAKs and the TLK from it (the names of the left-out files
    come from the index, so the HAKs equal those built from a full checkout), packs `Module/` with `SWLOR.CLI --pack`
    (the Characterization snapshots need the module and the 2DA/TLK data of the branch itself), and pulls the Docker images.
-5. `scripts/run-engine-tests.sh` builds the test project and runs the suite in the pinned server image, with a wall clock of
+5. `scripts/run-engine-tests.sh` builds the test project (and the host) and runs the suite in the pinned server image on the chosen entry, with a wall clock of
    270 minutes (120 for the quick label; a manual run can ask for less). Its exit code is the job's result.
 6. `tools/EngineTestSummary.py` writes the job summary (verdict, failed tests, per-category table, slowest tests) and
    annotations, and the job uploads the `engine-test-results` artifact (14 days): `engine-test-results.json`, the runner output

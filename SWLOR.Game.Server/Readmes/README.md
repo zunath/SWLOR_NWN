@@ -38,7 +38,8 @@ One line per guide. Rule guides are required reading before working in their are
 - [AbilityDefinitions.md](AbilityDefinitions.md): ability definitions in practice.
 - [DualWieldCombat.md](DualWieldCombat.md): dual-wield and double-weapon attack timing.
 - [Weather.md](Weather.md): the weather service.
-- [Deployment.md](Deployment.md): Docker, environments, monitoring.
+- [Deployment.md](Deployment.md): Docker, environments, the .NET entry, monitoring.
+- [HotReload.md](HotReload.md): replacing the game build of a running development or test server, what a reload keeps and loses, and the rules for code that must survive it.
 
 ## Content pipelines
 

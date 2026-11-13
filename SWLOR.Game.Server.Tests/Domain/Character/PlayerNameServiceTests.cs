@@ -783,6 +783,16 @@ public class PlayerNameServiceTests
     }
 
     [Test]
+    public void A_reload_applies_the_overrides_of_everyone_online_again_whose_restoring_closures_it_dropped()
+    {
+        // P4-15 closure audit: a tell's chat-name override is put back by a closure the reload drops.
+        _service.OnCarriedStateAdopted();
+
+        Overrides().Select(call => (uint)call.Arguments[5]!).Distinct().Should().Contain(new[] { Alice, Bob, Carol, Staff },
+            "each player's view of every name, and the staff's true names, are derived again");
+    }
+
+    [Test]
     public void Entering_as_something_that_is_not_a_player_does_nothing()
     {
         _engine.SetReturnHandler("GetEnteringObject", _ => Npc);

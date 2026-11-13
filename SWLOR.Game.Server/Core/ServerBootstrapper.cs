@@ -119,17 +119,14 @@ namespace SWLOR.Game.Server.Core
 
         /// <summary>
         /// On the engine thread, while a reload quiesces this build and before <see cref="CarryForReload"/>: the work in flight that a
-        /// dropped closure would have finished ends (<see cref="ReloadQuiescers"/>: casts, item uses, fishing casts, timed stealth),
+        /// dropped closure would have finished ends (the <see cref="ReloadHookPhase.Quiesce"/> hooks, <see cref="ReloadHooks"/>),
         /// then the <see cref="PlayerReload.Quiesce"/> steps of <c>mod_exit</c> for every online player (<see cref="PlayerReloadPlan"/>),
         /// then their screens (<c>Domain.UI.PlayerScreenCarry</c>): conversations taken out as data, windows closed.
         /// </summary>
         public IReadOnlyList<ReloadStepResult> QuiescePlayers()
         {
             RequireContainer();
-            var inFlight = new ReloadStep(ReloadStepKind.Quiesce, "reload", nameof(ReloadQuiescers),
-                typeof(ReloadQuiescers).GetMethod(nameof(ReloadQuiescers.Run)),
-                () => ReloadQuiescers.Run(typeof(ServerBootstrapper).Assembly, _container.ResolveHandlerOwner, PlayerReloadPlan.OnlinePlayers()));
-            var steps = new[] { inFlight }
+            var steps = new[] { HookStep(ReloadStepKind.Quiesce, ReloadHookPhase.Quiesce) }
                 .Concat(PlayerReloadPlan.QuiescePlan(ServerManager.Scripts, PlayerReloadPlan.OnlinePlayers))
                 .Append(ScreenStep(ReloadStepKind.Quiesce, nameof(IPlayerScreenCarry.Close),
                     carry => ReloadCarry.Put(PlayerScreensKey, carry.Close(PlayerReloadPlan.OnlinePlayers()))));
@@ -137,14 +134,16 @@ namespace SWLOR.Game.Server.Core
         }
 
         /// <summary>
-        /// On the engine thread, after <see cref="RebuildAfterReload"/> on a reload: the <see cref="PlayerReload.Restore"/> steps of
-        /// <c>mod_enter</c> for every online player (<see cref="PlayerReloadPlan"/>), then their windows and conversations again
-        /// (<see cref="PlayerScreenCarry"/>), before the first frame of the new build.
+        /// On the engine thread, after <see cref="RebuildAfterReload"/> on a reload: what a dropped closure kept going restarts (the
+        /// <see cref="ReloadHookPhase.Resume"/> hooks), then the <see cref="PlayerReload.Restore"/> steps of <c>mod_enter</c> for every
+        /// online player (<see cref="PlayerReloadPlan"/>), then their windows and conversations again (<c>Domain.UI.PlayerScreenCarry</c>),
+        /// before the first frame of the new build.
         /// </summary>
         public IReadOnlyList<ReloadStepResult> RestorePlayers()
         {
             RequireContainer();
-            var steps = PlayerReloadPlan.RestorePlan(ServerManager.Scripts, PlayerReloadPlan.OnlinePlayers)
+            var steps = new[] { HookStep(ReloadStepKind.Restore, ReloadHookPhase.Resume) }
+                .Concat(PlayerReloadPlan.RestorePlan(ServerManager.Scripts, PlayerReloadPlan.OnlinePlayers))
                 .Append(ScreenStep(ReloadStepKind.Restore, nameof(IPlayerScreenCarry.Reopen),
                     carry => carry.Reopen(PlayerReloadPlan.OnlinePlayers(), ReloadCarry.Take(PlayerScreensKey))));
             return ReloadBootstrap.Run(steps, RunInModuleContext);
@@ -152,6 +151,13 @@ namespace SWLOR.Game.Server.Core
 
         /// <summary>The key of the players' carried screens on the module (<see cref="ReloadCarry"/>).</summary>
         public const string PlayerScreensKey = "player-screens";
+
+        /// <summary>The step that runs every <see cref="ReloadHookAttribute"/> method of <paramref name="phase"/> with the online players.</summary>
+        private ReloadStep HookStep(ReloadStepKind kind, ReloadHookPhase phase)
+        {
+            return new ReloadStep(kind, "reload", nameof(ReloadHooks), typeof(ReloadHooks).GetMethod(nameof(ReloadHooks.Run)),
+                () => ReloadHooks.Run(typeof(ServerBootstrapper).Assembly, phase, _container.ResolveHandlerOwner, PlayerReloadPlan.OnlinePlayers()));
+        }
 
         /// <summary>The step that carries (<see cref="ReloadStepKind.Carry"/>) or puts back the <see cref="ReloadStateKind.Carried"/> fields.</summary>
         private ReloadStep StateStep(ReloadStepKind kind)

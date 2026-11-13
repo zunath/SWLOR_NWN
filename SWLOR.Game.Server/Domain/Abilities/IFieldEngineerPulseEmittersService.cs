@@ -19,4 +19,7 @@ public interface IFieldEngineerPulseEmittersService
 
     /// <summary>Forgets the activator once the last of their emitters has been removed.</summary>
     void ReleaseIfEmpty(uint activator);
+
+    /// <summary>Every emitter of every activator, which this forgets (a hot reload ends them all while the old build quiesces).</summary>
+    System.Collections.Generic.IReadOnlyList<DeviceAbilityEffects.FieldEngineerPulseEmitter> TakeAll();
 }

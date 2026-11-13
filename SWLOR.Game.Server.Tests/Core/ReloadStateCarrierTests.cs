@@ -286,41 +286,25 @@ public class ReloadStateCarrierTests
     }
 
     [Test]
-    public void TheQuiescersEndTheWorkInFlightOfEveryDiscoveredClassAndNameTheOnesThatFail()
+    public void ALocationIsCarriedAsItsAreaPositionAndFacingAndComesBackAsANewOne()
     {
-        ReloadQuiescers.Discover(Game).Select(type => type.Name).Should().Contain(new[]
-        {
-            nameof(AbilityService), "ItemService", "FishingService", "StealthService",
-        });
+        // A pending ship launch keeps where the pilot stood (P4-15 closure audit); the old build's location handle does not survive.
+        ReloadStateCarrier.CarriedClasses(Game).Should().Contain(entry =>
+            entry.Type.Name == "SpaceService" && entry.Fields.Any(field => field.Name == "_pendingShipLaunches"));
+        var engine = new SWLOR.NWN.API.Testing.FakeNWScript();
+        engine.SetReturn("GetAreaFromLocation", 4001u);
+        engine.SetReturn("GetPositionFromLocation", new System.Numerics.Vector3(1.5f, 2.5f, 3.5f));
+        engine.SetReturn("GetFacingFromLocation", 90f);
+        using var scope = SWLOR.NWN.API.NWScript.NWScriptRuntime.Override(engine);
+        var converter = new ReloadCarryLocationConverter();
 
-        var called = new List<Type>();
-        var players = new uint[] { 9 };
-        object Resolve(Type type) => type == typeof(AbilityService) ? null : new RecordingQuiescer(type, called, players);
+        var text = JsonConvert.SerializeObject(SWLOR.NWN.API.Testing.EngineStructures.Create<SWLOR.NWN.API.Engine.Location>(0x55), converter);
+        JsonConvert.DeserializeObject<SWLOR.NWN.API.Engine.Location>(text, converter);
 
-        var run = () => ReloadQuiescers.Run(Game, Resolve, players);
-
-        run.Should().Throw<InvalidOperationException>().WithMessage("*AbilityService*", "a class the container cannot give is named");
-        called.Should().HaveCount(ReloadQuiescers.Discover(Game).Count - 1, "every other class still ends its work");
-    }
-
-    private sealed class RecordingQuiescer : IReloadQuiescer
-    {
-        private readonly Type _type;
-        private readonly List<Type> _called;
-        private readonly IReadOnlyList<uint> _players;
-
-        public RecordingQuiescer(Type type, List<Type> called, IReadOnlyList<uint> players)
-        {
-            _type = type;
-            _called = called;
-            _players = players;
-        }
-
-        public void QuiesceForReload(IReadOnlyList<uint> players)
-        {
-            players.Should().BeSameAs(_players);
-            _called.Add(_type);
-        }
+        var made = engine.CallsTo("Location").Should().ContainSingle().Subject;
+        made.Arguments[0].Should().Be(4001u);
+        made.Arguments[1].Should().Be(new System.Numerics.Vector3(1.5f, 2.5f, 3.5f));
+        made.Arguments[2].Should().Be(90f);
     }
 
     [Test]

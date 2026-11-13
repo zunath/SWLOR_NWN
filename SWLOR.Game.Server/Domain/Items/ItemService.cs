@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Domain.Items
     /// definition cache, the 2DA cache, the weapon ability mappings and the base item type groups are this instance's
     /// state. The facade keeps the event handlers and forwards every call to the container's instance.
     /// </summary>
-    public class ItemService : IItemService, IReloadQuiescer
+    public class ItemService : IItemService
     {
         private readonly IBeastMasteryService _beastMastery;
         private readonly IDBService _db;
@@ -283,10 +283,11 @@ namespace SWLOR.Game.Server.Domain.Items
         }
 
         /// <summary>
-        /// While a hot reload quiesces this build (<see cref="IReloadQuiescer"/>): an item use that is still waiting on its delay is
+        /// While a hot reload quiesces this build (a <see cref="ReloadHookPhase.Quiesce"/> hook): an item use that is still waiting on its delay is
         /// interrupted, as moving interrupts it (its timing bar stops and the busy flag clears). The closure that would apply the item
         /// and release the player is dropped by the reload, so the player would otherwise stay busy.
         /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
         public void QuiesceForReload(IReadOnlyList<uint> players)
         {
             foreach (var player in players)

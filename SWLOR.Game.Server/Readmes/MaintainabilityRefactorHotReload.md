@@ -285,15 +285,21 @@ Online players (P4-15). Every `mod_enter` and `mod_exit` handler carries `[Playe
 `mod_exit`: 13 `Quiesce`, 32 `LogoutOnly`). A handler that runs on a reload is exactly a call of its per-player step
 (`PlayerSessionAttribute.Step`), so login and logout run the same code as before and no handler needed a split. While the old build
 quiesces (`GameGeneration.BeginQuiescenceAsync`): first the work in flight that a dropped closure would have finished and released
-ends as an interruption ends it (`IReloadQuiescer`, `ReloadQuiescers`): every creature's cast or delayed impact (busy flag, timing bar,
-channel), a player's delayed item use and fishing cast (busy flag, timing bar), a player's timed stealth window (granted stealth and
-its bonus); then the `Quiesce` steps for every online player (reset every hotbar recharge icon; save window geometry, HP and map
+ends as an interruption ends it (the quiesce hooks: methods marked `[ReloadHook(ReloadHookPhase.Quiesce)]`, run by `ReloadHooks`):
+every creature's cast or delayed impact (busy flag, timing bar, channel), a player's delayed item use and fishing cast (busy flag,
+timing bar), every creature's timed stealth window (granted stealth and its bonus) and Ghost Protocol's combat-entry window, every
+Field Engineer emitter and its marker, every placed trap, every actor's paired-pistol muzzle anchors; then the `Quiesce` steps for
+every online player (reset every hotbar recharge icon; save window geometry, HP and map
 exploration; lock unlocked hotbars; end the activities whose state cannot be carried: performance, quick craft, slicing, search,
 prospecting, fishing fights, melee technique chains, paired-pistol muzzle anchors), then the screens (`PlayerScreenCarry`: an open conversation
 on a registered graph is taken out as data without its abort actions; every window is closed as the player closes it), then the
 digests, then the boot carries and the carried state (`ReloadStateCarrier`: the fields marked `[ReloadState(ReloadStateKind.Carried)]`,
 written as JSON field by field and left on the module). When the new build activates, after the reruns and adoptions and before the
-first frame: the carried state goes back into the same fields (its digests are compared with the old build's at quiescence), then the
+first frame: the carried state goes back into the same fields (its digests are compared with the old build's at quiescence, and each
+class's `IReloadStateAdopter` restarts the timers its state drives), then the resume hooks (`ReloadHookPhase.Resume`: an auto-relocking
+door left open, every corpse's cleanup, every scavenge site's hold check and the destruction of a spent one, every quest item
+collector's sweep, a craft's pending character export, the ghost and crafting styles of a player revived just before the reload, the
+animation mappings and clip tokens of every creature other than a player; a restarted timer starts over), then the
 `Restore` steps for every online player (window view models, hotbar cooldown overlays and their timers for the cooldowns still
 running, idle readiness timers, the portrait-tell character ids, the cleanup of a queued weapon ability, the animation mappings whose
 owners went with the old build), then the windows reopen and the conversation resumes at its line.
@@ -302,21 +308,29 @@ Carried (`Snapshots/ReloadAdoption.txt`, CARRIED STATE): status effects of every
 logged out (`StatusEffectService`), parties, player auras, combat activity times and idle readiness inputs, combat points (kill XP
 in progress), enmity tables, Force Mend and Harmonic Restoration cooldowns, revive lockouts, Standing Ovation cooldowns, Mimicry
 witnesses and analysis observers, AFK flags (timer restarted), PvP states (timer restarted), temporary stat modifiers, ordinary-attack
-haste state, power glove and twin pistol pairs, shuttle boarding times and notices, players in space and ship clones, quest encounter
-creatures, players by area, battle music and weather exposure times, introduction offers, DM window targets, and the counters
-whose values outlive a build in engine locals or carried state (HoloCom call tokens, stealth window generations, ranged roll ids
-used by the carried haste history), so a new build's ids never repeat an old one. A HoloCom call still ringing goes on ringing: its
-next ring is scheduled again from the attempt's engine locals.
+haste state, power glove and twin pistol pairs, shuttle boarding times and notices, players in space and ship clones, pending ship
+launches, quest encounter creatures, players by area, battle music and weather exposure times, introduction offers, DM window
+targets, and the counters whose values outlive a build in engine locals or carried state (HoloCom call tokens, stealth window
+generations, ranged roll ids used by the carried haste history), so a new build's ids never repeat an old one. A HoloCom call still
+ringing goes on ringing: its next ring is scheduled again from the attempt's engine locals. Adoption also restarts a status
+effect's own checks (a resting creature's movement check), settles a status whose native effect ended, recomputes movement rates,
+polls each pending ship launch, runs each quest encounter's idle check and applies every online player's name overrides again.
 
 Lost, with the reason:
 
 - Closures the old build scheduled (`DelayCommand`, `AssignCommand`, `ActionDoCommand`; required): each is code of the old build. Running
   one after its build is disposed runs retired code against a disposed container, and keeping one keeps the old build loaded, so the
   host drops them. What they drive is restarted where it is data: status effect ticks are native interval effects (kept), the
-  cooldown overlay and idle readiness timers are rearmed by `Restore` steps, the AFK, PvP and HoloCom ring timers by
-  `IReloadStateAdopter`, every `Scheduler` timer of a rerun boot handler by the rerun. What a closure would have released is released
-  at quiescence instead (`IReloadQuiescer`, the recharge icon reset). A delayed effect in flight (an ability impact, an item use, a
-  fishing cast, a respawn countdown, a queued ability) does not happen, and a timed stealth window ends at the reload.
+  cooldown overlay and idle readiness timers are rearmed by `Restore` steps, the timers of carried state by `IReloadStateAdopter`,
+  the timers of engine objects (doors, corpses, scavenge sites, item collectors) by resume hooks, every `Scheduler` timer of a rerun
+  boot handler by the rerun. What a closure would have released is released at quiescence instead (quiesce hooks, the recharge icon
+  reset). A delayed effect in flight (an ability impact, an item use, a fishing cast, a respawn countdown, a queued ability) does not
+  happen, and a timed stealth window ends at the reload. The P4-15 closure audit went through all 534 `DelayCommand`, `AssignCommand`,
+  `ActionDoCommand` and `Scheduler` sites: 49 left state behind after a reload and are restarted or ended as above, 80 were already
+  covered, 6 are definitions, and 399 drop harmlessly (a one-shot visual, sound, message or hit; a loop the next heartbeat, event or
+  window restarts). The accepted drops with a visible effect are one-frame races, where the reload lands between an `AssignCommand`
+  and the next event pass (a purchase's gold charge, a jump, an emptied corpse's body release), and a deferred temporary HP grant near
+  the 32,767 HP limit, whose reservation stays until that pool is granted or removed again.
 - Windows that take a payload (too complicated): the payload is an object of the old build (an item, a target, a session, a
   confirmation callback), so they are closed, not reopened. Windows without a payload (62 of about 86 view models) reopen as the
   player opens them, at the same place; their selections, scroll and typed text start over. A DM's window shown on a possessed
@@ -326,16 +340,16 @@ Lost, with the reason:
 - In-flight activities (too complicated: their state holds delegates, definitions or engine handles): an ability being cast or an
   impact resolving (interrupted at quiescence), an item use or fishing cast waiting on its delay (interrupted at quiescence), queued
   weapon abilities, melee technique chains (ended at quiescence), twin pistol channels, quick-craft batches,
-  crafting, slicing, searching, prospecting, fishing and performance sessions (ended at quiescence as at logout), espionage
-  infiltration attempts, combat recordings (stopped by the retire handler), a targeting cursor that is open.
+  crafting, slicing, searching, prospecting, fishing and performance sessions (ended at quiescence as at logout), Field Engineer
+  emitters (ended at quiescence: they hold the pulse callbacks), espionage infiltration attempts, combat recordings (stopped by the
+  retire handler), a targeting cursor that is open.
 - Short-lived combat bookkeeping (too complicated for its value: dozens of trackers that expire within seconds): attack swing debts,
   hit sequence and auto-attack cycle counters, repeated-target and pressure chains, guard and deflection proc cooldowns, healing
   budgets, stealth detection rolls, telegraphs on the ground (their shapes stay until the area or another telegraph updates them),
   the native attack and animation projections in `Native/`, NPC attack delays.
 - AI and pets (too complicated: the state caches action definitions and timer flags): boss phases and once-only actions, NPC ability
-  cooldowns, perceived allies (refilled by perception), pet command modes, NPC ships' status in space (`SpaceService._shipNPCs`), and
-  an NPC's timed stealth window (the quiescer ends only players' windows: NPCs are not enumerated).
-- Placed traps (their state holds engine locations): they stay in the world and no longer fire.
+  cooldowns, perceived allies (refilled by perception), pet command modes, NPC ships' status in space (`SpaceService._shipNPCs`).
+- Placed traps (their records hold the ability's trigger callback): removed at quiescence, markers and all.
 - Appearance projections (helmet head scale, neck, shoulder and skin aliases) and tint carries in progress: the next equip change
   recomputes them.
 - Chat portrait tell history and performance preferences: memory only, never saved.

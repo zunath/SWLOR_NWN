@@ -104,11 +104,23 @@ namespace SWLOR.Game.Server.Domain.Character
 
         public bool IsAfk(uint player) => AfkPlayers.ContainsKey(player);
 
-        /// <summary>A hot reload carried the AFK players; the movement check that clears them is started again.</summary>
+        /// <summary>
+        /// A hot reload carried the AFK players; the movement check that clears them is started again. A tell's temporary chat name is
+        /// put back by a closure the reload drops, so every online player's name overrides are applied again from Redis, as a refresh
+        /// does (unchanged ones are rewritten with the same text).
+        /// </summary>
         public void OnCarriedStateAdopted()
         {
             if (AfkPlayers.Count > 0)
                 _afkMovementCheck ??= ScheduleRepeating(CheckAfkMovement, TimeSpan.FromSeconds(1));
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetIsDM(player))
+                    ApplyNameOverridesForDMObserver(player);
+                else
+                    ApplyNameOverridesForPlayer(player);
+            }
         }
 
         public bool ToggleAfk(uint player)

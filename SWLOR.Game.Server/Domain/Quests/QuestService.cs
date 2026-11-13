@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.Domain.Quests
     public class QuestService : IQuestService
     {
         private const string ActiveItemCollectorVariable = "ACTIVE_QUEST_COLLECTOR";
+        private const string ItemCollectorResref = "qst_item_collect";
+        private const float ItemCollectorLifespanSeconds = 300f;
         private readonly Dictionary<string, QuestDetail> _quests = new();
         private readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new();
         private readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new();
@@ -396,7 +398,7 @@ namespace SWLOR.Game.Server.Domain.Quests
                 return false;
             }
 
-            var collector = CreateObject(ObjectType.Placeable, "qst_item_collect", GetLocation(player));
+            var collector = CreateObject(ObjectType.Placeable, ItemCollectorResref, GetLocation(player));
             SetLocalObject(collector, "QUEST_OWNER", questSource);
             SetLocalObject(collector, "QUEST_PLAYER", player);
             SetLocalString(collector, "QUEST_ID", questId);
@@ -404,16 +406,46 @@ namespace SWLOR.Game.Server.Domain.Quests
             AssignCommand(collector, () => SetFacingPoint(GetPosition(player)));
             AssignCommand(player, () => ActionInteractObject(collector));
 
-            // Collectors are destroyed when the final item is turned in, but a player can open one
-            // and walk away - sweep it up after a few minutes so abandoned collectors don't litter
-            // the area until reboot. Turned-in items are consumed immediately, so nothing is lost.
-            DelayCommand(300f, () =>
+            ScheduleItemCollectorSweep(collector);
+
+            return true;
+        }
+
+        // Collectors are destroyed when the final item is turned in, but a player can open one
+        // and walk away - sweep it up after a few minutes so abandoned collectors don't litter
+        // the area until reboot. Turned-in items are consumed immediately, so nothing is lost.
+        private void ScheduleItemCollectorSweep(uint collector)
+        {
+            DelayCommand(ItemCollectorLifespanSeconds, () =>
             {
                 if (GetIsObjectValid(collector))
                     DestroyItemCollector(collector);
             });
+        }
 
-            return true;
+        /// <summary>
+        /// When a hot reload has activated a new build: every item collector the old build left gets its sweep again. The sweep and the
+        /// removal of a closed collector were closures the reload dropped; without them an abandoned collector would stay until the server
+        /// restarts. A player still using one keeps it for a full sweep period from the reload.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Resume)]
+        public void ResumeItemCollectorSweepsForReload(IReadOnlyList<uint> players)
+        {
+            var collectors = new List<uint>();
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                for (var placeable = GetFirstObjectInArea(area, ObjectType.Placeable); GetIsObjectValid(placeable);
+                     placeable = GetNextObjectInArea(area, ObjectType.Placeable))
+                {
+                    if (GetResRef(placeable) == ItemCollectorResref)
+                        collectors.Add(placeable);
+                }
+            }
+
+            foreach (var collector in collectors)
+            {
+                ScheduleItemCollectorSweep(collector);
+            }
         }
 
         /// <summary>

@@ -415,6 +415,37 @@ public class StealthServiceTests
     }
 
     [Test]
+    public void A_reload_ends_an_NPCs_timed_stealth_window_too()
+    {
+        // P4-15 closure audit: the reload's player list does not name an NPC, so the service remembers whom it started windows on.
+        _stealthed.Add(Enemy);
+        _stealth.ScheduleTimedExit(Enemy, 30f);
+        var modesBefore = _engine.CallsTo("SetActionMode").Count;
+
+        _stealth.QuiesceForReload(new[] { Player });
+
+        _locals.Has(Enemy, "STEALTH_TIMED_EXIT_ACTIVE").Should().BeFalse();
+        var leave = _engine.CallsTo("SetActionMode").Skip(modesBefore).Should().ContainSingle().Subject;
+        leave.Arguments[0].Should().Be(Enemy);
+        leave.Arguments[2].Should().Be(false);
+
+        modesBefore = _engine.CallsTo("SetActionMode").Count;
+        _stealth.QuiesceForReload(new[] { Player });
+        _engine.CallsTo("SetActionMode").Should().HaveCount(modesBefore, "a window is ended once");
+    }
+
+    [Test]
+    public void A_reload_closes_Ghost_Protocols_combat_entry_window_whose_closing_closure_it_drops()
+    {
+        _engine.SetLocalInt(Player, StealthService.CombatEntryWindowVariable, 1);
+
+        _stealth.QuiesceForReload(new[] { Player });
+
+        _locals.Has(Player, StealthService.CombatEntryWindowVariable).Should().BeFalse(
+            "left set, the player could enter stealth in combat for the rest of the session");
+    }
+
+    [Test]
     public void ScheduleTimedExit_ClearsAGrantWhoseEntryNeverHappenedAndSkipsInvalidCreatures()
     {
         var generation = _stealth.ScheduleTimedExit(Player, 5f);

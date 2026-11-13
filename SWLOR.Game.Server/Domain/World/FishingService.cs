@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// unchanged. The event handlers run on the container's instance; static callers reach it through
     /// <c>GameServices.Fishing</c>.
     /// </summary>
-    public class FishingService : IFishingService, IReloadQuiescer
+    public class FishingService : IFishingService
     {
         private readonly Dictionary<FishType, FishAttribute> _fish = new();
         private readonly Dictionary<FishingRodType, FishingRodAttribute> _rods = new();
@@ -526,11 +526,12 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <summary>
-        /// While a hot reload quiesces this build (<see cref="IReloadQuiescer"/>): a cast still waiting on its timer is interrupted, as
+        /// While a hot reload quiesces this build (a <see cref="ReloadHookPhase.Quiesce"/> hook): a cast still waiting on its timer is interrupted, as
         /// moving interrupts it (its timing bar stops, its animation, busy flag and attempt clear). The closure that would land the cast
         /// is dropped by the reload, so the player would otherwise stay busy fishing. A fight already under way is ended by
         /// <c>FishingFightsService</c>'s quiescence step.
         /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
         public void QuiesceForReload(IReadOnlyList<uint> players)
         {
             foreach (var player in players)

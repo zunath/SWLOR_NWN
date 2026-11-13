@@ -56,6 +56,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ExecuteScript(ScriptName.OnRestStarted, creature);
         }
 
+        /// <summary>
+        /// The movement check reschedules itself through a closure a hot reload drops; the rest position and the busy flag are engine
+        /// locals and the effect is carried, so the new build starts the check again and walking still ends rest.
+        /// </summary>
+        public override void ResumeAfterReload(uint creature)
+        {
+            DelayCommand(0.5f, () => CheckMovement(creature));
+        }
+
         protected override void Tick(uint creature)
         {
             var vitality = Math.Max(0, GetAbilityScore(creature, AbilityType.Vitality));

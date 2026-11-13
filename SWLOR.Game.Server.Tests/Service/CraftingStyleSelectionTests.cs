@@ -216,6 +216,8 @@ public class CraftingStyleSelectionTests
     public void EveryReviveRestoresTheSelectedStyles_ThroughTheOneHookEveryReviveCalls()
     {
         Squash(Method(Source("Feature", "PlayerTemporaryEffects.cs"), "RestoreGhostAfterRevive"))
+            .Should().Contain("RestoreGhostNow(creature)");
+        Squash(Method(Source("Feature", "PlayerTemporaryEffects.cs"), "RestoreGhostNow"))
             .Should().Contain("CraftStyleEffects.Restore(creature)");
 
         var gameServer = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server");

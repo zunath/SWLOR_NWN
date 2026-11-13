@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWNX;
@@ -102,6 +103,17 @@ public static class PairedRangedPresentation
 
     /// <summary>Bolts presented for the actor since its pool was prepared.</summary>
     public static int GetLaunchCount(uint actor) => LaunchCounts.GetValueOrDefault(actor);
+
+    /// <summary>
+    /// While a hot reload quiesces the old build: every actor's muzzle anchors are destroyed, NPCs' as well as players' (whose
+    /// logout step does the same), because the pools are this build's memory and the new build cannot find them to reuse or remove.
+    /// </summary>
+    [ReloadHook(ReloadHookPhase.Quiesce)]
+    public static void ReleaseAllForReload(IReadOnlyList<uint> players)
+    {
+        foreach (var actor in Anchors.Keys.ToList())
+            Release(actor);
+    }
 
     public static void Release(uint actor)
     {

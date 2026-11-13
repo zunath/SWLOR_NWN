@@ -298,7 +298,7 @@ public class AbilityActivationPathTests
         UsePerkFeat.TryUseAbility(Caster, Target, Feat, Nowhere()).Should().BeTrue();
         _log.Clear();
 
-        ((SWLOR.Game.Server.Core.IReloadQuiescer)Ability).QuiesceForReload(Array.Empty<uint>());
+        ((SWLOR.Game.Server.Domain.Abilities.AbilityService)Ability).QuiesceForReload(Array.Empty<uint>());
 
         _log.Should().Equal("ClearBusy");
         Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse("the new build has no activation to finish or interrupt");
@@ -315,7 +315,7 @@ public class AbilityActivationPathTests
         _log.Should().EndWith("SetBusy", "the caster waits on the impact");
         _log.Clear();
 
-        ((SWLOR.Game.Server.Core.IReloadQuiescer)Ability).QuiesceForReload(Array.Empty<uint>());
+        ((SWLOR.Game.Server.Domain.Abilities.AbilityService)Ability).QuiesceForReload(Array.Empty<uint>());
 
         _log.Should().Contain("ClearBusy");
         Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
@@ -330,7 +330,7 @@ public class AbilityActivationPathTests
         _catalog[Feat] = Ability_(AbilityActivationType.Casted, delay: 2f);
         _log.Clear();
 
-        ((SWLOR.Game.Server.Core.IReloadQuiescer)Ability).QuiesceForReload(new[] { Caster });
+        ((SWLOR.Game.Server.Domain.Abilities.AbilityService)Ability).QuiesceForReload(new[] { Caster });
 
         _log.Should().BeEmpty("only a cast clears a busy flag; any other activity keeps its own");
     }

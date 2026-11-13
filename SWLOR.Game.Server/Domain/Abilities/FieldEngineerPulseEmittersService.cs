@@ -56,4 +56,11 @@ public class FieldEngineerPulseEmittersService : IFieldEngineerPulseEmittersServ
         if (_activeEmitters.TryGetValue(activator, out var emitters) && emitters.Count <= 0)
             _activeEmitters.Remove(activator);
     }
+
+    public IReadOnlyList<DeviceAbilityEffects.FieldEngineerPulseEmitter> TakeAll()
+    {
+        var all = _activeEmitters.Values.SelectMany(emitters => emitters).ToArray();
+        _activeEmitters.Clear();
+        return all;
+    }
 }

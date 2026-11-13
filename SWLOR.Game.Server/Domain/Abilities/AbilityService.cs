@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// feature code and the definition search sit behind one-line <c>protected virtual</c> methods whose bodies are the
     /// original calls.
     /// </summary>
-    public class AbilityService : IAbilityService, IReloadQuiescer
+    public class AbilityService : IAbilityService
     {
         private readonly IStatusEffectService _statusEffect;
         private readonly IEnmityService _enmity;
@@ -4043,11 +4043,12 @@ namespace SWLOR.Game.Server.Domain.Abilities
         public void RemoveActiveAbilityActivation(uint activator) => _activeAbilityActivations.Remove(activator);
 
         /// <summary>
-        /// While a hot reload quiesces this build (<see cref="IReloadQuiescer"/>): every creature's cast or delayed impact is
+        /// While a hot reload quiesces this build (a <see cref="ReloadHookPhase.Quiesce"/> hook): every creature's cast or delayed impact is
         /// interrupted, as damage or movement interrupts it, which releases its busy flag, timing bar, channel and stamina context.
         /// The closures that would finish it are dropped by the reload and the activations are not carried, so the new build could
         /// neither finish nor interrupt it, and the caster would stay busy.
         /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
         public void QuiesceForReload(IReadOnlyList<uint> players)
         {
             foreach (var activator in _activeAbilityActivations.Keys.ToArray())

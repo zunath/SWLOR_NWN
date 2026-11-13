@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
@@ -274,6 +275,50 @@ namespace SWLOR.Game.Server.Domain.Crafting
                 DeleteLocalObject(site, OpeningVariable);
                 DeleteLocalBool(site, HolderOpenedVariable);
             }));
+        }
+
+        /// <summary>
+        /// When a hot reload has activated a new build: the scavenge sites the old build's closures would have settled are settled. A site
+        /// held for a scavenger who is still online gets its hold check again; a hold whose scavenger has gone lapses now. A searched site
+        /// left empty with no hold is destroyed: its destruction was a closure too, and a visit the reload ended asks for it at once.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Resume)]
+        public static void SettleSitesForReload(IReadOnlyList<uint> players)
+        {
+            var held = new List<(uint Site, uint Holder)>();
+            var spent = new List<uint>();
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                for (var site = GetFirstObjectInArea(area, ObjectType.Placeable); GetIsObjectValid(site);
+                     site = GetNextObjectInArea(area, ObjectType.Placeable))
+                {
+                    if (GetEventScript(site, EventScript.Placeable_OnClosed) != ScriptName.OnScavengeClosed)
+                        continue;
+
+                    var holder = GetLocalObject(site, OpeningVariable);
+                    if (GetIsObjectValid(holder))
+                    {
+                        held.Add((site, holder));
+                        continue;
+                    }
+
+                    DeleteLocalObject(site, OpeningVariable);
+                    DeleteLocalBool(site, HolderOpenedVariable);
+                    if (GetLocalBool(site, SearchedVariable) && !GetIsObjectValid(GetFirstItemInInventory(site)))
+                        spent.Add(site);
+                }
+            }
+
+            foreach (var (site, holder) in held)
+            {
+                ScheduleHoldLapse(site, holder, OpeningHoldSeconds);
+            }
+
+            foreach (var site in spent)
+            {
+                SetPlotFlag(site, false);
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), site);
+            }
         }
 
         public void DestroySite(uint player, uint site, double animationSeconds)

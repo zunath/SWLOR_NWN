@@ -12,6 +12,8 @@ namespace SWLOR.Toolset.Tests;
 public class PerformancePropMotionTests
 {
     private static readonly string[] States = ["Loop", "Low", "Mid", "High", "Flourish"];
+    // The Wookiee sets have no middle accent: the body bank is full, and the server plays the low one for it.
+    private static readonly string[] WookieeStates = ["Loop", "Low", "High", "Flourish"];
     // Measured on the native bow hair and the fingerboard-to-bridge string surface.
     private static readonly Vector3 BowHairStart = new(.0023665f, .0244655f, .0301885f);
     private static readonly Vector3 BowHairEnd = new(-.344768f, .213982f, .4864385f);
@@ -88,14 +90,47 @@ public class PerformancePropMotionTests
     public void LowMouthMicrophoneSitsTenCentimetresLowerAndStaysThere(string state) =>
         MicrophoneStaysAtTheLips("VocalsLowMouth", state, 1.53f);
 
+    [TestCaseSource(nameof(WookieeStates))]
+    public void MidMouthMicrophoneSitsFiveCentimetresLowerAndStaysThere(string state) =>
+        MicrophoneStaysAtTheLips("VocalsMidMouth", state, 1.58f);
+
     [TestCaseSource(nameof(States))]
-    public void LowMouthSingingDiffersFromOrdinarySingingOnlyInTheMicrophoneArm(string state)
+    public void LowMouthSingingDiffersFromOrdinarySingingOnlyInTheMicrophoneArm(string state) =>
+        VariantMovesOnly("Vocals", "VocalsLowMouth", state, "lbicep_g", "lforearm_g", "lhand_g");
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void MidMouthSingingDiffersFromOrdinarySingingOnlyInTheMicrophoneArm(string state) =>
+        VariantMovesOnly("Vocals", "VocalsMidMouth", state, "lbicep_g", "lforearm_g", "lhand_g");
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void WidePipesDifferFromOrdinaryPipesOnlyInTheArms(string state) =>
+        VariantMovesOnly("Pipes", "PipesWide", state, "lbicep_g", "lforearm_g", "lhand_g", "rbicep_g", "rforearm_g", "rhand_g");
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void WidePipesHoldTheHandsFiveCentimetresFurtherOutOnEachSide(string state)
+    {
+        var ordinary = Project("Pipes", state);
+        var wide = Project("PipesWide", state);
+        foreach (var (hand, direction) in new[] { ("rhand_g", 1f), ("lhand_g", -1f) })
+        {
+            var joint = ordinary.Joints.FindIndex(j => j.Name == hand);
+            for (var key = 0; key < ordinary.Keys.Count; key++)
+            {
+                var from = AnimationRig.World(ordinary.Joints, ordinary.Keys[key].Pose)[joint].Translation;
+                var to = AnimationRig.World(wide.Joints, wide.Keys[key].Pose)[joint].Translation;
+                ((to.X - from.X) * direction).Should().BeApproximately(.05f, .012f, hand);
+                MathF.Abs(to.Z - from.Z).Should().BeLessThan(.012f, hand);
+            }
+        }
+    }
+
+    private static void VariantMovesOnly(string family, string variant, string state, params string[] joints)
     {
         // The robe layers copy the ordinary clip's garment tracks, so nothing else may move.
-        var ordinary = Project("Vocals", state);
-        var lowered = Project("VocalsLowMouth", state);
+        var ordinary = Project(family, state);
+        var lowered = Project(variant, state);
         lowered.Keys.Count.Should().Be(ordinary.Keys.Count);
-        var arm = new HashSet<string> { "lbicep_g", "lforearm_g", "lhand_g" };
+        var arm = new HashSet<string>(joints);
         var moved = new HashSet<string>();
         for (var key = 0; key < ordinary.Keys.Count; key++)
         {
@@ -110,7 +145,7 @@ public class PerformancePropMotionTests
             }
         }
         moved.Should().BeSubsetOf(arm);
-        moved.Should().Contain("lbicep_g");
+        moved.Should().Contain(joints[0]);
     }
 
     private static void MicrophoneStaysAtTheLips(string family, string state, float height)
@@ -236,7 +271,8 @@ public class PerformancePropMotionTests
         var recipe = JsonSerializer.Deserialize<Recipe>(File.ReadAllText(Path.Combine(folder, "props-recipe.json")), Recipe.Json)!;
         recipe.Motions.Select(motion => motion.Id).Should().BeEquivalentTo(
             new[] { "Vocals", "Pipes", "Violin", "Tambourine", "VocalsLowMouth" }
-                .SelectMany(family => States.Select(state => family + state)));
+                .SelectMany(family => States.Select(state => family + state))
+                .Concat(new[] { "VocalsMidMouth", "PipesWide" }.SelectMany(family => WookieeStates.Select(state => family + state))));
         foreach (var motion in recipe.Motions)
         {
             var committed = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(folder, motion.Id + ".swlanim")));
@@ -292,13 +328,15 @@ public class PerformancePropMotionTests
 
     [TestCase("Vocals")]
     [TestCase("VocalsLowMouth")]
+    [TestCase("VocalsMidMouth")]
     [TestCase("Pipes")]
+    [TestCase("PipesWide")]
     [TestCase("Violin")]
     [TestCase("Tambourine")]
     public void AccentsReturnToTheLoopHoldWithoutAnArmSnap(string family)
     {
         var loop = Project(family, "Loop");
-        foreach (var state in States)
+        foreach (var state in family is "VocalsMidMouth" or "PipesWide" ? WookieeStates : States)
         {
             var project = Project(family, state);
             foreach (var time in new[] { 0f, project.Duration })

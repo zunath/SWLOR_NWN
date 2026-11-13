@@ -202,11 +202,18 @@ def accent(phase, peak=.4):
 
 # --- Vocals -------------------------------------------------------------------------------------
 MIC_HAND = (-.11, .225, 1.63)
+STATES = ("Loop", "Low", "Mid", "High", "Flourish")
 # One singing clip serves every body, fitted to a Human-height mouth. An Ugnaught's mouth sits lower on its
 # head, so its singers play a copy with the microphone hand lowered by this much on the authoring rig.
 LOW_MOUTH = "VocalsLowMouth"
 LOW_MOUTH_DROP = .10
-STATES = ("Loop", "Low", "Mid", "High", "Flourish")
+# A female Wookiee's mouth sits between the two: the ordinary hand covers her nose and the lowered one her throat.
+MID_MOUTH = "VocalsMidMouth"
+MID_MOUTH_DROP = .05
+# The body bank holds 128 clips, so the Wookiee sets leave out the middle accent; the server plays the low one for it.
+WOOKIEE_STATES = ("Loop", "Low", "High", "Flourish")
+MOUTH_DROPS = {LOW_MOUTH: (LOW_MOUTH_DROP, "Vocals Low Mouth ", STATES),
+               MID_MOUTH: (MID_MOUTH_DROP, "Vocals Mid Mouth ", WOOKIEE_STATES)}
 MIC_GRIP = (.3, -.72, .62)
 MIC_PALM = (.3317419670, -.5323938892, -.7787839094)
 FREE_HAND = (.28, .10, 1.08)
@@ -217,7 +224,7 @@ VOCAL_GESTURE = [
 
 
 def vocals_pose(name, time, duration):
-    drop = LOW_MOUTH_DROP if name.startswith(LOW_MOUTH) else 0
+    drop = next((drop for prefix, (drop, _, _) in MOUTH_DROPS.items() if name.startswith(prefix)), 0)
     phase = time/duration
     hand = list(FREE_HAND)
     if name.endswith("Loop"):
@@ -266,6 +273,10 @@ PIPES_LEFT_ELBOW = (-.42, .12, 1.30)
 # Eight notes across the row; the pipes slide under the lips between notes and rest on each one.
 PIPE_NOTES = (0, .022, .038, .014, -.016, -.038, -.020, 0)
 PIPE_SLOT = .65
+# A Wookiee's large hands overlap at the mouth and push the pipes aside, so Wookiees play a copy with each
+# hand moved outward by this much on the authoring rig.
+WIDE_PIPES = "PipesWide"
+WIDE_PIPES_SPREAD = .05
 
 
 def pipes_pose(name, time, duration):
@@ -300,9 +311,10 @@ def pipes_pose(name, time, duration):
         else:
             dip = .008*level
             controls = body(chest=(2.5*level, 0, 0), head=(4.5*level, 0, 0), root=(0, -.006*level))
+    spread = WIDE_PIPES_SPREAD if name.startswith(WIDE_PIPES) else 0
     controls.update({
-        "rightHand": [PIPES_RIGHT[0]+slide, PIPES_RIGHT[1], PIPES_RIGHT[2]-dip],
-        "leftHand": [PIPES_LEFT[0]+slide, PIPES_LEFT[1], PIPES_LEFT[2]-dip],
+        "rightHand": [PIPES_RIGHT[0]+slide+spread, PIPES_RIGHT[1], PIPES_RIGHT[2]-dip],
+        "leftHand": [PIPES_LEFT[0]+slide-spread, PIPES_LEFT[1], PIPES_LEFT[2]-dip],
         "blade": [0, -.06, 1], "rightGripAxis": [0, 1, 0], "rightGripNormal": [1, 0, 0],
         "rightGripFacing": list(PIPES_FACING), "rightElbow": list(PIPES_RIGHT_ELBOW), "leftElbow": list(PIPES_LEFT_ELBOW),
         "shield": [-100, 160, 25]})
@@ -444,10 +456,17 @@ def tambourine_pose(name, time, duration):
 def refine(source):
     result = copy.deepcopy(source)
     # The low-mouth singing clips are copies of the ordinary ones, authored again with the lowered hand.
-    result["motions"] = [motion for motion in result["motions"] if not motion["id"].startswith(LOW_MOUTH)]
-    for state in STATES:
-        variant = copy.deepcopy(next(motion for motion in result["motions"] if motion["id"] == "Vocals" + state))
-        variant["id"], variant["name"] = LOW_MOUTH + state, "Vocals Low Mouth " + state
+    result["motions"] = [motion for motion in result["motions"]
+                         if not motion["id"].startswith((*MOUTH_DROPS, WIDE_PIPES))]
+    for prefix, (_, label, states) in MOUTH_DROPS.items():
+        for state in states:
+            variant = copy.deepcopy(next(motion for motion in result["motions"] if motion["id"] == "Vocals" + state))
+            variant["id"], variant["name"] = prefix + state, label + state
+            result["motions"].append(variant)
+    # The wide pipes clips are copies of the ordinary ones, authored again with the hands apart.
+    for state in WOOKIEE_STATES:
+        variant = copy.deepcopy(next(motion for motion in result["motions"] if motion["id"] == "Pipes" + state))
+        variant["id"], variant["name"] = WIDE_PIPES + state, "Pipes Wide " + state
         result["motions"].append(variant)
     for motion in result["motions"]:
         name = motion["id"]
@@ -457,7 +476,7 @@ def refine(source):
             motion["leftHandFollowsHead"] = True
             author(motion, RATES["Vocals"], lambda time, length, name=name: vocals_pose(name, time, length))
             motion["interpretation"] = "The singer shifts weight, turns and lifts the head with each phrase and gestures from the elbow with the free hand; the microphone stays at the lips as the head moves."
-            if name.startswith(LOW_MOUTH):
+            if name.startswith(tuple(MOUTH_DROPS)):
                 motion["interpretation"] += " The hand is lowered for a mouth set low on the head."
         elif name.startswith("Pipes"):
             motion["naturalGrip"] = False
@@ -465,6 +484,8 @@ def refine(source):
             motion["rightHandFollowsHead"] = True
             author(motion, RATES["Pipes"], lambda time, length, name=name: pipes_pose(name, time, length))
             motion["interpretation"] = "The pipes slide under the lips from note to note and rest on each one, with a breath between phrases; the head leads each slide and both hands stay with the mouth."
+            if name.startswith(WIDE_PIPES):
+                motion["interpretation"] += " The hands are set apart for large hands that would overlap at the mouth."
         elif name.startswith("Violin"):
             violin_contact_beats(motion)
             motion["rightHandAttachment"] = list(BOW_ATTACHMENT)

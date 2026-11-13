@@ -221,6 +221,10 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PipesLoop = new("sw_pip_loop", 5.19999981f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PipesLow = new("sw_pip_low", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PipesMid = new("sw_pip_mid", 0.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PipesWideFlourish = new("sw_pwd_flour", 1.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PipesWideHigh = new("sw_pwd_high", 0.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PipesWideLoop = new("sw_pwd_loop", 5.19999981f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PipesWideLow = new("sw_pwd_low", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PistolRushTravel = new("sw_pistolrus", 1.89999998f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PlayInstrument = new("sw_pf_play", 1.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip PointBlankBurst = new("sw_ptblkbst", 1.54999995f);
@@ -360,6 +364,10 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VocalsLowMouthLow = new("sw_vlm_low", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VocalsLowMouthMid = new("sw_vlm_mid", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VocalsMid = new("sw_voc_mid", 0.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VocalsMidMouthFlourish = new("sw_vmm_flour", 1.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VocalsMidMouthHigh = new("sw_vmm_high", 0.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VocalsMidMouthLoop = new("sw_vmm_loop", 5.19999981f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VocalsMidMouthLow = new("sw_vmm_low", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip VolatileCompound = new("sw_vola_comp", 2.1500001f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip WardenClampTechnique = new("sw_ward_clam", 2.70000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip WardenMarkTechnique = new("sw_ward_mark", 2.5f);

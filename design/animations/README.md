@@ -344,9 +344,9 @@ playback. After installing, compile the banks and regenerate the clothing bridge
 `performance/` holds the Performance skill's motion. The two ability activation clips, `Dance`
 (`sw_pf_dance`) and `PlayInstrument` (`sw_pf_play`), are in the active inventory with native-sourced
 recipes in `performance/choreographies.json`: native `pause1` and `pausewalkl` with directed hands, so
-they end in native idle like every inventory clip. The other 47 clips are activity clips like
+they end in native idle like every inventory clip. The other 55 clips are activity clips like
 Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are authored in
-`performance/recipe.json`, twenty-five in `performance/props-recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
+`performance/recipe.json`, thirty-three in `performance/props-recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
 
 | Group | Clips (project Id = internal name) | Length |
 |---|---|---|
@@ -357,7 +357,9 @@ Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are aut
 | Horns | HornLoop `sw_hrn_loop` (5.2 s), HornLow/Mid/High `sw_hrn_low/mid/high` (0.5 s), HornFlourish `sw_hrn_flour` (1.5 s) | |
 | Vocals | VocalsLoop `sw_voc_loop` (5.2 s), VocalsLow/Mid/High `sw_voc_low/mid/high` (0.5 s), VocalsFlourish `sw_voc_flour` (1.5 s) | |
 | Vocals, low mouth | VocalsLowMouthLoop `sw_vlm_loop` (5.2 s), VocalsLowMouthLow/Mid/High `sw_vlm_low/mid/high` (0.5 s), VocalsLowMouthFlourish `sw_vlm_flour` (1.5 s) | |
+| Vocals, mid mouth | VocalsMidMouthLoop `sw_vmm_loop` (5.2 s), VocalsMidMouthLow/High `sw_vmm_low/high` (0.5 s), VocalsMidMouthFlourish `sw_vmm_flour` (1.5 s) | |
 | Pipes | PipesLoop `sw_pip_loop` (5.2 s), PipesLow/Mid/High `sw_pip_low/mid/high` (0.5 s), PipesFlourish `sw_pip_flour` (1.5 s) | |
+| Pipes, wide hands | PipesWideLoop `sw_pwd_loop` (5.2 s), PipesWideLow/High `sw_pwd_low/high` (0.5 s), PipesWideFlourish `sw_pwd_flour` (1.5 s) | |
 | Violin | ViolinLoop `sw_vio_loop` (5.2 s), ViolinLow/Mid/High `sw_vio_low/mid/high` (0.5 s), ViolinFlourish `sw_vio_flour` (1.5 s) | |
 | Tambourine | TambourineLoop `sw_tam_loop` (5.2 s), TambourineLow/Mid/High `sw_tam_low/mid/high` (0.5 s), TambourineFlourish `sw_tam_flour` (1.5 s) | |
 | Finale | PerformanceBow `sw_pf_bow` | 1.5 s |
@@ -434,8 +436,9 @@ with offsets in `HornFit` checked close up from front, side and angle on every p
 The female body holds the pipes at the chin, so every full-height female species raises them three
 centimetres; Cathar and droid arms stop short of the mouth (his cheek, her neck, the droid's jaw), and the
 short Ugnaught and Ewok bodies hold them beside the mouth, so `HornFit` moves the pipes to the mouth on
-those bodies too. The other male bodies line up without an offset. Judge the fit in close-ups: a few
-centimetres below the mouth does not show in a full-body view.
+those bodies too. Wookiees have their own fit for the wide-hands clips described below. The other male
+bodies line up without an offset. Judge the fit in close-ups: a few centimetres below the mouth does not
+show in a full-body view.
 These middle-part offsets apply only while music
 plays and are removed on stop or unequip. Tambourine clips hold the drum in front of the chest
 with its face outward and its ribbons down, with free-hand strikes and wrist shakes.
@@ -450,6 +453,14 @@ them only in the microphone arm. Install them like any other clip, then add them
 `ExtendRobeAnimations.py --baseline <pre-change-sha> --variant sw_voc_loop=sw_vlm_loop ... --output <new-output> --apply`:
 each variant copies an owned clip's garment tracks, events and part IDs and takes only the body rotations
 that differ, so no robe is regenerated.
+
+Wookiees have two more sets, selected the same way. A female Wookiee's mouth sits between a Human's and an
+Ugnaught's, so she sings with `VocalsMidMouth` (`sw_vmm_*`, the hand 5 cm lower). A Wookiee's large hands
+overlap at the mouth and push the pipes aside, so both genders play `PipesWide` (`sw_pwd_*`, each hand 5 cm
+further out), and `HornFit` then centres the pipes on the mouth for that hold. `an_a_ba` and `an_a_fa` are
+now full at 128 clips, which left room for four clips in each set: there is no middle accent, and
+`FitToBody` plays the low accent for it. Keep a variant in the same bank as the clip it copies: clips that
+spill into another bank cannot be carried into the robe layers with `--variant`.
 
 To publish a revision of these three families, generate the recipe into a staging directory, copy the
 fifteen changed projects and the manifest, `install-active` them into `a_ba` and `a_fa`, and compile

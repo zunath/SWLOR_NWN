@@ -778,7 +778,7 @@ namespace SWLOR.Game.Server.Service
         {
             var clip = PerformanceAnimations.FitToBody(
                 PerformanceAnimations.GetLoopClip(session.Kind, session.InstrumentFamily, session.Routine),
-                GetAppearanceType(session.Performer));
+                GetAppearanceType(session.Performer), GetGender(session.Performer));
             session.AnimationToken = NamedAnimation.Play(session.Performer, clip, LoopPlaybackSeconds, holdMode: HoldMode(session));
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(LoopRenewSeconds);
         }
@@ -793,7 +793,7 @@ namespace SWLOR.Game.Server.Service
         private static void PlayThenLoop(PerformanceSession session, AnimationClip clip, NamedAnimationHold holdMode)
         {
             var player = session.Performer;
-            clip = PerformanceAnimations.FitToBody(clip, GetAppearanceType(player));
+            clip = PerformanceAnimations.FitToBody(clip, GetAppearanceType(player), GetGender(player));
             var token = NamedAnimation.Play(player, clip, holdMode: holdMode);
             session.AnimationToken = token;
             session.AnimationRenewUtc = DateTime.UtcNow.AddSeconds(clip.Duration + AccentRecoverySeconds);

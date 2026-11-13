@@ -41,6 +41,9 @@ public static class HornFit
             [(panpipes, AppearanceType.Cathar, Gender.Female)] = new(.085f, 0f, 0f, 0f, 180f),
             [(panpipes, AppearanceType.Droid, Gender.Male)] = new(.085f, 0f, 0f, 0f, 180f),
             [(panpipes, AppearanceType.Droid, Gender.Female)] = new(.085f, 0f, 0f, 0f, 180f),
+            // Wookiees play the pipes with their hands apart (PerformanceAnimations.FitToBody); these fit that hold.
+            [(panpipes, AppearanceType.Wookiee, Gender.Male)] = new(.05f, .03f, 0f, 0f, 180f),
+            [(panpipes, AppearanceType.Wookiee, Gender.Female)] = new(.05f, 0f, 0f, 0f, 180f),
             [(kloo, AppearanceType.MonCalamari, Gender.Male)] = new(0f, 0f, 0f, -8f),
             [(kloo, AppearanceType.MonCalamari, Gender.Female)] = new(0f, 0f, 0f, -10f),
             [(kloo, AppearanceType.Wookiee, Gender.Male)] = new(0f, 0f, 0f, -8f),
@@ -67,7 +70,7 @@ public static class HornFit
                      AppearanceType.Human, AppearanceType.Chiss, AppearanceType.Zabrak, AppearanceType.Twilek,
                      AppearanceType.Mirialan, AppearanceType.Echani, AppearanceType.KelDor, AppearanceType.Cyborg,
                      AppearanceType.Trandoshan, AppearanceType.Togruta, AppearanceType.Nautolan,
-                     AppearanceType.Bothan, AppearanceType.Rodian, AppearanceType.MonCalamari, AppearanceType.Wookiee
+                     AppearanceType.Bothan, AppearanceType.Rodian, AppearanceType.MonCalamari
                  })
             fits[(panpipes, appearance, Gender.Female)] = femalePanpipes;
 

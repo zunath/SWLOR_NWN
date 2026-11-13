@@ -155,10 +155,48 @@ public class PerformanceAnimationsTests
         };
         foreach (var (clip, lowered) in sung)
         {
-            var fitted = PerformanceAnimations.FitToBody(clip, AppearanceType.Ugnaught);
-            fitted.Name.Should().Be(lowered);
-            fitted.Duration.Should().Be(clip.Duration, "the lowered copy keeps the clip's timing");
+            foreach (var gender in new[] { Gender.Male, Gender.Female })
+            {
+                var fitted = PerformanceAnimations.FitToBody(clip, AppearanceType.Ugnaught, gender);
+                fitted.Name.Should().Be(lowered);
+                fitted.Duration.Should().Be(clip.Duration, "the lowered copy keeps the clip's timing");
+            }
         }
+    }
+
+    [TestCase(PerformanceCue.Low, "sw_vmm_low")]
+    [TestCase(PerformanceCue.Mid, "sw_vmm_low")]
+    [TestCase(PerformanceCue.High, "sw_vmm_high")]
+    public void OnlyFemaleWookieesSingWithTheMicrophoneHalfLowered(PerformanceCue cue, string lowered)
+    {
+        var clip = PerformanceAnimations.GetCueClip(PerformanceKind.Music, PerformanceInstrumentFamily.Vocals, cue);
+        var fitted = PerformanceAnimations.FitToBody(clip, AppearanceType.Wookiee, Gender.Female);
+        fitted.Name.Should().Be(lowered);
+        fitted.Duration.Should().Be(clip.Duration, "the middle accent borrows the low one, which lasts as long");
+        PerformanceAnimations.FitToBody(AuthoredAnimation.VocalsLoop, AppearanceType.Wookiee, Gender.Female).Name.Should().Be("sw_vmm_loop");
+        PerformanceAnimations.FitToBody(AuthoredAnimation.VocalsFlourish, AppearanceType.Wookiee, Gender.Female).Name.Should().Be("sw_vmm_flour");
+        PerformanceAnimations.FitToBody(clip, AppearanceType.Wookiee, Gender.Male).Should().BeSameAs(clip);
+    }
+
+    [TestCase(Gender.Male)]
+    [TestCase(Gender.Female)]
+    public void WookieesPlayThePipesWithTheirHandsApart(Gender gender)
+    {
+        var played = new[]
+        {
+            (AuthoredAnimation.PipesLoop, "sw_pwd_loop"), (AuthoredAnimation.PipesLow, "sw_pwd_low"),
+            (AuthoredAnimation.PipesMid, "sw_pwd_low"), (AuthoredAnimation.PipesHigh, "sw_pwd_high"),
+            (AuthoredAnimation.PipesFlourish, "sw_pwd_flour"),
+        };
+        foreach (var (clip, wide) in played)
+        {
+            var fitted = PerformanceAnimations.FitToBody(clip, AppearanceType.Wookiee, gender);
+            fitted.Name.Should().Be(wide);
+            fitted.Duration.Should().Be(clip.Duration, "the wide copy keeps the clip's timing");
+            PerformanceAnimations.FitToBody(clip, AppearanceType.Bothan, gender).Should().BeSameAs(clip);
+        }
+        PerformanceAnimations.FitToBody(AuthoredAnimation.TambourineLoop, AppearanceType.Wookiee, gender)
+            .Should().BeSameAs(AuthoredAnimation.TambourineLoop);
     }
 
     [TestCase(AppearanceType.Human)]
@@ -169,7 +207,8 @@ public class PerformanceAnimationsTests
     {
         foreach (var clip in new[] { AuthoredAnimation.VocalsLoop, AuthoredAnimation.VocalsLow, AuthoredAnimation.VocalsMid,
                      AuthoredAnimation.VocalsHigh, AuthoredAnimation.VocalsFlourish })
-            PerformanceAnimations.FitToBody(clip, appearance).Should().BeSameAs(clip);
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+            PerformanceAnimations.FitToBody(clip, appearance, gender).Should().BeSameAs(clip);
     }
 
     [Test]
@@ -177,7 +216,8 @@ public class PerformanceAnimationsTests
     {
         foreach (var clip in new[] { AuthoredAnimation.PipesLoop, AuthoredAnimation.TambourineFlourish, AuthoredAnimation.HornLoop,
                      AuthoredAnimation.CantinaShuffle, AuthoredAnimation.PerformanceBow })
-            PerformanceAnimations.FitToBody(clip, AppearanceType.Ugnaught).Should().BeSameAs(clip);
-        PerformanceAnimations.FitToBody(null, AppearanceType.Ugnaught).Should().BeNull();
+            PerformanceAnimations.FitToBody(clip, AppearanceType.Ugnaught, Gender.Male).Should().BeSameAs(clip);
+        PerformanceAnimations.FitToBody(null, AppearanceType.Ugnaught, Gender.Male).Should().BeNull();
+        PerformanceAnimations.FitToBody(null, AppearanceType.Wookiee, Gender.Female).Should().BeNull();
     }
 }

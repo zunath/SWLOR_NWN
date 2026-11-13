@@ -33,6 +33,8 @@ public class EchaniTempleMonksTests
             var npc = placed.Single(npc => Value(npc, "Tag").GetString() == tag);
             foreach (var creature in new[] { blueprint, npc })
             {
+                Value(creature, "Description").GetProperty("0").GetString().Should()
+                    .Contain("grey").And.NotContain("white").And.NotContain("blue");
                 Variables(creature)["ECHANI_MONK"].GetInt32().Should().Be(1);
                 Variables(creature)["AI_FLAGS"].GetInt32().Should().Be(0);
                 Variables(creature)["VISIBILITY_OBJECT_ID"].GetString().Should().Be(tag.ToUpperInvariant(),
@@ -119,7 +121,7 @@ public class EchaniTempleMonksTests
             Value(armor, "ArmorPart_RBicep").GetInt32().Should().Be(1);
             Value(armor, "ArmorPart_LShoul").GetInt32().Should().Be(0);
             Value(armor, "ArmorPart_RShoul").GetInt32().Should().Be(0);
-            Value(armor, "ArmorPart_Torso").GetInt32().Should().Be(name == "master" ? 21 : 55);
+            Value(armor, "ArmorPart_Torso").GetInt32().Should().Be(name == "master" ? 21 : 50);
             silhouettes.Add(string.Join(",", parts.Keys.Select(part => Value(armor, "ArmorPart_" + part).GetInt32())))
                 .Should().BeTrue("each monk has a distinct outfit combination");
         }
@@ -188,6 +190,120 @@ public class EchaniTempleMonksTests
                 }
             }
         }
+    }
+
+    [Test]
+    public void Highcrest_VisitsTheSentinelWithoutUsingTheUpperShuttle()
+    {
+        var area = Read("Module/git/pw_ar_sc_eshancm.git.json");
+        var sentinel = Value(area, "Creature List").EnumerateArray()
+            .Single(creature => Value(creature, "Tag").GetString() == "hc_daren");
+        var route = Value(area, "WaypointList").EnumerateArray()
+            .Where(point => Value(point, "Tag").GetString()!.StartsWith("es_monk_path_"))
+            .ToArray();
+        var visit = route.Single(point => Variables(point).TryGetValue("ECHANI_HOST", out var host)
+                                         && host.GetString() == "hc_daren");
+        Variables(visit)["ECHANI_SCENE"].GetString().Should().NotBeNullOrEmpty();
+        Variables(visit).Should().NotContainKey("ECHANI_TRANSFER",
+            "the sentinel conversation must run before the monks return through Highcrest");
+        var distanceSquared = new[] { "XPosition", "YPosition", "ZPosition" }.Sum(field =>
+            Math.Pow(Value(visit, field).GetDouble() - Value(sentinel, field).GetDouble(), 2));
+        distanceSquared.Should().BeLessThanOrEqualTo(64,
+            "the controller only includes a host within eight meters of the scene waypoint");
+
+        foreach (var point in route)
+        {
+            var variables = Variables(point);
+            if (variables.TryGetValue("ECHANI_TRANSFER", out var destination))
+                destination.GetString().Should().Be("WP_eshan_cityside2",
+                    "the monks leave Highcrest by the city road, never the upper shuttle");
+        }
+    }
+
+    [Test]
+    public void OldQuarter_VisitsAllResidentHostsBeforeTakingTheTunnel()
+    {
+        var area = Read("Module/git/pw_sc_es_oldgate.git.json");
+        var creatures = Value(area, "Creature List").EnumerateArray().ToArray();
+        var waypoints = Value(area, "WaypointList").EnumerateArray().ToArray();
+        var points = waypoints
+            .Where(point => Value(point, "Tag").GetString()!.StartsWith("es_monk_path_"))
+            .ToDictionary(point => Value(point, "Tag").GetString()!);
+        var visited = new HashSet<string>();
+        var hosts = new List<string>();
+        var current = "es_monk_path_005";
+        while (true)
+        {
+            visited.Add(current).Should().BeTrue("the visit must reach the tunnel without looping inside the area");
+            points.Should().ContainKey(current);
+            var point = points[current];
+            var variables = Variables(point);
+            if (variables.TryGetValue("ECHANI_HOST", out var host) && !string.IsNullOrEmpty(host.GetString()))
+            {
+                var hostTag = host.GetString()!;
+                hosts.Add(hostTag);
+                var resident = creatures.Single(creature => Value(creature, "Tag").GetString() == hostTag);
+                Variables(point)["ECHANI_SCENE"].GetString().Should().NotBeNullOrEmpty();
+                var distanceSquared = new[] { "XPosition", "YPosition", "ZPosition" }.Sum(field =>
+                    Math.Pow(Value(point, field).GetDouble() - Value(resident, field).GetDouble(), 2));
+                distanceSquared.Should().BeLessThanOrEqualTo(64,
+                    $"{hostTag} must be within the controller's eight-meter scene range");
+                var patrol = Variables(resident)["ESHAN_PATROL_ROUTE"].GetString()!
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                patrol.Should().NotBeEmpty();
+                foreach (var patrolTag in patrol)
+                {
+                    var patrolPoint = waypoints.Single(waypoint => Value(waypoint, "Tag").GetString() == patrolTag);
+                    var patrolDistanceSquared = new[] { "XPosition", "YPosition", "ZPosition" }.Sum(field =>
+                        Math.Pow(Value(point, field).GetDouble() - Value(patrolPoint, field).GetDouble(), 2));
+                    (Math.Sqrt(patrolDistanceSquared) + 0.75).Should().BeLessThanOrEqualTo(8,
+                        $"{hostTag} must remain within scene range at {patrolTag}, including civilian patrol arrival tolerance");
+                }
+                if (hostTag == "es_oq_sera")
+                    variables["ECHANI_SCENE"].GetString().Should().Be("grove");
+            }
+            if (variables.TryGetValue("ECHANI_TRANSFER", out var transfer))
+            {
+                transfer.GetString().Should().Be("WP_eshan_city_tunright");
+                break;
+            }
+            current = variables["ECHANI_NEXT"].GetString()!;
+        }
+        hosts.Should().Equal(new[] { "es_oq_ilya", "es_oq_cerin", "es_oq_toren", "es_oq_sera" },
+            "the existing resident visits and Sera's grove conversation precede the tunnel departure");
+    }
+
+    [TestCase("es_monk_path_064", "es_monk_path_068")]
+    [TestCase("es_monk_path_072", "es_monk_path_075")]
+    public void KeshPeaks_WalksTheEntranceAndClimbInBothDirections(string start, string finish)
+    {
+        var area = Read("Module/git/pw_sc_eskeshpeak.git.json");
+        var points = Value(area, "WaypointList").EnumerateArray()
+            .Where(point => Value(point, "Tag").GetString()!.StartsWith("es_monk_path_"))
+            .ToDictionary(point => Value(point, "Tag").GetString()!);
+        var visited = new HashSet<string>();
+        var current = start;
+        while (current != finish)
+        {
+            visited.Add(current).Should().BeTrue("the mountain walk must reach its destination");
+            var point = points[current];
+            var variables = Variables(point);
+            variables.Should().NotContainKey("ECHANI_TRANSFER",
+                "the climb uses the connected mountainside, not the separate lower approach's teleporters");
+            Value(point, "YPosition").GetDouble().Should().BeGreaterThan(70,
+                "the entrance and spa are connected across the northern mountainside");
+            var next = variables["ECHANI_NEXT"].GetString()!;
+            points.Should().ContainKey(next);
+            var distance = Math.Sqrt(new[] { "XPosition", "YPosition", "ZPosition" }.Sum(field =>
+                Math.Pow(Value(point, field).GetDouble() - Value(points[next], field).GetDouble(), 2)));
+            distance.Should().BeLessThan(16, "short walking targets keep the group on the authored climb");
+            current = next;
+        }
+        visited.Count.Should().BeGreaterThan(10, "the old route attempted long moves between disconnected approaches");
+        if (start == "es_monk_path_064")
+            Variables(points["es_monk_path_065"])["ECHANI_SCENE"].GetString().Should().Be("peaks");
+        else
+            Variables(points[finish])["ECHANI_TRANSFER"].GetString().Should().Be("WP_eshan_to_keshpeaks");
     }
 
     [Test]

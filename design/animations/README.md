@@ -430,6 +430,9 @@ Panpipes, tambourines and violin bows lift the polearm carry layer at the openin
 on the looping carrier. All clips in each new family return to their common playing hold.
 The pipes use an outer-edge grip with the row turned inward by a native item-part Z rotation,
 with Human offsets in `HornFit` checked from front and side against the default male and female heads.
+The Cathar male's longer arms carry the pipes to his cheek, and the short Ugnaught and Ewok bodies hold
+them beside the mouth, so `HornFit` also moves the pipes to the mouth on those bodies; every other
+playable body was checked in the client and needs no offset.
 These middle-part offsets apply only while music
 plays and are removed on stop or unequip. Tambourine clips hold the drum in front of the chest
 with its face outward and its ribbons down, with free-hand strikes and wrist shakes.

@@ -45,6 +45,15 @@ public class ProcessWideRegistrationTests
     }
 
     [Test]
+    public void Starting_a_runtime_timer_is_reported_for_each_timer_type()
+    {
+        var problems = FindInFixtures().Where(problem => problem.StartsWith(KeyOf(typeof(TimerStarter)).ToString() + " ")).ToList();
+
+        problems.Should().Contain(problem => problem.Contains("starts a timer (System.Threading.Timer;"));
+        problems.Should().Contain(problem => problem.Contains("starts a timer (System.Timers.Timer;"));
+    }
+
+    [Test]
     public void Using_the_same_types_without_subscribing_or_starting_a_thread_is_not_reported()
     {
         FindInFixtures().Should().NotContain(problem => problem.StartsWith(KeyOf(typeof(ProcessNeutralUser)).ToString() + " "));
@@ -86,6 +95,16 @@ public class ProcessWideRegistrationTests
             .ToList();
 
         Fail(problems, "Threads started in the server (the allow list is empty)");
+    }
+
+    [Test]
+    public void The_server_starts_a_runtime_timer_only_where_the_allow_list_says()
+    {
+        var problems = ProcessWideRegistrationRule.Find(ArchitectureProject.Facts, Subscribers, ThreadStarters)
+            .Where(problem => problem.Contains("starts a timer"))
+            .ToList();
+
+        Fail(problems, "Runtime timers started in the server (the allow list is empty; timers are Scheduler work)");
     }
 
     private static void Fail(IReadOnlyList<string> problems, string headline)

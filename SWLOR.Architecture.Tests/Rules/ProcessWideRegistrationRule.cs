@@ -15,6 +15,14 @@ internal static class ProcessWideRegistrationRule
     private const string Constructor = ".ctor";
     private const string ThreadType = "System.Threading.Thread";
 
+    /// <summary>Runtime timers that tick on a pool thread of their own: the server's timers are <c>Scheduler</c> work on the engine thread.</summary>
+    private static readonly string[] TimerTypes =
+    [
+        "System.Threading.Timer",
+        "System.Timers.Timer",
+        "System.Threading.PeriodicTimer"
+    ];
+
     /// <summary>The types whose event subscriptions are always process-wide, whatever the event.</summary>
     private static readonly string[] AnyEventTypes =
     [
@@ -54,6 +62,11 @@ internal static class ProcessWideRegistrationRule
             {
                 problems.Add($"{use.Source} starts a thread ({Describe(use.Members)}): the server runs on the engine thread and the thread pool only. " +
                              "Run the work as pool work, or add the type to the allow list with the item that removes it.");
+            }
+            else if (TimerTypes.Contains(use.ExternalType) && use.MemberName == Constructor && !threadStarters.Contains(use.Source))
+            {
+                problems.Add($"{use.Source} starts a timer ({use.ExternalType}; {Describe(use.Members)}): a runtime timer outlives the build that started it. " +
+                             "Use Scheduler, or add the type to the allow list with the item that removes it.");
             }
         }
 

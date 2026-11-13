@@ -57,6 +57,17 @@ The application uses `ApplicationSettings.cs` to manage configuration. This clas
 - Provides centralized access to application settings
 - Handles environment-specific behavior
 
+## The .NET Entry
+
+`SWLOR_DOTNET_ENTRY` in `swlor.env` picks how NWNX starts the game, and the `NWNX_DOTNET_ASSEMBLY`, `NWNX_DOTNET_ENTRYPOINT` and `NWNX_DOTNET_METHOD` lines next to it must match it (every tool that stages a server writes them; `DotnetEntryLayoutTests` pins the values).
+
+| Entry | `dotnet/` holds | Used by |
+|---|---|---|
+| `host` | `SWLOR.Game.Host` and the files it needs; the game build in `dotnet/game/` | The development `swlor.env`, engine tests, the live client stack, `SWLOR.CLI -o`. The only entry that can hot reload (`HotReload.md`). |
+| `native` | the game build, started by its own `ServerManager.Bootstrap` | Production. `scripts/deployment/swlor-deploy.sh` defaults to it (`SERVER_DOTNET_ENTRY=native` in `swlor-deploy.conf.example`) and leaves a native server's env file and layout as they were. |
+
+Production stays on the native entry until the host is measured no slower under load (`EngineTesting.md`, "Combat load measurement"). Hot reload is off unless `SWLOR_HOT_RELOAD=true`, and the host refuses it when `SWLOR_ENVIRONMENT` is production, missing or misspelled, or when `SWLOR_GAME_COLLECTIBLE` is `false`; never set it on a production server. A production deployment needs nothing for reload: it restarts.
+
 ## Deployment Environments
 
 ### 1. Development Environment

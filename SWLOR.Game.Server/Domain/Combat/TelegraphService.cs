@@ -534,6 +534,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             });
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets which shaders the client has; the new build starts without that cache.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetShaderStateOnExit()
         {

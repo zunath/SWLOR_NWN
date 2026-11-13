@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Writes an audit log when a player connects to the server.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Writes a connection audit line.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void AuditClientConnection()
         {
@@ -27,6 +29,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Writes an audit log when a player disconnects from the server.
         /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Writes a disconnection audit line.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void AuditClientDisconnection()
         {

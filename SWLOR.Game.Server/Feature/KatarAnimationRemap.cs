@@ -51,6 +51,15 @@ namespace SWLOR.Game.Server.Feature
             SyncKatarRemapState(player);
         }
 
+        /// <summary>
+        /// Reapplies the katar remap the creature's equipment needs, any creature (a hot reload clears an NPC's mappings whose owners went
+        /// with the old build, <see cref="SavedAnimationMappings.ResetCreatureMappingsForReload"/>).
+        /// </summary>
+        public static void SynchronizeEquipment(uint creature)
+        {
+            SyncKatarRemapState(creature);
+        }
+
         [NWNEventHandler(ScriptName.OnModuleUnequip)]
         public static void OnUnequip()
         {

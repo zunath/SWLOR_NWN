@@ -94,4 +94,49 @@ public class FieldEngineerPulseEmittersServiceTests
         service.TryRemove(Emitter(1)).Should().BeFalse();
         service.ReleaseIfEmpty(1);
     }
+
+    [Test]
+    public void TakeAll_ReturnsEveryActivatorsEmittersAndForgetsThem()
+    {
+        var service = new FieldEngineerPulseEmittersService();
+        var first = Emitter(1);
+        var second = Emitter(2);
+        service.Track(first);
+        service.Track(second);
+
+        service.TakeAll().Should().BeEquivalentTo(new[] { first, second });
+
+        service.TryGetSnapshot(1, out _).Should().BeFalse();
+        service.TryGetSnapshot(2, out _).Should().BeFalse();
+        service.TakeAll().Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_reload_ends_every_emitter_and_removes_the_markers_whose_removal_closures_it_drops()
+    {
+        // P4-15 closure audit: the pulses and the marker removals are closures; the emitters hold callbacks and cannot be carried.
+        using var facades = new SWLOR.Game.Server.Tests.Support.FacadeContainer();
+        using var facadeScope = facades.Install();
+        var engine = new SWLOR.NWN.API.Testing.FakeNWScript();
+        engine.SetReturnHandler("GetIsObjectValid", args => (uint)args[0]! != Invalid);
+        engine.SetReturnHandler("GetObjectByTag", args => (int)args[1]! == 0 ? StrayMarker : Invalid);
+        using var engineScope = SWLOR.NWN.API.NWScript.NWScriptRuntime.Override(engine);
+        var emitters = SWLOR.Game.Server.Composition.GameServices.FieldEngineerPulseEmitters;
+        var first = Emitter(1);
+        first.MarkerObject = 801;
+        var second = Emitter(2);
+        second.MarkerObject = 802;
+        emitters.Track(first);
+        emitters.Track(second);
+
+        DeviceAbilityEffects.EndFieldEngineerPulsesForReload(Array.Empty<uint>());
+
+        engine.CallsTo("DestroyObject").Select(call => (uint)call.Arguments[0]!).Should().Equal(new uint[] { 801, 802, StrayMarker },
+            "a marker whose emitter already ended, waiting on a beacon in flight, is found by its tag");
+        emitters.TryGetSnapshot(1, out _).Should().BeFalse();
+        emitters.TryGetSnapshot(2, out _).Should().BeFalse();
+    }
+
+    private const uint Invalid = 0x7F000000;
+    private const uint StrayMarker = 803;
 }

@@ -94,6 +94,8 @@ namespace SWLOR.Game.Server.Domain.Social
                 StopWatching(state);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets the watcher in memory, which goes with the old build.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetExitingPlayer()
         {

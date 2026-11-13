@@ -77,5 +77,11 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         /// <summary>Closes the conversation window of a participant.</summary>
         void End(uint player, uint uiTarget = OBJECT_INVALID);
+
+        /// <summary>A hot reload takes a player's open conversation out of the old build as data, or null when it cannot be carried.</summary>
+        ConversationReloadState CarryForReload(uint player);
+
+        /// <summary>A hot reload opens a carried conversation again in the new build at the same line.</summary>
+        void ResumeAfterReload(uint player, ConversationReloadState state);
     }
 }

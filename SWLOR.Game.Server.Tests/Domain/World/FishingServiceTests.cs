@@ -506,6 +506,25 @@ public class FishingServiceTests
     }
 
     [Test]
+    public void A_reload_interrupts_a_cast_still_waiting_on_its_timer_and_leaves_other_players_alone()
+    {
+        // P4-15: the timer that would land the cast is a closure the reload drops.
+        LoadRod();
+        PointAt(FishingLocationType.ViscaraCavern);
+        Random.SetSeed(1);
+        Cast();
+        _playerPlugin.ClearCalls();
+
+        _service.QuiesceForReload(new[] { Player, Bystander });
+
+        _playerPlugin.CallsTo("StopGuiTimingBar").Should().ContainSingle();
+        _locals.String(Player, "FISHING_ATTEMPT_ID").Should().BeEmpty();
+        _locals.String(Player, "FISHING_ANIMATION_TOKEN").Should().BeEmpty();
+        _locals.Int(Player, "IS_BUSY").Should().Be(0, "the player is not left busy fishing");
+        Messages().Should().Equal(new[] { "Fisher casts a line into the water." }, "the interruption sends no message of its own");
+    }
+
+    [Test]
     public void The_cast_ends_with_a_message_when_the_player_moves()
     {
         LoadRod();

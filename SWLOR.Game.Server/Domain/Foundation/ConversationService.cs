@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -358,6 +359,100 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
             if (GetIsObjectValid(player) && GetIsPC(player))
                 SendMessageToPC(player, ColorToken.Red("This conversation could not be opened. The error has been logged."));
+        }
+
+        /// <summary>
+        /// While a hot reload quiesces this build: the conversation <paramref name="player"/> has open on their own screen, as data the
+        /// next build can resume (<see cref="ResumeAfterReload"/>), with its window taken off the screen without ending it. Null when
+        /// there is none, or when it cannot be carried: a session built on an unregistered graph or runtime (a menu built in code,
+        /// say, whose actions are closures of this build) or holding state other than strings. Such a conversation is left open for
+        /// the reload's window step, which closes it as the player would.
+        /// </summary>
+        public ConversationReloadState CarryForReload(uint player)
+        {
+            if (FindOpenSession(player) is not ConversationSession session || session.HasEnded || session.CurrentNode == null ||
+                session.Context.State.Values.Any(value => value != null && value is not string))
+                return null;
+
+            var graphId = GraphIdOf(session);
+            if (graphId.Length == 0 || !_graphs.TryGetValue(graphId, out var graph))
+                return null;
+
+            var state = new ConversationReloadState
+            {
+                GraphId = graph.Id,
+                Owner = session.Context.Owner,
+                ShownOn = player,
+                NodeId = session.CurrentNode.Id,
+                Text = session.CurrentText.ToList(),
+                ChoiceIds = session.VisibleChoices.Select(choice => choice.Id).ToList(),
+                Tokens = new Dictionary<string, string>(session.Context.Tokens),
+                State = session.Context.State.ToDictionary(pair => pair.Key, pair => (string)pair.Value),
+            };
+            DetachWindowForReload(player);
+            return state;
+        }
+
+        /// <summary>
+        /// When a hot reload activates this build: opens <paramref name="state"/>'s conversation for <paramref name="player"/> again at
+        /// the line the old build left it, on this build's graph of the same id, without running its start, node or choice actions
+        /// again. A graph the build no longer has, or a line it no longer has, is reported and not opened.
+        /// </summary>
+        public void ResumeAfterReload(uint player, ConversationReloadState state)
+        {
+            if (state == null)
+                throw new ArgumentNullException(nameof(state));
+
+            if (!IsValidParticipant(player) || !_graphs.TryGetValue(state.GraphId ?? string.Empty, out var graph))
+            {
+                WriteError($"NUI conversation '{state.GraphId}' could not be resumed after a reload: the graph or the player is gone.");
+                return;
+            }
+
+            var context = new ConversationContext(player, state.Owner);
+            foreach (var (key, value) in state.Tokens ?? new Dictionary<string, string>())
+                context.Tokens[key] = value;
+            foreach (var (key, value) in state.State ?? new Dictionary<string, string>())
+                context.State[key] = value;
+
+            ConversationSession session;
+            try
+            {
+                session = ConversationSession.Resume(graph, context, Runtime, state.NodeId, state.Text, state.ChoiceIds);
+            }
+            catch (Exception ex)
+            {
+                WriteError($"NUI conversation '{state.GraphId}' could not be resumed after a reload. {ex.Message}");
+                return;
+            }
+
+            var tetherObject = GetIsObjectValid(state.Owner) ? state.Owner : OBJECT_INVALID;
+            TogglePlayerWindow(player, new ConversationPayload(player, session), tetherObject,
+                state.ShownOn == player || state.ShownOn == OBJECT_INVALID ? OBJECT_INVALID : state.ShownOn);
+        }
+
+        /// <summary>The registered graph id a session runs, found by reference among the registered graphs.</summary>
+        private string GraphIdOf(ConversationSession session)
+        {
+            return _graphs.FirstOrDefault(pair => session.RunsOn(pair.Value, Runtime)).Key ?? string.Empty;
+        }
+
+        /// <summary>
+        /// The session the conversation window open on <paramref name="player"/>'s screen shows, or null. The original window table of
+        /// <c>Gui</c>, on its own so a unit test can answer it.
+        /// </summary>
+        protected virtual IConversationSession FindOpenSession(uint player)
+        {
+            if (!_gui.IsWindowOpen(player, GuiWindowType.Conversation))
+                return null;
+
+            return (_gui.GetPlayerWindow(player, GuiWindowType.Conversation)?.ViewModel as ConversationViewModel)?.GetActiveSession();
+        }
+
+        /// <summary>Takes the conversation window off the screen without ending its session, on its own so a unit test can answer it.</summary>
+        protected virtual void DetachWindowForReload(uint player)
+        {
+            _gui.DetachWindowForReload(player, GuiWindowType.Conversation, player);
         }
 
         /// <summary>

@@ -581,6 +581,35 @@ public class QuestEncounterServiceTests
     }
 
     [Test]
+    public void A_reload_runs_the_idle_check_it_dropped_again_from_the_carried_activity()
+    {
+        // P4-15 closure audit: the encounters are carried, but their idle check is a closure the reload drops.
+        StartEncounter();
+        AgeActivity(Encounter, TimeSpan.FromMinutes(4));
+        _locals.ClearCalls();
+
+        _service.OnCarriedStateAdopted();
+
+        _world.Engine.CallsTo("DestroyObject").Should().BeEmpty();
+        var next = _world.Engine.CallsTo("DelayCommand").Should().ContainSingle().Subject;
+        ((float)next.Arguments[0]!).Should().BeInRange(5 * 60f, 6 * 60f + 1f, "the idle minutes left, not a fresh ten");
+    }
+
+    [Test]
+    public void A_reload_fades_an_encounter_left_idle_too_long_and_frees_its_activator()
+    {
+        StartEncounter();
+        AgeActivity(Encounter, TimeSpan.FromMinutes(11));
+        _world.Place(Encounter, Cantina);
+        _locals.ClearCalls();
+
+        _service.OnCarriedStateAdopted();
+
+        _world.Engine.CallsTo("DestroyObject").Should().ContainSingle().Which.Arguments[0].Should().Be(Encounter);
+        _locals.Object(Activator, QuestEncounterService.ActiveCreatureVariable).Should().Be(Invalid);
+    }
+
+    [Test]
     public void TrackEncounterActivity_keeps_an_encounter_creature_from_fading()
     {
         var check = StartEncounter();

@@ -69,6 +69,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             RemoveStatTriggerCooldowns(defeated);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets the player's combat trackers and takes pressure effects off others; the trackers go with the old build.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearStatTriggerState()
         {

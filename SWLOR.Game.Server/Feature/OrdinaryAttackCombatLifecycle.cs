@@ -33,6 +33,8 @@ public static class OrdinaryAttackCombatLifecycle
     }
     [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
     public static void OnCreatureDeath() => OrdinaryAttackTraits.ClearOnDeath(OBJECT_SELF);
+    [PlayerSession(PlayerReload.LogoutOnly,
+        "Takes the haste trait off at logout; the trait state is carried.")]
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => OrdinaryAttackTraits.ClearActor(GetExitingObject());
     // Dismissed droids and despawned NPCs are destroyed without an exit event.

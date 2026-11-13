@@ -234,7 +234,8 @@ public class ReloadDigestTests
     {
         var lines = ReloadDigests.Adopted(ScriptHandlerTestSupport.ServerContainer.ResolveHandlerOwner);
 
-        lines.Select(line => line.Name.Substring(0, line.Name.LastIndexOf('.'))).Distinct().Should().Equal(
+        lines.Select(line => line.Name.Substring(0, line.Name.LastIndexOf('.'))).Distinct().Should().Contain(new[]
+        {
             "SWLOR.Game.Server.Domain.Abilities.MimicryService",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService",
             "SWLOR.Game.Server.Domain.Economy.GuildService",
@@ -242,12 +243,16 @@ public class ReloadDigestTests
             "SWLOR.Game.Server.Domain.World.PropertyLoaderService",
             "SWLOR.Game.Server.Domain.World.ShuttleService",
             "SWLOR.Game.Server.Domain.World.WeatherService",
-            "SWLOR.Game.Server.Feature.StoreManagement");
+            "SWLOR.Game.Server.Feature.StoreManagement",
+        }).And.Contain(ReloadStateCarrier.CarriedClasses(ScriptHandlerTestSupport.GameAssembly).Select(entry => entry.Type.FullName),
+            "the carried state is compared with the old build's at quiescence as the adopted state is (P4-15)");
         lines.Select(line => line.Name).Should().Contain(new[]
         {
             "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawns",
             "SWLOR.Game.Server.Domain.Economy.GuildService.DateTasksLoaded",
             "SWLOR.Game.Server.Feature.StoreManagement._stores",
+            "SWLOR.Game.Server.Domain.Character.StatusEffectService._creatureEffects",
+            "SWLOR.Game.Server.Domain.Social.PartyService._parties",
         });
         lines.Should().OnlyContain(line => line.Kind == ReloadDigests.AdoptedKind && line.Hash != "unresolved");
     }

@@ -556,11 +556,21 @@ namespace SWLOR.Game.Server.Domain.Combat
             Activations.Remove(creature);
         }
 
+        [PlayerSession(PlayerReload.Quiesce,
+            "The technique chains cannot be carried (they hold ability definitions), so their status effects are taken off as at logout instead of outliving their owner.",
+            Step = nameof(ClearTechniquesFor))]
         [NWNEventHandler(ScriptName.OnAreaExit)]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void OnExit()
         {
-            var creature = GetExitingObject();
+            ClearTechniquesFor(GetExitingObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="OnExit"/> for <paramref name="creature"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+        /// </summary>
+        public void ClearTechniquesFor(uint creature)
+        {
             ClearBenefits(creature);
             ClearTargetReferences(creature);
         }

@@ -17,9 +17,16 @@
 #     replaced logged at quiescence, so no boot-only side effect happened again;
 #   - every digest was taken (none is error:<exception> or unresolved).
 #
+# With --engine-filter <filter> (P4-15) the engine-test assembly is staged with the game and with every candidate, so each
+# generation runs the engine tests the filter selects (the runner reruns after a reload): for example
+# --engine-filter HotReloadPlayers --reloads 2 runs the scenario that keeps a player online across two reloads. The check then
+# also waits for each generation's "[ENGINE_TESTS] SUMMARY" line and fails unless every one says failed=0 and the last
+# generation's run passed at least one test.
+#
 # Usage:
 #   scripts/run-hot-reload-check.sh [--server-home <dir>] [--reloads <n>] [--skip-build]
 #                                   [--boot-timeout-minutes <n>] [--reload-timeout-seconds <n>]
+#                                   [--engine-filter <filter>]
 #
 # The server home resolves like run-engine-tests.sh's: --server-home, SWLOR_ENGINE_TEST_SERVER_HOME, the
 # repo's enginetests-home/, the repo's debugserver/. Its dotnet/ is restaged (the host in dotnet/, the game
@@ -38,6 +45,8 @@ RELOADS=3
 DIGEST_TIMEOUT_SECONDS=300
 BOOT_TIMEOUT_MINUTES=20
 RELOAD_TIMEOUT_SECONDS=900
+ENGINE_FILTER=""
+ENGINE_TIMEOUT_SECONDS=900
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -59,6 +68,10 @@ while [ $# -gt 0 ]; do
             ;;
         --reload-timeout-seconds)
             RELOAD_TIMEOUT_SECONDS="$2"
+            shift 2
+            ;;
+        --engine-filter)
+            ENGINE_FILTER="$2"
             shift 2
             ;;
         *)
@@ -100,6 +113,9 @@ COMPOSE_PROJECT="swlor-hot-reload-check"
 GAME_OUTPUT_DIR="$REPO_ROOT/SWLOR.Game.Server/bin/Release/net10.0"
 HOST_OUTPUT_DIR="$REPO_ROOT/SWLOR.Game.Host/bin/Release/net10.0"
 CLI_ASSEMBLY="$REPO_ROOT/SWLOR.CLI/bin/Release/net10.0/SWLOR.CLI.dll"
+ENGINE_TEST_ASSEMBLY="$REPO_ROOT/SWLOR.Game.Server.EngineTests/bin/Release/net10.0/SWLOR.Game.Server.EngineTests.dll"
+# What each reload publishes: the game's output, or (with --engine-filter) a copy of it with the engine-test assembly beside the game.
+CANDIDATE_OUTPUT_DIR="$GAME_OUTPUT_DIR"
 DOTNET_DIR="$SERVER_HOME/dotnet"
 RELOAD_DIR="$SERVER_HOME/reload"
 
@@ -130,21 +146,33 @@ docker_path() {
 
 if [ "$SKIP_BUILD" -eq 0 ]; then
     section "Building the game, the host and SWLOR.CLI (Release)"
-    for project in SWLOR.Game.Server/SWLOR.Game.Server.csproj SWLOR.Game.Host/SWLOR.Game.Host.csproj SWLOR.CLI/SWLOR.CLI.csproj; do
+    projects="SWLOR.Game.Server/SWLOR.Game.Server.csproj SWLOR.Game.Host/SWLOR.Game.Host.csproj SWLOR.CLI/SWLOR.CLI.csproj"
+    if [ -n "$ENGINE_FILTER" ]; then
+        projects="$projects SWLOR.Game.Server.EngineTests/SWLOR.Game.Server.EngineTests.csproj"
+    fi
+    for project in $projects; do
         if ! dotnet build "$REPO_ROOT/$project" -c Release -p:RunPostBuildEvent=Never -nologo -v q -clp:ErrorsOnly; then
             echo "dotnet build of $project failed" >&2
             exit 1
         fi
     done
 fi
-for required in "$GAME_OUTPUT_DIR/SWLOR.Game.Server.dll" "$HOST_OUTPUT_DIR/SWLOR.Game.Host.dll" "$HOST_OUTPUT_DIR/SWLOR.Game.Host.runtimeconfig.json" "$CLI_ASSEMBLY"; do
+required_outputs=("$GAME_OUTPUT_DIR/SWLOR.Game.Server.dll" "$HOST_OUTPUT_DIR/SWLOR.Game.Host.dll" "$HOST_OUTPUT_DIR/SWLOR.Game.Host.runtimeconfig.json" "$CLI_ASSEMBLY")
+if [ -n "$ENGINE_FILTER" ]; then
+    required_outputs+=("$ENGINE_TEST_ASSEMBLY")
+fi
+for required in "${required_outputs[@]}"; do
     if [ ! -f "$required" ]; then
         echo "Missing build output: $required. Run without --skip-build." >&2
         exit 1
     fi
 done
 
-section "Staging the host entry into $DOTNET_DIR (no engine-test assembly)"
+if [ -n "$ENGINE_FILTER" ]; then
+    section "Staging the host entry into $DOTNET_DIR with the engine tests (filter '$ENGINE_FILTER')"
+else
+    section "Staging the host entry into $DOTNET_DIR (no engine-test assembly)"
+fi
 if ! rm -rf "$DOTNET_DIR" "$RELOAD_DIR"; then
     echo "Could not clear $DOTNET_DIR and $RELOAD_DIR" >&2
     exit 1
@@ -154,6 +182,18 @@ if ! mkdir -p "$DOTNET_DIR/game" "$RELOAD_DIR/receipts" ||
    ! cp -r "$GAME_OUTPUT_DIR"/. "$DOTNET_DIR/game"/; then
     echo "Could not stage the host and the game into $DOTNET_DIR" >&2
     exit 1
+fi
+if [ -n "$ENGINE_FILTER" ]; then
+    # The game loads the engine-test assembly from the folder it was loaded from, so the boot's folder and every candidate
+    # carry it beside the game (ServerBootstrapper.LoadEngineTestAssembly).
+    CANDIDATE_OUTPUT_DIR="$(mktemp -d)"
+    if ! cp "$ENGINE_TEST_ASSEMBLY" "$DOTNET_DIR/game"/ ||
+       ! cp -r "$GAME_OUTPUT_DIR"/. "$CANDIDATE_OUTPUT_DIR"/ ||
+       ! cp "$ENGINE_TEST_ASSEMBLY" "$CANDIDATE_OUTPUT_DIR"/; then
+        echo "Could not stage the engine-test assembly" >&2
+        exit 1
+    fi
+    export SWLOR_ENGINE_TEST_FILTER="$ENGINE_FILTER"
 fi
 
 SWLOR_ENGINE_TEST_HOME="$(docker_path "$SERVER_HOME")"
@@ -304,6 +344,9 @@ cleanup()
         popd > /dev/null || true
         STACK_ACTIVE=0
     fi
+    if [ "$CANDIDATE_OUTPUT_DIR" != "$GAME_OUTPUT_DIR" ]; then
+        rm -rf "$CANDIDATE_OUTPUT_DIR"
+    fi
     exit "$cleanup_status"
 }
 
@@ -389,12 +432,35 @@ if ! wait_for_digests 1 boot 1; then
     exit 1
 fi
 
+# With --engine-filter, each generation's engine-test run ends with one "[ENGINE_TESTS] SUMMARY" line.
+engine_summaries() {
+    compose logs --no-color swlor-server 2>/dev/null | grep "\[ENGINE_TESTS\] SUMMARY " | tr -d '\r'
+}
+
+# Waits until $1 engine-test runs have printed their summary, so a reload never lands in the middle of a run.
+wait_for_engine_runs() {
+    [ -n "$ENGINE_FILTER" ] || return 0
+    local deadline=$(( $(date +%s) + ENGINE_TIMEOUT_SECONDS ))
+    until [ "$(engine_summaries | wc -l | tr -d ' ')" -ge "$1" ]; do
+        if [ "$(date +%s)" -ge "$deadline" ]; then
+            echo "Engine-test run $1 did not finish within $ENGINE_TIMEOUT_SECONDS second(s)." >&2
+            return 1
+        fi
+        sleep 2
+    done
+    echo "Engine-test run $1: $(engine_summaries | sed -n "${1}p" | sed 's/.*SUMMARY //')"
+}
+
+if ! wait_for_engine_runs 1; then
+    exit 1
+fi
+
 applied=0
 for reload in $(seq 1 "$RELOADS"); do
     section "Reload $reload of $RELOADS: SWLOR.CLI --reload"
     if ! dotnet "$CLI_ASSEMBLY" --reload \
             --server-home "$(native_path "$SERVER_HOME")" \
-            --server-output "$(native_path "$GAME_OUTPUT_DIR")" \
+            --server-output "$(native_path "$CANDIDATE_OUTPUT_DIR")" \
             --reload-timeout "$RELOAD_TIMEOUT_SECONDS"; then
         echo "Reload $reload did not apply." >&2
         failed=1
@@ -406,7 +472,25 @@ for reload in $(seq 1 "$RELOADS"); do
         failed=1
         break
     fi
+    if ! wait_for_engine_runs "$((reload + 1))"; then
+        failed=1
+        break
+    fi
 done
+
+if [ -n "$ENGINE_FILTER" ]; then
+    section "Engine tests '$ENGINE_FILTER' in each generation"
+    compose logs --no-color swlor-server | grep "\[ENGINE_TESTS\] \(\[\|SUMMARY\)" | tr -d '\r'
+    if engine_summaries | grep -qv " failed=0 "; then
+        echo "An engine-test run failed." >&2
+        failed=1
+    fi
+    if [ "$(engine_summaries | wc -l | tr -d ' ')" -lt "$((applied + 1))" ] ||
+       engine_summaries | tail -n 1 | grep -q " passed=0 "; then
+        echo "Not every generation ran the engine tests, or the last run passed none." >&2
+        failed=1
+    fi
+fi
 
 section "What the server logged about the reloads"
 compose logs --no-color swlor-server |

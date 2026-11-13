@@ -16,16 +16,26 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// </summary>
     public class CombatActivityService : ICombatActivityService
     {
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<(uint, uint), DateTime> _recentDamageTargets = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, DateTime> _recentDamageTaken = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, DateTime> _lastHostileAbilityAttemptActivity = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, DateTime> _lastHostileIncomingActivity = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly HashSet<uint> _firstCombatAttackConsumed = new();
         // Short-window activity queries must preserve the timestamps used by idle-readiness callbacks.
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, DateTime> _lastAttackActivity = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, TargetHitSequenceState> _firstHostileAbilityHitCounts = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, DateTime> _stealthOpeningWindows = new();
 
         private readonly IdleSkillAbilityStatChannel[] _idleSkillAbilityStatChannels =
@@ -624,10 +634,20 @@ namespace SWLOR.Game.Server.Domain.Combat
                 StatType.AbilityActivationIdleSkillType);
         }
 
+        [PlayerSession(PlayerReload.Restore,
+            "Re-arms the idle readiness timers, closures of the old build that a reload drops, from the carried combat times.",
+            Step = nameof(RestoreIdleReadiness))]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RestoreIdleReadinessOnPlayerEnter()
         {
-            var creature = GetEnteringObject();
+            RestoreIdleReadiness(GetEnteringObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="RestoreIdleReadinessOnPlayerEnter"/> for <paramref name="creature"/>: the login's handler, and a hot reload's restore step for a player who stays online.
+        /// </summary>
+        public void RestoreIdleReadiness(uint creature)
+        {
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 

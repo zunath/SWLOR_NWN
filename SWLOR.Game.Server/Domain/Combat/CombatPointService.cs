@@ -56,11 +56,13 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <summary>
         /// Tracks the combat points earned by players during combat.
         /// </summary>
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>> _creatureCombatPointTracker = new();
 
         /// <summary>
         /// Tracks the combat point lists associated with a player back to a creature.
         /// </summary>
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, HashSet<uint>> _playerToCreatureTracker = new();
         private readonly WeaponAttackPointLedger _weaponAttackPoints = new();
 
@@ -115,6 +117,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             // A queued ability owns the replaced roll's contribution under its captured ability skill.
             if (awardPoint) RecordWeaponAttackPoint(actor, target, weapon, capturedSkill);
         }
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets hits in flight, which go with the old build.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearPendingWeaponAttackPoints() => _weaponAttackPoints.Clear(GetExitingObject());
 
@@ -241,6 +245,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// When a player leaves an area or the server, we need to remove all combat points
         /// that may be referenced to their character.
         /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forfeits the player's combat points at logout; a reload carries them.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         [NWNEventHandler(ScriptName.OnAreaExit)]
         public void OnPlayerExit()

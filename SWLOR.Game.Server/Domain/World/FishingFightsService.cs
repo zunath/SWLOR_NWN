@@ -51,10 +51,20 @@ namespace SWLOR.Game.Server.Domain.World
             _lifecycle.Abandon(_lifecycle.GetActive(player), FishingFightEnd.Died);
         }
 
+        [PlayerSession(PlayerReload.Quiesce,
+            "A fishing fight cannot be carried, so it ends as at logout and the busy flag clears instead of sticking.",
+            Step = nameof(AbandonFor))]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void AbandonOnExit()
         {
-            var player = GetExitingObject();
+            AbandonFor(GetExitingObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="AbandonOnExit"/> for <paramref name="player"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+        /// </summary>
+        public void AbandonFor(uint player)
+        {
             _lifecycle.Abandon(_lifecycle.GetActive(player), FishingFightEnd.Left);
         }
     }

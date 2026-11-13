@@ -196,11 +196,13 @@ internal sealed class DMPossessionHarness
             .Select(method => MakeStatic(method.WithAttributeLists(default)).ToFullString());
 
     /// <summary>
-    /// Returns the source of a field declaration of a converted service's instance class as a static field.
+    /// Returns the source of a field declaration of a converted service's instance class as a static field, without its
+    /// attributes (as for methods): a hot reload's <c>[ReloadState]</c> marking means nothing to the harness.
     /// </summary>
     public static string InstanceField(string relativePath, string name) =>
         MakeStatic(ParseServerFile(relativePath).DescendantNodes().OfType<FieldDeclarationSyntax>()
-                .Single(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText == name)))
+                .Single(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText == name))
+                .WithAttributeLists(default))
             .ToFullString();
 
     private static T MakeStatic<T>(T member)

@@ -133,6 +133,15 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         }
 
         /// <summary>
+        /// Keeps a tracked object past this test: the context no longer destroys it. For a scenario that spans hot reloads
+        /// (<c>HotReloadPlayersEngineTests</c>), whose last phase destroys it itself.
+        /// </summary>
+        public void Untrack(uint obj)
+        {
+            _trackedObjects.RemoveAll(tracked => tracked == obj);
+        }
+
+        /// <summary>
         /// Creates an additional instanced copy of an area by resref and tracks it for cleanup.
         /// Fails the test if the area could not be created.
         /// </summary>

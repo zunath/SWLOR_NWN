@@ -55,11 +55,11 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly Dictionary<string, ActiveFlight> _activeFlights = new();
         [ReloadState(ReloadStateKind.Adopted)]
         private readonly Dictionary<string, (PlanetType Origin, PlanetType Destination)> _ticketHolders = new();
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<string, DateTime> _boardingNotBeforeUtc = new();
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<(PlanetType Origin, PlanetType Destination), DateTime> _announcedBoardings = new();
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly ShuttleMissedBoardingTracker _missedBoardings = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private DateTime _lastTickUtc;
@@ -1019,6 +1019,8 @@ namespace SWLOR.Game.Server.Domain.World
                 _missedBoardings.RecordMiss(playerId);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets the boarding time; the boarding times are carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ExitServer()
         {
@@ -1030,6 +1032,8 @@ namespace SWLOR.Game.Server.Domain.World
         /// aboard their shuttle. This is a backstop for cases where the game placed them
         /// into a stale instance or an unexpected location.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Resumes a ticket or a flight at login with messages and a jump; the ticket holders and flights are adopted and the boarding times carried.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void EnterServer()
         {

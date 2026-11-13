@@ -264,6 +264,8 @@ namespace SWLOR.Game.Server.Domain.Character
             _resolvedPlayerIdsByNpc.Remove(npc);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Cancels an infiltration attempt held in memory, which goes with the old build.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         [NWNEventHandler(ScriptName.OnAreaExit)]
         public void OnPlayerExit()

@@ -73,6 +73,26 @@ public class GameGenerationTests
             return Array.Empty<ReloadStepResult>();
         }
 
+        public Exception QuiescePlayersFailure { get; set; }
+        public Exception RestorePlayersFailure { get; set; }
+        public IReadOnlyList<ReloadStepResult> PlayersRestored { get; set; } = Array.Empty<ReloadStepResult>();
+
+        public IReadOnlyList<ReloadStepResult> QuiescePlayers()
+        {
+            Calls.Add("quiesce-players");
+            if (QuiescePlayersFailure != null)
+                throw QuiescePlayersFailure;
+            return Array.Empty<ReloadStepResult>();
+        }
+
+        public IReadOnlyList<ReloadStepResult> RestorePlayers()
+        {
+            Calls.Add("restore-players");
+            if (RestorePlayersFailure != null)
+                throw RestorePlayersFailure;
+            return PlayersRestored;
+        }
+
         public IReadOnlyList<ReloadDigestLine> DescribeCaches()
         {
             Calls.Add("caches");
@@ -200,9 +220,10 @@ public class GameGenerationTests
 
         await generation.ActivateAsync(new GenerationActivation(3, null, null, null, services), CancellationToken.None);
 
-        boot.Calls.Should().Equal(new[] { "activate", "resume", "rebuild", "adopted", "next-frame" },
+        boot.Calls.Should().Equal(new[] { "activate", "resume", "rebuild", "adopted", "restore-players", "next-frame" },
             "the engine signals the module load and runs the boot scripts only for generation 1, so a reload takes the signal, " +
-            "reruns and adopts, and logs the adopted and world digests inside the pause and the cache digests a frame later");
+            "reruns and adopts, logs the adopted and world digests as the adoption left them, restores the online players inside " +
+            "the pause, and logs the cache digests a frame later");
         hooks.Calls.Should().Equal(new[] { "bind" });
         generation.Scripts.Should().BeOfType<HostedScriptDispatcher>();
         generation.MainLoop.Should().BeOfType<HostedMainLoop>();
@@ -211,8 +232,10 @@ public class GameGenerationTests
             "the package makes the build active only after its activation, so the scripts the engine runs from the rebuild come here");
         callbacks.Activating.Should().BeNull();
         callbacks.Calls.Should().Equal("bind-activation", "unbind-activation", "bind");
-        log[0].Should().MatchRegex(@"^Generation 3 activated by a reload in \d+ ms: rebuilt the service container and the script dispatch, " +
-                                   @"then the reload bootstrap reran=1 adopted=1 carried=0 failed=0 totalMs=15 slowest=.*FixtureOwner\.Rerun:12,.*FixtureOwner\.Adopt:3$");
+        log.Should().ContainSingle(line => line.StartsWith("Generation 3 activated", StringComparison.Ordinal)).Which.Should().MatchRegex(
+            @"^Generation 3 activated by a reload in \d+ ms: rebuilt the service container and the script dispatch, " +
+            @"then the reload bootstrap reran=1 adopted=1 carried=0 failed=0 quiesced=0 restored=0 totalMs=15 " +
+            @"slowest=.*FixtureOwner\.Rerun:12,.*FixtureOwner\.Adopt:3; the online players reran=0 adopted=0 carried=0 failed=0 quiesced=0 restored=0 totalMs=0 slowest=$");
         log.Should().Contain("SWLOR_RELOAD_DIGEST generation=3 phase=reload kind=world name=world.dockIds count=2 hash=00000000000000bb");
 
         boot.NextFrame.Should().ContainSingle();
@@ -259,8 +282,42 @@ public class GameGenerationTests
         await generation.ActivateAsync(Activation(services), CancellationToken.None);
         await generation.BeginQuiescenceAsync(CancellationToken.None);
 
-        boot.Calls.Should().Equal("activate", "resume", "rebuild");
+        boot.Calls.Should().Equal(new[] { "activate", "resume", "rebuild", "restore-players" },
+            "a reload restores the online players whether or not the digests are logged; with hot reload off nothing quiesces");
         log.Should().ContainSingle().Which.Should().StartWith("Generation 1 activated by a reload");
+    }
+
+    [Test]
+    public async Task A_player_restore_that_fails_is_logged_and_the_activation_goes_on()
+    {
+        var boot = new RecordingBoot { RestorePlayersFailure = new InvalidOperationException("players") };
+        var log = new List<string>();
+        var generation = new GameGeneration(boot, log.Add);
+        var (services, _, _, callbacks, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = true });
+
+        var activate = async () => await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        await activate.Should().NotThrowAsync("the players keep what the engine and Redis hold");
+        log.Should().Contain(line => line.StartsWith("Generation 1 could not restore its online players after the reload: System.InvalidOperationException: players", StringComparison.Ordinal));
+        generation.Scripts.Should().NotBeNull();
+        callbacks.Calls.Should().Equal("bind-activation", "unbind-activation", "bind");
+    }
+
+    [Test]
+    public async Task A_player_quiescence_that_fails_is_logged_and_the_carry_goes_on()
+    {
+        var boot = new RecordingBoot { QuiescePlayersFailure = new InvalidOperationException("players") };
+        var log = new List<string>();
+        var generation = new GameGeneration(boot, log.Add);
+        var (services, _, _, _, _) = HostServices();
+        services.With<IHostLifecycle>(new Lifecycle { ModuleLoaded = false });
+        await generation.ActivateAsync(Activation(services), CancellationToken.None);
+
+        await generation.BeginQuiescenceAsync(CancellationToken.None);
+
+        boot.Calls.Should().Equal("activate", "quiesce-players", "adopted", "carry");
+        log.Should().Contain(line => line.StartsWith("Generation 1 could not quiesce its online players for the reload: System.InvalidOperationException: players", StringComparison.Ordinal));
     }
 
     [Test]
@@ -314,8 +371,10 @@ public class GameGenerationTests
 
         await generation.BeginQuiescenceAsync(CancellationToken.None);
 
-        boot.Calls.Should().Equal("activate", "adopted", "carry");
+        boot.Calls.Should().Equal(new[] { "activate", "quiesce-players", "adopted", "carry" },
+            "the players' quiescence steps run first, so the digests and the carries see what their logout work left");
         log.Should().Contain("SWLOR_RELOAD_DIGEST generation=4 phase=quiesce kind=world name=world.dockIds count=2 hash=00000000000000bb");
+        log.Should().Contain(line => line.StartsWith("Generation 4 quiesced its online players for a reload: reran=0 adopted=0 carried=0 failed=0", StringComparison.Ordinal));
         log.Should().Contain(line => line.StartsWith("Generation 4 quiesced for a reload: reran=0 adopted=0 carried=0 failed=0", StringComparison.Ordinal));
     }
 

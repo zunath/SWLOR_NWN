@@ -34,6 +34,47 @@ namespace SWLOR.Game.Server.Domain.Foundation
         }
 
         /// <summary>
+        /// The graph and runtime the session runs on: a hot reload carries a session only when they are the ones registered under the
+        /// graph's id, so the next build can find their counterparts (<see cref="ConversationService.CarryForReload"/>).
+        /// </summary>
+        public bool RunsOn(ConversationGraph graph, IConversationRuntime runtime)
+        {
+            return ReferenceEquals(_graph, graph) && ReferenceEquals(_runtime, runtime);
+        }
+
+        /// <summary>
+        /// A started session that stands where another build's left off (a hot reload): at <paramref name="currentNodeId"/>, showing
+        /// <paramref name="currentText"/> and offering the choices <paramref name="visibleChoiceIds"/>, without running any action or
+        /// condition again, so the player goes on from the same line.
+        /// </summary>
+        public static ConversationSession Resume(
+            ConversationGraph graph,
+            ConversationContext context,
+            IConversationRuntime runtime,
+            string currentNodeId,
+            IEnumerable<ConversationTextBlock> currentText,
+            IEnumerable<string> visibleChoiceIds)
+        {
+            var session = new ConversationSession(graph, context, runtime);
+            if (string.IsNullOrEmpty(currentNodeId) || !graph.Nodes.TryGetValue(currentNodeId, out var node))
+                throw new InvalidOperationException($"Conversation '{graph.Id}' has no node '{currentNodeId}' to resume at.");
+
+            var choices = new List<ConversationChoice>();
+            foreach (var choiceId in visibleChoiceIds ?? Enumerable.Empty<string>())
+            {
+                if (!graph.Choices.TryGetValue(choiceId, out var choice))
+                    throw new InvalidOperationException($"Conversation '{graph.Id}' has no choice '{choiceId}' to resume with.");
+                choices.Add(choice);
+            }
+
+            session._hasStarted = true;
+            session.CurrentNode = node;
+            session._currentText = (currentText ?? Enumerable.Empty<ConversationTextBlock>()).ToList();
+            session._visibleChoices = choices;
+            return session;
+        }
+
+        /// <summary>
         /// Starts the session at the first entry point whose conditions pass.
         /// </summary>
         public bool Start()

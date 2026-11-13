@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -27,6 +28,7 @@ public class PowerGloveEquipmentService : IPowerGloveEquipmentService
     private const string DestroyingVariable = "POWER_GLOVE_REMOVING";
     private const string CompanionResref = "pg_companion";
 
+    [ReloadState(ReloadStateKind.Carried)]
     private readonly Dictionary<uint, (uint Main, uint Companion)> _pairs = new();
     private readonly HashSet<uint> _changing = new();
     private readonly HashSet<uint> _refreshingAppearance = new();

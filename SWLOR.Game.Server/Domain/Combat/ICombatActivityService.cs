@@ -66,6 +66,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         void RestoreIdleReadinessOnPlayerEnter();
 
+        /// <summary>The work of <see cref="RestoreIdleReadinessOnPlayerEnter"/> for one player (a hot reload's restore step).</summary>
+        void RestoreIdleReadiness(uint player);
+
         void ScheduleIdleReadinessRefresh(uint creature);
 
         bool HasConfiguredIdleSkillAbilityChannel(uint creature);

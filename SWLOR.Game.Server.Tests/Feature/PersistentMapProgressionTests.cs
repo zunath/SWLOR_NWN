@@ -55,7 +55,7 @@ public class PersistentMapProgressionTests
         CanPersist(10, "permanent_area").Should().BeTrue();
     }
 
-    [TestCase(nameof(PersistentMapProgression.SaveMapProgression), "GetAreaExplorationState")]
+    [TestCase(nameof(PersistentMapProgression.SaveMapProgressionFor), "GetAreaExplorationState")]
     [TestCase(nameof(PersistentMapProgression.LoadMapProgression), "SetAreaExplorationState")]
     public void MapHandlers_RejectTransientAreasBeforeAccessingPersistence(string methodName, string nativeOperation)
     {
@@ -75,7 +75,7 @@ public class PersistentMapProgressionTests
     [Test]
     public void Logout_UsesThePlayersAreaInsteadOfTheModuleForThePersistenceCheck()
     {
-        ReadMethod(nameof(PersistentMapProgression.SaveMapProgression)).ToString()
+        ReadMethod(nameof(PersistentMapProgression.SaveMapProgressionFor)).ToString()
             .Should().Contain("OBJECT_SELF == GetModule() ? GetArea(player) : OBJECT_SELF");
     }
 

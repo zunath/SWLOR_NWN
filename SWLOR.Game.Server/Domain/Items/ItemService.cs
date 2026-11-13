@@ -282,6 +282,29 @@ namespace SWLOR.Game.Server.Domain.Items
             EnsureItemAndContentsActivations(GetModuleItemAcquired());
         }
 
+        /// <summary>
+        /// While a hot reload quiesces this build (a <see cref="ReloadHookPhase.Quiesce"/> hook): an item use that is still waiting on its delay is
+        /// interrupted, as moving interrupts it (its timing bar stops and the busy flag clears). The closure that would apply the item
+        /// and release the player is dropped by the reload, so the player would otherwise stay busy.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
+        public void QuiesceForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var player in players)
+            {
+                if (_activity.GetBusyType(player) != ActivityStatusType.UseItem)
+                    continue;
+
+                _activity.ClearBusy(player);
+                StopTimingBarForReload(player);
+            }
+        }
+
+        /// <summary>Stops a player's timing bar; on its own so a unit test can answer it.</summary>
+        protected virtual void StopTimingBarForReload(uint player) => PlayerPlugin.StopGuiTimingBar(player, string.Empty);
+
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The activation item properties stay on the items.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void EnsureInventoryItemActivations()
         {

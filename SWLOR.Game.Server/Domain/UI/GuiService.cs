@@ -118,10 +118,21 @@ namespace SWLOR.Game.Server.Domain.UI
         /// <summary>
         /// When a player enters the server, create instances of every window if they have not already been created this session.
         /// </summary>
+        [PlayerSession(PlayerReload.Restore,
+            "Creates the player's window view models (memory only) with their saved geometry; every window needs them.",
+            Step = nameof(CreatePlayerWindowsFor))]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void CreatePlayerWindows()
         {
-            var player = GetEnteringObject();
+            CreatePlayerWindowsFor(GetEnteringObject());
+        }
+
+        /// <summary>
+        /// Creates <paramref name="player"/>'s window view models, with the geometry saved in Redis, unless they exist: the login's
+        /// handler, and a hot reload's restore step for a player who stays online.
+        /// </summary>
+        public void CreatePlayerWindowsFor(uint player)
+        {
             var playerId = GetObjectUUID(player);
 
             if (_playerWindows.ContainsKey(playerId))
@@ -175,10 +186,21 @@ namespace SWLOR.Game.Server.Domain.UI
         /// <summary>
         /// When a player exits the server, save the geometry positions of any open windows.
         /// </summary>
+        [PlayerSession(PlayerReload.Quiesce,
+            "Saves the geometry of the open windows, which only the old build's view models hold, so the reopened windows keep their place.",
+            Step = nameof(SavePlayerWindowGeometryFor))]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void SavePlayerWindowGeometry()
         {
-            var player = GetExitingObject();
+            SavePlayerWindowGeometryFor(GetExitingObject());
+        }
+
+        /// <summary>
+        /// Saves the geometry of <paramref name="player"/>'s open windows to Redis: the logout's handler, and a hot reload's
+        /// quiescence step for a player who stays online.
+        /// </summary>
+        public void SavePlayerWindowGeometryFor(uint player)
+        {
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
@@ -649,6 +671,92 @@ namespace SWLOR.Game.Server.Domain.UI
                         TogglePlayerWindow(owner, type, uiTarget: target);
                 }
             }
+        }
+
+        /// <summary>
+        /// While a hot reload quiesces this build: closes every window of <paramref name="player"/> the way the player closes it (its
+        /// close callback runs and its geometry is saved), because the next build's element ids differ (<see cref="_elementEvents"/>
+        /// is rerolled) and its view models know nothing of the open window. Returns the windows the next build reopens: those whose
+        /// view model takes no payload, so opening them again is what the player gets by opening them. A window that takes a payload
+        /// (an item, a target, a session, a confirmation callback) cannot be opened again without it, so it stays closed.
+        /// </summary>
+        public IReadOnlyList<GuiReloadWindow> CloseWindowsForReload(uint player)
+        {
+            var reopen = new List<GuiReloadWindow>();
+            var playerId = GetObjectUUID(player);
+            if (!_playerWindows.TryGetValue(playerId, out var windows))
+                return reopen;
+
+            foreach (var (type, playerWindow) in windows.ToList())
+            {
+                foreach (var shownOn in _dmPresence.GetShownOn(player, type).ToList())
+                {
+                    if (!IsWindowOpen(shownOn, type))
+                        continue;
+
+                    var tether = playerWindow.ViewModel?.TetherObject ?? OBJECT_INVALID;
+                    ClosePlayerWindow(player, type, shownOn);
+                    if (TakesNoPayload(playerWindow))
+                        reopen.Add(new GuiReloadWindow(type, shownOn, tether));
+                }
+            }
+
+            return reopen;
+        }
+
+        /// <summary>
+        /// When a hot reload activates this build: opens again the windows the old build closed for <paramref name="player"/>
+        /// (<see cref="CloseWindowsForReload"/>), on the same object and tether, unless one is open already or its tether is gone.
+        /// </summary>
+        public void ReopenWindowsForReload(uint player, IReadOnlyList<GuiReloadWindow> windows)
+        {
+            if (windows == null)
+                throw new ArgumentNullException(nameof(windows));
+
+            foreach (var window in windows)
+            {
+                if (!_windowTemplates.ContainsKey(window.Type) || !GetIsObjectValid(window.ShownOn) || IsWindowOpen(window.ShownOn, window.Type))
+                    continue;
+                if (window.Tether != OBJECT_INVALID && !GetIsObjectValid(window.Tether))
+                    continue;
+
+                TogglePlayerWindow(player, window.Type, tetherObject: window.Tether,
+                    uiTarget: window.ShownOn == player ? OBJECT_INVALID : window.ShownOn);
+            }
+        }
+
+        /// <summary>
+        /// While a hot reload quiesces this build: takes a window off the screen without its close callback (a conversation the
+        /// next build resumes must not end), saving its geometry as a close does.
+        /// </summary>
+        public void DetachWindowForReload(uint player, GuiWindowType type, uint shownOn)
+        {
+            if (shownOn == OBJECT_INVALID)
+                shownOn = player;
+
+            var windowToken = NuiFindWindow(shownOn, BuildWindowId(type));
+            if (windowToken == 0)
+                return;
+
+            NuiDestroy(shownOn, windowToken);
+            var playerId = GetObjectUUID(player);
+            if (_playerWindows.TryGetValue(playerId, out var windows) && windows.TryGetValue(type, out var playerWindow))
+            {
+                playerWindow.WindowToken = 0;
+                SaveWindowGeometry(playerId, type, playerWindow.ViewModel.Geometry);
+            }
+        }
+
+        /// <summary>Whether the window's view model takes no payload (it derives from the view model base with <see cref="GuiPayloadBase"/>).</summary>
+        private static bool TakesNoPayload(GuiPlayerWindow playerWindow)
+        {
+            for (var type = playerWindow?.ViewModel?.GetType(); type != null; type = type.BaseType)
+            {
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(GuiViewModelBase<,>))
+                    return type.GetGenericArguments()[1] == typeof(GuiPayloadBase);
+            }
+
+            return false;
         }
 
         /// <summary>

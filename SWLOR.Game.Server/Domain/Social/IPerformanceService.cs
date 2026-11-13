@@ -89,6 +89,9 @@ namespace SWLOR.Game.Server.Domain.Social
         /// <summary>Ends the performance of a player who leaves the module.</summary>
         void EndOnLogout();
 
+        /// <summary>The work of <see cref="EndOnLogout"/> for one player (a hot reload's quiescence step).</summary>
+        void EndOnLogoutFor(uint player);
+
         /// <summary>Ends the performance of a player who leaves the area.</summary>
         void EndOnAreaExit();
 

@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatusEffect.RemoveStatusEffect(player, typeof(RestStatusEffect));
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Ends rest at login; the carried rest status stays.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void RemoveRestOnLogin()
         {
@@ -52,6 +54,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             DelayCommand(0.5f, () => CheckMovement(creature));
             ExecuteScript(ScriptName.OnRestStarted, creature);
+        }
+
+        /// <summary>
+        /// The movement check reschedules itself through a closure a hot reload drops; the rest position and the busy flag are engine
+        /// locals and the effect is carried, so the new build starts the check again and walking still ends rest.
+        /// </summary>
+        public override void ResumeAfterReload(uint creature)
+        {
+            DelayCommand(0.5f, () => CheckMovement(creature));
         }
 
         protected override void Tick(uint creature)

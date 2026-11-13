@@ -20,6 +20,8 @@ public static class PowerGloveFit
     private const string AppliedTranslationYVariable = "POWER_GLOVE_FIT_Y";
     private const string AppliedTranslationZVariable = "POWER_GLOVE_FIT_Z";
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "The glove fit stays in the engine.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnModuleEnter() => RefreshInventory(GetEnteringObject());
 

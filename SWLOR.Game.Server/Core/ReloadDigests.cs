@@ -9,7 +9,8 @@ namespace SWLOR.Game.Server.Core
     /// (<see cref="ReloadDigestHasher"/>) of one field, named <c>Namespace.Class.field</c>. Cache: every field of each class that
     /// owns a rerun boot handler or a handler of a script those run, except the fields marked <see cref="ReloadStateAttribute"/>
     /// and those that hold another service; after a reload each must equal the boot's. Adopted: every field marked
-    /// <see cref="ReloadStateKind.Adopted"/>; after a reload each must equal the old build's at quiescence. The world digests
+    /// <see cref="ReloadStateKind.Adopted"/> or <see cref="ReloadStateKind.Carried"/>; after a reload each must equal the old build's at
+    /// quiescence. The world digests
     /// (<see cref="WorldDigest"/>) complete them. The server logs them only when hot reload is on;
     /// <c>scripts/run-hot-reload-check.sh</c> compares them (<see cref="Compare"/> is the same rule).
     /// </summary>
@@ -48,7 +49,8 @@ namespace SWLOR.Game.Server.Core
         }
 
         /// <summary>
-        /// The adopted digests: one per field marked <see cref="ReloadStateKind.Adopted"/> of the classes of the game assembly, in
+        /// The adopted digests: one per field marked <see cref="ReloadStateKind.Adopted"/> or <see cref="ReloadStateKind.Carried"/> of
+        /// the classes of the game assembly, in
         /// the order of the class names. An instance field is read from <paramref name="resolveOwner"/>'s instance of the class (the
         /// container's singleton); a class it cannot resolve gets one digest that never matches.
         /// </summary>
@@ -70,7 +72,7 @@ namespace SWLOR.Game.Server.Core
             var lines = new List<ReloadDigestLine>();
             foreach (var type in assembly.GetTypes().OrderBy(type => type.FullName, StringComparer.Ordinal))
             {
-                var adopted = type.GetFields(flags).Where(field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted).ToArray();
+                var adopted = type.GetFields(flags).Where(field => IsComparedAtQuiescence(ReloadDigestHasher.StateOf(field))).ToArray();
                 if (adopted.Length == 0)
                     continue;
 
@@ -86,10 +88,16 @@ namespace SWLOR.Game.Server.Core
                 }
 
                 lines.AddRange(DescribeFields(hasher, AdoptedKind, type, instance,
-                    field => field.DeclaringType == type && ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted));
+                    field => field.DeclaringType == type && IsComparedAtQuiescence(ReloadDigestHasher.StateOf(field))));
             }
 
             return lines;
+        }
+
+        /// <summary>The kinds whose digest after a reload must equal the old build's at quiescence: adopted and carried state.</summary>
+        public static bool IsComparedAtQuiescence(ReloadStateKind? kind)
+        {
+            return kind is ReloadStateKind.Adopted or ReloadStateKind.Carried;
         }
 
         /// <summary>

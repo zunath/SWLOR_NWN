@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     {
         private const string DefaultGroup = "";
 
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, List<TemporaryModifier>> _modifiers = new();
         private readonly IGuiService _gui;
 
@@ -19,6 +20,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             _gui = gui;
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Drops the player's temporary modifiers; they are carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearExitingObject()
         {

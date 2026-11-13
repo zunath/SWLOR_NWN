@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
@@ -26,6 +27,7 @@ public class TwinPistolEquipmentService : ITwinPistolEquipmentService
     private const string DestroyingVariable = "TWIN_PISTOL_REMOVING";
     private const string CompanionVariable = "TWIN_PISTOL_COMPANION";
     private const string CompanionResref = "twp_companion";
+    [ReloadState(ReloadStateKind.Carried)]
     private readonly Dictionary<uint, (uint Main, uint Spare)> _pairs = new();
     private readonly HashSet<uint> _changing = new();
     private readonly HashSet<uint> _refreshingAppearance = new();

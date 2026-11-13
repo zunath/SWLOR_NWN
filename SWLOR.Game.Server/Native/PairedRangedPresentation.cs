@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWNX;
@@ -102,6 +103,17 @@ public static class PairedRangedPresentation
 
     /// <summary>Bolts presented for the actor since its pool was prepared.</summary>
     public static int GetLaunchCount(uint actor) => LaunchCounts.GetValueOrDefault(actor);
+
+    /// <summary>
+    /// While a hot reload quiesces the old build: every actor's muzzle anchors are destroyed, NPCs' as well as players' (whose
+    /// logout step does the same), because the pools are this build's memory and the new build cannot find them to reuse or remove.
+    /// </summary>
+    [ReloadHook(ReloadHookPhase.Quiesce)]
+    public static void ReleaseAllForReload(IReadOnlyList<uint> players)
+    {
+        foreach (var actor in Anchors.Keys.ToList())
+            Release(actor);
+    }
 
     public static void Release(uint actor)
     {
@@ -233,9 +245,17 @@ public static class PairedRangedPresentation
     [NWNEventHandler(ScriptName.OnAreaEnter)]
     public static void OnAreaEnter() => Prepare(GetEnteringObject());
 
+    [PlayerSession(PlayerReload.Quiesce,
+        "The muzzle anchors are tracked only in the old build, so they are destroyed as at logout instead of being left in the world.",
+        Step = nameof(ReleaseFor))]
     [NWNEventHandler(ScriptName.OnAreaExit)]
     [NWNEventHandler(ScriptName.OnModuleExit)]
-    public static void OnExit() => Release(GetExitingObject());
+    public static void OnExit() => ReleaseFor(GetExitingObject());
+
+    /// <summary>
+    /// The work of <see cref="OnExit"/> for <paramref name="actor"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+    /// </summary>
+    public static void ReleaseFor(uint actor) => Release(actor);
 
     [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
     public static void OnCreatureDeath() => Release(OBJECT_SELF);

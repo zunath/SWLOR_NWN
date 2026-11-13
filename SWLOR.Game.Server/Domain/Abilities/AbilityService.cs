@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         }
 
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
@@ -1662,6 +1662,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>
         /// When a player enters the server, apply the Aura AOE effect.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The aura's area of effect stays on the player; the aura lists are carried (AbilityService._playerAuras).")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ApplyAuraAOE()
         {
@@ -1673,6 +1675,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// When a player exits the server, remove all of their Aura effects.
         /// Also removes the player from any aura ranges they are receiving as a recipient.
         /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Takes the player's auras off everyone; the aura lists are carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearAurasOnExit()
         {
@@ -4037,6 +4041,25 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _activeAbilityActivations[activator] = activation;
 
         public void RemoveActiveAbilityActivation(uint activator) => _activeAbilityActivations.Remove(activator);
+
+        /// <summary>
+        /// While a hot reload quiesces this build (a <see cref="ReloadHookPhase.Quiesce"/> hook): every creature's cast or delayed impact is
+        /// interrupted, as damage or movement interrupts it, which releases its busy flag, timing bar, channel and stamina context.
+        /// The closures that would finish it are dropped by the reload and the activations are not carried, so the new build could
+        /// neither finish nor interrupt it, and the caster would stay busy.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
+        public void QuiesceForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var activator in _activeAbilityActivations.Keys.ToArray())
+                InterruptActivationForReload(activator);
+        }
+
+        /// <summary>The interruption of one activation (<c>UsePerkFeat</c>'s), on its own so a unit test can answer it.</summary>
+        protected virtual void InterruptActivationForReload(uint activator)
+        {
+            UsePerkFeat.InterruptAbilityActivation(activator);
+        }
 
         public bool TryGetQueuedWeaponTraits(uint activator, out WeaponAbilityTraitActivation traits) =>
             _queuedWeaponTraits.TryGetValue(activator, out traits);

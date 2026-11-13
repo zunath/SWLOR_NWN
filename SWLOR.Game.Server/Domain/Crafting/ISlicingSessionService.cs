@@ -42,6 +42,9 @@ namespace SWLOR.Game.Server.Domain.Crafting
         /// <summary>A player who leaves the module or the area abandons their attempt.</summary>
         void OnPlayerExit();
 
+        /// <summary>The work of <see cref="OnPlayerExit"/> for one player (a hot reload's quiescence step).</summary>
+        void AbandonFor(uint player);
+
         /// <summary>A player who dies abandons their attempt and the window is closed.</summary>
         void OnPlayerDeath();
     }

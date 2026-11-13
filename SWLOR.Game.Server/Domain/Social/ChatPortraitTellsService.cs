@@ -33,10 +33,20 @@ namespace SWLOR.Game.Server.Domain.Social
         // Character IDs by login object. A character that logs back in, even into the same slot, is the same speaker.
         private readonly Dictionary<uint, string> _characterIdByLoginObject = new();
 
+        [PlayerSession(PlayerReload.Restore,
+            "Maps the login object to its character id, which only the old build's memory held.",
+            Step = nameof(RememberPlayer))]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RememberEnteringPlayer()
         {
-            var player = GetEnteringObject();
+            RememberPlayer(GetEnteringObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="RememberEnteringPlayer"/> for <paramref name="player"/>: the login's handler, and a hot reload's restore step for a player who stays online.
+        /// </summary>
+        public void RememberPlayer(uint player)
+        {
             if (!GetIsPC(player))
                 return;
 
@@ -45,6 +55,8 @@ namespace SWLOR.Game.Server.Domain.Social
             _characterIdByLoginObject[player] = GetObjectUUID(player);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Forgets the player in memory, which goes with the old build.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ForgetExitingPlayer()
         {

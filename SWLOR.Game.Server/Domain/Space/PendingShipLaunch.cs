@@ -3,7 +3,7 @@ using SWLOR.NWN.API.Engine;
 namespace SWLOR.Game.Server.Domain.Space
 {
     /// <summary>Reserves a ship and preserves the interior return location across native area loading.</summary>
-    internal sealed class PendingShipLaunch
+    public sealed class PendingShipLaunch
     {
         public string PlayerId { get; init; }
         public string ShipId { get; init; }

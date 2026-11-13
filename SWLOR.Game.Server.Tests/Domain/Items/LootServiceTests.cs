@@ -935,6 +935,33 @@ public class LootServiceTests
     }
 
     [Test]
+    public void A_reload_gives_every_corpse_and_extraction_corpse_its_cleanup_again()
+    {
+        // P4-15 closure audit: the six-minute cleanup is a closure the reload drops.
+        const uint extract = 301;
+        const uint chest = 302;
+        _valid.UnionWith(new[] { Body, extract, chest });
+        _engine.SetReturn("GetFirstArea", Area);
+        _engine.SetReturn("GetNextArea", ObjectInvalid);
+        _engine.SetReturn("GetFirstObjectInArea", Container);
+        _engine.SetReturnSequence("GetNextObjectInArea", extract, chest, ObjectInvalid);
+        _engine.SetLocalObject(Container, "CORPSE_BODY", Body);
+        _engine.SetLocalObject(extract, "CORPSE_BODY", Body);
+
+        _service.ResumeCorpseCleanupForReload(Array.Empty<uint>());
+
+        var cleanups = _engine.CallsTo("DelayCommand").ToList();
+        cleanups.Should().HaveCount(2, "a placeable that is not a corpse is left alone");
+        cleanups.Should().OnlyContain(call => (float)call.Arguments[0]! == 360f);
+        _locals.ClearCalls();
+        _engine.SetReturn("GetFirstItemInInventory", ObjectInvalid);
+
+        ((Action)cleanups[0].Arguments[1]!)();
+
+        _engine.CallsTo("DestroyObject").Select(call => (uint)call.Arguments[0]!).Should().Equal(Body, Container);
+    }
+
+    [Test]
     public void CloseCorpseContainer_leaves_a_corpse_that_still_holds_items()
     {
         _engine.SetReturn("OBJECT_SELF", Container);

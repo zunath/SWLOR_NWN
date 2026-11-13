@@ -822,5 +822,94 @@ public class ConversationServiceTests
         }
 
         protected override void WriteError(string message) => Errors.Add(message);
+
+        public Dictionary<uint, IConversationSession> OpenSessions { get; } = new();
+        public List<uint> Detached { get; } = new();
+
+        protected override IConversationSession FindOpenSession(uint player) => OpenSessions.GetValueOrDefault(player);
+
+        protected override void DetachWindowForReload(uint player) => Detached.Add(player);
+    }
+
+    // ---- a hot reload (P4-15)
+
+    [Test]
+    public void A_reload_carries_a_registered_conversation_and_resumes_it_at_the_same_line_without_running_actions()
+    {
+        var player = _bench.AddPlayer();
+        var owner = _bench.AddCreature();
+        var calls = 0;
+        _service.Runtime.RegisterAction("count", (_, _) => { calls++; return true; });
+        var graph = SimpleGraph("carried");
+        graph.OnStartActions.Add(new ConversationAction { Key = "count" });
+        graph.Nodes["start"].OnEnterActions.Add(new ConversationAction { Key = "count" });
+        graph.OnAbortActions.Add(new ConversationAction { Key = "count" });
+        _service.RegisterGraph(graph);
+        _service.Start(player.Id, owner.Id, "carried");
+        var session = _service.OpenedWindows.Single().Payload.Session;
+        session.Context.Tokens["mood"] = "calm";
+        _service.OpenSessions[player.Id] = session;
+        calls.Should().Be(2);
+
+        var state = _service.CarryForReload(player.Id);
+
+        state.Should().NotBeNull();
+        state!.GraphId.Should().Be("carried");
+        state.Owner.Should().Be(owner.Id);
+        state.NodeId.Should().Be("start");
+        state.ChoiceIds.Should().Equal("bye");
+        state.Text.Select(block => block.Text).Should().Equal("Hello");
+        _service.Detached.Should().Equal(player.Id);
+        session.HasEnded.Should().BeFalse("the old build's session is taken off the screen without its abort actions");
+        calls.Should().Be(2);
+
+        _service.ResumeAfterReload(player.Id, Newtonsoft.Json.JsonConvert.DeserializeObject<ConversationReloadState>(
+            Newtonsoft.Json.JsonConvert.SerializeObject(state)));
+
+        calls.Should().Be(2, "resuming runs no start, node or abort action again");
+        var resumed = _service.OpenedWindows.Last();
+        resumed.Player.Should().Be(player.Id);
+        resumed.Tether.Should().Be(owner.Id);
+        resumed.Payload.Session.Should().NotBeSameAs(session);
+        resumed.Payload.Session.CurrentNode.Id.Should().Be("start");
+        resumed.Payload.Session.CurrentText.Select(block => block.Text).Should().Equal("Hello");
+        resumed.Payload.Session.VisibleChoices.Select(choice => choice.Id).Should().Equal("bye");
+        resumed.Payload.Session.Context.Tokens.Should().Contain("mood", "calm");
+        _service.Errors.Should().BeEmpty();
+    }
+
+    [Test]
+    public void A_reload_does_not_carry_a_conversation_on_its_own_runtime_or_with_object_state()
+    {
+        var player = _bench.AddPlayer();
+        var graph = SimpleGraph("menu");
+        var own = new ConversationRuntime();
+        var session = new ConversationSession(graph, new ConversationContext(player.Id, ConversationBench.Invalid), own);
+        session.Start().Should().BeTrue();
+        _service.OpenSessions[player.Id] = session;
+
+        _service.CarryForReload(player.Id).Should().BeNull("a graph built in code may hold closures of the old build");
+
+        _service.RegisterGraph(SimpleGraph("registered"));
+        _service.Start(player.Id, ConversationBench.Invalid, "registered");
+        var registered = _service.OpenedWindows.Last().Payload.Session;
+        registered.Context.State["item"] = new object();
+        _service.OpenSessions[player.Id] = registered;
+        _service.CarryForReload(player.Id).Should().BeNull("state other than strings cannot be carried");
+        _service.Detached.Should().BeEmpty();
+        _service.CarryForReload(_bench.AddPlayer().Id).Should().BeNull("a player without a conversation carries nothing");
+    }
+
+    [Test]
+    public void A_carried_conversation_whose_graph_or_line_is_gone_is_reported_and_not_opened()
+    {
+        var player = _bench.AddPlayer();
+        _service.RegisterGraph(SimpleGraph("kept"));
+
+        _service.ResumeAfterReload(player.Id, new ConversationReloadState { GraphId = "gone", NodeId = "start" });
+        _service.ResumeAfterReload(player.Id, new ConversationReloadState { GraphId = "kept", NodeId = "missing" });
+
+        _service.OpenedWindows.Should().BeEmpty();
+        _service.Errors.Should().HaveCount(2).And.OnlyContain(error => error.Contains("could not be resumed after a reload"));
     }
 }

@@ -37,7 +37,13 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Dictionary<(uint Observer, uint Target), (bool Detected, DateTime RolledAt)> _verdicts = new();
 
         // Server-wide so a timer outliving its creature never matches a window on a reused object ID.
+        [ReloadState(ReloadStateKind.Carried)]
         private int _lastTimedExitGeneration;
+
+        // The creatures whose timed window is still open, so a hot reload can end an NPC's as well as a player's (the timer is a
+        // closure the reload drops). Bookkeeping only: nothing reads it outside QuiesceForReload.
+        [ReloadState(ReloadStateKind.Runtime)]
+        private readonly HashSet<uint> _timedExitCreatures = new();
 
         private readonly Lazy<IPerkService> _perk;
         private readonly Lazy<IStatService> _stat;
@@ -256,20 +262,29 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             var generation = ++_lastTimedExitGeneration;
             SetLocalInt(creature, TimedExitActiveVariable, generation);
+            _timedExitCreatures.Add(creature);
 
             DelayCommand(durationSeconds, () =>
             {
                 if (!GetIsObjectValid(creature))
+                {
+                    _timedExitCreatures.Remove(creature);
                     return;
+                }
 
                 // A grant whose entry never happened must not outlive its window either.
                 if (GetLocalInt(creature, GrantedStealthVariable) == generation)
                     ClearGrantedStealth(creature);
 
                 if (GetLocalInt(creature, TimedExitActiveVariable) != generation)
+                {
+                    if (GetLocalInt(creature, TimedExitActiveVariable) == 0)
+                        _timedExitCreatures.Remove(creature);
                     return;
+                }
 
                 DeleteLocalInt(creature, TimedExitActiveVariable);
+                _timedExitCreatures.Remove(creature);
                 if (!GetActionMode(creature, ActionMode.Stealth))
                     return;
 
@@ -320,6 +335,44 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         /// <summary>
+        /// While a hot reload quiesces this build (a <see cref="ReloadHookPhase.Quiesce"/> hook): a player's timed stealth window (a granted stealth or
+        /// an ability's timed exit) ends now, as its timer would end it. The timer is a closure the reload drops, so the window would
+        /// otherwise never close and a granted stealth bonus would stay. The window generation counter is carried, so the new build's
+        /// windows never match a stale one.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
+        public void QuiesceForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var player in players)
+            {
+                // Ghost Protocol's same-frame combat-entry window is ended by a closure too; left set, it would let the player enter
+                // stealth in combat for good.
+                DeleteLocalInt(player, CombatEntryWindowVariable);
+            }
+
+            // Every creature with a timed window: the online players, and any other creature (an NPC) this build started one on.
+            foreach (var creature in players.Concat(_timedExitCreatures).Distinct().ToList())
+            {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
+                var generation = GetLocalInt(creature, TimedExitActiveVariable);
+                if (generation == 0)
+                    continue;
+
+                if (GetLocalInt(creature, GrantedStealthVariable) == generation)
+                    ClearGrantedStealth(creature);
+
+                DeleteLocalInt(creature, TimedExitActiveVariable);
+                // Directly, not through AssignCommand: a command this build queues is dropped with it.
+                if (GetActionMode(creature, ActionMode.Stealth))
+                    SetActionMode(creature, ActionMode.Stealth, false);
+            }
+
+            _timedExitCreatures.Clear();
+        }
+
+        /// <summary>
         /// Returns whether the creature's current stealth window was granted by another player.
         /// </summary>
         public bool HasGrantedStealth(uint creature)
@@ -350,12 +403,16 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// Local variables are saved with the character, but the window's timer belongs to the old
         /// creature object, so a grant never outlives the session that received it.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Clears a granted-stealth window left by a crash at login; it would end a live one.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void ClearGrantedStealthOnEnter()
         {
             ClearGrantedStealth(GetEnteringObject());
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Clears granted-stealth locals at logout; for a player who stays online a reload ends only a timed window, through StealthService.QuiesceForReload.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearGrantedStealthOnExit()
         {

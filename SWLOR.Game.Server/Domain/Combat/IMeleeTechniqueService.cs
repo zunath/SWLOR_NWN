@@ -91,6 +91,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         void OnExit();
 
+        /// <summary>The work of <see cref="OnExit"/> for one player (a hot reload's quiescence step).</summary>
+        void ClearTechniquesFor(uint player);
+
         void OnDeath();
 
         void OnPlayerDeath();

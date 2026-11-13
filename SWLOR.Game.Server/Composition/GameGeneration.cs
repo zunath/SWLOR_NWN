@@ -100,7 +100,9 @@ namespace SWLOR.Game.Server.Composition
         /// uninstalled until the game's boot handlers enable them, at the same moments as on the native entry.
         /// When the host says the module has already loaded (<see cref="IHostLifecycle.ModuleLoaded"/>, a reload), the
         /// server also takes the module-load signal the engine will not send again and runs the reload bootstrap (the rerun
-        /// boot handlers, then the adoption steps), and the activation is logged with how long it took and its slowest steps:
+        /// boot handlers, then the adoption steps and the carried state), then restores the online players (their restore steps,
+        /// windows and conversations, <see cref="IGenerationBoot.RestorePlayers"/>), and the activation is logged with how long it
+        /// took and its slowest steps:
         /// it is the new build's part of the reload pause. With hot reload on, the adopted-state and world digests are logged
         /// before the pause ends and the cache digests at the next frame.
         /// </summary>
@@ -130,6 +132,7 @@ namespace SWLOR.Game.Server.Composition
             _boot.Activate(new HostedBoot(closures, redisConnection, hookControl, _sourceDirectory));
             var scripts = new HostedScriptDispatcher();
             IReadOnlyList<ReloadStepResult> rebuilt = null;
+            IReadOnlyList<ReloadStepResult> restored = null;
             if (reload)
             {
                 // The package makes this generation active only once the activation returns; until then the scripts the engine
@@ -139,6 +142,13 @@ namespace SWLOR.Game.Server.Composition
                 {
                     _boot.ResumeAfterModuleLoad();
                     rebuilt = _boot.RebuildAfterReload();
+
+                    // The adopted and carried state is compared with the old build's as the adoption left it, before the players'
+                    // restore steps use it.
+                    if (_reloadEnabled)
+                        LogDigests(ReloadPhase, _boot.DescribeAdoptedState);
+
+                    restored = RestorePlayers(activation.Generation);
                 }
                 finally
                 {
@@ -161,29 +171,38 @@ namespace SWLOR.Game.Server.Composition
                 _log(FormattableString.Invariant(
                     $"Generation {activation.Generation} activated by a reload in {activationTime.Elapsed.TotalMilliseconds:F0} ms: ") +
                     "rebuilt the service container and the script dispatch, then the reload bootstrap " +
-                    ReloadBootstrap.Describe(rebuilt ?? Array.Empty<ReloadStepResult>()));
+                    ReloadBootstrap.Describe(rebuilt ?? Array.Empty<ReloadStepResult>()) + "; the online players " +
+                    ReloadBootstrap.Describe(restored ?? Array.Empty<ReloadStepResult>()));
 
                 if (_reloadEnabled)
-                {
-                    LogDigests(ReloadPhase, _boot.DescribeAdoptedState);
                     _boot.RunNextFrame(() => LogDigests(ReloadPhase, _boot.DescribeCaches));
-                }
             }
 
             return ValueTask.CompletedTask;
         }
 
         /// <summary>
-        /// On the engine thread, when a reload replaces this build and hot reload is on: logs the adopted-state and world digests
-        /// the next build's must equal, then runs the carry steps, which leave on the module what the next build's adoption
-        /// steps cannot read back from the world. The old build's dispose then stops its timers and queues
-        /// (<see cref="IServerTeardown"/>), and the host drops its pending closures. P4-15 saves online players' state and closes
-        /// windows and conversations here.
+        /// On the engine thread, when a reload replaces this build and hot reload is on: runs the online players' quiescence steps
+        /// and takes their windows and conversations down (<see cref="IGenerationBoot.QuiescePlayers"/>, P4-15), logs the
+        /// adopted-state and world digests the next build's must equal, then runs the carry steps, which leave on the module what
+        /// the next build's adoption steps cannot read back from the world, and the carried runtime state. The old build's dispose
+        /// then stops its timers and queues (<see cref="IServerTeardown"/>), and the host drops its pending closures.
         /// </summary>
         public ValueTask BeginQuiescenceAsync(CancellationToken cancellationToken)
         {
             if (!_reloadEnabled || !_bootStarted)
                 return ValueTask.CompletedTask;
+
+            try
+            {
+                var players = _boot.QuiescePlayers();
+                _log(FormattableString.Invariant($"Generation {_generation} quiesced its online players for a reload: ") + ReloadBootstrap.Describe(players));
+            }
+            catch (Exception exception)
+            {
+                // The players keep what the engine and Redis hold; the next build's restore steps still run.
+                _log(FormattableString.Invariant($"Generation {_generation} could not quiesce its online players for the reload: ") + exception);
+            }
 
             LogDigests(QuiescePhase, _boot.DescribeAdoptedState);
             try
@@ -198,6 +217,23 @@ namespace SWLOR.Game.Server.Composition
             }
 
             return ValueTask.CompletedTask;
+        }
+
+        /// <summary>
+        /// The online players' restore steps and screens (<see cref="IGenerationBoot.RestorePlayers"/>). A failure is logged and the
+        /// activation goes on: the players keep what the engine and Redis hold.
+        /// </summary>
+        private IReadOnlyList<ReloadStepResult> RestorePlayers(long generation)
+        {
+            try
+            {
+                return _boot.RestorePlayers();
+            }
+            catch (Exception exception)
+            {
+                _log(FormattableString.Invariant($"Generation {generation} could not restore its online players after the reload: ") + exception);
+                return Array.Empty<ReloadStepResult>();
+            }
         }
 
         /// <summary>Nothing yet: the server drains no work of its own before its dispose.</summary>

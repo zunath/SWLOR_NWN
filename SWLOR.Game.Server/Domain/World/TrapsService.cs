@@ -259,6 +259,18 @@ namespace SWLOR.Game.Server.Domain.World
                 LifetimeSeconds - armingDelay));
         }
 
+        /// <summary>
+        /// While a hot reload quiesces the old build: every placed trap is cleared (its marker removed), as when its owner clears them.
+        /// A trap's arming and proximity checks are closures the reload drops, and its record holds the ability's trigger, so it cannot
+        /// be carried; without this the markers would stay in the world as traps that never fire and cannot be disarmed.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
+        public void ClearTrapsForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var owner in _trapsByOwner.Keys.ToList())
+                ClearTraps(owner);
+        }
+
         public void ClearTraps(uint owner)
         {
             if (!_trapsByOwner.TryGetValue(owner, out var ownerTraps))

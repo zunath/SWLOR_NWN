@@ -188,6 +188,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters the server, send them a greeting and a link to the Discord server.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "A login message.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void WelcomeMessage()
         {

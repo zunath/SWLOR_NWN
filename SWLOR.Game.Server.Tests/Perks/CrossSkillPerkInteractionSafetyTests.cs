@@ -68,7 +68,9 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         combat.Should().Contain("foreach (var channel in _idleSkillAbilityStatChannels)");
         combat.Should().Contain("typeof(IdleSkillAbilityReadyStatusEffect)");
         combat.Should().Contain("ColorToken.Combat(\"Idle Skill Ability Ready\")");
-        var restoreOnLogin = ExtractMethod(combat, "public static void RestoreIdleReadinessOnPlayerEnter()");
+        // The login handler is a call of its per-player step (a hot reload runs the step for players who stay online, P4-15).
+        ExtractMethod(combat, "public static void RestoreIdleReadinessOnPlayerEnter()").Should().Contain("RestoreIdleReadiness(GetEnteringObject())");
+        var restoreOnLogin = ExtractMethod(combat, "public static void RestoreIdleReadiness(uint creature)");
         restoreOnLogin.Should().Contain("RefreshIdleReadiness(creature)",
             "non-persistent readiness markers must be rebuilt when a player logs in");
         restoreOnLogin.Should().Contain("ScheduleIdleReadinessRefresh(creature)");

@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         void RestoreCooldownVisuals();
 
+        /// <summary>The work of <see cref="RestoreCooldownVisuals"/> for one player (a hot reload's restore step).</summary>
+        void RestoreCooldownVisualsFor(uint player);
+
         void ClearCooldownVisualsOnExit();
 
         /// <summary>Builds a native recharge frame name from feat or fitted module artwork.</summary>

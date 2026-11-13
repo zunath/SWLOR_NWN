@@ -99,6 +99,8 @@ public class ReloadAdoptionTests
         text.Append("# Rerun handlers with an adoption step: it puts back, after the reruns, what the rerun rolled anew.\n");
         text.Append("# Adopted state: the fields marked [ReloadState(ReloadStateKind.Adopted)], compared with the old build's at quiescence.\n");
         text.Append("# Rerolled state: the fields marked [ReloadState(ReloadStateKind.Rerolled)], rolled again by a reload and not compared.\n");
+        text.Append("# Carried state: the fields marked [ReloadState(ReloadStateKind.Carried)], written by the old build at quiescence and read back\n");
+        text.Append("# by the new one after its adoptions (ReloadStateCarrier), compared with the old build's at quiescence.\n");
         text.Append("# The rule is in SWLOR.Game.Server/Readmes/MaintainabilityRefactorHotReload.md sections 2 and 3.\n");
         text.Append("# Regenerate (build first): " + RegenerateCommand + "\n");
 
@@ -135,6 +137,10 @@ public class ReloadAdoptionTests
 
         text.Append("\n== REROLLED STATE ==\n");
         foreach (var field in FieldsOf(ReloadStateKind.Rerolled).OrderBy(field => field.DeclaringType.FullName, StringComparer.Ordinal).ThenBy(field => field.Name, StringComparer.Ordinal))
+            text.Append(field.DeclaringType.FullName).Append('.').Append(field.Name).Append('\n');
+
+        text.Append("\n== CARRIED STATE ==\n");
+        foreach (var field in FieldsOf(ReloadStateKind.Carried).OrderBy(field => field.DeclaringType.FullName, StringComparer.Ordinal).ThenBy(field => field.Name, StringComparer.Ordinal))
             text.Append(field.DeclaringType.FullName).Append('.').Append(field.Name).Append('\n');
 
         SnapshotComparison.AssertMatches(Snapshot, text.ToString(), RegenerateCommand);

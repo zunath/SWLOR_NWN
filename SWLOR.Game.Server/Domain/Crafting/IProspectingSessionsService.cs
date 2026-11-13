@@ -42,5 +42,8 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
         /// <summary>A player who logs out stops at once.</summary>
         void AbandonOnExit();
+
+        /// <summary>The work of <see cref="AbandonOnExit"/> for one player (a hot reload's quiescence step).</summary>
+        void AbandonFor(uint player);
     }
 }

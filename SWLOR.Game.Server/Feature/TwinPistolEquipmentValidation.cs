@@ -35,9 +35,13 @@ public static class TwinPistolEquipmentValidation
     [NWNEventHandler(ScriptName.OnObjectDestroyed)]
     public static void OnDestroyed() => TwinPistolEquipment.ClearFailedReturn(OBJECT_SELF);
 
+    [PlayerSession(PlayerReload.LogoutOnly,
+        "Forgets a failed re-equip notice, which goes with the old build.")]
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => TwinPistolEquipment.ClearFailedReturn(GetExitingObject());
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "Validates the hands at login; the equipment has not changed.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnEnter() => QueueRevalidation(GetEnteringObject());
 

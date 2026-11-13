@@ -26,6 +26,21 @@ namespace SWLOR.Game.Server.Domain.UI
         /// </summary>
         void SavePlayerWindowGeometry();
 
+        /// <summary>Creates a player's window view models unless they exist (the login handler's work, and a reload's restore step).</summary>
+        void CreatePlayerWindowsFor(uint player);
+
+        /// <summary>Saves the geometry of a player's open windows (the logout handler's work, and a reload's quiescence step).</summary>
+        void SavePlayerWindowGeometryFor(uint player);
+
+        /// <summary>A hot reload closes a player's windows in the old build and returns those the new build reopens.</summary>
+        IReadOnlyList<GuiReloadWindow> CloseWindowsForReload(uint player);
+
+        /// <summary>A hot reload reopens in the new build the windows the old build closed.</summary>
+        void ReopenWindowsForReload(uint player, IReadOnlyList<GuiReloadWindow> windows);
+
+        /// <summary>A hot reload takes a window off the screen without its close callback.</summary>
+        void DetachWindowForReload(uint player, GuiWindowType type, uint shownOn);
+
         /// <summary>
         /// Registers an element's event information.
         /// </summary>

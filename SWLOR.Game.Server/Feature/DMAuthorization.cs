@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature
         /// Verifies that a logging in player is an authorized DM.
         /// The player will be booted if they are not authorized.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Authorizes a DM at login and starts DMFI; the DM stays authorized.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void VerifyDM()
         {

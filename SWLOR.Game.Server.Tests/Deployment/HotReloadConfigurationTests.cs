@@ -43,6 +43,10 @@ public class HotReloadConfigurationTests
         check.Should().Contain("export SWLOR_ENGINE_TEST_HOT_RELOAD=true");
         check.Should().Contain("COMPOSE_PROJECT=\"swlor-hot-reload-check\"", "the check never shares the engine-test runner's Compose project");
         check.Should().Contain("SWLOR.Game.Server/Docker/docker-compose.enginetests.yml");
+        check.Should().Contain("export SWLOR_ENGINE_TEST_FILTER=\"$ENGINE_FILTER\"",
+            "--engine-filter runs the selected engine tests in every generation (the HotReloadPlayers scenario, P4-15)");
+        check.Should().Contain("--server-output \"$(native_path \"$CANDIDATE_OUTPUT_DIR\")\"",
+            "each candidate carries the engine-test assembly when the engine tests run");
         Read("scripts", "run-engine-tests.sh").Should().NotContain("SWLOR_ENGINE_TEST_HOT_RELOAD");
         Read("scripts", "run-engine-tests.ps1").Should().NotContain("SWLOR_ENGINE_TEST_HOT_RELOAD");
     }

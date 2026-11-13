@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "The client targeting data stays in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void RefreshClientTargetingOnEnter()
         {

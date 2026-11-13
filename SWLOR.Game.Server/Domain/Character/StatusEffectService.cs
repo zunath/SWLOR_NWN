@@ -27,14 +27,14 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <c>protected virtual</c> methods whose bodies are the original calls. The pure duration rules live in
     /// <see cref="StatusEffectRules"/>, for code that has no container.
     /// </summary>
-    public class StatusEffectService : IStatusEffectService
+    public class StatusEffectService : IStatusEffectService, IReloadStateAdopter
     {
         private const string StatusEffectTag = "STATUS_EFFECT";
         private const float Interval = 1f;
 
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
-        [ReloadState(ReloadStateKind.Runtime)]
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
         [ReloadState(ReloadStateKind.Runtime)]
@@ -298,6 +298,8 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player enters the server, apply the NWN effect system
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Moves the effects held since logout back to the player; a reload carries the status effects themselves, and a rerun would take the food bonus off max HP.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void OnPlayerEnter()
         {
@@ -323,6 +325,39 @@ namespace SWLOR.Game.Server.Domain.Character
 
             ReapplyFoodHP(player);
             DelayCommand(1f, () => RestoreSavedToggles(player));
+        }
+
+        /// <summary>
+        /// After a hot reload has carried the status effects into this build (<see cref="IReloadStateAdopter"/>), for every creature
+        /// still in the world: a status whose native effect is gone is settled now, as the old build's settle closure (dropped by the
+        /// reload) would have settled it; every other status restarts what it keeps going through its own closures
+        /// (<see cref="StatusEffectBase.ResumeAfterReload"/>, the rest movement check); and the movement rate is recomputed, as the
+        /// closure after a removed stat change would have done (online players too, whose last status may have just ended).
+        /// </summary>
+        public void OnCarriedStateAdopted()
+        {
+            var creatures = new HashSet<uint>(_creatureEffects.Keys);
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+                creatures.Add(player);
+
+            foreach (var creature in creatures)
+            {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
+                if (_creatureEffects.TryGetValue(creature, out var effects))
+                {
+                    foreach (var effect in effects.GetAllEffects())
+                    {
+                        if (!MayHaveEffectTag(creature, effect.Id) || !HasEffectByTag(creature, effect.Id))
+                            RemoveStatusEffectById(creature, effect.Id, true, false);
+                        else
+                            (effect as StatusEffectBase)?.ResumeAfterReload(creature);
+                    }
+                }
+
+                ApplyCreatureMovementRate(creature);
+            }
         }
 
         /// <summary>
@@ -405,6 +440,8 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// When a player exits the server, hold their status effects until they return.
         /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Holds the effects for the player's return and takes them off the creature; a reload carries the status effects of every creature instead.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void OnPlayerExit()
         {

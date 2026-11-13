@@ -374,6 +374,19 @@ public class TrapsServiceTests
     }
 
     [Test]
+    public void A_reload_clears_every_owners_traps_whose_arming_and_proximity_closures_it_drops()
+    {
+        PlacePerkTrap(Owner, At(0f)).Should().BeTrue();
+        PlacePerkTrap(OtherOwner, At(10f)).Should().BeTrue();
+
+        _service.ClearTrapsForReload(Array.Empty<uint>());
+
+        IsMarkerDestroyed(FirstMarker).Should().BeTrue();
+        IsMarkerDestroyed(SecondMarker).Should().BeTrue("an owner who is not online loses the trap too");
+        PlacePerkTrap(OtherOwner, At(0f)).Should().BeTrue("the spots are free again");
+    }
+
+    [Test]
     public void ClearTraps_does_nothing_for_an_owner_without_traps()
     {
         var clear = () => _service.ClearTraps(Owner);

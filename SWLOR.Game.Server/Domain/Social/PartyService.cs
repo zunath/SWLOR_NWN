@@ -23,8 +23,11 @@ namespace SWLOR.Game.Server.Domain.Social
             _telegraph = telegraph;
         }
 
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<Guid, List<uint>> _parties = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, Guid> _creatureToParty = new();
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<Guid, uint> _partyLeaders = new();
 
         [NWNEventHandler(ScriptName.OnPartyAcceptInvitationAfter)]
@@ -117,6 +120,8 @@ namespace SWLOR.Game.Server.Domain.Social
             _partyLeaders[partyId] = creature;
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Takes the player out of their party; the parties are carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void LeaveServer()
         {

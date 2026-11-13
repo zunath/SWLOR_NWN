@@ -400,6 +400,8 @@ namespace SWLOR.Game.Server.Domain.Social
             }
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Repairs a hotbar a crash left swapped at login; on a player who stays online it would overwrite the hotbar. The quiescence step ends a performance cleanly instead.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public void RecoverOnLogin()
         {
@@ -433,10 +435,21 @@ namespace SWLOR.Game.Server.Domain.Social
             session.NoteActivity(UtcNow());
         }
 
+        [PlayerSession(PlayerReload.Quiesce,
+            "A performance (song, beat timer) cannot be carried, so it ends as at logout: the hotbar is restored and the mode feats removed instead of staying swapped.",
+            Step = nameof(EndOnLogoutFor))]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void EndOnLogout()
         {
-            EndPerformance(GetExitingObject(), PerformanceEndReason.LoggedOut);
+            EndOnLogoutFor(GetExitingObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="EndOnLogout"/> for <paramref name="player"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+        /// </summary>
+        public void EndOnLogoutFor(uint player)
+        {
+            EndPerformance(player, PerformanceEndReason.LoggedOut);
         }
 
         [NWNEventHandler(ScriptName.OnAreaExit)]

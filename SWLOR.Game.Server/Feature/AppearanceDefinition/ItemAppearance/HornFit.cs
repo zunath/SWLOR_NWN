@@ -58,6 +58,8 @@ public static class HornFit
         return fits;
     }
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "The horn fit stays in the engine.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnModuleEnter() => RefreshInventory(GetEnteringObject());
 

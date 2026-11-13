@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Domain.Character
         public const float IntroductionRange = 20f;
         private readonly TimeSpan _offerLifetime = TimeSpan.FromMinutes(10);
         private const float IntroductionDelaySeconds = 120f;
+        [ReloadState(ReloadStateKind.Carried)]
         private readonly PlayerIntroductionInbox _inbox = new();
         private readonly IPlayerNameService _playerName;
         private readonly IDisguiseService _disguise;
@@ -30,6 +31,8 @@ namespace SWLOR.Game.Server.Domain.Character
             _recast = recast;
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Drops the player's introduction offers; the offers are carried.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ClearOnExit()
         {

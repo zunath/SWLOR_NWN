@@ -66,9 +66,10 @@ Domain/Companions -> Platform/Composition | 16
 Domain/Companions -> Platform/Core | 53
 Domain/Companions -> Platform/Extension | 1
 
-# Crafting -> Foundation (2 edges)
-Domain/Crafting -> Domain/Foundation | 85
+# Crafting -> Foundation (3 edges)
+Domain/Crafting -> Domain/Foundation | 190
 Domain/Crafting -> Platform/Entity | 98
+Feature/RecipeDefinition -> Domain/Foundation | 89
 
 # Crafting -> Platform (4 edges)
 Domain/Crafting -> Platform/Composition | 67
@@ -89,7 +90,7 @@ Feature/AIDefinition -> Platform/Composition | 1
 Feature/SpawnDefinition -> Platform/Composition | 1
 
 # Economy -> Foundation (3 edges)
-Domain/Economy -> Domain/Foundation | 30
+Domain/Economy -> Domain/Foundation | 31
 Domain/Economy -> Platform/Entity | 28
 Domain/Economy -> Platform/Enumeration | 31
 
@@ -336,7 +337,7 @@ Feature/QuestDefinition -> Platform/Composition | 145
 Domain/Social -> Domain/Foundation | 53
 Domain/Social -> Platform/Entity | 13
 Domain/Social -> Platform/Enumeration | 9
-Feature/ChatCommandDefinition -> Domain/Foundation | 38
+Feature/ChatCommandDefinition -> Domain/Foundation | 42
 Feature/ChatCommandDefinition -> Platform/Entity | 17
 Feature/ChatCommandDefinition -> Platform/Enumeration | 102
 
@@ -366,7 +367,7 @@ Domain/UI -> Domain/Foundation | 27
 Domain/UI -> Feature/MigrationDefinition | 1
 Domain/UI -> Platform/Entity | 29
 Domain/UI -> Platform/Enumeration | 1
-Feature/GuiDefinition -> Domain/Foundation | 342
+Feature/GuiDefinition -> Domain/Foundation | 363
 Feature/GuiDefinition -> Platform/Entity | 378
 Feature/GuiDefinition -> Platform/Enumeration | 21
 

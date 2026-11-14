@@ -14,7 +14,6 @@
 
 Abilities <-> Character | 2
 Abilities <-> Combat | 2
-Abilities <-> Creatures | 2
 Abilities <-> Foundation | 4
 Abilities <-> Items | 2
 Abilities <-> Platform | 4

@@ -309,8 +309,8 @@ Feature/MigrationDefinition -> Domain/Companions | 45
 Platform/Entity -> Domain/Companions | 22
 
 # Foundation -> Crafting (2 edges)
-Feature/MigrationDefinition -> Domain/Crafting | 15
-Platform/Entity -> Domain/Crafting | 23
+Feature/MigrationDefinition -> Domain/Crafting | 2
+Platform/Entity -> Domain/Crafting | 11
 
 # Foundation -> Creatures (2 edges)
 Domain/Foundation -> Domain/Creatures | 2
@@ -640,7 +640,7 @@ Feature/ChatCommandDefinition -> Domain/Companions | 6
 
 # Social -> Crafting (2 edges)
 Domain/Social -> Domain/Crafting | 5
-Feature/ChatCommandDefinition -> Domain/Crafting | 5
+Feature/ChatCommandDefinition -> Domain/Crafting | 4
 
 # Social -> Creatures (1 edge)
 Feature/ChatCommandDefinition -> Domain/Creatures | 1
@@ -718,7 +718,7 @@ Feature/GuiDefinition -> Domain/Companions | 70
 
 # UI -> Crafting (2 edges)
 Domain/UI -> Domain/Crafting | 3
-Feature/GuiDefinition -> Domain/Crafting | 237
+Feature/GuiDefinition -> Domain/Crafting | 220
 
 # UI -> Creatures (1 edge)
 Feature/GuiDefinition -> Domain/Creatures | 1

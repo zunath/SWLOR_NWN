@@ -33,8 +33,6 @@ SWLOR.Game.Server/Core/ScriptRegistry.cs -> Foundation | 4
 SWLOR.Game.Server/Core/ServerBootstrapper.cs -> Foundation | 2
 SWLOR.Game.Server/Core/ServerStaticState.cs -> Foundation | 1
 SWLOR.Game.Server/Core/ServerTeardown.cs -> Combat | 3
-SWLOR.Game.Server/Domain/Abilities/AbilityBuilder.cs -> Creatures | 2
-SWLOR.Game.Server/Domain/Abilities/AbilityDetail.cs -> Creatures | 2
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Quests | 3
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Social | 10
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Space | 3
@@ -211,7 +209,6 @@ SWLOR.Game.Server/Entity/Beast.cs -> Character | 2
 SWLOR.Game.Server/Entity/Beast.cs -> Combat | 3
 SWLOR.Game.Server/Entity/Beast.cs -> Companions | 3
 SWLOR.Game.Server/Entity/CraftSessionRecord.cs -> Character | 1
-SWLOR.Game.Server/Entity/CraftSessionRecord.cs -> Crafting | 1
 SWLOR.Game.Server/Entity/DMCreatorFavorites.cs -> Administration | 2
 SWLOR.Game.Server/Entity/DMCreatureManagerFavorites.cs -> Administration | 2
 SWLOR.Game.Server/Entity/Election.cs -> World | 1
@@ -223,7 +220,7 @@ SWLOR.Game.Server/Entity/MarketItem.cs -> Economy | 1
 SWLOR.Game.Server/Entity/Player.cs -> Abilities | 2
 SWLOR.Game.Server/Entity/Player.cs -> Character | 11
 SWLOR.Game.Server/Entity/Player.cs -> Combat | 3
-SWLOR.Game.Server/Entity/Player.cs -> Crafting | 4
+SWLOR.Game.Server/Entity/Player.cs -> Crafting | 2
 SWLOR.Game.Server/Entity/Player.cs -> Creatures | 1
 SWLOR.Game.Server/Entity/Player.cs -> Economy | 3
 SWLOR.Game.Server/Entity/Player.cs -> Items | 2
@@ -236,7 +233,6 @@ SWLOR.Game.Server/Entity/PlayerShip.cs -> Space | 1
 SWLOR.Game.Server/Entity/QuestContract.cs -> Quests | 4
 SWLOR.Game.Server/Entity/QuestContractDelivery.cs -> Quests | 2
 SWLOR.Game.Server/Entity/ResearchExperimentRecord.cs -> Crafting | 2
-SWLOR.Game.Server/Entity/ResearchJob.cs -> Crafting | 1
 SWLOR.Game.Server/Entity/ShuttleRide.cs -> World | 1
 SWLOR.Game.Server/Entity/WorldProperty.cs -> World | 9
 SWLOR.Game.Server/Entity/WorldPropertyPermission.cs -> World | 3

@@ -7,23 +7,23 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,097 | 13,558 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,098 | 13,560 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 44 | 73,929 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 35 | 9,785 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 22 | 354 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 77 | 111 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 124 | 272 types | none |
-| 7. Domain cycles | `DomainCycles.txt` | 69 | 215 edges | none |
+| 7. Domain cycles | `DomainCycles.txt` | 68 | 213 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 140 | 267 members | each kept with an approved reason, or removed |
-| 9. References up the domain order | `UpwardEdges.txt` | 360 | 1,319 members | none: every reference follows the domain order |
+| 9. References up the domain order | `UpwardEdges.txt` | 356 | 1,311 members | none: every reference follows the domain order |
 | 10. Sink work | `SinkWork.txt` | 15 | 2,096 lines | none: a sink only forwards |
 
 ## 1. Static service lookup
 
-- 1,097 files, 13,558 uses: 838 using directives and 12,720 uses in code (7,499 in a static context).
+- 1,098 files, 13,560 uses: 839 using directives and 12,721 uses in code (7,499 in a static context).
 - SWLOR.Game.Server: 656 file(s), 6,074 use(s) (Feature/ 553, Domain/ 79, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 236 file(s), 5,265 use(s).
-- SWLOR.Game.Server.Tests: 176 file(s), 2,061 use(s).
+- SWLOR.Game.Server.Tests: 177 file(s), 2,063 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -36,7 +36,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - Content (Feature/) uses in code: 4,791 (1,764 in a static context).
 - Content (Feature/) types that use it: 550. Static classes: 78. Instance classes that use it from a static member: 204 (156 only from static members).
 
-Largest 15 of 1,097 (all in `StaticLookups.txt`):
+Largest 15 of 1,098 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -187,11 +187,11 @@ Largest 15 of 124 (all in `LogicToContent.txt`):
 
 ## 7. Domain cycles
 
-- 69 pairs of domains depend on each other: 63 between logic (20 of them with Foundation or Platform), 6 between content.
+- 68 pairs of domains depend on each other: 62 between logic (20 of them with Foundation or Platform), 6 between content.
 - Foundation's logic is in a pair with 15 domains, Platform with 6.
-- Members both ways: 5,730.
+- Members both ways: 5,785.
 
-Largest 15 of 69 (all in `DomainCycles.txt`):
+Largest 15 of 68 (all in `DomainCycles.txt`):
 
 | Entry | Edges | Detail |
 |---|---:|---|
@@ -240,12 +240,12 @@ Largest 15 of 140 (all in `StaticState.txt`):
 
 ## 9. References up the domain order
 
-- 1,319 members in 252 files reference a domain above their own: 76 directions, 107 unit edges.
-- Logic: 1,201 members in 65 directions; content: 118 members in 11 directions.
+- 1,311 members in 249 files reference a domain above their own: 75 directions, 106 unit edges.
+- Logic: 1,193 members in 64 directions; content: 118 members in 11 directions.
 - From the hook logic in Platform/Native (P5-16b): 124 members in 53 lines.
-- By direction: Combat -> Abilities 313, Character -> Combat 201, Platform -> Combat 63, Foundation -> Character 51, Character -> Abilities 46, Platform -> Foundation 45, Character content -> Quests content 44, Platform -> Character 36, Foundation -> World 27, Character -> Companions 26, Character -> Items 22, Character content -> Abilities content 20, Combat -> Social 18, Character -> UI 17, Combat -> Creatures 17, Foundation -> Combat 17, Combat -> Companions 15, Foundation content -> Character content 15, Foundation -> Abilities 13, Items -> Companions 12, UI -> Abilities 12, Foundation -> Administration 11, World -> Social 11, Abilities -> Social 10, Foundation -> Crafting 10, Foundation -> Items 10, Foundation -> UI 10, Foundation content -> Gameplay content 10, Items -> Combat 10, Creatures -> Companions 9, UI content -> Gameplay content 9, Character -> Social 8, Combat -> World 8, Foundation -> Companions 8, Foundation -> Quests 8, Platform -> Abilities 8, Administration -> World 7, Crafting -> World 7, Foundation -> Social 7, Foundation content -> UI content 7, Administration -> Creatures 6, Combat -> Quests 6, UI -> Combat 6, World -> Space 6, Character -> Quests 5, UI -> Administration 5, Abilities -> Creatures 4, Character -> Creatures 4, Foundation -> Economy 4, Foundation -> Space 4, Platform -> Items 4, Quests -> Economy 4, UI -> Items 4, UI content -> Abilities content 4, Abilities -> Quests 3, Abilities -> Space 3, Abilities -> World 3, Administration -> Space 3, Character -> Administration 3, Combat -> Space 3, Creatures -> Social 3, Foundation -> Creatures 3, Items -> Abilities 3, Items -> Administration 3, Items -> Crafting 3, Items -> Economy 3, Items content -> Abilities content 3, UI -> Crafting 3, UI -> Social 3, Character content -> UI content 2, Gameplay content -> Abilities content 2, Gameplay content -> Quests content 2, Administration -> Combat 1, Character -> Economy 1, Items -> World 1, Platform -> Creatures 1.
+- By direction: Combat -> Abilities 313, Character -> Combat 201, Platform -> Combat 63, Foundation -> Character 51, Character -> Abilities 46, Platform -> Foundation 45, Character content -> Quests content 44, Platform -> Character 36, Foundation -> World 27, Character -> Companions 26, Character -> Items 22, Character content -> Abilities content 20, Combat -> Social 18, Character -> UI 17, Combat -> Creatures 17, Foundation -> Combat 17, Combat -> Companions 15, Foundation content -> Character content 15, Foundation -> Abilities 13, Items -> Companions 12, UI -> Abilities 12, Foundation -> Administration 11, World -> Social 11, Abilities -> Social 10, Foundation -> Items 10, Foundation -> UI 10, Foundation content -> Gameplay content 10, Items -> Combat 10, Creatures -> Companions 9, UI content -> Gameplay content 9, Character -> Social 8, Combat -> World 8, Foundation -> Companions 8, Foundation -> Quests 8, Platform -> Abilities 8, Administration -> World 7, Crafting -> World 7, Foundation -> Social 7, Foundation content -> UI content 7, Administration -> Creatures 6, Combat -> Quests 6, Foundation -> Crafting 6, UI -> Combat 6, World -> Space 6, Character -> Quests 5, UI -> Administration 5, Character -> Creatures 4, Foundation -> Economy 4, Foundation -> Space 4, Platform -> Items 4, Quests -> Economy 4, UI -> Items 4, UI content -> Abilities content 4, Abilities -> Quests 3, Abilities -> Space 3, Abilities -> World 3, Administration -> Space 3, Character -> Administration 3, Combat -> Space 3, Creatures -> Social 3, Foundation -> Creatures 3, Items -> Abilities 3, Items -> Administration 3, Items -> Crafting 3, Items -> Economy 3, Items content -> Abilities content 3, UI -> Crafting 3, UI -> Social 3, Character content -> UI content 2, Gameplay content -> Abilities content 2, Gameplay content -> Quests content 2, Administration -> Combat 1, Character -> Economy 1, Items -> World 1, Platform -> Creatures 1.
 
-Largest 15 of 360 (all in `UpwardEdges.txt`):
+Largest 15 of 356 (all in `UpwardEdges.txt`):
 
 | Entry | Members | Detail |
 |---|---:|---|
@@ -300,7 +300,7 @@ Owner decision 1 (2026-11-14) exempts these from the size and services measures 
 | generated code | generatedHeader `<auto-generated` | typeSize, methodSize, servicesPerType | Files whose header says a tool writes them: weapon archetype ability and perk definitions (GenerateWeaponArchetypeImplementation.py), capstone enemy abilities (UpdateCapstoneEnemyIdentity.ps1) and SlicingBoardCatalog.Generated.cs. |
 | migration | folder `SWLOR.Game.Server/Feature/MigrationDefinition/` | typeSize, methodSize, servicesPerType | Migrations are history: each runs once and is never edited. |
 | attribute-row enum | type `SWLOR.Game.Server.Domain.Character.StatType` | typeSize | Each member carries its row of data in attributes. |
-| attribute-row enum | type `SWLOR.Game.Server.Domain.Crafting.RecipeType` | typeSize | Each member carries its row of data in attributes. |
+| attribute-row enum | type `SWLOR.Game.Server.Domain.Foundation.RecipeType` | typeSize | Each member carries its row of data in attributes. |
 | attribute-row enum | type `SWLOR.Game.Server.Domain.World.StructureType` | typeSize | Each member carries its row of data in attributes. |
 | attribute-row enum | type `SWLOR.Game.Server.Domain.Items.KeyItemType` | typeSize | Each member carries its row of data in attributes. |
 | attribute-row enum | type `SWLOR.Game.Server.Domain.Character.PerkType` | typeSize | Each member carries its row of data in attributes (898 lines today; listed so it may grow past the limit). |

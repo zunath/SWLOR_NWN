@@ -7,21 +7,21 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,088 | 13,517 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,089 | 13,519 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 44 | 73,929 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 38 | 11,160 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 24 | 395 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 42 | 111 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 119 | 267 types | none |
-| 7. Domain cycles | `DomainCycles.txt` | 94 | 702 edges | none |
+| 7. Domain cycles | `DomainCycles.txt` | 94 | 701 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 140 | 267 members | each kept with an approved reason, or removed |
 
 ## 1. Static service lookup
 
-- 1,088 files, 13,517 uses: 829 using directives and 12,688 uses in code (7,471 in a static context).
+- 1,089 files, 13,519 uses: 830 using directives and 12,689 uses in code (7,471 in a static context).
 - SWLOR.Game.Server: 647 file(s), 6,039 use(s) (Feature/ 553, Domain/ 79, Native/ 7, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 236 file(s), 5,259 use(s).
-- SWLOR.Game.Server.Tests: 176 file(s), 2,061 use(s).
+- SWLOR.Game.Server.Tests: 177 file(s), 2,063 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -34,7 +34,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - Content (Feature/) uses in code: 4,765 (1,760 in a static context).
 - Content (Feature/) types that use it: 550. Static classes: 78. Instance classes that use it from a static member: 204 (156 only from static members).
 
-Largest 15 of 1,088 (all in `StaticLookups.txt`):
+Largest 15 of 1,089 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|

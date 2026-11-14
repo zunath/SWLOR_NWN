@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Definitions;
 using SWLOR.Game.Server.CharacterizationTests.Support;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -114,13 +115,16 @@ public class AbilityDefinitionCharacterizationTests
         new(nameof(AbilityDetail.UsesImmediateAuthoredAnimation), a => a.UsesImmediateAuthoredAnimation),
     };
 
+    // The AI settings moved off AbilityDetail into Creatures (P5-1d); they stay in the snapshot rows under their old names.
+    private static readonly HashSet<string> CreaturesOwnedSettings = new() { "AIHitPointCostPercent", "AIScore", "AITargetSelector" };
+
     // The delegates a definition may set. A row lists the ones that are set; their bodies are code, not data.
     private static readonly (string Property, Func<AbilityDetail, bool> IsSet)[] Delegates =
     {
         (nameof(AbilityDetail.ActivationAction), a => a.ActivationAction != null),
-        (nameof(AbilityDetail.AIHitPointCostPercent), a => a.AIHitPointCostPercent != null),
-        (nameof(AbilityDetail.AIScore), a => a.AIScore != null),
-        (nameof(AbilityDetail.AITargetSelector), a => a.AITargetSelector != null),
+        ("AIHitPointCostPercent", a => a.GetAIHitPointCostPercent() != null),
+        ("AIScore", a => a.GetAIScore() != null),
+        ("AITargetSelector", a => a.GetAITargetSelector() != null),
         (nameof(AbilityDetail.ChannelInterruptAction), a => a.ChannelInterruptAction != null),
         (nameof(AbilityDetail.CustomValidation), a => a.CustomValidation != null),
         (nameof(AbilityDetail.ImpactAction), a => a.ImpactAction != null),
@@ -231,7 +235,7 @@ public class AbilityDefinitionCharacterizationTests
             .OrderBy(name => name, StringComparer.Ordinal)
             .ToArray();
         var unknown = covered
-            .Where(name => typeof(AbilityDetail).GetProperty(name) == null)
+            .Where(name => typeof(AbilityDetail).GetProperty(name) == null && !CreaturesOwnedSettings.Contains(name))
             .OrderBy(name => name, StringComparer.Ordinal)
             .ToArray();
 

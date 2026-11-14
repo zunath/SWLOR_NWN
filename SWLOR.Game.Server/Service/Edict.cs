@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.IndustryService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -155,8 +156,11 @@ namespace SWLOR.Game.Server.Service
                 return enactment.Refusal;
 
             // One save of the city record holds the new Edict and the charge, so a restart cannot split them.
-            if (!CityTreasury.Spend(city, enactment.Charge).Succeeded)
+            var charge = CityTreasury.Spend(city, enactment.Charge);
+            if (!charge.Succeeded)
                 return EdictRefusal.InsufficientFunds;
+            CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.EdictEnacted, -charge.Total, EdictCatalog.Get(type)?.Name,
+                officialPlayerId, -charge.Restricted);
 
             Log.Write(LogGroup.Property, $"Edict '{type}' enacted for city '{city.CustomName}' ({city.Id}) by '{officialPlayerId}' for {enactment.Charge} credits.");
 

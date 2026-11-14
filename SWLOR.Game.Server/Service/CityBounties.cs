@@ -179,11 +179,14 @@ namespace SWLOR.Game.Server.Service
             };
             DB.Set(bounty);
 
-            if (!CityTreasury.PostEscrow(city, bounty.Id, reward, restrictedFirst: false).Succeeded)
+            var held = CityTreasury.PostEscrow(city, bounty.Id, reward, restrictedFirst: false);
+            if (!held.Succeeded)
             {
                 DB.Delete<CityBounty>(bounty.Id);
                 return "The reward could not be held. Try again.";
             }
+
+            CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.BountyPosted, -held.Total, bounty.TargetLabel, posterId, -held.Restricted);
 
             Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(poster)} posted bounty '{bounty.Id}' for city '{city.CustomName}' ({city.Id}) on player '{bounty.TargetPlayerId}' identity '{bounty.TargetDisguiseId}': {reward} credits, runs until {bounty.ExpiresUtc:u}.");
             Announce(city, BountyText.BuildPostedText(bounty.TargetLabel, reward, bounty.ExpiresUtc), posterId);
@@ -215,8 +218,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void Refund(CityBounty bounty, WorldProperty city, string gazetteText, string officialPlayerId = null)
         {
-            if (city != null)
-                CityTreasury.RefundEscrow(city, bounty.Id);
+            var release = city == null ? EscrowRelease.NotFound : CityTreasury.RefundEscrow(city, bounty.Id);
+            if (release.Found)
+                CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.BountyReturned, release.Credits, bounty.TargetLabel, officialPlayerId,
+                    release.Restricted);
 
             DB.Delete<CityBounty>(bounty.Id);
             if (city != null)
@@ -328,7 +333,11 @@ namespace SWLOR.Game.Server.Service
 
             var city = DB.Get<WorldProperty>(bounty.CityId);
             if (city != null && city.Escrow.ContainsKey(bounty.Id))
-                CityTreasury.PayOutEscrow(city, bounty.Id);
+            {
+                var release = CityTreasury.PayOutEscrow(city, bounty.Id);
+                CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.BountyCollected, 0, $"{bounty.TargetLabel}, by {bounty.ClaimantLabel}",
+                    escrowCredits: release.Credits);
+            }
 
             DB.Delete<CityBounty>(bounty.Id);
 

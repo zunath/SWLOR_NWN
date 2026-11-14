@@ -10,6 +10,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -438,6 +439,7 @@ namespace SWLOR.Game.Server.Service
 
             city.Treasury += tax;
             DB.Set(city);
+            CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.StoreSalesTax, tax);
             Log.Write(LogGroup.Property, $"SALES TAX - {PlayerName.GetAuditName(buyer)} paid {tax} credits to the treasury of {city.CustomName} ({city.Id}).");
         }
 

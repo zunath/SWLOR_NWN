@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -286,6 +287,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayer = DB.Get<Player>(playerId);
 
                 // Not enough to cover everything, but take what they have.
+                var taxPaid = Math.Min(gold, dbPlayer.PropertyOwedTaxes);
                 if (gold < dbPlayer.PropertyOwedTaxes)
                 {
                     AssignCommand(Player, () => TakeGoldFromCreature(gold, Player, true));
@@ -305,6 +307,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 DB.Set(dbPlayer);
                 DB.Set(dbCity);
+                CityTreasuryHistoryLog.Record(dbCity, CityTreasuryEntryType.CitizenTaxes, taxPaid);
 
                 IsPayTaxesEnabled = dbPlayer.PropertyOwedTaxes > 0;
                 PayTaxesButtonName = $"Pay Taxes ({dbPlayer.PropertyOwedTaxes} cr)";

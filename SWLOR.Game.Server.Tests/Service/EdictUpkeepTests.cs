@@ -158,7 +158,7 @@ public class EdictUpkeepTests
             "public Action PayUpkeep() => () =>");
 
         payUpkeep.Should().Contain("CityTreasuryRules.CanSpend(dbCity, dbCity.Upkeep)");
-        payUpkeep.Should().Contain("CityTreasury.PayUpkeep(dbCity, DateTime.UtcNow);");
+        payUpkeep.Should().Contain("if (CityTreasury.PayUpkeep(dbCity, DateTime.UtcNow))");
         payUpkeep.Should().NotContain("dbCity.Treasury -=");
     }
 

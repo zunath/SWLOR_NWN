@@ -134,11 +134,15 @@ namespace SWLOR.Game.Server.Service
             };
             DB.Set(tournament);
 
-            if (!CityTreasury.PostEscrow(city, tournament.Id, prize, restrictedFirst: false).Succeeded)
+            var held = CityTreasury.PostEscrow(city, tournament.Id, prize, restrictedFirst: false);
+            if (!held.Succeeded)
             {
                 DB.Delete<CityTournament>(tournament.Id);
                 return "The prize could not be held. Try again.";
             }
+
+            CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.TournamentPrizePosted, -held.Total,
+                $"starts {CityTreasuryHistoryRules.FormatTime(tournament.StartsUtc)}", playerId, -held.Restricted);
 
             Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} posted a tournament ({tournament.Id}) for city '{city.CustomName}' ({city.Id}): prize {prize}, entry fee {entryFee}, starts {startsUtc:u}.");
             Announce(tournament, TournamentText.BuildPostedText(prize, entryFee, startsUtc), playerId);

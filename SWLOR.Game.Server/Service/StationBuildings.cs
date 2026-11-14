@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Service.TransferService;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -310,6 +311,7 @@ namespace SWLOR.Game.Server.Service
 
             dbStation.Treasury += fee;
             DB.Set(dbStation);
+            CityTreasuryHistoryLog.Record(dbStation, CityTreasuryEntryType.ShipyardFees, fee);
             Log.Write(LogGroup.Property, $"{payer} paid a Shipyard fee of {fee} credits to station '{dbStation.CustomName}' ({dbStation.Id}).");
         }
 

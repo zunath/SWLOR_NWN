@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.StationService;
 using SWLOR.Game.Server.Service.TradeService;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -70,6 +71,7 @@ namespace SWLOR.Game.Server.Service
 
             city.Treasury += tariff;
             DB.Set(city);
+            CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.ExchangeTariffs, tariff);
             Log.Write(LogGroup.Property, $"TRADE TARIFF - {PlayerName.GetAuditName(player)} paid {tariff} credits to the treasury of {city.CustomName} ({city.Id}).");
         }
     }

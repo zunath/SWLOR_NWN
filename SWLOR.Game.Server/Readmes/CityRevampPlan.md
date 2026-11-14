@@ -680,6 +680,7 @@ The default for anything unclear: Edicts keep running while upkeep is paid, and 
 **Conflict**
 
 - **Duel interrupted:** a third player's attack voids the duel, both duelists stay protected for 6 more seconds, and in a tournament the attacker is barred from the ring.
+- **Treasury history:** Manage City's Treasury tab shows the last 30 days of treasury changes, newest first, to the mayor and those who may withdraw (`CityTreasuryHistoryLog`, added 2026-11-14): deposits, withdrawals, upkeep, Edict charges, situations, bounties, projects and tournaments as lines naming the official, and taxes, tariffs, fares and shipyard fees as one total per kind per day. One record per city, at most 500 lines, pruned on every write and at boot; a city that is gone loses its history.
 - **Bounty farming:** the claimant cannot share a CD key with the target or be in the target's party, cannot be the bounty's poster or share the poster's CD key (kept on the bounty at posting; review fix 2026-11-14, so an official cannot post the treasury on an accomplice and collect it), and each identity can have at most one city bounty claimed per week.
 - **Bounty on a citizen:** allowed. A city can hunt its own outlaws.
 - **Unclaimed bounty or cancelled tournament:** the reward or prize returns from escrow to the treasury, and entry fees return to the entrants.

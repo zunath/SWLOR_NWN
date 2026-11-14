@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.TournamentService;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -94,7 +95,19 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (settlement.ReleasedEscrow)
+            {
                 DB.Set(city);
+                var held = $"started {CityTreasuryHistoryRules.FormatTime(tournament.StartsUtc)}";
+                if (outcome == TournamentOutcome.Completed)
+                {
+                    CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.TournamentPrizeAwarded, 0, held, escrowCredits: tournament.Prize);
+                    CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.TournamentFees, settlement.FeesToTreasury, held);
+                }
+                else
+                {
+                    CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.TournamentPrizeReturned, tournament.Prize, held);
+                }
+            }
 
             DB.Delete<CityTournament>(tournament.Id);
             Log.Write(LogGroup.Property, $"Tournament '{tournament.Id}' of city '{tournament.CityId}' settled as {outcome}: {settlement.Payouts.Count} payments owed, {settlement.FeesToTreasury} credits in fees kept by the city.");

@@ -140,12 +140,16 @@ namespace SWLOR.Game.Server.Service
 
             // Saved first, so a restart between the two saves finds a Starting project and decides from the escrow what happened.
             DB.Set(project);
-            if (!CityTreasury.PostEscrow(city, project.Id, project.CreditCost, restrictedFirst: true).Succeeded)
+            var held = CityTreasury.PostEscrow(city, project.Id, project.CreditCost, restrictedFirst: true);
+            if (!held.Succeeded)
             {
                 DB.Delete<CityProject>(project.Id);
                 project = null;
                 return CityProjectRefusal.CannotAfford;
             }
+
+            CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.ProjectStarted, -held.Total, CityProjectRules.GetName(project), playerId,
+                -held.Restricted);
 
             project.State = CityProjectState.Open;
             DB.Set(project);
@@ -215,7 +219,12 @@ namespace SWLOR.Game.Server.Service
             ReturnMaterials(project);
 
             if (city != null && !city.IsQueuedForDeletion)
-                CityTreasury.RefundEscrow(city, project.Id);
+            {
+                var release = CityTreasury.RefundEscrow(city, project.Id);
+                if (release.Found)
+                    CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.ProjectReturned, release.Credits, CityProjectRules.GetName(project),
+                        restricted: release.Restricted);
+            }
 
             DeleteProject(project);
         }
@@ -388,6 +397,9 @@ namespace SWLOR.Game.Server.Service
             var release = CityTreasuryRules.PayOutEscrow(city, project.Id);
             CityProjectRules.ApplyCompletion(city, project);
             DB.Set(city);
+            if (release.Found)
+                CityTreasuryHistoryLog.Record(city, CityTreasuryEntryType.ProjectCompleted, 0, CityProjectRules.GetName(project),
+                    escrowCredits: release.Credits);
 
             Log.Write(LogGroup.Property, $"City project '{CityProjectRules.GetName(project)}' ({project.Id}) completed for city '{city.CustomName}' ({city.Id}); {release.Credits} credits paid out of escrow.");
             if (release.Found)

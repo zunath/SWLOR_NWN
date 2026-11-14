@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.IndustryService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -466,7 +467,12 @@ namespace SWLOR.Game.Server.Service
                 SituationTreasury.GetSpendable(city),
                 SituationRules.GetGainsInWindow(situations, now));
             if (change != 0)
+            {
+                var restrictedBefore = city.RestrictedTreasury;
                 SituationTreasury.Apply(city, change);
+                CityTreasuryHistoryLog.Record(city, change > 0 ? CityTreasuryEntryType.SituationGain : CityTreasuryEntryType.SituationCost, change,
+                    SituationCatalog.Get(situation.Type)?.Title, restricted: city.RestrictedTreasury - restrictedBefore);
+            }
 
             if (change > 0)
                 situation.TreasuryGain = change;

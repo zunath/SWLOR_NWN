@@ -573,7 +573,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Log.Write(LogGroup.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) paid city upkeep of {dbCity.Upkeep} credits for property '{dbCity.CustomName}' ({dbCity.Id}).");
 
                     // Restricted funds pay first, and an Edict the payment lifts out of disrepair adds its part-week.
-                    CityTreasury.PayUpkeep(dbCity, DateTime.UtcNow);
+                    var upkeepPaid = dbCity.Upkeep;
+                    var restrictedBefore = dbCity.RestrictedTreasury;
+                    if (CityTreasury.PayUpkeep(dbCity, DateTime.UtcNow))
+                        CityTreasuryHistoryLog.Record(dbCity, CityTreasuryEntryType.UpkeepPaid, -upkeepPaid,
+                            playerId: GetObjectUUID(Player), restricted: dbCity.RestrictedTreasury - restrictedBefore);
                     Property.BroadcastCityUpkeepPaid(dbCity);
 
                     Instructions = "Upkeep paid successfully.";
@@ -773,6 +777,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 dbCity.Treasury -= amount;
                 DB.Set(dbCity);
+                CityTreasuryHistoryLog.Record(dbCity, CityTreasuryEntryType.Withdrawal, -amount, playerId: GetObjectUUID(Player));
 
                 GiveGoldToCreature(Player, amount);
                 Log.Write(LogGroup.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) withdrew {amount} credits from treasury of property '{dbCity.CustomName}' ({dbCity.Id})");
@@ -793,6 +798,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 AssignCommand(Player, () => TakeGoldFromCreature(amount, Player, true));
                 dbCity.Treasury += amount;
                 DB.Set(dbCity);
+                CityTreasuryHistoryLog.Record(dbCity, CityTreasuryEntryType.Deposit, amount, playerId: GetObjectUUID(Player));
                 Log.Write(LogGroup.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) deposited {amount} credits into treasury of property '{dbCity.CustomName}' ({dbCity.Id})");
 
                 RefreshPropertyDetails();

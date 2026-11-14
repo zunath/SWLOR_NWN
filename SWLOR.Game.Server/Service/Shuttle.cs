@@ -13,6 +13,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Service.TransferService;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -994,6 +995,7 @@ namespace SWLOR.Game.Server.Service
                         CityAffairs.IsModifierActive(dbCity, CityModifierType.TransportationIncomeHalved));
                     dbCity.Treasury += income;
                     DB.Set(dbCity);
+                    CityTreasuryHistoryLog.Record(dbCity, CityTreasuryEntryType.TransportationTax, income);
                     Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {Station.GetStopName(route.Destination)}; {income} reached the treasury.");
                 }
             }

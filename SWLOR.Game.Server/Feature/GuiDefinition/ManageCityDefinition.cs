@@ -22,7 +22,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetTitle("Manage City")
                 .DefinePartialView(ManageCityViewModel.CityTabPartial, AddCityTab)
                 .DefinePartialView(ManageCityViewModel.EdictsTabPartial, AddEdictsTab)
-                .DefinePartialView(ManageCityViewModel.SuccessionTabPartial, AddSuccessionTab);
+                .DefinePartialView(ManageCityViewModel.SuccessionTabPartial, AddSuccessionTab)
+                .DefinePartialView(ManageCityViewModel.TreasuryTabPartial, AddTreasuryTab);
 
             window.AddStandardLayout(layout =>
             {
@@ -34,8 +35,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .AddOption("City")
                         .AddOption("Edicts")
                         .AddOption("Succession")
+                        .AddOption("Treasury")
                         .BindSelectedValue(model => model.TabToggleValue)
-                        .SetWidth(348f)
+                        .SetWidth(464f)
                         .SetHeight(TabRowHeight);
                 });
                 layout.SetContentPartialElement(ManageCityViewModel.TabContentElement);

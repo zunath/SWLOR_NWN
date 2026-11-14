@@ -143,6 +143,9 @@ public class ShipTransferTests
         source.Should().Contain("dbOldOwner.ActiveShipId = Guid.Empty.ToString();");
         source.Should().NotContain("UnlockedHullDesigns", "Hull Designs don't change hands");
 
+        ExtractMethod(ReadServerSource("Service", "ShipTransfer.cs"), "public static ShipTransferCheck BuildCheck(")
+            .Should().Contain("GetIsObjectValid(Space.GetShipPilot(ship.Id)) || Space.IsShipLaunchPending(ship.Id),",
+                "a ship mid-launch cannot change hands before its pilot arrives in space");
         var reset = ExtractMethod(ReadServerSource("Service", "ShipTransfer.cs"), "private static void ResetPermissions(");
         reset.Should().Contain("DB.Delete<WorldPropertyPermission>(permission.Id);", "the old owner and their guests lose access");
     }

@@ -44,8 +44,9 @@ namespace SWLOR.Game.Server.Service
             return new ShipTransferCheck
             {
                 RecipientIsOwner = !string.IsNullOrWhiteSpace(recipientPlayerId) && recipientPlayerId == ship.OwnerPlayerId,
+                // A launch in flight has no pilot or space position yet, but the old owner's pilot is about to take it out.
                 InSpace = property == null || property.Positions.ContainsKey(PropertyLocationType.CurrentPosition) ||
-                          GetIsObjectValid(Space.GetShipPilot(ship.Id)),
+                          GetIsObjectValid(Space.GetShipPilot(ship.Id)) || Space.IsShipLaunchPending(ship.Id),
                 DockedAway = Space.IsDockedAboardHost(ship, out _),
                 PlayersAboard = CountPlayersAboard(ship.PropertyId),
                 ListedForSale = IsListedForSale(ship.Id),

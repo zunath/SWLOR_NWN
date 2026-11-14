@@ -93,8 +93,8 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             {
                 _builder.Ability(feat);
 
-                if (ability.AITargetSelector != null)
-                    _builder.Target(ability.AITargetSelector);
+                if (ability.GetAITargetSelector() != null)
+                    _builder.Target(ability.GetAITargetSelector());
 
                 var action = _builder
                     .Score(AIScore.Ability(ability))

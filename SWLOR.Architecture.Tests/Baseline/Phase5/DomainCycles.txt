@@ -12,7 +12,7 @@
 Abilities <-> Character | 10
 Abilities <-> Combat | 4
 Abilities <-> Companions | 2
-Abilities <-> Creatures | 4
+Abilities <-> Creatures | 3
 Abilities <-> Foundation | 4
 Abilities <-> Gameplay | 11
 Abilities <-> Items | 4

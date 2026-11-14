@@ -7,21 +7,21 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,097 | 13,526 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 44 | 73,985 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 30 | 7,284 lines | none over 150 lines (400 for layout) |
+| 1. Static service lookup | `StaticLookups.txt` | 1,098 | 13,528 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 44 | 73,929 lines | none over 1,000 lines |
+| 3. Long methods | `LongMethods.txt` | 35 | 9,785 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 22 | 354 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 42 | 111 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 124 | 272 types | none |
-| 7. Domain cycles | `DomainCycles.txt` | 94 | 704 edges | none |
+| 7. Domain cycles | `DomainCycles.txt` | 94 | 703 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 140 | 267 members | each kept with an approved reason, or removed |
 
 ## 1. Static service lookup
 
-- 1,097 files, 13,526 uses: 838 using directives and 12,688 uses in code (7,489 in a static context).
+- 1,098 files, 13,528 uses: 839 using directives and 12,689 uses in code (7,489 in a static context).
 - SWLOR.Game.Server: 656 file(s), 6,048 use(s) (Feature/ 553, Domain/ 79, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 236 file(s), 5,259 use(s).
-- SWLOR.Game.Server.Tests: 176 file(s), 2,061 use(s).
+- SWLOR.Game.Server.Tests: 177 file(s), 2,063 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -34,7 +34,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - Content (Feature/) uses in code: 4,765 (1,760 in a static context).
 - Content (Feature/) types that use it: 550. Static classes: 78. Instance classes that use it from a static member: 204 (156 only from static members).
 
-Largest 15 of 1,097 (all in `StaticLookups.txt`):
+Largest 15 of 1,098 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -56,7 +56,7 @@ Largest 15 of 1,097 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 44 types over 1,000 lines, 73,985 lines in all.
+- 44 types over 1,000 lines, 73,929 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -82,17 +82,21 @@ Largest 15 of 44 (all in `LargeTypes.txt`):
 
 ## 3. Long methods
 
-- 28 methods over 150 lines and 2 GUI layout methods over 400.
-- Exempt and over the limit: 80 (content data 76, data catalog member 4).
+- 33 methods over 150 lines and 2 GUI layout methods over 400.
+- Exempt and over the limit: 78 (content data 76, data catalog member 2).
 
-Largest 15 of 30 (all in `LongMethods.txt`):
+Largest 15 of 35 (all in `LongMethods.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
+| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideViewModel.BuildTopics` | 972 | PlayerGuideViewModel.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.StablesDefinition.BuildWindow` | 741 | layout, StablesDefinition.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel.LoadShip` | 532 | ShipManagementViewModel.cs |
+| `SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces` | 477 | RaceService.cs |
+| `SWLOR.Game.Server.Feature.EventRegistration.HookNWNXEvents` | 433 | EventRegistration.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat.ActivateAbility` | 432 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ShipManagementDefinition.BuildWindow` | 414 | layout, ShipManagementDefinition.cs |
+| `SWLOR.Game.Server.Feature.ChatCommandDefinition.EmoteChatCommand.BuildChatCommands` | 412 | EmoteChatCommand.cs |
 | `SWLOR.Game.Server.Domain.Foundation.CommunicationService.ProcessChatMessage` | 327 | CommunicationService.cs |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase.ConfigureWeaponAbility` | 291 | WeaponActiveAbilityDefinitionBase.cs |
 | `SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid` | 272 | DroidService.cs |
@@ -100,10 +104,6 @@ Largest 15 of 30 (all in `LongMethods.txt`):
 | `SWLOR.Game.Server.Domain.Character.SkillService.GiveSkillXP` | 237 | SkillService.cs |
 | `SWLOR.Game.Server.Domain.Character.StatusEffectService.ApplyStatusEffectInternal` | 234 | StatusEffectService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CombatStyleGuideTopics.Create` | 224 | CombatStyleGuideTopics.cs |
-| `SWLOR.Game.Server.Domain.World.PropertyCityGovernanceService.ProcessCityElections` | 215 | PropertyCityGovernanceService.cs |
-| `SWLOR.Game.Server.Domain.Combat.CombatRecordSerializer.Write` | 198 | CombatRecordSerializer.cs |
-| `SWLOR.Game.Server.Domain.UI.GuiWindowBuilder<T>.Build` | 198 | GuiWindowBuilder.cs |
-| `SWLOR.Game.Server.Domain.Abilities.AbilityService.ApplyTelegraphedCombatImpact` | 197 | AbilityService.cs |
 
 ## 4. Services per type
 
@@ -261,8 +261,6 @@ Owner decision 1 (2026-11-14) exempts these from the size and services measures 
 | content data | member `SWLOR.Game.Server.Feature.QuestDefinition.CapstoneProofDefinitions.All` | typeSize, methodSize | Quest data: the table of capstone proofs, one record per capstone. |
 | data catalog member | member `SWLOR.Game.Server.Domain.World.MusicSongCatalog.Songs` | typeSize, methodSize | Lists the songs and nothing else. |
 | data catalog member | member `SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog.Entries` | typeSize, methodSize | Lists the ability animations and nothing else. |
-| data catalog member | member `SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces` | typeSize, methodSize | Fills the default appearance table per race and gender and nothing else; cutting it into numbered pieces only to meet the line limit would make it harder to read (P5-16c). |
-| data catalog member | member `SWLOR.Game.Server.Feature.ChatCommandDefinition.EmoteChatCommand.BuildChatCommands` | typeSize, methodSize | Lists the emote chat commands (name, description, animation) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16c). |
 | fluent builder | type `SWLOR.Game.Server.Domain.Abilities.AbilityBuilder` | typeSize | Many short builder methods; its methods are still measured. |
 
 Owner decision 3 (2026-11-14) keeps these static entry points static:

@@ -108,10 +108,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         public static AIScoreCalculation Ability(AbilityDetail ability)
         {
-            var score = ability.AIScore ?? DefaultAbility(ability);
-            return ability.AIHitPointCostPercent == null
+            var score = ability.GetAIScore() ?? DefaultAbility(ability);
+            return ability.GetAIHitPointCostPercent() == null
                 ? score
-                : WithHitPointCostReserve(ability.AIHitPointCostPercent, score);
+                : WithHitPointCostReserve(ability.GetAIHitPointCostPercent(), score);
         }
 
         private static AIScoreCalculation DefaultAbility(AbilityDetail ability)

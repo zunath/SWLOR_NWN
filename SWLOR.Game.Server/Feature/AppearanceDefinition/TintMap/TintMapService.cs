@@ -153,6 +153,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             PowerGloveFit.Apply(creature);
             HornFit.Apply(creature);
             TwinPistolEquipment.RefreshAppearance(creature);
+            WeaponFit.Apply(creature);
 
             // Rebuild the complete tint state in one pass. Parameter-scoped wildcard resets are
             // not reliable for modular creatures: on the game client they can discard palette

@@ -447,7 +447,7 @@ public static class TwinPistolEquipmentEngineTests
 
     private static int NativeWeaponDeltaCap(EngineTestContext ctx, uint item)
     {
-        var getCap = typeof(GetDamageRoll).GetMethod("GetWeaponDeltaCap", BindingFlags.NonPublic | BindingFlags.Static);
+        var getCap = typeof(DamageRollWeapon).GetMethod("GetWeaponDeltaCap", BindingFlags.NonPublic | BindingFlags.Static);
         ctx.Assert(getCap != null, "The production native weapon-cap resolver exists");
         var weapon = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(item).AsNWSItem();
         return (int)getCap.Invoke(null, new object[] { weapon });

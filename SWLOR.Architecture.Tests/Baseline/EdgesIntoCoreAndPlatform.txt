@@ -318,9 +318,9 @@ Feature/LootTableDefinition -> Platform/Core | 1
 
 # Platform -> Foundation (4 edges)
 Platform/Core -> Domain/Foundation | 17
-Platform/Native -> Domain/Foundation | 9
+Platform/Native -> Domain/Foundation | 14
 Platform/Native -> Feature/MigrationDefinition | 1
-Platform/NativeSinks -> Domain/Foundation | 25
+Platform/NativeSinks -> Domain/Foundation | 26
 
 # Quests -> Foundation (2 edges)
 Domain/Quests -> Domain/Foundation | 79

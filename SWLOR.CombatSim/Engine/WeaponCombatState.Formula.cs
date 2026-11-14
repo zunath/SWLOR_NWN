@@ -47,7 +47,7 @@ public sealed partial class WeaponCombatState
     }
 
     /// <summary>
-    /// GetDamageRoll.CalculateCreatureDamage: a landed ordinary attack consumes Charged Blows' bonus and advances
+    /// DamageRollCreature.CalculateCreatureDamage: a landed ordinary attack consumes Charged Blows' bonus and advances
     /// Follow-Through's cycle (ConsumeMeleeAutoAttackCycleDamageBonus); both add DMG before the damage formula.
     /// </summary>
     public int TakeLandedOrdinaryPower(double now)

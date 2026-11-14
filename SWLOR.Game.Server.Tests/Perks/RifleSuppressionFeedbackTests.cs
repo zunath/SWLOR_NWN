@@ -50,7 +50,7 @@ public sealed class RifleSuppressionFeedbackTests
         var killBox = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Rifle", "KillBoxAbilityDefinition.cs"));
         var killBoxStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "KillBoxStatusEffect.cs"));
         var containmentNetStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "ContainmentNetStatusEffect.cs"));
-        var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var native = NativeCombatSource.AttackRoll();
 
         combat.Should().Contain("Sustained Fire {state.Stacks}/{maxStacks}");
         combat.Should().Contain("Pinning Fire: Suppression applied.");

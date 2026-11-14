@@ -46,12 +46,14 @@ public class BareHandedAttackSkillTests : SkillFacadeFixture
     {
         // With no weapon, arms item, or natural weapon no item on-hit event fires, so the landed
         // native damage roll must award the Unarmed combat point itself.
-        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
-        var landed = source[source.IndexOf("if (isLandedAttack)", System.StringComparison.Ordinal)..];
+        var source = NativeCombatSource.Read("GetDamageRoll.cs");
+        var landedBranch = source[source.IndexOf("if (isLandedAttack)", System.StringComparison.Ordinal)..];
+        var hitEffects = NativeCombatSource.Read("DamageRollHitEffects.cs");
+        var landed = hitEffects[hitEffects.IndexOf("internal static void ApplyLandedHitEffects(", System.StringComparison.Ordinal)..];
 
         source.Should().Contain("weapon = GetFallbackAttackWeapon(attacker);",
             "a null weapon after the fallback means no arms item or natural weapon is equipped");
+        landedBranch.Should().Contain("DamageRollHitEffects.ApplyLandedHitEffects(attacker, defender, weapon, pAttackData,");
         landed.Should().Contain("if (weapon == null && pAttackData.m_bRangedAttack == 0 && creatureTarget)");
         landed.Should().Contain(
             "CombatPoint.RecordWeaponAttackPoint(attackerId, defenderId, OBJECT_INVALID, SkillType.Unarmed);");

@@ -6,33 +6,47 @@ namespace SWLOR.TypeMoves;
 /// <summary>
 /// Finds, with the semantic model of the tree before the move, how one file reaches the moved types and the types that stay:
 /// <list type="bullet">
-/// <item>a qualified name whose qualifier binds to the old namespace (<c>Service.Log</c>, <c>SWLOR.Game.Server.Service.Log</c>,
-/// in code, <c>using static</c> and alias directives): the qualifier's last segment becomes the new namespace;</item>
-/// <item>a simple name that binds to a moved type (through a using of the old namespace, a <c>global using</c>, or the
-/// enclosing namespace): the file imports the new namespace;</item>
-/// <item>a simple name (or extension method) that binds to a type that stays: the file keeps its using of the old namespace,
-/// a moved file imports it, and a reference through a <c>global using</c> keeps that one.</item>
+/// <item>a qualified name whose qualifier spells a moved type's source namespace (<c>Service.Log</c>,
+/// <c>SWLOR.Game.Server.Service.Log</c>, <c>Crafting.RecipeType</c>, in code, <c>nameof</c>, <c>cref</c>, <c>using static</c> and
+/// alias directives): the segments that spell the source become the target;</item>
+/// <item>a simple name that binds to a moved type (through a using of the source namespace, a <c>global using</c>, or the
+/// enclosing namespace), also in a <c>cref</c> or <c>nameof</c>, or a call of an extension method a moved class declares: the
+/// file imports the new namespace;</item>
+/// <item>a simple name (or extension method) that binds to a type that stays in a source namespace: the file keeps its using
+/// of that namespace, a moved file imports it, and a reference through a <c>global using</c> keeps that one.</item>
 /// </list>
 /// A name reached through an alias is left alone (the alias directive is rewritten instead).
 /// </summary>
 internal static class ReferenceAnalyzer
 {
-    /// <returns>True when a staying type binds through a <c>global using</c> of the old namespace.</returns>
-    public static bool Analyze(SemanticModel model, SyntaxNode root, MoveContext context, bool movedFile, FileFindings findings)
+    /// <returns>The source namespaces a staying type binds through by a <c>global using</c>.</returns>
+    public static IReadOnlySet<string> Analyze(SemanticModel model, SyntaxNode root, MoveContext context, bool movedFile, FileFindings findings)
     {
-        var usesGlobalImport = false;
-        foreach (var name in root.DescendantNodes().OfType<SimpleNameSyntax>())
+        var throughGlobal = new HashSet<string>(StringComparer.Ordinal);
+        var names = movedFile ? context.InterestingNamesInMovedFiles : context.InterestingNames;
+        foreach (var name in SyntaxQueries.SimpleNames(root))
         {
             var text = name.Identifier.ValueText;
-            if (!context.InterestingNames.Contains(text) || SyntaxQueries.InNamespaceName(name))
+            if (!names.Contains(text) || SyntaxQueries.InNamespaceName(name))
                 continue;
 
             var qualifier = SyntaxQueries.Qualifier(name);
             if (qualifier != null)
             {
-                if (context.OtherExtensionMethods.Contains(text) && name.Parent is MemberAccessExpressionSyntax &&
-                    Binding.Of(model, name).Symbols.Any(context.IsStayingExtension))
-                    usesGlobalImport |= RouteStaying(name, context, movedFile, findings);
+                if (context.ExtensionNames.Contains(text) && name.Parent is MemberAccessExpressionSyntax or MemberBindingExpressionSyntax)
+                {
+                    var symbols = Binding.Of(model, name).Symbols;
+                    if (symbols.Select(context.MovedExtension).FirstOrDefault(move => move != null) is { } extension)
+                    {
+                        findings.Imports.Add(extension.To);
+                        findings.MovedReferences++;
+                    }
+                    else if (symbols.Select(context.StayingExtensionSource).FirstOrDefault(source => source != null) is { } source &&
+                             RouteStaying(name, source, movedFile, findings))
+                    {
+                        throughGlobal.Add(source);
+                    }
+                }
 
                 if (context.MovedNames.Contains(text))
                     AddQualifierEdit(model, name, qualifier, context, findings);
@@ -49,42 +63,56 @@ internal static class ReferenceAnalyzer
                 findings.Imports.Add(moved.To);
                 findings.MovedReferences++;
             }
-            else if (!binding.Ambiguous && binding.Symbols.Any(context.IsStayingType))
+            else if (!binding.Ambiguous && binding.Symbols.Select(context.StayingSource).FirstOrDefault(source => source != null) is { } source &&
+                     RouteStaying(name, source, movedFile, findings))
             {
-                usesGlobalImport |= RouteStaying(name, context, movedFile, findings);
+                throughGlobal.Add(source);
             }
         }
 
-        return usesGlobalImport;
+        return throughGlobal;
     }
 
+    /// <summary>
+    /// A qualifier that spells the moved type's source namespace (not an alias of it) gets the target instead: the segments
+    /// that spell <see cref="TypeMove.RelativeSource"/> become <see cref="TypeMove.RelativeTarget"/>; a shorter qualifier (one
+    /// that relied on the enclosing namespace or a using to reach the source) is replaced whole by the relative target, and the
+    /// check writes the full namespace when that would bind to something else.
+    /// </summary>
     private static void AddQualifierEdit(SemanticModel model, SimpleNameSyntax name, SyntaxNode qualifier, MoveContext context, FileFindings findings)
     {
-        if (SyntaxQueries.LastIdentifier(qualifier) is not { } last || last.ValueText != context.FromLeaf)
-            return;
-        if (model.GetSymbolInfo(qualifier).Symbol is not INamespaceSymbol @namespace || @namespace.ToDisplayString() != context.From)
-            return;
-
         var move = Binding.Of(model, name).Symbols.Select(context.MovedFrom).FirstOrDefault(found => found != null);
         if (move == null)
             return; // the tree has no such type (master without it): nothing to move
+        if (model.GetSymbolInfo(qualifier).Symbol is not INamespaceSymbol @namespace || @namespace.ToDisplayString() != move.From)
+            return;
+        if (SyntaxQueries.Segments(qualifier) is not { } segments)
+            return;
 
-        findings.QualifierEdits[last.SpanStart] = new TextEdit(last.SpanStart, last.Span.Length, move.RelativeTarget);
+        var from = move.From.Split('.');
+        if (segments.Count > from.Length || !segments.Select(token => token.ValueText).SequenceEqual(from[^segments.Count..], StringComparer.Ordinal))
+            return; // an alias of the namespace: the alias directive names it
+
+        var source = move.RelativeSource.Split('.').Length;
+        var start = segments.Count >= source ? segments[^source].SpanStart : segments[0].SpanStart;
+        var end = segments[^1].Span.End;
+        findings.QualifierEdits[start] = new TextEdit(start, end - start, move.RelativeTarget);
+        findings.Qualifiers[name.SpanStart] = new QualifierSpan(qualifier.SpanStart, end, move);
     }
 
     /// <returns>True when the reference goes through a <c>global using</c>.</returns>
-    private static bool RouteStaying(SyntaxNode node, MoveContext context, bool movedFile, FileFindings findings)
+    private static bool RouteStaying(SyntaxNode node, string source, bool movedFile, FileFindings findings)
     {
-        if (SyntaxQueries.IsWithin(SyntaxQueries.NamespaceOf(node), context.From))
+        if (SyntaxQueries.IsWithin(SyntaxQueries.NamespaceOf(node), source))
         {
             if (movedFile)
-                findings.NeedsOldNamespace = true;
+                findings.NeededSources.Add(source);
             return false;
         }
 
-        if (SyntaxQueries.HasFileImport(node, context.From))
+        if (SyntaxQueries.HasFileImport(node, source))
         {
-            findings.KeepsImport = true;
+            findings.KeptImports.Add(source);
             return false;
         }
 

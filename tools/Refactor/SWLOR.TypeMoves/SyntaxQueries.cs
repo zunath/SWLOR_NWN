@@ -17,6 +17,10 @@ internal static class SyntaxQueries
         _ => name.ToString()
     };
 
+    /// <summary>Every simple name of the file, those in documentation comments (<c>cref</c>) included.</summary>
+    public static IEnumerable<SimpleNameSyntax> SimpleNames(SyntaxNode root) =>
+        root.DescendantNodes(descendIntoTrivia: true).OfType<SimpleNameSyntax>();
+
     /// <summary>Every using directive of the file: the compilation unit's and those of each namespace declaration.</summary>
     public static IEnumerable<UsingDirectiveSyntax> AllUsings(SyntaxNode root) =>
         root.DescendantNodes(node => node is CompilationUnitSyntax or BaseNamespaceDeclarationSyntax).OfType<UsingDirectiveSyntax>();
@@ -51,8 +55,9 @@ internal static class SyntaxQueries
         node.AncestorsAndSelf().Any(ancestor => ancestor.Parent is BaseNamespaceDeclarationSyntax declaration && declaration.Name == ancestor);
 
     /// <summary>
-    /// The qualifier of a name that is the right side of a qualified name, a member access or an alias-qualified name
-    /// (<c>Service</c> in <c>Service.Log</c>), or null for a name that stands first.
+    /// The qualifier of a name that is the right side of a qualified name, a member access, an alias-qualified name or a
+    /// qualified <c>cref</c> (<c>Service</c> in <c>Service.Log</c> and in <c>&lt;see cref="Service.Log"/&gt;</c>), or null for a
+    /// name that stands first.
     /// </summary>
     public static SyntaxNode? Qualifier(SimpleNameSyntax name) => name.Parent switch
     {
@@ -60,18 +65,32 @@ internal static class SyntaxQueries
         MemberAccessExpressionSyntax access when access.Name == name => access.Expression,
         MemberBindingExpressionSyntax binding when binding.Name == name => binding,
         AliasQualifiedNameSyntax alias when alias.Name == name => alias.Alias,
+        NameMemberCrefSyntax { Parent: QualifiedCrefSyntax qualifiedCref } member when member.Name == name && qualifiedCref.Member == member => qualifiedCref.Container,
         _ => null
     };
 
-    /// <summary>The last identifier of a dotted qualifier (<c>Service</c> in <c>SWLOR.Game.Server.Service</c>), or null.</summary>
-    public static SyntaxToken? LastIdentifier(SyntaxNode qualifier) => qualifier switch
+    /// <summary>
+    /// The identifiers of a dotted qualifier, left to right (<c>SWLOR</c>, <c>Game</c>, <c>Server</c>, <c>Service</c> for
+    /// <c>global::SWLOR.Game.Server.Service</c>), or null when it is not a plain dotted name (an expression, an extern alias).
+    /// </summary>
+    public static List<SyntaxToken>? Segments(SyntaxNode qualifier)
     {
-        IdentifierNameSyntax identifier => identifier.Identifier,
-        QualifiedNameSyntax qualified => qualified.Right.Identifier,
-        AliasQualifiedNameSyntax alias => alias.Name.Identifier,
-        MemberAccessExpressionSyntax { RawKind: (int)SyntaxKind.SimpleMemberAccessExpression, Name: IdentifierNameSyntax name } => name.Identifier,
-        _ => null
-    };
+        switch (qualifier)
+        {
+            case IdentifierNameSyntax identifier:
+                return [identifier.Identifier];
+            case AliasQualifiedNameSyntax alias when alias.Alias.Identifier.IsKind(SyntaxKind.GlobalKeyword) && alias.Name is IdentifierNameSyntax:
+                return [alias.Name.Identifier];
+            case QualifiedNameSyntax { Right: IdentifierNameSyntax right } qualified when Segments(qualified.Left) is { } left:
+                left.Add(right.Identifier);
+                return left;
+            case MemberAccessExpressionSyntax { RawKind: (int)SyntaxKind.SimpleMemberAccessExpression, Name: IdentifierNameSyntax name } access when Segments(access.Expression) is { } head:
+                head.Add(name.Identifier);
+                return head;
+            default:
+                return null;
+        }
+    }
 
     /// <summary>
     /// True when a using of <paramref name="namespace"/> written in the file is in scope at the node: at the top of the file

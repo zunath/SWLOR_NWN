@@ -1313,7 +1313,7 @@ public class CombatUpgradeBibleSyncTests : SkillFacadeFixture
             root.FullName,
             "SWLOR.Game.Server",
             "Domain",
-            "Crafting",
+            "Foundation",
             "RecipeType.cs"));
         var enumRecipeTypes = Regex.Matches(recipeTypeSource, @"(?m)^\s*(Instruction[A-Za-z0-9]+)\s*=")
             .Select(match => match.Groups[1].Value)

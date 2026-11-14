@@ -4,6 +4,7 @@ using SWLOR.Game.Server.CharacterizationTests.Definitions;
 using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Extension;
 using static SWLOR.Game.Server.Composition.GameServices;
 

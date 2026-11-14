@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
 using SWLOR.Game.Server.Domain.Crafting.RecipeParameters;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service.Kitchen;
 

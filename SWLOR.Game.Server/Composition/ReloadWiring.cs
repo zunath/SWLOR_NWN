@@ -13,7 +13,11 @@ namespace SWLOR.Game.Server.Composition
     /// </summary>
     public static class ReloadWiring
     {
-        /// <summary>The carrier of this build's carried state, with the ability definition converter.</summary>
+        /// <summary>
+        /// The carrier of this build's carried state, with the ability definition converter, this build's content factory (a carried
+        /// object that takes services is built through its constructor with this build's services) and the container's registrations
+        /// (a field that holds a service or content singleton is never carried).
+        /// </summary>
         public static ReloadStateCarrier CreateStateCarrier(ContainerHost container)
         {
             if (container == null)
@@ -22,7 +26,7 @@ namespace SWLOR.Game.Server.Composition
             return new ReloadStateCarrier(typeof(ReloadWiring).Assembly, new JsonConverter[]
             {
                 new AbilityDetailReloadConverter(() => container.Resolve<IAbilityService>().GetAllAbilityDetails()),
-            });
+            }, container.Resolve<IContentFactory>(), container.IsRegistered);
         }
 
         /// <summary>The players' windows and conversations, through the container's GUI and conversation services.</summary>

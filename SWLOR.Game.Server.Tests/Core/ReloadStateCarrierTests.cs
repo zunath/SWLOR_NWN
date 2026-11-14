@@ -48,11 +48,14 @@ public class ReloadStateCarrierTests
     {
         var problems = ReloadStateCarrier.CarriedClasses(Game)
             .SelectMany(entry => entry.Fields)
-            .SelectMany(field => ReloadStateCarrier.Problems(field.FieldType, Game, type => type == typeof(AbilityDetail))
+            .SelectMany(field => ReloadStateCarrier.Problems(field.FieldType, Game, type => type == typeof(AbilityDetail),
+                    ScriptHandlerTestSupport.ServerContainer.IsRegistered)
                 .Select(problem => $"{field.DeclaringType!.FullName}.{field.Name}: {problem}"))
             .ToArray();
 
-        problems.Should().BeEmpty("a carried field must hold data only: no delegates, no object-typed members, no foreign objects");
+        // A field of a carried object that holds a service the container registers is left out, as the carry leaves it out
+        // (the content factory builds the object with the new build's services); one the registrations miss is checked as data.
+        problems.Should().BeEmpty("a carried field must hold data only: no delegates, no object-typed members, no foreign objects, no services");
     }
 
     [TestCaseSource(nameof(CarriedClasses))]

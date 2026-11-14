@@ -9,7 +9,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,088 | 13,517 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 44 | 73,929 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 38 | 11,160 lines | none over 150 lines (400 for layout) |
+| 3. Long methods | `LongMethods.txt` | 38 | 11,163 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 24 | 395 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 42 | 111 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 119 | 267 types | none |

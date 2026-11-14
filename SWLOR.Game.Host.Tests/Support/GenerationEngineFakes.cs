@@ -47,6 +47,17 @@ internal sealed class GenerationEngineFakes
         }
     }
 
+    /// <summary>The game assembly of the newest generation that is not unloading, or null when there is none.</summary>
+    public Assembly? ActiveGameAssembly()
+    {
+        lock (_gate)
+        {
+            var generation = _generations.LastOrDefault(candidate => !candidate.Unloading);
+            return (generation?.Context.Target as AssemblyLoadContext)?.Assemblies
+                .FirstOrDefault(assembly => assembly.GetName().Name == GameAssemblyName);
+        }
+    }
+
     /// <summary>The engine seams overridden in each generation (the same number every time).</summary>
     public int SeamsPerGeneration { get; private set; }
 

@@ -117,41 +117,50 @@ internal static class TypeMoveRunner
         var server = before[graph.Server];
         foreach (var move in pending.Values.Distinct())
         {
-            foreach (var entry in data.Moves.Where(entry => entry.File == move.File))
+            foreach (var entry in data.Moves.Where(entry => entry.SourcePath == move.SourcePath))
             {
                 if (FindNamespace(server.GlobalNamespace, entry.To)?.GetTypeMembers(entry.Name).Length > 0)
                     throw new TypeMoveException($"{entry.To} already declares a type {entry.Name}.");
             }
         }
 
-        var staying = FindNamespace(server.GlobalNamespace, data.From)?.GetTypeMembers().Where(type => !data.ByName.ContainsKey(type.Name)).ToList() ?? [];
-        var stayingExtensions = staying
-            .Where(type => type.MightContainExtensionMethods)
-            .SelectMany(type => type.GetMembers().OfType<IMethodSymbol>().Where(method => method.IsExtensionMethod))
-            .Select(method => method.Name)
-            .ToHashSet(StringComparer.Ordinal);
-        var context = new MoveContext(data, staying.Select(type => type.Name).ToHashSet(StringComparer.Ordinal), stayingExtensions);
+        // What stays in each source namespace, and the extension methods of what moves and of what stays.
+        var stayingTypes = new Dictionary<string, IReadOnlySet<string>>(StringComparer.Ordinal);
+        var stayingExtensions = new Dictionary<string, IReadOnlySet<string>>(StringComparer.Ordinal);
+        foreach (var source in data.Sources)
+        {
+            var staying = FindNamespace(server.GlobalNamespace, source)?.GetTypeMembers().Where(type => !data.ByOldFullName.ContainsKey(source + "." + type.Name)).ToList() ?? [];
+            stayingTypes[source] = staying.Select(type => type.Name).ToHashSet(StringComparer.Ordinal);
+            stayingExtensions[source] = ExtensionMethods(staying);
+        }
+
+        var movedTypes = data.Moves.SelectMany(move => FindNamespace(server.GlobalNamespace, move.From)?.GetTypeMembers(move.Name) ?? []).ToList();
+        var context = new MoveContext(data, stayingTypes, stayingExtensions, ExtensionMethods(movedTypes));
+        var droppable = data.Sources.Where(context.MayDropImport).ToHashSet(StringComparer.Ordinal);
 
         // Analysis: how each file reaches the moved types and the staying ones.
         var findings = new Dictionary<string, FileFindings>(StringComparer.OrdinalIgnoreCase);
         var home = new Dictionary<string, ProjectInfo>(StringComparer.OrdinalIgnoreCase);
-        var keepsGlobal = new HashSet<ProjectInfo>();
+        var keptGlobal = new Dictionary<ProjectInfo, HashSet<string>>();
         var globalImports = new Dictionary<ProjectInfo, HashSet<string>>();
         var mentions = WordRegex(context.InterestingNames);
-        var fromUsing = new Regex(@"\busing\s+(global::)?" + Regex.Escape(data.From) + @"\s*;", RegexOptions.CultureInvariant);
+        var leaves = data.Sources.Select(TypeMove.Leaf).Distinct(StringComparer.Ordinal).ToList();
+        var droppableUsing = droppable.Count == 0 ? null
+            : new Regex(@"\busing\s+(global::)?(" + string.Join("|", droppable.Select(Regex.Escape)) + @")\s*;", RegexOptions.CultureInvariant);
         var work = new List<(ProjectInfo Project, string Path, SyntaxTree Tree, bool Moved)>();
         foreach (var project in graph.Ordered.Where(graph.SeeServer.Contains))
         {
             globalImports[project] = GlobalImports(project, trees[project].Values);
-            var globalFrom = globalImports[project].Contains(data.From);
+            keptGlobal[project] = new HashSet<string>(StringComparer.Ordinal);
+            var globalSource = globalImports[project].Overlaps(data.Sources);
             foreach (var (path, tree) in trees[project])
             {
                 var text = sources[path].Text;
                 var moved = pending.ContainsKey(path);
-                var importsFrom = fromUsing.IsMatch(text);
-                if (!moved && !importsFrom && !(text.Contains(context.FromLeaf, StringComparison.Ordinal) || globalFrom))
+                var importsSource = droppableUsing?.IsMatch(text) == true;
+                if (!moved && !importsSource && !(globalSource || leaves.Any(leaf => text.Contains(leaf, StringComparison.Ordinal))))
                     continue;
-                if (!moved && !importsFrom && !mentions.IsMatch(text))
+                if (!moved && !importsSource && !mentions.IsMatch(text))
                     continue;
 
                 if (!home.ContainsKey(path) || IsBelow(path, project.Folder))
@@ -169,13 +178,13 @@ internal static class TypeMoveRunner
             var model = before[item.Project].GetSemanticModel(item.Tree);
             models[(item.Project, item.Path)] = model;
             var local = new FileFindings();
-            var usesGlobal = ReferenceAnalyzer.Analyze(model, item.Tree.GetRoot(), context, item.Moved, local);
+            var throughGlobal = ReferenceAnalyzer.Analyze(model, item.Tree.GetRoot(), context, item.Moved, local);
             lock (findings[item.Path])
                 findings[item.Path].Merge(local);
-            if (usesGlobal)
+            if (throughGlobal.Count > 0)
             {
-                lock (keepsGlobal)
-                    keepsGlobal.Add(item.Project);
+                lock (keptGlobal)
+                    keptGlobal[item.Project].UnionWith(throughGlobal);
             }
         });
         log.WriteLine($"Analyzed in {clock.Elapsed.TotalSeconds:0.0} s.");
@@ -188,14 +197,13 @@ internal static class TypeMoveRunner
         foreach (var (path, found) in findings)
         {
             var project = home[path];
-            var imports = new HashSet<string>(globalImports[project], StringComparer.Ordinal);
-            if (!keepsGlobal.Contains(project))
-                imports.Remove(data.From);
+            var dropped = droppable.Where(source => !keptGlobal[project].Contains(source)).ToHashSet(StringComparer.Ordinal);
+            var imports = new HashSet<string>(globalImports[project].Where(@namespace => !dropped.Contains(@namespace)), StringComparer.Ordinal);
 
             var tree = trees[project][path];
             var addedHere = new HashSet<string>(StringComparer.Ordinal);
             var list = EditPlanner.Plan(sources[path].Text, (CompilationUnitSyntax)tree.GetRoot(), found, context,
-                pending.TryGetValue(path, out var move) ? move.To : null, imports, !keepsGlobal.Contains(project), addedHere, ref usingsRemoved);
+                pending.GetValueOrDefault(path), imports, dropped, addedHere, ref usingsRemoved);
             usingsAdded += addedHere.Count;
             added[path] = addedHere;
             if (list.Count > 0)
@@ -206,7 +214,7 @@ internal static class TypeMoveRunner
         var qualified = 0;
         if (edits.Count > 0 || pending.Count > 0)
         {
-            qualified = CheckBindings(root, graph, trees, sources, before, models, ghosts, pending, edits, added, globalImports, context, log);
+            qualified = CheckBindings(root, graph, trees, sources, before, models, ghosts, pending, edits, added, findings, globalImports, context, log);
             log.WriteLine($"Checked the bindings in {clock.Elapsed.TotalSeconds:0.0} s.");
         }
 
@@ -275,7 +283,7 @@ internal static class TypeMoveRunner
         var moves = output.Where(entry => entry.Key != entry.Value.OldPath).OrderBy(entry => entry.Key, StringComparer.Ordinal).ToList();
         var editsOnly = output.Where(entry => entry.Key == entry.Value.OldPath).OrderBy(entry => entry.Key, StringComparer.Ordinal).ToList();
         var verb = options.Mode == RunMode.Apply ? "Moved" : "Would move";
-        log.WriteLine($"{verb} {moves.Count} file(s) ({pending.Values.Sum(move => data.Moves.Count(entry => entry.File == move.File))} type(s)); " +
+        log.WriteLine($"{verb} {moves.Count} file(s) ({pending.Values.Sum(move => data.Moves.Count(entry => entry.SourcePath == move.SourcePath))} type(s)); " +
                       $"{(options.Mode == RunMode.Apply ? "rewrote" : "would rewrite")} {editsOnly.Count} other file(s): " +
                       $"{findings.Values.Sum(found => found.QualifierEdits.Count)} qualified name(s), {usingsAdded} using line(s) added, {usingsRemoved} removed, " +
                       $"{qualified} name(s) qualified to keep their binding, {textRewrites} text rewrite(s), {handlerRenames} handler rename(s); {clock.Elapsed.TotalSeconds:0.0} s.");
@@ -326,12 +334,14 @@ internal static class TypeMoveRunner
         IReadOnlyDictionary<string, TypeMove> pending,
         Dictionary<string, List<TextEdit>> edits,
         IReadOnlyDictionary<string, HashSet<string>> added,
+        IReadOnlyDictionary<string, FileFindings> findings,
         IReadOnlyDictionary<ProjectInfo, HashSet<string>> globalImports,
         MoveContext context,
         TextWriter log)
     {
         var targets = context.Data.Moves.Select(move => move.To).ToHashSet(StringComparer.Ordinal);
-        var moved = WordRegex(context.MovedNames);
+        var movedNames = context.MovedNames.Concat(context.MovedExtensionNames).ToHashSet(StringComparer.Ordinal);
+        var moved = WordRegex(movedNames);
         var targetUsing = new Regex(@"\busing\s+(global::)?(" + string.Join("|", targets.Select(Regex.Escape)) + @")\s*;", RegexOptions.CultureInvariant);
 
         // The files to compare, with the names to compare in each (null: every name, for a moved file).
@@ -352,7 +362,7 @@ internal static class TypeMoveRunner
                 var text = sources[path].Text;
                 if (edits.ContainsKey(path) || (moved.IsMatch(text) &&
                     (projectTargets || targetUsing.IsMatch(text) || SyntaxQueries.DeclaredNamespaces(tree.GetRoot()).Any(own => targets.Any(target => SyntaxQueries.IsWithin(own, target))))))
-                    checks[path] = new HashSet<string>(context.MovedNames, StringComparer.Ordinal);
+                    checks[path] = new HashSet<string>(movedNames, StringComparer.Ordinal);
             }
         }
 
@@ -371,8 +381,9 @@ internal static class TypeMoveRunner
 
                 foreach (var @namespace in imported)
                 {
-                    foreach (var type in FindNamespace(afterServer.GlobalNamespace, @namespace)?.GetTypeMembers() ?? [])
-                        names.Add(type.Name);
+                    var types = FindNamespace(afterServer.GlobalNamespace, @namespace)?.GetTypeMembers() ?? [];
+                    names.UnionWith(MoveContext.WithAttributeStems(types.Select(type => type.Name)));
+                    names.UnionWith(ExtensionMethods(types));
                 }
             }
 
@@ -397,9 +408,31 @@ internal static class TypeMoveRunner
             {
                 var (path, project, change) = group.First();
                 var treeBefore = trees[project][path];
-                var token = treeBefore.GetRoot().FindToken(change.Position);
+                var token = treeBefore.GetRoot().FindToken(change.Position, findInsideTrivia: true);
                 var line = treeBefore.GetLineSpan(token.Span).StartLinePosition.Line + 1;
                 attempts.TryGetValue(group.Key, out var tries);
+
+                // A rewritten qualifier that would reach something else gets the full namespace, then global::.
+                if (!change.Leading && findings.TryGetValue(path, out var fileFindings) && fileFindings.Qualifiers.TryGetValue(change.Position, out var span))
+                {
+                    if (tries >= 2)
+                    {
+                        failures.Add($"{Relative(root, path)} ({project.AssemblyName}) line {line}: {change.Name} meant {change.Before} and would mean {change.After}.");
+                        continue;
+                    }
+
+                    var full = (tries > 0 ? "global::" : string.Empty) + span.Move.To;
+                    attempts[group.Key] = tries + 1;
+                    var spanEdits = edits.TryGetValue(path, out var existing) ? existing : edits[path] = new List<TextEdit>();
+                    spanEdits.RemoveAll(edit => edit.Start >= span.Start && edit.End <= span.End);
+                    spanEdits.Add(new TextEdit(span.Start, span.End - span.Start, full));
+                    if (tries == 0)
+                        qualified++;
+                    log.WriteLine($"Qualified {Relative(root, path)} line {line}: {full}.{change.Name} (it meant {change.Before}; the shorter qualifier would mean {change.After}).");
+                    fixedPaths.Add(path);
+                    continue;
+                }
+
                 var fileNamespace = pending.TryGetValue(path, out var move) ? move.To : SyntaxQueries.NamespaceOf(token.Parent!);
                 var qualifier = change.Leading && tries < 2 ? BindingCheck.Qualifier(change.Meant, context, fileNamespace, global: tries > 0) : null;
                 if (qualifier == null)
@@ -501,13 +534,13 @@ internal static class TypeMoveRunner
         var declared = root.DescendantNodes(node => node is CompilationUnitSyntax or BaseNamespaceDeclarationSyntax)
             .OfType<BaseNamespaceDeclarationSyntax>()
             .ToList();
-        if (declared.Count != 1 || SyntaxQueries.FullName(declared[0]) != data.From)
-            throw new TypeMoveException($"{move.SourcePath} must declare exactly one namespace, {data.From}.");
+        if (declared.Count != 1 || SyntaxQueries.FullName(declared[0]) != move.From)
+            throw new TypeMoveException($"{move.SourcePath} must declare exactly one namespace, {move.From}.");
 
         var types = declared[0].Members.OfType<BaseTypeDeclarationSyntax>().Select(type => type.Identifier.ValueText)
             .Concat(declared[0].Members.OfType<DelegateDeclarationSyntax>().Select(@delegate => @delegate.Identifier.ValueText))
             .ToHashSet(StringComparer.Ordinal);
-        var listed = data.Moves.Where(entry => entry.File == move.File).Select(entry => entry.Name).ToHashSet(StringComparer.Ordinal);
+        var listed = data.Moves.Where(entry => entry.SourcePath == move.SourcePath).Select(entry => entry.Name).ToHashSet(StringComparer.Ordinal);
         if (!types.SetEquals(listed))
             throw new TypeMoveException($"{move.SourcePath} declares {string.Join(", ", types.OrderBy(name => name, StringComparer.Ordinal))}, but the data lists {string.Join(", ", listed.OrderBy(name => name, StringComparer.Ordinal))} for it.");
     }
@@ -522,6 +555,13 @@ internal static class TypeMoveRunner
             .Select(directive => SyntaxQueries.Dotted(directive.Name!))
             .ToHashSet(StringComparer.Ordinal);
     }
+
+    /// <summary>The names of the extension methods the static classes among the types declare.</summary>
+    private static HashSet<string> ExtensionMethods(IEnumerable<INamedTypeSymbol> types) =>
+        types.Where(type => type.MightContainExtensionMethods)
+            .SelectMany(type => type.GetMembers().OfType<IMethodSymbol>().Where(method => method.IsExtensionMethod))
+            .Select(method => method.Name)
+            .ToHashSet(StringComparer.Ordinal);
 
     private static INamespaceSymbol? FindNamespace(INamespaceSymbol global, string name)
     {

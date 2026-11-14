@@ -83,7 +83,7 @@ Largest 15 of 44 (all in `LargeTypes.txt`):
 ## 3. Long methods
 
 - 28 methods over 150 lines and 2 GUI layout methods over 400.
-- Exempt and over the limit: 78 (content data 76, data catalog member 2).
+- Exempt and over the limit: 80 (content data 76, data catalog member 4).
 
 Largest 15 of 30 (all in `LongMethods.txt`):
 
@@ -261,6 +261,8 @@ Owner decision 1 (2026-11-14) exempts these from the size and services measures 
 | content data | member `SWLOR.Game.Server.Feature.QuestDefinition.CapstoneProofDefinitions.All` | typeSize, methodSize | Quest data: the table of capstone proofs, one record per capstone. |
 | data catalog member | member `SWLOR.Game.Server.Domain.World.MusicSongCatalog.Songs` | typeSize, methodSize | Lists the songs and nothing else. |
 | data catalog member | member `SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog.Entries` | typeSize, methodSize | Lists the ability animations and nothing else. |
+| data catalog member | member `SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces` | typeSize, methodSize | Fills the default appearance table per race and gender and nothing else; cutting it into numbered pieces only to meet the line limit would make it harder to read (P5-16c). |
+| data catalog member | member `SWLOR.Game.Server.Feature.ChatCommandDefinition.EmoteChatCommand.BuildChatCommands` | typeSize, methodSize | Lists the emote chat commands (name, description, animation) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16c). |
 | fluent builder | type `SWLOR.Game.Server.Domain.Abilities.AbilityBuilder` | typeSize | Many short builder methods; its methods are still measured. |
 
 Owner decision 3 (2026-11-14) keeps these static entry points static:

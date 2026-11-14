@@ -11,16 +11,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             var builder = new ChatCommandBuilder();
 
-            BuildEmotesFirst(builder);
-            BuildEmotesSecond(builder);
-            BuildEmotesThird(builder);
-            BuildEmotesFourth(builder);
-
-            return builder.Build();
-        }
-
-        private static void BuildEmotesFirst(ChatCommandBuilder builder)
-        {
             builder.Create("bored")
                 .Description("Plays a bored animation.")
                 .Permissions(AuthorizationLevel.All)
@@ -131,10 +121,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .AnimationAction(Animation.FireForgetDodgeSide)
                 .IsEmote();
-        }
-
-        private static void BuildEmotesSecond(ChatCommandBuilder builder)
-        {
             builder.Create("sit")
                 .Description("Makes your character sit down.")
                 .Permissions(AuthorizationLevel.All)
@@ -235,10 +221,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .AnimationLoopingAction(Animation.PushUp)
                 .IsEmote();
-        }
-
-        private static void BuildEmotesThird(ChatCommandBuilder builder)
-        {
             builder.Create("lounge")
                 .Description("Play a lounge animation.")
                 .Permissions(AuthorizationLevel.All)
@@ -339,10 +321,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                .Permissions(AuthorizationLevel.All)
                .AnimationLoopingAction(Animation.LayPartiallyBackHandsOnStomach)
                .IsEmote();
-        }
-
-        private static void BuildEmotesFourth(ChatCommandBuilder builder)
-        {
             builder.Create("cheerloud")
                .Description("Cheer loudly.")
                .Permissions(AuthorizationLevel.All)
@@ -438,6 +416,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
               .Permissions(AuthorizationLevel.All)
               .AnimationLoopingAction(Animation.DualWieldingStance2)
               .IsEmote();
+
+            return builder.Build();
         }
     }
 }

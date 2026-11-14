@@ -27,14 +27,6 @@ namespace SWLOR.Game.Server.Domain.Character
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void LoadRaces()
         {
-            LoadMaleAppearancesFirst();
-            LoadMaleAppearancesSecond();
-            LoadFemaleAppearancesFirst();
-            LoadFemaleAppearancesSecond();
-        }
-
-        private void LoadMaleAppearancesFirst()
-        {
             // Male appearances
             _defaultRaceAppearancesMale[RacialType.Human] = new RacialAppearance();
             _defaultRaceAppearancesMale[RacialType.Bothan] = new RacialAppearance
@@ -160,10 +152,6 @@ namespace SWLOR.Game.Server.Domain.Character
                 LeftShinId = 208,
                 LeftFootId = 208
             };
-        }
-
-        private void LoadMaleAppearancesSecond()
-        {
             _defaultRaceAppearancesMale[RacialType.MonCalamari] = new RacialAppearance
             {
                 AppearanceType = AppearanceType.MonCalamari,
@@ -275,10 +263,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 LeftShinId = 208,
                 LeftFootId = 208
             };
-        }
 
-        private void LoadFemaleAppearancesFirst()
-        {
             // Female appearances
             _defaultRaceAppearancesFemale[RacialType.Human] = new RacialAppearance();
             _defaultRaceAppearancesFemale[RacialType.Bothan] = new RacialAppearance
@@ -403,10 +388,6 @@ namespace SWLOR.Game.Server.Domain.Character
                 LeftShinId = 208,
                 LeftFootId = 208
             };
-        }
-
-        private void LoadFemaleAppearancesSecond()
-        {
             _defaultRaceAppearancesFemale[RacialType.MonCalamari] = new RacialAppearance
             {
                 AppearanceType = AppearanceType.MonCalamari,
@@ -517,6 +498,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 LeftShinId = 208,
                 LeftFootId = 208
             };
+
         }
 
         /// <summary>

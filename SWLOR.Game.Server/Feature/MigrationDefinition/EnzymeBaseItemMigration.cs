@@ -8,8 +8,9 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
 /// <summary>
 /// Moves incubation enzymes from their 2x2 base items to the 1x1 <see cref="BaseItem.Enzyme"/>, with the model that
-/// selects each color's inventory icon (<c>iit_enzyme_NNN</c>), and updates building icons and Sandstorm Gaderffii looks
-/// (<see cref="GaderffiiAppearanceMigration"/>) in the same saved-data visit.
+/// selects each color's inventory icon (<c>iit_enzyme_NNN</c>), and updates building icons, Sandstorm Gaderffii looks
+/// (<see cref="GaderffiiAppearanceMigration"/>) and retired appearances (<see cref="RetiredAppearanceMigration"/>) in the
+/// same saved-data visit.
 /// </summary>
 public static class EnzymeBaseItemMigration
 {
@@ -37,7 +38,10 @@ public static class EnzymeBaseItemMigration
     public static bool MigrateSavedObject(string original, out string migrated) =>
         StoredObjectData.MigrateEnzymeData(original, out migrated);
 
-    /// <summary>Updates enzyme sizes, building icons and Gaderffii looks in carried, worn and nested items.</summary>
+    /// <summary>
+    /// Updates enzyme sizes, building icons, Gaderffii looks and retired appearances on the character and its carried,
+    /// worn and nested items.
+    /// </summary>
     internal static void MigrateCharacter(SavedCharacter character)
     {
         var visited = new HashSet<StoredObjectData.Node>();

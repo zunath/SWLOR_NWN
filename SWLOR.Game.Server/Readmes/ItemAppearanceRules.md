@@ -51,6 +51,12 @@ clipping checks and dependent robe/part-skin regeneration.
   slots (`ArmorAppearanceCatalog.AcceptsSavedStyle`) and shows it as the list's bare option ("None", or
   1 where the list has no 0), which it looks like; the item keeps its value until the player picks a
   part. Body-part lists (Appearance tab) still offer 1 and 2, so their names stay.
+- `RetiredAppearances` lists the armor parts, heads, helmets and cloaks removed from the haks to shrink
+  them (none was used by a player, NPC, blueprint or DM template in the 2026-11-13 production data).
+  Their parts 2DA and `cloakmodel.2da` rows are retired in place; never offer them again or reuse
+  their numbers for new art. `RetiredAppearanceMigration` moves anything still on one to the bare
+  option, the race's first head, helmet 1 or the Plain cloak (`SavedDataItemSweepTests`, filter
+  `RetiredAppearances`).
 - Every catalog part needs a `tintmap.2da` row so palette and exact RGB colors reach it.
   Stock parts are imported with their stock PLT and converted like hak parts; a part that
   only has fixed artwork gets an authored palette from

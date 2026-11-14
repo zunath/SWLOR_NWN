@@ -23,7 +23,7 @@ internal sealed partial class StoredObjectData
     internal static bool MigrateEnzymeNode(Node node, bool isItem, HashSet<Node> visited)
     {
         if (!visited.Add(node)) return false;
-        var changed = false;
+        var changed = MigrateRetiredAppearances(node, isItem);
         if (isItem)
         {
             var currentModel = ReadSimpleModel(node);

@@ -132,13 +132,16 @@ namespace SWLOR.Game.Server.Service
             return signature;
         }
 
-        /// <summary>The pilots flying in an area.</summary>
+        /// <summary>
+        /// The pilots flying their own ships in an area. Crew at a station or viewport keep an active ship but fly
+        /// aboard the pilot's, so a collapse must not throw their own docked ship out.
+        /// </summary>
         private static List<uint> GetPilotsInArea(string areaResref)
         {
             var pilots = new List<uint>();
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                if (IsPlayerInSpaceMode(player) && GetResRef(GetArea(player)) == areaResref)
+                if (IsPlayerInSpaceMode(player) && IsShipInSpace(player) && GetResRef(GetArea(player)) == areaResref)
                     pilots.Add(player);
             }
 

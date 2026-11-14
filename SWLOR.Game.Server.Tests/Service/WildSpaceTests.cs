@@ -349,6 +349,8 @@ public class WildSpaceTests
         rifts.Should().Contain("if (!CanFlownShipEnterArea(pilot, destination))");
         rifts.Should().Contain("farEnd.Signal[GetObjectUUID(pilot)] = farEnd.SignalRequired;", "the crossing ship can come back");
         rifts.Should().Contain("EjectStrandedShips(end, now);");
+        rifts.Should().Contain("if (IsPlayerInSpaceMode(player) && IsShipInSpace(player) && GetResRef(GetArea(player)) == areaResref)",
+            "crew at a station keep an active ship but are not flying it, so a collapse leaves their docked ship alone");
         rifts.Should().Contain("RiftRules.HullAfterEjection(status.Hull, status.MaxHull)");
 
         var scanning = ReadServerSource("Service", "SpaceScanning.cs");

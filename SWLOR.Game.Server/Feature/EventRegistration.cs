@@ -152,6 +152,15 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         private static void HookNWNXEvents()
         {
+            HookChatAndItemEvents();
+            HookDmEvents();
+            HookClientAndCombatEvents();
+            HookTrapToInputEvents();
+            HookRemainingEvents();
+        }
+
+        private static void HookChatAndItemEvents()
+        {
             // Chat Plugin Events start here.
             ChatPlugin.RegisterChatScript(ScriptName.OnNWNXChat);
 
@@ -236,7 +245,10 @@ namespace SWLOR.Game.Server.Feature
             // Feat Use events
             EventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_BEFORE", ScriptName.OnUseFeatBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_USE_FEAT_AFTER", ScriptName.OnUseFeatAfter);
+        }
 
+        private static void HookDmEvents()
+        {
             // DM Give events
             EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_GOLD_BEFORE", ScriptName.OnDMGiveGoldBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_DM_GIVE_GOLD_AFTER", ScriptName.OnDMGiveGoldAfter);
@@ -334,7 +346,10 @@ namespace SWLOR.Game.Server.Feature
             // Client Disconnect events
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_DISCONNECT_BEFORE", ScriptName.OnClientDisconnectBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_DISCONNECT_AFTER", ScriptName.OnClientDisconnectAfter);
+        }
 
+        private static void HookClientAndCombatEvents()
+        {
             // Client Connect events
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_BEFORE", ScriptName.OnClientConnectBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_CLIENT_CONNECT_AFTER", ScriptName.OnClientConnectAfter);
@@ -434,7 +449,10 @@ namespace SWLOR.Game.Server.Feature
             // Barter End events
             EventsPlugin.SubscribeEvent("NWNX_ON_BARTER_END_BEFORE", ScriptName.OnBarterEndBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_BARTER_END_AFTER", ScriptName.OnBarterEndAfter);
+        }
 
+        private static void HookTrapToInputEvents()
+        {
             // Trap events
             EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_DISARM_BEFORE", ScriptName.OnTrapDisarmBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_TRAP_DISARM_AFTER", ScriptName.OnTrapDisarmAfter);
@@ -523,7 +541,10 @@ namespace SWLOR.Game.Server.Feature
             //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_ADDED", ScriptName.OnResourceAdded);
             //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_REMOVED", ScriptName.OnResourceRemoved);
             //EventsPlugin.SubscribeEvent("NWNX_ON_RESOURCE_MODIFIED", ScriptName.OnResourceModified);
+        }
 
+        private static void HookRemainingEvents()
+        {
             // ELC Events
             EventsPlugin.SubscribeEvent("NWNX_ON_ELC_VALIDATE_CHARACTER_BEFORE", ScriptName.OnELCValidateCharacterBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_ELC_VALIDATE_CHARACTER_AFTER", ScriptName.OnELCValidateCharacterAfter);

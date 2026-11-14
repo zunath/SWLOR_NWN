@@ -29,7 +29,8 @@ public class AppearanceEditorItemValidityTests
             "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "AppearanceEditorViewModel.cs"));
         var methods = string.Join(Environment.NewLine, CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
-            .Where(node => node.Identifier.Text is "IsValidItem" or "AllowsItemFlags" or "AllowsWeaponParts")
+            .Where(node => node.Identifier.Text is "IsValidItem" or "AllowsItemFlags" or "GetWeaponPartId"
+                or "GetWeaponPartOptions")
             .Select(node => node.ToFullString().Replace("IWeaponAppearanceDefinition", "WeaponAppearanceBaseDefinition")));
         var harness = $$"""
             using System;

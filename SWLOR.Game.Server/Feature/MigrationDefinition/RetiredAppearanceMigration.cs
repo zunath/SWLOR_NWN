@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 
@@ -89,6 +92,55 @@ public static class RetiredAppearanceMigration
     public static int ReplaceHelmet(int model) => RetiredAppearances.Helmets.Contains(model) ? HelmetReplacement : model;
 
     public static int ReplaceCloak(int row) => RetiredAppearances.Cloaks.Contains(row) ? CloakReplacement : row;
+
+    /// <summary>
+    /// The species whose heads a saved character uses. A character saved while flying has its ship's appearance;
+    /// leaving space restores the species kept on its record (<see cref="Player.OriginalAppearanceType"/>).
+    /// </summary>
+    public static int SpeciesAppearance(int savedAppearance, Player record) =>
+        !ModelLetters.ContainsKey(savedAppearance) && record != null &&
+        ModelLetters.ContainsKey((int)record.OriginalAppearanceType)
+            ? (int)record.OriginalAppearanceType
+            : savedAppearance;
+
+    /// <summary>
+    /// Updates a constructed droid's saved body (its controller's <c>AppearanceParts</c>), which the summon reapplies.
+    /// Constructed droids are male droid bodies. Returns the original text when nothing is retired.
+    /// </summary>
+    public static string MigrateDroidAppearance(string droidJson)
+    {
+        if (string.IsNullOrWhiteSpace(droidJson)) return droidJson;
+        var droid = JObject.Parse(droidJson);
+        if (droid["AppearanceParts"] is not JObject parts) return droidJson;
+        var changed = false;
+        foreach (var entry in parts.Properties())
+        {
+            if (!Enum.TryParse<CreaturePart>(entry.Name, out var creaturePart) ||
+                entry.Value.Type != JTokenType.Integer)
+                continue;
+            var current = (int)entry.Value;
+            var replacement = creaturePart == CreaturePart.Head
+                ? ReplaceHead((int)AppearanceType.Droid, 0, current)
+                : DroidParts.TryGetValue(creaturePart, out var part) ? ReplaceBodyPart(part, current) : current;
+            if (replacement == current) continue;
+            entry.Value = replacement;
+            changed = true;
+        }
+        return changed ? droid.ToString(Formatting.None) : droidJson;
+    }
+
+    private static readonly IReadOnlyDictionary<CreaturePart, RetiredArmorPart> DroidParts = new Dictionary<CreaturePart, RetiredArmorPart>
+    {
+        [CreaturePart.Neck] = RetiredArmorPart.Neck, [CreaturePart.Torso] = RetiredArmorPart.Torso,
+        [CreaturePart.Belt] = RetiredArmorPart.Belt, [CreaturePart.Pelvis] = RetiredArmorPart.Pelvis,
+        [CreaturePart.LeftShoulder] = RetiredArmorPart.Shoulder, [CreaturePart.RightShoulder] = RetiredArmorPart.Shoulder,
+        [CreaturePart.LeftBicep] = RetiredArmorPart.Bicep, [CreaturePart.RightBicep] = RetiredArmorPart.Bicep,
+        [CreaturePart.LeftForearm] = RetiredArmorPart.Forearm, [CreaturePart.RightForearm] = RetiredArmorPart.Forearm,
+        [CreaturePart.LeftHand] = RetiredArmorPart.Hand, [CreaturePart.RightHand] = RetiredArmorPart.Hand,
+        [CreaturePart.LeftThigh] = RetiredArmorPart.Thigh, [CreaturePart.RightThigh] = RetiredArmorPart.Thigh,
+        [CreaturePart.LeftShin] = RetiredArmorPart.Shin, [CreaturePart.RightShin] = RetiredArmorPart.Shin,
+        [CreaturePart.LeftFoot] = RetiredArmorPart.Foot, [CreaturePart.RightFoot] = RetiredArmorPart.Foot,
+    };
 
     /// <summary>Keeps an outfit's listed part numbers in step with its saved garment and helmet.</summary>
     public static bool UpdateOutfitIds(PlayerOutfit outfit)

@@ -51,8 +51,8 @@ internal sealed partial class StoredObjectData
             if (droid != null)
             {
                 var original = ReadText(droid);
-                var migrated = HeadgearSlotMigration.MigrateDroid(original,
-                    data => MigrateEnzymeData(data, out var result) ? result : data, repairHeadgear: false);
+                var migrated = RetiredAppearanceMigration.MigrateDroidAppearance(HeadgearSlotMigration.MigrateDroid(original,
+                    data => MigrateEnzymeData(data, out var result) ? result : data, repairHeadgear: false));
                 if (original != migrated)
                 {
                     WriteText(droid, migrated);

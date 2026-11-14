@@ -6,9 +6,10 @@ internal sealed partial class StoredObjectData
 {
     /// <summary>
     /// Saved-data form of <see cref="RetiredAppearanceMigration"/> on one item or creature node. Nested items are the
-    /// caller's to visit.
+    /// caller's to visit. <paramref name="species"/> replaces a creature's saved appearance when choosing its head: a
+    /// character saved in space has its ship's appearance.
     /// </summary>
-    internal static bool MigrateRetiredAppearances(Node node, bool isItem)
+    internal static bool MigrateRetiredAppearances(Node node, bool isItem, int? species = null)
     {
         var changed = false;
         void Replace(string label, int replacement, int current)
@@ -56,7 +57,7 @@ internal sealed partial class StoredObjectData
         }
         var head = ReadPart(node, "Appearance_Head");
         Replace("Appearance_Head", RetiredAppearanceMigration.ReplaceHead(
-            ReadInteger(node, "Appearance_Type"), ReadInteger(node, "Gender"), head), head);
+            species ?? ReadInteger(node, "Appearance_Type"), ReadInteger(node, "Gender"), head), head);
         return changed;
     }
 }

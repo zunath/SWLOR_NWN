@@ -45,6 +45,9 @@ public static class EnzymeBaseItemMigration
     internal static void MigrateCharacter(SavedCharacter character)
     {
         var visited = new HashSet<StoredObjectData.Node>();
+        // A character saved in space has its ship's appearance; its head belongs to the species on its record.
+        StoredObjectData.MigrateRetiredAppearances(character.Root, false,
+            RetiredAppearanceMigration.SpeciesAppearance(character.ReadInteger("Appearance_Type"), character.Record));
         StoredObjectData.MigrateEnzymeNode(character.Root, false, visited);
         // Items waiting in overflow storage hang off the character separately from its inventory lists.
         foreach (var item in character.Carried.Concat(character.Equipped))

@@ -1,6 +1,8 @@
 #nullable enable
+using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
@@ -103,6 +105,52 @@ public partial class SavedDataItemSweepTests
         var creature = Encode(Node(0, Parts(("Appearance_Head", 258)).Concat(new[]
             { Scalar(2, "Appearance_Type", 2143), Scalar(0, "Gender", 1) }).ToArray()), "UTC ");
         EnzymeBaseItemMigration.MigrateSavedObject(creature, out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void RetiredAppearances_UseTheRecordedSpeciesForACharacterSavedInSpace()
+    {
+        var ship = (int)AppearanceType.SWLORShipNeutralCondor;
+        var record = new Player { OriginalAppearanceType = AppearanceType.Human };
+        RetiredAppearanceMigration.SpeciesAppearance(ship, record).Should().Be((int)AppearanceType.Human);
+        RetiredAppearanceMigration.SpeciesAppearance((int)AppearanceType.Twilek, record).Should().Be((int)AppearanceType.Twilek,
+            "a character on foot keeps its saved species");
+        RetiredAppearanceMigration.SpeciesAppearance(ship, null).Should().Be(ship);
+
+        var file = Encode(Node(0, Parts(("Appearance_Head", 258)).Concat(new[]
+            { Scalar(2, "Appearance_Type", ship), Scalar(0, "Gender", 1) }).ToArray()), "BIC ");
+        var assembly = typeof(EnzymeBaseItemMigration).Assembly;
+        var characterType = assembly.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter", true)!;
+        var character = Activator.CreateInstance(characterType, BindingFlags.Instance | BindingFlags.NonPublic, null,
+            new object[] { Convert.FromBase64String(file), record }, null)!;
+        typeof(EnzymeBaseItemMigration).GetMethod("MigrateCharacter", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new[] { character });
+        var saved = Convert.ToBase64String((byte[])characterType.GetMethod("Serialize")!.Invoke(character, null)!);
+        RacialAppearanceRegistry.TryGet(AppearanceType.Human, out var human).Should().BeTrue();
+        PartFields(Read(saved), "Appearance_Head").Should().Be((human.FemaleHeads[0], human.FemaleHeads[0]),
+            "leaving space restores the human body, which no longer has head 258");
+    }
+
+    [Test]
+    public void RetiredAppearances_MoveAConstructedDroidsSavedBody()
+    {
+        var droid = new JObject
+        {
+            ["Name"] = "Unit",
+            ["AppearanceParts"] = new JObject { ["Head"] = 23, ["Neck"] = 211, ["RightHand"] = 218, ["LeftFoot"] = 13, ["Torso"] = 200 },
+        };
+        var controller = Encode(Node(0, List("VarTable", Node(0, Text("Name", "CONSTRUCTED_DROID"),
+            Scalar(4, "Type", 3), Text("Value", droid.ToString())))));
+
+        EnzymeBaseItemMigration.MigrateSavedObject(controller, out var migrated).Should().BeTrue();
+        var saved = JObject.Parse((string)Value(Children(Read(migrated), "VarTable").Single(), "Value"));
+        RacialAppearanceRegistry.TryGet(AppearanceType.Droid, out var droidBody).Should().BeTrue();
+        saved["AppearanceParts"]!.ToObject<Dictionary<string, int>>().Should().BeEquivalentTo(new Dictionary<string, int>
+        {
+            ["Head"] = droidBody.MaleHeads[0], ["Neck"] = 1, ["RightHand"] = 1, ["LeftFoot"] = 1, ["Torso"] = 200,
+        });
+        saved["Name"]!.Value<string>().Should().Be("Unit");
+        EnzymeBaseItemMigration.MigrateSavedObject(migrated, out _).Should().BeFalse();
     }
 
     [Test]

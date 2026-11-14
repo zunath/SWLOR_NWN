@@ -4649,7 +4649,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CityBounties.cs",
-    "Line": 451,
+    "Line": 462,
     "Member": "TellTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(BountyText.BuildTargetNotice(city.CustomName, bounty.Reward, bounty.ExpiresUtc)))"

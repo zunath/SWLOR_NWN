@@ -114,7 +114,7 @@ public class BountyRulesTests
     [Test]
     public void OnlyThosePermittedToPost_CanPost()
     {
-        BountyRules.CheckPost(Post(canPost: false)).Should().Contain("mayor or an officer");
+        BountyRules.CheckPost(Post(canPost: false)).Should().Contain("right to withdraw from the treasury");
     }
 
     [Test]

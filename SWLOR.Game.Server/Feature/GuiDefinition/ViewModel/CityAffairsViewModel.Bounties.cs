@@ -68,6 +68,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            var canManage = CityBounties.CanManage(city, GetObjectUUID(Player));
             var canPost = CityBounties.CanPost(city, GetObjectUUID(Player));
             var now = DateTime.UtcNow;
             var open = CityBounties.GetOpenForCity(_cityId);
@@ -97,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BountyNames = names;
             BountyToggles = toggles;
             IsBountyListEmpty = open.Count == 0;
-            CanWithdrawBounty = canPost && _selectedBountyIndex >= 0;
+            CanWithdrawBounty = canManage && _selectedBountyIndex >= 0;
 
             RefreshBountyTargets(canPost);
         }
@@ -116,7 +117,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 options.Add(new GuiComboEntry(string.IsNullOrEmpty(target.Problem) ? target.Name : $"{target.Name} (unavailable)", index));
             }
 
-            if (_bountyTargets.Count == 0)
+            if (!canPost)
+                options.Add(new GuiComboEntry("Posting needs the right to withdraw from the treasury", 0));
+            else if (_bountyTargets.Count == 0)
                 options.Add(new GuiComboEntry("No one online shows the PvP flag", 0));
 
             TargetOptions = options;

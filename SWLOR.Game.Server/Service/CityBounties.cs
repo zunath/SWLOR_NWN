@@ -109,11 +109,22 @@ namespace SWLOR.Game.Server.Service
 
         // Posting and cancelling
 
-        /// <summary>Whether the player holds the power to post and cancel bounties for the city.</summary>
-        public static bool CanPost(WorldProperty city, string playerId)
+        /// <summary>Whether the player is an official who sees the city's bounties and may withdraw one (the reward goes back).</summary>
+        public static bool CanManage(WorldProperty city, string playerId)
         {
             return city != null && city.PropertyType == PropertyType.City &&
                    CityPowers.Can(city, playerId, CityPower.PostRequests);
+        }
+
+        /// <summary>
+        /// Whether the player may post a bounty: an official who may also withdraw from the treasury. A bounty pays its
+        /// reward out of the ordinary treasury to whoever collects it, so it needs the same right as a withdrawal, or an
+        /// officer could move the treasury to an accomplice through a bounty.
+        /// </summary>
+        public static bool CanPost(WorldProperty city, string playerId)
+        {
+            return CanManage(city, playerId) &&
+                   CityPowers.Can(city, playerId, CityPower.WithdrawTreasury);
         }
 
         /// <summary>
@@ -204,7 +215,7 @@ namespace SWLOR.Game.Server.Service
 
             var city = DB.Get<WorldProperty>(bounty.CityId);
             var playerId = GetObjectUUID(player);
-            if (!PvpCombat.IsPlayer(player) || !CanPost(city, playerId))
+            if (!PvpCombat.IsPlayer(player) || !CanManage(city, playerId))
                 return "Only the mayor or an officer can withdraw a bounty.";
 
             Log.Write(LogGroup.Property, $"{PlayerName.GetAuditName(player)} withdrew bounty '{bounty.Id}' of city '{city.CustomName}' ({city.Id}).");

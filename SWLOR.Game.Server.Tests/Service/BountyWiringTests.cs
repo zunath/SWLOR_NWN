@@ -256,6 +256,12 @@ public class BountyWiringTests
         var source = ReadServerSource("Service", "CityBounties.cs");
 
         source.Should().Contain("CityPowers.Can(city, playerId, CityPower.PostRequests)");
+        var canPost = source[source.IndexOf("public static bool CanPost(", StringComparison.Ordinal)..];
+        canPost[..canPost.IndexOf("\n        }", StringComparison.Ordinal)].Should().Contain("CanManage(city, playerId)")
+            .And.Contain("CityPowers.Can(city, playerId, CityPower.WithdrawTreasury)",
+                "a bounty pays treasury credits to whoever collects it, so posting needs the right to withdraw");
+        source.Should().Contain("if (!PvpCombat.IsPlayer(player) || !CanManage(city, playerId))",
+            "withdrawing a bounty returns its reward, so any official may do it");
         source.Should().Contain("restrictedFirst: false");
         source.Should().NotContain("restrictedFirst: true");
     }

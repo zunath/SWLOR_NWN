@@ -896,7 +896,8 @@ uses **bowshot**, whose hook retains its rest orientation; generic **xbowshot**
 rotates it differently. The human `rhand` hook sits at
 `(0.0110681, 0, -0.0961281)` relative to `rhand_g`.
 
-That helper uses only the male bare hand. The female normal human bind socket
+Fit a pistol to that reference hand only. Other bodies and hand models are corrected by the hand, not the
+weapon: see [WeaponHandFit.md](WeaponHandFit.md). That helper uses only the male bare hand. The female normal human bind socket
 is `(0.00101395, 0.0104238, -0.0818723)` relative to `rhand_g`; do not reuse the
 male socket for a female reference. Inspect the actual female and male hands,
 open or fingerless glove styles, both equipped hands, and the playable normal

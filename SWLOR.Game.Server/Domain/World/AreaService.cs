@@ -16,6 +16,9 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IDBService _db;
         private readonly Lazy<IPropertyService> _property;
 
+        // Built from the areas of the world at boot. Carried, not rebuilt, on a hot reload: the world by then may hold area
+        // instances made since boot (CreateArea), which a server that never reloads keeps out of this cache.
+        [field: ReloadState(ReloadStateKind.Carried)]
         private Dictionary<string, uint> AreasByResref { get; } = new();
         [field: ReloadState(ReloadStateKind.Carried)]
         private Dictionary<uint, List<uint>> PlayersByArea { get; } = new();

@@ -116,14 +116,15 @@ public class StoreManagementBootTests
     }
 
     [Test]
-    public void A_reload_keeps_the_stores_of_the_module_areas_and_leaves_out_the_copies_in_area_instances()
+    public void A_reload_keeps_the_stores_the_boot_found_and_leaves_out_the_copies_in_area_instances_made_since()
     {
-        // An instance of the cantina made after boot (CreateArea copies its template, store included, items unmarked).
+        // An instance of the cantina made after boot (CreateArea copies its template, store included, items unmarked). Whatever
+        // resref the engine gives the copy, the carried list keeps it out.
         const uint CantinaCopy = 104;
         const uint CopyStore = 204;
         _world.Add(CantinaCopy);
         _world.Add(CopyStore);
-        var areas = new[] { Cantina, Market, CantinaCopy };
+        var areas = new List<uint> { Cantina, Market };
         var cursor = 0;
         // A queued sequence answers before a handler; clear the set-up's two-area one.
         _engine.SetReturnSequence("GetFirstArea");
@@ -133,7 +134,7 @@ public class StoreManagementBootTests
             cursor = 0;
             return areas[0];
         });
-        _engine.SetReturnHandler("GetNextArea", _ => ++cursor < areas.Length ? areas[cursor] : ObjectInvalid);
+        _engine.SetReturnHandler("GetNextArea", _ => ++cursor < areas.Count ? areas[cursor] : ObjectInvalid);
         var contents = new Dictionary<uint, Queue<uint>>();
         _engine.SetReturnHandler("GetFirstObjectInArea", arguments =>
         {
@@ -148,22 +149,23 @@ public class StoreManagementBootTests
         });
         _engine.SetReturnHandler("GetNextObjectInArea", arguments =>
             contents[(uint)arguments[0]!].TryDequeue(out var next) ? next : ObjectInvalid);
-        _engine.SetReturnHandler("GetResRef", arguments => (uint)arguments[0]! == Market ? "market" : "cantina");
-        _engine.SetReturnHandler("GetArea", arguments => (uint)arguments[0]! switch
-        {
-            BarStore => Cantina,
-            MarketStore => Market,
-            _ => CantinaCopy,
-        });
+        var fields = new[] { typeof(StoreManagement).GetField("_stores", BindingFlags.NonPublic | BindingFlags.Static)! };
+        var carrier = new ReloadStateCarrier(typeof(StoreManagement).Assembly);
 
         StoreManagement.LoadStores();
-        Stores().Cast<uint>().Should().Equal(new[] { BarStore, MarketStore, CopyStore }, "the rerun finds every store in the world");
-        StoreManagement.AdoptStores();
+        var carried = carrier.Write(fields, null);
 
-        Stores().Cast<uint>().Should().Equal(BarStore, MarketStore);
+        // The instance appears, then the new build starts with an empty list and reruns LoadStores.
+        areas.Add(CantinaCopy);
+        Stores().Clear();
+        StoreManagement.LoadStores();
+        Stores().Cast<uint>().Should().Equal(new[] { BarStore, MarketStore, CopyStore }, "the rerun finds every store in the world");
+        carrier.Read(fields, null, carried);
+
+        Stores().Cast<uint>().Should().Equal(new[] { BarStore, MarketStore }, "the hourly clean-up must not empty the instance's store");
         _engine.CountOf("SetLocalBool").Should().Be(0, "the items keep the marks the boot gave them");
         _items.CountOf("SetBaseGoldPieceValue").Should().Be(0, "the prices are never raised again");
-        NewScheduledItems().Should().ContainSingle("the hourly cleanup the boot starts runs again");
+        NewScheduledItems().Should().HaveCount(2, "each build schedules the hourly cleanup (the old build's ends with it)");
     }
 
     private static IList Stores() =>

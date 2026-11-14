@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Composition
         // the provider is published and never changed after.
         private IReadOnlyDictionary<Type, Type[]> _registeredClasses = new Dictionary<Type, Type[]>();
 
+        private Func<Type, bool> _isRegistered;
+
         /// <summary>True once <see cref="Build"/> has completed.</summary>
         public bool IsBuilt => Volatile.Read(ref _provider) != null;
 
@@ -81,6 +83,26 @@ namespace SWLOR.Game.Server.Composition
             where TService : class
         {
             return Provider.GetRequiredService<TService>();
+        }
+
+        /// <summary>
+        /// True when the container registers <paramref name="type"/> as a service or content singleton: what a content constructor
+        /// takes, and what the reload carry and the reload digests leave out of a carried object (HotReload.md).
+        /// </summary>
+        /// <exception cref="ContainerNotBuiltException">The container is not built.</exception>
+        public bool IsRegistered(Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            var predicate = Volatile.Read(ref _isRegistered);
+            if (predicate == null)
+            {
+                predicate = RegisteredTypes.Of(Provider);
+                Volatile.Write(ref _isRegistered, predicate);
+            }
+
+            return predicate(type);
         }
 
         /// <summary>

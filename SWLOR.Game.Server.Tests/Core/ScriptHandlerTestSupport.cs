@@ -22,23 +22,34 @@ internal static class ScriptHandlerTestSupport
 
     public static Assembly GameAssembly => typeof(ScriptRegistry).Assembly;
 
-    public static Assembly EngineTestAssembly => Assembly.Load(new AssemblyName("SWLOR.Game.Server.EngineTests"));
+    private static readonly Lazy<Assembly> EngineTests = new(() => Assembly.Load(new AssemblyName("SWLOR.Game.Server.EngineTests")));
+
+    // The engine-test classes with instance handlers (the runner), built as LoadEngineTestAssembly builds them.
+    private static readonly Lazy<IReadOnlyDictionary<Type, object>> EngineTestOwners = new(() =>
+        EngineTestAssemblyLoader.CreateHandlerOwners(EngineTests.Value, ServerContainer.Resolve<IContentFactory>()));
+
+    public static Assembly EngineTestAssembly => EngineTests.Value;
 
     /// <summary>A container built from the server's registrations, as the boot builds it (one per test run).</summary>
     public static ContainerHost ServerContainer => Container.Value;
 
     /// <summary>
     /// What <c>ServerBootstrapper.LoadScripts</c> passes the registry: the container's singleton of a class that holds
-    /// handlers on instance methods (a converted service whose facade was removed).
+    /// handlers on instance methods (a converted service whose facade was removed), or the instance the content factory built for
+    /// an engine-test class with instance handlers (the runner).
     /// </summary>
-    public static Func<Type, object> Owners => ServerContainer.ResolveHandlerOwner;
+    public static Func<Type, object> Owners => type => ServerContainer.ResolveHandlerOwner(type) ?? EngineTestOwner(type);
 
     /// <summary>
     /// <see cref="Owners"/>, and a new instance of a class of this test assembly (its instance-handler fixtures), for the
     /// tests that scan every assembly loaded in the AppDomain.
     /// </summary>
     public static Func<Type, object> OwnersAndTestFixtures =>
-        type => ServerContainer.ResolveHandlerOwner(type) ?? (type.Assembly == typeof(ScriptHandlerTestSupport).Assembly ? Activator.CreateInstance(type) : null);
+        type => ServerContainer.ResolveHandlerOwner(type) ?? EngineTestOwner(type) ??
+                (type.Assembly == typeof(ScriptHandlerTestSupport).Assembly ? Activator.CreateInstance(type) : null);
+
+    private static object? EngineTestOwner(Type type) =>
+        type.Assembly == EngineTests.Value && EngineTestOwners.Value.TryGetValue(type, out var owner) ? owner : null;
 
     /// <summary>Every public method of every type, in the order reflection returns them (what discovery walked before the manifest).</summary>
     public static IReadOnlyList<MethodInfo> MethodsOf(params Assembly[] assemblies)

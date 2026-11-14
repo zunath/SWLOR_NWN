@@ -7,12 +7,14 @@ namespace SWLOR.Architecture.Tests.Debt;
 /// <summary>
 /// The services of the server and who takes them through a constructor. A service type is a type the container registers
 /// in <c>Composition/ServiceRegistrations.Register</c> (both sides of <c>AddSingleton&lt;IService, Service&gt;()</c>): the game
-/// services and the process services (<c>IHookControl</c>, <c>IRedisConnectionSource</c>, ...). Records, settings and other
-/// values a constructor takes are not services.
+/// services, the process services (<c>IHookControl</c>, <c>IRedisConnectionSource</c>, ...) and the content factory, or a content
+/// singleton <c>Composition/ContentRegistrations.Register</c> registers (each counts one toward a type's services, target 2).
+/// Records, settings and other values a constructor takes are not services.
 /// </summary>
 internal static class ServiceScanner
 {
     public const string RegistrationsType = "SWLOR.Game.Server.Composition.ServiceRegistrations";
+    public const string ContentRegistrationsType = "SWLOR.Game.Server.Composition.ContentRegistrations";
     public const string ServiceProvider = "System.IServiceProvider";
 
     private static readonly string[] RegistrationMethods = ["AddSingleton", "AddTransient", "AddScoped", "TryAddSingleton", "TryAddTransient", "TryAddScoped"];
@@ -23,16 +25,17 @@ internal static class ServiceScanner
         ["System.Func<TResult>"] = "Func"
     };
 
-    /// <summary>The full names of the types <c>ServiceRegistrations</c> registers.</summary>
+    /// <summary>The full names of the types <c>ServiceRegistrations</c> and <c>ContentRegistrations</c> register.</summary>
     public static IReadOnlySet<string> ServiceTypes(SourceSnapshot snapshot)
     {
         var compilation = snapshot.CompilationOf(snapshot.Server);
-        var registrations = compilation.GetTypeByMetadataName(RegistrationsType);
         var types = new HashSet<string>(StringComparer.Ordinal);
-        if (registrations is null)
-            return types;
+        var references = new[] { RegistrationsType, ContentRegistrationsType }
+            .Select(compilation.GetTypeByMetadataName)
+            .OfType<INamedTypeSymbol>()
+            .SelectMany(registrations => registrations.DeclaringSyntaxReferences);
 
-        foreach (var reference in registrations.DeclaringSyntaxReferences)
+        foreach (var reference in references)
         {
             var node = reference.GetSyntax();
             var model = compilation.GetSemanticModel(node.SyntaxTree, ignoreAccessibility: true);

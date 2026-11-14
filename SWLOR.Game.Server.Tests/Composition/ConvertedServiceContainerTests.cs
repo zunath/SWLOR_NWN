@@ -101,8 +101,11 @@ public class ConvertedServiceContainerTests
     public void GameServices_has_a_property_for_each_class_static_code_reaches_and_nothing_else()
     {
         const BindingFlags Declared = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+        // Content is the temporary content factory for code not converted yet (MaintainabilityRefactorContentInjection.md); it goes
+        // with GameServices in wave C11.
         var expected = ConvertedServiceFixtures.Load().Where(service => service.AccessorProperty is not null)
             .Select(service => $"{service.Contract.Name} {service.AccessorProperty}")
+            .Append("IContentFactory Content")
             .OrderBy(text => text, StringComparer.Ordinal);
 
         typeof(GameServices).GetProperties(Declared).Select(property => $"{property.PropertyType.Name} {property.Name}")

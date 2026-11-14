@@ -2,6 +2,7 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Composition
 {
@@ -79,20 +80,42 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>
         /// Builds a container from the server's registrations with the server's options (<c>ValidateOnBuild</c>,
-        /// <c>ValidateScopes</c>, every singleton created) and disposes it, without touching <see cref="ServerHost"/>. The
-        /// host validates a game build this way off the engine thread before activating it: constructors may not call the
-        /// engine (<c>DependencyInjection.md</c>).
+        /// <c>ValidateScopes</c>, every singleton created, content singletons included), runs the content check
+        /// (<see cref="CheckContent"/>) and disposes it, without touching <see cref="ServerHost"/>. The host validates a game
+        /// build this way off the engine thread before activating it: constructors may not call the engine
+        /// (<c>DependencyInjection.md</c>), and no made content is built.
         /// </summary>
         /// <returns>The number of registrations.</returns>
         public static int ValidateServerServices()
         {
             var services = new ServiceCollection();
             RegisterServerServices(services);
-            using (ContainerHost.Create(services))
+            using (var provider = ContainerHost.Create(services))
             {
+                CheckContent(provider);
             }
 
             return services.Count;
+        }
+
+        /// <summary>
+        /// The content check of the reload validation (HotReload.md rule 9): every made type of the game build takes its registered
+        /// types before its values, and every <c>Content.Create</c> signature <see cref="ContentRegistrations"/> records resolves to
+        /// exactly one constructor of <paramref name="provider"/>'s factory. Builds no made content.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">The check found a problem; the message lists each.</exception>
+        public static void CheckContent(IServiceProvider provider)
+        {
+            if (provider == null)
+                throw new ArgumentNullException(nameof(provider));
+
+            var factory = provider.GetRequiredService<IContentFactory>() as ContentFactory ?? new ContentFactory(provider);
+            var problems = factory.Check(typeof(CompositionRoot).Assembly.GetTypes(), ContentRegistrations.Signatures());
+            if (problems.Count > 0)
+            {
+                throw new InvalidOperationException("The content check failed: " + Environment.NewLine + "  " +
+                                                    string.Join(Environment.NewLine + "  ", problems));
+            }
         }
 
         /// <summary>

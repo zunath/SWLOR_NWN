@@ -28,6 +28,15 @@ namespace SWLOR.Game.Server.Core
         /// </summary>
         public static IReadOnlyList<ReloadDigestLine> Cache(ScriptRegistry registry)
         {
+            return Cache(registry, null);
+        }
+
+        /// <summary>
+        /// <see cref="Cache(ScriptRegistry)"/>, with the fields of a type the container registers (<paramref name="isService"/>: an
+        /// injected service or content singleton) left out like the interface-typed ones.
+        /// </summary>
+        public static IReadOnlyList<ReloadDigestLine> Cache(ScriptRegistry registry, Func<Type, bool> isService)
+        {
             var nested = ReloadBootstrap.NestedScripts
                 .SelectMany(script => registry.GetActionScripts(script))
                 .Select(handler => (Type: handler.Action.Method.DeclaringType, Instance: handler.Action.Target));
@@ -40,7 +49,7 @@ namespace SWLOR.Game.Server.Core
                 .Select(group => group.First())
                 .ToArray();
 
-            var hasher = new ReloadDigestHasher(typeof(ReloadDigests).Assembly);
+            var hasher = new ReloadDigestHasher(typeof(ReloadDigests).Assembly, isService);
             var lines = new List<ReloadDigestLine>();
             foreach (var (type, instance) in owners)
                 lines.AddRange(DescribeFields(hasher, CacheKind, type, instance, field => ReloadDigestHasher.StateOf(field) == null));
@@ -59,8 +68,17 @@ namespace SWLOR.Game.Server.Core
             return Adopted(typeof(ReloadDigests).Assembly, resolveOwner);
         }
 
-        /// <summary><see cref="Adopted(Func{Type, object})"/> over the classes of <paramref name="assembly"/>.</summary>
-        public static IReadOnlyList<ReloadDigestLine> Adopted(Assembly assembly, Func<Type, object> resolveOwner)
+        /// <summary>
+        /// <see cref="Adopted(Func{Type, object})"/>, with the fields of a type the container registers (<paramref name="isService"/>)
+        /// left out like the interface-typed ones.
+        /// </summary>
+        public static IReadOnlyList<ReloadDigestLine> Adopted(Func<Type, object> resolveOwner, Func<Type, bool> isService)
+        {
+            return Adopted(typeof(ReloadDigests).Assembly, resolveOwner, isService);
+        }
+
+        /// <summary><see cref="Adopted(Func{Type, object}, Func{Type, bool})"/> over the classes of <paramref name="assembly"/>.</summary>
+        public static IReadOnlyList<ReloadDigestLine> Adopted(Assembly assembly, Func<Type, object> resolveOwner, Func<Type, bool> isService = null)
         {
             if (assembly == null)
                 throw new ArgumentNullException(nameof(assembly));
@@ -68,7 +86,7 @@ namespace SWLOR.Game.Server.Core
                 throw new ArgumentNullException(nameof(resolveOwner));
 
             const BindingFlags flags = BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-            var hasher = new ReloadDigestHasher(assembly);
+            var hasher = new ReloadDigestHasher(assembly, isService);
             var lines = new List<ReloadDigestLine>();
             foreach (var type in assembly.GetTypes().OrderBy(type => type.FullName, StringComparer.Ordinal))
             {
@@ -112,7 +130,7 @@ namespace SWLOR.Game.Server.Core
             try
             {
                 fields = ReloadDigestHasher.RootFields(type, instance)
-                    .Where(field => include(field) && !ReloadDigestHasher.IsDependency(field.FieldType))
+                    .Where(field => include(field) && !hasher.HoldsDependency(field.FieldType))
                     .ToList();
             }
             catch (Exception exception)

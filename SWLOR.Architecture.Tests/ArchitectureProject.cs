@@ -1,5 +1,6 @@
 using SWLOR.Architecture.Tests.Debt;
 using SWLOR.Architecture.Tests.Domains;
+using SWLOR.Architecture.Tests.Rules;
 using SWLOR.Architecture.Tests.Scanning;
 
 namespace SWLOR.Architecture.Tests;
@@ -23,6 +24,7 @@ internal static class ArchitectureProject
     private static readonly Lazy<NativeHookFacts> HooksAssemblyNativeHooks = new(() => NativeHookScanner.Scan(HooksAssemblyPath, ContractsNamespace));
     private static readonly Lazy<SourceSnapshot> SolutionSource = new(() => SourceSnapshot.Load(RepositoryRoot, SolutionFileName));
     private static readonly Lazy<DebtScan> SolutionDebt = new(() => DebtScan.Run(Source, Exemptions, Graph, Server, Facts));
+    private static readonly Lazy<ContentInjectionRules> ServerContentRules = new(() => new ContentInjectionRules(Source));
 
     /// <summary>The solution whose projects the Phase 5 debt measures read.</summary>
     public const string SolutionFileName = "SWLOR.Game.Server.sln";
@@ -58,6 +60,9 @@ internal static class ArchitectureProject
 
     /// <summary>The Phase 5 debt measures of the solution as it is now, computed once for all debt tests.</summary>
     public static DebtScan Debt => SolutionDebt.Value;
+
+    /// <summary>The content injection guards over the server's source, computed once for all tests that read them.</summary>
+    public static ContentInjectionRules ContentInjection => ServerContentRules.Value;
 
     public static string DomainMapPath => Path.Combine(Directory, "DomainMap.json");
 

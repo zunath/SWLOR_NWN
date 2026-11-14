@@ -41,6 +41,9 @@ namespace SWLOR.Game.Server.Composition
             // The native hooks the hook files enable at their boot moments: the process's own on the native entry; the host
             // registers the one it installs the hooks through (P4-11).
             services.AddSingleton<IHookControl, NativeHookTable>();
+            // Content: the factory of made content, and the content singletons (written by tools/Refactor/SWLOR.ContentInjection).
+            services.AddSingleton<IContentFactory, ContentFactory>();
+            ContentRegistrations.Register(services);
 
             // Core
             // The Redis connection DBService takes; a host that keeps it across hot reloads registers its own (P4-10).

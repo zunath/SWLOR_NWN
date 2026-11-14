@@ -94,7 +94,11 @@ consume: `Combat.SetAbilityHitResolutionOverride` / `SetAutoAttackHitResolutionO
 ## Architecture Overview
 
 The runner lives in `SWLOR.Game.Server.EngineTests/EngineTest.cs`, with its supporting types in
-`SWLOR.Game.Server.EngineTests/Framework/`.
+`SWLOR.Game.Server.EngineTests/Framework/`. The runner is made content (`DependencyInjection.md`, "Content injection"): when
+`ServerBootstrapper.LoadEngineTestAssembly` loads the assembly, the container's content factory builds each class there that
+declares an instance `[NWNEventHandler]` (`EngineTestAssemblyLoader.CreateHandlerOwners`), and `LoadScripts` binds those handlers
+to the built instances after the container's own singletons. The runner takes the factory (`IContentFactory`) through its
+constructor; nothing reaches it through a static.
 
 1. **Trigger** - `EngineTest.ScheduleEngineTests` is an `[NWNEventHandler(ScriptName.OnModuleLoad)]`
    handler. It checks `ApplicationSettings.EngineTestsEnabled`; if false, it does nothing. If the
@@ -106,7 +110,7 @@ The runner lives in `SWLOR.Game.Server.EngineTests/EngineTest.cs`, with its supp
    `EngineTestStartupDelaySeconds` (default 15s), giving the module time to finish booting. A
    static `_hasRun` flag guards against scheduling twice on repeated `OnModuleLoad` events.
 
-2. **Discovery** - `DiscoverTests` reflects over every loaded assembly's public static methods,
+2. **Discovery** - `DiscoverTests` reflects over every loaded assembly's methods,
    collects the ones carrying `[EngineTest]`, and orders them by `Category` then `Name`. If
    `SWLOR_ENGINE_TEST_FILTER` is set, only tests whose `Name` or `Category` contains the filter
    text (case-insensitive) survive.
@@ -123,7 +127,8 @@ The runner lives in `SWLOR.Game.Server.EngineTests/EngineTest.cs`, with its supp
    script finishes) settle before the first test acts inside it.
 
 4. **Per-test execution** - `RunSingleTestAsync` builds a fresh `EngineTestContext` for each test,
-   validates the method signature, invokes it via reflection, and races it against a timeout task
+   validates the method signature, invokes it via reflection (an instance test on a new instance of its class, which the
+   runner's content factory builds with its services for that run), and races it against a timeout task
    (`attribute.TimeoutSeconds`, default 60s) using `NwTask.WhenAny`. `EngineTestSkippedException`
    maps to `Skipped`, `EngineTestAssertionException` maps to `Failed`, any other exception is
    unwrapped from `TargetInvocationException` and also maps to `Failed` (and is logged to
@@ -177,7 +182,24 @@ their default on a parse failure.
 public static async Task MyTest(EngineTestContext ctx) { /* ... */ }
 ```
 
-- The method must be **public static**.
+or, for a class that takes its services through its constructor (the form tests convert to, wave by wave, as content is
+converted; `Definitions/InstanceEngineTests.cs` is the example):
+
+```csharp
+public sealed class MyEngineTests
+{
+    public MyEngineTests(IContentFactory content, IPerkService perk) { Content = content; Perk = perk; }
+    private IContentFactory Content { get; }
+    private IPerkService Perk { get; }
+
+    [EngineTest("Human-readable test name", Category = "MyCategory")]
+    public async Task MyTest(EngineTestContext ctx) { /* Perk.GetPerkLevel(...), Content.Create<...>(...) */ }
+}
+```
+
+- The method must be **public**: static, or an instance method of a non-abstract class. The runner builds the class with its
+  content factory for each run (a new instance per test), so its constructor takes registered services only (named like the
+  old `GameServices` properties) and must not call the engine. Static tests run as before until wave C9 converts them.
 - It must take exactly **one parameter of type `EngineTestContext`**.
 - It must return **`Task`** - and only `Task` (`Task<T>` does not pass the signature check,
   `EngineTest.IsValidTestMethod`). `void` bodies are rejected because the per-test timeout is
@@ -191,8 +213,9 @@ public static async Task MyTest(EngineTestContext ctx) { /* ... */ }
   Sweep-style tests must yield periodically inside long loops (`await NwTask.NextFrame()` every
   N items - see `PerkSweepEngineTests`). The NWNX thread watchdog (below) is the hard backstop
   for a segment that never returns.
-- A misplaced attribute (private or instance method, wrong parameters) is reported as a **failed**
-  test with an invalid-signature message rather than silently skipped.
+- A misplaced attribute (private method, instance method of an abstract class, wrong parameters) is reported as a
+  **failed** test with an invalid-signature message rather than silently skipped; a class the factory cannot build fails the
+  test with the factory's message.
 - `Name` (constructor argument) is required. `Category` defaults to `"General"`. `TimeoutSeconds`
   defaults to `60f`.
 - Tests failing the signature check are reported as `Failed` with a descriptive message rather than

@@ -21,7 +21,9 @@ internal static class DebtReport
         [DebtMeasures.DeferredResolutionFile] = ("parameters", "none"),
         [DebtMeasures.LogicToContentFile] = ("types", "none"),
         [DebtMeasures.DomainCyclesFile] = ("edges", "none"),
-        [DebtMeasures.StaticStateFile] = ("members", "each kept with an approved reason, or removed")
+        [DebtMeasures.StaticStateFile] = ("members", "each kept with an approved reason, or removed"),
+        [DebtMeasures.UpwardEdgesFile] = ("members", "none: every reference follows the domain order"),
+        [DebtMeasures.SinkWorkFile] = ("lines", "none: a sink only forwards")
     };
 
     /// <summary>The unit of a measure's counts, for messages: <c>uses</c>, <c>lines</c>, <c>services</c>.</summary>

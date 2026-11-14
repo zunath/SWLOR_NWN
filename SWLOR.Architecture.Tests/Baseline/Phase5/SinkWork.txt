@@ -1,0 +1,29 @@
+# Phase 5 debt (P5-1b): what the native sinks do besides forwarding (owner decision 12: a sink does no work).
+# Line: <type> | <lines>: a type of SWLOR.Game.Server.NativeSinks (the sink factory, which only creates the sinks, is
+# not measured) and the lines of its members that do work, each from its first attribute or modifier to its last token.
+# A member does no work when it is a method whose body is one call to a name or a chain of member names that passes the
+# method's own parameters as written, a readonly instance field without an initializer, or a constructor that only
+# assigns its parameters to fields; everything else is work. The domain order counts NativeSinks as wiring on that
+# condition. The hook logic moves into Combat services in P5-16b; the sinks stay under the no-content rule
+# (LogicToContent.txt).
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server.NativeSinks.ChatPortraitSpeakersSink | 13
+SWLOR.Game.Server.NativeSinks.ClientJsonUtf8GuardSink | 202
+SWLOR.Game.Server.NativeSinks.CombatRecorderEffectHooksSink | 144
+SWLOR.Game.Server.NativeSinks.LegacyItemPropertiesSink | 146
+SWLOR.Game.Server.NativeSinks.NeckAppearanceSerializationSink | 44
+SWLOR.Game.Server.NativeSinks.OnAIActionAttackObjectSink | 879
+SWLOR.Game.Server.NativeSinks.PlayerCreationSink | 35
+SWLOR.Game.Server.NativeSinks.PlayerFileCheckpointSink | 106
+SWLOR.Game.Server.NativeSinks.PlayerListNamePrivacySink | 35
+SWLOR.Game.Server.NativeSinks.PlayerSlotAssignmentSink | 109
+SWLOR.Game.Server.NativeSinks.QuickbarFeatLoadingSink | 10
+SWLOR.Game.Server.NativeSinks.SavedPlayerInventorySink | 8
+SWLOR.Game.Server.NativeSinks.StaleDriveAfterJumpSink | 75
+SWLOR.Game.Server.NativeSinks.VitalityHitPointsSink | 190
+SWLOR.Game.Server.NativeSinks.WeaponAttackAnimationSink | 100

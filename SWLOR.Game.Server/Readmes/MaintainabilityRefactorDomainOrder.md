@@ -84,9 +84,12 @@ All four were approved as recommended, with the reviewer's conditions.
   Creatures) and the approved order costs 609, 1.8% more. UI stays low by choice: once `ExtraHotbarsService` moves up,
   the minimum (517) keeps UI low and the approved order costs 528. Above Combat the order is weakly held; several orders
   are within 2%.
-- **Reproducing.** The tool (a C# extractor and Python analysis scripts) is committed under `tools/Refactor/DomainOrder`
-  in P5-1b, so the order can be re-measured after each split and in P5-15. The guard measures it needs (pairs by band,
-  upward edges, `Lazy<>` by direction, sink work) go into `SWLOR.Architecture.Tests` with the other debt measures.
+- **Reproducing.** The tool (a C# extractor and Python analysis scripts) is in `tools/Refactor/DomainOrder` (P5-1b; its
+  README names the commands), so the order can be re-measured after each split and in P5-15. Run on `369c318be` it
+  reproduces every figure here. On `bd12924d9`, P5-1b's base, only the hook figures differ: P5-16a split the native attack
+  code into more members, so the hook code holds 81 upward member references instead of 63 (P5-16 and P5-16b: 91 instead
+  of 73). The guard measures are in `SWLOR.Architecture.Tests` with the other debt measures (section 5, "Record the
+  order").
 
 ## 1. What the two-way pairs are made of
 
@@ -255,6 +258,13 @@ After the moves, in the approved order (Appendix C has each direction with its m
 records them as a shrinking baseline, `UpwardEdges.txt`, so every item shrinks it and P5-15 is left with the cycles inside
 domains and the final guards.
 
+The baseline counts the tree as it is, before the moves, and counts every reference, vocabulary included, so the type
+moves of P5-1e and P5-1f shrink it too. At P5-1b it holds 1,319 member references in 76 directions (931 of them service,
+other or definition references, in 65 directions); 124 come from the hook code in `Native/`, which is Platform until it
+moves. The table below counts only what the moves leave. When P5-16b moves hook code into Combat, the references into it
+from domains below Combat (the `Character -> Native` and `Foundation -> Native` rows of Appendix C) start to point up, so
+P5-16b fixes them in the same pull request.
+
 | Item | Directions | Members |
 |---|---:|---:|
 | P5-1g shared low interfaces | 9 | 106 |
@@ -411,10 +421,24 @@ with the rest.
 - **Prefer type moves to member moves.** Moving a constant or a nested type out of a class changes the call text, which
   master's code then needs rewritten (`Apply-FacadeRemoval.ps1` can respell moved constants, as upkeep until the cutover).
   P5-1f keeps such moves to the 114 references listed.
-- **Record the order.** P5-1b adds the order and the band rule to `DomainMap.json`, with `Entity` and `Enumeration` as
-  Foundation areas and `NativeSinks` as a wiring area. `DomainCycleScanner` and `Phase5DebtTests` count pairs by band,
-  and `DomainCycles.txt` is regenerated under the new measure. P5-1b also adds the new baselines: `UpwardEdges.txt`,
-  `Lazy<>` by direction, and sink work. P5-15 turns them into failing guards.
+- **Record the order.** P5-1b recorded the order and the band rule in `DomainMap.json`:
+  - `order` (bottom to top) and `contentBand: aboveAllLogic`;
+  - `platformAreaDomains` puts `Entity` and `Enumeration` in Foundation for every guard, so `CrossDomainEdges.txt` and
+    `EdgesIntoCoreAndPlatform.txt` now list their edges under Foundation;
+  - `wiringPlatformAreas` adds `NativeSinks`, so its 7 edges left `CrossDomainEdges.txt`;
+  - `contentRuleExemptAreas` lets only `Composition` name content, so the sinks stay in `LogicToContent.txt`.
+
+  The order measures bind the server's source the way the tool does (`SourceReferenceScanner`), so their counts do not
+  depend on the build configuration, and they match the tool's `guard_figures.py`. At P5-1b:
+  - `DomainCycles.txt` counts pairs by band: 69, 63 between logic and 6 between content (the recount of section 4).
+  - `UpwardEdges.txt` has one line per file and higher node, with its referencing members: 1,319 (see "Remaining upward
+    edges, by item").
+  - `DeferredResolution.txt` gives each `Lazy<>` its direction (`<file> -> Combat (up)`): 28 up, 53 down and 30 inside one
+    domain. The direction went into the existing baseline rather than a second one, so deferred resolution keeps one source.
+  - `SinkWork.txt` counts the lines of the sinks' members that do more than forward: 2,096 lines in 15 of the 17 sinks,
+    879 of them in `OnAIActionAttackObjectSink` (decision 3's 2,373 lines count whole files at `369c318be`).
+
+  P5-15 turns them into failing guards; P5-16b does it for `SinkWork.txt`.
 
 ## 6. Items
 
@@ -477,7 +501,7 @@ Sequencing:
 - The recorder part implements P5-1g's recording interface.
 - The part map gives P5-16b a home for the hook logic; P5-16a's static helpers are the starting point.
 
-## Side finding (not fixed)
+## Side finding (fixed in P5-1b)
 
 P5-0's `SourceSnapshot` builds its compilations with `MetadataImportOptions.All` and binds with
 `ignoreAccessibility: true`. With the server's `global using System;`, the name `Currency` then binds to both
@@ -486,6 +510,11 @@ symbol. `LookupScanner` therefore misses the `Currency` lookups (8 server files,
 `Feature/PlaceableScripts.cs`), so `StaticLookups.txt` undercounts them. Binding with accessibility respected fixes it.
 `Currency` is the only `GameServices` name that matches an internal type of `System.Private.CoreLib`; other assemblies
 were not checked.
+
+P5-1b binds every measure and the content injection rules through one call (`SourceSnapshot.Bind`) with accessibility
+respected. `StaticLookups.txt` gained the 32 `Currency` uses it missed: 26 in those 8 server files and 6 in two engine
+test files (`LightsaberWorkbenchEngineTests`, `ServiceContainerEngineTests`). The 10 files were already listed for other
+lookups, so only their counts grew. No other baseline changed.
 
 ## Appendix A: Every two-way pair today
 

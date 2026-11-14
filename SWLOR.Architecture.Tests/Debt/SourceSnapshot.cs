@@ -81,6 +81,17 @@ internal sealed class SourceSnapshot
     public CSharpCompilation CompilationOf(ParsedProject project) =>
         _compilations.GetOrAdd(project.Name, _ => Compile(project));
 
+    /// <summary>
+    /// The semantic model every measure binds names in: the compiler's own lookup, accessibility respected. The compilations
+    /// import every metadata member (<see cref="MetadataImportOptions.All"/>), internal ones included, so a model that ignored
+    /// accessibility would see internal framework types too: under the server's <c>global using System;</c> the name
+    /// <c>Currency</c> would then match both <c>GameServices.Currency</c> and the internal <c>System.Currency</c> of
+    /// <c>System.Private.CoreLib</c> and bind to nothing. Respecting accessibility drops the internal candidate, as the
+    /// compiler does.
+    /// </summary>
+    public static SemanticModel Bind(CSharpCompilation compilation, SyntaxTree tree) =>
+        compilation.GetSemanticModel(tree, ignoreAccessibility: false);
+
     private CSharpCompilation Compile(ParsedProject project)
     {
         var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true)

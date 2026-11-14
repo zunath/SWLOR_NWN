@@ -6,7 +6,7 @@ using SWLOR.Architecture.Tests.Scanning;
 namespace SWLOR.Architecture.Tests.Debt;
 
 /// <summary>
-/// Turns what the scanners found into the eight Phase 5 debt measures: their baseline entries, the header that explains
+/// Turns what the scanners found into the ten Phase 5 debt measures: their baseline entries, the header that explains
 /// each baseline file and the totals the report shows.
 /// </summary>
 internal static class DebtMeasures
@@ -19,6 +19,8 @@ internal static class DebtMeasures
     public const string LogicToContentFile = "LogicToContent.txt";
     public const string DomainCyclesFile = "DomainCycles.txt";
     public const string StaticStateFile = "StaticState.txt";
+    public const string UpwardEdgesFile = "UpwardEdges.txt";
+    public const string SinkWorkFile = "SinkWork.txt";
 
     public const string ServerFolder = SourceSnapshot.ServerProjectName + "/";
     public const string CompositionFolder = ServerFolder + "Composition/";
@@ -203,20 +205,39 @@ internal static class DebtMeasures
             summary);
     }
 
-    public static DebtMeasure DeferredResolution(IReadOnlyList<ConstructorService> constructorServices, IReadOnlyList<(string File, string? Type)> providerUses)
+    public static DebtMeasure DeferredResolution(IReadOnlyList<ConstructorService> constructorServices, IReadOnlyList<(string File, string? Type)> providerUses, DomainMap map)
     {
-        var deferred = constructorServices.Where(service => service.IsDeferred).ToList();
+        var deferred = constructorServices
+            .Where(service => service.IsDeferred)
+            .Select(service => (Service: service, Direction: DeferredDirection(service, map)))
+            .ToList();
         var entries = deferred
-            .GroupBy(service => service.File)
-            .Select(file => new DebtEntry(file.Key, file.Count(), string.Join(", ", file.GroupBy(service => service.Wrapper).Select(wrapper => $"{wrapper.Key} {wrapper.Count()}"))))
+            .GroupBy(item => (item.Service.File, item.Direction.To, item.Direction.Way))
+            .Select(group => new DebtEntry(
+                $"{group.Key.File} -> {group.Key.To} ({group.Key.Way})",
+                group.Count(),
+                $"{group.First().Direction.From} -> {group.Key.To}: " +
+                string.Join(", ", group.GroupBy(item => item.Service.Wrapper).OrderBy(wrapper => wrapper.Key, StringComparer.Ordinal).Select(wrapper => $"{wrapper.Key} {wrapper.Count()}")) +
+                " (" + string.Join(", ", group.Select(item => ShortName(item.Service.Service)).Distinct().OrderBy(name => name, StringComparer.Ordinal)) + ")"))
             .Concat(providerUses.GroupBy(use => use.File).Select(file => new DebtEntry(file.Key + " (IServiceProvider)", file.Count())))
+            .ToList();
+        int Way(string way) => deferred.Count(item => item.Direction.Way == way);
+        var up = deferred
+            .Where(item => item.Direction.Way == Up)
+            .GroupBy(item => $"{item.Direction.From} -> {item.Direction.To}")
+            .OrderByDescending(group => group.Count())
+            .ThenBy(group => group.Key, StringComparer.Ordinal)
+            .Select(group => $"{group.Key} {group.Count()}")
             .ToList();
 
         var summary = new List<string>
         {
-            $"{deferred.Count} deferred constructor parameters in {deferred.Select(service => service.File).Distinct().Count()} files " +
-            $"(Lazy {deferred.Count(service => service.Wrapper == "Lazy")}, Func {deferred.Count(service => service.Wrapper == "Func")}), " +
-            $"taken by {deferred.Select(service => service.Type).Distinct().Count()} types, deferring {deferred.Select(service => service.Service).Distinct().Count()} distinct services.",
+            $"{deferred.Count} deferred constructor parameters in {deferred.Select(item => item.Service.File).Distinct().Count()} files " +
+            $"(Lazy {deferred.Count(item => item.Service.Wrapper == "Lazy")}, Func {deferred.Count(item => item.Service.Wrapper == "Func")}), " +
+            $"taken by {deferred.Select(item => item.Service.Type).Distinct().Count()} types, deferring {deferred.Select(item => item.Service.Service).Distinct().Count()} distinct services.",
+            $"By direction in the domain order: up {Way(Up)}, down {Way(Down)}, inside one domain {Way(Inside)}" +
+            (deferred.Count == Way(Up) + Way(Down) + Way(Inside) ? "." : $", outside the order {deferred.Count - Way(Up) - Way(Down) - Way(Inside)}."),
+            $"Up: {(up.Count == 0 ? "none" : string.Join(", ", up))}.",
             $"IServiceProvider outside Composition/: {providerUses.Count} uses."
         };
 
@@ -224,9 +245,11 @@ internal static class DebtMeasures
             "5. Deferred resolution",
             DeferredResolutionFile,
             [
-                "Phase 5 debt (P5-0): deferred resolution in SWLOR.Game.Server (target 4).",
-                "Line: <file> | <parameters>: constructor parameters of type Lazy<T> or Func<T> where T is a service (a type",
-                "Composition/ServiceRegistrations.Register registers).",
+                "Phase 5 debt (P5-0, by direction since P5-1b): deferred resolution in SWLOR.Game.Server (target 4).",
+                "Line: <file> -> <domain> (<direction>) | <parameters>: constructor parameters of type Lazy<T> or Func<T> where T is a",
+                "service (a type Composition/ServiceRegistrations.Register registers) of <domain>, from the file's domain: up or down",
+                "the domain order (DomainMap.json order), or inside one domain. An up Lazy<> hides the half of a construction cycle",
+                "that an inversion removes; a down one becomes a plain parameter once its up half is gone (MaintainabilityRefactorDomainOrder.md).",
                 "Line: <file> (IServiceProvider) | <uses>: names outside Composition/ that bind to System.IServiceProvider (a hard rule",
                 "as well: ConvertedServicesTests.Nothing_locates_a_service_outside_composition).",
                 .. Footer
@@ -266,8 +289,9 @@ internal static class DebtMeasures
                 "<content unit> is a Feature folder (Feature/StatusEffectDefinition) or a type directly in Feature (Feature.UsePerkFeat);",
                 "<types> counts the distinct types of that unit the file names (in code, attributes and using static directives;",
                 "constants and nameof included). Names are bound the way the compiler binds them, so the result does not depend on the",
-                "build configuration. A name of the file's own domain's content counts. The composition root (Composition) is wiring",
-                "and is not listed. A content member reached without naming its type (a variable, an extension method) is not seen.",
+                "build configuration. A name of the file's own domain's content counts. The composition root (Composition) registers",
+                "content and is not listed; the native sinks (NativeSinks) are wiring in the domain order but stay under this rule.",
+                "A content member reached without naming its type (a variable, an extension method) is not seen.",
                 .. Footer
             ],
             references.Select(reference => new DebtEntry(
@@ -279,25 +303,104 @@ internal static class DebtMeasures
 
     public static DebtMeasure DomainCycles(IReadOnlyList<DomainCycle> cycles)
     {
-        var withPlatform = cycles.Count(cycle => cycle.First is "Foundation" or "Platform" || cycle.Second is "Foundation" or "Platform");
+        static bool IsContent(string node) => node.EndsWith(OrderNode.ContentSuffix, StringComparison.Ordinal);
+        static bool Involves(DomainCycle cycle, string domain) => cycle.First == domain || cycle.Second == domain;
+        var content = cycles.Count(cycle => IsContent(cycle.First));
+        var withLow = cycles.Count(cycle => Involves(cycle, "Foundation") || Involves(cycle, "Platform"));
         var summary = new List<string>
         {
-            $"{cycles.Count} pairs of domains depend on each other ({cycles.Count - withPlatform} between game domains, {withPlatform} with Foundation or Platform).",
-            $"Foundation is in a pair with {cycles.Count(cycle => cycle.First == "Foundation" || cycle.Second == "Foundation")} domains, Platform with {cycles.Count(cycle => cycle.First == "Platform" || cycle.Second == "Platform")}."
+            $"{cycles.Count} pairs of domains depend on each other: {cycles.Count - content} between logic ({withLow} of them with Foundation or Platform), " +
+            $"{content} between content.",
+            $"Foundation's logic is in a pair with {cycles.Count(cycle => Involves(cycle, "Foundation"))} domains, Platform with {cycles.Count(cycle => Involves(cycle, "Platform"))}.",
+            $"Members both ways: {cycles.Sum(cycle => cycle.ForwardMembers + cycle.BackwardMembers):N0}."
         };
 
         return new DebtMeasure(
             "7. Domain cycles",
             DomainCyclesFile,
             [
-                "Phase 5 debt (P5-0): pairs of domains that depend on each other (target 4), read from the compiled SWLOR.Game.Server.dll.",
-                "Line: <domain> <-> <domain> | <edges>: the unit edges between the two domains, both ways (the units and edges of",
-                "CrossDomainEdges.txt). A domain is its Domain/ code plus its content folders (DomainMap.json). Foundation and Platform",
-                "count as domains here, so edges into them (EdgesIntoCoreAndPlatform.txt) count too. Edges out of the composition root",
-                "are wiring and do not count. CrossDomainEdges.txt and EdgesIntoCoreAndPlatform.txt list the referencing members of each edge.",
+                "Phase 5 debt (P5-0, counted by band since P5-1b): pairs of domains that depend on each other (target 4), read from",
+                "the server's source with the compiler's binding, so the result does not depend on the build configuration.",
+                "Line: <node> <-> <node> | <edges>: two nodes of one band that reference each other, and the unit edges between them",
+                "both ways. A node is a domain's logic (Character: Domain/, Platform areas) or its content (Character content: Feature/),",
+                "as DomainMap.json maps them (owner decisions 10 to 12): content is a band above all logic, so content using logic and",
+                "logic naming content (LogicToContent.txt) never make a pair; Entity and Enumeration count as Foundation; references",
+                "out of the wiring areas (Composition, NativeSinks) do not count. Every reference counts, constants, enum members and",
+                "nameof included (SourceReferenceScanner). One direction of each pair points up the order: UpwardEdges.txt.",
                 .. Footer
             ],
             cycles.Select(cycle => new DebtEntry(cycle.Key, cycle.ForwardEdges + cycle.BackwardEdges, cycle.Detail)).ToList(),
+            summary);
+    }
+
+    public static DebtMeasure UpwardEdges(IReadOnlyList<UpwardReference> upward)
+    {
+        var directions = upward
+            .GroupBy(reference => reference.Direction)
+            .Select(group => (Direction: group.Key, From: group.First().From, Members: group.Sum(reference => reference.Members.Count), Edges: group.SelectMany(reference => reference.UnitEdges).Distinct().Count()))
+            .OrderByDescending(direction => direction.Members)
+            .ThenBy(direction => direction.Direction, StringComparer.Ordinal)
+            .ToList();
+        var logic = directions.Where(direction => !direction.From.IsContent).ToList();
+        var content = directions.Where(direction => direction.From.IsContent).ToList();
+        var native = upward.Where(reference => reference.File.StartsWith(ServerFolder + "Native/", StringComparison.Ordinal)).ToList();
+
+        var summary = new List<string>
+        {
+            $"{upward.Sum(reference => reference.Members.Count):N0} members in {upward.Select(reference => reference.File).Distinct().Count()} files reference a domain above " +
+            $"their own: {directions.Count} directions, {directions.Sum(direction => direction.Edges)} unit edges.",
+            $"Logic: {logic.Sum(direction => direction.Members):N0} members in {logic.Count} directions; content: {content.Sum(direction => direction.Members):N0} members in {content.Count} directions.",
+            $"From the hook logic in Platform/Native (P5-16b): {native.Sum(reference => reference.Members.Count)} members in {native.Count} lines.",
+            $"By direction: {string.Join(", ", directions.Select(direction => $"{direction.Direction} {direction.Members}"))}."
+        };
+
+        return new DebtMeasure(
+            "9. References up the domain order",
+            UpwardEdgesFile,
+            [
+                "Phase 5 debt (P5-1b): references that point up the domain order (target 4), read from the server's source with the",
+                "compiler's binding, so the result does not depend on the build configuration.",
+                "Line: <file> -> <node> | <members>: the distinct source members of <file> (a method, property, field, constructor or",
+                "enum member, with its lambdas and local functions) that name a type of <node>, a domain higher in the order",
+                "(DomainMap.json order) in the file's own band. A node is a domain's logic (Character) or its content (Character",
+                "content); content is a band above all logic, Entity and Enumeration count as Foundation, references out of the wiring",
+                "areas (Composition, NativeSinks) do not count, and logic naming content is LogicToContent.txt. Every reference",
+                "counts, vocabulary (enums, constants, records) included: the type moves of P5-1e and P5-1f remove those. The domain",
+                "order and every direction's fix: SWLOR.Game.Server/Readmes/MaintainabilityRefactorDomainOrder.md (Appendix C).",
+                .. Footer
+            ],
+            upward.Select(reference => new DebtEntry(
+                reference.Key,
+                reference.Members.Count,
+                $"{reference.Direction}: {string.Join(", ", reference.Targets.Take(MaximumTargets))}{(reference.Targets.Count > MaximumTargets ? $" and {reference.Targets.Count - MaximumTargets} more" : string.Empty)}")).ToList(),
+            summary);
+    }
+
+    public static DebtMeasure SinkWork(IReadOnlyList<SinkWork> sinks)
+    {
+        var working = sinks.Where(sink => sink.Lines > 0).ToList();
+        var summary = new List<string>
+        {
+            $"{working.Count} of {sinks.Count} sink types do work: {working.Sum(sink => sink.Lines):N0} lines in {working.Sum(sink => sink.WorkingMembers.Count)} members. " +
+            $"{sinks.Sum(sink => sink.ForwardingMembers)} members only forward or hold what was injected.",
+            $"Forwarding only: {(sinks.Count == working.Count ? "none" : string.Join(", ", sinks.Except(working).Select(sink => ShortName(sink.Type))))}."
+        };
+
+        return new DebtMeasure(
+            "10. Sink work",
+            SinkWorkFile,
+            [
+                "Phase 5 debt (P5-1b): what the native sinks do besides forwarding (owner decision 12: a sink does no work).",
+                "Line: <type> | <lines>: a type of SWLOR.Game.Server.NativeSinks (the sink factory, which only creates the sinks, is",
+                "not measured) and the lines of its members that do work, each from its first attribute or modifier to its last token.",
+                "A member does no work when it is a method whose body is one call to a name or a chain of member names that passes the",
+                "method's own parameters as written, a readonly instance field without an initializer, or a constructor that only",
+                "assigns its parameters to fields; everything else is work. The domain order counts NativeSinks as wiring on that",
+                "condition. The hook logic moves into Combat services in P5-16b; the sinks stay under the no-content rule",
+                "(LogicToContent.txt).",
+                .. Footer
+            ],
+            working.Select(sink => new DebtEntry(sink.Type, sink.Lines, string.Join(", ", sink.WorkingMembers))).ToList(),
             summary);
     }
 
@@ -346,6 +449,37 @@ internal static class DebtMeasures
             .Where(type => type.Modifiers.Any(SyntaxKind.StaticKeyword))
             .Select(SyntaxNames.FullName)
             .ToHashSet(StringComparer.Ordinal);
+
+    private const int MaximumTargets = 5;
+    private const string Up = "up";
+    private const string Down = "down";
+    private const string Inside = "inside";
+
+    /// <summary>The nodes of a deferred parameter's taker and service, and which way it points in the domain order.</summary>
+    private static (string From, string To, string Way) DeferredDirection(ConstructorService service, DomainMap map)
+    {
+        var from = UnitOfType(service.Type) is { } fromUnit ? map.NodeOf(fromUnit) : null;
+        var to = UnitOfType(service.Service) is { } toUnit ? map.NodeOf(toUnit) : null;
+        if (from is not { } taker || to is not { } served)
+            return (from?.ToString() ?? "(no domain)", to?.ToString() ?? "(no domain)", "outside the order");
+
+        return (taker.ToString(), served.ToString(), map.DirectionOf(taker, served) switch
+        {
+            OrderDirection.Up => Up,
+            OrderDirection.Down => Down,
+            OrderDirection.Inside => Inside,
+            var other => other.ToString()
+        });
+    }
+
+    /// <summary>The unit of a top-level type given by its full name (type parameters, if any, are ignored).</summary>
+    private static DependencyUnit? UnitOfType(string fullName)
+    {
+        var generic = fullName.IndexOf('<');
+        var name = generic < 0 ? fullName : fullName[..generic];
+        var dot = name.LastIndexOf('.');
+        return dot < 0 ? null : UnitClassifier.Classify(new TypeKey(name[..dot], name[(dot + 1)..]));
+    }
 
     private static string TopFolder(string file)
     {

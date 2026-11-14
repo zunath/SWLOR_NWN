@@ -22,6 +22,10 @@ internal enum UnitKind
     /// <summary>A type that sits directly in <c>Feature</c> (a top-level <c>Feature/*.cs</c> file).</summary>
     FeatureType,
 
-    /// <summary>Code outside <c>Domain</c>, <c>Service</c> and <c>Feature</c>: <c>Core</c>, <c>Native</c>, <c>Entity</c>, <c>Enumeration</c>, <c>Extension</c>.</summary>
+    /// <summary>
+    /// Code outside <c>Domain</c>, <c>Service</c> and <c>Feature</c>: <c>Core</c>, <c>Native</c>, <c>Entity</c>, <c>Enumeration</c>,
+    /// <c>Extension</c>. It belongs to the Platform domain unless the domain map gives the area another (<c>Entity</c> and
+    /// <c>Enumeration</c> count as Foundation).
+    /// </summary>
     Platform
 }

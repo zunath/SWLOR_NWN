@@ -1,0 +1,375 @@
+# Phase 5 debt (P5-1b): references that point up the domain order (target 4), read from the server's source with the
+# compiler's binding, so the result does not depend on the build configuration.
+# Line: <file> -> <node> | <members>: the distinct source members of <file> (a method, property, field, constructor or
+# enum member, with its lambdas and local functions) that name a type of <node>, a domain higher in the order
+# (DomainMap.json order) in the file's own band. A node is a domain's logic (Character) or its content (Character
+# content); content is a band above all logic, Entity and Enumeration count as Foundation, references out of the wiring
+# areas (Composition, NativeSinks) do not count, and logic naming content is LogicToContent.txt. Every reference
+# counts, vocabulary (enums, constants, records) included: the type moves of P5-1e and P5-1f remove those. The domain
+# order and every direction's fix: SWLOR.Game.Server/Readmes/MaintainabilityRefactorDomainOrder.md (Appendix C).
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server/ApplicationSettings.cs -> Character | 1
+SWLOR.Game.Server/ApplicationSettings.cs -> Foundation | 2
+SWLOR.Game.Server/Core/ClosureManager.cs -> Foundation | 1
+SWLOR.Game.Server/Core/HostedClosureManager.cs -> Foundation | 1
+SWLOR.Game.Server/Core/HostedMainLoop.cs -> Foundation | 1
+SWLOR.Game.Server/Core/HostedScriptDispatcher.cs -> Foundation | 1
+SWLOR.Game.Server/Core/HostedSignalHandler.cs -> Foundation | 1
+SWLOR.Game.Server/Core/MainLoopProcessor.cs -> Foundation | 1
+SWLOR.Game.Server/Core/ManagedEntryDepth.cs -> Combat | 1
+SWLOR.Game.Server/Core/NativeInteropManager.cs -> Foundation | 4
+SWLOR.Game.Server/Core/PlayerReloadPlan.cs -> Foundation | 1
+SWLOR.Game.Server/Core/ReloadBootstrap.cs -> Foundation | 1
+SWLOR.Game.Server/Core/ReloadHooks.cs -> Foundation | 1
+SWLOR.Game.Server/Core/ReloadStateCarrier.cs -> Foundation | 2
+SWLOR.Game.Server/Core/ScriptExecutionProviderImpl.cs -> Foundation | 1
+SWLOR.Game.Server/Core/ScriptExecutor.cs -> Foundation | 3
+SWLOR.Game.Server/Core/ScriptRegistry.cs -> Foundation | 4
+SWLOR.Game.Server/Core/ServerBootstrapper.cs -> Foundation | 2
+SWLOR.Game.Server/Core/ServerStaticState.cs -> Foundation | 1
+SWLOR.Game.Server/Core/ServerTeardown.cs -> Combat | 3
+SWLOR.Game.Server/Domain/Abilities/AbilityBuilder.cs -> Creatures | 2
+SWLOR.Game.Server/Domain/Abilities/AbilityDetail.cs -> Creatures | 2
+SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Quests | 3
+SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Social | 10
+SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Space | 3
+SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> World | 3
+SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Creatures | 3
+SWLOR.Game.Server/Domain/Administration/DMObjectDetailsService.cs -> Combat | 1
+SWLOR.Game.Server/Domain/Administration/DMObjectDetailsService.cs -> Creatures | 3
+SWLOR.Game.Server/Domain/Administration/DMObjectDetailsService.cs -> World | 3
+SWLOR.Game.Server/Domain/Administration/DMPlayerDirectoryService.cs -> World | 4
+SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs -> Space | 3
+SWLOR.Game.Server/Domain/Character/AchievementService.cs -> UI | 5
+SWLOR.Game.Server/Domain/Character/CreatureStatusEffect.cs -> Combat | 2
+SWLOR.Game.Server/Domain/Character/DisguiseService.cs -> Administration | 3
+SWLOR.Game.Server/Domain/Character/DisguiseService.cs -> UI | 4
+SWLOR.Game.Server/Domain/Character/EquipmentPredicates.cs -> Combat | 3
+SWLOR.Game.Server/Domain/Character/EquipmentPredicates.cs -> Items | 17
+SWLOR.Game.Server/Domain/Character/EquipmentStatTotals.cs -> Combat | 5
+SWLOR.Game.Server/Domain/Character/EquipmentStatTotals.cs -> Items | 1
+SWLOR.Game.Server/Domain/Character/EspionageInfiltrationService.cs -> Combat | 9
+SWLOR.Game.Server/Domain/Character/EspionageInfiltrationService.cs -> Creatures | 4
+SWLOR.Game.Server/Domain/Character/IAttackAttemptStatusEffect.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Character/IPerkService.cs -> Abilities | 2
+SWLOR.Game.Server/Domain/Character/IPreDamageStatusEffect.cs -> Combat | 1
+SWLOR.Game.Server/Domain/Character/IStatService.cs -> Combat | 6
+SWLOR.Game.Server/Domain/Character/IStatusEffect.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Character/IStatusEffect.cs -> Combat | 5
+SWLOR.Game.Server/Domain/Character/IStatusEffectService.cs -> Abilities | 3
+SWLOR.Game.Server/Domain/Character/IStatusEffectService.cs -> Combat | 5
+SWLOR.Game.Server/Domain/Character/LanguageService.cs -> Economy | 1
+SWLOR.Game.Server/Domain/Character/NPCStats.cs -> Combat | 3
+SWLOR.Game.Server/Domain/Character/PerkBuilder.cs -> Companions | 1
+SWLOR.Game.Server/Domain/Character/PerkRequirementBeastRole.cs -> Companions | 4
+SWLOR.Game.Server/Domain/Character/PerkRequirementQuest.cs -> Quests | 2
+SWLOR.Game.Server/Domain/Character/PerkService.cs -> Abilities | 15
+SWLOR.Game.Server/Domain/Character/PerkService.cs -> Combat | 3
+SWLOR.Game.Server/Domain/Character/PerkService.cs -> Companions | 10
+SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs -> Abilities | 2
+SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs -> Combat | 4
+SWLOR.Game.Server/Domain/Character/PlayerNameService.cs -> Social | 8
+SWLOR.Game.Server/Domain/Character/SkillService.cs -> Combat | 3
+SWLOR.Game.Server/Domain/Character/SkillService.cs -> Companions | 4
+SWLOR.Game.Server/Domain/Character/SkillService.cs -> UI | 3
+SWLOR.Game.Server/Domain/Character/StatGroup.cs -> Combat | 3
+SWLOR.Game.Server/Domain/Character/StatRules.cs -> Combat | 2
+SWLOR.Game.Server/Domain/Character/StatService.cs -> Abilities | 6
+SWLOR.Game.Server/Domain/Character/StatService.cs -> Combat | 57
+SWLOR.Game.Server/Domain/Character/StatService.cs -> Companions | 7
+SWLOR.Game.Server/Domain/Character/StatService.cs -> Items | 4
+SWLOR.Game.Server/Domain/Character/StatType.cs -> Combat | 47
+SWLOR.Game.Server/Domain/Character/StatTypeMetadata.cs -> Combat | 1
+SWLOR.Game.Server/Domain/Character/StatusEffectBase.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Character/StatusEffectBase.cs -> Combat | 12
+SWLOR.Game.Server/Domain/Character/StatusEffectRules.cs -> Combat | 1
+SWLOR.Game.Server/Domain/Character/StatusEffectSelectors.cs -> Combat | 1
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Abilities | 15
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Combat | 28
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Quests | 3
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> UI | 5
+SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Abilities | 33
+SWLOR.Game.Server/Domain/Combat/CombatAbilityBonusService.cs -> Abilities | 3
+SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs -> Abilities | 3
+SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Abilities | 36
+SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Social | 3
+SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs -> Abilities | 5
+SWLOR.Game.Server/Domain/Combat/CombatAttackTimingService.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Abilities | 6
+SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Abilities | 4
+SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Quests | 3
+SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Social | 3
+SWLOR.Game.Server/Domain/Combat/CombatPointService.cs -> Companions | 3
+SWLOR.Game.Server/Domain/Combat/CombatPointService.cs -> Social | 3
+SWLOR.Game.Server/Domain/Combat/CombatPointService.cs -> Space | 3
+SWLOR.Game.Server/Domain/Combat/CombatQueriesService.cs -> Abilities | 6
+SWLOR.Game.Server/Domain/Combat/CombatQueriesService.cs -> Social | 3
+SWLOR.Game.Server/Domain/Combat/CombatRecordAbilityCostScope.cs -> Abilities | 2
+SWLOR.Game.Server/Domain/Combat/CombatRecordAbilityFeatIndex.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Combat/CombatRecordNames.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Abilities | 20
+SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs -> Abilities | 22
+SWLOR.Game.Server/Domain/Combat/CombatRules.cs -> Abilities | 3
+SWLOR.Game.Server/Domain/Combat/DeathService.cs -> Abilities | 3
+SWLOR.Game.Server/Domain/Combat/DeathService.cs -> World | 5
+SWLOR.Game.Server/Domain/Combat/EnmityService.cs -> Companions | 5
+SWLOR.Game.Server/Domain/Combat/EnmityService.cs -> Creatures | 13
+SWLOR.Game.Server/Domain/Combat/EnmityService.cs -> Social | 3
+SWLOR.Game.Server/Domain/Combat/EnmityService.cs -> World | 3
+SWLOR.Game.Server/Domain/Combat/ICombatAbilityActivationService.cs -> Abilities | 2
+SWLOR.Game.Server/Domain/Combat/ICombatAbilityBonusService.cs -> Abilities | 3
+SWLOR.Game.Server/Domain/Combat/ICombatAbilityImpactService.cs -> Abilities | 6
+SWLOR.Game.Server/Domain/Combat/ICombatActivityService.cs -> Abilities | 3
+SWLOR.Game.Server/Domain/Combat/ICombatAttackTimingService.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Combat/ICombatDamageModifiersService.cs -> Abilities | 3
+SWLOR.Game.Server/Domain/Combat/ICombatQueriesService.cs -> Abilities | 6
+SWLOR.Game.Server/Domain/Combat/ICombatRecorderService.cs -> Abilities | 8
+SWLOR.Game.Server/Domain/Combat/ICombatResourcesService.cs -> Abilities | 14
+SWLOR.Game.Server/Domain/Combat/IMeleeTechniqueService.cs -> Abilities | 14
+SWLOR.Game.Server/Domain/Combat/IPairedRangedTraitsService.cs -> Abilities | 2
+SWLOR.Game.Server/Domain/Combat/IRecastService.cs -> Abilities | 6
+SWLOR.Game.Server/Domain/Combat/LimitedAttackCounter.cs -> Abilities | 4
+SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Abilities | 41
+SWLOR.Game.Server/Domain/Combat/PairedRangedTraitsService.cs -> Abilities | 9
+SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs -> Companions | 3
+SWLOR.Game.Server/Domain/Combat/RecastService.cs -> Abilities | 13
+SWLOR.Game.Server/Domain/Combat/ResistanceService.cs -> Abilities | 3
+SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Creatures | 4
+SWLOR.Game.Server/Domain/Combat/TechniqueReactiveState.cs -> Abilities | 4
+SWLOR.Game.Server/Domain/Combat/TechniqueSequence.cs -> Abilities | 6
+SWLOR.Game.Server/Domain/Combat/TelegraphService.cs -> Social | 3
+SWLOR.Game.Server/Domain/Combat/TwinPistolAbilityService.cs -> Abilities | 14
+SWLOR.Game.Server/Domain/Combat/TwinPistolChannel.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Companions | 3
+SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs -> Quests | 3
+SWLOR.Game.Server/Domain/Combat/WeaponAbilityTraitPolicy.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Combat/WeaponDamage.cs -> Companions | 1
+SWLOR.Game.Server/Domain/Crafting/CraftService.cs -> World | 3
+SWLOR.Game.Server/Domain/Crafting/Minigame/Line/LineMovePattern.cs -> World | 1
+SWLOR.Game.Server/Domain/Crafting/Minigame/Line/LineSetup.cs -> World | 3
+SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Companions | 4
+SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Social | 3
+SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Companions | 5
+SWLOR.Game.Server/Domain/Foundation/AbilityAnimationBinding.cs -> Abilities | 9
+SWLOR.Game.Server/Domain/Foundation/AbilityAnimationBinding.cs -> Character | 1
+SWLOR.Game.Server/Domain/Foundation/AnimationPreviewCatalog.cs -> Abilities | 2
+SWLOR.Game.Server/Domain/Foundation/AnimationPreviewCatalog.cs -> Character | 2
+SWLOR.Game.Server/Domain/Foundation/CacheService.cs -> Items | 3
+SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs -> Administration | 7
+SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs -> Character | 9
+SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs -> Social | 3
+SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs -> Space | 3
+SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs -> World | 11
+SWLOR.Game.Server/Domain/Foundation/ConversationService.cs -> Character | 3
+SWLOR.Game.Server/Domain/Foundation/ConversationService.cs -> UI | 6
+SWLOR.Game.Server/Domain/Foundation/MessagingService.cs -> Combat | 3
+SWLOR.Game.Server/Domain/Foundation/MigrationService.cs -> Character | 8
+SWLOR.Game.Server/Domain/Foundation/MigrationService.cs -> Items | 3
+SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs -> Character | 3
+SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs -> Combat | 3
+SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Character | 1
+SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Combat | 1
+SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Items | 1
+SWLOR.Game.Server/Domain/Foundation/SavedEquipmentStats.cs -> Character | 2
+SWLOR.Game.Server/Domain/Foundation/SavedEquipmentStats.cs -> Combat | 1
+SWLOR.Game.Server/Domain/Foundation/SavedEquipmentStats.cs -> Items | 1
+SWLOR.Game.Server/Domain/Foundation/WalkmeshService.cs -> Creatures | 2
+SWLOR.Game.Server/Domain/Foundation/WorkAnimation.cs -> Character | 1
+SWLOR.Game.Server/Domain/Foundation/WorkAnimation.cs -> Crafting | 2
+SWLOR.Game.Server/Domain/Items/ItemBuilder.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Items/ItemDetail.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Items/ItemService.cs -> Abilities | 1
+SWLOR.Game.Server/Domain/Items/ItemService.cs -> Combat | 9
+SWLOR.Game.Server/Domain/Items/ItemService.cs -> Companions | 6
+SWLOR.Game.Server/Domain/Items/ItemService.cs -> Crafting | 3
+SWLOR.Game.Server/Domain/Items/ItemTrashService.cs -> Administration | 3
+SWLOR.Game.Server/Domain/Items/KeyItemIcon.cs -> Companions | 1
+SWLOR.Game.Server/Domain/Items/KeyItemIcon.cs -> World | 1
+SWLOR.Game.Server/Domain/Items/LightsaberWorkbenchService.cs -> Combat | 1
+SWLOR.Game.Server/Domain/Items/LightsaberWorkbenchService.cs -> Economy | 3
+SWLOR.Game.Server/Domain/Items/LootService.cs -> Companions | 5
+SWLOR.Game.Server/Domain/Quests/GuildTaskXpReward.cs -> Economy | 2
+SWLOR.Game.Server/Domain/Quests/QuestRewards.cs -> Economy | 2
+SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Abilities | 12
+SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Combat | 6
+SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Crafting | 3
+SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Items | 4
+SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Social | 3
+SWLOR.Game.Server/Domain/UI/GuiService.cs -> Administration | 5
+SWLOR.Game.Server/Domain/World/HoloComService.cs -> Social | 7
+SWLOR.Game.Server/Domain/World/HoloComService.cs -> Space | 5
+SWLOR.Game.Server/Domain/World/IHoloComService.cs -> Social | 1
+SWLOR.Game.Server/Domain/World/MusicService.cs -> Social | 3
+SWLOR.Game.Server/Domain/World/StructureChangedAction.cs -> Space | 1
+SWLOR.Game.Server/Entity/Account.cs -> Character | 2
+SWLOR.Game.Server/Entity/Beast.cs -> Character | 2
+SWLOR.Game.Server/Entity/Beast.cs -> Combat | 3
+SWLOR.Game.Server/Entity/Beast.cs -> Companions | 3
+SWLOR.Game.Server/Entity/CraftSessionRecord.cs -> Character | 1
+SWLOR.Game.Server/Entity/CraftSessionRecord.cs -> Crafting | 1
+SWLOR.Game.Server/Entity/DMCreatorFavorites.cs -> Administration | 2
+SWLOR.Game.Server/Entity/DMCreatureManagerFavorites.cs -> Administration | 2
+SWLOR.Game.Server/Entity/Election.cs -> World | 1
+SWLOR.Game.Server/Entity/ExtraHotbar.cs -> UI | 1
+SWLOR.Game.Server/Entity/ExtraHotbarSlot.cs -> UI | 1
+SWLOR.Game.Server/Entity/IncubationJob.cs -> Combat | 3
+SWLOR.Game.Server/Entity/IncubationJob.cs -> Companions | 5
+SWLOR.Game.Server/Entity/MarketItem.cs -> Economy | 1
+SWLOR.Game.Server/Entity/Player.cs -> Abilities | 2
+SWLOR.Game.Server/Entity/Player.cs -> Character | 11
+SWLOR.Game.Server/Entity/Player.cs -> Combat | 3
+SWLOR.Game.Server/Entity/Player.cs -> Crafting | 4
+SWLOR.Game.Server/Entity/Player.cs -> Creatures | 1
+SWLOR.Game.Server/Entity/Player.cs -> Economy | 3
+SWLOR.Game.Server/Entity/Player.cs -> Items | 2
+SWLOR.Game.Server/Entity/Player.cs -> Quests | 2
+SWLOR.Game.Server/Entity/Player.cs -> Social | 2
+SWLOR.Game.Server/Entity/Player.cs -> UI | 2
+SWLOR.Game.Server/Entity/Player.cs -> World | 2
+SWLOR.Game.Server/Entity/PlayerDisguise.cs -> Social | 2
+SWLOR.Game.Server/Entity/PlayerShip.cs -> Space | 1
+SWLOR.Game.Server/Entity/QuestContract.cs -> Quests | 4
+SWLOR.Game.Server/Entity/QuestContractDelivery.cs -> Quests | 2
+SWLOR.Game.Server/Entity/ResearchExperimentRecord.cs -> Crafting | 2
+SWLOR.Game.Server/Entity/ResearchJob.cs -> Crafting | 1
+SWLOR.Game.Server/Entity/ShuttleRide.cs -> World | 1
+SWLOR.Game.Server/Entity/WorldProperty.cs -> World | 9
+SWLOR.Game.Server/Entity/WorldPropertyPermission.cs -> World | 3
+SWLOR.Game.Server/Enumeration/GuildType.cs -> Character | 5
+SWLOR.Game.Server/Feature/AppearanceDefinition/TintMap/TintMapService.cs -> UI content | 2
+SWLOR.Game.Server/Feature/BeastStableTrials.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/DialogDefinition/GuildMasterDialog.cs -> UI content | 1
+SWLOR.Game.Server/Feature/DialogDefinition/MarketDialog.cs -> UI content | 1
+SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs -> UI content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs -> Gameplay content | 3
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs -> Gameplay content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs -> Abilities content | 2
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs -> Gameplay content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMPlayerExamineViewModel.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs -> Gameplay content | 2
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ExamineItemViewModel.cs -> Gameplay content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerStatusViewModel.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SettingsViewModel.cs -> Gameplay content | 1
+SWLOR.Game.Server/Feature/ItemDefinition/FaultlineCapacitorItemDefinition.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/ItemDefinition/StormcoreMatrixItemDefinition.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/ItemDefinition/TidecallBeaconItemDefinition.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/CharacterMigration/SavedCharacterLoad.cs -> Gameplay content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/CharacterMigration/SavedCombatUpgradeItemMigrations.cs -> Gameplay content | 2
+SWLOR.Game.Server/Feature/MigrationDefinition/CharacterMigration/SavedWeaponDamageTypeMigration.cs -> Gameplay content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/CharacterMigration/_02_to_12_CharacterMigrations.cs -> Character content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/CharacterMigration/_1_LegacyPlayerMigration.cs -> Character content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/FurnitureRenameMigration.cs -> UI content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/ItemAppearanceCatalogMigration.cs -> Character content | 2
+SWLOR.Game.Server/Feature/MigrationDefinition/LootStatRevisionMigration.cs -> Gameplay content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/PelvisAppearanceMigration.cs -> Character content | 10
+SWLOR.Game.Server/Feature/MigrationDefinition/PistolBaseItemMigration.cs -> Gameplay content | 3
+SWLOR.Game.Server/Feature/MigrationDefinition/SerializedItemWeaponDamageTypeMigration.cs -> Gameplay content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.FurnitureRenames.cs -> UI content | 1
+SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.Pelvis.cs -> Character content | 1
+SWLOR.Game.Server/Feature/NaturalRegeneration.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastBalancedPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastBruiserPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastDamagePerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastEvasionPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastForcePerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastTankPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/DevicesAssaultGadgetsPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/DevicesFieldEngineerPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/DevicesFieldSupportPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/DevicesGrenadierPerkDefinition.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/DevicesGrenadierPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/FirstAidCombatPharmacologyPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/ForceDarkManipulatorPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/ForceDarkRavagerPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/ForceLightGuardianPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/HeavyVibrobladePerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/KatarPerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/LeadershipFieldStewardPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/LeadershipVanguardCommandPerkDefinition.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/LeadershipVanguardCommandPerkDefinition.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/PerkDefinition/LightsaberPerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/PistolPerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/RiflePerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/SaberstaffPerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/SpearPerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/StaffPerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/ThrowingPerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/TwinBladePerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/TwinPistolPerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/UnarmedPerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/VibrobladePerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/PerkDefinition/VibroknifePerkDefinition.cs -> Quests content | 2
+SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs -> Gameplay content | 1
+SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs -> UI content | 2
+SWLOR.Game.Server/Feature/StatusEffectDefinition/CleanseOrder1StatusEffect.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/CleanseOrder2StatusEffect.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/EmergencySealant1StatusEffect.cs -> Abilities content | 2
+SWLOR.Game.Server/Feature/StatusEffectDefinition/ForceDamageOverTimeStatusEffectBase.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/GuardiansResolveStatusEffect.cs -> Abilities content | 2
+SWLOR.Game.Server/Feature/StatusEffectDefinition/LastBastionBarrierStatusEffect.cs -> Abilities content | 2
+SWLOR.Game.Server/Feature/StatusEffectDefinition/LastStandOfTheLight1StatusEffect.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/ReflectiveBarrier1StatusEffect.cs -> Abilities content | 2
+SWLOR.Game.Server/Feature/StatusEffectDefinition/RegenerativeHealingStatusEffect.cs -> Abilities content | 3
+SWLOR.Game.Server/Feature/StatusEffectDefinition/SocialScalingStatusEffectBase.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/SoulDevourerStanceStatusEffect.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/StatusEffectDefinition/WardenWallStanceStatusEffect.cs -> Abilities content | 1
+SWLOR.Game.Server/Feature/UnarmedMastery.cs -> Quests content | 1
+SWLOR.Game.Server/Feature/UsePerkFeat.cs -> Abilities content | 1
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs -> Abilities | 2
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs -> Character | 2
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs -> Combat | 2
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs -> Foundation | 2
+SWLOR.Game.Server/Native/AttackRollAccuracy.cs -> Items | 1
+SWLOR.Game.Server/Native/AttackRollCritical.cs -> Character | 3
+SWLOR.Game.Server/Native/AttackRollCritical.cs -> Combat | 2
+SWLOR.Game.Server/Native/AttackRollCritical.cs -> Foundation | 3
+SWLOR.Game.Server/Native/AttackRollDefense.cs -> Character | 3
+SWLOR.Game.Server/Native/AttackRollDefense.cs -> Combat | 3
+SWLOR.Game.Server/Native/AttackRollDefense.cs -> Foundation | 2
+SWLOR.Game.Server/Native/AttackRollFeedback.cs -> Abilities | 1
+SWLOR.Game.Server/Native/AttackRollFeedback.cs -> Character | 3
+SWLOR.Game.Server/Native/AttackRollFeedback.cs -> Combat | 2
+SWLOR.Game.Server/Native/AttackRollFeedback.cs -> Foundation | 2
+SWLOR.Game.Server/Native/AttackRollSettlement.cs -> Abilities | 1
+SWLOR.Game.Server/Native/AttackRollSettlement.cs -> Character | 1
+SWLOR.Game.Server/Native/AttackRollSettlement.cs -> Combat | 1
+SWLOR.Game.Server/Native/AttackRollSettlement.cs -> Foundation | 1
+SWLOR.Game.Server/Native/AttackSwing.cs -> Character | 1
+SWLOR.Game.Server/Native/CombatRecorderEffectHooks.cs -> Combat | 1
+SWLOR.Game.Server/Native/DamageRollCreature.cs -> Character | 1
+SWLOR.Game.Server/Native/DamageRollCreature.cs -> Combat | 1
+SWLOR.Game.Server/Native/DamageRollCreature.cs -> Foundation | 1
+SWLOR.Game.Server/Native/DamageRollHitEffects.cs -> Character | 3
+SWLOR.Game.Server/Native/DamageRollHitEffects.cs -> Combat | 3
+SWLOR.Game.Server/Native/DamageRollMitigation.cs -> Combat | 3
+SWLOR.Game.Server/Native/DamageRollMitigation.cs -> Foundation | 1
+SWLOR.Game.Server/Native/DamageRollWeapon.cs -> Character | 1
+SWLOR.Game.Server/Native/DamageRollWeapon.cs -> Combat | 3
+SWLOR.Game.Server/Native/DamageRollWeapon.cs -> Items | 1
+SWLOR.Game.Server/Native/GetDamageRoll.cs -> Character | 5
+SWLOR.Game.Server/Native/GetDamageRoll.cs -> Combat | 6
+SWLOR.Game.Server/Native/GetDamageRoll.cs -> Foundation | 3
+SWLOR.Game.Server/Native/OnAIActionAttackObject.cs -> Combat | 2
+SWLOR.Game.Server/Native/OnAIActionAttackObject.cs -> Creatures | 1
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs -> Abilities | 1
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs -> Character | 5
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs -> Combat | 5
+SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs -> Items | 1
+SWLOR.Game.Server/Native/PairedRangedPresentation.cs -> Combat | 4
+SWLOR.Game.Server/Native/RangedWeaponAttackContext.cs -> Combat | 11
+SWLOR.Game.Server/Native/ResolveAttackRoll.cs -> Abilities | 2
+SWLOR.Game.Server/Native/ResolveAttackRoll.cs -> Character | 2
+SWLOR.Game.Server/Native/ResolveAttackRoll.cs -> Combat | 2
+SWLOR.Game.Server/Native/ResolveAttackRoll.cs -> Foundation | 2
+SWLOR.Game.Server/Native/ResolvedCombatDamage.cs -> Combat | 1
+SWLOR.Game.Server/Native/WeaponAttackAnimation.cs -> Combat | 2
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs -> Abilities | 1
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs -> Character | 5
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs -> Combat | 3
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs -> Items | 1
+SWLOR.Game.Server/Native/WeaponDamageProfile.cs -> Combat | 2

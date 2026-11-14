@@ -19,6 +19,10 @@ namespace SWLOR.Game.Server.Core
         // Set only on the host entry (BootstrapHosted); null on the native entry, whose steps then run exactly as before.
         private HostedBoot _hostedBoot;
 
+        // The instances the engine-test assembly's instance handlers run on, built by LoadEngineTestAssembly with the content
+        // factory; empty when engine tests are off.
+        private IReadOnlyDictionary<Type, object> _engineTestOwners = new Dictionary<Type, object>();
+
         public ServerBootstrapper()
             : this(CompositionRoot.ServerHost)
         {
@@ -45,6 +49,12 @@ namespace SWLOR.Game.Server.Core
 
         /// <summary>The removable process-event subscriptions; available once the container is built.</summary>
         public IProcessEventSubscriptions ProcessEvents => _container.Resolve<IProcessEventSubscriptions>();
+
+        /// <summary>
+        /// The container's content factory, which builds made content with its services; available once the container is built. The
+        /// engine-test assembly's handler owners are built with it.
+        /// </summary>
+        public IContentFactory Content => _container.Resolve<IContentFactory>();
 
         /// <summary>
         /// The boot steps in the order <see cref="Bootstrap"/> runs them. One list drives the run and the tests that
@@ -184,14 +194,14 @@ namespace SWLOR.Game.Server.Core
         public IReadOnlyList<ReloadDigestLine> DescribeCaches()
         {
             RequireContainer();
-            return ReloadDigests.Cache(ServerManager.Scripts);
+            return ReloadDigests.Cache(ServerManager.Scripts, _container.IsRegistered);
         }
 
         /// <summary>The adopted-state digests (<see cref="ReloadDigests.Adopted(Func{Type, object})"/>) and the world digests (<see cref="WorldDigest"/>).</summary>
         public IReadOnlyList<ReloadDigestLine> DescribeAdoptedState()
         {
             RequireContainer();
-            return ReloadDigests.Adopted(_container.ResolveHandlerOwner).Concat(WorldDigest.Capture()).ToArray();
+            return ReloadDigests.Adopted(_container.ResolveHandlerOwner, _container.IsRegistered).Concat(WorldDigest.Capture()).ToArray();
         }
 
         private void RequireContainer()
@@ -353,6 +363,10 @@ namespace SWLOR.Game.Server.Core
         /// loaded implicitly. It is loaded into the GAME assembly's own load context: a plain
         /// Assembly.LoadFrom would land in the default context and hand the test code a second,
         /// incompatible copy of every game type it references.
+        ///
+        /// The classes of the assembly that declare instance handlers (the runner) are made content:
+        /// the container's content factory builds each here, and LoadScripts binds their handlers to
+        /// those instances (<see cref="EngineTestAssemblyLoader.CreateHandlerOwners"/>).
         /// </summary>
         private void LoadEngineTestAssembly()
         {
@@ -392,7 +406,8 @@ namespace SWLOR.Game.Server.Core
                     // From bytes, into the game's own context: the test code unloads with its generation, and a reload
                     // loads the new build's test assembly.
                     var loadContext = AssemblyLoadContext.GetLoadContext(gameAssembly) ?? AssemblyLoadContext.Default;
-                    EngineTestAssemblyLoader.Load(loadContext, path);
+                    var engineTests = EngineTestAssemblyLoader.Load(loadContext, path);
+                    _engineTestOwners = EngineTestAssemblyLoader.CreateHandlerOwners(engineTests, Content);
                     Console.WriteLine($"{EngineTestAssemblyName} loaded from {path} - engine tests will be discovered.");
                     return;
                 }
@@ -417,9 +432,19 @@ namespace SWLOR.Game.Server.Core
                 throw new ContainerNotBuiltException("The service container must be built before the script handlers are registered.");
 
             Console.WriteLine("Registering scripts...");
-            // A handler declared on a service's instance method runs on the container's singleton of that class.
-            ServerManager.Scripts.LoadHandlersFromAssembly(_container.ResolveHandlerOwner);
+            // A handler declared on a service's instance method runs on the container's singleton of that class; one of the
+            // engine-test assembly on the instance LoadEngineTestAssembly built for it.
+            ServerManager.Scripts.LoadHandlersFromAssembly(ResolveHandlerOwner);
             Console.WriteLine("Scripts registered successfully.");
+        }
+
+        /// <summary>
+        /// The instance the handlers of <paramref name="type"/> run on: the container's singleton of the class, or, for a class of the
+        /// engine-test assembly, the instance <see cref="LoadEngineTestAssembly"/> built.
+        /// </summary>
+        private object ResolveHandlerOwner(Type type)
+        {
+            return _container.ResolveHandlerOwner(type) ?? (_engineTestOwners.TryGetValue(type, out var owner) ? owner : null);
         }
 
         private static void OnUnhandledException(object exceptionObject)

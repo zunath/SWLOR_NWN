@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using System.Runtime;
+using System.Runtime.CompilerServices;
 using Nwn.Hosting.Bootstrap;
 using Nwn.Hosting.Reload;
 using Nwn.Hosting.Testing.Fixtures;
@@ -19,7 +21,8 @@ namespace SWLOR.Game.Host.Tests.Reload;
 /// it keeps the whole build in memory, and reloads would grow the server without bound. This loads the real Release
 /// build of the game through the package's <see cref="ReloadHost"/> with SWLOR's load options 25 times, each time a new
 /// collectible generation that validates, activates, binds its native sinks, runs every script of its handler manifest
-/// and a few frames under the engine fakes, and is then retired by the next reload (the last by the host's dispose).
+/// and a few frames under the engine fakes, builds made content through its content factory (whose compiled delegates
+/// live in the build's static slots), and is then retired by the next reload (the last by the host's dispose).
 /// Every retired generation must be collected.
 /// </summary>
 /// <remarks>
@@ -152,6 +155,9 @@ public class RealBuildReloadTests
                         host.PumpMainLoop();
                     }
 
+                    // Made content through the generation's factory, which compiles one delegate per signature into the build.
+                    RequireContentFactoryBuilds(generation, fakes);
+
                     // Closures still pending when the generation retires (the engine fakes keep the game's own): scheduled
                     // through NWN.Core as game code schedules them, so the generation's closure manager wraps each one in
                     // its own code. The host must drop them when it retires the generation.
@@ -210,6 +216,32 @@ public class RealBuildReloadTests
         // A generation that stayed reachable would add its whole build each time; this bound only catches growth of that kind.
         Require(heapAfterLast < heapAfterFirst * 2,
             $"The managed heap grew from {heapAfterFirst} bytes after generation 1 to {heapAfterLast} after generation {Generations}.");
+    }
+
+    /// <summary>
+    /// Builds a status effect of the active generation through its content factory three ways (values-free, with a value, by type), so
+    /// each compiles a delegate in the collectible build. Reached by reflection: nothing of the build may stay referenced from here.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void RequireContentFactoryBuilds(int generation, GenerationEngineFakes fakes)
+    {
+        var game = fakes.ActiveGameAssembly() ?? throw new InvalidOperationException($"Generation {generation} has no game assembly.");
+        var bootstrapper = game.GetType("SWLOR.Game.Server.Core.ServerManager", true)!
+            .GetProperty("Bootstrapper", BindingFlags.Public | BindingFlags.Static)!.GetValue(null)!;
+        var content = bootstrapper.GetType().GetProperty("Content")!.GetValue(bootstrapper)!;
+        var factory = content.GetType().GetInterfaces().Single(type => type.Name == "IContentFactory");
+        var made = game.GetType("SWLOR.Game.Server.Feature.StatusEffectDefinition.VenomStatusEffect", true)!;
+        var creates = factory.GetMethods().Where(method => method.Name == "Create").ToArray();
+
+        var valuesFree = creates.Single(method => method.GetGenericArguments().Length == 1 && method.GetParameters().Length == 0)
+            .MakeGenericMethod(made).Invoke(content, null);
+        var withValue = creates.Single(method => method.GetGenericArguments().Length == 2)
+            .MakeGenericMethod(made, typeof(int)).Invoke(content, [5]);
+        var byType = creates.Single(method => method.GetGenericArguments().Length == 1 && method.GetParameters().Length == 1)
+            .MakeGenericMethod(typeof(object)).Invoke(content, [made]);
+
+        Require(valuesFree?.GetType() == made && withValue?.GetType() == made && byType?.GetType() == made,
+            $"Generation {generation}'s content factory did not build {made.Name} each way.");
     }
 
     private static void RequireEverySinkBound(int generation)

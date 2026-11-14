@@ -15,8 +15,9 @@
       * every mechanical script in tools/Refactor/MechanicalScripts.txt (Apply-FacadeRemoval.ps1 changes nothing on a tree
         without the GameServices accessor; Move-SupportNamespaces.ps1 moves master's support namespaces with the branch's
         domain map),
-      * on the copied characterization project only, Apply-FacadeRemoval.ps1 -Reverse, so the branch's tests compile
-        against master's facades (P2-Z); it keeps the imports of the Domain.<Domain> namespaces the copy now declares.
+      * on the copied characterization project only, Apply-ContentInjection.ps1 -Reverse (P5-13: Content.Create back to new, the
+        fixture properties removed) and then Apply-FacadeRemoval.ps1 -Reverse, so the branch's tests compile against master's
+        facades (P2-Z); the latter keeps the imports of the Domain.<Domain> namespaces the copy now declares.
     The SWLOR_Haks submodule is a sparse worktree (sw_2da, sw_tlk, sw_ability) at the commit master pins.
 #>
 
@@ -178,6 +179,19 @@ function Invoke-MechanicalScriptsOnCopy {
     }
 }
 
+# Runs the branch's Apply-ContentInjection.ps1 -Reverse on a folder of the copy: turns Content.Create<X, A...>(args) back into
+# new X(args) and removes the fixture properties the forward run adds (Content, singletons from the test's container), so branch
+# tests that build content through the factory compile on master. It needs nothing of the tree (master has no IContentFactory).
+function Invoke-ContentInjectionReverse {
+    param($Copy, [string]$Folder)
+    $script = Join-Path $Copy.Root 'tools/Refactor/Apply-ContentInjection.ps1'
+    $reverse = Invoke-Process -FilePath (Get-HostExecutable) -Arguments @('-NoProfile', '-NonInteractive', '-File', $script, '-Reverse', '-Path', $Folder)
+    if ($reverse.ExitCode -ne 0) {
+        throw (New-Failure "Apply-ContentInjection.ps1 -Reverse failed on $Folder (exit $($reverse.ExitCode)): $($reverse.Error.Trim()) $($reverse.Output.Trim())" 3)
+    }
+    Write-Host "Content injection reversed on the copy: $(($reverse.Lines | Select-Object -Last 1))"
+}
+
 # Runs the branch's Apply-FacadeRemoval.ps1 -Reverse on a folder of the copy: drops the GameServices imports, turns
 # GameServices.<Name>. back into <Name>. and moved constants back onto their facade, so branch code compiles on master.
 function Invoke-FacadeRemovalReverse {
@@ -262,6 +276,9 @@ function Invoke-CharacterizationReference {
             Copy-Item -LiteralPath $file.FullName -Destination $target -Force
         }
     }
+    # Content injection (P5-13): the branch's tests build converted content with Content.Create and read services and singletons
+    # through fixture properties; master builds content with new, so the copy is turned back first (the tool's -Reverse mode).
+    Invoke-ContentInjectionReverse -Copy $Copy -Folder (Join-Path $Copy.Path $name)
     # Facade removal (P2-Z): the branch's tests reach a removed facade through GameServices and read its moved constants
     # from their owners. Master still has the facades, so the copy is respelled back (the tool's -Reverse mode).
     Invoke-FacadeRemovalReverse -Copy $Copy -Folder (Join-Path $Copy.Path $name)

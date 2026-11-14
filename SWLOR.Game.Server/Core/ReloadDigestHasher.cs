@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Core
     /// assembly, tuples and key-value pairs by their fields, lists in order, dictionaries and sets in the order of their entries'
     /// hashes, delegates by their method's name. It leaves out what differs between two equal builds or over time: object
     /// identity, times of day (<see cref="DateTime"/>, <see cref="DateTimeOffset"/>), pointers, other services (an interface-typed
-    /// field), fields marked <see cref="ReloadStateAttribute"/> other than the kind asked for, and the inside of foreign
+    /// field, or a field of a type the container registers), fields marked <see cref="ReloadStateAttribute"/> other than the kind asked for, and the inside of foreign
     /// objects (a Redis connection, an engine location), which count by type name only. Cycles, depth and size are bounded the
     /// same way every time, so the hash stays comparable. Used only when hot reload is on.
     /// </summary>
@@ -25,13 +25,34 @@ namespace SWLOR.Game.Server.Core
         private const long NodeBudget = 20_000_000;
 
         private readonly Assembly _gameAssembly;
+        private readonly Func<Type, bool> _isService;
         private readonly List<object> _path = new();
         private long _nodes;
 
         /// <param name="gameAssembly">The assembly whose objects are hashed by their fields.</param>
         public ReloadDigestHasher(Assembly gameAssembly)
+            : this(gameAssembly, null)
+        {
+        }
+
+        /// <param name="gameAssembly">The assembly whose objects are hashed by their fields.</param>
+        /// <param name="isService">
+        /// True for a type the container registers (a service or content singleton, the class-typed ones included): a field of it
+        /// counts as a dependency, like an interface-typed one. Null for interfaces only.
+        /// </param>
+        public ReloadDigestHasher(Assembly gameAssembly, Func<Type, bool> isService)
         {
             _gameAssembly = gameAssembly ?? throw new ArgumentNullException(nameof(gameAssembly));
+            _isService = isService ?? (_ => false);
+        }
+
+        /// <summary>
+        /// Whether a field declared as <paramref name="declared"/> holds another service: <see cref="IsDependency"/>, or a type the
+        /// container registers (an injected content singleton).
+        /// </summary>
+        public bool HoldsDependency(Type declared)
+        {
+            return IsDependency(declared) || _isService(declared);
         }
 
         /// <summary>
@@ -52,7 +73,7 @@ namespace SWLOR.Game.Server.Core
             foreach (var field in RootFields(type, instance).Where(include))
             {
                 hash = Mix(hash, field.DeclaringType?.Name + "." + field.Name);
-                if (IsDependency(field.FieldType))
+                if (HoldsDependency(field.FieldType))
                 {
                     hash = Mix(hash, Leaf("dep", field.FieldType.FullName));
                     continue;
@@ -247,7 +268,7 @@ namespace SWLOR.Game.Server.Core
                          .ThenBy(field => field.Name, StringComparer.Ordinal))
             {
                 hash = Mix(hash, field.Name);
-                hash = Mix(hash, IsDependency(field.FieldType)
+                hash = Mix(hash, HoldsDependency(field.FieldType)
                     ? Leaf("dep", field.FieldType.FullName)
                     : HashValue(field.GetValue(value), depth + 1));
             }

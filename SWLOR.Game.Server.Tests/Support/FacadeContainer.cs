@@ -2,6 +2,7 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 
@@ -13,6 +14,12 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// In the server the facades resolve from the container the boot builds; a test installs this one for the current
 /// flow with <see cref="Install"/>, and what the instances cache lives for as long as the container does.
 /// </summary>
+/// <remarks>
+/// The test API of content injection (MaintainabilityRefactorContentInjection.md, "Tests and tools"): a fixture declares what its
+/// code calls as properties of the same names, read from its own container, so test text matches content text and no test reaches
+/// a service through a static lookup: <c>private IStatService Stat =&gt; _container.Get&lt;IStatService&gt;();</c> and
+/// <c>private IContentFactory Content =&gt; _container.Content;</c>.
+/// </remarks>
 public sealed class FacadeContainer : IDisposable
 {
     private static readonly AsyncLocal<FacadeContainer?> Installed = new();
@@ -71,9 +78,15 @@ public sealed class FacadeContainer : IDisposable
         }
     }
 
-    /// <summary>The container's instance of a service, to set it up or to assert on it.</summary>
-    public TService Get<TService>()
-        where TService : notnull => _provider.GetRequiredService<TService>();
+    /// <summary>The container's instance of a service or content singleton, to call it, set it up or assert on it.</summary>
+    public T Get<T>()
+        where T : class => _provider.GetRequiredService<T>();
+
+    /// <summary>Builds made content with this container's services (<c>Content.Create&lt;VenomStatusEffect, int, int&gt;(1, 1)</c>).</summary>
+    public IContentFactory Content => _provider.GetRequiredService<IContentFactory>();
+
+    /// <summary>True when this container registers <paramref name="type"/> as a service or content singleton.</summary>
+    public bool IsRegistered(Type type) => ((ContentFactory)Content).IsRegistered(type);
 
     public void Dispose() => _provider.Dispose();
 }

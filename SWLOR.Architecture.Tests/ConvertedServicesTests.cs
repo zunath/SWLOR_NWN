@@ -124,7 +124,10 @@ public class ConvertedServicesTests
     public void No_class_the_container_builds_uses_GameServices()
     {
         ArchitectureProject.Facts.Types.Should().Contain(type => type.Key == ConvertedService.Accessor, "the rule names the real accessor");
-        var registered = List.Services.SelectMany(service => service.Pieces).SelectMany(pieces => new[] { pieces.Instance, pieces.Interface });
+        // The content singletons ContentRegistrations lists are built by the container too (MaintainabilityRefactorContentInjection.md).
+        var contentSingletons = ArchitectureProject.ContentInjection.ContentSingletonKeys().Select(key => new TypeKey(key.Namespace, key.Name));
+        var registered = List.Services.SelectMany(service => service.Pieces).SelectMany(pieces => new[] { pieces.Instance, pieces.Interface })
+            .Concat(contentSingletons);
 
         Fail(ConvertedServiceRules.RegisteredClassesUseTheAccessor(ArchitectureProject.Graph, registered, ConvertedService.Accessor),
             "A class the container builds takes its dependencies through the constructor, never through GameServices");

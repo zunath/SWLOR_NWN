@@ -24,9 +24,8 @@ Feature/AbilityDefinition -> Domain/Combat | 146
 # Abilities -> Companions (1 edge)
 Feature/AbilityDefinition -> Domain/Companions | 11
 
-# Abilities -> Creatures (2 edges)
-Domain/Abilities -> Domain/Creatures | 8
-Feature/AbilityDefinition -> Domain/Creatures | 32
+# Abilities -> Creatures (1 edge)
+Feature/AbilityDefinition -> Domain/Creatures | 36
 
 # Abilities -> Gameplay (5 edges)
 Domain/Abilities -> Feature.PistolAnimationRemap | 1
@@ -230,7 +229,7 @@ Domain/Crafting -> Feature/GuiDefinition | 4
 Domain/Crafting -> Domain/World | 8
 
 # Creatures -> Abilities (2 edges)
-Domain/Creatures -> Domain/Abilities | 31
+Domain/Creatures -> Domain/Abilities | 40
 Feature/AIDefinition -> Domain/Abilities | 5
 
 # Creatures -> Administration (1 edge)

@@ -19,6 +19,8 @@ public class SpaceStaleMenuTests
         var docked = Between(ShipManagement(), "private PlayerShip GetShipDockedHere(string shipId)", "private PlayerShip GetShipToRefit(string shipId)");
         Index(docked, "var dbShip = DB.Get<PlayerShip>(shipId);")
             .Should().BeLessThan(Index(docked, "GetShipLocation(dbShip, dbProperty, out _) == GetArea(Player)"));
+        docked.Should().Contain("!Space.IsShipLaunchPending(shipId) && GetShipLocation(dbShip, dbProperty, out _) == GetArea(Player)",
+            "a launching ship cannot be unregistered, refit, boarded or repaired before its pilot arrives in space");
 
         var refit = Between(ShipManagement(), "private PlayerShip GetShipToRefit(string shipId)", "private void RefreshShipIfOpen(");
         Index(refit, "var dbShip = GetShipDockedHere(shipId);")

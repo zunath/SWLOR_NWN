@@ -1712,13 +1712,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         /// <summary>
         /// The ship as saved now, when it is still docked where the player stands. The window's buttons reflect when it
-        /// loaded the ship, which may since have flown, been unregistered or moved.
+        /// loaded the ship, which may since have flown, been unregistered or moved. A ship whose pilot is launching it
+        /// has no space position until they arrive, but it is leaving: it is not docked here.
         /// </summary>
         private PlayerShip GetShipDockedHere(string shipId)
         {
             var dbShip = DB.Get<PlayerShip>(shipId);
             var dbProperty = dbShip == null ? null : DB.Get<WorldProperty>(dbShip.PropertyId);
-            if (dbProperty != null && GetShipLocation(dbShip, dbProperty, out _) == GetArea(Player))
+            if (dbProperty != null && !Space.IsShipLaunchPending(shipId) && GetShipLocation(dbShip, dbProperty, out _) == GetArea(Player))
                 return dbShip;
 
             FloatingTextStringOnCreature("That ship is no longer docked here.", Player, false);

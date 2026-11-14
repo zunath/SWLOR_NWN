@@ -252,10 +252,10 @@ smaller.
 | P5-10 | Character and Companions: `PerkService`, `SkillService`, `PlayerNameService`, `MimicryService`, `DroidService`, `BeastMasteryService` | P5-5; `DroidService` after the other splits (owner decision 5) | Sonnet build, Opus review |
 | P5-11 | Social, UI and Foundation: `CommunicationService`, `PerformanceAudienceService`, `PerformanceService`, `ExtraHotbarsService`, `GuiWindowBuilder`; `TintMapService` into `Domain` | P5-1 | Sonnet build, Opus review |
 | P5-12 | Static helpers and `new`-built logic types off the lookup (79 `Domain` files, `Native`, `NativeSinks`, `Core`), using the P5-13 design | P5-13, P5-16 | Opus design, Sonnet build |
-| P5-13 | Content without the lookup: design (above) and pilot family | P5-0 | Opus |
-| P5-14 | Content waves, tests and tools; delete `GameServices` and `FacadeAccessor` | P5-12, P5-13, P5-16 | Sonnet (scripted), Opus review |
+| P5-13 | Content without the lookup: design ([MaintainabilityRefactorContentInjection.md](MaintainabilityRefactorContentInjection.md)) and pilot | P5-0 | Opus |
+| P5-14 | Content waves C1 to C11 (see the content design), tests and tools; delete `GameServices` and `FacadeAccessor` | P5-2, P5-12, P5-13, P5-16 | Sonnet (scripted), Opus review |
 | P5-15 | Break the remaining domain cycles and the construction cycles; guards: no two-way pair, the domain order, no deferred resolution | P5-2, P5-14 | Opus |
-| P5-16 | Every type and method over the limits that no split covers. Named so far: `Native` (`ResolveAttackRoll`, `GetDamageRoll`), `NativeSinks.AttackObject`, `EventRegistration`, `ServiceRegistrations.Register`, `UsePerkFeat`, `WeaponActiveAbilityDefinitionBase`, the view models over the limit, `DMChatCommand`, `CharacterChatCommand`, `EmoteChatCommand`, `EquipmentStats`, the two layouts, the player guide topics, `RaceService.LoadRaces`; static content state into services | P5-0 | Sonnet build, Opus review |
+| P5-16 | Every type and method over the limits that no split covers. Named so far: `Native` (`ResolveAttackRoll`, `GetDamageRoll`), `NativeSinks.AttackObject`, `EventRegistration`, `ServiceRegistrations.Register`, `UsePerkFeat`, `WeaponActiveAbilityDefinitionBase`, the view models over the limit, `DMChatCommand`, `CharacterChatCommand`, `EmoteChatCommand`, `EquipmentStats`, the two layouts, the player guide topics, `RaceService.LoadRaces`, `WeaponAbilityProfile` (data plus a rider singleton); static content state into services | P5-0 | Sonnet build, Opus review |
 | P5-17 | Test debt: the six exclusion entries, the 39 known engine failures and the load-dependent ones, engine runs surviving the daily restart, a compose project name per run, the smoke craft step, `SWLOR.Toolset.Tests` outside CI | - | Sonnet, Opus for triage |
 | P5-18 | Dropped from Phase 5 (owner decision 7): the reload pause and the host entry's non-collectible frame rate stay in Reported defects | - | - |
 | P5-19 | End-of-phase verification (gate, engine sweeps on both entries, reload checks, smoke run, live reload) and an updated cutover handoff | all | Opus |
@@ -293,3 +293,10 @@ The owner approved all seven as recommended:
 6. A test fix that changes game behaviour lands on `master` as a normal bug fix. An engine test is removed only when it
    checks behaviour that no longer exists, with the reason in the pull request.
 7. P5-18 (reload pause, host frame rate) is not part of Phase 5. Both stay in Reported defects.
+8. Constructor injection for every type, content included; no method or property injection (2026-11-14, on the P5-13
+   design: "Constructor injection was a requirement from the beginning"). Content made with values is created through a
+   content factory that supplies the services; creation sites change text, service calls keep theirs.
+9. Tests get no static lookup: fixtures declare the services they use, engine tests are built by the factory the runner
+   is handed (2026-11-14).
+
+The content design is [MaintainabilityRefactorContentInjection.md](MaintainabilityRefactorContentInjection.md).

@@ -840,6 +840,13 @@
     "Call": "SendMessageToPC(user, $\"{targetName} stats: \\n\" +\n                                $\"Armor: {targetStatus.Hull} Max: {targetStatus.MaxHull} \\n\" +\n                                $\"Shields: {targetStatus.Shield} Max: {targetStatus.MaxShield} \\n\" +\n                                $\"Capacitor: {targetStatus.Capacitor} Max: {targetStatus.MaxCapacitor} \\n\" +\n                                $\"Shield Regen: {targetStatus.ShieldRechargeRate} \\n\" +\n                                $\"EM Damage Bonus: {targetStatus.EMDamage} \\n\" +\n                                $\"Thermal Damage Bonus: {targetStatus.ThermalDamage} \\n\" +\n                                $\"Explosive Damage Bonus: {targetStatus.ExplosiveDamage} \\n\" +\n                                $\"Accuracy: {targetStatus.Accuracy} \\n\" +\n                                $\"Evasion: {targetStatus.Evasion} \\n\" +\n                                $\"Thermal Defense: {targetStatus.ThermalDefense} \\n\" +\n                                $\"EM Defense: {targetStatus.EMDefense} \\n\" +\n                                $\"Explosive Defense: {targetStatus.ExplosiveDefense} \\n\" +\n                                $\"Skill Level: {level}\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/HuttballChatCommand.cs",
+    "Line": 36,
+    "Member": "BuildChatCommands",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a team captain can open the captain's window.\"))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/IncubationTestChatCommand.cs",
     "Line": 62,
     "Member": "FinishStage",
@@ -1986,6 +1993,97 @@
     "Member": "SubmitBroadcastAsync",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(receiver, ColorToken.Custom(displayName + \" broadcasts a new HoloNet message: \", 0, 180, 255) + ColorToken.White(message))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballPlayerViewModel.cs",
+    "Line": 119,
+    "Member": "RequireMe",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Character, ColorToken.Red(\"You are not playing in a Huttball match here.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballPlayerViewModel.cs",
+    "Line": 190,
+    "Member": "OnJoin",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Character, ColorToken.Red(\"You can only join between drives.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballPlayerViewModel.cs",
+    "Line": 197,
+    "Member": "OnJoin",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Character, ColorToken.Red(\"You are already playing in another match.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballPlayerViewModel.cs",
+    "Line": 223,
+    "Member": "OnCaptain",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Character, ColorToken.Red(\"Only a team captain can open the captain's window.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballViewModel.cs",
+    "Line": 287,
+    "Member": "RequireUnit",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(UserIsDM\n                ? \"Select a player in the match first.\"\n                : \"You are not in this match.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballViewModel.cs",
+    "Line": 359,
+    "Member": "OnCreateMatch",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(error))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballViewModel.cs",
+    "Line": 384,
+    "Member": "OnAddPlayer",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Pick a creature in this area.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballViewModel.cs",
+    "Line": 392,
+    "Member": "OnAddPlayer",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red($\"{name} is already playing in another match.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballViewModel.cs",
+    "Line": 476,
+    "Member": "CanManage",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red($\"{PlayerName.GetDisplayName(Player, target)} is not in this match.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballViewModel.cs",
+    "Line": 486,
+    "Member": "CanManage",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Only a team captain can do that.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballViewModel.cs",
+    "Line": 492,
+    "Member": "CanManage",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(Names($\"{player.Name} is not on your team.\")))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballViewModel.cs",
+    "Line": 508,
+    "Member": "OnSelectUnit",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red($\"{PlayerName.GetDisplayName(Player, target)} is not in this match.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/HuttballViewModel.cs",
+    "Line": 602,
+    "Member": "ChangeResource",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Captains change resources only between drives.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs",
@@ -4989,6 +5087,55 @@
     "Member": "CleanupAllHoloComState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, \"Your HoloCom call went unanswered.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Huttball.cs",
+    "Line": 151,
+    "Member": "CreatePlayerMatch",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, ColorToken.Red(obstruction))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Huttball.cs",
+    "Line": 388,
+    "Member": "SpawnTestTeams",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(actor, ColorToken.Red(\"Spawn test teams between drives.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Huttball.cs",
+    "Line": 493,
+    "Member": "Command",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(actor, ColorToken.Red(\"There is no Huttball match in this area.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Huttball.cs",
+    "Line": 520,
+    "Member": "PickSquare",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(actor, ColorToken.Red(\"Pick a square of the pitch.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Huttball.cs",
+    "Line": 570,
+    "Member": "Apply",
+    "Delivery": "Retained",
+    "Call": "DMPresence.SendMessage(actor, ColorToken.Red(ResolveNames(actor, result.Error)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Huttball.cs",
+    "Line": 659,
+    "Member": "Celebrate",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(ColorToken.Yellow($\"TOUCHDOWN! {ResolveNames(scorer.Creature, scorer.Name)}!\"), scorer.Creature, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/Huttball.cs",
+    "Line": 716,
+    "Member": "Announce",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(controlled, ColorToken.SkillCheck(\"Huttball: \") + ResolveNames(pc, line))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Item.cs",

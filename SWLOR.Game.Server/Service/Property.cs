@@ -3134,8 +3134,9 @@ namespace SWLOR.Game.Server.Service
             if (!parentProperty.ChildPropertyIds.ContainsKey(PropertyChildType.Structure))
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure] = new List<string>();
 
+            // The structure keeps the storage it can give; the property gains what it adds among the pieces that count.
             parentProperty.ChildPropertyIds[PropertyChildType.Structure].Add(structure.Id);
-            parentProperty.ItemStorageCount += structureItemStorage;
+            parentProperty.ItemStorageCount += GetStorageGainedOnPlacement(parentProperty, structureItemStorage);
 
             DB.Set(structure);
             DB.Set(parentProperty);
@@ -3151,6 +3152,78 @@ namespace SWLOR.Game.Server.Service
             RunStructureChangedEvent(type, StructureChangeType.PositionChanged, structure, placeable);
 
             return structure;
+        }
+
+        /// <summary>How many pieces of furniture add storage in the property's layout; 0 when every piece does.</summary>
+        public static int GetStoragePieceLimit(WorldProperty property) =>
+            property != null && _activeLayouts.TryGetValue(property.Layout, out var layout) ? layout.StoragePieceLimit : 0;
+
+        /// <summary>The storage each structure placed in the property can give, in a stable order.</summary>
+        private static List<(string Id, int Storage)> GetPlacedStructureStorage(string parentPropertyId)
+        {
+            var query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), parentPropertyId, false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure);
+            var count = (int)DB.SearchCount(query);
+            return count <= 0
+                ? new List<(string Id, int Storage)>()
+                : DB.Search(query.AddPaging(count, 0)).Where(x => x != null).Select(x => (x.Id, x.ItemStorageCount)).ToList();
+        }
+
+        /// <summary>
+        /// The item storage a property gains when a structure that can give <paramref name="storage"/> is placed: all of it,
+        /// unless its layout counts only its best pieces (<see cref="FurnitureStorageRules"/>), when it is what the new
+        /// piece adds among them. Called before the structure is saved.
+        /// </summary>
+        public static int GetStorageGainedOnPlacement(WorldProperty property, int storage)
+        {
+            var limit = GetStoragePieceLimit(property);
+            if (limit <= 0)
+                return storage;
+
+            var placed = GetPlacedStructureStorage(property.Id).Select(x => x.Storage).ToList();
+            return FurnitureStorageRules.GetStorageGained(placed, storage, limit);
+        }
+
+        /// <summary>
+        /// The item storage a property loses when a placed structure is picked up: all it gives, unless its layout counts
+        /// only its best pieces, when a counted piece is replaced by the best one that did not count.
+        /// </summary>
+        public static int GetStorageLostOnRetrieval(WorldProperty property, WorldProperty structure)
+        {
+            var limit = GetStoragePieceLimit(property);
+            if (limit <= 0)
+                return structure.ItemStorageCount;
+
+            var placed = GetPlacedStructureStorage(property.Id);
+            var index = placed.FindIndex(x => x.Id == structure.Id);
+            return index < 0
+                ? 0
+                : FurnitureStorageRules.GetStorageLost(placed.Select(x => x.Storage).ToList(), index, limit);
+        }
+
+        /// <summary>
+        /// The furniture placed in the property against its limit, and how many pieces add storage, for the windows and
+        /// the placement message. Furniture is what counts against the structure limit (not buildings or research devices).
+        /// </summary>
+        public static string DescribeFurniture(WorldProperty property)
+        {
+            if (property == null || !_activeLayouts.TryGetValue(property.Layout, out var layout))
+                return string.Empty;
+
+            var query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), property.Id, false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure);
+            var count = (int)DB.SearchCount(query);
+            var furniture = count <= 0
+                ? 0
+                : DB.Search(query.AddPaging(count, 0)).Count(x =>
+                {
+                    var detail = x == null ? null : GetStructureByType(x.StructureType);
+                    return detail != null && detail.LayoutType == PropertyLayoutType.Invalid &&
+                           detail.Category == StructureCategoryType.Structure;
+                });
+            return FurnitureStorageRules.DescribeFurniture(furniture, layout.StructureLimit);
         }
 
         /// <summary>
@@ -3850,7 +3923,18 @@ namespace SWLOR.Game.Server.Service
                     structureType, location);
             }
 
-            SendMessageToPC(player, $"{fixtureName} Limit: {structureCount+1} / {structureLimit}");
+            var storagePieces = GetStoragePieceLimit(property);
+            // A ship names both caps: its furniture can outgrow the pieces that add storage.
+            if (storagePieces > 0 && structureDetail.Category == StructureCategoryType.Structure)
+            {
+                var placedIn = DB.Get<WorldProperty>(propertyId);
+                SendMessageToPC(player, $"{FurnitureStorageRules.DescribeFurniture(structureCount + 1, structureLimit)}. " +
+                                        $"Item storage: {placedIn?.ItemStorageCount ?? 0} items.");
+            }
+            else
+            {
+                SendMessageToPC(player, $"{fixtureName} Limit: {structureCount+1} / {structureLimit}");
+            }
         }
 
         /// <summary>

@@ -1134,7 +1134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Lease Expiration",
                             "Keep the lease extended before its displayed expiration time. An expired apartment is queued for removal on the next server restart, including its structures and stored contents."),
                         new ArticleBlock("Structures and Permissions",
-                            "Properties have structure limits and permissions. Depending on the property, permissions can allow entering, editing structures, retrieving structures, renaming, changing descriptions, accessing storage, or managing special property features."),
+                            "Properties have structure limits and permissions. Depending on the property, permissions can allow entering, editing structures, retrieving structures, renaming, changing descriptions, accessing storage, or managing special property features. Most furniture also adds item storage. A ship holds more furniture than adds storage, so its last pieces may be decoration only. Manage Structures shows the furniture placed and the item storage."),
                         new ArticleBlock("Bank Storage",
                             "Banks store inventory items up to the bank's item limit. Deposit targets an item in your inventory, and Withdraw returns the selected stored item to you."),
                         new ArticleBlock("Buying From Markets",

@@ -82,6 +82,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string ItemStorageText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsFurnitureCountVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+
+        /// <summary>
+        /// Shows the furniture placed against its limit (on a ship, with how many pieces add storage) and the items stored
+        /// against the storage. Cities and stations count buildings and structures instead, so they show neither.
+        /// </summary>
+        private void RefreshFurnitureCount(WorldProperty property)
+        {
+            IsFurnitureCountVisible = property != null &&
+                                      property.PropertyType != PropertyType.City &&
+                                      property.Layout != PropertyLayoutType.Station;
+            if (!IsFurnitureCountVisible)
+            {
+                FurnitureCount = string.Empty;
+                ItemStorageText = string.Empty;
+                return;
+            }
+
+            var query = new DBQuery<WorldPropertyCategory>()
+                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), property.Id, false);
+            var itemCount = DB.Search(query).Sum(x => x.Items.Count);
+            FurnitureCount = Property.DescribeFurniture(property);
+            ItemStorageText = FurnitureStorageRules.DescribeItemStorage(itemCount, property.ItemStorageCount);
+        }
+
         public bool IsManagePropertyEnabled
         {
             get => Get<bool>();
@@ -171,6 +207,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             query.AddPaging(StructuresPerPage, SelectedPageIndex * StructuresPerPage);
             var structures = DB.Search(query);
             _structurePropertyIds.Clear();
+            RefreshFurnitureCount(DB.Get<WorldProperty>(propertyId));
 
             foreach (var structure in structures)
             {
@@ -233,6 +270,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _skipPaginationSearch = true;
             Instructions = string.Empty;
+            FurnitureCount = string.Empty;
+            ItemStorageText = string.Empty;
+            IsFurnitureCountVisible = false;
             InstructionColor = GuiColor.Green;
 
             var area = GetArea(Player);
@@ -480,7 +520,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var categories = DB.Search(query).ToList();
                 var itemCount = categories.Sum(x => x.Items.Count);
 
-                if (itemCount > parentProperty.ItemStorageCount - structure.ItemStorageCount)
+                // A ship counts only its best pieces of furniture for storage, so picking up one may cost less than it gives.
+                var storageLost = Property.GetStorageLostOnRetrieval(parentProperty, structure);
+                if (itemCount > parentProperty.ItemStorageCount - storageLost)
                 {
                     Instructions = $"Remove items from storage first.";
                     InstructionColor = GuiColor.Red;
@@ -502,7 +544,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Remove the structure from the parent's child list.
                 parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
-                parentProperty.ItemStorageCount -= structure.ItemStorageCount;
+                parentProperty.ItemStorageCount -= storageLost;
 
                 DB.Set(parentProperty);
 
@@ -517,6 +559,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SelectedStructureIndex = -1;
 
                 DestroyObject(placeable);
+                RefreshFurnitureCount(parentProperty);
                 LoadStructure();
             });
         };

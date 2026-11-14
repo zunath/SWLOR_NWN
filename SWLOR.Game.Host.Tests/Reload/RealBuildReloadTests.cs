@@ -219,8 +219,10 @@ public class RealBuildReloadTests
     }
 
     /// <summary>
-    /// Builds a status effect of the active generation through its content factory three ways (values-free, with a value, by type), so
-    /// each compiles a delegate in the collectible build. Reached by reflection: nothing of the build may stay referenced from here.
+    /// Builds a status effect of the active generation through its content factory three ways (values-free, with a value, by type), and
+    /// two converted types whose delegates hold the generation's services as constants (a conversation menu by type, the examine payload
+    /// with values), so each compiles a delegate in the collectible build. Reached by reflection: nothing of the build may stay
+    /// referenced from here.
     /// </summary>
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void RequireContentFactoryBuilds(int generation, GenerationEngineFakes fakes)
@@ -242,6 +244,15 @@ public class RealBuildReloadTests
 
         Require(valuesFree?.GetType() == made && withValue?.GetType() == made && byType?.GetType() == made,
             $"Generation {generation}'s content factory did not build {made.Name} each way.");
+
+        var menu = game.GetType("SWLOR.Game.Server.Feature.DialogDefinition.XPTomeDialog", true)!;
+        var payload = game.GetType("SWLOR.Game.Server.Feature.GuiDefinition.Payload.ExamineItemPayload", true)!;
+        var menuByType = creates.Single(method => method.GetGenericArguments().Length == 1 && method.GetParameters().Length == 1)
+            .MakeGenericMethod(typeof(object)).Invoke(content, [menu]);
+        var payloadWithValues = creates.Single(method => method.GetGenericArguments().Length == 4)
+            .MakeGenericMethod(payload, typeof(string), typeof(string), typeof(string)).Invoke(content, ["Datapad", "A datapad.", string.Empty]);
+        Require(menuByType?.GetType() == menu && payloadWithValues?.GetType() == payload,
+            $"Generation {generation}'s content factory did not build the converted {menu.Name} and {payload.Name} with their services.");
     }
 
     private static void RequireEverySinkBound(int generation)

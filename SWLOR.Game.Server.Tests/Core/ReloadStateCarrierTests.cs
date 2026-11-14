@@ -347,17 +347,28 @@ public class ReloadStateCarrierTests
         FieldOf(owner.GetType(), name).SetValue(owner, value);
     }
 
-    /// <summary>Sets a field's value; a static readonly collection is refilled instead, as the carrier does.</summary>
+    /// <summary>Sets a field's value; a static readonly dictionary or list is refilled instead, as the carrier does.</summary>
     private static void SetSample(FieldInfo field, object owner, object value)
     {
-        if (field.IsStatic && field.IsInitOnly)
+        if (field.IsStatic && field.IsInitOnly && field.GetValue(null) is System.Collections.IDictionary current)
         {
-            var current = (System.Collections.IDictionary)field.GetValue(null)!;
             current.Clear();
             if (value is System.Collections.IDictionary entries)
             {
                 foreach (System.Collections.DictionaryEntry entry in entries)
                     current[entry.Key] = entry.Value;
+            }
+
+            return;
+        }
+
+        if (field.IsStatic && field.IsInitOnly && field.GetValue(null) is System.Collections.IList list)
+        {
+            list.Clear();
+            if (value is System.Collections.IEnumerable items)
+            {
+                foreach (var item in items)
+                    list.Add(item);
             }
 
             return;

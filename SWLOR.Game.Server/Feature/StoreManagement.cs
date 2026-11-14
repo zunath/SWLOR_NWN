@@ -11,15 +11,17 @@ namespace SWLOR.Game.Server.Feature
     public class StoreManagement
     {
         private const int IntervalHours = 1; // Determines the interval at which stores are cleaned. 1 = 1 hour
-        // The stores of the module's own areas: the rerun LoadStores finds them again on a hot reload and AdoptStores leaves out
-        // the copies in area instances made since boot.
-        [ReloadState(ReloadStateKind.Adopted)]
+        // The stores the boot found. Carried, not adopted, on a hot reload: the rerun LoadStores also finds the stores of area
+        // instances made since boot (CreateArea copies a template's store with its items unmarked), which the hourly clean-up
+        // would empty; the carried list replaces what it found.
+        [ReloadState(ReloadStateKind.Carried)]
         private static readonly List<uint> _stores = new();
         private const string StoreServiceItem = "STORE_SERVICE_IS_STORE_ITEM";
 
         /// <summary>
         /// When the module loads, place all stores inside the cache and schedule the cleanup process. It only reads the
-        /// world, so a hot reload runs it again; <see cref="ProcessStores"/> runs right after it.
+        /// world, so a hot reload runs it again (for the cleanup; the store list is carried); <see cref="ProcessStores"/> runs
+        /// right after it.
         /// </summary>
         [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -41,10 +43,9 @@ namespace SWLOR.Game.Server.Feature
 
         /// <summary>
         /// After <see cref="LoadStores"/>, marks every item the stores of the module hold as a store item and adds its
-        /// increased price to its base value. Boot only: a second run would raise the prices again; a hot reload runs
-        /// <see cref="AdoptStores"/> instead.
+        /// increased price to its base value. Boot only: a second run would raise the prices again.
         /// </summary>
-        [BootPhase(BootReload.BootOnly, AdoptedBy = nameof(AdoptStores))]
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The marks and prices stay on the store items in the engine, and the store list is carried.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessStores()
         {
@@ -56,25 +57,6 @@ namespace SWLOR.Game.Server.Feature
                     ApplyIncreasedPriceItemProperty(item);
                 }
             }
-        }
-
-        /// <summary>
-        /// On a hot reload, after the rerun <see cref="LoadStores"/> (which found the stores and started the hourly clean-up):
-        /// keeps the stores of the areas the boot found, so the clean-up never empties a store in an area instance made since
-        /// boot (instances copy their template, store items unmarked). The module's own area of each resref comes first in the
-        /// engine's area list; instances are added after it. The prices and marks the boot gave stay as they are.
-        /// </summary>
-        public static void AdoptStores()
-        {
-            var bootAreas = new HashSet<uint>();
-            var resrefs = new HashSet<string>();
-            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
-            {
-                if (resrefs.Add(GetResRef(area)))
-                    bootAreas.Add(area);
-            }
-
-            _stores.RemoveAll(store => !bootAreas.Contains(GetArea(store)));
         }
 
         /// <summary>

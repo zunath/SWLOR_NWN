@@ -51,6 +51,6 @@ SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DisguiseViewModel | 1029
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DroidAssemblyViewModel | 1022
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.IncubatorViewModel | 1189
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerksViewModel | 1543
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideViewModel | 1311
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideViewModel | 1367
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel | 2081
 SWLOR.Game.Server.Feature.UsePerkFeat | 1687

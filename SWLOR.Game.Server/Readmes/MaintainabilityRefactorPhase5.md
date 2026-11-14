@@ -240,9 +240,16 @@ smaller.
 | ID | Item | Depends on | Model |
 |---|---|---|---|
 | P5-0 | Debt guards with shrinking baselines and a generated debt report: lookups per file, type and method size, services per type (constructor plus lookups), deferred-resolution parameters, logic-to-content references (same-domain included), two-way domain pairs (Foundation and Platform included), static entry points and static content state | - | Opus |
-| P5-1 | Edge classification, shared-vocabulary and interface moves, proposed domain order (owner review) | P5-0 | Opus |
+| P5-1 | Edge classification and the domain order ([MaintainabilityRefactorDomainOrder.md](MaintainabilityRefactorDomainOrder.md), owner decisions 10-13) | P5-0 | Opus |
+| P5-1b | Domain-order guard and measures, baselines including `UpwardEdges.txt`, the measuring tool under `tools/Refactor/DomainOrder` | P5-1 | Opus |
+| P5-1c | Type-move tool extension (per-entry source namespace, `Feature` and `Core` targets) and a sync pilot with `RecipeType.cs` | P5-1 | Opus |
+| P5-1d | AI settings off `AbilityDetail` (Creatures extension methods, call text unchanged) | P5-1 | Sonnet build, Opus review |
+| P5-1e | The 99 type moves (runs alone) | P5-1b, P5-1c, P5-1d | Sonnet (scripted), Opus review |
+| P5-1f | Constant and nested-type extractions | P5-1c, P5-1e | Sonnet build, Opus review |
+| P5-1g | Recording, companion and refresh interfaces | P5-1e; before P5-4 | Opus |
+| P5-1h | Misplaced code moves | P5-1b | Sonnet build, Opus review |
 | P5-2 | Remove the logic-to-content references the splits leave | P5-7 | Sonnet build, Opus review |
-| P5-3 | Split `AbilityService` (master freeze) | P5-1 | Opus |
+| P5-3 | Split `AbilityService` (master freeze) | P5-1e | Opus |
 | P5-4 | Split `StatService` (master freeze) | P5-3 | Opus |
 | P5-5 | Split `StatusEffectService` (master freeze) | P5-4 | Opus |
 | P5-6 | Split `SpaceService` | the other splits (owner decision 5) | Sonnet build, Opus review |
@@ -254,8 +261,10 @@ smaller.
 | P5-12 | Static helpers and `new`-built logic types off the lookup (79 `Domain` files, `Native`, `NativeSinks`, `Core`), using the P5-13 design | P5-13, P5-16 | Opus design, Sonnet build |
 | P5-13 | Content without the lookup: design ([MaintainabilityRefactorContentInjection.md](MaintainabilityRefactorContentInjection.md)) and pilot | P5-0 | Opus |
 | P5-14 | Content waves C1 to C11 (see the content design), tests and tools; delete `GameServices` and `FacadeAccessor` | P5-2, P5-12, P5-13, P5-16 | Sonnet (scripted), Opus review |
+| P5-15a | Inversions in services no split covers | P5-1b | Sonnet build, Opus review |
 | P5-15 | Break the remaining domain cycles and the construction cycles; guards: no two-way pair, the domain order, no deferred resolution | P5-2, P5-14 | Opus |
 | P5-16 | Every type and method over the limits that no split covers. Named so far: `Native` (`ResolveAttackRoll`, `GetDamageRoll`), `NativeSinks.AttackObject`, `EventRegistration`, `ServiceRegistrations.Register`, `UsePerkFeat`, `WeaponActiveAbilityDefinitionBase`, the view models over the limit, `DMChatCommand`, `CharacterChatCommand`, `EmoteChatCommand`, `EquipmentStats`, the two layouts, the player guide topics, `RaceService.LoadRaces`, `WeaponAbilityProfile` (data plus a rider singleton); static content state into services | P5-0 | Sonnet build, Opus review |
+| P5-16b | Hook logic out of `NativeSinks` into Combat services; the "sink does no work" guard | P5-7, P5-16a | Opus |
 | P5-17 | Test debt: the six exclusion entries, the 39 known engine failures and the load-dependent ones, engine runs surviving the daily restart, a compose project name per run, the smoke craft step, `SWLOR.Toolset.Tests` outside CI | - | Sonnet, Opus for triage |
 | P5-18 | Dropped from Phase 5 (owner decision 7): the reload pause and the host entry's non-collectible frame rate stay in Reported defects | - | - |
 | P5-19 | End-of-phase verification (gate, engine sweeps on both entries, reload checks, smoke run, live reload) and an updated cutover handoff | all | Opus |
@@ -300,3 +309,17 @@ The owner approved all seven as recommended:
    is handed (2026-11-14).
 
 The content design is [MaintainabilityRefactorContentInjection.md](MaintainabilityRefactorContentInjection.md).
+
+On the P5-1 domain order (2026-11-14, all four as recommended, with the independent review's conditions):
+
+10. Content is a band above all logic: content may use any logic, logic never names content, and content that uses other
+    content follows the same order.
+11. `Entity` and `Enumeration` count as Foundation; the types they store move to `Domain.Foundation`, and `Log` and
+    `FrameProfiler` (with their families) move to Core.
+12. `NativeSinks` counts as wiring under a "sink does no work" guard; its hook logic moves into Combat services (P5-16b,
+    after P5-7's part map).
+13. Character, Combat and Abilities stay three domains; the `AbilityDetail` family (15 types, without the AI settings)
+    moves into Character.
+
+The domain order, the type moves, the inversions and how a lower domain gets an implementation without a construction
+cycle are in [MaintainabilityRefactorDomainOrder.md](MaintainabilityRefactorDomainOrder.md).

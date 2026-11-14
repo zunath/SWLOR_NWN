@@ -13,7 +13,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | 4. Services per type | `ServicesPerType.txt` | 24 | 395 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 42 | 111 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 119 | 267 types | none |
-| 7. Domain cycles | `DomainCycles.txt` | 94 | 702 edges | none |
+| 7. Domain cycles | `DomainCycles.txt` | 94 | 704 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 140 | 267 members | each kept with an approved reason, or removed |
 
 ## 1. Static service lookup
@@ -193,9 +193,9 @@ Largest 15 of 94 (all in `DomainCycles.txt`):
 | `Gameplay <-> Platform` | 146 | Gameplay -> Platform: 143 edge(s); Platform -> Gameplay: 3 edge(s) |
 | `Foundation <-> Gameplay` | 43 | Foundation -> Gameplay: 5 edge(s); Gameplay -> Foundation: 38 edge(s) |
 | `Gameplay <-> UI` | 24 | Gameplay -> UI: 18 edge(s); UI -> Gameplay: 6 edge(s) |
+| `Foundation <-> Platform` | 22 | Foundation -> Platform: 17 edge(s); Platform -> Foundation: 5 edge(s) |
 | `Character <-> Platform` | 21 | Character -> Platform: 14 edge(s); Platform -> Character: 7 edge(s) |
 | `Combat <-> Gameplay` | 21 | Combat -> Gameplay: 3 edge(s); Gameplay -> Combat: 18 edge(s) |
-| `Foundation <-> Platform` | 21 | Foundation -> Platform: 17 edge(s); Platform -> Foundation: 4 edge(s) |
 | `Gameplay <-> Items` | 15 | Gameplay -> Items: 14 edge(s); Items -> Gameplay: 1 edge(s) |
 | `Platform <-> UI` | 13 | Platform -> UI: 1 edge(s); UI -> Platform: 12 edge(s) |
 | `Platform <-> World` | 13 | Platform -> World: 1 edge(s); World -> Platform: 12 edge(s) |

@@ -60,7 +60,7 @@ Companions <-> Items | 4
 Companions <-> Platform | 5
 Companions <-> Quests | 2
 Companions <-> UI | 3
-Crafting <-> Foundation | 2
+Crafting <-> Foundation | 3
 Crafting <-> Gameplay | 6
 Crafting <-> Items | 5
 Crafting <-> Platform | 6
@@ -78,7 +78,7 @@ Economy <-> UI | 3
 Economy <-> World | 2
 Foundation <-> Gameplay | 43
 Foundation <-> Items | 7
-Foundation <-> Platform | 21
+Foundation <-> Platform | 22
 Foundation <-> Quests | 5
 Foundation <-> Social | 3
 Foundation <-> Space | 5

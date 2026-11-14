@@ -4,13 +4,13 @@ using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.Engine;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {

@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

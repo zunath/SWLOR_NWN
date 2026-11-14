@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -31,16 +31,16 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 {
                     var itemResref = GetResRef(item);
                     var targetResref = GetResRef(target);
-                    var level = GetLocalInt(target, BeastMastery.BeastLevelVariable);
+                    var level = GetLocalInt(target, BeastMasteryService.BeastLevelVariable);
                     var perkLevel = Perk.GetPerkLevel(user, PerkType.DNAManipulation);
                     var maxLevel = perkLevel * 10;
                     var chargesRequired = 1 + level / 10;
                     var charges = GetItemCharges(item);
                     var requiredExtractorLevel = level / 10;
                     var extractorLevel = Convert.ToInt32(itemResref.Substring(itemResref.Length - 1, 1));
-                    var beastTypeId = GetLocalInt(target, BeastMastery.BeastTypeVariable);
+                    var beastTypeId = GetLocalInt(target, BeastMasteryService.BeastTypeVariable);
 
-                    if (targetResref != BeastMastery.ExtractCorpseObjectResref)
+                    if (targetResref != BeastMasteryService.ExtractCorpseObjectResref)
                     {
                         return "You may only extract DNA from empty corpses.";
                     }
@@ -81,10 +81,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     const int BaseStatChance = 5;
-                    var level = GetLocalInt(target, BeastMastery.BeastLevelVariable);
+                    var level = GetLocalInt(target, BeastMasteryService.BeastLevelVariable);
                     var chargesRequired = 1 + level / 10;
                     var charges = GetItemCharges(item) - chargesRequired;
-                    var beastType = (BeastType)GetLocalInt(target, BeastMastery.BeastTypeVariable);
+                    var beastType = (BeastType)GetLocalInt(target, BeastMasteryService.BeastTypeVariable);
                     var beastDetail = BeastMastery.GetBeastDetail(beastType);
                     var social = GetAbilityScore(user, AbilityType.Social) - 10;
                     if (social < 0)
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         }
                     }
 
-                    var dna = CreateItemOnObject(BeastMastery.DNAResref, user);
+                    var dna = CreateItemOnObject(BeastMasteryService.DNAResref, user);
 
                     foreach (var ip in itemProperties)
                     {
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     SetName(dna, $"Beast DNA: {beastDetail.Name}");
                     BeastStableTrials.RecordDnaExtraction(user, level, target);
                     DestroyObject(target);
-                    var body = GetLocalObject(target, Loot.CorpseBodyVariable);
+                    var body = GetLocalObject(target, LootService.CorpseBodyVariable);
                     AssignCommand(body, () => SetIsDestroyable());
                     DestroyObject(body);
                 });

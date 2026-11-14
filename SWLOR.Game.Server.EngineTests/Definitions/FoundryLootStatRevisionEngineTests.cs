@@ -7,11 +7,11 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -83,7 +83,7 @@ public static partial class MigrationEngineTests
         {
             // Keep the complete HP budget below the one-level fixture's native cap.
             var record = DB.Get<Player>(GetObjectUUID(player));
-            record.TemporaryFoodHP = 100 - Stat.BaseHP;
+            record.TemporaryFoodHP = 100 - StatService.BaseHP;
             Stat.AdjustPlayerMaxHP(record, player, 100 - record.MaxHP);
             DB.Set(record);
             SetCurrentHitPoints(player, 100);

@@ -1,12 +1,11 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Tests.Perks.AgriculturePerkLines;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -16,6 +15,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class AgriculturePerkLineTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly int[] Ranks = { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 };
     private static readonly int[] Prices = { 1, 1, 2, 2, 3, 3, 3, 3, 3, 4 };
 
@@ -269,7 +284,7 @@ public class AgriculturePerkLineTests
 
     private static bool FishingQuickReelNeverReadsAStat()
     {
-        var source = File.ReadAllText(Path.Combine(FindRoot(), "SWLOR.Game.Server", "Service", "FishingService", "FishingQuickReel.cs"));
+        var source = File.ReadAllText(Path.Combine(FindRoot(), "SWLOR.Game.Server", "Domain", "World", "FishingQuickReel.cs"));
         return !source.Contains("StatType") && !source.Contains("Stat.");
     }
 

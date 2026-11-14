@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
@@ -8,20 +9,33 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class ForceLightConsularTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _installed = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _installed = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _installed.Dispose();
+
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
@@ -70,8 +84,7 @@ public class ForceLightConsularTests
         perk.PerkLevels.Values.SelectMany(level => level.StatBonuses)
             .Should().NotContain(bonus => bonus.Stat == StatType.ForceAffinity);
 
-        var cache = (Dictionary<PerkType, PerkDetail>)typeof(Perk)
-            .GetField("_allPerks", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var cache = PerkInternals.AllPerks;
         var hadPrevious = cache.TryGetValue(PerkType.ThrowRock, out var previous);
         cache[PerkType.ThrowRock] = perk;
         try
@@ -245,7 +258,7 @@ public class ForceLightConsularTests
             source.Should().NotContain("hitChancePercentAdjustment", $"{abilityType.Name} should use the shared Force accuracy formula");
         }
 
-        var hitRate = Combat.CalculateHitRate(
+        var hitRate = CombatRules.CalculateHitRate(
             attackerAccuracy,
             squellbugEvasion,
             fullLightAffinityHitChance);
@@ -269,7 +282,7 @@ public class ForceLightConsularTests
             var ability = power.Item3[feat];
             var physical = power.Item1 == PerkType.ThrowRock;
             var abilityHitRate = physical
-                ? Combat.CalculateHitRate(attackerAccuracy, squellbugEvasion, 0)
+                ? CombatRules.CalculateHitRate(attackerAccuracy, squellbugEvasion, 0)
                 : hitRate;
             var affinityMagnitude = physical ? 1d : fullLightAffinityMagnitude;
             return (Ability: ability, Damage: ExpectedDamagePerUse(
@@ -278,13 +291,13 @@ public class ForceLightConsularTests
                 physical ? squellbugPhysicalDefense : squellbugForceDefense,
                 physical ? squellbugVitality : squellbugWillpower, abilityHitRate, affinityMagnitude));
         }).ToArray();
-        spentSP.Should().BeLessThanOrEqualTo(level + Skill.StartingSkillPoints);
+        spentSP.Should().BeLessThanOrEqualTo(level + SkillService.StartingSkillPoints);
 
         // One caster, three buttons, no simultaneous casts, no regeneration or consumables.
         var readyAt = new double[rotation.Length];
         var seconds = 0d;
         var damage = 0d;
-        var fp = Stat.GetMaxFP(Stat.BaseFP, attackerWillpower, 0);
+        var fp = Stat.GetMaxFP(StatService.BaseFP, attackerWillpower, 0);
         var casts = 0;
         while (damage < squellbugHP && seconds < 60d)
         {
@@ -473,7 +486,7 @@ public class ForceLightConsularTests
         int hitRate,
         double affinityMagnitude)
     {
-        var (minimumDamage, maximumDamage) = Combat.CalculateDamageRange(
+        var (minimumDamage, maximumDamage) = CombatRules.CalculateDamageRange(
             attackerAttack,
             baseDamage,
             attackerStat,

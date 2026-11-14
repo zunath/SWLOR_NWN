@@ -14,7 +14,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The script on the object that is associated with the event specified will run. Events can be created using the following event functions: EventActivateItem() - This creates an OnActivateItem module event. The script for handling this event can be set in Module Properties on the Event Tab. EventConversation() - This creates an OnConversation creature event. The script for handling this event can be set by viewing the Creature Properties on a creature and then clicking on the Scripts Tab. EventSpellCastAt() - This creates an OnSpellCastAt event. The script for handling this event can be set in the Scripts Tab of the Properties menu for the object. EventUserDefined() - This creates an OnUserDefined event. The script for handling this event can be set in the Scripts Tab of the Properties menu for the object/area/module.</remarks>
         public static void SignalEvent(uint oObject, Event evToRun)
         {
-            global::NWN.Core.NWScript.SignalEvent(oObject, evToRun);
+            NWScriptRuntime.Current.SignalEvent(oObject, evToRun);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This only creates the event. The event won't actually trigger until SignalEvent() is called using this created UserDefined event as an argument. For example: SignalEvent(oObject, EventUserDefined(9999)); Once the event has been signaled, the script associated with the OnUserDefined event will run on the object oObject. To specify the OnUserDefined script that should run, view the object's Properties and click on the Scripts Tab. Then specify a script for the OnUserDefined event. From inside the OnUserDefined script call: GetUserDefinedEventNumber() to retrieve the value of nUserDefinedEventNumber that was used when the event was signaled.</remarks>
         public static Event EventUserDefined(int nUserDefinedEventNumber)
         {
-            return global::NWN.Core.NWScript.EventUserDefined(nUserDefinedEventNumber);
+            return NWScriptRuntime.Current.EventUserDefined(nUserDefinedEventNumber);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This is for use in a user-defined script.</remarks>
         public static int GetUserDefinedEventNumber()
         {
-            return global::NWN.Core.NWScript.GetUserDefinedEventNumber();
+            return NWScriptRuntime.Current.GetUserDefinedEventNumber();
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Use this in an OnClosed script.</remarks>
         public static uint GetLastClosedBy()
         {
-            return global::NWN.Core.NWScript.GetLastClosedBy();
+            return NWScriptRuntime.Current.GetLastClosedBy();
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The event script. Will return empty string if unset, the object is invalid, or the object cannot have the requested handler</returns>
         public static string GetEventScript(uint oObject, EventScript nHandler)
         {
-            return global::NWN.Core.NWScript.GetEventScript(oObject, (int)nHandler);
+            return NWScriptRuntime.Current.GetEventScript(oObject, nHandler);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>1 on success, 0 on failure. Will fail if oObject is invalid or does not have the requested handler</returns>
         public static int SetEventScript(uint oObject, EventScript nHandler, string sScript)
         {
-            return global::NWN.Core.NWScript.SetEventScript(oObject, (int)nHandler, sScript);
+            return NWScriptRuntime.Current.SetEventScript(oObject, nHandler, sScript);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The vector of the last GUI event. GUIEVENT_RADIAL_OPEN - World vector position of radial if on tile</returns>
         public static Vector3 GetLastGuiEventVector()
         {
-            return global::NWN.Core.NWScript.GetLastGuiEventVector();
+            return NWScriptRuntime.Current.GetLastGuiEventVector();
         }
     }
 }

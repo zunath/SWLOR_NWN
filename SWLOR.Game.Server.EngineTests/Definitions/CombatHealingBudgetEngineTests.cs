@@ -4,12 +4,12 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -25,22 +25,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, target, 1000, 1000);
             TemporaryStatModifier.Add(source, StatType.HealingReceivedPercentAdjustment, 35, 30f);
 
-            using (Combat.BeginDamageDerivedHealing(source, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
             {
-                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25), "ordinary passive is capped after healing bonuses");
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 8), "another passive cannot refill the same hit");
-                ctx.AssertEqual(150, Combat.ApplyDamageDerivedHealing(source, 684, 40, true), "active drain keeps its separate allowance");
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 40, true), "one hit cannot repeat the active allowance");
+                ctx.AssertEqual(60, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25), "ordinary passive is capped after healing bonuses");
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 8), "another passive cannot refill the same hit");
+                ctx.AssertEqual(150, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 40, true), "active drain keeps its separate allowance");
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 40, true), "one hit cannot repeat the active allowance");
             }
             ctx.AssertEqual(211, GetCurrentHitPoints(source), "combined spike heals 210 HP");
 
             for (var i = 0; i < 3; i++)
             {
-                using (Combat.BeginDamageDerivedHealing(source, target))
-                    ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25), "subsequent hits use the remaining rolling allowance");
+                using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                    ctx.AssertEqual(60, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25), "subsequent hits use the remaining rolling allowance");
             }
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "fifth hit cannot exceed 240 HP within six seconds");
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25), "fifth hit cannot exceed 240 HP within six seconds");
         }
 
         [EngineTest("Soul Ascension preserves ordinary stacked lifesteal sustain", Category = "CombatHealing", TimeoutSeconds = 20f)]
@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 foreach (var source in new[] { baseline, ascended })
                 {
-                    using (Combat.BeginDamageDerivedHealing(source, target))
-                        Combat.ApplyDamageDealtEffects(source, target, 250, SkillType.HeavyVibroblade,
+                    using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                        GameServices.CombatHitEffects.ApplyDamageDealtEffects(source, target, 250, SkillType.HeavyVibroblade,
                             CombatDamageType.Physical, isAbilityDamage: true);
                 }
             }
@@ -101,44 +101,44 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "Vampiric Fury retains its eight-second cooldown");
             }
             TemporaryStatModifier.Add(passiveFirst, StatType.HealingReceivedPercentAdjustment, 35, 30f);
-            using (Combat.BeginDamageDerivedHealing(baseline, target))
-                Combat.ApplyDamageDealtEffects(baseline, target, 684, SkillType.HeavyVibroblade,
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(baseline, target))
+                GameServices.CombatHitEffects.ApplyDamageDealtEffects(baseline, target, 684, SkillType.HeavyVibroblade,
                     CombatDamageType.Physical, isAbilityDamage: true);
-            using (Combat.BeginDamageDerivedHealing(criticalFirst, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(criticalFirst, target))
             {
-                Combat.ApplyCriticalHitEffects(criticalFirst, target, 684, 1);
+                GameServices.CombatHitEffects.ApplyCriticalHitEffects(criticalFirst, target, 684, 1);
                 ctx.AssertEqual(121, GetCurrentHitPoints(criticalFirst), "the critical proc uses only its separate 120-HP allowance");
-                Combat.ApplyDamageDealtEffects(criticalFirst, target, 684, SkillType.HeavyVibroblade,
+                GameServices.CombatHitEffects.ApplyDamageDealtEffects(criticalFirst, target, 684, SkillType.HeavyVibroblade,
                     CombatDamageType.Physical, isAbilityDamage: true);
             }
-            using (Combat.BeginDamageDerivedHealing(passiveFirst, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(passiveFirst, target))
             {
-                Combat.ApplyDamageDealtEffects(passiveFirst, target, 684, SkillType.HeavyVibroblade,
+                GameServices.CombatHitEffects.ApplyDamageDealtEffects(passiveFirst, target, 684, SkillType.HeavyVibroblade,
                     CombatDamageType.Physical, isAbilityDamage: true);
-                Combat.ApplyCriticalHitEffects(passiveFirst, target, 684, 1);
+                GameServices.CombatHitEffects.ApplyCriticalHitEffects(passiveFirst, target, 684, 1);
             }
             ctx.AssertEqual(61, GetCurrentHitPoints(baseline), "ordinary stacked lifesteal heals 60 HP");
             ctx.AssertEqual(181, GetCurrentHitPoints(criticalFirst), "critical healing adds 120 HP alongside ordinary lifesteal");
             ctx.AssertEqual(181, GetCurrentHitPoints(passiveFirst), "reversed trigger order and healing bonuses preserve the same caps");
 
-            using (Combat.BeginDamageDerivedHealing(criticalFirst, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(criticalFirst, target))
             {
-                Combat.ApplyCriticalHitEffects(criticalFirst, target, 684, 1);
+                GameServices.CombatHitEffects.ApplyCriticalHitEffects(criticalFirst, target, 684, 1);
                 ctx.AssertEqual(181, GetCurrentHitPoints(criticalFirst), "another critical hit cannot heal during the eight-second cooldown");
-                Combat.ApplyDamageDealtEffects(criticalFirst, target, 684, SkillType.HeavyVibroblade,
+                GameServices.CombatHitEffects.ApplyDamageDealtEffects(criticalFirst, target, 684, SkillType.HeavyVibroblade,
                     CombatDamageType.Physical, isAbilityDamage: true);
             }
             ctx.AssertEqual(241, GetCurrentHitPoints(criticalFirst), "cooldown prevents another proc while ordinary healing spends the last 60 HP");
-            using (Combat.BeginDamageDerivedHealing(criticalFirst, target))
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(criticalFirst, 684, 25),
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(criticalFirst, target))
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(criticalFirst, 684, 25),
                     "critical and ordinary healing together exhaust the shared 240-HP rolling budget");
 
             await ctx.DelaySecondsAsync(8.1f);
             ObjectPlugin.SetCurrentHitPoints(criticalFirst, 1);
-            using (Combat.BeginDamageDerivedHealing(criticalFirst, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(criticalFirst, target))
             {
-                Combat.ApplyCriticalHitEffects(criticalFirst, target, 684, 1);
-                Combat.ApplyDamageDealtEffects(criticalFirst, target, 684, SkillType.HeavyVibroblade,
+                GameServices.CombatHitEffects.ApplyCriticalHitEffects(criticalFirst, target, 684, 1);
+                GameServices.CombatHitEffects.ApplyDamageDealtEffects(criticalFirst, target, 684, SkillType.HeavyVibroblade,
                     CombatDamageType.Physical, isAbilityDamage: true);
             }
             ctx.AssertEqual(181, GetCurrentHitPoints(criticalFirst), "expired cooldown and rolling receipts allow the next critical proc");
@@ -153,10 +153,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, source, 1000, 1);
             Prepare(ctx, target, 1000, 1000);
             TemporaryStatModifier.Add(source, StatType.CriticalHPPercentOfDamageRestore, 25, 30f);
-            using (Combat.BeginDamageDerivedHealing(source, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
             {
-                Combat.ApplyCriticalHitEffects(source, target, 684, 1);
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 8),
+                GameServices.CombatHitEffects.ApplyCriticalHitEffects(source, target, 684, 1);
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 8),
                     "a critical proc with no cooldown shares the ordinary per-hit allowance");
             }
             ctx.AssertEqual(61, GetCurrentHitPoints(source), "unrestricted critical healing cannot claim the larger allowance");
@@ -170,23 +170,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(1f);
             Prepare(ctx, source, 1000, 1);
             Prepare(ctx, target, 1000, 1000);
-            using (Combat.BeginDamageDerivedHealing(source, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
             {
-                ctx.AssertEqual(120, Combat.ApplyDamageDerivedHealing(source, 300, 100, passiveHealingCooldownSeconds: 8),
+                ctx.AssertEqual(120, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 300, 100, passiveHealingCooldownSeconds: 8),
                     "cooldown recovery can use its 120-HP allowance");
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 300, 100, passiveHealingCooldownSeconds: 8),
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 300, 100, passiveHealingCooldownSeconds: 8),
                     "the same hit cannot refill its cooldown allowance");
-                ctx.AssertEqual(30, Combat.ApplyDamageDerivedHealing(source, 300, 100),
+                ctx.AssertEqual(30, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 300, 100),
                     "ordinary lifesteal only uses the remaining 50%-of-damage allowance");
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 300, 100, true),
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 300, 100, true),
                     "active healing shares the aggregate damage ceiling");
             }
             ObjectPlugin.SetCurrentHitPoints(target, 20);
-            using (Combat.BeginDamageDerivedHealing(source, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
             {
-                ctx.AssertEqual(10, Combat.ApplyDamageDerivedHealing(source, 684, 100, passiveHealingCooldownSeconds: 8),
+                ctx.AssertEqual(10, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 100, passiveHealingCooldownSeconds: 8),
                     "cooldown healing cannot draw more than half the target's remaining HP");
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 100),
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 100),
                     "ordinary healing cannot reuse the target's overkill health");
             }
         }
@@ -199,23 +199,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(1f);
             Prepare(ctx, source, 1000, 1000);
             Prepare(ctx, target, 1000, 1000);
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "full-health healing spends nothing");
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25), "full-health healing spends nothing");
 
             ObjectPlugin.SetCurrentHitPoints(source, 999);
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(1, Combat.ApplyDamageDerivedHealing(source, 684, 25), "only the missing HP spends allowance");
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(1, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25), "only the missing HP spends allowance");
             ObjectPlugin.SetCurrentHitPoints(source, 1);
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25), "next hit retains its per-hit allowance");
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(60, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25), "next hit retains its per-hit allowance");
 
             ObjectPlugin.SetCurrentHitPoints(target, 20);
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(10, Combat.ApplyDamageDerivedHealing(source, 684, 50, true), "a 20-HP target supplies at most 10 HP of healing");
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(10, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 50, true), "a 20-HP target supplies at most 10 HP of healing");
 
             SetPlotFlag(target, true);
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 50, true), "an invulnerable plot target cannot supply healing");
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 50, true), "an invulnerable plot target cannot supply healing");
         }
 
         [EngineTest("Kill recovery shares a six-second allowance without suppressing other kill rewards", Category = "CombatHealing", TimeoutSeconds = 20f)]
@@ -229,11 +229,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(source, StatType.DefeatedEnemyAttackPercentAdjustment, 15, 30f);
             TemporaryStatModifier.Add(source, StatType.DefeatedEnemyAttackDurationSeconds, 30, 30f);
             for (var i = 0; i < 5; i++)
-                Combat.ApplyDefeatedEnemyEffects(source);
+                GameServices.CombatHitEffects.ApplyDefeatedEnemyEffects(source);
             ctx.AssertEqual(121, GetCurrentHitPoints(source), "five kills share a 120-HP allowance after bonuses");
             ctx.Assert(Stat.GetStatAdjustment(source, StatType.AttackPercentAdjustment) >= 15, "kill attack reward still applies");
             await ctx.DelaySecondsAsync(6.1f);
-            Combat.ApplyDefeatedEnemyEffects(source);
+            GameServices.CombatHitEffects.ApplyDefeatedEnemyEffects(source);
             ctx.AssertEqual(241, GetCurrentHitPoints(source), "expired receipts release their allowance");
         }
 
@@ -256,7 +256,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(source, StatType.CombatReadinessPercent, 15, 30f);
             TemporaryStatModifier.Add(source, StatType.HealingReceivedPercentAdjustment, 20, 30f);
             ctx.SetResources(source, 100, 100);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 var definition = new ForceDrainAbilityDefinition().BuildAbilities()[FeatType.ForceDrain3];
@@ -276,12 +276,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(GetCurrentHitPoints(target) > 500, "target remains above the enhanced-drain threshold");
                 var requested = Stat.ApplyHealingReceivedAdjustment(source, GameMath.PercentOf(damage, 40), false);
                 var expected = Math.Min(GameMath.PercentOf(damage, 50), Math.Min(requested,
-                    Combat.CalculateMaxHPHealingBudget(GetMaxHitPoints(source), Combat.MaximumActivatedDamageHealingMaxHPPercent)));
+                    CombatRules.CalculateMaxHPHealingBudget(GetMaxHitPoints(source), CombatResourcesService.MaximumActivatedDamageHealingMaxHPPercent)));
                 ctx.AssertEqual(expected, GetCurrentHitPoints(source) - 1, "healing applies the damage and maximum-HP caps without another Readiness multiplier");
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -348,8 +348,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(101, GetCurrentHitPoints(target), "native current HP already includes the temporary pool");
             ctx.AssertEqual(101, Ability.GetRemainingDamageTargetHP(source, target),
                 "damageable health counts the temporary pool exactly once");
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(50, Combat.ApplyDamageDerivedHealing(source, 100, 50, true),
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(50, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 100, 50, true),
                     "a hit absorbed by temporary HP still supplies its full damage-derived healing");
 
             AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(100), target));
@@ -405,18 +405,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(source, StatType.HealingReceivedAttackDurationSeconds, 30, 30f);
             TemporaryStatModifier.Add(source, StatType.DefeatedEnemyHPPercentRestore, 12, 30f);
             ctx.AssertEqual(1100, GetCurrentHitPoints(source), "native HP exceeds maximum while base HP is missing");
-            using (Combat.BeginDamageDerivedHealing(source, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
             {
-                ctx.AssertEqual(150, Combat.ApplyDamageDerivedHealing(source, 684, 40, true),
+                ctx.AssertEqual(150, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 40, true),
                     "active drain restores missing base HP despite the shield");
-                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, 684, 25),
+                ctx.AssertEqual(60, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25),
                     "ordinary lifesteal also restores base HP");
             }
             ctx.AssertEqual(810, ObjectPlugin.GetCurrentHitPoints(source), "both damage-derived heals reach base HP");
             ctx.AssertEqual(10, Stat.GetStatAdjustment(source, StatType.AttackPercentAdjustment),
                 "receiving healing still triggers the attack reward while shielded");
-            Combat.ApplyDefeatedEnemyEffects(source);
-            Combat.ApplyDefeatedEnemyEffects(source);
+            GameServices.CombatHitEffects.ApplyDefeatedEnemyEffects(source);
+            GameServices.CombatHitEffects.ApplyDefeatedEnemyEffects(source);
             ctx.AssertEqual(930, ObjectPlugin.GetCurrentHitPoints(source), "kill recovery heals base HP and retains its 120-HP budget");
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(source), "healing does not replace or consume temporary HP");
         }
@@ -431,22 +431,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, target, 1000, 1000);
             TemporaryHitPointEffects.ApplyFlat(source, "LIFESTEAL_RECIPIENT", 500, 30f);
             TemporaryStatModifier.Add(source, StatType.DefeatedEnemyHPPercentRestore, 12, 30f);
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(1, Combat.ApplyDamageDerivedHealing(source, 684, 25), "only one missing base HP is healed");
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "full base HP cannot spend passive budget");
-            Combat.ApplyDefeatedEnemyEffects(source);
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(1, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25), "only one missing base HP is healed");
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25), "full base HP cannot spend passive budget");
+            GameServices.CombatHitEffects.ApplyDefeatedEnemyEffects(source);
             ObjectPlugin.SetCurrentHitPoints(source, 500);
-            Combat.ApplyDefeatedEnemyEffects(source);
+            GameServices.CombatHitEffects.ApplyDefeatedEnemyEffects(source);
             ctx.AssertEqual(620, ObjectPlugin.GetCurrentHitPoints(source), "a full-health kill did not spend the kill budget");
             foreach (var expected in new[] { 60, 60, 60, 59 })
             {
-                using (Combat.BeginDamageDerivedHealing(source, target))
-                    ctx.AssertEqual(expected, Combat.ApplyDamageDerivedHealing(source, 684, 25),
+                using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                    ctx.AssertEqual(expected, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25),
                         "only the one effective HP from the first hit was charged to the passive budget");
             }
-            using (Combat.BeginDamageDerivedHealing(source, target))
-                ctx.AssertEqual(0, Combat.ApplyDamageDerivedHealing(source, 684, 25), "the 240-HP rolling limit still applies");
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
+                ctx.AssertEqual(0, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 684, 25), "the 240-HP rolling limit still applies");
             ctx.AssertEqual(859, ObjectPlugin.GetCurrentHitPoints(source), "base HP receives 120 kill HP plus 239 remaining passive HP");
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(source), "overhealing does not refill or consume the shield");
         }
@@ -468,7 +468,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(source, () =>
                 {
                     int damage;
-                    using (Combat.BeginDamageDerivedHealing(source, target))
+                    using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
                     {
                         damage = Ability.ApplyCombatImpact(source, target, GetLocation(target), SkillType.Force,
                             400, 0, null, false, damageType: CombatDamageType.Force, awardsCombatPoints: false,
@@ -477,7 +477,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "damage calculation grants the shield before queueing the hit");
                         ctx.AssertEqual(1 + GameMath.PercentOf(damage, 8), ObjectPlugin.GetCurrentHitPoints(source),
                             "passive recovery uses the hit's full damage, including shield absorption");
-                        ctx.AssertEqual(150, Combat.ApplyDamageDerivedHealing(source, damage, 40, true),
+                        ctx.AssertEqual(150, GameServices.CombatResources.ApplyDamageDerivedHealing(source, damage, 40, true),
                             "the outer active-drain scope also observes the newly granted shield");
                     }
                     ctx.AssertEqual(600 - damage, Ability.GetRemainingDamageTargetHP(source, target),
@@ -502,14 +502,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             PrepareReactiveShield(ctx, target);
             TemporaryStatModifier.Add(source, StatType.CriticalHPPercentOfDamageRestore, 25, 30f);
             TemporaryStatModifier.Add(source, StatType.CriticalHPPercentOfDamageRestoreCooldownSeconds, 8, 30f);
-            using (Combat.BeginDamageDerivedHealing(source, target))
+            using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
             {
-                var damage = Combat.ApplyDamageTakenModifiers(target, 400, source, CombatDamageType.Force);
+                var damage = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(target, 400, source, CombatDamageType.Force);
                 ctx.AssertEqual(400, damage, "the shield preserves the incoming damage amount");
                 ctx.AssertEqual(600, GetCurrentHitPoints(target), "reactive shield increases damageable HP from 100 to 600");
-                Combat.ApplyCriticalHitEffects(source, target, damage, 1);
+                GameServices.CombatHitEffects.ApplyCriticalHitEffects(source, target, damage, 1);
                 ctx.AssertEqual(101, ObjectPlugin.GetCurrentHitPoints(source), "the critical proc heals 25% of 400 instead of 25% of the old 100 HP");
-                ctx.AssertEqual(60, Combat.ApplyDamageDerivedHealing(source, damage, 25), "ordinary healing keeps its separate allowance");
+                ctx.AssertEqual(60, GameServices.CombatResources.ApplyDamageDerivedHealing(source, damage, 25), "ordinary healing keeps its separate allowance");
             }
         }
 

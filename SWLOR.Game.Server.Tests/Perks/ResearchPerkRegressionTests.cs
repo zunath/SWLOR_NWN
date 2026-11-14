@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -17,11 +17,11 @@ public class ResearchPerkRegressionTests
     [Test]
     public void Research_GatesTerminalAccessAndRecipeTiersByFabricationRank()
     {
-        var craft = ReadSource("Service", "Craft.cs");
+        var craft = ReadSource("Domain", "Crafting", "CraftService.cs");
         var canResearchRecipe = ExtractMethod(
             craft,
-            "public static bool CanPlayerResearchRecipe(uint player, RecipeType recipeType)");
-        var useResearchTerminal = ExtractMethod(craft, "public static void UseResearchTerminal()");
+            "public bool CanPlayerResearchRecipe(uint player, RecipeType recipeType)");
+        var useResearchTerminal = ExtractMethod(craft, "public void UseResearchTerminal()");
         var researchViewModel = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
         var buildJob = ExtractMethod(
             researchViewModel,
@@ -43,20 +43,20 @@ public class ResearchPerkRegressionTests
         buildJob.Should().Contain("RequiredResearchTier = researchTier");
         validateJob.Should().Contain("CraftRankMilestones.GetResearchTier(Player) < researchJob.RequiredResearchTier");
         validateJob.Should().Contain("CraftRankMilestones.RequiredFabricationRankForResearchTier(researchJob.RequiredResearchTier)");
-        validateJob.Should().Contain("researchJob.CurrentLevel >= Craft.MaxResearchLevel");
+        validateJob.Should().Contain("researchJob.CurrentLevel >= CraftService.MaxResearchLevel");
 
         validateBlueprint.Should().Contain("var requiredTier = recipe.Level / 10 + 1;");
         validateBlueprint.Should().Contain("if (requiredTier > 5)");
         validateBlueprint.Should().Contain("if (researchTier < requiredTier)");
         validateBlueprint.Should().Contain("CraftRankMilestones.RequiredFabricationRankForResearchTier(requiredTier)");
-        validateBlueprint.Should().Contain("blueprint.Level >= Craft.MaxResearchLevel");
+        validateBlueprint.Should().Contain("blueprint.Level >= CraftService.MaxResearchLevel");
     }
 
     [Test]
     public void ResearchTerminalMessages_NameResearchJobsAndNoRetiredPerks()
     {
-        var craft = ReadSource("Service", "Craft.cs");
-        var useResearchTerminal = ExtractMethod(craft, "public static void UseResearchTerminal()");
+        var craft = ReadSource("Domain", "Crafting", "CraftService.cs");
+        var useResearchTerminal = ExtractMethod(craft, "public void UseResearchTerminal()");
 
         useResearchTerminal.Should().Contain("Another player's research job is active. This job will complete in: {completionTime}.");
         useResearchTerminal.Should().Contain("Another player's research job is active. This job has completed.");

@@ -3,11 +3,9 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -82,20 +80,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Logging out drops the non-persistent effect; the record stays.
             StatusEffect.RemoveAllStatusEffects(creature, includeCraftingStyles: true);
             ctx.AssertEqual(CircuitStyle.None, CircuitStyles.Active(creature), "the style effect does not outlive the session");
-            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftingStyleSelection.Restore(creature));
+            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftStyleEffects.Restore(creature));
             ctx.AssertEqual(CircuitStyle.Overclock, CircuitStyles.Active(creature), "login applies the selected style");
             ctx.Assert(!StatusEffect.HasEffect<SafeModeStatusEffect>(creature), "and not the other one");
 
             // A second login while the style is already active leaves it alone.
             var effect = StatusEffect.GetStatusEffect(creature, typeof(OverclockStatusEffect));
-            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftingStyleSelection.Restore(creature));
+            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftStyleEffects.Restore(creature));
             ctx.Assert(ReferenceEquals(effect, StatusEffect.GetStatusEffect(creature, typeof(OverclockStatusEffect))),
                 "restoring an active style does not stack or replace it");
 
             // The perk was refunded while the effect was gone (a refund by a character upgrade, say): nothing comes back.
             StatusEffect.RemoveAllStatusEffects(creature, includeCraftingStyles: true);
             player.Update(record => record.Perks.Remove(PerkType.OverclockStyle));
-            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftingStyleSelection.Restore(creature));
+            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftStyleEffects.Restore(creature));
             ctx.AssertEqual(CircuitStyle.None, CircuitStyles.Active(creature), "a style whose perk is no longer owned is not applied");
             ctx.AssertEqual(PerkType.Invalid, Selected(player.Id), "and its stale selection is dropped");
         }
@@ -119,7 +117,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(CircuitStyle.None, CircuitStyles.Active(creature), "the refunded style is removed");
             ctx.AssertEqual(PerkType.Invalid, Selected(player.Id), "and forgotten");
 
-            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftingStyleSelection.Restore(creature));
+            await ctx.ExecuteInCreatureContextAsync(creature, () => CraftStyleEffects.Restore(creature));
             ctx.AssertEqual(CircuitStyle.None, CircuitStyles.Active(creature), "nothing comes back at the next login");
         }
     }

@@ -1,5 +1,5 @@
 using SWLOR.CombatSim.Data;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CombatSim.Scenario;
 

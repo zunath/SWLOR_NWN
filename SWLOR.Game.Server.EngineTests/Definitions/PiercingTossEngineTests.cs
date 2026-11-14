@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var abilities = new PiercingTossAbilityDefinition().BuildAbilities();
             var cases = new List<(uint Target, BleedStatusEffect Bleed, int Ticks, DateTime AppliedAt, string Label, int PostHitHP)>();
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var extensionSeconds in new[] { 0, 6 })
@@ -108,8 +108,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
     }

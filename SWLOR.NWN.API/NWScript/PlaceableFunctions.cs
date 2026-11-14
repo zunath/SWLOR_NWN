@@ -8,7 +8,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlaceable">The placeable object to use</param>
         public static void ActionInteractObject(uint oPlaceable)
         {
-            global::NWN.Core.NWScript.ActionInteractObject(oPlaceable);
+            NWScriptRuntime.Current.ActionInteractObject(oPlaceable);
         }
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last object that used the placeable, or OBJECT_INVALID if called by something other than a placeable or door</returns>
         public static uint GetLastUsedBy()
         {
-            return global::NWN.Core.NWScript.GetLastUsedBy();
+            return NWScriptRuntime.Current.GetLastUsedBy();
         }
 
         /// <summary>
@@ -35,9 +35,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bIlluminate">If TRUE, the placeable's illumination will be turned on. If FALSE, it will be turned off</param>
         public static void SetPlaceableIllumination(uint oPlaceable = OBJECT_INVALID, bool bIlluminate = true)
         {
-            if (oPlaceable == OBJECT_INVALID)
-                oPlaceable = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetPlaceableIllumination(oPlaceable, bIlluminate ? 1 : 0);
+            NWScriptRuntime.Current.SetPlaceableIllumination(oPlaceable, bIlluminate);
         }
 
         /// <summary>
@@ -47,9 +45,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the illumination is on</returns>
         public static bool GetPlaceableIllumination(uint oPlaceable = OBJECT_INVALID)
         {
-            if (oPlaceable == OBJECT_INVALID)
-                oPlaceable = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetPlaceableIllumination(oPlaceable) != 0;
+            return NWScriptRuntime.Current.GetPlaceableIllumination(oPlaceable);
         }
 
         /// <summary>
@@ -60,7 +56,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if the action is valid for the placeable</returns>
         public static int GetIsPlaceableObjectActionPossible(uint oPlaceable, int nPlaceableAction)
         {
-            return global::NWN.Core.NWScript.GetIsPlaceableObjectActionPossible(oPlaceable, nPlaceableAction);
+            return NWScriptRuntime.Current.GetIsPlaceableObjectActionPossible(oPlaceable, nPlaceableAction);
         }
 
         /// <summary>
@@ -70,7 +66,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nPlaceableAction">PLACEABLE_ACTION_* constant</param>
         public static void DoPlaceableObjectAction(uint oPlaceable, int nPlaceableAction)
         {
-            global::NWN.Core.NWScript.DoPlaceableObjectAction(oPlaceable, nPlaceableAction);
+            NWScriptRuntime.Current.DoPlaceableObjectAction(oPlaceable, nPlaceableAction);
         }
     }
 }

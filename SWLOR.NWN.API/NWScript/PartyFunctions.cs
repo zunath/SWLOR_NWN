@@ -9,7 +9,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPartyLeader">Player already in the party</param>
         public static void AddToParty(uint oPC, uint oPartyLeader)
         {
-            global::NWN.Core.NWScript.AddToParty(oPC, oPartyLeader);
+            NWScriptRuntime.Current.AddToParty(oPC, oPartyLeader);
         }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPC">Removes this player from whatever party they're currently in</param>
         public static void RemoveFromParty(uint oPC)
         {
-            global::NWN.Core.NWScript.RemoveFromParty(oPC);
+            NWScriptRuntime.Current.RemoveFromParty(oPC);
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nEnableFlash">If TRUE, the button will start flashing. If FALSE, the button will stop flashing</param>
         public static void SetPanelButtonFlash(uint oPlayer, int nButton, int nEnableFlash)
         {
-            global::NWN.Core.NWScript.SetPanelButtonFlash(oPlayer, nButton, nEnableFlash);
+            NWScriptRuntime.Current.SetPanelButtonFlash(oPlayer, nButton, nEnableFlash);
         }
     }
 }

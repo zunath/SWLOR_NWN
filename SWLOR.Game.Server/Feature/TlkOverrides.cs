@@ -1,15 +1,17 @@
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AttributeService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
     public class TlkOverrides
     {
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The TLK overrides stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void OverrideTlks()
         {
@@ -177,7 +179,7 @@ namespace SWLOR.Game.Server.Feature
                     descriptionId <= 0)
                     continue;
 
-                var description = BuildAbilityDescription(abilityDetail, Mimicry.GetTechniqueDescription(feat));
+                var description = BuildAbilityDescription(abilityDetail, GameServices.Mimicry.GetTechniqueDescription(feat));
                 SetTlkOverride(descriptionId, description);
                 var spellDescriptionId = GetSpellDescriptionId(feat);
                 if (spellDescriptionId > 0)

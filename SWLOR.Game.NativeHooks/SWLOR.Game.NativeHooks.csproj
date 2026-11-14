@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The native hook trampolines (MaintainabilityRefactorHotReload.md, section 3, "Native hooks"). NWNX keeps calling the
+       function pointer of an installed hook for the life of the process, so the [UnmanagedCallersOnly] entry points live
+       here, in an assembly that outlives every game build and loads into the default context on both entries: the native
+       entry's SWLOR.Game.Server references it, and the host references it and shares it with every generation by name.
+       Each entry point forwards to the sink a game build bound, or calls the engine function itself when none is bound.
+       It references nothing of the game, only the contracts and NWNX.NET (a rule in SWLOR.Architecture.Tests keeps it
+       that way). -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NWNX.NET" Version="1.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="SWLOR.Game.NativeHooks.Tests" />
+    <!-- The host's extension tests resolve the hooks against a stand-in for the engine (INativeFunctions). -->
+    <InternalsVisibleTo Include="SWLOR.Game.Host.Tests" />
+  </ItemGroup>
+
+</Project>

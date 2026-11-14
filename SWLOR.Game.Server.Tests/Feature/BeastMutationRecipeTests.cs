@@ -2,7 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

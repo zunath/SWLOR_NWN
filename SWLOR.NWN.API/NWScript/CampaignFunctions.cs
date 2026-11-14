@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetCampaignFloat(string sCampaignName, string sVarName, float flFloat,
             uint oPlayer = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetCampaignFloat(sCampaignName, sVarName, flFloat, oPlayer);
+            NWScriptRuntime.Current.SetCampaignFloat(sCampaignName, sVarName, flFloat, oPlayer);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetCampaignInt(string sCampaignName, string sVarName, int nInt,
             uint oPlayer = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetCampaignInt(sCampaignName, sVarName, nInt, oPlayer);
+            NWScriptRuntime.Current.SetCampaignInt(sCampaignName, sVarName, nInt, oPlayer);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetCampaignVector(string sCampaignName, string sVarName, Vector3 vVector,
             uint oPlayer = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetCampaignVector(sCampaignName, sVarName, vVector, oPlayer);
+            NWScriptRuntime.Current.SetCampaignVector(sCampaignName, sVarName, vVector, oPlayer);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetCampaignLocation(string sCampaignName, string sVarName, Location locLocation,
             uint oPlayer = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetCampaignLocation(sCampaignName, sVarName, locLocation, oPlayer);
+            NWScriptRuntime.Current.SetCampaignLocation(sCampaignName, sVarName, locLocation, oPlayer);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetCampaignString(string sCampaignName, string sVarName, string sString,
             uint oPlayer = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetCampaignString(sCampaignName, sVarName, sString, oPlayer);
+            NWScriptRuntime.Current.SetCampaignString(sCampaignName, sVarName, sString, oPlayer);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="sCampaignName">The name of the campaign database to delete</param>
         public static void DestroyCampaignDatabase(string sCampaignName)
         {
-            global::NWN.Core.NWScript.DestroyCampaignDatabase(sCampaignName);
+            NWScriptRuntime.Current.DestroyCampaignDatabase(sCampaignName);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The float value from the database</returns>
         public static float GetCampaignFloat(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetCampaignFloat(sCampaignName, sVarName, oPlayer);
+            return NWScriptRuntime.Current.GetCampaignFloat(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The integer value from the database</returns>
         public static int GetCampaignInt(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetCampaignInt(sCampaignName, sVarName, oPlayer);
+            return NWScriptRuntime.Current.GetCampaignInt(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The vector value from the database</returns>
         public static Vector3 GetCampaignVector(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetCampaignVector(sCampaignName, sVarName, oPlayer);
+            return NWScriptRuntime.Current.GetCampaignVector(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The location value from the database</returns>
         public static Location GetCampaignLocation(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetCampaignLocation(sCampaignName, sVarName, oPlayer);
+            return NWScriptRuntime.Current.GetCampaignLocation(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The string value from the database</returns>
         public static string GetCampaignString(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetCampaignString(sCampaignName, sVarName, oPlayer);
+            return NWScriptRuntime.Current.GetCampaignString(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>By normal database standards, deleting does not actually remove the entry from the database, but flags it as deleted. Do not expect the database files to shrink in size from this command. If you want to 'pack' the database, you will have to do it externally from the game.</remarks>
         public static void DeleteCampaignVariable(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.DeleteCampaignVariable(sCampaignName, sVarName, oPlayer);
+            NWScriptRuntime.Current.DeleteCampaignVariable(sCampaignName, sVarName, oPlayer);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>0 if it failed, 1 if it worked</returns>
         public static int StoreCampaignObject(string sCampaignName, string sVarName, uint oObject, uint oPlayer = OBJECT_INVALID, bool bSaveObjectState = false)
         {
-            return global::NWN.Core.NWScript.StoreCampaignObject(sCampaignName, sVarName, oObject, oPlayer, bSaveObjectState ? 1 : 0);
+            return NWScriptRuntime.Current.StoreCampaignObject(sCampaignName, sVarName, oObject, oPlayer, bSaveObjectState);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The retrieved object</returns>
         public static uint RetrieveCampaignObject(string sCampaignName, string sVarName, Location locLocation, uint oOwner = OBJECT_INVALID, uint oPlayer = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            return global::NWN.Core.NWScript.RetrieveCampaignObject(sCampaignName, sVarName, locLocation, oOwner, oPlayer, bLoadObjectState ? 1 : 0);
+            return NWScriptRuntime.Current.RetrieveCampaignObject(sCampaignName, sVarName, locLocation, oOwner, oPlayer, bLoadObjectState);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oPlayer">If you want a variable to pertain to a specific player, provide a player object (default: OBJECT_INVALID)</param>
         public static void SetCampaignJson(string sCampaignName, string sVarName, Json jValue, uint oPlayer = OBJECT_INVALID)
         {
-            global::NWN.Core.NWScript.SetCampaignJson(sCampaignName, sVarName, jValue, oPlayer);
+            NWScriptRuntime.Current.SetCampaignJson(sCampaignName, sVarName, jValue, oPlayer);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The JSON value from the database</returns>
         public static Json GetCampaignJson(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
-            return global::NWN.Core.NWScript.GetCampaignJson(sCampaignName, sVarName, oPlayer);
+            return NWScriptRuntime.Current.GetCampaignJson(sCampaignName, sVarName, oPlayer);
         }
     }
 }

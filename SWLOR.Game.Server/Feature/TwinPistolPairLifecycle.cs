@@ -1,13 +1,15 @@
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature;
 
 /// <summary>The second gun exists only while its owned Twin Pistols item is equipped.</summary>
 public static class TwinPistolPairLifecycle
 {
+    [BootPhase(BootReload.Rerun)]
     [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
     public static void RegisterUnequipGuard() => EquipmentUnequip.RegisterGuard("TwinPistol", TryHandleUnequip);
 
@@ -36,9 +38,13 @@ public static class TwinPistolPairLifecycle
             TwinPistolEquipment.RemovePair(OBJECT_SELF, item);
     }
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "Recreates the spare pistol at login; the spare stays equipped and the pairs are carried.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnEnter() => TwinPistolEquipment.RestorePair(GetEnteringObject());
 
+    [PlayerSession(PlayerReload.LogoutOnly,
+        "Destroys the spare pistol at logout; it stays equipped and the pairs are carried.")]
     [NWNEventHandler(ScriptName.OnModuleExit)]
     public static void OnExit() => TwinPistolEquipment.ReleaseCompanions(GetExitingObject());
 
@@ -51,7 +57,7 @@ public static class TwinPistolPairLifecycle
         var item = GetModuleItemLost();
         if (TwinPistolEquipment.IsDestroyingCompanion(item)) return;
         var actor = TwinPistolEquipment.IsGeneratedCompanion(item)
-            ? GetLocalObject(item, TwinPistolEquipment.OwnerVariable) : GetModuleItemLostBy();
+            ? GetLocalObject(item, TwinPistolEquipmentService.OwnerVariable) : GetModuleItemLostBy();
         if (!TwinPistolEquipment.IsChanging(actor) &&
             (TwinPistolEquipment.IsPairItem(item) || TwinPistolEquipment.IsGeneratedCompanion(item)))
         {
@@ -65,7 +71,7 @@ public static class TwinPistolPairLifecycle
     {
         var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
         if (!TwinPistolEquipment.IsGeneratedCompanion(item)) return;
-        var owner = GetLocalObject(item, TwinPistolEquipment.OwnerVariable);
+        var owner = GetLocalObject(item, TwinPistolEquipmentService.OwnerVariable);
         if (!GetIsObjectValid(owner) || TwinPistolEquipment.IsChanging(owner)) return;
         EventsPlugin.SkipEvent();
         if (TwinPistolEquipment.RemovePair(owner, item)) TwinPistolEquipment.DestroySpare(item);

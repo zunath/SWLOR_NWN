@@ -1,8 +1,9 @@
+using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Play;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Scenario.Fabricator
 {
@@ -74,7 +75,7 @@ namespace SWLOR.CraftSim.Scenario.Fabricator
                 : new FabricatorSetup(
                     null,
                     recipe.Level,
-                    SWLOR.Game.Server.Service.Craft.GetRecipeLevelDetail(recipe.Level).Progress,
+                    ServerRecipeLevels.For(recipe.Level).Progress,
                     request.Rank,
                     gear.Craftsmanship,
                     gear.Control,

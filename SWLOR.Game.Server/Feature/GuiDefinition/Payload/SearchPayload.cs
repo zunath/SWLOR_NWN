@@ -1,5 +1,5 @@
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.ScavengeService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
 {

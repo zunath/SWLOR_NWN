@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -25,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         private void BeastEgg()
         {
-            _builder.Create(BeastMastery.BeastEggResref)
+            _builder.Create(BeastMasteryService.BeastEggResref)
                 .Delay(4f)
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .ValidationAction((user, item, target, location, index) =>
@@ -71,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var accuracyPurity = 0;
                     var evasionPurity = 0;
                     var learningPurity = 0;
-                    var defensePurities = Combat.CreateDefaultDefenseValues();
+                    var defensePurities = CombatRules.CreateDefaultDefenseValues();
                     var resistancePurities = Resistance.CreateDefaultResistanceValues();
                     var xpPenalty = 0;
 

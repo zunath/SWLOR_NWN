@@ -4,15 +4,14 @@ using System.Numerics;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -49,8 +48,8 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             {
                 CreaturePlugin.AddFeat(actor, FeatType.LeadShot1);
                 CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
-                Combat.SetAbilityHitResolutionOverride(true);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             });
             await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.LeadShot1, GetLocation(target)),
                 $"Lead Shot enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
@@ -70,9 +69,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
                 ClearAllActions();
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
                     $"Foreign Rifle Headshot queues: {Ability.GetLastActivationDenialReason()}");
-                var dictionary = (Dictionary<uint, WeaponAbilityTraitActivation>)typeof(UsePerkFeat)
-                    .GetField("_queuedWeaponTraits", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-                traits = dictionary[actor];
+                ctx.Assert(Ability.TryGetQueuedWeaponTraits(actor, out traits), "the queued Headshot captures its traits");
                 ctx.AssertEqual(5, UsePerkFeat.GetQueuedWeaponTraitAccuracy(actor), "Captured Changing Angles reaches the carrier attack roll");
                 ctx.AssertEqual(1, traits.Snapshot.CadenceSpent, "A foreign paid weapon ability captures Cadence");
                 ctx.AssertEqual(0, State(actor).Cadence, "The captured Cadence is spent once when the queued cost is paid");
@@ -191,7 +188,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             await InFrame(ctx, actor, () =>
             {
                 CreaturePlugin.AddFeat(actor, FeatType.ControlledBurst1); CreaturePlugin.AddFeat(actor, FeatType.TwinSuns);
-                Combat.SetAbilityHitResolutionOverride(true); Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true); GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 player.Update(record => record.Stamina = Stat.GetMaxStamina(actor) - 100);
             });
             var stamina = Stat.GetCurrentStamina(actor);
@@ -235,8 +232,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
     }
 
     private static PairedRangedTraitState State(uint actor) =>
-        ((Dictionary<uint, PairedRangedTraitState>)typeof(PairedRangedTraits).GetField("States", BindingFlags.NonPublic | BindingFlags.Static)
-            .GetValue(null)).GetValueOrDefault(actor);
+        CombatHelperInternals.Field<IPairedRangedTraitsService, Dictionary<uint, PairedRangedTraitState>>("_states").GetValueOrDefault(actor);
 
     private static async Task InFrame(EngineTestContext ctx, uint actor, Action action)
     {
@@ -255,7 +251,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
 
     private static void Cleanup(uint actor)
     {
-        Combat.SetAutoAttackHitResolutionOverride(null); Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null); GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (!GetIsObjectValid(actor)) return;
         AssignCommand(actor, () => ClearAllActions());
         TwinPistolAbility.Cancel(actor); UsePerkFeat.InterruptAbilityActivation(actor); UsePerkFeat.ClearQueuedAbility(actor);

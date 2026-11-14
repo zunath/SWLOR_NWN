@@ -23,9 +23,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetFeedbackMessageHidden(FeedbackMessageTypes messageType, uint? player = null)
         {
-            uint playerValue = player ?? OBJECT_INVALID;
-            var result = global::NWN.Core.NWNX.FeedbackPlugin.GetFeedbackMessageHidden((int)messageType, playerValue);
-            return result != 0;
+            return FeedbackPluginRuntime.Current.GetFeedbackMessageHidden(messageType, player);
         }
 
         /// <summary>
@@ -42,8 +40,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetFeedbackMessageHidden(FeedbackMessageTypes messageType, bool hide, uint? player = null)
         {
-            uint playerValue = player ?? OBJECT_INVALID;
-            global::NWN.Core.NWNX.FeedbackPlugin.SetFeedbackMessageHidden((int)messageType, hide ? 1 : 0, playerValue);
+            FeedbackPluginRuntime.Current.SetFeedbackMessageHidden(messageType, hide, player);
         }
 
         /// <summary>
@@ -60,9 +57,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetCombatLogMessageHidden(CombatLogMessageType messageType, uint? player = null)
         {
-            uint playerValue = player ?? OBJECT_INVALID;
-            var result = global::NWN.Core.NWNX.FeedbackPlugin.GetCombatLogMessageHidden((int)messageType, playerValue);
-            return result != 0;
+            return FeedbackPluginRuntime.Current.GetCombatLogMessageHidden(messageType, player);
         }
 
         /// <summary>
@@ -80,8 +75,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCombatLogMessageHidden(CombatLogMessageType messageType, bool hide, uint? player = null)
         {
-            uint playerValue = player ?? OBJECT_INVALID;
-            global::NWN.Core.NWNX.FeedbackPlugin.SetCombatLogMessageHidden((int)messageType, hide ? 1 : 0, playerValue);
+            FeedbackPluginRuntime.Current.SetCombatLogMessageHidden(messageType, hide, player);
         }
 
         /// <summary>
@@ -97,9 +91,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static bool GetJournalUpdatedMessageHidden(uint? player = null)
         {
-            uint playerValue = player ?? OBJECT_INVALID;
-            var result = global::NWN.Core.NWNX.FeedbackPlugin.GetJournalUpdatedMessageHidden(playerValue);
-            return result != 0;
+            return FeedbackPluginRuntime.Current.GetJournalUpdatedMessageHidden(player);
         }
 
         /// <summary>
@@ -115,7 +107,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetFeedbackMessageMode(bool whiteList)
         {
-            global::NWN.Core.NWNX.FeedbackPlugin.SetFeedbackMessageMode(whiteList ? 1 : 0);
+            FeedbackPluginRuntime.Current.SetFeedbackMessageMode(whiteList);
         }
 
         /// <summary>
@@ -132,7 +124,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetCombatLogMessageMode(bool whiteList)
         {
-            global::NWN.Core.NWNX.FeedbackPlugin.SetCombatLogMessageMode(whiteList ? 1 : 0);
+            FeedbackPluginRuntime.Current.SetCombatLogMessageMode(whiteList);
         }
     }
 }

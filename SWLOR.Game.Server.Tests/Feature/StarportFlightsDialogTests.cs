@@ -4,20 +4,40 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.ShuttleService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.NWN.API.NWScript;
+using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class StarportFlightsDialogTests
 {
+    // The ticket page names planets through the Planet facade, which resolves from the container the fixture installs.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
     [OneTimeSetUp]
     public void CachePlanets()
     {
-        typeof(Planet).GetMethod("CachePlanets", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, null);
+        _facades = new FacadeContainer();
+        using (_facades.Install())
+        using (NWScriptRuntime.Override(new FakeNWScript()))
+        {
+            Planet.CacheData();
+        }
     }
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     [TestCase(PlanetType.Viscara)]
     [TestCase(PlanetType.Tatooine)]

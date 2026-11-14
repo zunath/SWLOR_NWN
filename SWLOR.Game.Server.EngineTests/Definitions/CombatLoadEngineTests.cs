@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -330,12 +328,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // the Party service membership.
         private static void FormPlayerParties(List<uint> players)
         {
-            var addToParty = typeof(Party).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Static);
             foreach (var party in players.Chunk(PartySize))
             {
                 var leader = party[0];
                 foreach (var member in party.Skip(1))
-                    AssignCommand(member, () => addToParty.Invoke(null, new object[] { leader, member }));
+                    AssignCommand(member, () => PartyCaches.Invoke("AddToParty", leader, member));
             }
         }
 
@@ -387,7 +384,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var script = EventScript.Creature_OnHeartbeat; script <= EventScript.Creature_OnBlockedByDoor; script++)
                 SetEventScript(player, script, string.Empty);
             // Players regenerate normally; natural regeneration writes the player record.
-            DeleteLocalInt(player, Stat.SuppressNaturalRegenVariable);
+            DeleteLocalInt(player, StatService.SuppressNaturalRegenVariable);
             fixture.Update(record =>
             {
                 foreach (var (feat, _) in Rotation)

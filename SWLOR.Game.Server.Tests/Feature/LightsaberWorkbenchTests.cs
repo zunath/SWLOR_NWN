@@ -3,10 +3,12 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -14,6 +16,22 @@ public class LightsaberWorkbenchTests
 {
     private const int LightsaberBaseItem = 512;
     private const int SaberstaffBaseItem = 511;
+
+    // The catalog tests call the workbench through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     [Test]
     public void KyberToken_IsCursedPlotSingleStackAndActivatable()
@@ -39,16 +57,15 @@ public class LightsaberWorkbenchTests
         var root = FindRepositoryRoot();
         var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
 
-        var currencyType = File.ReadAllText(Path.Combine(serverRoot, "Service", "CurrencyService", "CurrencyType.cs"));
+        var currencyType = File.ReadAllText(Path.Combine(serverRoot, "Domain", "Economy", "CurrencyType.cs"));
         currencyType.Should().Contain("KyberToken");
 
         var consumables = File.ReadAllText(Path.Combine(serverRoot, "Feature", "ItemDefinition", "ConsumableItemDefinition.cs"));
         consumables.Should().Contain("_builder.Create(\"kyber_token\")");
         consumables.Should().Contain("Currency.GiveCurrency(user, CurrencyType.KyberToken, 1);");
 
-        var workbench = File.ReadAllText(Path.Combine(serverRoot, "Service", "LightsaberWorkbench.cs"));
-        workbench.Should().Contain("Currency.GetCurrency(player, CurrencyType.KyberToken)");
-
+        // The bench's own check (a Kyber Token in the wallet is required) is exercised by
+        // LightsaberWorkbenchServiceTests.ValidateAccess_*.
         var viewModel = File.ReadAllText(Path.Combine(serverRoot, "Feature", "GuiDefinition", "ViewModel", "LightsaberWorkbenchViewModel.cs"));
         viewModel.Should().Contain("Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);");
     }
@@ -183,7 +200,7 @@ public class LightsaberWorkbenchTests
         var root = FindRepositoryRoot();
         var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
 
-        var workbench = File.ReadAllText(Path.Combine(serverRoot, "Service", "LightsaberWorkbench.cs"));
+        var workbench = File.ReadAllText(Path.Combine(serverRoot, "Domain", "Items", "LightsaberWorkbenchService.cs"));
         workbench.Should().Contain("WeaponSubmissionTokenTag = \"wpn_sub_token\";");
 
         // The submission token blueprint must exist, stay a weapon submission token, and
@@ -198,7 +215,7 @@ public class LightsaberWorkbenchTests
         // The workbench routes every token property through the shared filter and the
         // same merge the enhancement slots use.
         var viewModel = File.ReadAllText(Path.Combine(serverRoot, "Feature", "GuiDefinition", "ViewModel", "LightsaberWorkbenchViewModel.cs"));
-        viewModel.Should().Contain("LightsaberWorkbench.WeaponSubmissionTokenTag");
+        viewModel.Should().Contain("LightsaberWorkbenchService.WeaponSubmissionTokenTag");
         viewModel.Should().MatchRegex(@"ShouldTransferSubmissionProperty\([^;]*\)\)\s*continue;\s*Craft\.ApplyCraftedItemProperty\(item, ip\);");
 
         var cases = new (ItemPropertyType Type, int SubType, bool Transfers)[]
@@ -440,8 +457,8 @@ public class LightsaberWorkbenchTests
         var red = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false).Single(x => x.Name == "Red");
 
         // Default (Match Blade): the light follows whichever blade is selected.
-        LightsaberWorkbench.ResolveLightColor(blue, LightsaberWorkbench.MatchBladeLightColor).Should().Be((int)LightColor.Blue);
-        LightsaberWorkbench.ResolveLightColor(red, LightsaberWorkbench.MatchBladeLightColor).Should().Be((int)LightColor.Red);
+        LightsaberWorkbench.ResolveLightColor(blue, LightsaberWorkbenchService.MatchBladeLightColor).Should().Be((int)LightColor.Blue);
+        LightsaberWorkbench.ResolveLightColor(red, LightsaberWorkbenchService.MatchBladeLightColor).Should().Be((int)LightColor.Red);
 
         // An explicit color that equals the current blade's color still sticks after a blade change.
         var selection = (int)LightColor.Blue;
@@ -449,11 +466,11 @@ public class LightsaberWorkbenchTests
         LightsaberWorkbench.ResolveLightColor(red, selection).Should().Be((int)LightColor.Blue);
 
         // Picking Match Blade again resumes following the blade.
-        selection = LightsaberWorkbench.MatchBladeLightColor;
+        selection = LightsaberWorkbenchService.MatchBladeLightColor;
         LightsaberWorkbench.ResolveLightColor(red, selection).Should().Be((int)LightColor.Red);
 
         // Match Blade must not collide with a real light color.
-        Enum.IsDefined(typeof(LightColor), LightsaberWorkbench.MatchBladeLightColor).Should().BeFalse();
+        Enum.IsDefined(typeof(LightColor), LightsaberWorkbenchService.MatchBladeLightColor).Should().BeFalse();
 
         var root = FindRepositoryRoot();
         var viewModel = File.ReadAllText(Path.Combine(
@@ -466,7 +483,7 @@ public class LightsaberWorkbenchTests
         var normalized = Regex.Replace(viewModel, @"\s+", " ");
 
         // Match Blade is the default, resolved when constructing, and no inference from client echoes remains.
-        normalized.Should().Contain("SelectedLightColor = LightsaberWorkbench.MatchBladeLightColor;");
+        normalized.Should().Contain("SelectedLightColor = LightsaberWorkbenchService.MatchBladeLightColor;");
         normalized.Should().Contain("LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor)");
         viewModel.Should().NotContain("_lightColorChosen");
         viewModel.Should().NotContain("_autoLightColor");

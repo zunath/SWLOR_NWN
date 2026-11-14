@@ -7,8 +7,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using TelegraphInstance = SWLOR.Game.Server.Domain.Combat.TelegraphService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -62,11 +63,11 @@ public class TelegraphTests
         bool isHostile,
         TelegraphColorType expected)
     {
-        var method = typeof(Telegraph)
-            .GetMethod("SelectTelegraphColorType", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(TelegraphInstance)
+            .GetMethod("SelectTelegraphColorType", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
         var actual = (TelegraphColorType)method.Invoke(
-            null,
+            NewInstance(),
             new object[] { isOwnTelegraph, isPartyMemberTelegraph, isHostile })!;
 
         actual.Should().Be(expected);
@@ -77,10 +78,11 @@ public class TelegraphTests
     {
         var source = File.ReadAllText(ResolveRepositoryPath(
             "SWLOR.Game.Server",
-            "Service",
-            "Party.cs"));
-        var addPartyStart = source.IndexOf("private static void AddToParty", StringComparison.Ordinal);
-        var removePartyStart = source.IndexOf("private static void RemoveCreatureFromParty", StringComparison.Ordinal);
+            "Domain",
+            "Social",
+            "PartyService.cs"));
+        var addPartyStart = source.IndexOf("private void AddToParty", StringComparison.Ordinal);
+        var removePartyStart = source.IndexOf("private void RemoveCreatureFromParty", StringComparison.Ordinal);
 
         addPartyStart.Should().BeGreaterThan(-1);
         removePartyStart.Should().BeGreaterThan(-1);
@@ -89,13 +91,13 @@ public class TelegraphTests
         var removePartyBody = ExtractBlockBody(source, removePartyStart);
 
         addPartyBody.Should().Contain(
-            "Telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));",
+            "_telegraph.Value.UpdateShadersForPlayers(GetAllPartyMembers(requester));",
             "joining players and associates must see active party telegraphs change color immediately");
         removePartyBody.Should().Contain(
             "var affectedPartyMembers = _parties[partyId].ToList();",
             "the former party must be captured before its membership cache changes");
         removePartyBody.Should().Contain(
-            "Telegraph.UpdateShadersForPlayers(affectedPartyMembers);",
+            "_telegraph.Value.UpdateShadersForPlayers(affectedPartyMembers);",
             "departing and remaining players must immediately repack active telegraph colors");
     }
 
@@ -121,14 +123,16 @@ public class TelegraphTests
         // Instant-cast area abilities cannot gate damage behind a pre-cast telegraph without
         // contradicting the Bible, so the impact flash is what makes them visible at all. If this
         // default is ever zeroed, every instant area ability silently stops rendering.
-        var parameter = typeof(Ability)
-            .GetMethod(nameof(Ability.ApplyTelegraphedCombatImpact), BindingFlags.Static | BindingFlags.Public)!
+        // Static callers reach the service through GameServices.Ability, typed as the interface, so the interface's
+        // default is the one they get.
+        var parameter = typeof(IAbilityService)
+            .GetMethod(nameof(IAbilityService.ApplyTelegraphedCombatImpact), BindingFlags.Instance | BindingFlags.Public)!
             .GetParameters()
             .Single(x => x.Name == "impactFlashDuration");
 
         parameter.HasDefaultValue.Should().BeTrue();
-        parameter.DefaultValue.Should().Be(Ability.DefaultImpactFlashDuration);
-        Ability.DefaultImpactFlashDuration.Should().BeGreaterThan(0f);
+        parameter.DefaultValue.Should().Be(AbilityService.DefaultImpactFlashDuration);
+        AbilityService.DefaultImpactFlashDuration.Should().BeGreaterThan(0f);
     }
 
     /// <summary>
@@ -138,7 +142,7 @@ public class TelegraphTests
     public void ApplyTelegraphedCombatImpact_FlashesOnlyWhenActivationDidNotAlreadyShowTheShape()
     {
         // Guards the wiring itself: the zero-telegraph branch must still render something.
-        var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
+        var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         var branchStart = source.IndexOf("if (telegraphDuration <= 0f)", StringComparison.Ordinal);
 
         branchStart.Should().BeGreaterThan(
@@ -155,9 +159,9 @@ public class TelegraphTests
         branchBody.IndexOf("ShowAreaImpactFlash(", StringComparison.Ordinal)
             .Should().BeGreaterThan(-1, "the instant-cast path must flash the area it just struck");
 
-        var flashStart = source.IndexOf("private static void ShowAreaImpactFlash(", StringComparison.Ordinal);
+        var flashStart = source.IndexOf("private void ShowAreaImpactFlash(", StringComparison.Ordinal);
         var flashBody = ExtractBlockBody(source, flashStart);
-        flashBody.Should().Contain("Telegraph.ShouldShowImpactFlash(geometry, activationAreaTelegraphs)");
+        flashBody.Should().Contain("_telegraph.ShouldShowImpactFlash(geometry, activationAreaTelegraphs)");
     }
 
     /// <summary>
@@ -179,7 +183,7 @@ public class TelegraphTests
         impactBody.Should().NotContain("ImpactDelay",
             "a separate delay must not discard the warned footprint");
 
-        var abilitySource = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
+        var abilitySource = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         abilitySource.Should().Contain("trackedImpact?.Ability.ImpactDelay > 0f ? null : trackedImpact?.ActivationAreaTelegraphs",
             "a separately delayed impact still needs a fresh flash at the original footprint");
     }
@@ -188,19 +192,19 @@ public class TelegraphTests
     public void PersistentAreaIndicators_DoNotDisplaceActivationWarnings()
     {
         var persistentIndicator = Candidate(new TelegraphData { IsPersistentAreaIndicator = true });
-        var activationWarnings = Enumerable.Range(1, Telegraph.MaxRenderCount)
+        var activationWarnings = Enumerable.Range(1, TelegraphService.MaxRenderCount)
             .Select(_ => Candidate(new TelegraphData()));
 
         var selected = SelectForRendering(new[] { persistentIndicator }.Concat(activationWarnings));
 
-        selected.Should().HaveCount(Telegraph.MaxRenderCount);
+        selected.Should().HaveCount(TelegraphService.MaxRenderCount);
         selected.Should().OnlyContain(candidate => !candidate.Telegraph.Data.IsPersistentAreaIndicator);
     }
 
     [Test]
     public void EnemyThreats_ClaimRenderSlotsBeforeAlliedShapes()
     {
-        var alliedWarnings = Enumerable.Range(1, Telegraph.MaxRenderCount)
+        var alliedWarnings = Enumerable.Range(1, TelegraphService.MaxRenderCount)
             .Select(_ => Candidate(new TelegraphData { IsHostile = true }, TelegraphColorType.PartyMember));
         var enemyWarning = Candidate(new TelegraphData { IsHostile = true }, TelegraphColorType.Hostile, creatorIsEnemy: true);
         var enemyZone = Candidate(
@@ -210,7 +214,7 @@ public class TelegraphTests
 
         var selected = SelectForRendering(alliedWarnings.Concat(new[] { enemyZone, enemyWarning }));
 
-        selected.Should().HaveCount(Telegraph.MaxRenderCount);
+        selected.Should().HaveCount(TelegraphService.MaxRenderCount);
         selected[0].Should().Be(enemyWarning, "an enemy warning is the most urgent shape on screen");
         selected[1].Should().Be(enemyZone, "a lingering enemy area still outranks every allied shape");
     }
@@ -235,7 +239,7 @@ public class TelegraphTests
     [TestCase(TelegraphColorType.PartyMember)]
     public void NonHostileColors_NeverReachTheReputationLookup(TelegraphColorType colorType)
     {
-        var method = typeof(Telegraph)
+        var method = typeof(TelegraphInstance)
             .GetMethod("IsCreatorEnemyOfViewer", BindingFlags.Static | BindingFlags.NonPublic)!;
 
         // No engine is running here, so any lookup past the color check would throw.
@@ -254,8 +258,8 @@ public class TelegraphTests
     [Test]
     public void AreaImpactFlash_IsMarkedSoAlliedViewersCanSkipIt()
     {
-        var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
-        var flashStart = source.IndexOf("private static void ShowAreaImpactFlash(", StringComparison.Ordinal);
+        var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var flashStart = source.IndexOf("private void ShowAreaImpactFlash(", StringComparison.Ordinal);
 
         ExtractBlockBody(source, flashStart).Should().Contain("isImpactFlash: true");
     }
@@ -270,7 +274,7 @@ public class TelegraphTests
 
     private static TelegraphRenderCandidate[] SelectForRendering(IEnumerable<TelegraphRenderCandidate> candidates)
     {
-        var selector = typeof(Telegraph)
+        var selector = typeof(TelegraphInstance)
             .GetMethod("SelectTelegraphsForRendering", BindingFlags.Static | BindingFlags.NonPublic)!;
 
         return (TelegraphRenderCandidate[])selector.Invoke(null, new object[] { candidates })!;
@@ -342,11 +346,11 @@ public class TelegraphTests
         TelegraphColorType colorType,
         float rotation)
     {
-        var method = typeof(Telegraph)
-            .GetMethod("PackTelegraphData", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(TelegraphInstance)
+            .GetMethod("PackTelegraphData", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
         return (int)method.Invoke(
-            null,
+            NewInstance(),
             new object[]
             {
                 type,
@@ -355,6 +359,9 @@ public class TelegraphTests
                 rotation
             })!;
     }
+
+    // The pure helpers under test use neither the DM presence nor the party service.
+    private static TelegraphInstance NewInstance() => new(null!, null!);
 
     private static int ExtractPackedColor(int packed)
     {

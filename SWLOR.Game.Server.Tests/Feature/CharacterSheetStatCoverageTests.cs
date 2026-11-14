@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -48,8 +49,8 @@ public class CharacterSheetStatCoverageTests
     {
         var viewModel = ReadViewModel();
 
-        viewModel.Should().Contain("AddStat(\"Haste\", FormatPercent(Combat.CalculateAttackDelayReduction(_target))");
-        viewModel.Should().Contain("AddStat(\"Off-Hand Haste\", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target))");
+        viewModel.Should().Contain("AddStat(\"Haste\", FormatPercent(GameServices.CombatAttackTiming.CalculateAttackDelayReduction(_target))");
+        viewModel.Should().Contain("AddStat(\"Off-Hand Haste\", FormatPercent(GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(_target))");
     }
 
     [Test]
@@ -66,7 +67,7 @@ public class CharacterSheetStatCoverageTests
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonus");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
-        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAbovePercent(_target, threshold)");
+        viewModel.Should().Contain("GameServices.CombatResources.IsCurrentFPAndStaminaAbovePercent(_target, threshold)");
 
     }
 
@@ -86,13 +87,13 @@ public class CharacterSheetStatCoverageTests
         var temporaryModifiers = File.ReadAllText(Path.Combine(
             FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "CombatService",
-            "TemporaryStatModifier.cs"));
+            "Domain",
+            "Combat",
+            "TemporaryStatModifierService.cs"));
 
         viewModel.Should().Contain("IGuiRefreshable<StatAdjustmentRefreshEvent>");
         viewModel.Should().Contain("public void Refresh(StatAdjustmentRefreshEvent payload)");
-        temporaryModifiers.Should().Contain("Gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent())");
+        temporaryModifiers.Should().Contain("_gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent())");
         temporaryModifiers.Should().Contain("if (PurgeExpired(creature))");
     }
 
@@ -100,25 +101,23 @@ public class CharacterSheetStatCoverageTests
     public void CharacterSheet_RefreshesWhenStatusEffectStatsChange()
     {
         var viewModel = ReadViewModel();
-        var statusEffects = ReadService("StatusEffect.cs");
+        var statusEffects = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
 
         viewModel.Should().Contain("IGuiRefreshable<StatusEffectReceivedRefreshEvent>");
         viewModel.Should().Contain("IGuiRefreshable<StatusEffectRemovedRefreshEvent>");
         viewModel.Should().Contain("public void Refresh(StatusEffectReceivedRefreshEvent payload)");
         viewModel.Should().Contain("public void Refresh(StatusEffectRemovedRefreshEvent payload)");
         statusEffects.Should().Contain(
-            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent())");
+            "_gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent())");
         statusEffects.Should().Contain(
-            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
+            "_gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
         statusEffects.Should().Contain("if (!isReplacement)");
         statusEffects.Should().Contain("isReplacement: true");
         statusEffects.Should().Contain("bool isReplacement = false");
         statusEffects.Should().MatchRegex(@"removeNativeEffect,\s+isReplacement\);");
 
-        var gui = ReadService("Gui.cs");
-        gui.Should().Contain("public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)");
-        gui.Should().Contain("for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())");
-        gui.Should().Contain("!viewModel.IsViewingTarget(target)");
+        // The refresh itself (only sheets that are open and viewing the target) is covered by GuiServiceTests.
     }
 
     [Test]
@@ -128,18 +127,19 @@ public class CharacterSheetStatCoverageTests
 
         // Guard reduction is adjustable via GuardDamageReductionPercentAdjustment, so the tooltip
         // must not claim a fixed 20% and the real value gets its own row.
-        viewModel.Should().Contain("AddStat(\"Guard Reduction\", FormatPercent(Combat.GetGuardDamageReductionPercent(_target))");
+        viewModel.Should().Contain("AddStat(\"Guard Reduction\", FormatPercent(GameServices.CombatDamageTaken.GetGuardDamageReductionPercent(_target))");
         viewModel.Should().NotContain("Chance to reduce damage by 20% and increase enmity gain.");
     }
 
     [Test]
     public void StatAndCombatServices_ExposeTheAccessorsTheCharacterSheetConsumes()
     {
-        var stat = ReadService("Stat.cs");
-        var combat = ReadService("Combat.cs");
+        // The sheet reaches the stat service through GameServices.Stat, typed as its interface.
+        var stat = ReadService("Domain", "Character", "IStatService.cs");
+        var combat = CombatSource.Read();
 
         // The sheet must reuse these rather than re-deriving the shield bonus or the Guard clamp.
-        stat.Should().Contain("public static int GetDefensePercentAdjustment(uint creature, CombatDamageType type)");
+        stat.Should().Contain("int GetDefensePercentAdjustment(uint creature, CombatDamageType type);");
         combat.Should().Contain("public static int GetGuardDamageReductionPercent(uint defender)");
     }
 
@@ -154,13 +154,10 @@ public class CharacterSheetStatCoverageTests
             "CharacterSheetViewModel.cs"));
     }
 
-    private static string ReadService(string fileName)
+    private static string ReadService(params string[] path)
     {
         return File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            fileName));
+            new[] { FindRepositoryRoot().FullName, "SWLOR.Game.Server" }.Concat(path).ToArray()));
     }
 
     private static DirectoryInfo FindRepositoryRoot()

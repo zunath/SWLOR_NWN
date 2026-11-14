@@ -4,18 +4,17 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.LootService;
-using SWLOR.Game.Server.Service.MusicService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MusicCollectionTests
 {
     private const int SongKeyItemBase = 3000;
-    private static IReadOnlyList<MusicSong> Songs => MusicSongCatalog.Songs;
+    private static readonly IReadOnlyList<MusicSong> Songs = new MusicSongCatalog().Songs;
 
     [Test]
     public void Catalog_TracksEverySongAsAMusicKeyItem()

@@ -3,7 +3,8 @@ using System.Reflection;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.Formats.Gff;
 
@@ -16,37 +17,33 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class SavedCharacterPlacementTests
 {
     private const BindingFlags Members = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-    private static readonly Assembly Game = typeof(Migration).Assembly;
+    private static readonly Assembly Game = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly;
     private static readonly Type Document = Game.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;
-    private static readonly Type DataType = Game.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacterData")!;
-    private static readonly Type CharacterType = Game.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
-    private static readonly string[] DataFields = { "_inventorySizes", "_propertyDefinitions", "_blueprints" };
-    private object?[] _savedData = Array.Empty<object?>();
+    private static readonly Type CharacterType = Game.GetType("SWLOR.Game.Server.Domain.Foundation.SavedCharacter")!;
+    private FacadeContainer _container = null!;
+    private IDisposable _scope = null!;
 
     [SetUp]
     public void LoadSizes()
     {
-        _savedData = DataFields.Select(name => DataType.GetField(name, Members)!.GetValue(null)).ToArray();
+        // The saved-character data lives on the migration service; a character reaches it through the facade.
+        _container = new FacadeContainer();
+        _scope = _container.Install();
         var sizes = new Dictionary<int, (int Width, int Height)>
         {
             [(int)BaseItem.Helmet] = (2, 2),
             [(int)BaseItem.LargeBox] = (2, 2),
             [(int)BaseItem.Ring] = (1, 1),
         };
-        DataType.GetMethod("Load", Members, new[]
-        {
-            typeof(IReadOnlyDictionary<int, (int Width, int Height)>),
-            typeof(IReadOnlyDictionary<int, (int CostTable, int Param1Table)>),
-            typeof(IReadOnlyDictionary<string, string>),
-        })!.Invoke(null, new object[] { sizes, new Dictionary<int, (int, int)>(), new Dictionary<string, string>() });
+        _container.Get<IMigrationService>().CharacterData.Load(sizes, new Dictionary<int, (int, int)>(), new Dictionary<string, string>());
     }
 
     [TearDown]
     public void RestoreSizes()
     {
-        for (var index = 0; index < DataFields.Length; index++)
-            DataType.GetField(DataFields[index], Members)!.SetValue(null, _savedData[index]);
+        _scope.Dispose();
+        _container.Dispose();
     }
 
     [Test]

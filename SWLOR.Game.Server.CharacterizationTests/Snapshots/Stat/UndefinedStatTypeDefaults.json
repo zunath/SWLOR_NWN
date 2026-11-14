@@ -1,0 +1,11 @@
+{
+  "function": "Stat.GetStatTypeCategory / GetStatTypeAggregation / GetStatTypeDeflectionSource for a value that is not a StatType member",
+  "description": "The classification a stat id with no metadata gets.",
+  "seed": null,
+  "inputs": "One undefined stat id (99999).",
+  "rowCount": 1,
+  "columns": ["stat", "=> category", "=> aggregation", "=> deflectionSource", "=> grantedDeflectionStat"],
+  "rows": [
+    [99999, "NonBeneficial", "Additive", "None", "Invalid"]
+  ]
+}

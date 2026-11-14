@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using NWN.Native.API;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -39,6 +40,9 @@ namespace SWLOR.Game.Server.Native
             }
         }
 
+        // Carried across a hot reload: the haste trait keeps roll ids in its carried dedup history (OrdinaryAttackHasteState), so a new
+        // build must go on from the last id instead of reusing ids from 1.
+        [ReloadState(ReloadStateKind.Carried)]
         private static long _nextRoll;
         private static readonly Dictionary<uint, WeaponShotProfile> _weapons = new();
         private static readonly Dictionary<uint, Roll> _rolls = new();

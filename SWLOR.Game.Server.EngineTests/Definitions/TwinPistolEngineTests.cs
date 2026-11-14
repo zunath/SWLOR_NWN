@@ -3,15 +3,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -23,8 +22,6 @@ using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using DurationType = SWLOR.NWN.API.NWScript.Enum.DurationType;
 using ItemProperty = SWLOR.NWN.API.Engine.ItemProperty;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
-using Ability = SWLOR.Game.Server.Service.Ability;
-using StatusEffect = SWLOR.Game.Server.Service.StatusEffect;
 using NumericsVector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -66,7 +63,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "The fixture has independently budgeted gun damage");
                 });
                 Observe(actor);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(actor, () => ActionAttack(target));
                 await ctx.WaitUntilAsync(() => Hits.Count >= 2, 8f, "both ordinary gun impacts");
                 ctx.AssertEqual(main, Hits[0].Weapon, "Native launcher fires first");
@@ -86,12 +83,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 Observe(actor);
-                Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
                 var initial = native.m_pcCombatRound.m_nCurrentAttack;
                 AssignCommand(actor, () => ActionAttack(target));
                 await ctx.WaitUntilAsync(() => native.m_pcCombatRound.m_nCurrentAttack != initial, 6f, "the native main-hand miss");
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 await ctx.WaitUntilAsync(() => Hits.Any(x => x.Weapon == companion), 3f, "the independent companion hit");
                 ctx.AssertEqual(0, Hits.Count(x => x.Weapon == main), "A main-hand miss contributes no copied damage");
                 ctx.AssertEqual(1, Hits.Count(x => x.Weapon == companion), "Companion rolls and lands independently");
@@ -133,7 +130,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 try
                 {
                     Observe(actor);
-                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                     AssignCommand(actor, () => ActionAttack(pair.Target));
                     await ctx.WaitUntilAsync(() => Hits.Any(x => x.Weapon == pair.Main), 7f, "the original native main shot to launch");
                     var originalDamage = Hits.First(x => x.Weapon == pair.Main).Damage;
@@ -275,10 +272,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                                int.TryParse(Get2DAString("iprp_delay", "Label", cost), out var label) && label > 0)
                                 .First(cost =>
                             {
-                                var effective = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(cost * 10, cost * 10,
-                                    haste, Combat.CalculateOffhandAttackDelayReduction(actor)));
-                                return Combat.CalculateAttackSwingDelay(effective) == Combat.BaseAttackDelayMilliseconds &&
-                                       Combat.CalculateAttacksPerSwing(effective, 0, out _) == (quantity <= 2 ? 2 : 1);
+                                var effective = CombatRules.CalculateEffectiveAttackDelay(CombatRules.CalculateAttackDelayMilliseconds(cost * 10, cost * 10,
+                                    haste, GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(actor)));
+                                return CombatRules.CalculateAttackSwingDelay(effective) == CombatRules.BaseAttackDelayMilliseconds &&
+                                       CombatRules.CalculateAttacksPerSwing(effective, 0, out _) == (quantity <= 2 ? 2 : 1);
                             });
                             hastedDelayCost = delay;
                             ReplaceWeaponProperty(main, ItemPropertyType.Delay, ItemPropertyCustom(ItemPropertyType.Delay, -1, delay));
@@ -292,29 +289,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             $"main={main:X}/equipped={GetItemInSlot(InventorySlot.RightHand, actor):X}, " +
                             $"companion={companion:X}/equipped={GetItemInSlot(InventorySlot.LeftHand, actor):X}, " +
                             $"requestedCost={hastedDelayCost}, mainCost={GetDelayPropertyCost(main)}, companionCost={GetDelayPropertyCost(companion)}, " +
-                            $"rawDelay={Combat.CalculateAttackDelay(actor)}");
+                            $"rawDelay={GameServices.CombatAttackTiming.CalculateAttackDelay(actor)}");
                         await ctx.WaitUntilAsync(() => GetDelayPropertyCost(main) == hastedDelayCost &&
                             GetDelayPropertyCost(companion) == hastedDelayCost && TwinPistolEquipment.IsActivePair(actor) &&
                             GetItemInSlot(InventorySlot.RightHand, actor) == main && GetItemInSlot(InventorySlot.LeftHand, actor) == companion,
                             3f, "both real equipped native Delay properties to settle before measuring the hasted budget");
                         await ctx.ExecuteInCreatureContextAsync(actor, () =>
                         {
-                            var effectiveDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(actor));
+                            var effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(actor));
                             ctx.Log($"Finite haste setup: pc={GetIsPC(actor)}, quantity={quantity}, delayCost={hastedDelayCost}, " +
                                 $"haste={Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent)}, activePair={TwinPistolEquipment.IsActivePair(actor)}, " +
-                                $"mainCost={GetDelayPropertyCost(main)}, companionCost={GetDelayPropertyCost(companion)}, rawDelay={Combat.CalculateAttackDelay(actor)}, " +
-                                $"offhandReduction={Combat.CalculateOffhandAttackDelayReduction(actor)}, effectiveMs={effectiveDelay}, " +
-                                $"swingMs={Combat.CalculateAttackSwingDelay(effectiveDelay)}");
-                            ctx.AssertEqual(quantity <= 2 ? 4 : 2, Combat.CalculateAttacksPerSwing(effectiveDelay, 0, out _) * 2,
+                                $"mainCost={GetDelayPropertyCost(main)}, companionCost={GetDelayPropertyCost(companion)}, rawDelay={GameServices.CombatAttackTiming.CalculateAttackDelay(actor)}, " +
+                                $"offhandReduction={GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(actor)}, effectiveMs={effectiveDelay}, " +
+                                $"swingMs={CombatRules.CalculateAttackSwingDelay(effectiveDelay)}");
+                            ctx.AssertEqual(quantity <= 2 ? 4 : 2, CombatRules.CalculateAttacksPerSwing(effectiveDelay, 0, out _) * 2,
                                 "The hasted batch has its requested logical-shot budget before finite ammunition limits");
-                            ctx.AssertEqual(Combat.BaseAttackDelayMilliseconds, Combat.CalculateAttackSwingDelay(effectiveDelay),
+                            ctx.AssertEqual(CombatRules.BaseAttackDelayMilliseconds, CombatRules.CalculateAttackSwingDelay(effectiveDelay),
                                 "Hasted finite tests use the production native swing floor");
                         });
                     }
                     if (quantity == 0)
                         await ctx.WaitUntilAsync(() => !GetIsObjectValid(ammunition), 5f, "the zero-ammunition fixture to remove its temporary equip prerequisite");
                     Observe(actor);
-                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                     var started = Environment.TickCount64;
                     var hpBefore = GetCurrentHitPoints(target);
                     AssignCommand(actor, () => ActionAttack(target));
@@ -350,7 +347,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     if (quantity >= 4)
                     {
                         var mainTimes = Hits.Select((hit, index) => (hit, time: HitTimes[index])).Where(x => x.hit.Weapon == main).Select(x => x.time).ToArray();
-                        ctx.Assert(mainTimes.Last() - mainTimes.First() >= Combat.BaseAttackDelayMilliseconds - 50,
+                        ctx.Assert(mainTimes.Last() - mainTimes.First() >= CombatRules.BaseAttackDelayMilliseconds - 50,
                             "Four and five bullets cover at least two real native-floor cycles");
                     }
                     ctx.Assert(quantity == 0 ? GetCurrentHitPoints(target) == hpBefore : GetCurrentHitPoints(target) < hpBefore,
@@ -380,7 +377,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var ammo = GetItemInSlot(InventorySlot.Bullets, actor);
                 var quantity = GetIsObjectValid(ammo) ? GetItemStackSize(ammo) : 0;
                 Observe(actor);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(actor, () => ActionAttack(target));
                 await ctx.WaitUntilAsync(() => Hits.Any(x => x.Weapon == companion), 8f, "the unlimited companion shot");
                 ctx.AssertEqual(ammo, GetItemInSlot(InventorySlot.Bullets, actor), "The generated ammunition source is reused");
@@ -397,8 +394,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 Observe(actor);
-                Combat.SetAutoAttackHitResolutionOverride(true);
-                Combat.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
                 await ctx.ExecuteInCreatureContextAsync(actor, () =>
                 {
                     ctx.SetNPCResources(actor, 100, 100);
@@ -410,7 +407,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 await ctx.WaitUntilAsync(() => !UsePerkFeat.HasQueuedWeaponAbility(actor), 10f, "one queued ability consumption");
                 await ctx.WaitUntilAsync(() => Hits.Any(x => x.Weapon == companion), 4f, "the remaining ordinary companion roll");
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
+                var summary = GameServices.Ability.GetLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(summary != null && summary.SkillType == SkillType.Rifle && summary.AttributedDamage > 0,
                     "The queued ability keeps its captured cross-trained skill and real impact");
                 ctx.AssertEqual(0, Hits.Count(x => x.Weapon == main), "The replaced main-hand roll contributes no ordinary damage");
@@ -418,7 +415,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 Stop(actor);
             }
         }
@@ -451,15 +448,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.MakeHostile(target);
                     TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 30f, "TWIN_QUEUED");
                     CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
-                    Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                    GameServices.Ability.ClearLastCompletedAbilityImpactSummary(actor);
                     var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
                     PairedRangedTraits.CompleteAbility(actor, bonus, false, 0, 0, 6, 25, 12);
                     ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
                         "The fixture starts with six ordinary attempted-shot charges");
                 });
                 Observe(actor);
-                Combat.SetAutoAttackHitResolutionOverride(false);
-                Combat.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
                 var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
                 var initial = native.m_pcCombatRound.m_nCurrentAttack;
                 await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -472,9 +469,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(UsePerkFeat.HasQueuedWeaponAbility(actor), "A miss leaves the queued replacement readied");
                 ctx.AssertEqual(5, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
                     "The ordinary miss consumes one attempted-shot charge while leaving the replacement queued");
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 await ctx.WaitUntilAsync(() => !UsePerkFeat.HasQueuedWeaponAbility(actor), 4f, "the companion consumes the queued replacement once");
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
+                var summary = GameServices.Ability.GetLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(summary != null && summary.SkillType == SkillType.Rifle && summary.AttributedDamage > 0,
                     "The companion-triggered activation retains the purchased Rifle ability identity");
                 ctx.AssertEqual(WeaponDamage.GetEffectiveDMG(actor, main), summary.TriggeringWeaponDamage ?? -1,
@@ -484,15 +481,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, Hits.Count, "The main miss and replaced companion grant no ordinary damage");
                 ctx.AssertEqual(5, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
                     "The landed queued replacement consumes no additional ordinary-shot charge");
-                var tracker = (Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>>)typeof(CombatPoint)
-                    .GetField("_creatureCombatPointTracker", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+                var tracker = CombatInternals.CombatPointTracker();
                 var points = tracker[target][actor];
                 ctx.AssertEqual(3, points.GetValueOrDefault(SkillType.Rifle), "One queued ability awards its original skill contribution once");
                 ctx.AssertEqual(0, points.GetValueOrDefault(SkillType.TwinPistol), "A replaced roll awards no extra Twin Pistol contribution");
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 Stop(actor);
             }
         }
@@ -506,7 +502,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 try
                 {
                     Observe(actor);
-                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                     AssignCommand(actor, () => ActionAttack(target));
                     await ctx.WaitUntilAsync(() => Hits.Count >= 1, 6f, "main-hand resolution before the companion launch");
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -549,7 +545,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     TemporaryStatModifier.Add(target, StatType.RangedDeflectionChanceCap, 100, 30f, "TWIN_DEFLECT");
                 });
                 Observe(actor);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(actor, () => ActionAttack(target));
                 await ctx.DelaySecondsAsync(2f);
                 ctx.AssertEqual(0, Hits.Count, "Ranged deflection negates both independent shots");
@@ -563,7 +559,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ActionAttack(target);
                 });
                 await ctx.WaitUntilAsync(() => Hits.Any(x => x.Weapon == companion), 8f, "a physical companion shot through Guard");
-                ctx.Assert(Combat.HasRecentGuardedHit(target, 10f), "Guard reduces landed physical damage instead of negating the roll");
+                ctx.Assert(GameServices.CombatDamageTaken.HasRecentGuardedHit(target, 10f), "Guard reduces landed physical damage instead of negating the roll");
                 ctx.Assert(Hits.All(x => x.Damage > 0), "Guard leaves damage on the landed shot");
             }
             finally { Stop(actor); }
@@ -590,7 +586,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             ApplyEffectToObject(DurationType.Temporary, EffectDamageImmunityIncrease(immunity, 100), target, 30f);
                     });
                     Observe(actor);
-                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                     var hp = GetCurrentHitPoints(target);
                     var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
                     var initial = native.m_pcCombatRound.m_nCurrentAttack;
@@ -626,7 +622,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             ApplyEffectToObject(DurationType.Temporary, EffectDamageImmunityIncrease(DamageType.Piercing, 100), target, 30f);
                     });
                     Observe(actor);
-                    Combat.SetAutoAttackHitResolutionOverride(true);
+                    GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                     var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
                     var initial = native.m_pcCombatRound.m_nCurrentAttack;
                     AssignCommand(actor, () => ActionAttack(target));
@@ -666,18 +662,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     TemporaryStatModifier.Add(actor, StatType.PairedRangedDirectDamageCostWindowSeconds, 10, 30f);
                     TemporaryStatModifier.Add(actor, StatType.PairedRangedDirectDamageCostCooldownSeconds, 10, 30f);
                     ApplyEffectToObject(DurationType.Temporary, EffectDamageImmunityIncrease(DamageType.Cold, 100), actor, 30f);
-                    Combat.ApplyDamageDealtEffects(source, actor, 10, SkillType.TwinPistol, CombatDamageType.Ice);
+                    GameServices.CombatHitEffects.ApplyDamageDealtEffects(source, actor, 10, SkillType.TwinPistol, CombatDamageType.Ice);
                     ctx.AssertEqual(0, PairedRangedTraits.GetAbilityStaminaCostAdjustment(actor),
                         "A pre-mitigation elemental event cannot grant the discount through native immunity");
-                    Combat.ApplyDamageDealtEffects(source, actor, 10, SkillType.TwinPistol, CombatDamageType.Physical,
+                    GameServices.CombatHitEffects.ApplyDamageDealtEffects(source, actor, 10, SkillType.TwinPistol, CombatDamageType.Physical,
                         CombatDamageDeliveryType.DamageOverTime);
                     ctx.AssertEqual(0, PairedRangedTraits.GetAbilityStaminaCostAdjustment(actor),
                         "Positive periodic damage cannot grant a direct-damage discount");
-                    Combat.ApplyDamageDealtEffects(source, actor, 10, SkillType.TwinPistol, CombatDamageType.Physical,
+                    GameServices.CombatHitEffects.ApplyDamageDealtEffects(source, actor, 10, SkillType.TwinPistol, CombatDamageType.Physical,
                         CombatDamageDeliveryType.Triggered);
                     ctx.AssertEqual(0, PairedRangedTraits.GetAbilityStaminaCostAdjustment(actor),
                         "Triggered or reflected damage cannot grant the discount");
-                    Combat.ApplyDamageDealtEffects(source, actor, 10, SkillType.TwinPistol, CombatDamageType.Physical);
+                    GameServices.CombatHitEffects.ApplyDamageDealtEffects(source, actor, 10, SkillType.TwinPistol, CombatDamageType.Physical);
                     ctx.AssertEqual(-2, PairedRangedTraits.GetAbilityStaminaCostAdjustment(actor),
                         "The same damage hook grants exactly one discount for positive direct hostile damage");
                 });
@@ -707,8 +703,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         CreaturePlugin.AddFeat(actor, feat);
                     }
                 });
-                Combat.SetAutoAttackHitResolutionOverride(false);
-                Combat.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
 
                 // Tempo Shot grants two on its own; Lead Shot chains for its own one; Closing Shot spends all
                 // three, then its chained hit grants one fresh charge.
@@ -716,19 +712,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
-                        SWLOR.Game.Server.Service.AbilityService.HostileAbilityDelay.EndForTesting(actor);
-                        Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                        SWLOR.Game.Server.Domain.Abilities.HostileAbilityDelay.EndForTesting(actor);
+                        GameServices.Ability.ClearLastCompletedAbilityImpactSummary(actor);
                         ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-                            $"{feat} validation: {Ability.GetLastActivationDenialReason()}");
+                            $"{feat} validation: {GameServices.Ability.GetLastActivationDenialReason()}");
                         ctx.Assert(TwinPistolAbility.HasActiveActivation(actor), "The cast captures its weapon and trait state");
                         TwinPistolCombatLifecycle.Reconcile();
                         ctx.Assert(TwinPistolAbility.HasActiveActivation(actor),
                             "Out-of-combat reconciliation preserves an authorized cast before its first hostile impact");
                     });
                     await ctx.WaitUntilAsync(() => !TwinPistolAbility.HasActiveActivation(actor) && !Activity.IsBusy(actor) &&
-                        Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
+                        GameServices.Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
                         10f, $"{feat}'s captured paired impacts");
-                    var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
+                    var summary = GameServices.Ability.GetLastCompletedAbilityImpactSummary(actor);
                     ctx.Assert(summary.SkillType == SkillType.TwinPistol && summary.AttributedDamage > 0,
                         $"{feat} completes a paid Twin Pistol attack");
                     ctx.AssertEqual(expected, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0,
@@ -739,8 +735,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 TwinPistolAbility.Cancel(actor);
-                Combat.SetAbilityHitResolutionOverride(null);
-                SWLOR.Game.Server.Service.AbilityService.HostileAbilityDelay.EndForTesting(actor);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                SWLOR.Game.Server.Domain.Abilities.HostileAbilityDelay.EndForTesting(actor);
                 Stop(actor);
             }
         }
@@ -824,7 +820,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             if (GetIsObjectValid(actor)) AssignCommand(actor, () => ClearAllActions());
             PairedRangedAttackCycle.Cancel(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             _observed = OBJECT_INVALID;
             Hits.Clear();
             HitTimes.Clear();

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using NumericsVector3 = System.Numerics.Vector3;
 using ScriptVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native;
 
@@ -24,8 +25,11 @@ public static class PairedRangedPresentation
     // spot, such as where the actor stood earlier. Free anchors therefore wait at the hand they
     // serve (even slots at the main muzzle, odd slots at the companion muzzle) before they fire.
     private const float ParkToleranceMeters = .05f;
+    [ReloadState(ReloadStateKind.Runtime)]
     private static readonly Dictionary<uint, (uint[] Sources, long[] BusyUntil, long ReadyAt, uint Area)> Anchors = new();
+    [ReloadState(ReloadStateKind.Runtime)]
     private static readonly Dictionary<uint, (NumericsVector3 Position, float Facing)> LastPoses = new();
+    [ReloadState(ReloadStateKind.Runtime)]
     private static readonly Dictionary<uint, int> LaunchCounts = new();
 
     // The authored firing pose and registered 11/201/11 pistol appearance define
@@ -93,12 +97,23 @@ public static class PairedRangedPresentation
             return;
         }
         Anchors[actor] = (sources, new long[SourceAnchorCount],
-            Environment.TickCount64 + ReplicationWarmupMilliseconds, area);
+            Clock.TickCount64 + ReplicationWarmupMilliseconds, area);
         LastPoses[actor] = (position, facing);
     }
 
     /// <summary>Bolts presented for the actor since its pool was prepared.</summary>
     public static int GetLaunchCount(uint actor) => LaunchCounts.GetValueOrDefault(actor);
+
+    /// <summary>
+    /// While a hot reload quiesces the old build: every actor's muzzle anchors are destroyed, NPCs' as well as players' (whose
+    /// logout step does the same), because the pools are this build's memory and the new build cannot find them to reuse or remove.
+    /// </summary>
+    [ReloadHook(ReloadHookPhase.Quiesce)]
+    public static void ReleaseAllForReload(IReadOnlyList<uint> players)
+    {
+        foreach (var actor in Anchors.Keys.ToList())
+            Release(actor);
+    }
 
     public static void Release(uint actor)
     {
@@ -112,7 +127,7 @@ public static class PairedRangedPresentation
     public static void Park(uint actor)
     {
         if (!Anchors.TryGetValue(actor, out var pool) || pool.Area != GetArea(actor)) return;
-        var now = Environment.TickCount64;
+        var now = Clock.TickCount64;
         var position = GetPosition(actor);
         var facing = GetFacing(actor);
         var scale = VisualScale(actor);
@@ -154,6 +169,7 @@ public static class PairedRangedPresentation
         }
     }
 
+    [BootPhase(BootReload.Rerun)]
     [NWNEventHandler(ScriptName.OnModuleLoad)]
     public static void StartParking() =>
         Scheduler.ScheduleRepeating(ParkSettledActors, TimeSpan.FromMilliseconds(500));
@@ -179,7 +195,7 @@ public static class PairedRangedPresentation
         var offhand = GetItemInSlot(InventorySlot.LeftHand, actor);
         var muzzle = ResolveMuzzle(GetPosition(actor), GetFacing(actor), companion, VisualScale(actor));
         var destination = GetPosition(target) + NumericsVector3.UnitZ;
-        var remaining = pool.ReadyAt - Environment.TickCount64;
+        var remaining = pool.ReadyAt - Clock.TickCount64;
         if (remaining > 0)
         {
             // Newly created invisible objects must reach the client before a MIRV can
@@ -205,7 +221,7 @@ public static class PairedRangedPresentation
             GetItemInSlot(InventorySlot.LeftHand, actor) != companion) return;
         // Lease sources for hits too. Moving a shared source in the same frame can retarget
         // the other hand's MIRV or a previous target of the same volley before clients see it.
-        var slot = LeaseProjectileAnchor(pool.BusyUntil, Environment.TickCount64,
+        var slot = LeaseProjectileAnchor(pool.BusyUntil, Clock.TickCount64,
             NumericsVector3.Distance(muzzle, destination), companionHand);
         if (slot < 0) return;
         var source = pool.Sources[slot];
@@ -229,9 +245,17 @@ public static class PairedRangedPresentation
     [NWNEventHandler(ScriptName.OnAreaEnter)]
     public static void OnAreaEnter() => Prepare(GetEnteringObject());
 
+    [PlayerSession(PlayerReload.Quiesce,
+        "The muzzle anchors are tracked only in the old build, so they are destroyed as at logout instead of being left in the world.",
+        Step = nameof(ReleaseFor))]
     [NWNEventHandler(ScriptName.OnAreaExit)]
     [NWNEventHandler(ScriptName.OnModuleExit)]
-    public static void OnExit() => Release(GetExitingObject());
+    public static void OnExit() => ReleaseFor(GetExitingObject());
+
+    /// <summary>
+    /// The work of <see cref="OnExit"/> for <paramref name="actor"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+    /// </summary>
+    public static void ReleaseFor(uint actor) => Release(actor);
 
     [NWNEventHandler(ScriptName.OnCreatureDeathAfter)]
     public static void OnCreatureDeath() => Release(OBJECT_SELF);

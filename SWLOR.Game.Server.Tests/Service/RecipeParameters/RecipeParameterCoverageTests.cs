@@ -1,6 +1,7 @@
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.RecipeParameters;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service.RecipeParameters;
 
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Service.RecipeParameters;
 /// }
 /// </code>
 /// </summary>
-public abstract class RecipeParameterCoverageTests
+public abstract class RecipeParameterCoverageTests : SkillFacadeFixture
 {
     private static readonly Lazy<Dictionary<RecipeType, RecipeDetail>> _gameRecipes = new(RecipeDefinitionLoader.LoadGame);
 

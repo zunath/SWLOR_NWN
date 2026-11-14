@@ -1,9 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -30,7 +28,7 @@ public class ArmorDualWieldTests
         armorPerks.Should().Contain("StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 20 : 0");
         armorPerks.Should().Contain("StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 30 : 0");
 
-        var equipmentPredicates = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "PerkService" / "EquipmentPredicates.cs").FullName);
+        var equipmentPredicates = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Character" / "EquipmentPredicates.cs").FullName);
         equipmentPredicates.Should().Contain("public static bool HasDualWield(uint creature)");
         equipmentPredicates.Should().Contain("Item.IsAttackWeaponType(GetBaseItemType(mainHand))");
         equipmentPredicates.Should().Contain("Item.IsAttackWeaponType(GetBaseItemType(offHand))");

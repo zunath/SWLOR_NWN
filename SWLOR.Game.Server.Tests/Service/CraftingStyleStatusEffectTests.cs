@@ -3,10 +3,9 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -191,14 +190,14 @@ public class CraftingStyleStatusEffectTests
             .OrderBy(name => name)
             .ToList();
 
-        callers.Should().Equal("CharacterFullRebuildViewModel.cs", "Space.cs");
+        callers.Should().Equal("CharacterFullRebuildViewModel.cs", "SpaceService.cs");
     }
 
     private static List<MethodDeclarationSyntax> StatusEffectMethods()
     {
         var root = FindRepositoryRoot();
         var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"))).GetRoot();
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))).GetRoot();
         return syntax.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
     }
 

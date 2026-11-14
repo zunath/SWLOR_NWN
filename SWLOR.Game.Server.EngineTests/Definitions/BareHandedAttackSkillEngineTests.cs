@@ -3,8 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
@@ -89,8 +88,7 @@ public static class BareHandedAttackSkillEngineTests
 
     private static int Points(uint player, uint creature, SkillType skill)
     {
-        var tracker = (Dictionary<uint, Dictionary<uint, Dictionary<SkillType, int>>>)typeof(CombatPoint)
-            .GetField("_creatureCombatPointTracker", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null);
+        var tracker = CombatInternals.CombatPointTracker();
         return tracker!.TryGetValue(creature, out var byPlayer) &&
                byPlayer.TryGetValue(player, out var bySkill) &&
                bySkill.TryGetValue(skill, out var points)

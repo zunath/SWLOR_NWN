@@ -2,7 +2,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;

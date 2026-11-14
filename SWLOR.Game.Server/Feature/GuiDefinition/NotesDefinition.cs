@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddTextEdit()
                             .SetIsMultiline(true)
-                            .SetMaxLength(Notes.MaxNoteLength)
+                            .SetMaxLength(NotesService.MaxNoteLength)
                             .BindValue(model => model.ActiveNoteText)
                             .BindIsEnabled(model => model.IsNoteSelected);
                     });
@@ -279,7 +279,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 row.AddTextEdit()
                     .SetPlaceholder("New Category Name")
-                    .SetMaxLength(Notes.MaxCategoryNameLength)
+                    .SetMaxLength(NotesService.MaxCategoryNameLength)
                     .BindValue(model => model.NewCategoryName);
 
                 row.AddButton()

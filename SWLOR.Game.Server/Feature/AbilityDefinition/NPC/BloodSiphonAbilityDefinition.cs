@@ -1,9 +1,10 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .IsHostileAbility()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
+                    using var damageDerivedHealing = GameServices.CombatResources.BeginDamageDerivedHealing(activator, target);
                     var damage = Ability.ApplyCombatImpact(
                         activator,
                         target,
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small,
                         useNPCStatScaling: InnateAbility.ShouldUseNPCStatScaling(activator));
 
-                    var healed = Combat.ApplyDamageDerivedHealing(activator, damage, HealingPercent, isActivatedHealing: true);
+                    var healed = GameServices.CombatResources.ApplyDamageDerivedHealing(activator, damage, HealingPercent, isActivatedHealing: true);
                     if (healed > 0)
                     {
                         var beam = EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Chest);

@@ -1,6 +1,6 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.CraftSim.Legacy.Gathering
 {
@@ -24,7 +24,7 @@ namespace SWLOR.CraftSim.Legacy.Gathering
             return chance;
         }
 
-        /// <summary>XP for a bite, caught or not (FishingFightLifecycle.cs:64).</summary>
+        /// <summary>XP for a bite, caught or not (FishingFightLifecycle.cs:67).</summary>
         public static int XpPerBite(int agricultureRank, int fishLevel) => ServerXp.ForDelta(fishLevel - agricultureRank);
 
         /// <summary>Every fish the game defines, from the fish enum.</summary>
@@ -71,14 +71,14 @@ namespace SWLOR.CraftSim.Legacy.Gathering
             foreach (var definition in definitions)
             {
                 Dictionary<FishingLocationType, FishingLocationDetail> built;
-                SWLOR.Game.Server.Service.Random.SetSeed(SpecialPlacementSeed);
+                SWLOR.Game.Server.Domain.Foundation.Random.SetSeed(SpecialPlacementSeed);
                 try
                 {
                     built = ((IFishingLocationDefinition)Activator.CreateInstance(definition)).Build();
                 }
                 finally
                 {
-                    SWLOR.Game.Server.Service.Random.ResetSeed();
+                    SWLOR.Game.Server.Domain.Foundation.Random.ResetSeed();
                 }
 
                 foreach (var (location, detail) in built)

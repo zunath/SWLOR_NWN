@@ -2,9 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.QuestContractService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -86,12 +84,12 @@ public class QuestContractFactoryTests
     public void BuildQuest_PreservesMaximumStackQuantity()
     {
         var contract = CreateContract();
-        contract.Objectives[0].Quantity = QuestContractBoard.MaxObjectiveQuantity;
+        contract.Objectives[0].Quantity = QuestContractBoardService.MaxObjectiveQuantity;
 
         var quest = QuestContractFactory.BuildQuest(contract);
         var objective = quest.States[1].GetObjectives().Cast<CollectItemObjective>().First();
 
-        GetObjectiveQuantity(objective).Should().Be(QuestContractBoard.MaxObjectiveQuantity);
+        GetObjectiveQuantity(objective).Should().Be(QuestContractBoardService.MaxObjectiveQuantity);
         quest.States[1].JournalText.Should().Contain("99x Blaster Rifle");
     }
 

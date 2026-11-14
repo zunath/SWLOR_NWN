@@ -2,16 +2,32 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MeleeTechniqueTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly DateTime Start = new(2026, 10, 13, 12, 0, 0, DateTimeKind.Utc);
 
     [Test]
@@ -286,7 +302,7 @@ public class MeleeTechniqueTests
             directory = directory.Parent;
         directory.Should().NotBeNull();
         var source = File.ReadAllText(Path.Combine(directory!.FullName,
-            "SWLOR.Game.Server", "Service", "MeleeTechnique.cs"));
+            "SWLOR.Game.Server", "Domain", "Combat", "MeleeTechniqueService.cs"));
         foreach (var dependency in new[]
         {
             "EquipmentPredicates", "PowerGlove", "Power Glove", "SkillType.Unarmed",

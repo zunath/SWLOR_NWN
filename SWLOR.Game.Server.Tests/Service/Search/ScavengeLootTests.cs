@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.LootService;
-using SWLOR.Game.Server.Service.ScavengeService;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Tests.Service.Search;
 

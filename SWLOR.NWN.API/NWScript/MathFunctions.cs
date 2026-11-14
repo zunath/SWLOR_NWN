@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The absolute value</returns>
         public static float fabs(float fValue)
         {
-            return global::NWN.Core.NWScript.fabs(fValue);
+            return NWScriptRuntime.Current.fabs(fValue);
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The cosine value</returns>
         public static float cos(float fValue)
         {
-            return global::NWN.Core.NWScript.cos(fValue);
+            return NWScriptRuntime.Current.cos(fValue);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The sine value</returns>
         public static float sin(float fValue)
         {
-            return global::NWN.Core.NWScript.sin(fValue);
+            return NWScriptRuntime.Current.sin(fValue);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The tangent value</returns>
         public static float tan(float fValue)
         {
-            return global::NWN.Core.NWScript.tan(fValue);
+            return NWScriptRuntime.Current.tan(fValue);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The arccosine value, or zero if fValue > 1 or fValue < -1</returns>
         public static float acos(float fValue)
         {
-            return global::NWN.Core.NWScript.acos(fValue);
+            return NWScriptRuntime.Current.acos(fValue);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The arcsine value, or zero if fValue > 1 or fValue < -1</returns>
         public static float asin(float fValue)
         {
-            return global::NWN.Core.NWScript.asin(fValue);
+            return NWScriptRuntime.Current.asin(fValue);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The arctangent value</returns>
         public static float atan(float fValue)
         {
-            return global::NWN.Core.NWScript.atan(fValue);
+            return NWScriptRuntime.Current.atan(fValue);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The logarithm value, or zero if fValue <= zero</returns>
         public static float log(float fValue)
         {
-            return global::NWN.Core.NWScript.log(fValue);
+            return NWScriptRuntime.Current.log(fValue);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The result, or zero if fValue == 0 and fExponent < 0</returns>
         public static float pow(float fValue, float fExponent)
         {
-            return global::NWN.Core.NWScript.pow(fValue, fExponent);
+            return NWScriptRuntime.Current.pow(fValue, fExponent);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The square root, or zero if fValue < 0</returns>
         public static float sqrt(float fValue)
         {
-            return global::NWN.Core.NWScript.sqrt(fValue);
+            return NWScriptRuntime.Current.sqrt(fValue);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The absolute value, or 0 on error</returns>
         public static int abs(int nValue)
         {
-            return global::NWN.Core.NWScript.abs(nValue);
+            return NWScriptRuntime.Current.abs(nValue);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The normalized vector</returns>
         public static Vector3 VectorNormalize(Vector3 vVector)
         {
-            return global::NWN.Core.NWScript.VectorNormalize(vVector);
+            return NWScriptRuntime.Current.VectorNormalize(vVector);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The magnitude, or 0.0f on error</returns>
         public static float VectorMagnitude(Vector3 vVector)
         {
-            return global::NWN.Core.NWScript.VectorMagnitude(vVector);
+            return NWScriptRuntime.Current.VectorMagnitude(vVector);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The equivalent value in meters</returns>
         public static float FeetToMeters(float fFeet)
         {
-            return global::NWN.Core.NWScript.FeetToMeters(fFeet);
+            return NWScriptRuntime.Current.FeetToMeters(fFeet);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The equivalent value in meters</returns>
         public static float YardsToMeters(float fYards)
         {
-            return global::NWN.Core.NWScript.YardsToMeters(fYards);
+            return NWScriptRuntime.Current.YardsToMeters(fYards);
         }
 
         /// <summary>
@@ -164,9 +164,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The distance in metres, or -1.0f on error</returns>
         public static float GetDistanceToObject(uint oObject, uint oFrom = OBJECT_INVALID)
         {
-            if (oFrom == OBJECT_INVALID)
-                oFrom = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetDistanceToObject(oObject, oFrom);
+            return NWScriptRuntime.Current.GetDistanceToObject(oObject, oFrom);
         }
 
         /// <summary>
@@ -180,7 +178,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if there is line of sight</returns>
         public static bool LineOfSightObject(uint oSource, uint oTarget)
         {
-            return global::NWN.Core.NWScript.LineOfSightObject(oSource, oTarget) != 0;
+            return NWScriptRuntime.Current.LineOfSightObject(oSource, oTarget);
         }
 
         /// <summary>
@@ -196,7 +194,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>TRUE if there is line of sight</returns>
         public static bool LineOfSightVector(Vector3 vSource, Vector3 vTarget)
         {
-            return global::NWN.Core.NWScript.LineOfSightVector(vSource, vTarget) != 0;
+            return NWScriptRuntime.Current.LineOfSightVector(vSource, vTarget);
         }
 
         /// <summary>
@@ -206,7 +204,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The vector representation of the angle</returns>
         public static Vector3 AngleToVector(float fAngle)
         {
-            return global::NWN.Core.NWScript.AngleToVector(fAngle);
+            return NWScriptRuntime.Current.AngleToVector(fAngle);
         }
 
         /// <summary>
@@ -216,7 +214,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The angle representation of the vector</returns>
         public static float VectorToAngle(Vector3 vVector)
         {
-            return global::NWN.Core.NWScript.VectorToAngle(vVector);
+            return NWScriptRuntime.Current.VectorToAngle(vVector);
         }
 
         /// <summary>
@@ -227,7 +225,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total from rolling the dice</returns>
         public static int d2(int nNumDice = 1)
         {
-            return global::NWN.Core.NWScript.d2(nNumDice);
+            return NWScriptRuntime.Current.d2(nNumDice);
         }
 
         /// <summary>
@@ -238,7 +236,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total from rolling the dice</returns>
         public static int d3(int nNumDice = 1)
         {
-            return global::NWN.Core.NWScript.d3(nNumDice);
+            return NWScriptRuntime.Current.d3(nNumDice);
         }
 
         /// <summary>
@@ -249,7 +247,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total from rolling the dice</returns>
         public static int d4(int nNumDice = 1)
         {
-            return global::NWN.Core.NWScript.d4(nNumDice);
+            return NWScriptRuntime.Current.d4(nNumDice);
         }
 
         /// <summary>
@@ -260,7 +258,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total from rolling the dice</returns>
         public static int d6(int nNumDice = 1)
         {
-            return global::NWN.Core.NWScript.d6(nNumDice);
+            return NWScriptRuntime.Current.d6(nNumDice);
         }
 
         /// <summary>
@@ -271,7 +269,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total from rolling the dice</returns>
         public static int d8(int nNumDice = 1)
         {
-            return global::NWN.Core.NWScript.d8(nNumDice);
+            return NWScriptRuntime.Current.d8(nNumDice);
         }
 
         /// <summary>
@@ -282,7 +280,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total from rolling the dice</returns>
         public static int d10(int nNumDice = 1)
         {
-            return global::NWN.Core.NWScript.d10(nNumDice);
+            return NWScriptRuntime.Current.d10(nNumDice);
         }
 
         /// <summary>
@@ -293,7 +291,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total from rolling the dice</returns>
         public static int d12(int nNumDice = 1)
         {
-            return global::NWN.Core.NWScript.d12(nNumDice);
+            return NWScriptRuntime.Current.d12(nNumDice);
         }
 
         /// <summary>
@@ -304,7 +302,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total from rolling the dice</returns>
         public static int d20(int nNumDice = 1)
         {
-            return global::NWN.Core.NWScript.d20(nNumDice);
+            return NWScriptRuntime.Current.d20(nNumDice);
         }
 
         /// <summary>
@@ -315,7 +313,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total from rolling the dice</returns>
         public static int d100(int nNumDice = 1)
         {
-            return global::NWN.Core.NWScript.d100(nNumDice);
+            return NWScriptRuntime.Current.d100(nNumDice);
         }
 
         /// <summary>
@@ -325,7 +323,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bPrepend">If TRUE, the message will be prefixed with "PRINTVECTOR:" (defaults to false)</param>
         public static void PrintVector(Vector3 vVector, bool bPrepend = false)
         {
-            global::NWN.Core.NWScript.PrintVector(vVector, bPrepend ? 1 : 0);
+            NWScriptRuntime.Current.PrintVector(vVector, bPrepend);
         }
 
         /// <summary>
@@ -337,7 +335,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The created vector</returns>
         public static Vector3 Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f)
         {
-            return global::NWN.Core.NWScript.Vector(x, y, z);
+            return NWScriptRuntime.Current.Vector3(x, y, z);
         }
 
         /// <summary>
@@ -347,7 +345,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The floating point number</returns>
         public static float IntToFloat(int nInteger)
         {
-            return global::NWN.Core.NWScript.IntToFloat(nInteger);
+            return NWScriptRuntime.Current.IntToFloat(nInteger);
         }
 
         /// <summary>
@@ -357,7 +355,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The nearest integer</returns>
         public static int FloatToInt(float fFloat)
         {
-            return global::NWN.Core.NWScript.FloatToInt(fFloat);
+            return NWScriptRuntime.Current.FloatToInt(fFloat);
         }
 
         /// <summary>
@@ -367,7 +365,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The integer value</returns>
         public static int StringToInt(string sNumber)
         {
-            return global::NWN.Core.NWScript.StringToInt(sNumber);
+            return NWScriptRuntime.Current.StringToInt(sNumber);
         }
 
         /// <summary>
@@ -377,7 +375,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The floating point number</returns>
         public static float StringToFloat(string sNumber)
         {
-            return global::NWN.Core.NWScript.StringToFloat(sNumber);
+            return NWScriptRuntime.Current.StringToFloat(sNumber);
         }
     }
 }

@@ -15,6 +15,15 @@
 #   scripts/run-engine-tests.sh [--skip-build] [--filter <substring>]
 #                                [--arena-resref <resref>] [--configuration <cfg>]
 #                                [--server-home <dir>] [--timeout-minutes <n>]
+#                                [--entry host|native] [--collectible true|false]
+#
+# --entry picks the .NET entry the server boots through (the compose file boots the
+# staged one whatever the home's swlor.env says). host (the default): SWLOR.Game.Host
+# in dotnet/ loads the game and the test assembly from dotnet/game/ as a generation.
+# native: SWLOR.Game.Server's own ServerManager.Bootstrap with everything in dotnet/
+# (production's entry until the host is measured no slower). --collectible applies to
+# the host only: true or false; unset keeps the host's default (collectible outside
+# production).
 #
 # --timeout-minutes is a hard wall-clock limit on the containerized run (default
 # 90; a full sweep takes roughly 45). It is the backstop against a server that
@@ -33,6 +42,8 @@ ARENA_RESREF=""
 CONFIGURATION="Release"
 SERVER_HOME="${SWLOR_ENGINE_TEST_SERVER_HOME:-}"
 TIMEOUT_MINUTES=90
+ENTRY="host"
+COLLECTIBLE=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -60,12 +71,29 @@ while [ $# -gt 0 ]; do
             TIMEOUT_MINUTES="$2"
             shift 2
             ;;
+        --entry)
+            ENTRY="$2"
+            shift 2
+            ;;
+        --collectible)
+            COLLECTIBLE="$2"
+            shift 2
+            ;;
         *)
             echo "Unknown argument: $1" >&2
             exit 2
             ;;
     esac
 done
+
+case "$ENTRY" in
+    host|native) ;;
+    *) echo "--entry must be host or native, not '$ENTRY'." >&2; exit 2 ;;
+esac
+case "$COLLECTIBLE" in
+    ""|true|false) ;;
+    *) echo "--collectible must be true or false, not '$COLLECTIBLE'." >&2; exit 2 ;;
+esac
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -102,6 +130,16 @@ COMPOSE_FILE="$REPO_ROOT/SWLOR.Game.Server/Docker/docker-compose.enginetests.yml
 # stack even though both may use the same server home directory.
 COMPOSE_PROJECT="swlor-engine-tests"
 DOTNET_OUTPUT_DIR="$SERVER_HOME/dotnet"
+# The host entry stages the host in dotnet/ and the game build (with the test assembly) in
+# dotnet/game/; the native entry stages the game build in dotnet/ itself.
+HOST_PROJECT="$REPO_ROOT/SWLOR.Game.Host/SWLOR.Game.Host.csproj"
+if [ "$ENTRY" = "host" ]; then
+    GAME_STAGING_DIR="$DOTNET_OUTPUT_DIR/game"
+    ENTRY_ASSEMBLY_NAME="SWLOR.Game.Host"
+else
+    GAME_STAGING_DIR="$DOTNET_OUTPUT_DIR"
+    ENTRY_ASSEMBLY_NAME="SWLOR.Game.Server"
+fi
 REPORT_PATH="$SERVER_HOME/app_logs/engine_tests/engine-test-results.json"
 
 section() {
@@ -119,6 +157,13 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
         echo "dotnet build failed" >&2
         exit 1
     fi
+    if [ "$ENTRY" = "host" ]; then
+        dotnet build "$HOST_PROJECT" -c "$CONFIGURATION" -p:RunPostBuildEvent=Never
+        if [ $? -ne 0 ]; then
+            echo "dotnet build of SWLOR.Game.Host failed" >&2
+            exit 1
+        fi
+    fi
 
     # BOTH outputs are staged, game project first. A referenced project's DLL is copied into
     # the referencing project's output, but its runtimeconfig.json/deps.json are NOT - and
@@ -127,30 +172,42 @@ if [ "$SKIP_BUILD" -eq 0 ]; then
     # top to add the test assembly.
     GAME_OUTPUT_DIR="$REPO_ROOT/SWLOR.Game.Server/bin/$CONFIGURATION/net10.0"
     ENGINE_TEST_OUTPUT_DIR="$REPO_ROOT/SWLOR.Game.Server.EngineTests/bin/$CONFIGURATION/net10.0"
+    HOST_OUTPUT_DIR="$REPO_ROOT/SWLOR.Game.Host/bin/$CONFIGURATION/net10.0"
     for dir in "$GAME_OUTPUT_DIR" "$ENGINE_TEST_OUTPUT_DIR"; do
         if [ ! -d "$dir" ]; then
             echo "Expected build output directory not found: $dir" >&2
             exit 1
         fi
     done
+    if [ "$ENTRY" = "host" ] && [ ! -d "$HOST_OUTPUT_DIR" ]; then
+        echo "Expected build output directory not found: $HOST_OUTPUT_DIR" >&2
+        exit 1
+    fi
 
-    section "Deploying build output to $DOTNET_OUTPUT_DIR"
+    section "Deploying build output to $DOTNET_OUTPUT_DIR ($ENTRY entry)"
     # Every staging step is checked: silently running the test container against a stale
     # or partially copied assembly would produce a passing report for the wrong build.
     if ! rm -rf "$DOTNET_OUTPUT_DIR"; then
         echo "Failed to remove previous staging directory $DOTNET_OUTPUT_DIR" >&2
         exit 1
     fi
-    if ! mkdir -p "$DOTNET_OUTPUT_DIR"; then
-        echo "Failed to create staging directory $DOTNET_OUTPUT_DIR" >&2
+    if ! mkdir -p "$GAME_STAGING_DIR"; then
+        echo "Failed to create staging directory $GAME_STAGING_DIR" >&2
         exit 1
     fi
-    for dir in "$GAME_OUTPUT_DIR" "$ENGINE_TEST_OUTPUT_DIR"; do
-        if ! cp -r "$dir"/. "$DOTNET_OUTPUT_DIR"/; then
-            echo "Failed to stage build output into $DOTNET_OUTPUT_DIR" >&2
+    if [ "$ENTRY" = "host" ]; then
+        if ! cp -r "$HOST_OUTPUT_DIR"/. "$DOTNET_OUTPUT_DIR"/; then
+            echo "Failed to stage the host into $DOTNET_OUTPUT_DIR" >&2
             exit 1
         fi
-        echo "Copied $dir -> $DOTNET_OUTPUT_DIR"
+        echo "Copied $HOST_OUTPUT_DIR -> $DOTNET_OUTPUT_DIR"
+    fi
+    for dir in "$GAME_OUTPUT_DIR" "$ENGINE_TEST_OUTPUT_DIR"; do
+        if ! cp -r "$dir"/. "$GAME_STAGING_DIR"/; then
+            echo "Failed to stage build output into $GAME_STAGING_DIR" >&2
+            exit 1
+        fi
+        echo "Copied $dir -> $GAME_STAGING_DIR"
     done
 
 else
@@ -162,14 +219,32 @@ fi
 # revisions of this script, before the harness was its own assembly) the server
 # would boot, schedule nothing, and burn the entire wall clock before failing.
 # Fail here in a second instead.
-if [ ! -f "$DOTNET_OUTPUT_DIR/SWLOR.Game.Server.EngineTests.dll" ]; then
-    echo "$DOTNET_OUTPUT_DIR is missing SWLOR.Game.Server.EngineTests.dll - no engine tests would run. Re-run without --skip-build to stage it." >&2
+if [ ! -f "$GAME_STAGING_DIR/SWLOR.Game.Server.EngineTests.dll" ]; then
+    echo "$GAME_STAGING_DIR is missing SWLOR.Game.Server.EngineTests.dll - no engine tests would run. Re-run without --skip-build (with --entry $ENTRY) to stage it." >&2
     exit 1
 fi
-if [ ! -f "$DOTNET_OUTPUT_DIR/SWLOR.Game.Server.runtimeconfig.json" ]; then
-    echo "$DOTNET_OUTPUT_DIR is missing SWLOR.Game.Server.runtimeconfig.json - the NWNX .NET host cannot boot. Re-run without --skip-build to stage it." >&2
+if [ ! -f "$GAME_STAGING_DIR/SWLOR.Game.Server.dll" ]; then
+    echo "$GAME_STAGING_DIR is missing SWLOR.Game.Server.dll - the $ENTRY entry has no game to load. Re-run without --skip-build (with --entry $ENTRY) to stage it." >&2
     exit 1
 fi
+if [ ! -f "$DOTNET_OUTPUT_DIR/$ENTRY_ASSEMBLY_NAME.runtimeconfig.json" ]; then
+    echo "$DOTNET_OUTPUT_DIR is missing $ENTRY_ASSEMBLY_NAME.runtimeconfig.json - the NWNX .NET host cannot boot the $ENTRY entry. Re-run without --skip-build (with --entry $ENTRY) to stage it." >&2
+    exit 1
+fi
+
+# The compose file boots the entry staged above (docker-compose.enginetests.yml).
+export SWLOR_ENGINE_TEST_DOTNET_ENTRY="$ENTRY"
+if [ "$ENTRY" = "host" ]; then
+    export SWLOR_ENGINE_TEST_DOTNET_ASSEMBLY="/nwn/home/dotnet/SWLOR.Game.Host"
+    export SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT="SWLOR.Game.Host.Bootstrap.NativeBootstrap"
+    export SWLOR_ENGINE_TEST_DOTNET_METHOD="Initialize"
+else
+    export SWLOR_ENGINE_TEST_DOTNET_ASSEMBLY="/nwn/home/dotnet/SWLOR.Game.Server"
+    export SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT="SWLOR.Game.Server.Core.ServerManager"
+    export SWLOR_ENGINE_TEST_DOTNET_METHOD="Bootstrap"
+fi
+export SWLOR_ENGINE_TEST_GAME_COLLECTIBLE="$COLLECTIBLE"
+echo "Booting the $ENTRY entry ($SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT.$SWLOR_ENGINE_TEST_DOTNET_METHOD), collectible='$COLLECTIBLE'."
 
 section "Running engine tests via docker compose (server home: $SERVER_HOME)"
 export SWLOR_ENGINE_TEST_FILTER="$FILTER"
@@ -327,6 +402,7 @@ for path in cryptographic_secret nwn.ini nwnplayer.ini settings.tml; do
 done
 
 rm -f /nwn/home/app_logs/engine_tests/engine-test-results.json
+rm -rf /nwn/home/app_logs/engine_tests/characterization
 : > "$snapshot"
 chmod 0600 "$snapshot"
 
@@ -396,6 +472,19 @@ if [ "$PERMISSION_RESTORE_EXIT_CODE" -ne 0 ]; then
 fi
 
 echo "docker compose exit code: $COMPOSE_EXIT_CODE"
+
+# SWLOR_UPDATE_SNAPSHOTS=1: the characterization scenarios wrote the snapshots that differ from the checked-in ones
+# next to the report. Copy them into the project so the next build embeds them, then clear the output.
+CHARACTERIZATION_OUTPUT="$SERVER_HOME/app_logs/engine_tests/characterization"
+if [ -d "$CHARACTERIZATION_OUTPUT" ]; then
+    if [ "${SWLOR_UPDATE_SNAPSHOTS:-}" = "1" ]; then
+        SNAPSHOT_TARGET="$REPO_ROOT/SWLOR.Game.Server.EngineTests/Characterization/Snapshots"
+        mkdir -p "$SNAPSHOT_TARGET"
+        cp -R "$CHARACTERIZATION_OUTPUT/." "$SNAPSHOT_TARGET/"
+        echo "Copied updated characterization snapshots to $SNAPSHOT_TARGET"
+    fi
+    rm -rf "$CHARACTERIZATION_OUTPUT"
+fi
 
 section "Engine test results"
 if [ ! -f "$REPORT_PATH" ]; then

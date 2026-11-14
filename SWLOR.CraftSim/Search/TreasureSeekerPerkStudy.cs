@@ -1,12 +1,9 @@
 using SWLOR.CraftSim.Gates;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
-using SWLOR.Game.Server.Service.LootService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.ScavengeService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
+using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Search
@@ -33,7 +30,7 @@ namespace SWLOR.CraftSim.Search
                 foreach (var bonus in perks[perk].PerkLevels[level].StatBonuses)
                 {
                     totals.TryGetValue(bonus.Stat, out var current);
-                    totals[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(0));
+                    totals[bonus.Stat] = StatRules.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(0));
                 }
             }
 

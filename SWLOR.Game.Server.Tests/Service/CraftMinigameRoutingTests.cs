@@ -1,16 +1,34 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 /// <summary>Covers the routing from a crafting skill to the window that crafts it.</summary>
 public class CraftMinigameRoutingTests
 {
+    // The craft rules reach the crafting service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private sealed record Declaration(SkillType Skill, GuiWindowType Window, CraftMinigameType Minigame) : ICraftMinigameRoute;
 
     private static IEnumerable<SkillType> CraftingSkills() =>
@@ -145,9 +163,9 @@ public class CraftMinigameRoutingTests
             directory = directory.Parent;
         directory.Should().NotBeNull();
 
-        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Service", "Item.cs"));
+        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Domain", "Items", "ItemService.cs"));
 
-        source.Should().Contain("CraftMinigameRouting.IsAnyCraftWindowOpen(creature)");
+        source.Should().Contain("_craftMinigameRouting.IsAnyCraftWindowOpen(creature)");
         source.Should().NotContain("Gui.IsWindowOpen(creature, GuiWindowType.Craft)",
             "a minigame's window must block equipping");
     }

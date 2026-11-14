@@ -4,18 +4,19 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -129,6 +130,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadAppearances()
         {

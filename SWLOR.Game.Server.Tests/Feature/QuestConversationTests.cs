@@ -6,25 +6,38 @@ using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Quests;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 [NonParallelizable]
 public sealed partial class QuestConversationTests
 {
-    private object _originalItemNames = null!;
-    private static PropertyInfo ItemNameCache => typeof(Cache)
-        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
+    // The guild service is an instance behind the static Guild class: the fixture loads it once into a container of its
+    // own and installs that container for every test, as the server's boot does for the facades.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     [OneTimeSetUp]
     public void LoadItemNamesFromBlueprintsForGuildQuestDefinitions()
     {
-        Guild.LoadData();
-        NPCGroup.CacheData();
+        _facades = new FacadeContainer();
+        using (_facades.Install())
+        {
+            Guild.LoadData();
+            NPCGroup.CacheData();
+        }
+
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null && !Directory.Exists(Path.Combine(directory.FullName, "Module", "uti")))
             directory = directory.Parent;
@@ -32,12 +45,14 @@ public sealed partial class QuestConversationTests
         var names = Directory.EnumerateFiles(Path.Combine(directory!.FullName, "Module", "uti"), "*.uti.json")
             .ToDictionary(path => Path.GetFileName(path)[..^".uti.json".Length], path =>
                 JObject.Parse(File.ReadAllText(path))["LocalizedName"]?["value"]?["0"]?.Value<string>() ?? string.Empty);
-        _originalItemNames = ItemNameCache.GetValue(null)!;
-        ItemNameCache.SetValue(null, names);
+        CacheItemNames.Seed(_facades, names);
     }
 
     [OneTimeTearDown]
-    public void RestoreItemNames() => ItemNameCache.SetValue(null, _originalItemNames);
+    public void RestoreItemNames()
+    {
+        _facades.Dispose();
+    }
 
     private static Dictionary<string, QuestDetail> BuildQuests() => typeof(IQuestListDefinition).Assembly
         .GetTypes()
@@ -229,7 +244,7 @@ public sealed partial class QuestConversationTests
                     Grants.Add((resref, player, quantity));
                     return 500;
                 }
-                public static void GiveKeyItem(uint player, SWLOR.Game.Server.Service.KeyItemService.KeyItemType type) { }
+                public static void GiveKeyItem(uint player, SWLOR.Game.Server.Domain.Items.KeyItemType type) { }
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)

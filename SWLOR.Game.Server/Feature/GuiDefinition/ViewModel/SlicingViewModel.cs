@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.GuiDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Crafting;
+using Slicing = SWLOR.Game.Server.Domain.Crafting.Slicing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const string HelpPartial = "SLICING_HELP";
 
-        private readonly List<SlicingSession.EligibleSlicingTool> _tools = new();
+        private readonly List<EligibleSlicingTool> _tools = new();
         private int _toolIndex;
         private bool _isSwapMode;
         private bool _suppressCloseFailure;
@@ -305,7 +306,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshToolDisplay();
         }
 
-        private static bool CanBeginSwap(SlicingSession.ActiveSlicingSession session)
+        private static bool CanBeginSwap(ActiveSlicingSession session)
         {
             return session.SelectedIndex >= 0 &&
                    session.SelectedIndex < session.Board.Tiles.Count &&
@@ -359,7 +360,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private static string GetTileImage(
-            SlicingSession.ActiveSlicingSession session,
+            ActiveSlicingSession session,
             int index,
             bool powered,
             int integrity)
@@ -390,7 +391,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return $"{family}{theme}{type}{tile.Orientation}{state}";
         }
 
-        private static string GetTileTooltip(SlicingSession.ActiveSlicingSession session, int index)
+        private static string GetTileTooltip(ActiveSlicingSession session, int index)
         {
             var tile = session.Board.Tiles[index];
             var identity = tile.Type switch

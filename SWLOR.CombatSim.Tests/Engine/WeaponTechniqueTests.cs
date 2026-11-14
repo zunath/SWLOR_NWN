@@ -5,10 +5,9 @@ using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Engine;
@@ -219,12 +218,12 @@ public class WeaponTechniqueTests
     }
     [Test] public void PureCombatMath_UsesRatingAccuracyAndNativeDelayRounding()
     {
-        Combat.CalculateHitRate(120,100,0).Should().Be(85);
-        Combat.CalculateHitRate(125,100,0).Should().Be(87);
-        Combat.CalculateHitRate(120,WeaponCombatState.Adjust(100,20),0).Should().Be(75);
-        Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(220,0,15,0)).Should().Be(1367);
-        Combat.CalculateDamageRange(100,100,20,100,20,0).Should().Be((70,100));
-        Combat.CalculateDamageRange(100,100,20,100,20,2).Should().Be((100,125));
+        CombatRules.CalculateHitRate(120,100,0).Should().Be(85);
+        CombatRules.CalculateHitRate(125,100,0).Should().Be(87);
+        CombatRules.CalculateHitRate(120,WeaponCombatState.Adjust(100,20),0).Should().Be(75);
+        CombatRules.CalculateEffectiveAttackDelay(CombatRules.CalculateAttackDelayMilliseconds(220,0,15,0)).Should().Be(1367);
+        CombatRules.CalculateDamageRange(100,100,20,100,20,0).Should().Be((70,100));
+        CombatRules.CalculateDamageRange(100,100,20,100,20,2).Should().Be((100,125));
     }
     [Test] public void NativeSwingFloor_CarriesFractionalAttacksBetweenAnimations()
     {

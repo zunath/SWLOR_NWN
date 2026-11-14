@@ -2,8 +2,7 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.DialogDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

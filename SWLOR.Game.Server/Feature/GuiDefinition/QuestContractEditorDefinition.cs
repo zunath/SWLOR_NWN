@@ -1,9 +1,9 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.Engine;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 row.AddTextEdit()
                     .SetPlaceholder("Title")
-                    .SetMaxLength(QuestContractBoard.MaxTitleLength)
+                    .SetMaxLength(QuestContractBoardService.MaxTitleLength)
                     .BindValue(model => model.Title)
                     .SetHeight(34f);
             });
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddTextEdit()
                     .SetPlaceholder("Description")
                     .SetIsMultiline(true)
-                    .SetMaxLength(QuestContractBoard.MaxDescriptionLength)
+                    .SetMaxLength(QuestContractBoardService.MaxDescriptionLength)
                     .BindValue(model => model.Description)
                     .SetHeight(80f);
             });
@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.SetHeight(40f);
 
                 row.AddLabel()
-                    .SetText($"Quantity (1-{QuestContractBoard.MaxObjectiveQuantity}):")
+                    .SetText($"Quantity (1-{QuestContractBoardService.MaxObjectiveQuantity}):")
                     .SetWidth(135f);
 
                 row.AddTextEdit()
@@ -294,7 +294,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.SetHeight(22f);
 
                 row.AddLabel()
-                    .SetText($"Current Objectives (max {QuestContractBoard.MaxObjectives})")
+                    .SetText($"Current Objectives (max {QuestContractBoardService.MaxObjectives})")
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
 
@@ -372,7 +372,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.SetHeight(22f);
 
                 row.AddLabel()
-                    .SetText($"Reward Items (max {QuestContractBoard.MaxRewardItems})")
+                    .SetText($"Reward Items (max {QuestContractBoardService.MaxRewardItems})")
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
 

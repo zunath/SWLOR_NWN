@@ -1,32 +1,17 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class DialogPrivacyTests
 {
     [Test]
-    public void SpawnedNpcDialogs_DefaultToPrivateConversations()
-    {
-        var source = ReadSource("SWLOR.Game.Server", "Service", "Spawn.cs").Replace("\r\n", "\n");
-        var adjustScripts = ExtractMethod(source, "private static void AdjustScripts(uint spawn)");
-
-        adjustScripts.Should().Contain("if (GetIsPC(spawn) || GetIsDM(spawn) || GetIsDMPossessed(spawn))");
-        adjustScripts.Should().Contain("ObjectPlugin.SetConversationPrivate(spawn, true);");
-        adjustScripts.IndexOf("ObjectPlugin.SetConversationPrivate(spawn, true);", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(adjustScripts.IndexOf("SetEventScript(spawn, EventScript.Creature_OnSpawnIn, \"x2_def_spawn\");", StringComparison.Ordinal));
-    }
-
-    [Test]
     public void NuiNpcConversations_ForcePrivateConversations()
     {
-        var source = ReadSource("SWLOR.Game.Server", "Service", "Conversation.cs").Replace("\r\n", "\n");
-        var routerSource = ReadSource("SWLOR.Game.Server", "Service", "ConversationMenu.cs");
         var scriptNames = ReadSource("SWLOR.Game.Server", "Core", "ScriptName.cs");
         var defaultConversationScript = ReadSource("Module", "nss", "nw_c2_default4.nss").Replace("\r\n", "\n");
-        var startAssigned = ExtractMethod(source, "public static void StartAssignedCreatureConversation()");
-        var makeCreatureConversationPrivate = ExtractMethod(source, "private static void MakeCreatureConversationPrivate(uint creature)");
 
         var resetIndex = defaultConversationScript.IndexOf(
             "DeleteLocalInt(OBJECT_SELF, \"SWLOR_NUI_CONVO\");", StringComparison.Ordinal);
@@ -62,80 +47,15 @@ public class DialogPrivacyTests
         handledBranch.Should().NotContain("BeginConversation();");
         tailHooks.Should().Contain("SignalEvent(OBJECT_SELF, EventUserDefined(EVENT_DIALOGUE));");
         tailHooks.Should().Contain("ExecuteScript(\"crea_convo_aft\", OBJECT_SELF);");
-        source.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureConversationBefore)]\n        public static void StartAssignedCreatureConversation()");
-        startAssigned.Should().Contain("MakeCreatureConversationPrivate(OBJECT_SELF);");
-        startAssigned.IndexOf("MakeCreatureConversationPrivate(OBJECT_SELF);", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(startAssigned.IndexOf("TryStartAssigned(player, OBJECT_SELF)", StringComparison.Ordinal));
-        startAssigned.Should().Contain("SetLocalInt(OBJECT_SELF, NuiConversationHandledLocal, 1);");
-        startAssigned.Should().NotContain("EventsPlugin.SkipEvent();");
 
-        makeCreatureConversationPrivate.Should().Contain("GetIsPC(creature)");
-        makeCreatureConversationPrivate.Should().Contain("GetIsDM(creature)");
-        makeCreatureConversationPrivate.Should().Contain("GetIsDMPossessed(creature)");
-        makeCreatureConversationPrivate.Should().Contain("ObjectPlugin.SetConversationPrivate(creature, true);");
-
-        routerSource.Should().Contain("EventScript.Creature_OnDialogue => GetLastSpeaker()",
-            "the creature OnConversation event exposes its initiating player as the last speaker");
-        routerSource.Should().NotContain("EventScript.Creature_OnDialogue => GetPCSpeaker()",
-            "GetPCSpeaker is only populated after NWN has already entered a native conversation");
-    }
-
-    [Test]
-    public void DirectNuiRouter_PreservesCreatureGuardsAndDmPossession()
-    {
-        var conversationSource = ReadSource("SWLOR.Game.Server", "Service", "Conversation.cs")
-            .Replace("\r\n", "\n");
-        var routerSource = ReadSource("SWLOR.Game.Server", "Service", "ConversationMenu.cs")
-            .Replace("\r\n", "\n");
-        var aiSource = ReadSource("SWLOR.Game.Server", "Service", "AI.cs")
-            .Replace("\r\n", "\n");
-        var participantGuard = ExtractMethod(
-            conversationSource, "internal static bool IsValidParticipant(uint player)");
-        var assignedStart = ExtractMethod(
-            conversationSource, "public static void StartAssignedCreatureConversation()");
-        var graphStart = ExtractMethod(
-            conversationSource, "public static void Start(\n            uint player,");
-        var openSession = ExtractMethod(
-            conversationSource, "public static void OpenSession(");
-        var objectRoute = ExtractMethod(
-            routerSource, "public static void StartFromObjectEvent()");
-        var aiFallback = ExtractMethod(
-            aiSource, "public static void CreatureConversation()");
-        var creatureGuard = ExtractMethod(
-            routerSource, "private static bool CanStartCreatureConversation(uint creature)");
-        var menuStart = ExtractMethod(
-            routerSource, "public static void Start(uint player, uint owner, string name,");
-
-        participantGuard.Should().Contain("GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player)");
-        assignedStart.Should().Contain("if (!IsValidParticipant(player))");
-        graphStart.Should().Contain("if (!IsValidParticipant(player))");
-        openSession.Should().Contain("if (GetIsDMPossessed(player))");
-        openSession.Should().Contain("uiTarget = player;");
-        openSession.Should().Contain("player = GetMaster(player);");
-        openSession.IndexOf("player = GetMaster(player);", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(openSession.IndexOf(
-                "Gui.TogglePlayerWindow(player, GuiWindowType.Conversation, payload, tetherObject, uiTarget);",
-                StringComparison.Ordinal),
-                "possessed DMs use their master-owned GUI state while the creature remains the NUI target");
-        objectRoute.Should().Contain("if (!Conversation.IsValidParticipant(player))");
-        objectRoute.Should().Contain("eventScript == EventScript.Creature_OnDialogue");
-        objectRoute.Should().Contain("!CanStartCreatureConversation(owner)");
-        menuStart.Should().Contain("if (!Conversation.IsValidParticipant(player))");
-
-        objectRoute.Should().Contain("var owner = OBJECT_SELF;");
-        objectRoute.Should().Contain(
-            "AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));");
-        objectRoute.Should().NotContain("ActionStartConversation(OBJECT_SELF");
-        aiFallback.Should().Contain("var owner = OBJECT_SELF;");
-        aiFallback.Should().Contain(
-            "AssignCommand(talker, () => ActionStartConversation(owner, conversation, true, false));");
-        aiFallback.Should().NotContain("ActionStartConversation(OBJECT_SELF");
-
-        creatureGuard.Should().Contain("effectType == EffectTypeScript.Petrify");
-        creatureGuard.Should().Contain("if (GetIsDead(creature))");
-        creatureGuard.Should().Contain("return GetCommandable(creature) || isCharmed;");
+        // The handler is on the instance class, where the script registry binds it to the container's instance. What it
+        // does (private before the window opens, the handled flag, the player/DM/possessed guards) is proved by
+        // ConversationServiceTests, and that the creature event routes the last speaker by ConversationMenuServiceTests.
+        typeof(ConversationService).GetMethod(nameof(ConversationService.StartAssignedCreatureConversation))!
+            .GetCustomAttributes(typeof(NWNEventHandler), false)
+            .Cast<NWNEventHandler>()
+            .Select(attribute => attribute.Script)
+            .Should().BeEquivalentTo(new[] { ScriptName.OnCreatureConversationBefore });
     }
 
     [Test]
@@ -143,8 +63,8 @@ public class DialogPrivacyTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Service",
-            "ConversationService",
+            "Domain",
+            "Foundation",
             "ConversationMenuSession.cs");
 
         source.Should().NotContain("SetCustomToken");

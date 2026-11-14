@@ -4,13 +4,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PvpCombatService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -62,7 +61,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 int DamageTo(uint target, uint source) =>
-                    Combat.ApplyDamageTakenModifiers(target, 100, source, CombatDamageType.Physical, isLandedAttack: false);
+                    GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(target, 100, source, CombatDamageType.Physical, isLandedAttack: false);
 
                 var npcDamageBeforeTheFight = DamageTo(npc, defender.Creature);
                 PvpCombat.SetCombatSecondsForTesting(defender.Creature, 0);
@@ -97,13 +96,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 PvpCombat.EndForTesting(protector.Creature);
                 ctx.Assert(!PvpCombat.IsInPvpCombat(protector.Creature), "the protector starts outside PvP combat");
 
-                var transferred = Combat.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
+                var transferred = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
                     CombatDamageType.Physical, CombatDamageDeliveryType.Transferred);
                 ctx.Assert(PvpCombat.IsInPvpCombat(protector.Creature), "the protector enters PvP combat");
                 ctx.Assert(PvpCombat.IsInPvpCombat(attacker.Creature), "the attacker stays in PvP combat");
 
                 PvpCombat.SetCombatSecondsForTesting(protector.Creature, 300);
-                ctx.AssertEqual(transferred, Combat.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
+                ctx.AssertEqual(transferred, GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(protector.Creature, 50, attacker.Creature,
                         CombatDamageType.Physical, CombatDamageDeliveryType.Transferred, isLandedAttack: false),
                     "damage passed on is not doubled again, however long the protector has fought");
             }
@@ -233,12 +232,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(!PvpCombat.IsInPvpCombat(owner.Creature), "the trap's owner is not in PvP combat yet");
 
                 // A tier 1 kit trap whose disarm fails, as Traps does when the roll misses.
-                var recordType = typeof(Traps).GetNestedType("TrapRecord", BindingFlags.NonPublic);
+                var traps = CompositionRoot.ServerHost.Provider.GetService(typeof(ITrapsService));
+                var recordType = traps.GetType().GetNestedType("TrapRecord", BindingFlags.NonPublic);
                 var record = Activator.CreateInstance(recordType, nonPublic: true);
                 recordType.GetProperty("Owner").SetValue(record, owner.Creature);
                 recordType.GetProperty("Tier").SetValue(record, 1);
-                typeof(Traps).GetMethod("TriggerOnDisarmFailure", BindingFlags.Static | BindingFlags.NonPublic)
-                    .Invoke(null, new[] { record, victim.Creature });
+                traps.GetType().GetMethod("TriggerOnDisarmFailure", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(traps, new[] { record, victim.Creature });
 
                 await ctx.WaitUntilAsync(() => GetCurrentHitPoints(victim.Creature) < maximum, 5f, "the trap's hit to land");
                 ctx.AssertEqual(maximum - 40, GetCurrentHitPoints(victim.Creature), "the tier 1 trap's 20 damage is doubled at 5:00");
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task HitAsync(EngineTestContext ctx, uint attacker, uint target)
         {
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
-                Combat.ApplyTriggeredDamage(attacker, target, 5, CombatDamageType.Physical));
+                GameServices.CombatHitEffects.ApplyTriggeredDamage(attacker, target, 5, CombatDamageType.Physical));
         }
 
         private static async Task HealAsync(EngineTestContext ctx, uint healer, uint target, int amount)

@@ -1,11 +1,11 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
-using SWLOR.Game.Server.Service.ProspectingService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 /// Covers rebuilding a session's engine with the harvester's perks and style as they are now, which the window does when the style
 /// is chosen: allowed until the first action, and never after it, while an action is working, or once the session is over.
 /// </summary>
-public class ProspectingRefreshEffectsTests
+public class ProspectingRefreshEffectsTests : SkillFacadeFixture
 {
     private const uint Player = 11;
     private const uint Harvester = 22;
@@ -38,7 +38,10 @@ public class ProspectingRefreshEffectsTests
     [OneTimeSetUp]
     public void LoadTheXpChart()
     {
-        Skill.CacheXPChartData();
+        using (SkillFacades.Install())
+        {
+            Skill.CacheXPChartData();
+        }
     }
 
     [SetUp]
@@ -225,7 +228,7 @@ public class ProspectingRefreshEffectsTests
 
         lifecycle.RefreshEffects(session, null).Should().BeTrue();
 
-        session.Engine.Setup.Effects.Should().BeSameAs(ProspectingEffects.None);
+        session.Engine.Setup.Effects.Should().Be(ProspectingEffects.None);
         session.Request.Effects.Should().BeNull();
     }
 
@@ -241,7 +244,7 @@ public class ProspectingRefreshEffectsTests
         lifecycle.Abandon(styled, ProspectingEnd.WindowClosed);
         var plain = lifecycle.Begin(Request()).Session;
 
-        plain.Engine.Setup.Effects.Should().BeSameAs(ProspectingEffects.None);
+        plain.Engine.Setup.Effects.Should().Be(ProspectingEffects.None);
     }
 
     // Once the session has acted, is working, or is over.

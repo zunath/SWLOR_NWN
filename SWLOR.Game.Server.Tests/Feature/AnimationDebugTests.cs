@@ -4,17 +4,33 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class AnimationDebugTests
+public class AnimationDebugTests : SkillFacadeFixture
 {
+    private Support.FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new Support.FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private sealed class PreviewClock : TimeProvider
     {
         public DateTimeOffset Now = DateTimeOffset.Parse("2026-01-01T00:00:00Z");

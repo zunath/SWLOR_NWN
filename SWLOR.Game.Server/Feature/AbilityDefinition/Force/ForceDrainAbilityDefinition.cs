@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -125,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             int healPercent,
             int lowHPHealPercent)
         {
-            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator, target);
+            using var damageDerivedHealing = GameServices.CombatResources.BeginDamageDerivedHealing(activator, target);
             var damage = Ability.ApplyCombatImpact(
                 activator,
                 target,
@@ -146,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var effectiveHealPercent = IsBelowHalfHP(target)
                 ? lowHPHealPercent
                 : healPercent;
-            Combat.ApplyDamageDerivedHealing(activator, damage, effectiveHealPercent, isActivatedHealing: true);
+            GameServices.CombatResources.ApplyDamageDerivedHealing(activator, damage, effectiveHealPercent, isActivatedHealing: true);
             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Red_Black), activator, 1.0f);
         }
 

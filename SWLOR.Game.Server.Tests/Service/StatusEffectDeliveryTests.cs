@@ -2,15 +2,32 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class StatusEffectDeliveryTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void FiniteStatusEffects_CanBeExtendedWithoutBeingRemoved()
     {
@@ -59,7 +76,7 @@ public class StatusEffectDeliveryTests
     {
         var root = FindRepositoryRoot();
         var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"))).GetRoot();
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))).GetRoot();
         var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "ApplyStatusEffectInternal");
         var feedback = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
@@ -80,28 +97,28 @@ public class StatusEffectDeliveryTests
     public void ChildStatusApplication_PreservesItsInheritedAbilityOrigin()
     {
         var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"))).GetRoot();
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))).GetRoot();
         var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "ApplyStatusEffectInternal");
         var origin = method.DescendantNodes().OfType<AssignmentExpressionSyntax>()
             .Single(node => node.Left.ToString() == "statusEffect.OriginatingAbility");
         origin.Kind().Should().Be(SyntaxKind.CoalesceAssignmentExpression,
             "a periodic child effect inherits the parent's origin even during another active ability impact");
-        origin.Right.ToString().Should().Be("Ability.GetActiveAbilityImpactSummary(source)?.Ability");
+        origin.Right.ToString().Should().Be("GetActiveAbilityImpactSummary(source)?.Ability");
     }
 
     [Test]
     public void DurationRefresh_AppliesOutgoingBonusesBeforeResistanceWithoutRestartingTicks()
     {
         var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"))).GetRoot();
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))).GetRoot();
         var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "RefreshStatusEffectDuration");
         var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
         var outgoing = calls.Single(call => call.Expression.ToString() == "ApplyOutgoingStatusDurationAdjustments");
         outgoing.ArgumentList.Arguments.Select(arg => arg.ToString()).Should()
             .Equal("statusEffect", "source", "durationSeconds", "false");
-        var resisted = calls.Single(call => call.Expression.ToString() == "Resistance.CalculateResistedTicks");
+        var resisted = calls.Single(call => call.Expression.ToString() == "_resistance.CalculateResistedTicks");
         outgoing.Span.End.Should().BeLessThan(resisted.Span.Start);
         calls.Should().Contain(call => call.Expression.ToString() == "statusEffect.SetDurationSeconds");
         calls.Should().NotContain(call => call.Expression.ToString() == "statusEffect.ApplyEffect");
@@ -111,8 +128,8 @@ public class StatusEffectDeliveryTests
     public void ForceAffinity_DoesNotAlterStatusDuration()
     {
         var root = FindRepositoryRoot();
-        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
 
         statusEffectSource.Should().NotContain("ApplyActiveForceAffinityDurationAdjustment");
         abilitySource.Should().NotContain("ApplyActiveForceAffinityDurationAdjustment");
@@ -122,7 +139,7 @@ public class StatusEffectDeliveryTests
     public void SubdualSelfApplication_IsPassedToBothControlBudgetClamps()
     {
         var root = FindRepositoryRoot();
-        var statusSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var statusSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
         var calls = CSharpSyntaxTree.ParseText(statusSource).GetRoot().DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Where(call => call.Expression.ToString() == "ClampHardCrowdControlDurationTicks").ToArray();
@@ -130,8 +147,8 @@ public class StatusEffectDeliveryTests
         calls.Should().OnlyContain(call => call.ArgumentList.Arguments.Any(arg =>
             arg.NameColon != null && arg.NameColon.Name.Identifier.ValueText == "isSelfApplied" &&
             arg.Expression.ToString() == "source == creature"));
-        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Death.cs"))
-            .Should().Contain("StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);");
+        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "DeathService.cs"))
+            .Should().Contain("ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);");
     }
 
     [Test]

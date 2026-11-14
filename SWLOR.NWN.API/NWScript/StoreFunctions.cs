@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The amount of gold the store has, or -1 if not using gold, or -2 if store not found</returns>
         public static int GetStoreGold(uint oidStore)
         {
-            return global::NWN.Core.NWScript.GetStoreGold(oidStore);
+            return NWScriptRuntime.Current.GetStoreGold(oidStore);
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nGold">The amount of gold to set (-1 means the store does not use gold)</param>
         public static void SetStoreGold(uint oidStore, int nGold)
         {
-            global::NWN.Core.NWScript.SetStoreGold(oidStore, nGold);
+            NWScriptRuntime.Current.SetStoreGold(oidStore, nGold);
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The maximum buy price, or -1 if unlimited, or -2 if store not found</returns>
         public static int GetStoreMaxBuyPrice(uint oidStore)
         {
-            return global::NWN.Core.NWScript.GetStoreMaxBuyPrice(oidStore);
+            return NWScriptRuntime.Current.GetStoreMaxBuyPrice(oidStore);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nMaxBuy">The maximum amount the store will pay for any item (-1 means unlimited)</param>
         public static void SetStoreMaxBuyPrice(uint oidStore, int nMaxBuy)
         {
-            global::NWN.Core.NWScript.SetStoreMaxBuyPrice(oidStore, nMaxBuy);
+            NWScriptRuntime.Current.SetStoreMaxBuyPrice(oidStore, nMaxBuy);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The identify cost, or -1 if store will not identify items, or -2 if store not found</returns>
         public static int GetStoreIdentifyCost(uint oidStore)
         {
-            return global::NWN.Core.NWScript.GetStoreIdentifyCost(oidStore);
+            return NWScriptRuntime.Current.GetStoreIdentifyCost(oidStore);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nCost">The cost for identifying items (-1 means store will not identify items)</param>
         public static void SetStoreIdentifyCost(uint oidStore, int nCost)
         {
-            global::NWN.Core.NWScript.SetStoreIdentifyCost(oidStore, nCost);
+            NWScriptRuntime.Current.SetStoreIdentifyCost(oidStore, nCost);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nBonusMarkDown">Added to the store's default mark down percentage on items bought (-100 to 100)</param>
         public static void OpenStore(uint oStore, uint oPC, int nBonusMarkUp = 0, int nBonusMarkDown = 0)
         {
-            global::NWN.Core.NWScript.OpenStore(oStore, oPC, nBonusMarkUp, nBonusMarkDown);
+            NWScriptRuntime.Current.OpenStore(oStore, oPC, nBonusMarkUp, nBonusMarkDown);
         }
     }
 }

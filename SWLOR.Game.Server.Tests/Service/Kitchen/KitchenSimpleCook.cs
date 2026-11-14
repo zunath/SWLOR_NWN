@@ -1,5 +1,5 @@
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
 
 namespace SWLOR.Game.Server.Tests.Service.Kitchen;
 

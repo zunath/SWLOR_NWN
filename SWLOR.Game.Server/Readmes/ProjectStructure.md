@@ -40,7 +40,7 @@ SWLOR.Game.Server/
 ├── Extension/                         # Extension methods
 ├── Feature/                           # Game-specific content
 ├── Native/                            # Native engine integration
-├── Service/                           # Business logic services
+├── Domain/                            # Business logic: one folder per domain (services and their types)
 ├── Docker/                            # Deployment configuration
 ├── Properties/                        # Project properties
 ├── Readmes/                           # Documentation
@@ -127,9 +127,9 @@ SWLOR.Game.Server/
 - Database models
 - Entity relationships
 
-### 3. Service Layer
+### 3. Domain Layer
 
-**Purpose**: Business logic and game mechanics.
+**Purpose**: Business logic and game mechanics, one folder and namespace per domain (`Domain.<Domain>`).
 
 **Components**:
 - Game system services
@@ -259,7 +259,7 @@ dotnet build
 **By Layer**:
 - Core systems in `Core/`
 - Data models in `Entity/`
-- Business logic in `Service/`
+- Business logic in `Domain/`
 - Game content in `Feature/`
 - Native code in `Native/`
 

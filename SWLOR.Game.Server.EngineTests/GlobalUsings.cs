@@ -9,5 +9,5 @@ global using static SWLOR.NWN.API.NWScript.NWScript;
 // SWLOR.Game.Server.EngineTests.*, so it would otherwise need a per-file using
 // for the services (Ability, Perk, Combat, Stat, ...) and features (UsePerkFeat)
 // that virtually every test touches.
-global using SWLOR.Game.Server.Service;
+global using static SWLOR.Game.Server.Composition.GameServices;
 global using SWLOR.Game.Server.Feature;

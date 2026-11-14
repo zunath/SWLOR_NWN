@@ -2,13 +2,31 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class SpearAppearanceTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     [Test]
     public void PlayerSpearBlueprints_HaveEveryPartInTheAppearanceEditorCatalog()
     {
@@ -27,7 +45,7 @@ public class SpearAppearanceTests
                 continue;
 
             var noEconomy = (blueprint["VarTable"]?["value"] as JArray)?.Any(variable =>
-                variable["Name"]?["value"]?.Value<string>() == Item.NoEconomyVariable &&
+                variable["Name"]?["value"]?.Value<string>() == ItemService.NoEconomyVariable &&
                 variable["Type"]?["value"]?.Value<int>() == 1 &&
                 variable["Value"]?["value"]?.Value<int>() == 1) == true;
             var name = blueprint["LocalizedName"]?["value"]?["0"]?.Value<string>();

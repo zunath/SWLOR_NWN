@@ -2,22 +2,20 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Gameplay;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class ServerTasks
     {
-        private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
         private const int LifecycleNotificationColor = 15158332; // #E74C3C (red)
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time.
         // All times are in UTC.
-        private static TimeSpan RestartTime => new TimeSpan(0, 10, 0, 0); // 0 = Restarts happen at 6 AM eastern time
-        private static DateTime _nextNotification;
+        private static readonly TimeSpan RestartTime = new TimeSpan(0, 10, 0, 0); // 0 = Restarts happen at 6 AM eastern time
 
         /// <summary>
         /// Every six seconds, the server will check to see if an automated restart is required.
@@ -49,18 +47,31 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// When the server starts up, a log message will be written.
+        /// When the server starts up, a log message will be written, the play options and bans are set in the engine and
+        /// the boot-complete notification is sent. Boot only; <see cref="StartRestartReminders"/> runs right after it.
         /// </summary>
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The play options and bans stay set in the engine, and a reload sends no boot notification.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessBootUp()
         {
             Log.Write(LogGroup.Server, "Server is starting up.");
             ConfigureServerSettings();
             ApplyBans();
-            ScheduleRestartReminder();
             _ = SendServerLifecycleNotification("Server boot process is complete. Server is fully online and available for play.");
         }
 
+        /// <summary>
+        /// Starts the restart reminders after <see cref="ProcessBootUp"/>: the reminder state and its one-minute timer live
+        /// in the game build, so a hot reload runs it again.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public static void StartRestartReminders()
+        {
+            ScheduleRestartReminder();
+        }
+
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "A reload sends no boot notification.")]
         [NWNEventHandler(ScriptName.OnModulePreload)]
         public static void ProcessBootStart()
         {
@@ -70,7 +81,7 @@ namespace SWLOR.Game.Server.Feature
 
         public static void SendServerLifecycleNotificationForShutdown(string message)
         {
-            if (string.IsNullOrWhiteSpace(_appSettings.ServerNotificationWebhookUrl))
+            if (string.IsNullOrWhiteSpace(ServerTask.ServerNotificationWebhookUrl))
                 return;
 
             try
@@ -89,7 +100,7 @@ namespace SWLOR.Game.Server.Feature
         }
         public static async Task<bool> SendServerLifecycleNotification(string message)
         {
-            var url = _appSettings.ServerNotificationWebhookUrl;
+            var url = ServerTask.ServerNotificationWebhookUrl;
             if (string.IsNullOrWhiteSpace(url)) return false;
 
             var authorName = "SWLOR Server";
@@ -133,8 +144,7 @@ namespace SWLOR.Game.Server.Feature
         private static void ScheduleRestartReminder()
         {
             var bootNow = DateTime.UtcNow;
-            _nextNotification = new DateTime(bootNow.Year, bootNow.Month, bootNow.Day, bootNow.Hour, 0, 0)
-                .AddMinutes(1);
+            ServerTask.StartRestartReminders(bootNow);
 
             Scheduler.ScheduleRepeating(() =>
             {
@@ -146,7 +156,7 @@ namespace SWLOR.Game.Server.Feature
                     restartDate = restartDate.AddDays(1);
                 }
 
-                if (now >= _nextNotification)
+                if (ServerTask.IsRestartReminderDue(now))
                 {
                     var delta = restartDate - now;
                     var rebootString = Time.GetTimeLongIntervals(delta, false);
@@ -169,9 +179,7 @@ namespace SWLOR.Game.Server.Feature
                             SendMessageToPC(player, message);
                     }
 
-                    _nextNotification = delta.TotalMinutes <= 15
-                        ? now.AddMinutes(1)
-                        : now.AddHours(1);
+                    ServerTask.ScheduleNextRestartReminder(now, delta);
                 }
             }, TimeSpan.FromMinutes(1));
         }
@@ -180,6 +188,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a player enters the server, send them a greeting and a link to the Discord server.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "A login message.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void WelcomeMessage()
         {

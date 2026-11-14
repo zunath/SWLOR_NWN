@@ -1,15 +1,30 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class MimicryPotencyTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     /// <summary>Checks stack replacement, the three-stack cap, and independent expiry of Momentum and Overload.</summary>
     [Test]
     public void MomentumReplacementAndExpiry_PreserveOtherPotencySources()
@@ -46,11 +61,11 @@ public class MimicryPotencyTests
         foreach (var skill in Enum.GetValues<SkillType>())
         {
             // An invalid engine object also proves excluded paths do not query native stats.
-            Combat.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 100, skill, false)
+            GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 100, skill, false)
                 .Should().Be(100, $"{skill} auto-attacks are not Mimicry technique damage");
             if (skill != SkillType.Mimicry)
             {
-                Combat.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 100, skill, true)
+                GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 100, skill, true)
                     .Should().Be(100, $"{skill} abilities, including NPC originals, are excluded");
             }
         }
@@ -60,7 +75,7 @@ public class MimicryPotencyTests
     [Test]
     public void PotencyDamageModifier_PreservesControlOnlyAndImmuneImpacts()
     {
-        Combat.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 0, SkillType.Mimicry, true)
+        GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(uint.MaxValue, 0, SkillType.Mimicry, true)
             .Should().Be(0, "potency must never create damage for a zero-damage impact");
     }
 }

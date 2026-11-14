@@ -5,11 +5,10 @@ using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Scenario.Circuit;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Scenario
 {
@@ -51,7 +50,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
         {
             var recipe = Recipe(30);
             var parameters = (CircuitParameters)recipe.Detail.MinigameParameters;
-            var level = Craft.GetRecipeLevelDetail(30);
+            var level = ServerRecipeLevels.For(30);
             var gear = SharedData.Gear.Levels(SkillType.Engineering).Last();
             var request = new CraftEngineRequest(recipe, 30, gear, null, 1, new SeededMinigameRandom(1));
 

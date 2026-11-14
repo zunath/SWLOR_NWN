@@ -2,9 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -730,7 +731,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Core Resources",
                             "HP is health. FP fuels Force abilities. STM fuels non-Force abilities. The Character Sheet shows your current and maximum values."),
                         new ArticleBlock("Hits and Misses",
-                            $"Accuracy is compared against Evasion to decide whether an attack lands. Final hit chance is clamped between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent, so very high or very low stats still leave uncertainty. Bosses always have at least a {Combat.BossMinimumHitRate} percent chance to hit."),
+                            $"Accuracy is compared against Evasion to decide whether an attack lands. Final hit chance is clamped between {CombatRules.MinimumHitRate} and {CombatRules.MaximumHitRate} percent, so very high or very low stats still leave uncertainty. Bosses always have at least a {CombatQueriesService.BossMinimumHitRate} percent chance to hit."),
                         new ArticleBlock("Damage and Defense",
                             "Physical attacks use Physical DEF and Force attacks use Force DEF; higher defense is better. Fire, poison, electrical, and ice use matching resistances. Sonic has no dedicated resistance. For percentage damage-taken modifiers, lower values are better."),
                         new ArticleBlock("Status Resistance",
@@ -738,13 +739,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Critical Hits",
                             "Critical Rate raises your chance to critically hit, while Critical Damage makes critical hits stronger. The target's Vitality can affect the final critical chance."),
                         new ArticleBlock("Deflection and Guard",
-                            $"Melee Deflection can negate hostile melee weapon auto-attacks, and Ranged Deflection can negate hostile ranged weapon auto-attacks. Both require a weapon and no shield. Shield Deflection covers both melee and ranged weapon auto-attacks and completely replaces weapon deflection while a shield is equipped; the chances never stack or roll in sequence. Deflection does not work against activated combat abilities or Force powers. Each incoming weapon auto-attack gets its own deflection attempt, including both hands when dual wielding. Guard is a separate damage-stage outcome that reduces incoming physical damage by {Combat.BaseGuardDamageReductionPercent} to {Combat.MaximumGuardDamageReductionPercent} percent and increases enmity."),
+                            $"Melee Deflection can negate hostile melee weapon auto-attacks, and Ranged Deflection can negate hostile ranged weapon auto-attacks. Both require a weapon and no shield. Shield Deflection covers both melee and ranged weapon auto-attacks and completely replaces weapon deflection while a shield is equipped; the chances never stack or roll in sequence. Deflection does not work against activated combat abilities or Force powers. Each incoming weapon auto-attack gets its own deflection attempt, including both hands when dual wielding. Guard is a separate damage-stage outcome that reduces incoming physical damage by {CombatDamageTakenService.BaseGuardDamageReductionPercent} to {CombatDamageTakenService.MaximumGuardDamageReductionPercent} percent and increases enmity."),
                         new ArticleBlock("Combat Readiness",
                             "Combat Readiness increases activated ability damage, healing, and temporary HP. It does not reduce cooldowns.")
                     },
                     new[]
                     {
-                        new QuestionAnswer("Why did I miss?", $"Your Accuracy was checked against the target's Evasion, and final hit chance is always between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent."),
+                        new QuestionAnswer("Why did I miss?", $"Your Accuracy was checked against the target's Evasion, and final hit chance is always between {CombatRules.MinimumHitRate} and {CombatRules.MaximumHitRate} percent."),
                         new QuestionAnswer("What defense matters?", "Physical DEF helps against physical attacks, Force DEF helps against Force attacks, and resistances help against matching elemental or status types."),
                         new QuestionAnswer("Are deflection and guard the same?", "No. Deflection can stop a hostile weapon auto-attack from landing, while Guard reduces physical damage after the hit."),
                         new QuestionAnswer("Does readiness lower cooldowns?", "No. Combat Readiness improves activated ability damage, healing, and temporary HP.")
@@ -761,33 +762,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Character Progression",
                             "Skills that count toward the skill cap can reach 400 total ranks. Every 10 earned SP grants 1 AP, up to 40 AP. AP upgrades raise an attribute to at most 26; a racial bonus can take one attribute to 27."),
                         new ArticleBlock("Hit Chance",
-                            $"Final hit chance always lands between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent, however high or low Accuracy and Evasion are. Bosses always keep at least a {Combat.BossMinimumHitRate} percent chance to hit."),
+                            $"Final hit chance always lands between {CombatRules.MinimumHitRate} and {CombatRules.MaximumHitRate} percent, however high or low Accuracy and Evasion are. Bosses always keep at least a {CombatQueriesService.BossMinimumHitRate} percent chance to hit."),
                         new ArticleBlock("Critical Hits",
-                            $"Critical chance is at least {Combat.MinimumCriticalRate} percent and at most {Combat.MaximumCriticalRate} percent. Critical Damage bonuses add at most +{Combat.MaximumCriticalDamagePercentAdjustment} percent to a critical hit."),
+                            $"Critical chance is at least {CombatRules.MinimumCriticalRate} percent and at most {CombatRules.MaximumCriticalRate} percent. Critical Damage bonuses add at most +{CombatRules.MaximumCriticalDamagePercentAdjustment} percent to a critical hit."),
                         new ArticleBlock("Damage Dealt",
-                            $"Percentage damage bonuses together can raise a hit by at most +{Combat.MaximumDamageBonusPercent} percent, double its base damage. Flat damage bonuses are added on top of that cap, and stance changes to ordinary weapon auto-attack damage apply after it."),
+                            $"Percentage damage bonuses together can raise a hit by at most +{CombatRules.MaximumDamageBonusPercent} percent, double its base damage. Flat damage bonuses are added on top of that cap, and stance changes to ordinary weapon auto-attack damage apply after it."),
                         new ArticleBlock("Damage Taken",
-                            $"Percentage damage-taken reductions from your gear and effects stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined. Reductions from Leadership abilities, Guard, and elemental resistance are applied separately on top of that, and damage immunity effects stop a hit entirely."),
+                            $"Percentage damage-taken reductions from your gear and effects stop at {CombatRules.MaximumCombinedDamageReductionPercent} percent combined. Reductions from Leadership abilities, Guard, and elemental resistance are applied separately on top of that, and damage immunity effects stop a hit entirely."),
                         new ArticleBlock("Guard",
-                            $"Guard chance can reach {Stat.MaximumGuardChance} percent. A guarded hit loses {Combat.BaseGuardDamageReductionPercent} percent of its physical damage, and bonuses can raise that to at most {Combat.MaximumGuardDamageReductionPercent} percent."),
+                            $"Guard chance can reach {StatService.MaximumGuardChance} percent. A guarded hit loses {CombatDamageTakenService.BaseGuardDamageReductionPercent} percent of its physical damage, and bonuses can raise that to at most {CombatDamageTakenService.MaximumGuardDamageReductionPercent} percent."),
                         new ArticleBlock("Deflection",
-                            $"Melee and Ranged Deflection chance each stop at {Stat.DefaultMeleeDeflectionChanceCap} percent. Some perks and effects raise that cap, up to {Stat.MaximumDeflectionChanceCap} percent. Shield Deflection stops at {Stat.MaximumShieldDeflectionChance} percent."),
+                            $"Melee and Ranged Deflection chance each stop at {StatService.DefaultMeleeDeflectionChanceCap} percent. Some perks and effects raise that cap, up to {StatService.MaximumDeflectionChanceCap} percent. Shield Deflection stops at {StatService.MaximumShieldDeflectionChance} percent."),
                         new ArticleBlock("Resistances",
-                            $"Fire, Poison, Electrical, Ice, Mind, Mobility, Trauma, and Disruption resistance stop at {Resistance.MaximumResistance - 1} percent for players. Only temporary immunity effects reach {Resistance.MaximumResistance} percent."),
+                            $"Fire, Poison, Electrical, Ice, Mind, Mobility, Trauma, and Disruption resistance stop at {ResistanceRules.MaximumResistance - 1} percent for players. Only temporary immunity effects reach {ResistanceRules.MaximumResistance} percent."),
                         new ArticleBlock("Attack Speed and Movement",
-                            $"Attack speed bonuses shorten your attack delay by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent, and slows lengthen it by at most {Combat.MaximumAttackDelayAdjustmentPercent} percent. Movement speed stops at {(int)Math.Round(Stat.MaximumMovementSpeedMultiplier * 100)} percent of normal, or 100 percent while walking."),
+                            $"Attack speed bonuses shorten your attack delay by at most {CombatRules.MaximumAttackDelayAdjustmentPercent} percent, and slows lengthen it by at most {CombatRules.MaximumAttackDelayAdjustmentPercent} percent. Movement speed stops at {(int)Math.Round(StatService.MaximumMovementSpeedMultiplier * 100)} percent of normal, or 100 percent while walking."),
                         new ArticleBlock("Combat Readiness",
-                            $"Combat Readiness stops at {Stat.MaximumCombatReadinessPercent} percent."),
+                            $"Combat Readiness stops at {StatService.MaximumCombatReadinessPercent} percent."),
                         new ArticleBlock("Healing From Damage",
-                            $"Healing from damage you deal, such as lifesteal, is at most {Combat.MaximumDamageDerivedHealingPercentPerHit} percent of that hit's damage. An activated ability heals you at most {Combat.MaximumActivatedDamageHealingMaxHPPercent} percent of your maximum HP this way per use. Passive on-hit healing gives at most {Combat.MaximumPassiveDamageHealingMaxHPPercentPerHit} percent of your maximum HP per hit ({Combat.MaximumCooldownDamageHealingMaxHPPercentPerHit} percent for effects with their own cooldown) and at most {Combat.MaximumPassiveDamageHealingMaxHPPercentPerWindow} percent every {Combat.CombatHealingWindowSeconds} seconds. Healing from defeating enemies gives at most {Combat.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow} percent of your maximum HP every {Combat.CombatHealingWindowSeconds} seconds."),
+                            $"Healing from damage you deal, such as lifesteal, is at most {CombatRules.MaximumDamageDerivedHealingPercentPerHit} percent of that hit's damage. An activated ability heals you at most {CombatResourcesService.MaximumActivatedDamageHealingMaxHPPercent} percent of your maximum HP this way per use. Passive on-hit healing gives at most {CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerHit} percent of your maximum HP per hit ({CombatResourcesService.MaximumCooldownDamageHealingMaxHPPercentPerHit} percent for effects with their own cooldown) and at most {CombatResourcesService.MaximumPassiveDamageHealingMaxHPPercentPerWindow} percent every {CombatResourcesService.CombatHealingWindowSeconds} seconds. Healing from defeating enemies gives at most {CombatResourcesService.MaximumDefeatedEnemyHealingMaxHPPercentPerWindow} percent of your maximum HP every {CombatResourcesService.CombatHealingWindowSeconds} seconds."),
                         new ArticleBlock("Hard Crowd Control",
-                            $"Hard crowd control lasts at most {StatusEffect.MaximumHardCrowdControlDurationSeconds} seconds, however long it was meant to last. Against players it is then halved by the PvP rules.")
+                            $"Hard crowd control lasts at most {StatusEffectRules.MaximumHardCrowdControlDurationSeconds} seconds, however long it was meant to last. Against players it is then halved by the PvP rules.")
                     },
                     new[]
                     {
-                        new QuestionAnswer("Why does my hit chance never reach 100?", $"Final hit chance stops at {Combat.MaximumHitRate} percent, so more Accuracy past that point does not help."),
-                        new QuestionAnswer("What is the highest critical chance?", $"{Combat.MaximumCriticalRate} percent."),
-                        new QuestionAnswer("Can I become immune to damage?", $"Only through damage immunity effects. Otherwise percentage damage-taken reductions from your gear and effects stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined, and resistances stop at {Resistance.MaximumResistance - 1} percent outside temporary immunity effects."),
+                        new QuestionAnswer("Why does my hit chance never reach 100?", $"Final hit chance stops at {CombatRules.MaximumHitRate} percent, so more Accuracy past that point does not help."),
+                        new QuestionAnswer("What is the highest critical chance?", $"{CombatRules.MaximumCriticalRate} percent."),
+                        new QuestionAnswer("Can I become immune to damage?", $"Only through damage immunity effects. Otherwise percentage damage-taken reductions from your gear and effects stop at {CombatRules.MaximumCombinedDamageReductionPercent} percent combined, and resistances stop at {ResistanceRules.MaximumResistance - 1} percent outside temporary immunity effects."),
                         new QuestionAnswer("How high can attributes go?", "AP upgrades stop at 26. A racial bonus can raise one attribute to 27.")
                     },
                     new[] { "Combat Basics", "Attributes", "Skills", "Force Affinity", StatusEffectGuideTopics.TopicName, "PvP Combat" }),

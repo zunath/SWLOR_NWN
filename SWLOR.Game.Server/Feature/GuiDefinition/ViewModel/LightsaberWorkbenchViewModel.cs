@@ -1,18 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.LightsaberWorkbenchService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = GuiColor.Green;
 
             RefreshWeaponType();
-            SelectedLightColor = LightsaberWorkbench.MatchBladeLightColor;
+            SelectedLightColor = LightsaberWorkbenchService.MatchBladeLightColor;
             // Dim (5m) by default; the larger Normal (15m) light is opt-in.
             SelectedLightBrightnessIndex = 0;
             WatchOnClient(model => model.SelectedLightColor);
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
-            if (enhancementLevel - LightsaberWorkbench.EnhancementRecipeLevel > 5)
+            if (enhancementLevel - LightsaberWorkbenchService.EnhancementRecipeLevel > 5)
             {
                 FloatingTextStringOnCreature("That enhancement is too advanced for this workbench.", Player, false);
                 return false;
@@ -436,7 +436,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             return;
                         }
 
-                        if (GetTag(item) != LightsaberWorkbench.WeaponSubmissionTokenTag)
+                        if (GetTag(item) != LightsaberWorkbenchService.WeaponSubmissionTokenTag)
                         {
                             FloatingTextStringOnCreature("Item must be a Weapon Submission Token.", Player, false);
                             return;
@@ -488,7 +488,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             return _submissionItem == OBJECT_INVALID ||
                 (IsSelectedInputAvailable(_submissionItem, _submissionId) &&
-                 GetTag(_submissionItem) == LightsaberWorkbench.WeaponSubmissionTokenTag);
+                 GetTag(_submissionItem) == LightsaberWorkbenchService.WeaponSubmissionTokenTag);
         }
 
         public Action OnClickConstruct() => () =>
@@ -564,8 +564,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var resref = _weaponType == BaseItem.Saberstaff
-                ? LightsaberWorkbench.SaberstaffResref
-                : LightsaberWorkbench.LightsaberResref;
+                ? LightsaberWorkbenchService.SaberstaffResref
+                : LightsaberWorkbenchService.LightsaberResref;
 
             // Assemble and verify the appearance before handing the weapon to the player.
             var storage = GetObjectByTag("TEMP_ITEM_STORAGE");
@@ -578,7 +578,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var item = CreateItemOnObject(resref, storage);
             item = ModifyWeaponPart(item, AppearanceWeapon.Bottom, bottom.PartValue);
-            item = ModifyWeaponPart(item, AppearanceWeapon.Middle, LightsaberWorkbench.MiddlePartValue);
+            item = ModifyWeaponPart(item, AppearanceWeapon.Middle, LightsaberWorkbenchService.MiddlePartValue);
             item = ModifyWeaponPart(item, AppearanceWeapon.Top, topValue);
 
             if (!GetIsObjectValid(item))
@@ -588,7 +588,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            SetLocalBool(item, Item.PlayerProducedItemVariable, true);
+            SetLocalBool(item, ItemService.PlayerProducedItemVariable, true);
 
             // Hand the weapon to the player BEFORE its properties are edited. Merging two
             // enhancements of the same stat removes the pre-merge property, and that

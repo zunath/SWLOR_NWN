@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
-using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -194,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (GetItemCursedFlag(item) ||
                 GetPlotFlag(item) ||
-                GetLocalInt(item, PlayerMarket.NoMarketListingVariable) > 0)
+                GetLocalInt(item, PlayerMarketService.NoMarketListingVariable) > 0)
             {
                 FloatingTextStringOnCreature("This item cannot be sold on the market.", Player, false);
                 return;
@@ -265,7 +266,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var deserialized = ObjectPlugin.Deserialize(dbListing.Data);
                     if (!Item.TryAcquireItem(Player, deserialized))
                     {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                         return;
                     }
 

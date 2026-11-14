@@ -1,8 +1,9 @@
-using SWLOR.Game.Server.Service.SnippetService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using SWLOR.Toolset.Domain.GameData.GameCode;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Toolset.Domain.Conversations
 {
@@ -314,7 +315,7 @@ namespace SWLOR.Toolset.Domain.Conversations
 
         /// <summary>Standing is clamped to the runtime's range, same as <c>Faction.AdjustPlayerFactionStanding</c>.</summary>
         private static int ClampStanding(int value) =>
-            Math.Clamp(value, Game.Server.Service.Faction.MinimumFaction, Game.Server.Service.Faction.MaximumFaction);
+            Math.Clamp(value, FactionService.MinimumFaction, FactionService.MaximumFaction);
 
         /// <summary>Points only floor at zero, same as <c>Faction.AdjustPlayerFactionPoints</c> - there is no ceiling.</summary>
         private static int ClampPoints(int value) => Math.Max(0, value);

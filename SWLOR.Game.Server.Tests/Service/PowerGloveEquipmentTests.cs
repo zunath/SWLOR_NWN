@@ -1,28 +1,53 @@
 using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.NWN.API.Testing;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class PowerGloveEquipmentTests
 {
+    // The item groups and the weapon ability mappings are the item service's, which the Item facade resolves from a
+    // container; the service is the real one with its search for item definitions switched off.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
     [OneTimeSetUp]
     public void LoadPureWeaponMappings()
     {
-        Skill.LoadMappings();
-        foreach (var method in new[] { "LoadItemToDamageStatMapping", "LoadItemToAccuracyStatMapping" })
-            typeof(Item).GetMethod(method, BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, null);
+        _facades = new FacadeContainer(services =>
+            services.Replace(ServiceDescriptor.Singleton<IItemService, MappingOnlyItemService>()));
+        using (_facades.Install())
+        using (NWScriptRuntime.Override(new FakeNWScript()))
+        {
+            Skill.LoadMappings();
+            Item.CacheData();
+        }
     }
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     [Test]
     public void PairNoteIsAppendedOnceAndKeepsTheDescription()
@@ -31,10 +56,10 @@ public class PowerGloveEquipmentTests
 
         var noted = PowerGloveEquipment.GetPairDescription(existing);
 
-        noted.Should().Be($"{existing}\n{PowerGloveEquipment.PairDescriptionNote}");
+        noted.Should().Be($"{existing}\n{PowerGloveEquipmentService.PairDescriptionNote}");
         PowerGloveEquipment.GetPairDescription(noted).Should().Be(noted, "examining again adds nothing");
-        PowerGloveEquipment.GetPairDescription(string.Empty).Should().Be(PowerGloveEquipment.PairDescriptionNote);
-        PowerGloveEquipment.PairDescriptionNote.Should().MatchRegex("^[\\x20-\\x7E]+$", "game text is plain ASCII");
+        PowerGloveEquipment.GetPairDescription(string.Empty).Should().Be(PowerGloveEquipmentService.PairDescriptionNote);
+        PowerGloveEquipmentService.PairDescriptionNote.Should().MatchRegex("^[\\x20-\\x7E]+$", "game text is plain ASCII");
     }
 
     [Test]
@@ -103,8 +128,7 @@ public class PowerGloveEquipmentTests
     public void SavedPairRecoveryRequiresPreAreaPlayerSlotsAndUnchangedOwnership(
         bool isPlayer, bool hasArea, bool equippedPair, bool matchingOwners, bool cachedPairMatches, bool expected)
     {
-        var policy = typeof(PowerGloveEquipment).GetMethod("CanRestoreSavedPair", BindingFlags.Static | BindingFlags.NonPublic)!;
-        policy.Invoke(null, new object[] { isPlayer, hasArea, equippedPair, matchingOwners, cachedPairMatches })
+        PowerGloveEquipment.CanRestoreSavedPair(isPlayer, hasArea, equippedPair, matchingOwners, cachedPairMatches)
             .Should().Be(expected);
     }
 
@@ -134,7 +158,7 @@ public class PowerGloveEquipmentTests
         foreach (var field in new[] { "Cost", "AddCost" })
             item.GetProperty(field).GetProperty("value").GetInt32().Should().Be(0);
         var noEconomy = item.GetProperty("VarTable").GetProperty("value").EnumerateArray()
-            .Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == Item.NoEconomyVariable);
+            .Single(variable => variable.GetProperty("Name").GetProperty("value").GetString() == ItemService.NoEconomyVariable);
         noEconomy.GetProperty("Value").GetProperty("value").GetInt32().Should().Be(1);
     }
 
@@ -172,13 +196,13 @@ public class PowerGloveEquipmentTests
     [Test, NonParallelizable]
     public void DestroyedOwnerStateCannotSurviveIntoAReusedObjectId()
     {
-        var pairs = (Dictionary<uint, (uint Main, uint Companion)>)typeof(PowerGloveEquipment)
-            .GetField("Pairs", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-        var changing = (HashSet<uint>)typeof(PowerGloveEquipment)
-            .GetField("Changing", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-        var refreshing = (HashSet<uint>)typeof(PowerGloveEquipment)
-            .GetField("RefreshingAppearance", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-        var remove = typeof(PowerGloveEquipment).GetMethod("RemoveOwnerState", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var service = (PowerGloveEquipmentService)_facades.Get<IPowerGloveEquipmentService>();
+        var pairs = (Dictionary<uint, (uint Main, uint Companion)>)typeof(PowerGloveEquipmentService)
+            .GetField("_pairs", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(service)!;
+        var changing = (HashSet<uint>)typeof(PowerGloveEquipmentService)
+            .GetField("_changing", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(service)!;
+        var refreshing = (HashSet<uint>)typeof(PowerGloveEquipmentService)
+            .GetField("_refreshingAppearance", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(service)!;
         var originalPairs = pairs.ToArray();
         var originalChanging = changing.ToArray();
         var originalRefreshing = refreshing.ToArray();
@@ -196,15 +220,15 @@ public class PowerGloveEquipmentTests
                 refreshing.Add(actor);
             }
 
-            var removed = ((uint Main, uint Companion)?)remove.Invoke(null, new object[] { owner });
+            var removed = service.RemoveOwnerState(owner);
             removed.Should().Be((101u, 102u));
             pairs.Should().NotContainKey(owner);
             changing.Should().NotContain(owner);
             refreshing.Should().NotContain(owner);
-            remove.Invoke(null, new object[] { owner }).Should().BeNull();
+            service.RemoveOwnerState(owner).Should().BeNull();
 
             // An owner destroyed before a pair is cached must also release its reentrancy guards.
-            remove.Invoke(null, new object[] { uncachedOwner }).Should().BeNull();
+            service.RemoveOwnerState(uncachedOwner).Should().BeNull();
             changing.Should().NotContain(uncachedOwner);
             refreshing.Should().NotContain(uncachedOwner);
             pairs[other].Should().Be((201u, 202u));
@@ -212,7 +236,7 @@ public class PowerGloveEquipmentTests
             refreshing.Should().Contain(other);
 
             pairs[owner] = (301, 302);
-            ((ValueTuple<uint, uint>?)remove.Invoke(null, new object[] { owner })).Should().Be((301u, 302u));
+            service.RemoveOwnerState(owner).Should().Be((301u, 302u));
             pairs[other].Should().Be((201u, 202u));
         }
         finally

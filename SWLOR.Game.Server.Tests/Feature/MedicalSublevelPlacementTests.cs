@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Domain.Items;
 using System.Text.Json;
 
 namespace SWLOR.Game.Server.Tests.Feature;

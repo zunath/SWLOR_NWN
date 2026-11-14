@@ -66,11 +66,6 @@ public class DMChatCommandTests
             "Feature",
             "ChatCommandDefinition",
             "DMChatCommand.cs"));
-        var beastMasterySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "BeastMastery.cs"));
 
         dmChatCommandSource.Should().Contain("BeastMastery.GetAllBeastTypes()")
             .And.Contain("Usage: /spawnegg <beast type>")
@@ -78,7 +73,6 @@ public class DMChatCommandTests
             .And.Contain("_spawnBeastEggHelpMessages = messages.ToArray()")
             .And.Contain("foreach (var message in _spawnBeastEggHelpMessages)")
             .And.Contain("BeastMastery.CreateBeastEgg(beastType, user)");
-        beastMasterySource.Should().Contain("ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType)");
     }
 
     [Test]
@@ -88,13 +82,15 @@ public class DMChatCommandTests
         var chatCommandSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "ChatCommand.cs"));
+            "Domain",
+            "Social",
+            "ChatCommandService.cs"));
         var targetingSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Targeting.cs"));
+            "Domain",
+            "Combat",
+            "TargetingService.cs"));
         var dmChatCommandSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",

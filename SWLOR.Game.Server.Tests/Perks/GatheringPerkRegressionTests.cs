@@ -3,10 +3,8 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.ScavengeService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -78,30 +76,11 @@ public class GatheringPerkRegressionTests
     [Test]
     public void TreasureHunterAndCreditfinder_PreserveCreatureLootBonuses()
     {
-        var loot = ReadSource("Service", "Loot.cs");
-        var itemHit = ExtractMethod(loot, "public static void MarkCreditfinderAndTreasureHunterOnTarget()");
-        itemHit.Should().Contain("RecordWeaponHitFindBonuses(OBJECT_SELF, GetSpellTargetObject());");
-        var markTarget = ExtractMethod(loot, "public static void RecordWeaponHitFindBonuses(uint attacker, uint target)");
-        var spawnLoot = ExtractMethod(
-            loot,
-            "private static List<uint> SpawnLoot(uint source, uint receiver, string lootTableName, int chance, int attempts)");
-        var lootTable = ReadSource("Service", "LootService", "LootTable.cs");
+        // How a creature is marked by a hit and how its loot is spawned with the marks (the credit finder gold
+        // bonus, the rare find bonus on the drop chance and on the weights) is tested as behaviour in
+        // Domain/Items/LootServiceTests; this keeps the loot table side of the rare weight.
+        var lootTable = ReadSource("Domain", "Items", "LootTable.cs");
         var chooseItem = ExtractMethod(lootTable, "public LootTableItem GetRandomItemWithRareBonus(int rareBonusChance)");
-
-        markTarget.Should().Contain("Perk.GetPerkLevel(attacker, PerkType.CreditFinder)");
-        markTarget.Should().Contain("Perk.GetPerkLevel(attacker, PerkType.TreasureHunter) * 10");
-        markTarget.Should().Contain("var rareBonusChance = Math.Max(");
-        markTarget.Should().Contain("Stat.GetStatAdjustment(attacker, StatType.RareItemFindChance)");
-        markTarget.Should().Contain("if (creditFinderLevel > currentCreditFinder)");
-        markTarget.Should().Contain("SetLocalInt(target, \"CREDITFINDER_LEVEL\", creditFinderLevel)");
-        markTarget.Should().Contain("if (rareBonusChance > currentTreasureHunter)");
-        markTarget.Should().Contain("SetLocalInt(target, \"RARE_BONUS_CHANCE\", rareBonusChance)");
-
-        spawnLoot.Should().Contain("var creditPercentIncrease = creditFinderLevel * 0.2f;");
-        spawnLoot.Should().Contain("if (rareBonusChance > 0 && table.IsRare)");
-        spawnLoot.Should().Contain("chance += table.GetRareChanceBonus(rareBonusChance);");
-        spawnLoot.Should().Contain("table.GetRandomItemWithRareBonus(rareBonusChance)");
-        spawnLoot.Should().Contain("quantity += (int)(quantity * creditPercentIncrease);");
 
         chooseItem.Should().Contain("if (rareBonusChance > 0 && item.IsRare)");
         chooseItem.Should().Contain("weight += rareBonusChance;");
@@ -128,8 +107,8 @@ public class GatheringPerkRegressionTests
         var onOpened = ExtractMethod(scavengePoint, "public static void OnOpened()");
         onOpened.Should().NotContain("Perception");
         onOpened.Should().NotContain("GetAbilityModifier");
-        ReadSource("Service", "ScavengeService", "ScavengeLifecycle.cs").Should().Contain("CraftRankMilestones.HardLookLevelForRank(request.GatheringRank)");
-        ReadSource("Service", "ScavengeService", "ScavengeQuickSearch.cs").Should().Contain("hardLookLevel * 10 + ReferencePerceptionModifier * 5");
+        ReadSource("Domain", "Crafting", "ScavengeLifecycle.cs").Should().Contain("CraftRankMilestones.HardLookLevelForRank(request.GatheringRank)");
+        ReadSource("Domain", "Crafting", "ScavengeQuickSearch.cs").Should().Contain("hardLookLevel * 10 + ReferencePerceptionModifier * 5");
     }
 
     [Test]
@@ -151,14 +130,14 @@ public class GatheringPerkRegressionTests
         onOpened.IndexOf("NwnScavengeWorld.SearchedVariable", StringComparison.Ordinal)
             .Should().BeLessThan(onOpened.IndexOf("ScavengeSessions.Start(request)", StringComparison.Ordinal));
         NwnScavengeWorld.SearchedVariable.Should().Be("FULLY_HARVESTED");
-        ReadSource("Service", "ScavengeService", "NwnScavengeWorld.cs").Should().Contain("SetLocalBool(site, SearchedVariable, true)");
+        ReadSource("Domain", "Crafting", "NwnScavengeWorld.cs").Should().Contain("SetLocalBool(site, SearchedVariable, true)");
 
         // Treasure Hunter and Creditfinder keep their effects on a find: 10 weight per level on rare entries, 20% per level on gold.
-        var loot = ReadSource("Service", "ScavengeService", "ScavengeLoot.cs");
+        var loot = ReadSource("Domain", "Crafting", "ScavengeLoot.cs");
         loot.Should().Contain("public const int TreasureHunterWeightPerLevel = 10;");
         loot.Should().Contain("public const float CreditFinderIncreasePerLevel = 0.2f;");
         loot.Should().Contain("quantity += (int)(quantity * (creditFinderLevel * CreditFinderIncreasePerLevel));");
-        ReadSource("Service", "ScavengeService", "ScavengeLifecycle.cs").Should().Contain("session.Request.TreasureHunterLevel");
+        ReadSource("Domain", "Crafting", "ScavengeLifecycle.cs").Should().Contain("session.Request.TreasureHunterLevel");
     }
 
     [Test]

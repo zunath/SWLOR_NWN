@@ -1,13 +1,29 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class SingleWeaponDamageTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     [Test]
     public void NativeFallback_IsNotAnItemDamageRating()
     {
@@ -93,7 +109,7 @@ public class SingleWeaponDamageTests
     public void RatingFeedsTheDamageFormula_WithoutMultiplyingOtherDamageInputs()
     {
         var rating = WeaponDamage.CalculateEffectiveDMG(24, 60);
-        Combat.CalculateDamageRange(100, rating + 10, 26, 100, 26, 0)
+        CombatRules.CalculateDamageRange(100, rating + 10, 26, 100, 26, 0)
             .Should().Be((34, 49), "Follow-Through's +10 formula DMG is added after the weapon rating bonus");
     }
 }

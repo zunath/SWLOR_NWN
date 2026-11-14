@@ -6,9 +6,9 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
@@ -25,11 +25,12 @@ public class CombatUpgradeMigrationCoverageTests
         var statusEffectService = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "StatusEffect.cs"));
+            "Domain",
+            "Character",
+            "StatusEffectService.cs"));
 
-        statusEffectService.Should().Contain("private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();");
-        statusEffectService.Should().Contain("_loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, DateTime.UtcNow);");
+        statusEffectService.Should().Contain("private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();");
+        statusEffectService.Should().Contain("_loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, Clock.UtcNow);");
         statusEffectService.Should().NotContain("ClearLoggedOutPlayerEffects");
     }
 
@@ -114,8 +115,9 @@ public class CombatUpgradeMigrationCoverageTests
         var migrationService = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Migration.cs"));
+            "Domain",
+            "Foundation",
+            "MigrationService.cs"));
 
         migrationService.Should().Contain("ConsoleProgressMigrationVersion = 22");
         migrationService.Should().Contain("Starting server migration");
@@ -186,7 +188,7 @@ public class CombatUpgradeMigrationCoverageTests
         migrationSource.Should().Contain("ItemPropertyType.Blueprint");
         migrationSource.Should().Contain("SelectBlueprintDamageEnhancements(selectedEnhancements)");
         migrationSource.Should().Contain("DamageType.IsElementalDamageType()");
-        migrationSource.Should().Contain("SWLOR.Game.Server.Service.Random.Next(elementalDamageTypes.Count)");
+        migrationSource.Should().Contain("SWLOR.Game.Server.Domain.Foundation.Random.Next(elementalDamageTypes.Count)");
         migrationSource.Should().Contain("damageEnhancement.DamageType == selectedElementalDamageType");
     }
 
@@ -291,7 +293,7 @@ public class CombatUpgradeMigrationCoverageTests
             "StoredItemDataMigration.cs"));
         migration.Should().Contain("DroidStatSubType.Armor");
         migration.Should().Contain("DroidPartItemPropertySubType.CPU");
-        migration.Should().Contain("Droid.DroidControlItemResref");
+        migration.Should().Contain("DroidService.DroidControlItemResref");
         migration.Should().Contain("GetTierArmorSkillRank");
     }
 

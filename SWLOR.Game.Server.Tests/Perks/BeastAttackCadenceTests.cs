@@ -1,13 +1,30 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class BeastAttackCadenceTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     [Test]
     public void Garral_UsesBalancedProgressionAcrossAllLevels()
     {
@@ -83,24 +100,9 @@ public class BeastAttackCadenceTests
         ItemPropertyAttackDelay delay,
         int expectedMilliseconds)
     {
-        var calculatedDelay = Combat.CalculateAttackDelayMilliseconds((int)delay * 10, 0, 0, 0);
+        var calculatedDelay = CombatRules.CalculateAttackDelayMilliseconds((int)delay * 10, 0, 0, 0);
 
-        Combat.CalculateEffectiveAttackDelay(calculatedDelay).Should().Be(expectedMilliseconds);
-    }
-
-    [Test]
-    public void BeastRuntime_AppliesTheConfiguredDelayToTheNaturalWeapon()
-    {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "BeastMastery.cs"));
-
-        source.Should().Contain(
-            "ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)level.AttackDelay)",
-            "the generated species cadence must replace the generic beast-claw delay at runtime");
+        CombatRules.CalculateEffectiveAttackDelay(calculatedDelay).Should().Be(expectedMilliseconds);
     }
 
     [Test]

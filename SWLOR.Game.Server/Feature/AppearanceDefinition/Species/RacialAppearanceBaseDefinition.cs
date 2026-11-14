@@ -1,0 +1,26 @@
+namespace SWLOR.Game.Server.Feature.AppearanceDefinition.Species
+{
+    public abstract class RacialAppearanceBaseDefinition: IRacialAppearanceDefinition
+    {
+        public virtual float MaximumScale => 1.15f;
+        public virtual float MinimumScale => 0.85f;
+        public virtual float MaximumHeadScale => 1.15f;
+        public virtual float MinimumHeadScale => 0.85f;
+        public abstract int[] MaleHeads { get; }
+        public abstract int[] FemaleHeads { get; }
+        public virtual int[] Torsos { get; } = { 1, 2};
+        public virtual int[] Pelvis { get; } = { 1};
+        public virtual int[] RightBicep { get; } = { 1, 2 };
+        public virtual int[] RightForearm { get; } = { 1, 2, 152 };
+        public virtual int[] RightHand { get; } = { 1, 2, 5, 100, 110, 113, 151, 258, 259, 260, 261, 262, 263 };
+        public virtual int[] RightThigh { get; } = { 1, 2, 154 };
+        public virtual int[] RightShin { get; } = { 1, 2 };
+        public virtual int[] RightFoot { get; } = { 1 };
+        public virtual int[] LeftBicep { get; } = { 1, 2 };
+        public virtual int[] LeftForearm { get; } = { 1, 2, 152 };
+        public virtual int[] LeftHand { get; } = { 1, 2, 5, 100, 110, 113, 151, 258, 259, 260, 261, 262, 263 };
+        public virtual int[] LeftThigh { get; } = { 1, 2, 154 };
+        public virtual int[] LeftShin { get; } = { 1, 2 };
+        public virtual int[] LeftFoot { get; } = { 1 };
+    }
+}

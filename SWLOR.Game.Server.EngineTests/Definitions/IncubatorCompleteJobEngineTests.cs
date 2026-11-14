@@ -4,9 +4,8 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.UI;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
 
@@ -36,10 +35,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     model = ReopenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
                     ctx.Assert(model.IsCompleteJobEnabled, "Complete Job stays enabled after the window reopens");
 
-                    var eggs = CountCarried(player, BeastMastery.BeastEggResref);
+                    var eggs = CountCarried(player, BeastMasteryService.BeastEggResref);
                     model.OnClickCompleteJob()();
                     model.OnModalConfirmClick()();
-                    ctx.AssertEqual(eggs + 1, CountCarried(player, BeastMastery.BeastEggResref), "Completing the job gives the egg");
+                    ctx.AssertEqual(eggs + 1, CountCarried(player, BeastMasteryService.BeastEggResref), "Completing the job gives the egg");
                     ctx.Assert(!DB.Exists<IncubationJob>(job.Id), "Completing the job removes it");
                 });
             }
@@ -64,10 +63,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var model = OpenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
                     ctx.Assert(!model.IsCompleteJobEnabled, "Complete Job is disabled while the last stage runs");
 
-                    var eggs = CountCarried(player, BeastMastery.BeastEggResref);
+                    var eggs = CountCarried(player, BeastMasteryService.BeastEggResref);
                     model.OnClickCompleteJob()();
                     model.OnModalConfirmClick()();
-                    ctx.AssertEqual(eggs, CountCarried(player, BeastMastery.BeastEggResref), "A running job gives no egg");
+                    ctx.AssertEqual(eggs, CountCarried(player, BeastMasteryService.BeastEggResref), "A running job gives no egg");
                     ctx.Assert(DB.Exists<IncubationJob>(running.Id), "A running job stays");
 
                     running.CurrentStage = 1;

@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
 {
@@ -96,7 +95,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 {
                     foreach (var bonus in level.StatBonuses)
                     {
-                        if (!Enum.IsDefined(typeof(SWLOR.Game.Server.Service.StatService.StatType), bonus.Stat))
+                        if (!Enum.IsDefined(typeof(SWLOR.Game.Server.Domain.Character.StatType), bonus.Stat))
                         {
                             failures.Add($"{perkType}: undefined StatType {bonus.Stat} in a stat bonus");
                         }

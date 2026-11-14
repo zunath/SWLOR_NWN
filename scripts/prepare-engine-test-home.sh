@@ -17,8 +17,10 @@
 # The home defaults to <repo>/enginetests-home, which run-engine-tests.sh uses automatically.
 # Steps whose inputs have not changed since the last run are skipped; --force redoes them.
 #
-# Requires: dotnet SDK, docker compose, python3, the full SWLOR_Haks checkout, and the native
-# NWN tools that Setup.sh (or .claude/hooks/session-start.sh in cloud sessions) prepares.
+# Requires: dotnet SDK, docker compose, python3, a SWLOR_Haks checkout and the native NWN tools
+# that Setup.sh (or .claude/hooks/session-start.sh in cloud sessions) prepares. The checkout is
+# either the full one or the sparse one scripts/ci/fetch-engine-test-haks.sh makes (300 MB: it
+# leaves out the file types stubbed below, and this script takes their names from the commit).
 #
 # Usage:
 #   scripts/prepare-engine-test-home.sh [--server-home <dir>] [--force] [--skip-images]
@@ -32,6 +34,9 @@ FORCE=0
 SKIP_IMAGES=0
 # Bump when the staging rules change so existing homes rebuild.
 STAMP_VERSION=2
+# Types the dedicated server never reads; Beamdog's server data stubs the first four.
+# scripts/ci/fetch-engine-test-haks.sh reads this line to know what to leave out of its sparse checkout.
+export STUBBED_TYPES=".mdl .tga .dds .plt .wav .bmu"
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -102,12 +107,24 @@ dotnet build "$REPO_ROOT/SWLOR.CLI/SWLOR.CLI.csproj" -c Release -p:RunPostBuildE
 
 section "Server-only HAKs and TLK"
 python3 - "$REPO_ROOT" <<'CHECK_HAKS'
-import json, os, sys
+import json, os, subprocess, sys
 repo = sys.argv[1]
+stubbed_types = set(os.environ["STUBBED_TYPES"].split())
 config = json.load(open(os.path.join(repo, "Build", "hakbuilder.json")))
-missing = [hak["Name"] for hak in config["HakList"]
-           if not os.path.isdir(os.path.join(repo, "Build", hak["Path"]))
-           or not os.listdir(os.path.join(repo, "Build", hak["Path"]))]
+# Files a sparse checkout left out of the working tree (git marks them S). The stubbed types may be left out,
+# because the staging below recreates them as zero-byte files; any other type makes its folder incomplete.
+listing = subprocess.run(["git", "-C", os.path.join(repo, "SWLOR_Haks"), "ls-files", "-t", "-z"], capture_output=True)
+left_out = [entry[2:] for entry in listing.stdout.decode("utf-8", "surrogateescape").split("\0")
+            if entry.startswith("S ")] if listing.returncode == 0 else []
+left_out_folders = {name.split("/", 1)[0] for name in left_out}
+incomplete = {name.split("/", 1)[0] for name in left_out if os.path.splitext(name)[1].lower() not in stubbed_types}
+missing = []
+for hak in config["HakList"]:
+    path = os.path.join(repo, "Build", hak["Path"])
+    folder = os.path.basename(os.path.normpath(path))
+    populated = (os.path.isdir(path) and bool(os.listdir(path))) or folder in left_out_folders
+    if folder in incomplete or not populated:
+        missing.append(hak["Name"])
 if missing:
     sys.exit(f"SWLOR_Haks is missing HAK folders ({', '.join(missing[:5])}...). "
              "Check out the full submodule: git -C SWLOR_Haks sparse-checkout disable")
@@ -125,11 +142,20 @@ else
     trap 'exit 130' INT TERM HUP
     mkdir -p "$work"
     python3 - "$REPO_ROOT" "$work" "$SERVER_HOME" <<'STAGE_HAKS'
-import json, os, shutil, sys
+import json, os, shutil, subprocess, sys
 repo, work, home = sys.argv[1:]
-# Types the dedicated server never reads; Beamdog's server data stubs the first four.
-stubbed_types = {".mdl", ".tga", ".dds", ".plt", ".wav", ".bmu"}
+stubbed_types = set(os.environ["STUBBED_TYPES"].split())
 config = json.load(open(os.path.join(repo, "Build", "hakbuilder.json")))
+haks_root = os.path.join(repo, "SWLOR_Haks")
+# A sparse SWLOR_Haks checkout (scripts/ci/fetch-engine-test-haks.sh) leaves the stubbed types out of the working
+# tree (git marks those files S), so their names come from the index. A full checkout has every file already.
+listing = subprocess.run(["git", "-C", haks_root, "ls-files", "-t", "-z"], capture_output=True)
+left_out = [entry[2:] for entry in listing.stdout.decode("utf-8", "surrogateescape").split("\0")
+            if entry.startswith("S ")] if listing.returncode == 0 else []
+stub_names = {}
+for name in left_out:
+    if os.path.splitext(name)[1].lower() in stubbed_types:
+        stub_names.setdefault(name.split("/", 1)[0], []).append(name)
 haks, kept, stubbed = [], 0, 0
 for hak in config["HakList"]:
     source = os.path.normpath(os.path.join(repo, "Build", hak["Path"]))
@@ -144,6 +170,14 @@ for hak in config["HakList"]:
             else:
                 shutil.copyfile(os.path.join(root, name), os.path.join(out, name))
                 kept += 1
+    prefix = os.path.relpath(source, haks_root).replace(os.sep, "/") + "/"
+    for name in stub_names.get(prefix.split("/", 1)[0], []):
+        if name.startswith(prefix):
+            path = os.path.join(target, *name[len(prefix):].split("/"))
+            if not os.path.exists(path):
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                open(path, "wb").close()
+                stubbed += 1
     haks.append({"Name": hak["Name"], "Path": target + "/", "CompileModels": False})
 with open(os.path.join(work, "hakbuilder.json"), "w") as f:
     json.dump({

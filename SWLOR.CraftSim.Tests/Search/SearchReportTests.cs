@@ -4,7 +4,7 @@ using SWLOR.CraftSim.Cli;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Search;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
 
 namespace SWLOR.CraftSim.Tests.Search
 {

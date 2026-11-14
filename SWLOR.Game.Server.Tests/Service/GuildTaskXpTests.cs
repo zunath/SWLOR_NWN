@@ -1,10 +1,12 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -19,13 +21,30 @@ public class GuildTaskXpTests
         GuildType.SmitheryGuild, GuildType.EngineeringGuild, GuildType.FabricationGuild, GuildType.AgricultureGuild
     };
 
+    private FacadeContainer _container = null!;
+    private IDisposable _scope = null!;
+
     [OneTimeSetUp]
-    public void LoadTheXpChart() => Skill.CacheXPChartData();
+    public void LoadTheXpChart()
+    {
+        _container = new FacadeContainer();
+        using (_container.Install())
+            Skill.CacheXPChartData();
+    }
+
+    [OneTimeTearDown]
+    public void DisposeTheContainer() => _container.Dispose();
+
+    [SetUp]
+    public void InstallTheContainer() => _scope = _container.Install();
+
+    [TearDown]
+    public void RemoveTheContainer() => _scope.Dispose();
 
     [Test]
     public void TheAwardIsFiftyPercentOfTheCharts()
     {
-        GuildTaskXp.XpPercent.Should().Be(50);
+        GuildTaskXpService.XpPercent.Should().Be(50);
     }
 
     [TestCase(GuildType.SmitheryGuild, SkillType.Smithery)]

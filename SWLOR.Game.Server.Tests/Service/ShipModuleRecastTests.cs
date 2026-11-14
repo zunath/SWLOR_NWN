@@ -1,15 +1,32 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class ShipModuleRecastTests
 {
+    // The code under test reaches converted services through their static facades, which resolve from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     /// <summary>Checks independent timed slots, player-facing label lengths, and untimed configuration feats.</summary>
     [Test]
     public void ActiveSlots_HaveIndependentGroupsAndPassiveConfigurationHasNone()
@@ -37,7 +54,7 @@ public class ShipModuleRecastTests
             .Select(x => x.Texture).Distinct().ToArray();
         textures.Should().NotBeEmpty();
         foreach (var texture in textures)
-        for (var stage = 0; stage <= AbilityCooldownVisual.MaximumCooldownStage; stage++)
+        for (var stage = 0; stage <= AbilityCooldownVisualService.MaximumCooldownStage; stage++)
         {
             var resref = AbilityCooldownVisual.GetCooldownTextureName(texture, stage);
             resref.Should().NotBeNull($"{texture} must support cooldown artwork");

@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -170,7 +169,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(player.Id), "_22_ReviseLootStats");
                 var character = SavedCharacterMigration.Load(ctx, upgraded);
-                var saved = Droid.LoadConstructedDroid(SavedCharacterMigration.FindItem(character, Droid.DroidControlItemResref));
+                var saved = Droid.LoadConstructedDroid(SavedCharacterMigration.FindItem(character, DroidService.DroidControlItemResref));
                 AssertSavedLoot(ctx, saved.EquippedItems[InventorySlot.RightHand], NoLootEnhancements);
                 AssertSavedLoot(ctx, saved.Inventory.Values.Single(), GloveLootEnhancements);
                 var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_22_ReviseLootStats");
@@ -180,7 +179,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // The upgraded player summons the droid from the revised controller.
             using var login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 8f);
             var newOwner = login.Creature;
-            var newController = SavedCharacterMigration.FindItem(newOwner, Droid.DroidControlItemResref);
+            var newController = SavedCharacterMigration.FindItem(newOwner, DroidService.DroidControlItemResref);
             droid = await Spawn(ctx, newOwner, newController);
             try
             {

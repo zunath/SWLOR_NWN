@@ -1,18 +1,35 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class TankThreatTests
 {
+    // The enmity and recast facades, and the combat recorder a status effect checks, resolve from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [TestCase(100, 30, 130)]
     [TestCase(100, 80, 150)]
     [TestCase(100, -80, 50)]
@@ -116,15 +133,15 @@ public class TankThreatTests
         var offenseAttack = attack * 125 / 100;
         double Damage(int value, int power)
         {
-            var (minimum, maximum) = Combat.CalculateDamageRange(power, value, 20, attack, 20, 0);
+            var (minimum, maximum) = CombatRules.CalculateDamageRange(power, value, 20, attack, 20, 0);
             return (minimum + maximum) / 2.0;
         }
-        double Attacks(int haste) => 60000.0 / Combat.CalculateEffectiveAttackDelay(
-            Combat.CalculateAttackDelayMilliseconds(delay, 0, haste, 0));
+        double Attacks(int haste) => 60000.0 / CombatRules.CalculateEffectiveAttackDelay(
+            CombatRules.CalculateAttackDelayMilliseconds(delay, 0, haste, 0));
         // Equal hit rate is factored into both sides. Reprisals and critical bonuses
         // are excluded; Staff includes its +20% Sentinel Guard protection rider,
         // Vibroblade includes Covering Strike's source bonus, Lightsaber its hit condition.
-        var landed = Combat.CalculateHitRate(100, 100, 0) / 100.0;
+        var landed = CombatRules.CalculateHitRate(100, 100, 0) / 100.0;
         double Threat(int power, int damageMultiplier, int percent, int haste, bool oldDuplicate, AbilityDetail rotation, int bonusDamage, double uses)
         {
             var normal = Damage(weaponDamage, power);
@@ -180,7 +197,7 @@ public class TankThreatTests
                 var power = enemyDefense * (100 + penalty) / 100;
                 double Hit(int bonus)
                 {
-                    var (low, high) = Combat.CalculateDamageRange(power, weaponDamage + bonus, 20, enemyDefense, 20, 0);
+                    var (low, high) = CombatRules.CalculateDamageRange(power, weaponDamage + bonus, 20, enemyDefense, 20, 0);
                     return (low + high) / 2.0;
                 }
                 var normal = Hit(0);
@@ -202,7 +219,7 @@ public class TankThreatTests
             revisedTank.Should().BeGreaterThan(revisedOffense * 1.10, "both builds can spend the newly available stamina");
             revisedTank.Should().BeLessThan(revisedOffense * 2);
             // Opening burst pays actual costs from the unchanged pool with ten STM reserved.
-            var maximum = Stat.GetMaxStamina(Stat.BaseSTM, might, 0);
+            var maximum = Stat.GetMaxStamina(StatService.BaseSTM, might, 0);
             var current = maximum;
             remainder = 0;
             for (var second = 0; second < 300; second++)

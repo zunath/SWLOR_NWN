@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.EngineTests.Framework
 {
@@ -72,8 +71,6 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         public static void Click(object model, string name) =>
             ((Action)model.GetType().GetMethod(name, Members, Type.EmptyTypes).Invoke(model, null))();
 
-        private static Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> PlayerWindows() =>
-            (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        private static Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> PlayerWindows() => GuiInternals.PlayerWindows();
     }
 }

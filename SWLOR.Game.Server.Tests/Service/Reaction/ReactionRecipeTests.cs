@@ -2,15 +2,15 @@ using FluentAssertions;
 using System.Text.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
-using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Reaction;
+using SWLOR.Game.Server.Domain.Crafting.RecipeParameters;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Reaction;
 
@@ -20,12 +20,36 @@ namespace SWLOR.Game.Server.Tests.Service.Reaction;
 /// </summary>
 public class ReactionRecipeTests
 {
+    // The craft rules reach the crafting service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
+    // The recipe definitions read the skill catalog through the Skill facade; the sources also run during discovery,
+    // before the fixture has installed a container, so the list is built in one of its own.
     private static readonly Lazy<IReadOnlyList<KeyValuePair<RecipeType, RecipeDetail>>> EspionageRecipes = new(() =>
-        RecipeDefinitionLoader.LoadGame()
-            .Where(pair => pair.Value.Skill == SkillType.Espionage)
-            .OrderBy(pair => pair.Value.Level)
-            .ThenBy(pair => pair.Key.ToString(), StringComparer.Ordinal)
-            .ToList());
+    {
+        using var container = new FacadeContainer();
+        using (container.Install())
+        {
+            return RecipeDefinitionLoader.LoadGame()
+                .Where(pair => pair.Value.Skill == SkillType.Espionage)
+                .OrderBy(pair => pair.Value.Level)
+                .ThenBy(pair => pair.Key.ToString(), StringComparer.Ordinal)
+                .ToList();
+        }
+    });
 
     private static IEnumerable<TestCaseData> EveryRecipe() =>
         EspionageRecipes.Value.Select(pair => new TestCaseData(pair.Key).SetName($"{{m}}({pair.Key})"));

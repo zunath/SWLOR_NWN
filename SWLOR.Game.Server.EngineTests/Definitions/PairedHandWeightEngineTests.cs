@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using NWNXLib = NWN.Native.API.NWNXLib;
 

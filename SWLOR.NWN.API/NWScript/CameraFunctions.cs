@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetCameraFacing(float fDirection, float fDistance = -1.0f, float fPitch = -1.0f,
             CameraTransitionType nTransitionType = CameraTransitionType.Snap)
         {
-            global::NWN.Core.NWScript.SetCameraFacing(fDirection, fDistance, fPitch, (int)nTransitionType);
+            NWScriptRuntime.Current.SetCameraFacing(fDirection, fDistance, fPitch, nTransitionType);
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SWLOR.NWN.API.NWScript
             float fMinDist = -1.0f,
             float fMaxDist = -1.0f)
         {
-            global::NWN.Core.NWScript.SetCameraLimits(oPlayer, fMinPitch, fMaxPitch, fMinDist, fMaxDist);
+            NWScriptRuntime.Current.SetCameraLimits(oPlayer, fMinPitch, fMaxPitch, fMinDist, fMaxDist);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>SetObjectVisibleDistance() can be used to increase the visible distance range. If the target gets destroyed while the player's camera is attached to it, the camera will revert back to the player's character. If the player goes through a transition with its camera attached to a different object, it will revert back to the player's character. The object the player's camera is attached to is not saved when saving the game.</remarks>
         public static void AttachCamera(uint oPlayer, uint oTarget, bool bFindClearView = false)
         {
-            global::NWN.Core.NWScript.AttachCamera(oPlayer, oTarget, bFindClearView ? 1 : 0);
+            NWScriptRuntime.Current.AttachCamera(oPlayer, oTarget, bFindClearView);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Like all other camera settings, this is not saved when saving the game.</remarks>
         public static void SetCameraFlags(uint oPlayer, int nFlags = 0)
         {
-            global::NWN.Core.NWScript.SetCameraFlags(oPlayer, nFlags);
+            NWScriptRuntime.Current.SetCameraFlags(oPlayer, nFlags);
         }
     }
 }

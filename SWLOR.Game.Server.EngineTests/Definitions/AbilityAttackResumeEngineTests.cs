@@ -1,9 +1,10 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -42,11 +43,11 @@ public static class AbilityAttackResumeEngineTests
         ctx.MakeHostile(enemy);
         ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), enemy, 120f);
         ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(10000), enemy, 120f);
-        Combat.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
         try
         {
             await ctx.ExecuteInCreatureContextAsync(creature, () => ActionAttack(enemy));
-            await ctx.WaitUntilAsync(() => GetAttackTarget(creature) == enemy && Combat.HasRecentAttackActivity(creature, 1f),
+            await ctx.WaitUntilAsync(() => GetAttackTarget(creature) == enemy && GameServices.CombatActivity.HasRecentAttackActivity(creature, 1f),
                 15f, "controlled creature to begin autoattacking the enemy");
 
             await ctx.ExecuteInCreatureContextAsync(creature, () =>
@@ -60,7 +61,7 @@ public static class AbilityAttackResumeEngineTests
             // Outwait the attack observation from before activation; only a resumed swing
             // can satisfy this, and no second ActionAttack is issued by the test.
             await ctx.DelaySecondsAsync(2f);
-            await ctx.WaitUntilAsync(() => GetAttackTarget(creature) == enemy && Combat.HasRecentAttackActivity(creature, 1f),
+            await ctx.WaitUntilAsync(() => GetAttackTarget(creature) == enemy && GameServices.CombatActivity.HasRecentAttackActivity(creature, 1f),
                 15f, "autoattacks to resume on the original enemy");
             if (ability.ActivationType == AbilityActivationType.Weapon)
                 ctx.Assert(!UsePerkFeat.IsWeaponAbilityQueued(creature, feat), "the resumed swing consumed the queued ability");
@@ -68,7 +69,7 @@ public static class AbilityAttackResumeEngineTests
         finally
         {
             await ctx.ExecuteInCreatureContextAsync(creature, () => ClearAllActions(true));
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
         }
     }
 }

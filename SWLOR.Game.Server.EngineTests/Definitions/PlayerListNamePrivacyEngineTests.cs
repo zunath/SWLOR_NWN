@@ -8,7 +8,7 @@ using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

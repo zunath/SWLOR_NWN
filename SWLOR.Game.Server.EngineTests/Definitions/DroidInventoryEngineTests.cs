@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CompanionControlService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 return;
 
             var droid = StringToObject(EventsPlugin.GetEventData("ASSOCIATE_OBJECT_ID"));
-            if (GetResRef(droid) != Droid.DroidResref)
+            if (GetResRef(droid) != DroidService.DroidResref)
                 return;
 
             var repository = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(droid).AsNWSCreature().m_pcItemRepository;
@@ -659,7 +659,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var migrated = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                var migrate = typeof(Droid).Assembly
+                var migrate = typeof(DroidService).Assembly
                     .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration.StoredItemDataMigration")
                     .GetMethod("MigrateSerializedObject", BindingFlags.NonPublic | BindingFlags.Static);
                 var result = migrate.Invoke(null, new object[] { ObjectPlugin.Serialize(controller) });
@@ -682,7 +682,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var controller = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                controller = CreateItemOnObject(Droid.DroidControlItemResref, owner);
+                controller = CreateItemOnObject(DroidService.DroidControlItemResref, owner);
                 ctx.Assert(GetIsObjectValid(controller), "The controller exists");
                 foreach (var stat in new[] { DroidStatSubType.MGT, DroidStatSubType.PER, DroidStatSubType.VIT,
                              DroidStatSubType.WIL, DroidStatSubType.AGI, DroidStatSubType.SOC })

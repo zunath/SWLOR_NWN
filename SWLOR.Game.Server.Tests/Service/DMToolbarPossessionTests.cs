@@ -61,14 +61,24 @@ public class DMToolbarPossessionTests
                 }
             }
 
+            // The presence instance reaches the GUI service through a lazy field; the harness answers it with the static stand-in above.
+            public sealed class GuiService
+            {
+                public bool IsWindowOpen(uint player, GuiWindowType type) => Gui.IsWindowOpen(player, type);
+                public void ClosePlayerWindow(uint player, GuiWindowType type, uint uiTarget = OBJECT_INVALID) => Gui.ClosePlayerWindow(player, type, uiTarget);
+                public void TogglePlayerWindow(uint player, GuiWindowType type, object payload = null, uint tetherObject = OBJECT_INVALID, uint uiTarget = OBJECT_INVALID) => Gui.TogglePlayerWindow(player, type, payload, tetherObject, uiTarget);
+            }
+
             public static class DMPresence
             {
-                {{Field("Service/DMPresence.cs", "_windowTargets")}}
-                {{Method("Service/DMPresence.cs", "GetDM")}}
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "ShowWindow")}}
-                {{Method("Service/DMPresence.cs", "CloseWindow")}}
-                {{Method("Service/DMPresence.cs", "GetWindowTargets")}}
+                private static readonly Lazy<GuiService> _gui = new(() => new GuiService());
+
+                {{InstanceField("Domain/Administration/DMPresenceService.cs", "_windowTargets")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "ShowWindow")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "CloseWindow")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetWindowTargets")}}
 
                 // The engine finds the DM's client from the avatar only while the DM controls it.
                 public static readonly List<uint> AvatarFadesSent = new();

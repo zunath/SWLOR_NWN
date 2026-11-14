@@ -5,10 +5,9 @@ using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Scenario.Circuit;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Scenario
 {
@@ -73,7 +72,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
                 var stats = loadout.StatsAt(rank);
                 for (var run = 0; run < runs; run++)
                 {
-                    var level = Craft.GetRecipeLevelDetail(recipe.Level);
+                    var level = ServerRecipeLevels.For(recipe.Level);
                     var setup = new CircuitSetup(
                         recipe.Detail.MinigameParameters as CircuitParameters, recipe.Level, level.Progress, level.Quality, level.Durability, rank,
                         gear.Craftsmanship, gear.Control, gear.CpBonus, penalty, stats);

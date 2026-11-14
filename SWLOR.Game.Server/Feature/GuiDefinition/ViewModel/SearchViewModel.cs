@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.ScavengeService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -134,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // The record holds the selected style; a death, a login or a trip to space may have cost the scavenger its effect.
             // The session read its effects before this window opened, so they are read again while the board is untouched.
-            CraftingStyleSelection.Restore(Player);
+            CraftStyleEffects.Restore(Player);
             GatheringStyles.RemoveUnowned(Player);
             if (_session != null && ScavengeSessions.IsActive(_session))
                 RefreshSessionEffects();

@@ -79,6 +79,10 @@ services:
             - SWLOR_ENGINE_TEST_ARENA_RESREF=${SWLOR_ENGINE_TEST_ARENA_RESREF:-}
             - SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS=${SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS:-15}
             - SWLOR_ENGINE_TEST_SHUTDOWN=${SWLOR_ENGINE_TEST_SHUTDOWN:-true}
+            # Characterization scenarios write the snapshots that differ to
+            # <results directory>/characterization/ instead of failing when this is 1; the runner scripts copy
+            # them into SWLOR.Game.Server.EngineTests/Characterization/Snapshots/.
+            - SWLOR_UPDATE_SNAPSHOTS=${SWLOR_UPDATE_SNAPSHOTS:-}
             # Pin the report location to where the runner scripts look for it
             # (<server home>/app_logs/engine_tests/), regardless of where the home's
             # swlor.env points SWLOR_APP_LOG_DIRECTORY. Without this, a home with a
@@ -97,6 +101,18 @@ services:
             - NWNX_THREADWATCHDOG_SKIP=n
             - NWNX_THREADWATCHDOG_PERIOD=30
             - NWNX_THREADWATCHDOG_KILL_THRESHOLD=20
+            # The .NET entry the runner staged (run-engine-tests -Entry / --entry), whatever the home's swlor.env
+            # says: the host (default; SWLOR.Game.Host in dotnet/, the game and the test assembly in dotnet/game/)
+            # or the native entry (SWLOR.Game.Server and the test assembly in dotnet/). The collectible setting
+            # applies to the host only; blank keeps the host's default (collectible outside production).
+            - SWLOR_DOTNET_ENTRY=${SWLOR_ENGINE_TEST_DOTNET_ENTRY:-host}
+            - NWNX_DOTNET_ASSEMBLY=${SWLOR_ENGINE_TEST_DOTNET_ASSEMBLY:-/nwn/home/dotnet/SWLOR.Game.Host}
+            - NWNX_DOTNET_ENTRYPOINT=${SWLOR_ENGINE_TEST_DOTNET_ENTRYPOINT:-SWLOR.Game.Host.Bootstrap.NativeBootstrap}
+            - NWNX_DOTNET_METHOD=${SWLOR_ENGINE_TEST_DOTNET_METHOD:-Initialize}
+            - SWLOR_GAME_COLLECTIBLE=${SWLOR_ENGINE_TEST_GAME_COLLECTIBLE:-}
+            # Hot reload (host entry only): off for engine-test runs whatever the home's swlor.env says; the local
+            # reload check (scripts/run-hot-reload-check.sh) turns it on with SWLOR_ENGINE_TEST_HOT_RELOAD=true.
+            - SWLOR_HOT_RELOAD=${SWLOR_ENGINE_TEST_HOT_RELOAD:-false}
         links:
             - "redis:redis"
         volumes:

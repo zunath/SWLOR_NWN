@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -18,8 +19,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task KillProducesOneMimicryXPMessage(EngineTestContext ctx)
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
-            var queue = (SkillXPMessageQueue)typeof(Skill)
-                .GetField("_xpMessages", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var queue = ServiceInternals.Field<ISkillService, SkillXPMessageQueue>("_xpMessages");
             var sendField = typeof(SkillXPMessageQueue).GetField("_send", BindingFlags.NonPublic | BindingFlags.Instance);
             var originalSend = (Action<uint, SkillType, int>)sendField.GetValue(queue);
             var messages = new List<int>();
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     CombatPoint.AddCombatPoint(fixture.Creature, npc, SkillType.Force, 3);
                     CombatPoint.AddCombatPoint(fixture.Creature, npc, SkillType.Mimicry, 3);
                     ctx.SeedRandom(attempt + 1);
-                    Mimicry.OnCreatureAbilityUsed(npc, FeatType.SonicShriek);
+                    GameServices.Mimicry.OnCreatureAbilityUsed(npc, FeatType.SonicShriek);
                     await Kill(ctx, npc, fixture.Creature);
                     await ctx.WaitUntilAsync(() => messages.Count > 0, 3f, "combined Mimicry XP feedback");
                     await ctx.WaitFrameAsync();
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(forceXP > 0, "the baseline fight awards Force XP");
                 ctx.AssertEqual(forceXP, Experience(observer, SkillType.Force),
                     $"automatic observation with Mimicry {mimicryRank} does not lower Force XP");
-                ctx.AssertEqual(mimicryRank == 50 ? 0 : AfterPenalty(Mimicry.CalculateAnalysisXP(0, mimicryRank)),
+                ctx.AssertEqual(mimicryRank == 50 ? 0 : AfterPenalty(GameServices.Mimicry.CalculateAnalysisXP(0, mimicryRank)),
                     Experience(observer, SkillType.Mimicry) - StartingExperience(mimicryRank),
                     "observation grants only its independent rank-relative reward");
                 ctx.Assert(!Observers.ContainsKey(npc), "the kill consumes the observer's credit");
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "the higher actively used Mimicry rank still reduces and shares the utility pool");
             ctx.AssertEqual(forceXP, activeMimicryXP, "equal active credits still receive equal shares");
             ctx.AssertEqual(forceXP, Experience(observer, SkillType.Force), "observation does not alter active sharing");
-            ctx.AssertEqual(activeMimicryXP + AfterPenalty(Mimicry.CalculateAnalysisXP(0, 4)),
+            ctx.AssertEqual(activeMimicryXP + AfterPenalty(GameServices.Mimicry.CalculateAnalysisXP(0, 4)),
                 Experience(observer, SkillType.Mimicry) - StartingExperience(4),
                 "observation adds only its small separate reward to active Mimicry XP");
         }
@@ -195,13 +195,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Sweep();
             ctx.Assert(!Observers.ContainsKey(npc), "despawn clears observation credit");
             ctx.AssertEqual(0, Experience(fixture, SkillType.Mimicry), "despawn pays no observation XP");
-            typeof(CombatPoint).GetMethod("ClearPlayerCombatPoints", BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, new object[] { fixture.Creature });
+            CombatInternals.ClearPlayerCombatPoints(fixture.Creature);
         }
 
         private static Dictionary<uint, HashSet<string>> Observers =>
-            (Dictionary<uint, HashSet<string>>)typeof(Mimicry)
-                .GetField("_analysisObservers", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            ServiceInternals.Field<IMimicryService, Dictionary<uint, HashSet<string>>>("_analysisObservers");
 
         private static void Configure(PlayerAbilityFixture fixture, int mimicryRank, bool analyzer)
         {
@@ -227,8 +225,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void Observe(uint npc)
         {
-            Mimicry.OnCreatureAbilityUsed(npc, FeatType.SonicShriek);
-            Mimicry.OnCreatureAbilityUsed(npc, FeatType.StaticWeb);
+            GameServices.Mimicry.OnCreatureAbilityUsed(npc, FeatType.SonicShriek);
+            GameServices.Mimicry.OnCreatureAbilityUsed(npc, FeatType.StaticWeb);
         }
 
         private static async Task Kill(EngineTestContext ctx, uint npc, uint player)
@@ -243,11 +241,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return StartingExperience(playerSkill.Rank) + playerSkill.XP;
         }
 
-        private static int StartingExperience(int rank) => Enumerable.Range(0, rank).Sum(Skill.GetRequiredXP);
+        private static int StartingExperience(int rank) => Enumerable.Range(0, rank).Sum(level => Skill.GetRequiredXP(level));
 
         private static int AfterPenalty(int xp) => xp - (int)(xp * 0.3f);
 
-        private static void Sweep() => typeof(Mimicry)
-            .GetMethod("SweepStaleWitnesses", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+        private static void Sweep() => ServiceInternals.Invoke<IMimicryService>("SweepStaleWitnesses");
     }
 }

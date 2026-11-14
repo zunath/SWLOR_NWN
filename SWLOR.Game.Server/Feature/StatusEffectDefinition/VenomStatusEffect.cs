@@ -1,8 +1,8 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -64,10 +64,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var source = GetIsObjectValid(Source) ? Source : creature;
             var baseDamage = CalculateBaseDamagePerTick(_damageBonusPercent, _baseDamagePerTick);
-            var damageAmount = Combat.ApplyDamageTypeDealtModifiers(source, baseDamage, CombatDamageType.Poison);
+            var damageAmount = GameServices.CombatDamageModifiers.ApplyDamageTypeDealtModifiers(source, baseDamage, CombatDamageType.Poison);
             damageAmount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damageAmount);
-            damageAmount = Combat.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Poison);
-            damageAmount = Combat.ApplyDamageTakenModifiers(
+            damageAmount = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, damageAmount, CombatDamageType.Poison);
+            damageAmount = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(
                 creature,
                 damageAmount,
                 source,

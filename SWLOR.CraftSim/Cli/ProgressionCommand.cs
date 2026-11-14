@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Progression;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Cli
 {

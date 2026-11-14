@@ -2,20 +2,35 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class PerkRefundStatusEffectCleanupTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void SourceOwnedRefunds_KeepEachAbilityAndPreserveUnrelatedHaste()
     {
@@ -111,11 +126,11 @@ public class PerkRefundStatusEffectCleanupTests
     public void SourceOwnedRefundPath_PassesTheOriginatingAbilityToCleanup()
     {
         var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Perk.cs"))).GetRoot();
+            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs"))).GetRoot();
         var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "RemoveStatusEffectsOnPerkRefund");
         var cleanup = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(node => node.Expression.ToString() == "StatusEffect.RemoveStatusEffectsFromAllTargetsBySource");
+            .Single(node => node.Expression.ToString() == "_statusEffect.RemoveStatusEffectsFromAllTargetsBySource");
         cleanup.ArgumentList.Arguments.Select(argument => argument.ToString()).Should()
             .Equal("creature", "sourceOwnedStatusEffect.StatusEffectType", "false", "sourceOwnedStatusEffect.Ability");
     }
@@ -159,7 +174,7 @@ public class PerkRefundStatusEffectCleanupTests
     public void PerkRefundPaths_RemoveMarkedStatusEffects()
     {
         var root = FindRepositoryRoot();
-        var perkSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Perk.cs"));
+        var perkSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "PerkService.cs"));
         var perksViewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -176,19 +191,15 @@ public class PerkRefundStatusEffectCleanupTests
             "CharacterFullRebuildViewModel.cs"));
 
         perkSource.Should().Contain("StatusEffectTypesRemovedOnPerkRefund");
-        perkSource.Should().Contain("StatusEffect.RemoveStatusEffect(creature, statusEffectType, false);");
+        perkSource.Should().Contain("_statusEffect.RemoveStatusEffect(creature, statusEffectType, false);");
         perkSource.Should().Contain("SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
-        perkSource.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
-        perkSource.Should().Contain("Combat.RefreshStatDrivenTrackerEffects(creature);");
+        perkSource.Should().Contain("_statusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
+        perkSource.Should().Contain("RefreshStatDrivenTrackerEffects(creature);");
         perkSource.Should().Contain("RemoveStatusEffectsOnPerkRefund(player, perkType);");
         perksViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);");
         rebuildViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(Player, type);");
 
-        var combatSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs"));
+        var combatSource = CombatSource.Read();
         combatSource.Should().Contain("_autoAttackCycleCriticalCounts.Remove(creature);");
         combatSource.Should().Contain("typeof(AttackCycleTrackerStatusEffect)");
         combatSource.Should().Contain("typeof(CriticalRateStackTrackerStatusEffect)");
@@ -206,12 +217,13 @@ public class PerkRefundStatusEffectCleanupTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "StatusEffect.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Character",
+            "StatusEffectService.cs")).Replace("\r\n", "\n");
         var cleanupBody = source.Substring(
-            source.IndexOf("public static void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal),
-            source.IndexOf("private static void RemoveStatusEffectsFromAllTargetsWhenSourceExits", StringComparison.Ordinal) -
-            source.IndexOf("public static void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal));
+            source.IndexOf("public void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal),
+            source.IndexOf("private void RemoveStatusEffectsFromAllTargetsWhenSourceExits", StringComparison.Ordinal) -
+            source.IndexOf("public void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal));
 
         cleanupBody.Should().Contain("foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)");
         cleanupBody.Should().Contain("statusEffectType.IsAssignableFrom(effect.GetType())");

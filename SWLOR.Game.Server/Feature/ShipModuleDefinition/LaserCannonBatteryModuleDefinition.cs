@@ -1,12 +1,12 @@
 using SWLOR.Game.Server.Core;
  using System.Collections.Generic;
- using SWLOR.Game.Server.Service;
- using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SpaceService;
+ using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     var nearbyDefenseBonus = nearbyShipStatus.ThermalDefense * 2;
                                     var nearbyDefense = Space.GetShipDefense(nearbyTarget, nearbyDefenseBonus);
                                     var nearbyDefenderStat = GetAbilityScore(nearbyTarget, AbilityType.Vitality);
-                                    var damage = Combat.CalculateDamage(
+                                    var damage = GameServices.Combat.CalculateDamage(
                                         attack,
                                         moduleDMG,
                                         attackerStat,
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     var attackId = isHit ? 1 : 4;
                                     Messaging.SendMessageNearbyToPlayers(
                                         nearbyTarget,
-                                        receiver => Combat.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),
+                                        receiver => GameServices.CombatFeedback.BuildCombatLogMessage(receiver, activator, nearbyTarget, attackId, chanceToHit),
                                         60f);
 
                                     Enmity.ModifyEnmity(activator, nearbyTarget, damage);

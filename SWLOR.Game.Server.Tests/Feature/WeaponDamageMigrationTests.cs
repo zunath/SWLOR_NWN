@@ -3,14 +3,31 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class WeaponDamageMigrationTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     /// <summary>
     /// Guards idempotence for weapons already using the canonical untyped damage representation.
     /// </summary>
@@ -19,7 +36,7 @@ public class WeaponDamageMigrationTests
     [TestCase(ushort.MaxValue)]
     public void CanonicalUntypedDamageDoesNotNeedAnotherConversion(int subtype)
     {
-        var method = typeof(SWLOR.Game.Server.Service.Migration).Assembly
+        var method = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly
             .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration")!
             .GetMethod("ShouldMigrate", BindingFlags.NonPublic | BindingFlags.Static)!;
         var damage = new List<(ItemProperty Property, int SubType, int Value)> { (null!, subtype, 5) };
@@ -36,7 +53,7 @@ public class WeaponDamageMigrationTests
     [Test]
     public void LegacyForceDamageResolvesToPhysical()
     {
-        var migration = typeof(SWLOR.Game.Server.Service.Migration).Assembly
+        var migration = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly
             .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration")!;
         var resolve = migration.GetMethod("ResolveDamageType", BindingFlags.NonPublic | BindingFlags.Static)!;
         var shouldMigrate = migration.GetMethod("ShouldMigrate", BindingFlags.NonPublic | BindingFlags.Static)!;

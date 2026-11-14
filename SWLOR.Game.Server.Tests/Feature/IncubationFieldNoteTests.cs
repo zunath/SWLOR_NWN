@@ -7,12 +7,12 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LootService;
-using SWLOR.Game.Server.Service.SlicingService;
-using SWLOR.Game.Server.Service.SpawnService;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -21,6 +21,22 @@ namespace SWLOR.Game.Server.Tests.Feature;
 // valid as beasts and mutation paths are added or removed.
 public class IncubationFieldNoteTests
 {
+    // The registry is the container's instance of the incubation field note service, which the facade resolves.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly IReadOnlyDictionary<BeastType, BeastDetail> Beasts = BeastDefinitionCatalog.All;
 
     // target beast -> the source beasts that can mutate into it.

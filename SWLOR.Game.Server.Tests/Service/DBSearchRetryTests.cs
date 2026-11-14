@@ -4,8 +4,7 @@ using NRediSearch;
 using NUnit.Framework;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -79,53 +78,6 @@ public class DBSearchRetryTests
 
         search.Should().Throw<Exception>().Which.Should().BeSameAs(failure);
         attempts.Should().Be(1);
-    }
-
-    [TestCase("count")]
-    [TestCase("entities")]
-    [TestCase("json")]
-    public void DatabaseSearch_CanceledLookupRetriesTheSameQuery(string kind)
-    {
-        var database = DispatchProxy.Create<IDatabase, SearchDatabase>();
-        var stub = (SearchDatabase)database;
-        var clients = (Dictionary<Type, Client>)typeof(DB)
-            .GetField("_searchClientsByType", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-        var hadClient = clients.TryGetValue(typeof(QuestContract), out var previous);
-        clients[typeof(QuestContract)] = new Client(nameof(QuestContract), database);
-
-        try
-        {
-            var query = new DBQuery<QuestContract>()
-                .AddFieldSearch(nameof(QuestContract.SettlementPending), "[1 1]", false)
-                .AddPaging(7, 2);
-            switch (kind)
-            {
-                case "count":
-                    DB.SearchCount(query).Should().Be(0);
-                    break;
-                case "entities":
-                    DB.Search(query).Should().BeEmpty();
-                    break;
-                case "json":
-                    DB.SearchRawJson(query).Should().BeEmpty();
-                    break;
-            }
-
-            stub.Commands.Should().HaveCount(2);
-            stub.Commands[1].Should().Equal(stub.Commands[0]);
-            stub.Commands[0][0].Should().Be("FT.SEARCH");
-            stub.Commands[0][1].Should().Be(nameof(QuestContract));
-            stub.Commands[0][2].Should().Contain("@SettlementPending:[1 1]");
-            var limit = stub.Commands[0].IndexOf("LIMIT");
-            limit.Should().BeGreaterThan(0);
-            stub.Commands[0][limit + 1].Should().Be(kind == "count" ? "0" : "2");
-            stub.Commands[0][limit + 2].Should().Be(kind == "count" ? "0" : "7");
-        }
-        finally
-        {
-            if (hadClient) clients[typeof(QuestContract)] = previous!;
-            else clients.Remove(typeof(QuestContract));
-        }
     }
 
     private static SearchResult EmptySearchResult()

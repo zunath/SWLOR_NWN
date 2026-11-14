@@ -1,6 +1,7 @@
 # Weather system
 
-Weather is managed by `Service/Weather.cs`. `WeatherPattern`, `WeatherAreaState`,
+Weather is managed by `Domain/World/WeatherService.cs` (behind `IWeatherService`, reached from static code through
+`GameServices.Weather`), which also holds the event handlers (`Readmes/DependencyInjection.md`). `WeatherPattern`, `WeatherAreaState`,
 `WeatherConditions`, and `WeatherExposure` contain the independently testable timing,
 climate, storm, feedback, and damage rules.
 

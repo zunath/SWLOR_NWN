@@ -3,10 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -131,6 +130,15 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         public void Track(uint obj)
         {
             _trackedObjects.Add(obj);
+        }
+
+        /// <summary>
+        /// Keeps a tracked object past this test: the context no longer destroys it. For a scenario that spans hot reloads
+        /// (<c>HotReloadPlayersEngineTests</c>), whose last phase destroys it itself.
+        /// </summary>
+        public void Untrack(uint obj)
+        {
+            _trackedObjects.RemoveAll(tracked => tracked == obj);
         }
 
         /// <summary>
@@ -260,7 +268,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// </summary>
         public void SuppressNPCNaturalRegen(uint npc)
         {
-            SetLocalInt(npc, Stat.SuppressNaturalRegenVariable, 1);
+            SetLocalInt(npc, StatService.SuppressNaturalRegenVariable, 1);
         }
 
         /// <summary>
@@ -309,7 +317,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         public void SeedRandom(int seed)
         {
             _seededRandom = true;
-            Service.Random.SetSeed(seed);
+            Domain.Foundation.Random.SetSeed(seed);
         }
 
         public void Assert(bool condition, string message)
@@ -377,7 +385,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
 
         public void Log(string message)
         {
-            Service.Log.Write(LogGroup.EngineTest, $"[{TestName}] {message}", true);
+            Domain.Foundation.Log.Write(LogGroup.EngineTest, $"[{TestName}] {message}", true);
         }
 
         /// <summary>
@@ -387,7 +395,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         {
             if (_seededRandom)
             {
-                Service.Random.ResetSeed();
+                Domain.Foundation.Random.ResetSeed();
                 _seededRandom = false;
             }
 

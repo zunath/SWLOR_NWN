@@ -9,16 +9,13 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -49,8 +46,8 @@ public static class TwinPistolHostileDelayEngineTests
         var initialStamina = 0;
         var afterFirst = 0;
         var castDelay = 0f;
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var (target, _) = await Prepare(ctx, player);
@@ -95,8 +92,8 @@ public static class TwinPistolHostileDelayEngineTests
             if (GetIsObjectValid(actor)) AssignCommand(actor, () => ClearAllActions());
             PairedRangedAttackCycle.Cancel(actor);
             HostileAbilityDelay.EndForTesting(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         }
         await WaitFrames(ctx, () => writer.Completion.IsCompleted, "the stance recording to finish", 10f);
         ctx.Assert(writer.Error == null, $"The stance recording failed: {writer.Error}");
@@ -134,8 +131,8 @@ public static class TwinPistolHostileDelayEngineTests
         var replayWeaponDamage = 0;
         WeaponAbilityTraitActivation queuedTraits = null;
         var impactAt = DateTime.MaxValue;
-        Combat.SetAutoAttackHitResolutionOverride(false);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             var (target, main) = await Prepare(ctx, player);
@@ -196,14 +193,13 @@ public static class TwinPistolHostileDelayEngineTests
             else if (winner == FeatType.Headshot1)
             {
                 await WaitFrames(ctx, () => UsePerkFeat.IsWeaponAbilityQueued(actor, winner), "the held Headshot to queue after the shared delay");
-                queuedTraits = ((Dictionary<uint, WeaponAbilityTraitActivation>)typeof(UsePerkFeat)
-                    .GetField("_queuedWeaponTraits", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null))[actor];
+                ctx.Assert(Ability.TryGetQueuedWeaponTraits(actor, out queuedTraits), "the queued Headshot captures its traits");
                 ctx.Assert(queuedTraits.ContinuesChain, "Headshot is paid within six seconds of Paired Volley, so it continues the chain");
                 ctx.AssertEqual(afterFirst - Cost(winner), Stat.GetCurrentStamina(actor), "Replay pays the queued requirement exactly once");
                 // Any hostile weapon ability that costs STM spends all Cadence when its cost is paid.
                 ctx.AssertEqual(0, CadenceCharges(actor), "The paid queued cross-skill ability spends the captured Cadence");
                 ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "Queueing is not an impact");
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 AssignCommand(actor, () => ActionAttack(target));
             }
 
@@ -244,8 +240,8 @@ public static class TwinPistolHostileDelayEngineTests
             PairedRangedAttackCycle.Cancel(actor);
             PairedRangedTraits.ClearActor(actor);
             HostileAbilityDelay.EndForTesting(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         }
 
         await WaitFrames(ctx, () => writer.Completion.IsCompleted, "the owned recording to finish", 10f);

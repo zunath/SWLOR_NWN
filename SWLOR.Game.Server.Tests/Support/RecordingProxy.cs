@@ -1,0 +1,132 @@
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using SWLOR.NWN.API.Engine;
+
+namespace SWLOR.Game.Server.Tests.Support;
+
+/// <summary>
+/// A recording stand-in for any interface: it implements the interface at run time, records every call (member and
+/// arguments), and returns a fixed value per member. Used to prove that a static facade forwards each member to its
+/// instance without writing a fake by hand for every converted service.
+/// </summary>
+public class RecordingProxy : DispatchProxy
+{
+    private readonly List<RecordedInvocation> _calls = new();
+    private readonly Dictionary<MethodInfo, object?> _returns = new();
+
+    /// <summary>Every call received, in order.</summary>
+    public IReadOnlyList<RecordedInvocation> Calls => _calls;
+
+    /// <summary>
+    /// Creates a proxy that implements <paramref name="contract"/>. A call returns nothing for <c>void</c>, a distinct
+    /// object for a reference type (so a test can see that the facade passes the result through), a value that is not
+    /// the default for <c>bool</c>, <c>int</c>, <c>long</c>, <c>float</c>, <c>DateTime</c> and enums (and nullable enums), and the
+    /// default for any other value type.
+    /// </summary>
+    public static object Create(Type contract, out RecordingProxy proxy)
+    {
+        var create = typeof(DispatchProxy).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Single(method => method.Name == nameof(DispatchProxy.Create) && method.GetGenericArguments().Length == 2)
+            .MakeGenericMethod(contract, typeof(RecordingProxy));
+        var instance = create.Invoke(null, null)!;
+        proxy = (RecordingProxy)instance;
+        return instance;
+    }
+
+    /// <summary>
+    /// When set, a member that returns an interface returns a distinct stand-in instead of null (<see cref="StandIn"/>), so a
+    /// test can see that a caller passes the result through. Off by default: a test that uses the proxy as a quiet stand-in
+    /// gets null as before.
+    /// </summary>
+    public bool ReturnsInterfaceStandIns { get; set; }
+
+    /// <summary>The object the proxy returns for <paramref name="method"/>, or null for <c>void</c> and abstract types.</summary>
+    public object? ReturnedBy(MethodInfo method) => _returns.TryGetValue(method, out var value) ? value : null;
+
+    /// <summary>
+    /// A distinct object of an interface type: a one-element array for a sequence or collection interface an array
+    /// implements (<c>IEnumerable&lt;T&gt;</c>, <c>IReadOnlyList&lt;T&gt;</c>, ...), another recording proxy otherwise.
+    /// </summary>
+    public static object StandIn(Type interfaceType)
+    {
+        if (interfaceType.IsGenericType && interfaceType.GetGenericArguments().Length == 1)
+        {
+            var array = interfaceType.GetGenericArguments()[0].MakeArrayType();
+            if (interfaceType.IsAssignableFrom(array))
+                return Array.CreateInstance(interfaceType.GetGenericArguments()[0], 1);
+        }
+
+        return Create(interfaceType, out _);
+    }
+
+    protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
+    {
+        // An out parameter of a value type must leave the call holding a value, or the proxy cannot write it back.
+        var parameters = targetMethod!.GetParameters();
+        for (var index = 0; args != null && index < parameters.Length; index++)
+        {
+            var parameterType = parameters[index].ParameterType;
+            if (parameterType.IsByRef && args[index] == null && parameterType.GetElementType()!.IsValueType)
+                args[index] = Activator.CreateInstance(parameterType.GetElementType()!);
+        }
+
+        _calls.Add(new RecordedInvocation(targetMethod!, args ?? Array.Empty<object?>()));
+        if (!_returns.TryGetValue(targetMethod!, out var value))
+        {
+            value = ReturnsInterfaceStandIns && targetMethod!.ReturnType.IsInterface
+                ? StandIn(targetMethod.ReturnType)
+                : ValueFor(targetMethod!.ReturnType);
+            _returns[targetMethod] = value;
+        }
+
+        return value;
+    }
+
+    private static object? ValueFor(Type returnType)
+    {
+        if (returnType == typeof(void))
+            return null;
+        if (returnType == typeof(string))
+            return "returned";
+        if (returnType == typeof(bool))
+            return true;
+        if (returnType == typeof(int))
+            return 4242;
+        if (returnType == typeof(long))
+            return 4242L;
+        if (returnType == typeof(float))
+            return 4.5f;
+        if (returnType == typeof(DateTime))
+            return new DateTime(2026, 11, 3, 12, 0, 0, DateTimeKind.Utc);
+        var enumType = Nullable.GetUnderlyingType(returnType) ?? returnType;
+        if (enumType.IsEnum)
+        {
+            var values = Enum.GetValues(enumType);
+            return values.GetValue(values.Length > 1 ? 1 : 0);
+        }
+
+        if (returnType.IsValueType)
+            return Activator.CreateInstance(returnType);
+        if (returnType.IsAbstract || returnType.IsInterface)
+            return null;
+        // An array cannot be made uninitialized; a new one-element array is just as distinct.
+        if (returnType.IsArray)
+            return Array.CreateInstance(returnType.GetElementType()!, 1);
+        // A delegate cannot be made uninitialized either; a new one that does nothing is just as distinct.
+        if (typeof(Delegate).IsAssignableFrom(returnType))
+        {
+            var invoke = returnType.GetMethod("Invoke")!;
+            var parameters = invoke.GetParameters().Select(parameter => Expression.Parameter(parameter.ParameterType)).ToArray();
+            return Expression.Lambda(returnType, Expression.Default(invoke.ReturnType), parameters).Compile();
+        }
+
+        var uninitialized = RuntimeHelpers.GetUninitializedObject(returnType);
+        // An engine structure frees its native handle when the garbage collector finalizes it, which crashes a process
+        // that has no engine.
+        if (uninitialized is EngineStructureBase)
+            GC.SuppressFinalize(uninitialized);
+
+        return uninitialized;
+    }
+}

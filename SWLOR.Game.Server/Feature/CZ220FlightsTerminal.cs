@@ -1,9 +1,9 @@
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature
     {
         private const string HangarAreaResref = "czs220_hangar";
 
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The terminal it placed stays in the world.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void SpawnHangarFlightsTerminal()
         {

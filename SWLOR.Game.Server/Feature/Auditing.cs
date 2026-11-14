@@ -1,8 +1,8 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Writes an audit log when a player connects to the server.
         /// </summary>
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Writes a connection audit line.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void AuditClientConnection()
         {
@@ -27,6 +29,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Writes an audit log when a player disconnects from the server.
         /// </summary>
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Writes a disconnection audit line.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void AuditClientDisconnection()
         {
@@ -91,7 +95,7 @@ namespace SWLOR.Game.Server.Feature
             if (channel == ChatChannel.ServerMessage) return;
 
             // Automated announcements can remain visible without filling the chat audit log.
-            if (GetLocalInt(ChatPlugin.GetSender(), Communication.SuppressChatAuditVariable) != 0) return;
+            if (GetLocalInt(ChatPlugin.GetSender(), CommunicationService.SuppressChatAuditVariable) != 0) return;
 
             if (channel == ChatChannel.DMTell ||
                 channel == ChatChannel.PlayerTell)

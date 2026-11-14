@@ -21,7 +21,7 @@ public class ExtraHotbarsCraftWindowTests
     [OneTimeSetUp]
     public void CompileProductionEquipmentSlotUse()
     {
-        const string hotbars = "Service/ExtraHotbars.cs";
+        const string hotbars = "Domain/UI/ExtraHotbarsService.cs";
         _harness = Compile($$"""
             public enum InventorySlot { RightHand, LeftHand, Invalid }
             public enum BaseItem { Weapon, CompanionPistol, CompanionPowerGlove }
@@ -60,6 +60,9 @@ public class ExtraHotbarsCraftWindowTests
                 private static uint GetItemInSlot(InventorySlot slot, uint creature) => Hands.In(slot);
                 private static uint GetItemPossessor(uint item) => OBJECT_INVALID;
                 private static BaseItem GetBaseItemType(uint item) => BaseItem.Weapon;
+                private static bool IsAnyCraftWindowOpen(uint player) => CraftMinigameRouting.IsAnyCraftWindowOpen(player);
+                private static bool TryUnequip(uint player, uint item, InventorySlot slot, bool allowRecoveryBag) =>
+                    PlayerEquipmentStorage.TryUnequip(player, item, slot, allowRecoveryBag);
                 private static bool CanPairHands(uint mainHand, uint offHand) => true;
                 private static bool CanHoldInMainHand(uint item) => true;
                 private static string GetEquipError(uint player, uint item) => string.Empty;
@@ -70,12 +73,12 @@ public class ExtraHotbarsCraftWindowTests
                 private static void ActionEquipItem(uint item, InventorySlot slot) { Hands.Held[slot] = item; Hands.Equipped++; }
                 private static void RefreshStatusSoon(uint player) { }
 
-                {{Method(hotbars, "EquipHands")}}
-                {{Method(hotbars, "UnequipHands")}}
-                {{Method(hotbars, "GetHandSlot")}}
-                {{Method(hotbars, "IsHandCompanion")}}
-                {{Method(hotbars, "PutAwayHandItem")}}
-                {{Method(hotbars, "PlanHands")}}
+                {{InstanceMethod(hotbars, "EquipHands")}}
+                {{InstanceMethod(hotbars, "UnequipHands")}}
+                {{InstanceMethod(hotbars, "GetHandSlot")}}
+                {{InstanceMethod(hotbars, "IsHandCompanion")}}
+                {{InstanceMethod(hotbars, "PutAwayHandItem")}}
+                {{InstanceMethod(hotbars, "PlanHands")}}
 
                 public static void Use(uint player) => EquipHands(player, new ExtraHotbarSlot
                 {

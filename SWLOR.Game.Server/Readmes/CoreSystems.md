@@ -70,6 +70,22 @@ var firstObject = GetFirstObjectInArea(area);
 var nextObject = GetNextObjectInArea(area);
 ```
 
+**Engine seam.** Every static wrapper in `SWLOR.NWN.API/NWScript` and `NWScriptCustom` forwards to `NWScriptRuntime.Current`, an `INWScript`. By default that is `NwnCoreNWScript`, which holds the original wrapper bodies and calls the engine, so game code and call sites are unchanged. A unit test swaps the engine for `FakeNWScript` (project `SWLOR.NWN.API.Testing`), which records every call and returns configured or default values (zero, empty string, `OBJECT_INVALID` for every `uint` return, empty engine structures):
+
+```csharp
+var engine = new FakeNWScript();
+engine.SetReturn("GetEnteringObject", player);          // also SetReturnSequence and SetReturnHandler
+using var scope = NWScriptRuntime.Override(engine);     // per async flow; parallel tests do not see each other
+
+Activity.WipeStatusOnEntry();
+
+engine.Calls.Select(call => call.ToString()).Should().Contain("DeleteLocalBool(1001, \"IS_BUSY\")");
+```
+
+- Wrappers that contain logic (for example `GetLocalBool`, `ClearAllActions` resolving `OBJECT_SELF`, `RemoveEffectByTag`) are faked at their own level: the fake records the call and does not run the wrapper's body, so configure the wrapper's own return value.
+- Write a new or changed wrapper as before (a static method whose body calls `global::NWN.Core.NWScript`), then run `tools/Refactor/Apply-EngineSeam.ps1`. It moves the body into `NwnCoreNWScript`, extends `INWScript` and `FakeNWScript`, and rewrites the wrapper to forward. Never edit `SWLOR.NWN.API/Generated/` or `SWLOR.NWN.API.Testing/Generated/` by hand. `-Check` writes nothing and fails when the checked-in output is out of date; `SWLOR.NWN.API.Tests` runs the same check.
+- Public constants stay static (an interface cannot hold them). The generator rejects any other member shape (generics, `ref`/`out` parameters, attributes, fields, nested types), so nothing slips past the seam.
+
 ### 2. NWNX Plugin System
 
 **Purpose**: Provides access to NWNX plugin functionality.
@@ -80,6 +96,22 @@ var nextObject = GetNextObjectInArea(area);
 - `ChatPlugin.cs` - Chat system
 - Various plugin interfaces
 
+**Engine seam.** Every static wrapper in `SWLOR.NWN.API/NWNX/*Plugin.cs` forwards to its plugin's runtime, the same way the NWScript wrappers do: `ChatPlugin.SendMessage` calls `ChatPluginRuntime.Current`, an `IChatPlugin`. By default that is `NwnCoreChatPlugin`, which holds the original wrapper bodies and calls NWNX, so game code and call sites are unchanged. Each plugin has its own interface (`IChatPlugin`), pass-through (`NwnCoreChatPlugin`), runtime (`ChatPluginRuntime`) and fake (`FakeChatPlugin`, project `SWLOR.NWN.API.Testing`). A test replaces one plugin without touching the others:
+
+```csharp
+var plugin = new FakeCreaturePlugin();
+plugin.SetReturn("GetKnowsFeat", true);                      // also SetReturnSequence and SetReturnHandler
+using var scope = CreaturePluginRuntime.Override(plugin);    // per async flow; parallel tests do not see each other
+
+QuickCast.KnowsFeat(player, feat).Should().BeTrue();
+
+plugin.Calls.Select(call => call.ToString()).Should().Equal("GetKnowsFeat(1001, Alertness)");
+```
+
+- The same rules as the NWScript seam apply: wrappers with logic (an enum cast, a `bool` to `int` conversion, a result struct) are faked at their own level, and a new or changed wrapper is written as before and then moved by `tools/Refactor/Apply-EngineSeam.ps1`, which regenerates the NWScript and plugin seams together. A plugin file added to `SWLOR.NWN.API/NWNX` as `<Name>Plugin.cs` gets its own seam on the next run.
+- A plugin's data-only nested types (`ObjectPlugin.LocalVariable`, `UtilPlugin.WorldTime`, `UtilPlugin.HighResTimestamp`, `WeaponPlugin.DevastatingCriticalData`) stay in the static class and are used by the interface and fake through `using static`. The generator rejects a nested type that holds code.
+- A fake returns a new empty instance for a plain data class with a public parameterless constructor (`JournalEntry`, `QuickBarSlot`, `ItemPropertyUnpacked`), so game code that reads a field of the result does not fail on a null.
+
 **Usage**:
 ```csharp
 // Send chat message
@@ -88,6 +120,17 @@ ChatPlugin.SendMessage(0, "Hello World", ChatChannelType.PlayerTalk);
 // Get area info
 var areaInfo = AreaPlugin.GetAreaInfo(area);
 ```
+
+### 2a. Native hooks and sinks
+
+Each engine function the server hooks (`NWNXAPI.RequestFunctionHook`) belongs to a hook file in `Native/` (17 files, 36 hooks). NWNX calls an installed hook for the life of the process, so the hook entry points do not live in the game build: each file's `[UnmanagedCallersOnly]` **trampolines** are `SWLOR.Game.NativeHooks/<Name>Trampolines.cs`, with the symbols, the hook orders, the install guard and the original-function pointers. That assembly references nothing of the game (only `SWLOR.Game.Contracts` and `NWNX.NET`) and loads into the default context on both entries: the native entry's `SWLOR.Game.Server` references it, and the host references it and shares it with every generation by name (`HostOptions.SharedAssemblyNames`). The managed body of a hook is a **sink**: `NativeSinks/<Name>Sink.cs`, a class that implements `I<Name>Sink` of `SWLOR.Game.Contracts`.
+
+- **Installing.** `IHookControl.Enable(NativeHookId)` installs a file's hooks once for the process; a second call does nothing. The hook file's handler calls it at the moment the hook was always installed: the `RegisterHook(s)` handlers of `mod_load` (`NativeHookAccess.Hooks.Enable(...)`), `LegacyItemProperties.RegisterHook` from `EventRegistration.OnModulePreload`, and `CombatRecorderEffectHooks.Install` at the first recording. `NativeHookAccess.Hooks` is the container's `IHookControl`: the process's own `NativeHookTable` on the native entry, the host's on the host entry (`CompositionRoot.RegisterHostedServices` replaces it). On the host entry the 17 host extensions (`SWLOR.Game.Host/Hooks/NativeHookExtension`) only resolve the symbols when the host starts.
+- **Binding.** A trampoline reads its sink from a `volatile` static field: bound, it forwards the call and the engine function's trampoline (`nint original`, last argument) to the sink, which calls the engine function where the engine's own work belongs; unbound, it calls the engine function itself. The hooks that replace an engine function (`GetDamageRoll`, `ResolveAttackRoll`, `OnAIActionAttackObject`) pass no `original`. `INativeSinkBinding` binds a build's `NativeSinkSet` (`NativeSinks/NativeSinkFactory.Create`): the native entry when it boots (`ServerBootstrapper.RegisterNativeHandlers`), the host entry when it activates the generation (`GameGeneration.ActivateAsync`), which unbinds it in `DisposeAsync` so no trampoline references a retired build. The thread-static state two hooks share across calls lives beside the trampolines too (`PlayerFileLoadDepth`, `VitalityRecalculation.Current`), because the engine thread outlives every build.
+- **Add or change a hook.** Add the trampoline (symbol, order, guard, the sink-or-original body) to its `<Name>Trampolines` class and the id to `NativeHookId` for a new file, the method to the sink interface, the body to the sink class, and enable it from the hook file's handler. State that other code reads (a public counter, a table a test calls) stays on the hook file; state only the body uses moves to the sink.
+- **Hot paths.** `ComputeUpdate`, `WriteUpdate`, `GetMaximum` and `CalculateModifier` run per object per frame: a trampoline takes no lock, lease or allocation, only a volatile read and one interface call (`SWLOR.Game.NativeHooks.Tests` pins every trampoline at 0 bytes, bound and unbound, and checks each one's symbol, order and fallback).
+- **Rules.** `SWLOR.Architecture.Tests` (`NativeHookRulesTests`) fails when a trampoline calls anything but its sink and the engine function's pointer or reads no volatile field, when the game holds an `[UnmanagedCallersOnly]` method outside `Core` (the native entry's NWNX callbacks), when a sink implementation is outside `NativeSinks`, when `SWLOR.Game.Contracts` references anything but the framework, `Nwn.Hosting.Contracts` and `StackExchange.Redis`, or when `SWLOR.Game.NativeHooks` references anything but the framework, `NWNX.NET` and the contracts.
+- **Other contracts.** `IRedisConnectionSource` (the default `Domain.Foundation.RedisConnectionSource` opens Redis as before), `IHostLifecycle` (the host's `HostLifecycle`: module loaded, environment, reload on) and `IScriptContext` (declared, not used yet) live in the same project. The host entry boots the game as a reloadable generation: `HotReload.md`.
 
 ### 3. Async System
 
@@ -335,10 +378,10 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 Core systems integrate with services:
 
 ```csharp
-// Service using core functionality
-public static class CombatService
+// Service using core functionality: an instance class behind an interface (Readmes/DependencyInjection.md)
+public class CombatDamageService : ICombatDamageService
 {
-    public static void ApplyDamage(uint target, int damage, DamageType damageType)
+    public void ApplyDamage(uint target, int damage, DamageType damageType)
     {
         // Use core damage system
         var effect = EffectDamage(damage, damageType);
@@ -372,8 +415,9 @@ public class AbilityBuilder
 Core systems handle events:
 
 ```csharp
-// Core event handling
-public static void OnPlayerDamaged(uint player, uint attacker, int damage)
+// Core event handling: a public instance method of a service, bound to the container's singleton
+[NWNEventHandler(ScriptName.OnPlayerDamaged)]
+public void OnPlayerDamaged(uint player, uint attacker, int damage)
 {
     // Use core combat system
     var damageEffect = EffectDamage(damage, DamageType.Physical);
@@ -383,6 +427,38 @@ public static void OnPlayerDamaged(uint player, uint attacker, int damage)
     Log.Write(LogGroup.Combat, $"Player {player} took {damage} damage from {attacker}");
 }
 ```
+
+### 4. Script Handler Order
+
+At boot `ScriptRegistry.LoadHandlersFromAssembly` finds every `[NWNEventHandler(ScriptName.X)]` method by reflection, in the assemblies `GameAssemblies.GetAssemblies()` lists (the game build and, when engine tests are on, the engine-test assembly, which the bootstrapper loads from bytes into the game's load context), and registers it under its script name. A script runs its handlers front to back (a failing action handler is logged and the rest still run; every conditional handler runs and the results are ANDed). **The order is declared in `SWLOR.Game.Server/Core/ScriptHandlerOrder.txt`, the script handler manifest, and nowhere else.** Reflection order follows namespaces and file paths, so it is never consulted for a handler the manifest lists: moving a file, renaming a namespace or adding an unrelated file cannot reorder handlers. Some order is load-bearing: `Domain.Foundation.DBService.Connect` and `DBService.SyncIndexes` (the two parts of the old `DBService.Load`) must stay ahead of `Feature.EventRegistration.OnModulePreload` in `mod_preload`, because the first connects Redis, the second brings its indexes up to date and the third reads it.
+
+**Where handlers live.** A handler is a public, parameterless instance method (`void`, or `bool` for a conditional script) of a service's instance class or of one of its listed parts, never of a static class: at boot the registry builds the container, binds each handler to the singleton of its class and registers it under its script name. The manifest names the instance class (`SWLOR.Game.Server.Domain.Foundation.DBService.Connect`), and `SWLOR.Architecture.Tests` fail a handler on any other type in the domain namespace of a converted service (`Domain.<Domain>` and its topics, where the services and their support types live since P2-Z2). The exceptions are the static helpers P2-Z3 moved out of `Service` that keep a boot handler: `Domain.Foundation.FrameProfiler.Load` and `Domain.Foundation.Log.OnApplicationShutdown` (listed in `StaticHelpersMovedOutOfService` of `ConvertedServicesTests`). Moving a handler to another class edits its manifest line in place (and, until the cutover, adds a line to `tools/Refactor/HandlerRenames.txt`).
+
+**Format.** One block per script. The script name starts in column 0 (an optional `  # comment` may follow it), then one indented line per handler in run order: `action` (a `void` handler) or `conditional` (a `bool` handler), then `Namespace.Type.Method`. Blank lines, `#` comment lines and `== section ==` headings are ignored. Anything else is an error.
+
+```text
+mod_preload  # run by the engine before the module loads
+  action      SWLOR.Game.Server.Domain.Foundation.DBService.Connect
+  action      SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes
+  action      SWLOR.Game.Server.Feature.EventRegistration.StartServerEvents
+  action      SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
+```
+
+**Adding a handler.**
+
+1. Write the `[NWNEventHandler]` method. A handler of a boot script (`mod_preload`, `mod_content_chg`, `mod_cache_bef`, `mod_cache_aft`, `mod_load`, `db_loaded`, `app_shutdown`) also needs `[BootPhase(BootReload.<class>)]`, and a handler of `mod_enter` or `mod_exit` needs `[PlayerSession(PlayerReload.<class>, "<reason>")]` (`HotReload.md`, "Rules for new code"); `BootHandlerClassificationTests` and `PlayerSessionClassificationTests` fail without it.
+2. Build, so the generator sees the new handler: `dotnet build SWLOR.Game.Server.Tests -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`.
+3. Run the manifest generator: `SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandlerOrderTests"`
+   (PowerShell: `$env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS`). It rewrites the manifest from what the server would load, so existing handlers keep their order and a new handler is **appended to the end of its script's block**.
+4. If the new handler must run before others, move its line in the manifest. The generator never reorders lines it already has.
+5. Build again (same command as step 2) and run `dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~ScriptHandler"`. The server embeds the manifest, so the assembly carries the new one only after a rebuild.
+6. Commit the manifest with the handler. `ScriptHandlerOrderTests` fails while the manifest is not complete or names a handler that no longer exists.
+
+**Renaming or moving a handler method or class.** Edit its manifest line in place. Regenerating instead would drop the old line and append the new name at the end of the script, changing when it runs.
+
+**Until a handler is listed** it still runs, after every listed handler of its script and in discovery order, and the server logs it once at boot under the `Server` log group ("Script handler order: N handler(s) are not listed"). A listed handler whose method no longer exists is ignored and logged the same way ("match no handler"). Handlers in the engine test assembly are never listed; they run after the game's and are summarised in one line.
+
+**Deployment.** The manifest is an embedded resource of `SWLOR.Game.Server.dll` (`ScriptHandlerOrder.txt`), so every way of deploying the server ships it with the code it orders: `SWLOR.CLI` `DeployBuild` and the production deploy copy the whole build output into the `dotnet/` folder that the Docker compose files mount. A missing, unreadable, malformed or empty manifest stops the boot with an exception that names the problem; the server never falls back to reflection order. The embedded copy is what runs, so rebuild after editing the file.
 
 ## Core Best Practices
 
@@ -424,6 +500,8 @@ public static Area GetCachedArea(uint object)
 ```
 
 ### 3. Thread Safety
+
+The server runs on the engine thread and the thread pool. Do not start a thread or a runtime timer (`System.Threading.Timer`, `System.Timers.Timer`, `PeriodicTimer`) and do not subscribe to a process-wide event: a build that a hot reload retires could not let go of them. Use `Scheduler`, `NwTask` and pool work (`HotReload.md`, "Rules for new code"; `ProcessWideRegistrationTests` enforces it).
 
 ```csharp
 // Thread-safe operations

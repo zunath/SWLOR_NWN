@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
@@ -17,9 +16,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private const float ForceMendCooldownSeconds = 24f;
         private const float HarmonicRestorationCooldownSeconds = 20f;
         private const float HarmonicRestorationRadius = 5f;
-
-        private static readonly Dictionary<(uint, uint), DateTime> _forceMendCooldowns = new();
-        private static readonly Dictionary<uint, DateTime> _harmonicRestorationCooldowns = new();
 
         public static bool IsBelowHalfHP(uint target)
         {
@@ -111,32 +107,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static bool TryUseForceMend(uint activator, uint target)
         {
-            var key = (activator, target);
-            return TryUseCooldown(_forceMendCooldowns, key, ForceMendCooldownSeconds);
+            return ForceControlCooldowns.TryUseForceMend(activator, target, DateTime.UtcNow, ForceMendCooldownSeconds);
         }
 
         private static bool TryUseHarmonicRestoration(uint activator)
         {
-            return TryUseCooldown(_harmonicRestorationCooldowns, activator, HarmonicRestorationCooldownSeconds);
-        }
-
-        private static bool TryUseCooldown<TKey>(
-            Dictionary<TKey, DateTime> cooldowns,
-            TKey key,
-            float cooldownSeconds)
-            where TKey : notnull
-        {
-            var now = DateTime.UtcNow;
-            foreach (var expired in cooldowns.Where(x => x.Value <= now).Select(x => x.Key).ToList())
-            {
-                cooldowns.Remove(expired);
-            }
-
-            if (cooldowns.TryGetValue(key, out var nextAvailable) && nextAvailable > now)
-                return false;
-
-            cooldowns[key] = now.AddSeconds(cooldownSeconds);
-            return true;
+            return ForceControlCooldowns.TryUseHarmonicRestoration(activator, DateTime.UtcNow, HarmonicRestorationCooldownSeconds);
         }
     }
 }

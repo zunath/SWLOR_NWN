@@ -2,9 +2,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.QuestDefinition;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

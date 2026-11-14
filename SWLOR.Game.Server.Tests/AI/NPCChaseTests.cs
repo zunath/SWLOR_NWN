@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Service;
 
 namespace SWLOR.Game.Server.Tests.AI;
 
@@ -18,8 +19,10 @@ public class NPCChaseTests
     {
         // Execute the production event and threat-cleanup methods with engine boundaries
         // replaced by observable commands. No live NWN VM is available in unit tests.
-        var aiMethods = ExtractMethods("AI.cs", "CreatureBlocked");
-        var enmityMethods = ExtractMethods("Enmity.cs",
+        // The blocked handler is the AI instance's method, borrowed as a static one (DMPossessionHarness.InstanceMethod).
+        var aiMethods = DMPossessionHarness.InstanceMethod("Domain/Creatures/AIService.cs", "CreatureBlocked");
+        // The enmity instance's methods, borrowed as static ones (DMPossessionHarness.InstanceMethod).
+        var enmityMethods = ExtractMethods(
             "AttackHighestEnmityTarget", "GetHighestEnmityTarget", "GetEnmityTable",
             "RemoveProximityEnmity", "HasOnlyProximityEnmity", "GetRawEnmityAmount",
             "GetProximityEnmityAmount", "RemoveEnmityTableEntry",
@@ -32,6 +35,8 @@ public class NPCChaseTests
             using System.Collections.Generic;
             using System.Linq;
             using static World;
+
+            public static class Clock { public static DateTime UtcNow => DateTime.UtcNow; }
 
             public static class World
             {
@@ -66,9 +71,25 @@ public class NPCChaseTests
                 public static HashSet<uint> Hidden = new();
                 public static bool IsHiddenFrom(uint observer, uint target) => Hidden.Contains(target);
             }
+            public sealed class AIStub
+            {
+                public bool IsLeashEvading(uint creature) => Evading;
+                public bool IsInAggroRange(uint creature, uint target) => InRange.Contains(target);
+                public bool TryStartCombatLeashEvade(uint creature, uint target) => false;
+                public void StopCombatAfterProximityLoss(uint creature)
+                {
+                    StopCommands++;
+                    AttackTarget = OBJECT_INVALID;
+                }
+            }
+            public sealed class ActivityStub
+            {
+                public bool IsBusy(uint creature) => false;
+            }
             public static class AI
             {
                 public static bool IsAIEnabled(uint creature) => Enabled;
+                public static void ResumeAttackAfterActionsCleared(uint creature) => Enmity.ResumeAttackAfterActionsCleared(creature);
                 public static bool IsLeashEvading(uint creature) => Evading;
                 public static bool IsInAggroRange(uint creature, uint target) => InRange.Contains(target);
                 public static bool TryStartCombatLeashEvade(uint creature, uint target) => false;
@@ -79,22 +100,18 @@ public class NPCChaseTests
                 }
                 {{aiMethods}}
             }
-            public static class CompanionControl
-            {
-                public static bool IsRegisteredCompanion(uint creature) => false;
-                public static uint PeekAuthorizedTarget(uint creature) => OBJECT_INVALID;
-            }
             public static class Activity
             {
                 public static bool IsBusy(uint creature) => false;
             }
-            public enum LogGroup { AI }
-            public static class Log
-            {
-                public static void Write(LogGroup group, string message) { }
-            }
             public static class Enmity
             {
+                private static readonly AIStub _ai = new();
+                private static readonly ActivityStub _activity = new();
+                private static bool IsHiddenFrom(uint observer, uint target) => Stealth.IsHiddenFrom(observer, target);
+                private static bool IsRegisteredCompanion(uint creature) => false;
+                private static uint PeekAuthorizedTarget(uint creature) => OBJECT_INVALID;
+                private static void WriteAILog(string message) { }
                 private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
                 private static readonly Dictionary<uint, List<uint>> _creatureToEnemies = new();
                 private static readonly Dictionary<uint, Dictionary<uint, int>> _proximityEnmityAmounts = new();
@@ -309,15 +326,9 @@ public class NPCChaseTests
     }
 
     /// <summary>Compiles the actual production method bodies instead of maintaining test copies.</summary>
-    private static string ExtractMethods(string fileName, params string[] names)
-    {
-        var source = File.ReadAllText(Path.Combine(FindRoot(), "SWLOR.Game.Server", "Service", fileName));
-        var methods = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
-            .OfType<MethodDeclarationSyntax>().Where(method => names.Contains(method.Identifier.Text))
-            .Select(method => method.WithAttributeLists(default).WithoutTrivia().ToFullString()).ToArray();
-        methods.Should().HaveCount(names.Length);
-        return string.Join(Environment.NewLine, methods);
-    }
+    private static string ExtractMethods(params string[] names) =>
+        string.Join(Environment.NewLine,
+            names.Select(name => DMPossessionHarness.InstanceMethod("Domain/Combat/EnmityService.cs", name)));
 
     /// <summary>Finds this checkout's sources for both ordinary and isolated worktree test runs.</summary>
     private static string FindRoot()

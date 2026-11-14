@@ -5,15 +5,16 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class AbandonedStationRewardTests
+public class AbandonedStationRewardTests : SkillFacadeFixture
 {
     private const int ItemPropertyRequiresSkill = 131;
 

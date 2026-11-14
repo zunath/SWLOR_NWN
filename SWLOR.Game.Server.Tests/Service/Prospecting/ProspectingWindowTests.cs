@@ -3,9 +3,9 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.UI;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Prospecting;
@@ -151,14 +151,14 @@ public class ProspectingWindowTests
           {
               ProspectingActionText.MinesOut, ProspectingActionText.Collapses, ProspectingActionText.UsesUp,
               ProspectingEngine.NoRevealedSeam, ProspectingEngine.NotEnoughCharges, ProspectingEngine.NodeSpent,
-              SWLOR.Game.Server.Service.ProspectingService.ProspectingLifecycle.InUseMessage,
-              SWLOR.Game.Server.Service.ProspectingService.ProspectingLifecycle.SpentMessage,
-              SWLOR.Game.Server.Service.ProspectingService.ProspectingLifecycle.NoChargesMessage,
-              SWLOR.Game.Server.Service.ProspectingService.ProspectingLifecycle.MinedOutMessage,
-              SWLOR.Game.Server.Service.ProspectingService.ProspectingLifecycle.CollapsedMessage,
-              SWLOR.Game.Server.Service.ProspectingService.ProspectingLifecycle.LeftMessage,
-              SWLOR.Game.Server.Service.ProspectingService.ProspectingLifecycle.StillWorkingMessage,
-              SWLOR.Game.Server.Service.ProspectingService.ProspectingLifecycle.QuickHarvestTooLateMessage
+              SWLOR.Game.Server.Domain.Crafting.ProspectingLifecycle.InUseMessage,
+              SWLOR.Game.Server.Domain.Crafting.ProspectingLifecycle.SpentMessage,
+              SWLOR.Game.Server.Domain.Crafting.ProspectingLifecycle.NoChargesMessage,
+              SWLOR.Game.Server.Domain.Crafting.ProspectingLifecycle.MinedOutMessage,
+              SWLOR.Game.Server.Domain.Crafting.ProspectingLifecycle.CollapsedMessage,
+              SWLOR.Game.Server.Domain.Crafting.ProspectingLifecycle.LeftMessage,
+              SWLOR.Game.Server.Domain.Crafting.ProspectingLifecycle.StillWorkingMessage,
+              SWLOR.Game.Server.Domain.Crafting.ProspectingLifecycle.QuickHarvestTooLateMessage
           });
 
         texts.Should().OnlyContain(text => text.All(character => character < 128));

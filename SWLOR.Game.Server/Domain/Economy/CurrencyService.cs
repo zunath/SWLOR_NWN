@@ -1,0 +1,107 @@
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Domain.Economy;
+
+namespace SWLOR.Game.Server.Domain.Economy
+{
+    /// <summary>
+    /// The currencies a player holds: the logic and state that used to be a static class, moved here
+    /// unchanged. The event handler runs on the container's instance; static callers reach it through <c>GameServices.Currency</c>.
+    /// </summary>
+    public class CurrencyService : ICurrencyService
+    {
+        private readonly IDBService _db;
+        private readonly IGuiService _gui;
+        private readonly Dictionary<CurrencyType, CurrencyAttribute> _currencies = new Dictionary<CurrencyType, CurrencyAttribute>();
+
+        public CurrencyService(IDBService db, IGuiService gui)
+        {
+            _db = db;
+            _gui = gui;
+        }
+
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public void CacheCurrencies()
+        {
+            var currencyTypes = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>();
+            foreach (var currencyType in currencyTypes)
+            {
+                // Skip over the invalid currencies.
+                if (currencyType == CurrencyType.Invalid)
+                    continue;
+
+                var detail = currencyType.GetAttribute<CurrencyType, CurrencyAttribute>();
+                _currencies[currencyType] = detail;
+            }
+        }
+
+        public CurrencyAttribute GetCurrencyDetail(CurrencyType currencyType)
+        {
+            return _currencies[currencyType];
+        }
+
+        public int GetCurrency(uint player, CurrencyType type)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = _db.Get<Player>(playerId);
+
+            if (dbPlayer == null)
+                return 0;
+
+            if (!dbPlayer.Currencies.ContainsKey(type))
+                return 0;
+
+            return dbPlayer.Currencies[type];
+        }
+
+        public void GiveCurrency(uint player, CurrencyType type, int amount)
+        {
+            amount = Math.Abs(amount);
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = _db.Get<Player>(playerId);
+
+            if (dbPlayer == null)
+                return;
+
+            if (!dbPlayer.Currencies.ContainsKey(type))
+                dbPlayer.Currencies[type] = 0;
+
+            dbPlayer.Currencies[type] += amount;
+
+            _db.Set(dbPlayer);
+            _gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+        }
+
+        public void TakeCurrency(uint player, CurrencyType type, int amount)
+        {
+            amount = Math.Abs(amount);
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = _db.Get<Player>(playerId);
+
+            if (dbPlayer == null)
+                return;
+
+            if (!dbPlayer.Currencies.ContainsKey(type))
+                dbPlayer.Currencies[type] = 0;
+
+            var balance = dbPlayer.Currencies[type];
+            var newBalance = Math.Max(0, balance - amount);
+            if (newBalance == balance)
+                return;
+
+            dbPlayer.Currencies[type] = newBalance;
+
+            _db.Set(dbPlayer);
+            _gui.PublishRefreshEvent(player, new CurrencyRefreshEvent());
+        }
+    }
+}

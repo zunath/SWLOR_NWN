@@ -4,25 +4,43 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AbilityDescriptionTests
 {
+    // The code under test reaches converted services through their static facades, which resolve from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void TechniqueDescriptionCacheMissDoesNotReadFromTheEngine()
     {
         Ability.CacheData();
-        Mimicry.CacheData();
+        GameServices.Mimicry.CacheData();
 
         // A registered technique with no engine-backed boot data must remain a cache miss.
         // Reading feat/TLK data here would throw because this harness has no live engine.
-        Mimicry.IsTechnique(FeatType.DreadWaveTechnique).Should().BeTrue();
-        Mimicry.GetTechniqueDescription(FeatType.DreadWaveTechnique).Should().BeEmpty();
-        Mimicry.GetTechniqueDescription(FeatType.Invalid).Should().BeEmpty();
+        GameServices.Mimicry.IsTechnique(FeatType.DreadWaveTechnique).Should().BeTrue();
+        GameServices.Mimicry.GetTechniqueDescription(FeatType.DreadWaveTechnique).Should().BeEmpty();
+        GameServices.Mimicry.GetTechniqueDescription(FeatType.Invalid).Should().BeEmpty();
     }
 
     [TestCase(FeatType.DreadWaveTechnique, "Dread Wave", 8, 24)]

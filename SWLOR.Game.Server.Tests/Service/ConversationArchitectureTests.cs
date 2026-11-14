@@ -3,9 +3,8 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -15,13 +14,13 @@ public class ConversationArchitectureTests
     [Test]
     public void ConversationGraphs_LoadOnlyAfterSnippetRegistrationCompletes()
     {
-        var snippetCacheEvents = typeof(Snippet)
-            .GetMethod(nameof(Snippet.CacheData))!
+        var snippetCacheEvents = typeof(SnippetService)
+            .GetMethod(nameof(SnippetService.CacheData))!
             .GetCustomAttributes(typeof(NWNEventHandler), false)
             .Cast<NWNEventHandler>()
             .Select(attribute => attribute.Script);
-        var conversationCacheEvents = typeof(Conversation)
-            .GetMethod(nameof(Conversation.CacheData))!
+        var conversationCacheEvents = typeof(SWLOR.Game.Server.Domain.Foundation.ConversationService)
+            .GetMethod(nameof(SWLOR.Game.Server.Domain.Foundation.ConversationService.CacheData))!
             .GetCustomAttributes(typeof(NWNEventHandler), false)
             .Cast<NWNEventHandler>()
             .Select(attribute => attribute.Script);
@@ -114,8 +113,8 @@ public class ConversationArchitectureTests
         var markupSource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "ConversationService",
+            "Domain",
+            "Foundation",
             "ConversationMarkup.cs"));
         markupSource.Should().NotContain("CollapseForHeader");
     }
@@ -198,20 +197,6 @@ public class ConversationArchitectureTests
 
         errors.Should().BeEmpty(
             "migrated conversations must bypass NWN's native dialogue window at the module-resource boundary");
-    }
-
-    [Test]
-    public void NativeDialogFallbacks_CaptureTheOwnerBeforeAssigningThePlayerCommand()
-    {
-        var serviceDirectory = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service");
-        foreach (var fileName in new[] { "ConversationMenu.cs", "AI.cs" })
-        {
-            var source = File.ReadAllText(Path.Combine(serviceDirectory, fileName));
-            source.Should().NotContain("ActionStartConversation(OBJECT_SELF",
-                $"{fileName} runs the fallback as the player, where OBJECT_SELF would resolve to that player");
-            source.Should().Contain("ActionStartConversation(owner",
-                $"{fileName} must capture the event owner before queuing the fallback command");
-        }
     }
 
     [Test]

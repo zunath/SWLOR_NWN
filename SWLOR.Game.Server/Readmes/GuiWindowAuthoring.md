@@ -11,7 +11,7 @@ binding path, and known-good/known-bad layout shape.
 A window is three classes plus one enum entry. Registration is automatic
 (reflection) — the enum entry is the only registry edit.
 
-1. **Enum entry** — add to `Service/GuiService/GuiWindowType.cs`. Player-facing
+1. **Enum entry** — add to `Domain/UI/GuiWindowType.cs`. Player-facing
    windows use the next sequential id; debug windows use the 900 range
    (`DebugEnmity = 900`, `DebugNuiGallery = 901`). Duplicate ids throw at boot.
 2. **Definition** — `Feature/GuiDefinition/<Name>Definition.cs`, implements
@@ -40,7 +40,7 @@ private void NuiGallery()
 ## 2. ViewModel lifecycle (what actually happens, in order)
 
 `GuiViewModelBase.Bind(...)` runs every time the window opens
-(`Service/GuiService/GuiViewModelBase.cs`):
+(`Domain/UI/GuiViewModelBase.cs`):
 
 1. Geometry defaults to the definition's `SetInitialGeometry` if unset (per-player
    geometry is persisted across sessions in `Player.WindowGeometries`).
@@ -292,7 +292,7 @@ automatically. Replacing the whole list object also works and re-hooks events.
 replace the whole object (see the gallery's `OnClickReplaceComboOptions`).
 
 **Tables** (`AddTable` extension on `GuiColumn`, from
-`Service/GuiService/Component/GuiTable.cs`): declarative header + list. Fixed columns
+`Domain/UI/Component/GuiTable.cs`): declarative header + list. Fixed columns
 need `width > 0` (R1 — throws otherwise); only the last column defaults to variable.
 `AddComponentColumn` hosts buttons/widgets; `SetShowHeader(false)` + explicit
 `BindRowCount` for headerless lists. Pair with `GuiTableSource<TViewModel,TRow>` on

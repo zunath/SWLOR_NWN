@@ -3,6 +3,8 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -71,7 +73,7 @@ public class AccuracyItemPropertyTests
     public void AccuracyReaders_UseOnlyTheCustomProperty()
     {
         var root = FindRepositoryRoot();
-        var stat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        var stat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
 
         stat.Should().NotContain("ItemPropertyType.AccuracyBonus");
         stat.Should().NotContain("ItemPropertyType.EnhancementBonus");
@@ -79,15 +81,17 @@ public class AccuracyItemPropertyTests
         stat.Should().Contain("accuracyBonus += dbPlayer.Accuracy;");
         stat.Should().Contain("accuracyBonus += npcStats.Accuracy;");
 
-        var beastMastery = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "BeastMastery.cs"));
-        beastMastery.Should().Contain("ItemPropertyCustom(ItemPropertyType.Accuracy, -1, accuracyBonus)");
+        using (var engine = new PlayerEngine())
+        {
+            CraftServices.Create().BuildItemPropertyForEnhancement(EnhancementSubType.Accuracy, 7);
 
-        var craft = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Craft.cs"));
-        craft.Should().NotContain("ItemPropertyAttackBonus(");
-        craft.Should().Contain("ItemPropertyCustom(ItemPropertyType.Accuracy, -1, amount)");
+            engine.Engine.CountOf("ItemPropertyAttackBonus").Should().Be(0);
+            var custom = engine.Engine.CallsTo("ItemPropertyCustom").Should().ContainSingle().Subject;
+            custom.Arguments.Should().Equal(ItemPropertyType.Accuracy, -1, 7, -1);
+        }
 
         var equipmentStats = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"));
-        equipmentStats.Should().Contain("_statChangeActions[ItemPropertyType.Accuracy] = ApplyAccuracy;");
+        equipmentStats.Should().Contain("Stat.RegisterEquipmentStatAction(ItemPropertyType.Accuracy, ApplyAccuracy);");
     }
 
     [Test]

@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
 using static SWLOR.Game.Server.Tests.Service.Circuit.CircuitTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Circuit;
@@ -96,7 +96,7 @@ public class CircuitEngineTests
     {
         var setup = new CircuitSetup(null, 10, 45, 629, 60, 10, 0, 0, 0);
 
-        setup.Parameters.Should().BeSameAs(CircuitParameters.Fallback);
+        setup.Parameters.Should().BeEquivalentTo(CircuitParameters.Fallback);
         setup.OverloadLine.Should().Be(6);
     }
 

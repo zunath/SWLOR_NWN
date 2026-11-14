@@ -5,15 +5,33 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ExtraHotbarService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.NWScript.Enum;
+
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class ExtraHotbarsTests
 {
+    // The Gui facade resolves the GUI service from a container.
+    private FacadeContainer _guiFacades = null!;
+    private IDisposable _guiFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildGuiFacades() => _guiFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeGuiFacades() => _guiFacades.Dispose();
+
+    [SetUp]
+    public void InstallGuiFacades() => _guiFacadeScope = _guiFacades.Install();
+
+    [TearDown]
+    public void RemoveGuiFacades() => _guiFacadeScope.Dispose();
+
     [Test]
     public void GetBars_PlayerSavedBeforeHotbars_GetsEveryBarWithEverySlot()
     {
@@ -21,8 +39,8 @@ public class ExtraHotbarsTests
 
         var bars = ExtraHotbars.GetBars(player);
 
-        bars.Should().HaveCount(ExtraHotbars.BarCount);
-        bars.Should().OnlyContain(bar => bar.Slots.Count == ExtraHotbars.MaxSlots && !bar.IsVisible);
+        bars.Should().HaveCount(ExtraHotbarsService.BarCount);
+        bars.Should().OnlyContain(bar => bar.Slots.Count == ExtraHotbarsService.MaxSlots && !bar.IsVisible);
         bars.SelectMany(bar => bar.Slots).Should().OnlyContain(slot => slot.Type == ExtraHotbarSlotType.Empty);
     }
 
@@ -47,9 +65,9 @@ public class ExtraHotbarsTests
 
         var bars = ExtraHotbars.GetBars(player);
 
-        bars[0].SlotCount.Should().Be(ExtraHotbars.MaxSlots);
+        bars[0].SlotCount.Should().Be(ExtraHotbarsService.MaxSlots);
         bars[0].Slots[0].Feat.Should().Be(FeatType.Provoke1);
-        bars[0].Slots.Should().HaveCount(ExtraHotbars.MaxSlots);
+        bars[0].Slots.Should().HaveCount(ExtraHotbarsService.MaxSlots);
     }
 
     [Test]

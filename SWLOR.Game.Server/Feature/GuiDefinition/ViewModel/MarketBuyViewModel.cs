@@ -3,13 +3,13 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWNX;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// When the module loads, set up the category lists so they don't need
         /// to be initialized for every player.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadCategories()
         {
@@ -361,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var purchase = $"{GetItemStackSize(item)}x {GetName(item)}";
                 if (!Item.TryAcquireItem(Player, item))
                 {
-                    FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                    FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                     return;
                 }
 

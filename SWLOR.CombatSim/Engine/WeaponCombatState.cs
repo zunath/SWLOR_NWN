@@ -1,12 +1,10 @@
 using System.Reflection;
 using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Scenario;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
 
 namespace SWLOR.CombatSim.Engine;
 
@@ -96,7 +94,7 @@ public sealed partial class WeaponCombatState
     }
     private IEnumerable<IReadOnlyDictionary<StatType, int>> AllSources =>
         Sources.Cast<IReadOnlyDictionary<StatType, int>>().Concat(_owner.Statuses.Values.Select(s => s.Stats));
-    public int Stat(StatType stat) => AllSources.Aggregate(0, (sum, s) => SWLOR.Game.Server.Service.Stat.AggregateStatAdjustment(stat, sum, s.GetValueOrDefault(stat)));
+    public int Stat(StatType stat) => AllSources.Aggregate(0, (sum, s) => StatRules.AggregateStatAdjustment(stat, sum, s.GetValueOrDefault(stat)));
     public int LineStat(MeleeTechniqueLine line, StatType stat) => AllSources.Where(s => s.GetValueOrDefault(StatType.TechniqueLine) == (int)line).Sum(s => s.GetValueOrDefault(stat));
     public void Count(string key, double amount = 1) => Diagnostics[key] = Diagnostics.GetValueOrDefault(key) + amount;
     public void ClearSetup(bool spent = false)
@@ -268,7 +266,7 @@ public sealed partial class WeaponCombatState
             ResistanceType.Invalid => 0,
             _ => throw new InvalidDataException($"Unsupported weapon status resistance {status.ResistanceType}.")
         };
-        return WeaponControlState.Duration(status, seconds, StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, Stat), resistance, false);
+        return WeaponControlState.Duration(status, seconds, StatusEffectRules.GetOutgoingDurationPercentAdjustment(status.Categories, Stat), resistance, false);
     }
     public void DirectHpDamage(Combatant attacker, double now)
     {
@@ -295,13 +293,13 @@ public sealed partial class WeaponCombatState
     public int HastePercent(double now) => Stat(StatType.AttackDelayReductionPercent) + AreaHaste(now) + _owner.Spec.WeaponCombat.ExternalHastePercent +
         (_owner.Spec.WeaponCombat.PairedHands ? Stat(StatType.DualWieldAttackDelayReductionPercent) : 0) +
         (Reactions.GetWindowStage(At(now)) == MeleeTechniqueStage.Finish ? LineStat(WindowLine, StatType.TechniqueFinishFinisherHastePercent) : 0);
-    public double AttackSeconds(double now) => Combat.CalculateEffectiveAttackDelay(_owner.Spec.WeaponCombat.AttackDelayMilliseconds(HastePercent(now))) / 1000d;
+    public double AttackSeconds(double now) => CombatRules.CalculateEffectiveAttackDelay(_owner.Spec.WeaponCombat.AttackDelayMilliseconds(HastePercent(now))) / 1000d;
     /// <summary>Weapon rolls per attack cycle: both hands for Power Gloves, as the server's dual-wield cycle resolves.</summary>
     public int RollsPerCycle => _owner.Spec.WeaponCombat.PairedHands ? 2 : 1;
-    public double SwingSeconds(double now) => Combat.CalculateAttackSwingDelay((int)Math.Round(AttackSeconds(now)*1000)) / 1000d;
+    public double SwingSeconds(double now) => CombatRules.CalculateAttackSwingDelay((int)Math.Round(AttackSeconds(now)*1000)) / 1000d;
     public int TakeSwingAttacks(double now)
     {
-        var attacks = Combat.CalculateAttacksPerSwing((int)Math.Round(AttackSeconds(now)*1000), _attackDebt, out var debt);
+        var attacks = CombatRules.CalculateAttacksPerSwing((int)Math.Round(AttackSeconds(now)*1000), _attackDebt, out var debt);
         _attackDebt = debt;
         Count("SwingAnimations");
         Count("BatchedExtraAttacks", attacks-1);

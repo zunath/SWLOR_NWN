@@ -1,15 +1,31 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CompanionControlService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;
 using AssociateCommand = SWLOR.NWN.API.NWScript.Enum.Associate.Command;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.AI;
 
 public class CompanionControlPolicyTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void FollowAndGuardUseTheirDesignedCombatTethers()
     {
@@ -145,13 +161,13 @@ public class CompanionControlPolicyTests
     {
         ((int)AssociateCommand.ToggleAbilities).Should().Be(-21);
         AssociateCommand.ToggleCasting.Should().Be(AssociateCommand.ToggleAbilities);
-        CompanionControl.AssociateAbilitiesLabelStrRef.Should().Be(8127);
+        CompanionControlService.AssociateAbilitiesLabelStrRef.Should().Be(8127);
     }
 
     [Test]
     public void HealCommandOptionsAreDeclaredByAbilityMetadata()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var healingAbilities = Ability.GetAllAbilityDetails()
             .Where(x => x.Value.IsHealingAbility)
             .ToDictionary(x => x.Key, x => x.Value);

@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -27,8 +27,8 @@ public class PlayerIdentityAuditTests
     [OneTimeSetUp]
     public void CompileAuditHarness()
     {
-        var getAuditName = ExtractMethod("Service", "PlayerName.cs", "GetAuditName");
-        var getAuditIdentity = ExtractMethod("Service", "PlayerName.cs", "GetAuditIdentity");
+        var getAuditName = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/PlayerNameService.cs", "GetAuditName");
+        var getAuditIdentity = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/PlayerNameService.cs", "GetAuditIdentity");
         var connect = ExtractMethod("Feature", "Auditing.cs", "AuditClientConnection");
         var disconnect = ExtractMethod("Feature", "Auditing.cs", "AuditClientDisconnection");
         var chat = ExtractMethod("Feature", "Auditing.cs", "AuditChatMessages");
@@ -42,9 +42,9 @@ public class PlayerIdentityAuditTests
                                  call.ArgumentList.Arguments[0].ToString() == "LogGroup.Chat");
         var setNameAction = ExtractAction("SetKnownName");
         var forgetNameAction = ExtractAction("ForgetKnownName");
-        var acceptIntroduction = ExtractMethod("Service", "PlayerIntroduction.cs", "Accept");
-        var setDescriptor = ExtractMethod("Service", "PlayerDescriptor.cs", "SetUnknownDisplayName");
-        var getIdentityKey = ExtractMethod("Service", "Disguise.cs", "GetIdentityKey");
+        var acceptIntroduction = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/PlayerIntroductionService.cs", "Accept");
+        var setDescriptor = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/PlayerDescriptorService.cs", "SetUnknownDisplayName");
+        var getIdentityKey = SWLOR.Game.Server.Tests.Service.DMPossessionHarness.InstanceMethod("Domain/Character/DisguiseService.cs", "GetIdentityKey");
         var source = $$"""
             using System;
             using System.Collections.Generic;
@@ -76,6 +76,13 @@ public class PlayerIdentityAuditTests
             {
                 {{getAuditName}}
                 {{getAuditIdentity}}
+                private static string GetDisplayDescriptor(uint player) => Disguise.GetDisplayDescriptor(player);
+                private static PlayerDisguise GetActiveDisguise(uint player) => Disguise.GetActiveDisguise(player);
+                private static readonly Lazy<DisguiseShim> _disguise = new(() => new DisguiseShim());
+                private sealed class DisguiseShim
+                {
+                    public string BuildIdentityKey(string disguiseId) => Disguise.BuildIdentityKey(disguiseId);
+                }
                 public static string InputError => AuditWorld.ValidationError;
                 public static string ValidateKnownNameInput(string name) => InputError;
                 public static string ValidateKnownNameAssignment(uint observer, uint target, string name) => InputError;
@@ -100,6 +107,21 @@ public class PlayerIdentityAuditTests
             }
             public static class PlayerDescriptor
             {
+                private static readonly DbShim _db = new();
+                private static readonly NameShim _playerName = new();
+                private sealed class DbShim
+                {
+                    public T Get<T>(string id) where T : class => DB.Get<T>(id);
+                    public void Set(Player player) => DB.Set(player);
+                }
+                private sealed class NameShim
+                {
+                    public string SanitizeKnownName(string name) => PlayerName.SanitizeKnownName(name);
+                    public string ValidateKnownNameInput(string name) => PlayerName.ValidateKnownNameInput(name);
+                    public void RefreshNameOverridesForPlayer(uint player) => PlayerName.RefreshNameOverridesForPlayer(player);
+                }
+                private static string GetDisguiseIdentityKey(uint player) => Disguise.GetIdentityKey(player);
+                private static void WriteStructuredLog(LogGroup group, string message, params object[] values) => Log.WriteStructured(group, message, values);
                 {{setDescriptor}}
                 public static string GetUnknownDisplayName(uint player) => DB.Get<Player>(GetObjectUUID(player)).UnknownDisplayName;
             }
@@ -152,7 +174,7 @@ public class PlayerIdentityAuditTests
                 public static ChatChannel GetChannel() => Channel;
                 public static string GetMessage() => Message;
             }
-            public static class Communication { public const string SuppressChatAuditVariable = "suppress"; }
+            public static class CommunicationService { public const string SuppressChatAuditVariable = "suppress"; }
             public static class DMPresence
             {
                 public static readonly Dictionary<uint, uint> Masters = new();
@@ -189,7 +211,18 @@ public class PlayerIdentityAuditTests
             }
             public static class PlayerIntroduction
             {
-                private static readonly IntroductionInbox Inbox = new();
+                private static readonly IntroductionInbox _inbox = new();
+                private static readonly NameShim _playerName = new();
+                private sealed class NameShim
+                {
+                    public bool TryGetKnownName(uint observer, uint target, out string name) => PlayerName.TryGetKnownName(observer, target, out name);
+                    public string ValidateKnownNameAssignment(uint observer, uint target, string name) => PlayerName.ValidateKnownNameAssignment(observer, target, name);
+                    public void SetKnownName(uint observer, uint target, string name) => PlayerName.SetKnownName(observer, target, name);
+                    public string GetAuditName(uint target) => PlayerName.GetAuditName(target);
+                }
+                private static DateTime UtcNow() => DateTime.UtcNow;
+                private static string GetDisguiseIdentityKey(uint player) => Disguise.GetIdentityKey(player);
+                private static void WriteStructuredLog(LogGroup group, string message, params object[] values) => Log.WriteStructured(group, message, values);
                 private static bool IsCurrentIdentity(IntroductionOffer offer) => true;
                 {{acceptIntroduction}}
             }

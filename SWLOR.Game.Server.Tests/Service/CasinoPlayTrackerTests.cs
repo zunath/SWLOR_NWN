@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -39,7 +39,7 @@ public class CasinoPlayTrackerTests
     {
         var play = new CasinoDailyPlay();
         for (var i = 0; i < 20; i++)
-            CasinoPlayTracker.RecordSpin(play, Start.AddSeconds(i * 3), CasinoSlot.SpinCost);
+            CasinoPlayTracker.RecordSpin(play, Start.AddSeconds(i * 3), CasinoSlotService.SpinCost);
         Assert.That(play.Spins, Is.EqualTo(20));
         Assert.That(play.ProfitableWins, Is.Zero);
         Assert.That(CasinoPlayTracker.IsCoolingDown(play, Start.AddSeconds(60)), Is.False);

@@ -60,6 +60,20 @@ case "$action" in
         press "$w" "$1" "$2" "$button"
         sleep 1
         ;;
+    nui-click)
+        # A click for NUI controls on a busy machine: the client draws too few frames for a click that
+        # follows its pointer move within a quarter of a second, so the pointer rests on the control for
+        # two seconds and the button is held for one (a quick click registered about one time in three).
+        [ $# -eq 2 ] || die "Usage: nui-click X Y"
+        point "$1" "$2"; w=$(window)
+        xdotool windowfocus --sync "$w"
+        xdotool mousemove --window "$w" "$1" "$2"
+        sleep 2
+        xdotool mousedown 1
+        sleep 1
+        xdotool mouseup 1
+        sleep 1
+        ;;
     doubleclick)
         [ $# -eq 2 ] || die "Usage: doubleclick X Y"
         point "$1" "$2"; w=$(window)
@@ -81,6 +95,64 @@ case "$action" in
         sleep 0.25
         xdotool mouseup 1
         sleep 1
+        ;;
+    drag-slow)
+        # Like drag, but with eight intermediate pointer moves: NUI windows and some inventory
+        # drops ignore a drag that jumps straight to its end point.
+        [ $# -eq 4 ] || die "Usage: drag-slow X1 Y1 X2 Y2"
+        point "$1" "$2"; point "$3" "$4"; w=$(window)
+        xdotool windowfocus --sync "$w"
+        xdotool mousemove --window "$w" "$1" "$2"
+        sleep 0.5
+        xdotool mousedown 1
+        # A short wiggle first: the client starts a drag only after the pointer has left the source.
+        xdotool mousemove --window "$w" $(( $1 + 4 )) $(( $2 + 4 ))
+        sleep 0.3
+        for step in 1 2 3 4 5 6 7 8; do
+            xdotool mousemove --window "$w" $(( $1 + ($3 - $1) * step / 8 )) $(( $2 + ($4 - $2) * step / 8 ))
+            sleep 0.25
+        done
+        # Rest over the target before letting go, so it registers as the drop point.
+        sleep 0.7
+        xdotool mouseup 1
+        sleep 1
+        ;;
+    hostile-scan)
+        # Hovers each point in turn and prints the first one whose name label (just above the
+        # pointer) is hostile red; prints nothing when none is. One call instead of a move and a
+        # capture per point, which is what makes a wide search practical.
+        [ $# -ge 2 ] && [ $(($# % 2)) -eq 0 ] || die "Usage: hostile-scan X Y [X Y ...]"
+        w=$(window)
+        xdotool windowfocus --sync "$w"
+        while [ $# -ge 2 ]; do
+            x=$1; y=$2; shift 2
+            point "$x" "$y"
+            xdotool mousemove --window "$w" "$x" "$y"
+            sleep 0.6
+            left=$(( x > 70 ? x - 70 : 0 )); top=$(( y > 45 ? y - 45 : 0 ))
+            red=$(import -window "$w" -crop "140x50+$left+$top" -depth 8 txt:- | tr -d ' ' \
+                | sed -n 's/^[0-9]*,[0-9]*:(\([0-9]*\),\([0-9]*\),\([0-9]*\).*/\1 \2 \3/p' \
+                | awk '$1 > 190 && $2 < 120 && $3 < 120 { n++ } END { print n + 0 }')
+            if [ "$red" -ge 40 ]; then
+                echo "$x $y"
+                break
+            fi
+        done
+        ;;
+    label-scan)
+        # Holds Tab, which makes the client draw a name label over every creature in view, and prints
+        # "X Y N": the centre and the pixel count of the bright red (hostile) name text between the
+        # inventory panel and the chat area. Prints nothing when no such text shows. Tab is always released.
+        [ $# -eq 0 ] || die "Usage: label-scan"
+        w=$(window)
+        xdotool windowfocus --sync "$w"
+        xdotool keydown Tab
+        sleep 1.5
+        found=$(import -window "$w" -crop "840x530+360+60" -depth 8 txt:- | tr -d ' ' \
+            | sed -n 's/^\([0-9]*\),\([0-9]*\):(\([0-9]*\),\([0-9]*\),\([0-9]*\)).*/\1 \2 \3 \4 \5/p' \
+            | awk '$3 > 220 && $4 < 100 && $5 < 100 { sx += $1 + 360; sy += $2 + 60; n++ } END { if (n >= 40) print int(sx / n), int(sy / n), n }') || true
+        xdotool keyup Tab
+        echo "$found"
         ;;
     key)
         [ $# -eq 1 ] || die "Usage: key KEYSYM (for example Return, Escape, ctrl+a)"

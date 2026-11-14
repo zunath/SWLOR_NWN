@@ -1,23 +1,22 @@
 using NWN.Native.API;
-using NWNX.NET;
+using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
-using System.Runtime.InteropServices;
 using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using ImmunityType = NWN.Native.API.ImmunityType;
 using ObjectType = NWN.Native.API.ObjectType;
 using Player = SWLOR.Game.Server.Entity.Player;
-using Random = SWLOR.Game.Server.Service.Random;
+using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -57,28 +56,11 @@ namespace SWLOR.Game.Server.Native
         private const int DefaultToHitMod = 1;
         private const int DefaultToHitRoll = 1;
 
-        internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
-
-        // ReSharper disable once NotAccessedField.Local
-        private static ResolveAttackRollHook _callOriginal;
-
+        [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void RegisterHook()
         {
-            delegate* unmanaged<void*, void*, void> pHook = &OnResolveAttackRoll;
-            var functionPtr = NativeLibrary.GetExport(
-                NativeLibrary.GetMainProgramHandle(), "_ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject");
-            var hookPtr = NWNXAPI.RequestFunctionHook(
-                functionPtr,
-                (IntPtr)pHook,
-                -1000000);
-            _callOriginal = Marshal.GetDelegateForFunctionPointer<ResolveAttackRollHook>((IntPtr)hookPtr);
-        }
-
-        [UnmanagedCallersOnly]
-        private static void OnResolveAttackRoll(void* thisPtr, void* pTarget)
-        {
-            ResolveWeaponRoll(thisPtr, pTarget);
+            NativeHookAccess.Hooks.Enable(NativeHookId.ResolveAttackRoll);
         }
 
         internal static void ResolveWeaponRoll(void* thisPtr, void* pTarget)
@@ -105,7 +87,7 @@ namespace SWLOR.Game.Server.Native
                 var area = attacker.GetArea();
 
                 ProfilerPlugin.PushPerfScope("RunScript",
-                    "Script", $"NATIVE:{nameof(OnResolveAttackRoll)}",
+                    "Script", "NATIVE:OnResolveAttackRoll",
                     "Area", area.m_sTag.ToString(),
                     "ObjectType", "Creature");
 
@@ -141,10 +123,10 @@ namespace SWLOR.Game.Server.Native
                 UsePerkFeat.BeginWeaponAttackRoll(attacker.m_idSelf);
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
-                    : SWLOR.Game.Server.Service.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
+                    : GameServices.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
                 GetDamageRoll.PrepareForceConversionStanceAttack(attacker, targetObject, weaponSkillType);
                 var abilitySkillType = UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack)
-                    ? Combat.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
+                    ? GameServices.CombatQueries.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)
                     : weaponSkillType;
                 var techniqueAccuracy = MeleeTechnique.PrepareOrdinaryAttempt(
                     attacker.m_idSelf, targetObject.m_idSelf, weaponSkillType, queuedAbility != null,
@@ -190,7 +172,7 @@ namespace SWLOR.Game.Server.Native
 
                 var accuracyAbility = queuedAbility == null
                     ? AbilityType.Invalid
-                    : Combat.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType);
+                    : GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType);
                 var capturedOrdinaryAccuracy = queuedAbility == null
                     ? RangedWeaponAttackContext.GetProfile(attacker.m_idSelf)?.NativeAccuracy : null;
                 var attackerAccuracy = capturedOrdinaryAccuracy ??
@@ -203,12 +185,12 @@ namespace SWLOR.Game.Server.Native
                     attackerAccuracy += shot.Bonuses.AccuracyAdjustment;
                 else
                     attackerAccuracy += UsePerkFeat.GetQueuedWeaponTraitAccuracy(attacker.m_idSelf);
-                attackerAccuracy = Combat.ApplyStatusSourceAccuracyModifiers(
+                attackerAccuracy = GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(
                     attacker.m_idSelf,
                     defender.m_idSelf,
                     attackerAccuracy);
                 var defenderEvasion = Stat.GetEvasionNative(defender, abilitySkillType);
-                defenderEvasion = Combat.ApplySideAttackEvasionIgnore(
+                defenderEvasion = GameServices.CombatDamageModifiers.ApplySideAttackEvasionIgnore(
                     attacker.m_idSelf,
                     defender.m_idSelf,
                     abilitySkillType,
@@ -269,33 +251,33 @@ namespace SWLOR.Game.Server.Native
                 var attackRoll = Random.D100(1);
                 var queuedWeaponAbilityLongRangeHitChanceAdjustment =
                     UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)
-                        ? Combat.GetRangedAbilityLongRangeHitChanceAdjustment(
+                        ? GameServices.CombatSuppression.GetRangedAbilityLongRangeHitChanceAdjustment(
                             attacker.m_idSelf,
                             defender.m_idSelf,
                             abilitySkillType)
                         : 0;
                 var hitChanceModifier =
-                    Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType) +
+                    GameServices.CombatDamageModifiers.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType) +
                     queuedWeaponAbilityLongRangeHitChanceAdjustment +
-                    Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
-                    (queuedAbility == null ? 0 : Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+                    GameServices.CombatAbilityHit.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
+                    (queuedAbility == null ? 0 : GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
                         attacker.m_idSelf,
                         abilitySkillType,
                         queuedAbility)) +
-                    Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
+                    GameServices.CombatSuppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(
                         attacker.m_idSelf,
                         defender.m_idSelf,
                         weaponSkillType);
-                var hitRate = Combat.CalculateHitRate(
+                var hitRate = CombatRules.CalculateHitRate(
                     attackerAccuracy + accuracyModifiers,
                     defenderEvasion,
                     hitChanceModifier,
-                    Combat.GetMinimumHitRate(attacker.m_idSelf));
+                    GameServices.CombatQueries.GetMinimumHitRate(attacker.m_idSelf));
                 // Lucky Chamber advances on every ranged attack attempt, including misses and
                 // deflections. Its returned bonus is only consulted if this attempt lands.
                 var autoAttackCycleCriticalRate =
-                    Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType);
-                var isHit = Combat.GetAutoAttackHitResolutionOverride() ?? attackRoll <= hitRate;
+                    GameServices.CombatDamageModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType);
+                var isHit = GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride() ?? attackRoll <= hitRate;
                 var accuracyEvasionMiss = !isHit;
 
                 Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
@@ -316,7 +298,7 @@ namespace SWLOR.Game.Server.Native
 
                     // Deflecting Return is a Ranged Deflection rider. Shield Deflection never triggers it.
                     if (deflectionSource == DeflectionSource.Ranged)
-                        Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType);
+                        GameServices.CombatDamageTaken.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType);
                 }
 
                 // Hit
@@ -332,17 +314,17 @@ namespace SWLOR.Game.Server.Native
                         var criticalStat = attackerStats.GetDEXStat();
                         var criticalRoll = Random.D100(1);
                         var criticalModifier = CalculateCriticalRateModifier(attacker, defender, weaponSkillType);
-                        criticalModifier += Combat.ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf);
-                        criticalModifier += Combat.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
-                        criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
-                        criticalModifier += Combat.GetAutoAttackCriticalRateAdjustment(
+                        criticalModifier += GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf);
+                        criticalModifier += GameServices.CombatAttackTiming.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
+                        criticalModifier += GameServices.CombatAbilityBonus.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
+                        criticalModifier += GameServices.CombatDamageModifiers.GetAutoAttackCriticalRateAdjustment(
                             attacker.m_idSelf,
                             defender.m_idSelf,
                             autoAttackCycleCriticalRate);
-                        criticalModifier += Combat.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
-                        criticalModifier += Combat.GetBackAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
+                        criticalModifier += GameServices.CombatDamageModifiers.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
+                        criticalModifier += GameServices.CombatDamageModifiers.GetBackAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                         var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
-                        var criticalRate = Combat.CalculateCriticalRate(
+                        var criticalRate = CombatRules.CalculateCriticalRate(
                             criticalStat,
                             defender.m_pStats.GetCONStat(),
                             criticalSkillRank,
@@ -357,7 +339,7 @@ namespace SWLOR.Game.Server.Native
                             pAttackData.m_bCriticalThreat = 1;
                             pAttackData.m_nThreatRoll = 1;
 
-                            if (Combat.TryUseIncomingCriticalHitDowngrade(defender.m_idSelf, 1))
+                            if (GameServices.CombatDamageModifiers.TryUseIncomingCriticalHitDowngrade(defender.m_idSelf, 1))
                             {
                                 Log.Write(LogGroup.Attack, $"Critical hit downgraded by defender stats");
                                 TemporaryStatModifier.Replace(
@@ -390,15 +372,15 @@ namespace SWLOR.Game.Server.Native
                         }
                     }
 
-                    Combat.TrackAttackActivity(attacker.m_idSelf);
+                    GameServices.CombatActivity.TrackAttackActivity(attacker.m_idSelf);
                 }
                 // Miss
                 else
                 {
-                    Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
+                    GameServices.CombatDamageTaken.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
                     if (accuracyEvasionMiss && GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf))
                         PairedRangedTraits.RecordAccuracyEvasionMiss(defender.m_idSelf);
-                    Combat.TrackAttackActivity(attacker.m_idSelf);
+                    GameServices.CombatActivity.TrackAttackActivity(attacker.m_idSelf);
 
                     if (deflected)
                     {
@@ -426,7 +408,7 @@ namespace SWLOR.Game.Server.Native
                 if (wasSuccessfulBeforeDefensiveEffects &&
                     !IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
                 {
-                    Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
+                    GameServices.CombatDamageTaken.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
                 }
 
                 using (CombatRecorder.BeginStatTriggerAttribution(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost))
@@ -434,7 +416,7 @@ namespace SWLOR.Game.Server.Native
                         attacker, targetObject, IsSuccessfulAttackResult(pAttackData.m_nAttackResult));
 
                 if (!IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
-                    Combat.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);
+                    GameServices.CombatAbilityBonus.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);
 
                 // A landed queued weapon ability is finalized through Ability.EndAbilityImpact,
                 // which sends the single attempt notification for that originating swing. A miss
@@ -453,7 +435,7 @@ namespace SWLOR.Game.Server.Native
                 {
                     UsePerkFeat.ReserveQueuedWeaponAbilityAttack(
                         attacker.m_idSelf, pCombatRound.m_nCurrentAttack, weapon?.m_idSelf ?? OBJECT_INVALID);
-                    Combat.StoreQueuedWeaponAbilityCriticalRateBonus(
+                    GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityCriticalRateBonus(
                         attacker.m_idSelf,
                         abilitySkillType,
                         autoAttackCycleCriticalRate);
@@ -511,7 +493,7 @@ namespace SWLOR.Game.Server.Native
             if (IsSuccessfulAttackResult(attackResultType) &&
                 UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack))
             {
-                return Combat.BuildAbilityCombatLogMessage(
+                return GameServices.CombatFeedback.BuildAbilityCombatLogMessage(
                     observer,
                     attacker.m_idSelf,
                     defender.m_idSelf,
@@ -520,7 +502,7 @@ namespace SWLOR.Game.Server.Native
                     hitRate);
             }
 
-            return Combat.BuildCombatLogMessageNative(
+            return GameServices.CombatFeedback.BuildCombatLogMessageNative(
                 observer,
                 attacker,
                 defender,
@@ -594,7 +576,7 @@ namespace SWLOR.Game.Server.Native
         {
             if (!isHit ||
                 weaponSkillType == SkillType.Invalid ||
-                !Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf) ||
+                !GameServices.CombatDamageTaken.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf) ||
                 UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))
                 return DeflectionSource.None;
 
@@ -608,7 +590,7 @@ namespace SWLOR.Game.Server.Native
             {
                 Stat.ApplyDeflectionEffectsNative(defender, source);
 
-                var deflectionName = Combat.GetDeflectionResultName(source);
+                var deflectionName = CombatRules.GetDeflectionResultName(source);
                 attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName)));
                 defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)));
             }
@@ -650,8 +632,8 @@ namespace SWLOR.Game.Server.Native
         private static int CalculateCriticalRateModifier(CNWSCreature attacker, CNWSCreature defender, SkillType skillType)
         {
             var criticalModifier = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.CriticalRatePercentAdjustment);
-            criticalModifier += Combat.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType);
-            criticalModifier += Combat.GetCriticalRateAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
+            criticalModifier += GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType);
+            criticalModifier += GameServices.CombatAbilityHit.GetCriticalRateAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
 
             Log.Write(LogGroup.Attack, $"SWLOR crit rate modifier: {criticalModifier}");
 
@@ -662,7 +644,7 @@ namespace SWLOR.Game.Server.Native
         {
             var skillType = weapon == null
                 ? SkillType.Invalid
-                : SWLOR.Game.Server.Service.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
+                : GameServices.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
 
             if (attacker.m_bPlayerCharacter == 1 && !GetIsDMPossessed(attacker.m_idSelf))
             {

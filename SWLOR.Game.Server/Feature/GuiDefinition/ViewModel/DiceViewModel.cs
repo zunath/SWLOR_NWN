@@ -1,9 +1,10 @@
 using System.Linq;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -98,13 +99,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var value = sides switch
             {
-                2 => SWLOR.Game.Server.Service.Random.D2(number),
-                4 => SWLOR.Game.Server.Service.Random.D4(number),
-                6 => SWLOR.Game.Server.Service.Random.D6(number),
-                8 => SWLOR.Game.Server.Service.Random.D8(number),
-                10 => SWLOR.Game.Server.Service.Random.D10(number),
-                20 => SWLOR.Game.Server.Service.Random.D20(number),
-                100 => SWLOR.Game.Server.Service.Random.D100(number),
+                2 => SWLOR.Game.Server.Domain.Foundation.Random.D2(number),
+                4 => SWLOR.Game.Server.Domain.Foundation.Random.D4(number),
+                6 => SWLOR.Game.Server.Domain.Foundation.Random.D6(number),
+                8 => SWLOR.Game.Server.Domain.Foundation.Random.D8(number),
+                10 => SWLOR.Game.Server.Domain.Foundation.Random.D10(number),
+                20 => SWLOR.Game.Server.Domain.Foundation.Random.D20(number),
+                100 => SWLOR.Game.Server.Domain.Foundation.Random.D100(number),
                 _ => 0
             };
 

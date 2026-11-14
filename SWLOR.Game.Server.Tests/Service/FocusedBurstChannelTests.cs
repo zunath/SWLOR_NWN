@@ -1,15 +1,31 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class FocusedBurstChannelTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [TestCase(0)]
     [TestCase(1)]
     [TestCase(2)]
@@ -87,13 +103,13 @@ public class FocusedBurstChannelTests
         // A droid dismissed mid-channel never reaches FinishChannel, so ForgetDestroyed must release
         // the deferred stamina-cost context that BeginChannel took.
         var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server", "Service", "TwinPistolAbility.cs")).Replace("\r\n", "\n");
-        var start = source.IndexOf("public static void ForgetDestroyed(", StringComparison.Ordinal);
-        var body = source.Substring(start, source.IndexOf("public static void InterruptChannel(", start, StringComparison.Ordinal) - start);
+            "SWLOR.Game.Server", "Domain", "Combat", "TwinPistolAbilityService.cs")).Replace("\r\n", "\n");
+        var start = source.IndexOf("public void ForgetDestroyed(", StringComparison.Ordinal);
+        var body = source.Substring(start, source.IndexOf("public void InterruptChannel(", start, StringComparison.Ordinal) - start);
 
-        body.Should().Contain("if (Channels.Remove(actor, out var channel))");
-        body.Should().Contain("Combat.CompleteDeferredAbilityStaminaCostContext(actor, channel.Ability);");
-        body.Should().Contain("Activations.Remove(actor);");
+        body.Should().Contain("if (_channels.Remove(actor, out var channel))");
+        body.Should().Contain("CompleteDeferredAbilityStaminaCostContext(actor, channel.Ability);");
+        body.Should().Contain("_activations.Remove(actor);");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

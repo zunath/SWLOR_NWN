@@ -28,7 +28,7 @@ using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Creatures;
 using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Editors.TintMaps;
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -2381,9 +2381,9 @@ namespace SWLOR.Toolset.Tests
         {
             var catalog = CreaturePerkCatalog.Build();
 
-            catalog[(int)SWLOR.Game.Server.Service.PerkService.PerkType.Tame]
+            catalog[(int)SWLOR.Game.Server.Domain.Character.PerkType.Tame]
                 .MaximumLevel.Should().Be(5);
-            catalog[(int)SWLOR.Game.Server.Service.PerkService.PerkType.CombatAnalyzer]
+            catalog[(int)SWLOR.Game.Server.Domain.Character.PerkType.CombatAnalyzer]
                 .MaximumLevel.Should().Be(4);
         }
 

@@ -1,7 +1,7 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -11,6 +11,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class WeaponLoadoutBalanceTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     [TestCase(5, 220)]
     [TestCase(5, 230)]
     [TestCase(5, 240)]
@@ -72,12 +88,12 @@ public class WeaponLoadoutBalanceTests
         foreach (var paired in new[] { false, true })
         {
             var interval = Interval(delay, paired ? delay : 0, haste, paired ? 30 : 0);
-            var swing = Combat.CalculateAttackSwingDelay(interval);
+            var swing = CombatRules.CalculateAttackSwingDelay(interval);
             var debt = 0f;
             var rolls = 0;
             const int swings = 1000;
             for (var i = 0; i < swings; i++)
-                rolls += Combat.CalculateAttacksPerSwing(interval, debt, out debt) * (paired ? 2 : 1);
+                rolls += CombatRules.CalculateAttacksPerSwing(interval, debt, out debt) * (paired ? 2 : 1);
             var expected = swings * swing / (double)interval * (paired ? 2 : 1);
             Math.Abs(rolls - expected).Should().BeLessThan(2,
                 "the native animation floor must carry fractional cycles without creating extra damage rolls");
@@ -85,12 +101,12 @@ public class WeaponLoadoutBalanceTests
     }
 
     private static int Interval(int main, int off, int haste, int reduction) =>
-        Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelayMilliseconds(main, off, haste, reduction));
+        CombatRules.CalculateEffectiveAttackDelay(CombatRules.CalculateAttackDelayMilliseconds(main, off, haste, reduction));
 
     private static double MeanDamage(int dmg, int critChance)
     {
-        var normal = Combat.CalculateDamageRange(100, dmg, 26, 100, 26, 0);
-        var critical = Combat.CalculateDamageRange(100, dmg, 26, 100, 26, Combat.StandardCriticalRating);
+        var normal = CombatRules.CalculateDamageRange(100, dmg, 26, 100, 26, 0);
+        var critical = CombatRules.CalculateDamageRange(100, dmg, 26, 100, 26, CombatRules.StandardCriticalRating);
         return (normal.Item1 + normal.Item2) / 2d * (100 - critChance) / 100d +
                (critical.Item1 + critical.Item2) / 2d * critChance / 100d;
     }

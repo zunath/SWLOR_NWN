@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.EngineTests.Framework;
 using System.Collections;
 using System.Reflection;
 using FluentAssertions;
@@ -8,32 +9,41 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class AreaAbilityFragmentationTests
 {
+    // The code under test reaches converted services through their static facades, which resolve from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
     private const uint Creature = 61240;
     private const BindingFlags PrivateStatic = BindingFlags.NonPublic | BindingFlags.Static;
 
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", PrivateStatic)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
     public void ClearStatContributors()
     {
         CreatureEffects.Remove(Creature);
-        ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!
-            .GetValue(null)!).Remove(Creature);
+        TemporaryStatModifierInternals.Modifiers.Remove(Creature);
+        _facadeScope.Dispose();
     }
 
     [TestCase(1, 3)]
@@ -73,13 +83,10 @@ public class AreaAbilityFragmentationTests
         var profile = GetProfile(ability);
         GetProperty<int>(profile, "TemporaryAreaAbilityFragmentationDamage").Should().Be(0);
         GetProperty<int>(profile, "TemporaryDefeatedEnemyEffectDurationSeconds").Should().Be(45);
-        var add = typeof(TemporaryStatModifier).GetMethod("AddInternal", PrivateStatic)!;
         foreach (var stat in new[] { StatType.AreaAbilityPulseDamage, StatType.AreaAbilityPulseRadiusMeters })
         {
-            add.Invoke(null, new object[]
-            {
-                Creature, stat, GetProperty<int>(profile, $"Temporary{stat}"), 45f, "PulseTest", false
-            });
+            TemporaryStatModifierInternals.Invoke(
+                "AddInternal", Creature, stat, GetProperty<int>(profile, $"Temporary{stat}"), 45f, "PulseTest", false);
         }
 
         foreach (var skill in new[] { SkillType.TwinBlade, SkillType.Staff, SkillType.Force, SkillType.Mimicry })
@@ -94,14 +101,12 @@ public class AreaAbilityFragmentationTests
         GetFragmentation(SkillType.Staff, StatType.AreaAbilityFragmentationDamage).Should().Be(0);
         GetFragmentation(SkillType.Throwing, StatType.AreaAbilityFragmentationDamage).Should().Be(7);
 
-        ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!.GetValue(null)!)
-            .Remove(Creature);
+        TemporaryStatModifierInternals.Modifiers.Remove(Creature);
         GetPulse(ability, true).Should().Be((0, 0), "the pulse must end with its temporary buff");
     }
 
     private static (int Damage, int Radius) GetPulse(AbilityDetail ability, bool firstTarget) =>
-        ((IReadOnlyList<StatAdjustmentSource>)typeof(Combat).GetMethod("GetAreaAbilityPulseSources", PrivateStatic)!
-            .Invoke(null, new object[] { Creature, ability, firstTarget })!)
+        ((IReadOnlyList<StatAdjustmentSource>)CombatMembers.Invoke("GetAreaAbilityPulseSources", Creature, ability, firstTarget))
             .Select(source => (source[StatType.AreaAbilityPulseDamage], source[StatType.AreaAbilityPulseRadiusMeters]))
             .SingleOrDefault();
 
@@ -165,7 +170,6 @@ public class AreaAbilityFragmentationTests
 
     private static void AddTemporaryFragmentation(object profile)
     {
-        var add = typeof(TemporaryStatModifier).GetMethod("AddInternal", PrivateStatic)!;
         foreach (var stat in new[]
                  {
                      StatType.AreaAbilityFragmentationSkillType,
@@ -175,13 +179,12 @@ public class AreaAbilityFragmentationTests
                  })
         {
             var value = Convert.ToInt32(profile.GetType().GetProperty($"Temporary{stat}")!.GetValue(profile));
-            add.Invoke(null, new object[] { Creature, stat, value, 45f, "FragmentationTest", false });
+            TemporaryStatModifierInternals.Invoke("AddInternal", Creature, stat, value, 45f, "FragmentationTest", false);
         }
     }
 
     private static int GetFragmentation(SkillType skill, StatType stat) =>
-        (int)typeof(Combat).GetMethod("GetAreaAbilityFragmentationStatAdjustment", PrivateStatic)!
-            .Invoke(null, new object[] { Creature, skill, stat })!;
+        (int)CombatMembers.Invoke("GetAreaAbilityFragmentationStatAdjustment", Creature, skill, stat);
 
     private static object GetProfile(AbilityDetail ability) =>
         ability.ImpactAction.Target!.GetType()

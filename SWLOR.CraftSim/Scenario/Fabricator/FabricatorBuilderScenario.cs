@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
 
 namespace SWLOR.CraftSim.Scenario.Fabricator
 {

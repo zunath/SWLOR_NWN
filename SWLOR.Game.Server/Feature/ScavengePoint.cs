@@ -1,12 +1,10 @@
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.ScavengeService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
-using Skill = SWLOR.Game.Server.Service.Skill;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -30,7 +28,7 @@ namespace SWLOR.Game.Server.Feature
 
         /// <summary>
         /// A player opens a scavenge site. If they have the Gathering rank for it, the Search board opens in place of the site's inventory
-        /// (<see cref="ScavengeSessions"/>): they play the board, or choose Quick Search, and what the site gave is put in its inventory when
+        /// (<see cref="SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService"/>): they play the board, or choose Quick Search, and what the site gave is put in its inventory when
         /// they finish. A site can be searched once (<c>FULLY_HARVESTED</c>), and one scavenger at a time.
         /// </summary>
         [NWNEventHandler(ScriptName.OnScavengeOpened)]
@@ -205,7 +203,7 @@ namespace SWLOR.Game.Server.Feature
             }
             else if (GetLocalBool(placeable, "FULLY_HARVESTED"))
             {
-                Spawn.ScheduleResourceDespawn(placeable, TimeSpan.FromMinutes(Spawn.LeftoverResourceDespawnMinutes));
+                Spawn.ScheduleResourceDespawn(placeable, TimeSpan.FromMinutes(SpawnService.LeftoverResourceDespawnMinutes));
             }
         }
     }

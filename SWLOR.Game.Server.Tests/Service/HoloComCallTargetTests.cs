@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Domain.Social;
 using static SWLOR.Game.Server.Tests.Service.DMPossessionHarness;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -18,7 +18,7 @@ public class HoloComCallTargetTests
         _harness = Compile($$"""
             public static class DMPresence
             {
-                {{Method("Service/DMPresence.cs", "IsControlledByDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "IsControlledByDM")}}
             }
             """);
     }

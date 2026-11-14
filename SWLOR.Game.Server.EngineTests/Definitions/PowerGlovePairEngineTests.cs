@@ -2,15 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -38,7 +37,7 @@ public static class PowerGlovePairEngineTests
             "Both native base541 and cosmetic base543 resolve as an Unarmed grip");
         foreach (var feat in new[] { FeatType.Jab1, FeatType.PerfectForm1, FeatType.Haymaker1 })
         {
-            var ability = Service.Ability.GetAbilityDetail(feat);
+            var ability = GameServices.Ability.GetAbilityDetail(feat);
             var clip = AbilityAnimationBinding.ImpactClip(ability, actor);
             ctx.Assert(clip != null && ReferenceEquals(ability.AuthoredImpactAnimation, clip),
                 $"The actual equipped pair retains {feat}'s authored impact clip");
@@ -152,11 +151,11 @@ public static class PowerGlovePairEngineTests
         {
             await EquipExisting(ctx, actor, real, InventorySlot.RightHand);
             companion = await WaitForPair(ctx, actor, real);
-            ctx.AssertEqual(1, OwnedItems(actor).Count(PowerGloveEquipment.IsGeneratedCompanion), "A replacement creates only one cosmetic companion");
+            ctx.AssertEqual(1, OwnedItems(actor).Count(item => PowerGloveEquipment.IsGeneratedCompanion(item)), "A replacement creates only one cosmetic companion");
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionUnequipItem(real));
             await WaitForRemovedPair(ctx, actor, real, companion);
         }
-        ctx.AssertEqual(2, OwnedItems(actor).Count(PowerGloveEquipment.IsPairItem), "Swaps preserve exactly the two acquired real gloves");
+        ctx.AssertEqual(2, OwnedItems(actor).Count(item => PowerGloveEquipment.IsPairItem(item)), "Swaps preserve exactly the two acquired real gloves");
         await EquipExisting(ctx, actor, main, InventorySlot.RightHand);
         companion = await WaitForPair(ctx, actor, main);
         await ctx.ExecuteInCreatureContextAsync(actor, () => ActionPutDownItem(companion));
@@ -172,8 +171,8 @@ public static class PowerGlovePairEngineTests
         await ctx.ExecuteInCreatureContextAsync(actor, () => ItemPlugin.MoveTo(companion, recipient, true));
         await ctx.WaitUntilAsync(() => !GetIsObjectValid(companion), 6f, "a transferred cosmetic glove to be destroyed");
         await WaitForRemovedPair(ctx, actor, main, companion);
-        ctx.Assert(!OwnedItems(recipient).Any(PowerGloveEquipment.IsGeneratedCompanion), "The recipient retains no generated glove");
-        ctx.AssertEqual(2, OwnedItems(actor).Count(PowerGloveEquipment.IsPairItem), "Escape cleanup preserves the two real gloves");
+        ctx.Assert(!OwnedItems(recipient).Any(item => PowerGloveEquipment.IsGeneratedCompanion(item)), "The recipient retains no generated glove");
+        ctx.AssertEqual(2, OwnedItems(actor).Count(item => PowerGloveEquipment.IsPairItem(item)), "Escape cleanup preserves the two real gloves");
     }
 
     [EngineTest("Power Gloves receive no Single Weapon or Doublehand bonus and both hands roll the owned glove's DMG", Category = "PowerGlovePair", TimeoutSeconds = 35f)]
@@ -209,8 +208,8 @@ public static class PowerGlovePairEngineTests
             ctx.Assert(mainHand > 0, "The owned glove deals native ordinary damage");
             ctx.AssertEqual(mainHand, offHand, "The native off-hand roll uses the owned glove, never the cosmetic carrier");
             ctx.AssertEqual(48, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Unarmed), "Unarmed abilities count both hands' DMG");
-            ctx.AssertEqual(48, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed, abilityImpact: true), "Ability impacts add both gloves' DMG");
-            ctx.AssertEqual(24, Combat.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed), "Non-ability uses keep one glove's DMG");
+            ctx.AssertEqual(48, GameServices.CombatQueries.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed, abilityImpact: true), "Ability impacts add both gloves' DMG");
+            ctx.AssertEqual(24, GameServices.CombatQueries.GetCombatImpactWeaponDamage(actor, SkillType.Unarmed), "Non-ability uses keep one glove's DMG");
             ctx.AssertEqual(24, WeaponDamage.GetAbilityDMG(actor, main, SkillType.Katar), "Only Unarmed abilities count the pair");
             ctx.AssertEqual(24, Item.GetDMG(main), "Damage resolution never rewrites the real item's raw rating");
             AssertCosmeticCompanion(ctx, companion);
@@ -247,14 +246,14 @@ public static class PowerGlovePairEngineTests
                 AssertCosmeticCompanion(ctx, companion);
                 ctx.Assert(EquipmentPredicates.HasDualWield(actor), "The owned glove schedules an off-hand roll");
                 var gloveDelay = (int)WeaponDelay.GetWeaponDelay(BaseItem.PowerGlove) * 10;
-                ctx.AssertEqual(Combat.CalculateAttackDelayMilliseconds(gloveDelay, gloveDelay, 0, 0), Combat.CalculateAttackDelay(actor),
+                ctx.AssertEqual(CombatRules.CalculateAttackDelayMilliseconds(gloveDelay, gloveDelay, 0, 0), GameServices.CombatAttackTiming.CalculateAttackDelay(actor),
                     "The pair uses the paired delay of two gloves, like two katars");
-                effectiveDelay = Combat.CalculateEffectiveAttackDelay(Combat.CalculateAttackDelay(actor));
+                effectiveDelay = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(actor));
                 ctx.Assert(effectiveDelay > 1000, "The fixture has separately observable attack cycles");
             });
             _observedAttacker = actor;
             Hits.Clear();
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionAttack(target));
             await ctx.WaitUntilAsync(() => Hits.Count > 0, 6f, "the first main-hand roll");
             var round = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature().m_pcCombatRound;
@@ -273,7 +272,7 @@ public static class PowerGlovePairEngineTests
         {
             AssignCommand(actor, () => ClearAllActions());
             WeaponAttackCycle.CancelPendingHand(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             _observedAttacker = OBJECT_INVALID;
             Hits.Clear();
         }
@@ -388,7 +387,7 @@ public static class PowerGlovePairEngineTests
             });
             _observedAttacker = actor;
             Hits.Clear();
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionAttack(target));
             await ctx.WaitUntilAsync(() => Hits.Count > 0, 8f, "a real ordinary attack before forcing the pairing failure");
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -430,7 +429,7 @@ public static class PowerGlovePairEngineTests
                 });
                 await ctx.WaitFrameAsync();
                 await ctx.WaitUntilAsync(() => !OwnedItems(GetObjectByTag("TEMP_ITEM_STORAGE")).Any(item =>
-                        PowerGloveEquipment.IsGeneratedCompanion(item) && GetLocalObject(item, PowerGloveEquipment.OwnerVariable) == actor),
+                        PowerGloveEquipment.IsGeneratedCompanion(item) && GetLocalObject(item, PowerGloveEquipmentService.OwnerVariable) == actor),
                     3f, "failed companion creation to dispose of every owner-linked cosmetic in temporary storage");
                 ctx.AssertEqual(main, GetItemInSlot(InventorySlot.RightHand, actor), "Failed safe return retains the exact real item in its equipped slot");
                 ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.LeftHand, actor), "Failed creation leaves no cosmetic equipped object");
@@ -486,7 +485,7 @@ public static class PowerGlovePairEngineTests
             SetCommandable(true, escrow);
             AssignCommand(actor, () => ClearAllActions());
             WeaponAttackCycle.CancelPendingHand(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             _observedAttacker = OBJECT_INVALID;
             Hits.Clear();
         }
@@ -579,8 +578,7 @@ public static class PowerGlovePairEngineTests
     [EngineTest("Destroyed NPC Power Glove owners release cached pairs and orphan companions", Category = "PowerGlovePair", TimeoutSeconds = 45f)]
     public static async Task DestroyedNpcOwnerReleasesPairState(EngineTestContext ctx)
     {
-        var pairs = (Dictionary<uint, (uint Main, uint Companion)>)typeof(PowerGloveEquipment)
-            .GetField("Pairs", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+        var pairs = CombatHelperInternals.Field<IPowerGloveEquipmentService, Dictionary<uint, (uint Main, uint Companion)>>("_pairs");
         var keeper = ctx.SpawnCreature("civilian", 4f);
         var keeperMain = await EquipMain(ctx, keeper);
         ctx.Track(keeperMain);
@@ -597,7 +595,7 @@ public static class PowerGlovePairEngineTests
                 DestroyObject(actor);
                 ctx.Assert(!pairs.ContainsKey(actor), "The actual destruction event clears the owner ID synchronously");
                 if (GetIsObjectValid(main))
-                    ctx.AssertEqual(OBJECT_INVALID, GetLocalObject(main, PowerGloveEquipment.CompanionVariable), "Destroyed-owner cleanup releases the real glove's cosmetic link");
+                    ctx.AssertEqual(OBJECT_INVALID, GetLocalObject(main, PowerGloveEquipmentService.CompanionVariable), "Destroyed-owner cleanup releases the real glove's cosmetic link");
                 ctx.AssertEqual((keeperMain, keeperCompanion), pairs[keeper], "Destroying one owner never clears another owner's pair");
             });
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(actor) && !GetIsObjectValid(companion), 6f,
@@ -655,7 +653,7 @@ public static class PowerGlovePairEngineTests
             foreach (var column in new[] { "EquipableSlots", "WeaponWield", "WeaponType", "NumDice", "DieToRoll", "ReqFeat0" })
                 ctx.Log($"Native base543 {column}={Get2DAString("baseitems", column, (int)BaseItem.CompanionPowerGlove)}.");
             foreach (var item in OwnedItems(actor).Where(item => PowerGloveEquipment.IsPairItem(item) || PowerGloveEquipment.IsGeneratedCompanion(item)))
-                ctx.Log($"Owned glove={item:X8}, base={(int)GetBaseItemType(item)}, directOwner={GetItemPossessor(item, true):X8}, owner={GetItemPossessor(item):X8}, slot={Item.GetItemSlot(actor, item)}, companion={GetLocalObject(item, PowerGloveEquipment.CompanionVariable):X8}, main={GetLocalObject(item, PowerGloveEquipment.MainWeaponVariable):X8}, linkedOwner={GetLocalObject(item, PowerGloveEquipment.OwnerVariable):X8}, useError={Item.GetCreatureItemUseError(actor, item)}, properties={Properties(item)}.");
+                ctx.Log($"Owned glove={item:X8}, base={(int)GetBaseItemType(item)}, directOwner={GetItemPossessor(item, true):X8}, owner={GetItemPossessor(item):X8}, slot={Item.GetItemSlot(actor, item)}, companion={GetLocalObject(item, PowerGloveEquipmentService.CompanionVariable):X8}, main={GetLocalObject(item, PowerGloveEquipmentService.MainWeaponVariable):X8}, linkedOwner={GetLocalObject(item, PowerGloveEquipmentService.OwnerVariable):X8}, useError={Item.GetCreatureItemUseError(actor, item)}, properties={Properties(item)}.");
         });
     }
 
@@ -719,8 +717,8 @@ public static class PowerGlovePairEngineTests
     internal static void AssertOwnedItems(EngineTestContext ctx, uint actor, uint main, int companions)
     {
         var items = OwnedItems(actor);
-        ctx.AssertEqual(1, items.Count(PowerGloveEquipment.IsPairItem), "Exactly one purchased or crafted Power Glove is owned");
-        ctx.AssertEqual(companions, items.Count(PowerGloveEquipment.IsGeneratedCompanion), "Only the equipped cosmetic companion may exist");
+        ctx.AssertEqual(1, items.Count(item => PowerGloveEquipment.IsPairItem(item)), "Exactly one purchased or crafted Power Glove is owned");
+        ctx.AssertEqual(companions, items.Count(item => PowerGloveEquipment.IsGeneratedCompanion(item)), "Only the equipped cosmetic companion may exist");
         ctx.Assert(items.Contains(main), "The exact real item remains in owned equipment or storage");
         ctx.AssertEqual(actor, GetItemPossessor(main), "The real item retains its owner");
         ctx.AssertEqual(1, GetItemStackSize(main), "The real item is never duplicated into a stack");

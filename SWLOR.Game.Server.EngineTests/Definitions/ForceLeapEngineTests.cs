@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -21,7 +23,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var targetPosition = GetPosition(target);
             var used = false;
             var denial = string.Empty;
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -41,7 +43,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 TrackCorpsePlaceable(ctx, target);
             }
         }
@@ -57,7 +59,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (!GetIsObjectValid(placeable) || GetDistanceBetween(body, placeable) > 10f)
                     return;
 
-                if (GetLocalObject(placeable, Loot.CorpseBodyVariable) == body)
+                if (GetLocalObject(placeable, LootService.CorpseBodyVariable) == body)
                 {
                     ctx.Track(placeable);
                     return;

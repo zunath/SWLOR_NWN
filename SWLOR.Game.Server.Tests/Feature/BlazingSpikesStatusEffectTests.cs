@@ -1,7 +1,8 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -15,7 +16,7 @@ public class BlazingSpikesStatusEffectTests
         source.Should().Contain("CombatDamageDeliveryType deliveryType");
         source.Should().Contain("deliveryType != CombatDamageDeliveryType.Direct");
         source.Should().Contain("!damageType.IsPhysicalDamageType()");
-        source.Should().Contain("Combat.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);");
+        source.Should().Contain("GameServices.CombatHitEffects.ApplyTriggeredDamage(defender, attacker, reflectedDamage, CombatDamageType.Fire);");
         source.Should().NotContain("EffectDamage(reflectedDamage");
     }
 
@@ -23,13 +24,13 @@ public class BlazingSpikesStatusEffectTests
     public void StatusEffectDamageNotifications_CarryDeliveryType()
     {
         var root = FindRepositoryRoot();
-        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
-        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var combatSource = CombatSource.Read();
         var forceDotSource = ReadStatusEffectSource("ForceDamageOverTimeStatusEffectBase.cs");
 
         statusEffectSource.Should().Contain("CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct");
         statusEffectSource.Should().Contain("effect.OnDamageTakenEffect(defender, attacker, damage, damageType, deliveryType)");
-        combatSource.Should().Contain("StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);");
+        combatSource.Should().Contain("_statusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType, CombatDamageDeliveryType.Triggered);");
         forceDotSource.Should().Contain("StatusEffect.NotifyDamageStatusEffects(Source, creature, damage, CombatDamageType.Force, CombatDamageDeliveryType.DamageOverTime);");
     }
 

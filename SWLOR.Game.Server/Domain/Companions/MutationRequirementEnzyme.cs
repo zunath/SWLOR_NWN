@@ -1,0 +1,60 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Entity;
+
+namespace SWLOR.Game.Server.Domain.Companions
+{
+    public class MutationRequirementEnzyme: IMutationRequirement
+    {
+        public Dictionary<EnzymeColorType, int> LyaseEnzymeColors { get; set; }
+        public Dictionary<EnzymeColorType, int> IsomeraseEnzymeColors { get; set; }
+        public Dictionary<EnzymeColorType, int> HydrolaseEnzymeColors { get; set; }
+
+        public MutationRequirementEnzyme()
+        {
+            LyaseEnzymeColors = new Dictionary<EnzymeColorType, int>();
+            IsomeraseEnzymeColors = new Dictionary<EnzymeColorType, int>();
+            HydrolaseEnzymeColors = new Dictionary<EnzymeColorType, int>();
+        }
+
+        public string CheckRequirements(IncubationJob job)
+        {
+            foreach (var (color, count) in LyaseEnzymeColors)
+            {
+                if (job.LyaseColors[color] < count)
+                    return $"Required {color} lyase enzymes: {count}. This job only has: {job.LyaseColors[color]}.";
+            }
+            foreach (var (color, count) in IsomeraseEnzymeColors)
+            {
+                if (job.IsomeraseColors[color] < count)
+                    return $"Required {color} isomerase enzymes: {count}. This job only has: {job.IsomeraseColors[color]}.";
+            }
+            foreach (var (color, count) in HydrolaseEnzymeColors)
+            {
+                if (job.HydrolaseColors[color] < count)
+                    return $"Required {color} hydrolase enzymes: {count}. This job only has: {job.HydrolaseColors[color]}.";
+            }
+
+            return string.Empty;
+        }
+
+        public string GetRequirementDescription()
+        {
+            var parts = GetEnzymeDescriptions();
+            return parts.Count == 0 ? string.Empty : string.Join(", ", parts);
+        }
+
+        public IReadOnlyList<string> GetEnzymeDescriptions()
+        {
+            var parts = new List<string>();
+
+            foreach (var (color, count) in LyaseEnzymeColors)
+                parts.Add($"{count}x {color} Lyase");
+            foreach (var (color, count) in IsomeraseEnzymeColors)
+                parts.Add($"{count}x {color} Isomerase");
+            foreach (var (color, count) in HydrolaseEnzymeColors)
+                parts.Add($"{count}x {color} Hydrolase");
+
+            return parts;
+        }
+    }
+}

@@ -12,11 +12,11 @@ namespace SWLOR.CraftSim.Progression
     {
         private const string Server = "SWLOR.Game.Server/";
         public const string RoleplayXp = Server + "Feature/RoleplayXP.cs";
-        public const string Guild = Server + "Service/Guild.cs";
-        public const string ProspectingRulesFile = Server + "Service/CraftService/Minigame/Prospecting/ProspectingRules.cs";
-        public const string SearchRulesFile = Server + "Service/CraftService/Minigame/Search/SearchRules.cs";
+        public const string Guild = Server + "Domain/Economy/GuildService.cs";
+        public const string ProspectingRulesFile = Server + "Domain/Crafting/Minigame/Prospecting/ProspectingRules.cs";
+        public const string SearchRulesFile = Server + "Domain/Crafting/Minigame/Search/SearchRules.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
-        public const string Craft = Server + "Service/Craft.cs";
+        public const string Craft = Server + "Domain/Crafting/CraftService.cs";
         public const string ResearchViewModel = Server + "Feature/GuiDefinition/ViewModel/ResearchViewModel.cs";
 
         public static readonly SourceReference RoleplayXpRate = new(
@@ -24,11 +24,11 @@ namespace SWLOR.CraftSim.Progression
             "private const int RPRequiredTicks = 300;", "300 ticks * 6 seconds per HB = 1800 seconds = 30 minutes", "const int BaseXP = 1500;");
 
         public static readonly SourceReference GuildPointReward = new(
-            "Guild points per hand-in", Guild, 62, 80,
+            "Guild points per hand-in", Guild, 72, 85,
             "var rankBonus = 0.25f * dbGuild.Rank;", "(rankBonus * baseAmount)", "return (int)amount;");
 
         public static readonly SourceReference GuildBoardSize = new(
-            "Ten guild tasks per tier on the board", Guild, 124, 170,
+            "Ten guild tasks per tier on the board", Guild, 138, 166,
             "if (potentialTasks.Count <= 10)", ".OrderBy(o => Random.Next())", ".Take(10)", "_activeGuildTasksByRank[type][rank] = tasks;");
 
         public static readonly SourceReference HarvestDelay = new(
@@ -44,7 +44,7 @@ namespace SWLOR.CraftSim.Progression
             "private const float RefiningDelaySeconds = 6f;");
 
         public static readonly SourceReference ResearchCost = new(
-            "Research job length and credits", Craft, 1145, 1192,
+            "Research job length and credits", Craft, 1221, 1269,
             "var perkLevel = recipeDetail.Level / 10 + 1;", "if (perkLevel > 5)",
             "var price = baseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));",
             "price += price * recipeDetail.ResearchCostModifier;", "return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);");

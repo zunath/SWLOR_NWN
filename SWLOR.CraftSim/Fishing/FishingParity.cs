@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.CraftSim.Fishing
 {

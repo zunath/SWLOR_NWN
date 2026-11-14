@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using Ability = SWLOR.Game.Server.Service.Ability;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -28,7 +28,7 @@ public static class QuickCastEngineTests
         CreaturePlugin.AddFeat(player, FeatType.PowerCell3);
         ctx.SetResources(player, 100, 100);
         fixture.Update(record => record.Stamina = 50);
-        SetLocalInt(player, Stat.SuppressNaturalRegenVariable, 1);
+        SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 1);
         var expectedStamina = 50 - 7 + GameMath.PercentOf(Stat.GetMaxStamina(player), 18);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
             ctx.Assert(!QuickCast.TryCast(player, FeatType.AutoCastPowerCell3, out _), "default-off setting rejects alias"));
@@ -96,7 +96,7 @@ public static class QuickCastEngineTests
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
             ctx.Assert(!QuickCast.TryCast(player, FeatType.AutoCastInnervate1, out _), "normal recast prevents repeated activation");
-            ctx.Assert(Ability.GetLastActivationDenialReason().Contains("can be used in"), "recast denial comes from the normal ability pipeline");
+            ctx.Assert(GameServices.Ability.GetLastActivationDenialReason().Contains("can be used in"), "recast denial comes from the normal ability pipeline");
         });
         var beforeShoutHP = GetCurrentHitPoints(player);
         await ctx.ExecuteInCreatureContextAsync(player, () => UseNativeFeat(player, FeatType.AutoCastRousingShout3));
@@ -135,10 +135,10 @@ public static class QuickCastEngineTests
                 ActionAttack(enemy);
             });
             await ctx.WaitUntilAsync(() => GetAttackTarget(player) == enemy, 10f, "native attack target");
-            Ability.ClearLastCompletedAbilityImpactSummary(player);
+            GameServices.Ability.ClearLastCompletedAbilityImpactSummary(player);
             await ctx.ExecuteInCreatureContextAsync(player, () => UseNativeFeat(player, FeatType.AutoCastForceDrain1));
-            await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(player) != null && !Activity.IsBusy(player), 10f, "native hostile feat impact");
-            ctx.AssertEqual("Force Drain I", Ability.GetLastCompletedAbilityImpactSummary(player).Ability.Name, "ordinary hostile ability pipeline completed");
+            await ctx.WaitUntilAsync(() => GameServices.Ability.GetLastCompletedAbilityImpactSummary(player) != null && !Activity.IsBusy(player), 10f, "native hostile feat impact");
+            ctx.AssertEqual("Force Drain I", GameServices.Ability.GetLastCompletedAbilityImpactSummary(player).Ability.Name, "ordinary hostile ability pipeline completed");
             ctx.AssertEqual(96, Stat.GetCurrentFP(player), "ordinary FP cost is charged");
             // The ability resumes the attack shortly after its impact; cancel that resumed attack.
             await ctx.WaitUntilAsync(() => ActionInterruption.GetQueuedAttackTarget(player) == enemy, 5f, "resumed attack");
@@ -194,7 +194,7 @@ public static class QuickCastEngineTests
                     ctx.AssertEqual(1, GetCurrentHitPoints(player), "blocked casts do not heal");
                     ctx.AssertEqual(100, Stat.GetCurrentFP(player), "blocked casts do not spend FP");
                     ctx.Assert(!Activity.IsBusy(player), "blocked casts do not start activation");
-                    ctx.Assert(!Recast.IsOnRecastDelay(player, Ability.GetAbilityDetail(FeatType.Innervate1).RecastGroup).Item1, "blocked casts do not start recast");
+                    ctx.Assert(!Recast.IsOnRecastDelay(player, GameServices.Ability.GetAbilityDetail(FeatType.Innervate1).RecastGroup).Item1, "blocked casts do not start recast");
                 });
                 RemoveEffectByTag(player, effectTag);
                 await ctx.WaitFrameAsync();

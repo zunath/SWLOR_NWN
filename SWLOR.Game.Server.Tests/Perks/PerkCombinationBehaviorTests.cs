@@ -2,27 +2,42 @@ using System.Collections;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class PerkCombinationBehaviorTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
     private const uint Creature = 61250;
     private const BindingFlags PrivateStatic = BindingFlags.Static | BindingFlags.NonPublic;
 
     [TearDown]
-    public void Cleanup() => ((IDictionary)typeof(TemporaryStatModifier)
-        .GetField("_modifiers", PrivateStatic)!.GetValue(null)!).Remove(Creature);
+    public void Cleanup()
+    {
+        TemporaryStatModifierInternals.Modifiers.Remove(Creature);
+        _facadeScope.Dispose();
+    }
 
     [Test]
     public void IndependentDamageProcs_PreserveTheirIndividualExpectedDamage()
@@ -37,7 +52,7 @@ public class PerkCombinationBehaviorTests
         for (var second = 1; second <= 100; second++)
         {
             var rolls = new Queue<int>(new[] { first, second });
-            total += Combat.CalculateAutoAttackProcDamage(sources, () => rolls.Dequeue());
+            total += CombatRules.CalculateAutoAttackProcDamage(sources, () => rolls.Dequeue());
         }
         (total / 10000d).Should().Be(2.7, "independent 15% procs must not become one 30% proc of their combined damage");
     }
@@ -52,9 +67,9 @@ public class PerkCombinationBehaviorTests
         pouch[StatType.AutoAttackSplashRadiusMeters].Should().Be(3);
         pouch[StatType.AutoAttackSplashMaximumTargets].Should().Be(5);
         foreach (var skill in Enum.GetValues<SkillType>())
-            Combat.CanTriggerAutoAttackSplash(pouch, skill).Should().Be(Combat.IsWeaponSkillType(skill));
-        Combat.CalculateAutoAttackProcDamage(new[] { pouch, reflexes }, () => 16).Should().Be(0);
-        Combat.CalculateAutoAttackProcDamage(new[] { pouch, reflexes }, () => 15).Should().Be(10);
+            CombatRules.CanTriggerAutoAttackSplash(pouch, skill).Should().Be(CombatRules.IsWeaponSkillType(skill));
+        CombatRules.CalculateAutoAttackProcDamage(new[] { pouch, reflexes }, () => 16).Should().Be(0);
+        CombatRules.CalculateAutoAttackProcDamage(new[] { pouch, reflexes }, () => 15).Should().Be(10);
     }
 
     [Test]
@@ -66,12 +81,12 @@ public class PerkCombinationBehaviorTests
         var requiredSkill = (SkillType)deadeye[StatType.NonCriticalAbilityNextSkillAbilityCriticalRateSkillType];
 
         foreach (var skill in Enum.GetValues<SkillType>())
-            Combat.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true)
-                .Should().Be(Combat.IsRangedWeaponSkill(skill), skill.ToString());
+            CombatRules.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true)
+                .Should().Be(CombatRules.IsRangedWeaponSkill(skill), skill.ToString());
         foreach (var skill in new[] { SkillType.Pistol, SkillType.TwinPistol, SkillType.Rifle, SkillType.Throwing })
-            Combat.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true).Should().BeTrue(skill.ToString());
+            CombatRules.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true).Should().BeTrue(skill.ToString());
         foreach (var skill in new[] { SkillType.Vibroblade, SkillType.Force, SkillType.Devices, SkillType.Invalid })
-            Combat.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true).Should().BeFalse(skill.ToString());
+            CombatRules.MatchesNextSkillAbilityCriticalRateSkill(skill, requiredSkill, true).Should().BeFalse(skill.ToString());
     }
 
     [TestCase(nameof(PerkType.MobileFootwork), PerkType.MobileFootwork,
@@ -97,9 +112,9 @@ public class PerkCombinationBehaviorTests
 
         foreach (var skill in Enum.GetValues<SkillType>())
         {
-            Combat.AbilityUsedTriggerSkillMatches(skill, SkillType.Invalid, rangedOnly: true, isHostileAbility: true)
-                .Should().Be(Combat.IsRangedWeaponSkill(skill), skill.ToString());
-            Combat.AbilityUsedTriggerSkillMatches(skill, SkillType.Invalid, rangedOnly: true, isHostileAbility: false)
+            CombatRules.AbilityUsedTriggerSkillMatches(skill, SkillType.Invalid, rangedOnly: true, isHostileAbility: true)
+                .Should().Be(CombatRules.IsRangedWeaponSkill(skill), skill.ToString());
+            CombatRules.AbilityUsedTriggerSkillMatches(skill, SkillType.Invalid, rangedOnly: true, isHostileAbility: false)
                 .Should().BeFalse($"a non-hostile {skill} ability is not a hostile ranged weapon ability");
         }
     }
@@ -115,7 +130,7 @@ public class PerkCombinationBehaviorTests
         foreach (var ability in throwRock.Concat(suppressingShot))
         {
             ability.IsHostileAbility.Should().BeTrue(ability.Name);
-            Combat.AbilityUsedTriggerSkillMatches(ability.SkillType, SkillType.Invalid, rangedOnly: true, isHostileAbility: true)
+            CombatRules.AbilityUsedTriggerSkillMatches(ability.SkillType, SkillType.Invalid, rangedOnly: true, isHostileAbility: true)
                 .Should().BeFalse($"{ability.Name} uses {ability.SkillType}, not a ranged weapon skill");
         }
     }
@@ -124,13 +139,13 @@ public class PerkCombinationBehaviorTests
     public void AbilityUsedTrigger_WithoutRangedFlag_KeepsExactSkillMatching()
     {
         // Lateral Footwork still fires from Spear abilities only, hostile or not.
-        Combat.AbilityUsedTriggerSkillMatches(SkillType.Spear, SkillType.Spear, false, false).Should().BeTrue();
-        Combat.AbilityUsedTriggerSkillMatches(SkillType.Pistol, SkillType.Spear, false, true).Should().BeFalse();
-        Combat.AbilityUsedTriggerSkillMatches(SkillType.Spear, SkillType.Invalid, false, true).Should().BeFalse();
+        CombatRules.AbilityUsedTriggerSkillMatches(SkillType.Spear, SkillType.Spear, false, false).Should().BeTrue();
+        CombatRules.AbilityUsedTriggerSkillMatches(SkillType.Pistol, SkillType.Spear, false, true).Should().BeFalse();
+        CombatRules.AbilityUsedTriggerSkillMatches(SkillType.Spear, SkillType.Invalid, false, true).Should().BeFalse();
 
         // A ranged-only trigger with a selector stays narrowed to that ranged weapon skill.
-        Combat.AbilityUsedTriggerSkillMatches(SkillType.Rifle, SkillType.Rifle, true, true).Should().BeTrue();
-        Combat.AbilityUsedTriggerSkillMatches(SkillType.Pistol, SkillType.Rifle, true, true).Should().BeFalse();
+        CombatRules.AbilityUsedTriggerSkillMatches(SkillType.Rifle, SkillType.Rifle, true, true).Should().BeTrue();
+        CombatRules.AbilityUsedTriggerSkillMatches(SkillType.Pistol, SkillType.Rifle, true, true).Should().BeFalse();
     }
 
     [Test]
@@ -141,26 +156,26 @@ public class PerkCombinationBehaviorTests
         AddTemporary(group, StatType.PersistentNextSkillAbilityCriticalRateRangedOnly, 1);
         AddTemporary(group, StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment, 10);
 
-        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Rifle).Should().Be(10);
-        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Throwing).Should().Be(10);
-        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Pistol).Should().Be(10);
-        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Vibroblade).Should().Be(0);
-        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Force).Should().Be(0);
+        GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Rifle).Should().Be(10);
+        GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Throwing).Should().Be(10);
+        GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Pistol).Should().Be(10);
+        GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Vibroblade).Should().Be(0);
+        GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Force).Should().Be(0);
     }
 
     [Test]
     public void NoncriticalAbilityCriticalRate_WithoutRangedFlag_KeepsExactSkillMatching()
     {
-        Combat.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Pistol, SkillType.Pistol, false).Should().BeTrue();
-        Combat.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Rifle, SkillType.Pistol, false).Should().BeFalse();
-        Combat.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Pistol, SkillType.Invalid, false).Should().BeFalse();
-        Combat.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Pistol, SkillType.Rifle, true).Should().BeFalse();
+        CombatRules.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Pistol, SkillType.Pistol, false).Should().BeTrue();
+        CombatRules.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Rifle, SkillType.Pistol, false).Should().BeFalse();
+        CombatRules.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Pistol, SkillType.Invalid, false).Should().BeFalse();
+        CombatRules.MatchesNextSkillAbilityCriticalRateSkill(SkillType.Pistol, SkillType.Rifle, true).Should().BeFalse();
 
         const string group = nameof(StatType.PersistentNextSkillAbilityCriticalRateSkillType);
         AddTemporary(group, StatType.PersistentNextSkillAbilityCriticalRateSkillType, (int)SkillType.Rifle);
         AddTemporary(group, StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment, 5);
-        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Rifle).Should().Be(5);
-        Combat.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Pistol).Should().Be(0);
+        GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Rifle).Should().Be(5);
+        GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(Creature, SkillType.Pistol).Should().Be(0);
     }
 
     [Test]
@@ -182,12 +197,12 @@ public class PerkCombinationBehaviorTests
                      new uint[] { 1, 2, 3, 4, 5 }
                  })
         {
-            Combat.SelectAutoAttackSplashSecondaryTargets(candidates, 99, 5)
+            CombatRules.SelectAutoAttackSplashSecondaryTargets(candidates, 99, 5)
                 .Should().Equal(new uint[] { 1, 2, 3, 4 },
                     "the primary receives its own hit and cannot consume or duplicate any of the four splash slots");
         }
-        Combat.SelectAutoAttackSplashSecondaryTargets(new uint[] { 99, 1, 2 }, 99, 1).Should().BeEmpty();
-        Combat.SelectAutoAttackSplashSecondaryTargets(new uint[] { 99, 1, 2 }, 99, 0).Should().BeEmpty();
+        CombatRules.SelectAutoAttackSplashSecondaryTargets(new uint[] { 99, 1, 2 }, 99, 1).Should().BeEmpty();
+        CombatRules.SelectAutoAttackSplashSecondaryTargets(new uint[] { 99, 1, 2 }, 99, 0).Should().BeEmpty();
     }
 
     [Test]
@@ -201,11 +216,11 @@ public class PerkCombinationBehaviorTests
         foreach (var bleeding in new[] { false, true })
         {
             var procs = Enumerable.Range(1, 100).Count(roll =>
-                Combat.CanTriggerBleedingTargetAbilitySplash(source, skill, bleeding, roll));
+                CombatRules.CanTriggerBleedingTargetAbilitySplash(source, skill, bleeding, roll));
             procs.Should().Be(skill == SkillType.Throwing && bleeding ? 25 : 0);
         }
         var flurry = PerkSource<ThrowingPerkDefinition>("FlurryBleed", PerkType.FlurryBleed);
-        Combat.CanTriggerBleedingTargetAbilitySplash(flurry, SkillType.Throwing, true, 1)
+        CombatRules.CanTriggerBleedingTargetAbilitySplash(flurry, SkillType.Throwing, true, 1)
             .Should().BeFalse("a shared skill selector must not confer another perk's proc");
     }
 
@@ -216,7 +231,7 @@ public class PerkCombinationBehaviorTests
     public void ExplicitZeroDamageAbilities_BypassWeaponDamageAndAllLaterBonuses(
         SkillType skill, int adjustment, int rolledDamage)
     {
-        var damage = Combat.ApplyDamageDealtModifiers(1, 2, rolledDamage, skill, CombatDamageType.Physical,
+        var damage = GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(1, 2, rolledDamage, skill, CombatDamageType.Physical,
             isAbilityDamage: true, canApplyRandomFlatBonuses: true, isLandedAttack: true, ability: null,
             targetStatusDamagePercentAdjustment: out var targetAdjustment,
             abilityDamagePercentAdjustment: adjustment, lowHPAbilityDamagePercentAdjustment: 500);
@@ -227,10 +242,10 @@ public class PerkCombinationBehaviorTests
     [Test]
     public void SingleAdditionalDamageTarget_ExcludesThePrimaryBeforeSpendingTheSlot()
     {
-        Combat.SelectSecondaryDamageTargets(new uint[] { 99, 99, 1, 1, 2 }, 99, 1)
+        CombatRules.SelectSecondaryDamageTargets(new uint[] { 99, 99, 1, 1, 2 }, 99, 1)
             .Should().Equal(new uint[] { 1 });
-        Combat.SelectSecondaryDamageTargets(new uint[] { 99 }, 99, 1).Should().BeEmpty();
-        Combat.SelectSecondaryDamageTargets(new uint[] { 99, 1 }, 99, 0).Should().BeEmpty();
+        CombatRules.SelectSecondaryDamageTargets(new uint[] { 99 }, 99, 1).Should().BeEmpty();
+        CombatRules.SelectSecondaryDamageTargets(new uint[] { 99, 1 }, 99, 0).Should().BeEmpty();
     }
 
     [Test]
@@ -240,19 +255,19 @@ public class PerkCombinationBehaviorTests
         StoreDiscount("ranged", PerkSource<PistolPerkDefinition>("EvasiveReload", PerkType.EvasiveReload));
         StoreDiscount("global", PerkSource<SpearPerkDefinition>("OpportunistsFlow", PerkType.OpportunistsFlow));
 
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Staff, true).Should().Be(-7);
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Rifle, true).Should().Be(-7);
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Throwing, true).Should().Be(-7);
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Force, true).Should().Be(-4);
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Staff, false).Should().Be(0);
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Invalid, true).Should().Be(0);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Staff, true).Should().Be(-7);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Rifle, true).Should().Be(-7);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Throwing, true).Should().Be(-7);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Force, true).Should().Be(-4);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Staff, false).Should().Be(0);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Invalid, true).Should().Be(0);
 
         ConsumeMatchingDiscounts(SkillType.Rifle);
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Staff, true).Should().Be(-3);
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Pistol, true).Should().Be(0);
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Force, true).Should().Be(0);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Staff, true).Should().Be(-3);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Pistol, true).Should().Be(0);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Force, true).Should().Be(0);
         ConsumeMatchingDiscounts(SkillType.Staff);
-        Combat.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Staff, true).Should().Be(0);
+        GameServices.CombatAbilityBonus.GetNextSkillAbilityStaminaCostAdjustment(Creature, SkillType.Staff, true).Should().Be(0);
     }
 
     [TestCase(100, 500, 15, 215)]
@@ -260,7 +275,7 @@ public class PerkCombinationBehaviorTests
     [TestCase(1, 3, 15, 17)]
     [TestCase(0, 100, 15, 0)]
     public void DamageBonusCap_PreservesFlatDamage(int baseline, int percentageAdjusted, int flat, int expected) =>
-        Combat.CapOutgoingDamageBonus(baseline, percentageAdjusted, flat).Should().Be(expected);
+        CombatRules.CapOutgoingDamageBonus(baseline, percentageAdjusted, flat).Should().Be(expected);
 
     [TestCase(500, -50, -80, 150)]
     [TestCase(225, -50, -80, 68)]
@@ -272,7 +287,7 @@ public class PerkCombinationBehaviorTests
     [TestCase(2, -95, 0, 2)]
     public void CombinedReductionCap_DoesNotUndoGuardOrDamageSplitting(
         int damageAfterPriorStages, int targetReduction, int genericReduction, int expected) =>
-        Combat.ApplyCombinedDamageTakenAdjustment(damageAfterPriorStages, targetReduction, genericReduction)
+        CombatRules.ApplyCombinedDamageTakenAdjustment(damageAfterPriorStages, targetReduction, genericReduction)
             .Should().Be(expected);
 
     [Test]
@@ -282,8 +297,8 @@ public class PerkCombinationBehaviorTests
         for (var generic = 0; generic >= -95; generic--)
         {
             var targetDamage = 10000 * (100 + Math.Max(target, -85)) / 100;
-            var ordinary = Combat.ApplyCombinedDamageTakenAdjustment(targetDamage, target, generic);
-            var guarded = Combat.ApplyCombinedDamageTakenAdjustment(targetDamage * 45 / 100, target, generic);
+            var ordinary = CombatRules.ApplyCombinedDamageTakenAdjustment(targetDamage, target, generic);
+            var guarded = CombatRules.ApplyCombinedDamageTakenAdjustment(targetDamage * 45 / 100, target, generic);
             ordinary.Should().BeGreaterThanOrEqualTo(1500);
             guarded.Should().BeLessThanOrEqualTo((int)Math.Ceiling(ordinary * .45),
                 "Guard is a separate 55% reduction, including when other reductions reach their cap");
@@ -297,9 +312,9 @@ public class PerkCombinationBehaviorTests
     public void TriggeredDamage_HonorsTypedTargetModifiersAndTheSharedReductionBudget(
         int damage, int typedAdjustment, int genericAdjustment, int typedDamage, int expected)
     {
-        var result = Combat.ApplyTriggeredDamageTargetAdjustment(damage, typedAdjustment, null);
+        var result = CombatRules.ApplyTriggeredDamageTargetAdjustment(damage, typedAdjustment, null);
         result.Damage.Should().Be(typedDamage);
-        Combat.ApplyCombinedDamageTakenAdjustment(result.Damage, result.Adjustment, genericAdjustment)
+        CombatRules.ApplyCombinedDamageTakenAdjustment(result.Damage, result.Adjustment, genericAdjustment)
             .Should().Be(expected);
     }
 
@@ -307,7 +322,7 @@ public class PerkCombinationBehaviorTests
     [TestCase(0)]
     public void ConvertedDamage_PreservesAnAlreadyAppliedTargetAdjustmentIncludingZero(int priorAdjustment)
     {
-        var result = Combat.ApplyTriggeredDamageTargetAdjustment(50, -80, priorAdjustment);
+        var result = CombatRules.ApplyTriggeredDamageTargetAdjustment(50, -80, priorAdjustment);
         result.Damage.Should().Be(50, "the originating hit already applied its target-status modifier");
         result.Adjustment.Should().Be(priorAdjustment);
     }
@@ -437,16 +452,14 @@ public class PerkCombinationBehaviorTests
     }
 
     private static void AddTemporary(string group, StatType stat, int amount) =>
-        typeof(TemporaryStatModifier).GetMethod("AddInternal", PrivateStatic)!
-            .Invoke(null, new object[] { Creature, stat, amount, 30f, group, false });
+        TemporaryStatModifierInternals.Invoke("AddInternal", Creature, stat, amount, 30f, group, false);
 
     private static void ConsumeMatchingDiscounts(SkillType skill)
     {
         foreach (var source in TemporaryStatModifier.GetStatSources(Creature, StatType.NextSkillAbilityStaminaCostAdjustment))
         {
-            if (Combat.MatchesStaminaDiscount(source, skill, true))
-                typeof(TemporaryStatModifier).GetMethod("ConsumeSourceInternal", PrivateStatic)!
-                    .Invoke(null, new object[] { Creature, StatType.NextSkillAbilityStaminaCostAdjustment, source, false });
+            if (CombatRules.MatchesStaminaDiscount(source, skill, true))
+                TemporaryStatModifierInternals.Invoke("ConsumeSourceInternal", Creature, StatType.NextSkillAbilityStaminaCostAdjustment, source, false);
         }
     }
 }

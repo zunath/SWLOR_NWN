@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service.CraftService.Research;
+using SWLOR.Game.Server.Domain.Crafting.Research;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -10,6 +11,8 @@ namespace SWLOR.Game.Server.Feature
     /// </summary>
     public class ResearchInterruptions
     {
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Settles open experiments with a roll at logout; they stay open in Redis and the player carries on.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void SettleOnLogout()
         {
@@ -17,9 +20,11 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            ResearchExperimentService.SettleOpenExperiments(GetObjectUUID(player));
+            CraftResearchExperiment.SettleOpenExperiments(GetObjectUUID(player));
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Settles research a crash left open in a freshly loaded character file; on a player who stays online it would delete jobs started this session.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void SettleOnLogin()
         {
@@ -27,8 +32,8 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            ResearchExperimentService.RecoverAtLogin(player);
-            ResearchExperimentService.SettleOpenExperiments(GetObjectUUID(player));
+            CraftResearchExperiment.RecoverAtLogin(player);
+            CraftResearchExperiment.SettleOpenExperiments(GetObjectUUID(player));
         }
     }
 }

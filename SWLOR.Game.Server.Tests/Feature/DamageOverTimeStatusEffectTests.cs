@@ -4,27 +4,36 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class DamageOverTimeStatusEffectTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void TickingStatusEffects_KeepNativeLifetimeLongEnoughForTheirFinalTick()
     {
-        var durationMethod = typeof(StatusEffect).GetMethod(
-            "GetStatusEffectDurationSeconds",
-            BindingFlags.Static | BindingFlags.NonPublic)!;
-
-        var burnDuration = (float)durationMethod.Invoke(
-            null,
-            new object[] { new BurnStatusEffect(), 2 })!;
-        var passiveDuration = (float)durationMethod.Invoke(
-            null,
-            new object[] { new KoltoMistHealingStatusEffect(), 2 })!;
+        var burnDuration = StatusEffectInternals.Invoke<float>("GetStatusEffectDurationSeconds", new BurnStatusEffect(), 2);
+        var passiveDuration = StatusEffectInternals.Invoke<float>("GetStatusEffectDurationSeconds", new KoltoMistHealingStatusEffect(), 2);
 
         burnDuration.Should().Be(18f,
             "two 6-second ticks need one logical tick of NWN scheduler grace at the 12-second boundary");
@@ -124,8 +133,8 @@ public class DamageOverTimeStatusEffectTests
         var burnSource = ReadStatusEffectSource("BurnStatusEffect.cs");
 
         burnSource.Should().Contain("System.Math.Max(1, Random.Next(2, 4) + might * 2 * _level)");
-        burnSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire)");
-        burnSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire)");
+        burnSource.Should().Contain("GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire)");
+        burnSource.Should().Contain("GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire)");
         burnSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Fire), creature))");
     }
 
@@ -136,8 +145,8 @@ public class DamageOverTimeStatusEffectTests
 
         poisonSource.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
         poisonSource.Should().Contain("Math.Max(1, Random.Next(3, 7) + agility * level)");
-        poisonSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison)");
-        poisonSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison)");
+        poisonSource.Should().Contain("GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison)");
+        poisonSource.Should().Contain("GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison)");
         poisonSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Acid), creature))");
     }
 
@@ -147,8 +156,8 @@ public class DamageOverTimeStatusEffectTests
         var forceDotSource = ReadStatusEffectSource("ForceDamageOverTimeStatusEffectBase.cs");
 
         forceDotSource.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
-        forceDotSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment)");
-        forceDotSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment)");
+        forceDotSource.Should().Contain("GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment)");
+        forceDotSource.Should().Contain("GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment)");
         forceDotSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()), creature))");
     }
 
@@ -162,7 +171,7 @@ public class DamageOverTimeStatusEffectTests
             var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot();
             foreach (var call in syntax.DescendantNodes().OfType<InvocationExpressionSyntax>())
             {
-                if (call.Expression.ToString() != "Combat.ApplyDamageOverTimeTakenModifiers") continue;
+                if (call.Expression.ToString() != "GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers") continue;
                 var args = call.ArgumentList.Arguments;
                 if (args[2].Expression.ToString() is not ("CombatDamageType.Force" or "CombatDamageType.Physical")) continue;
                 examined++;
@@ -173,7 +182,7 @@ public class DamageOverTimeStatusEffectTests
                 variable.Should().NotBe("_", file);
                 var method = call.Ancestors().OfType<MethodDeclarationSyntax>().First();
                 method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-                    .Where(final => final.Expression.ToString() == "Combat.ApplyDamageTakenModifiers")
+                    .Where(final => final.Expression.ToString() == "GameServices.CombatDamageTaken.ApplyDamageTakenModifiers")
                     .Should().Contain(final => final.ArgumentList.Arguments.Any(arg =>
                             arg.NameColon != null && arg.NameColon.Name.Identifier.Text == "targetStatusDamagePercentAdjustment" &&
                             arg.Expression.ToString() == variable),
@@ -197,7 +206,7 @@ public class DamageOverTimeStatusEffectTests
                 var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
                 if (!calls.Any(call => call.Expression.ToString() == "EffectDamage")) continue;
                 examined++;
-                calls.Should().Contain(call => call.Expression.ToString() == "Combat.ApplyDamageTakenModifiers",
+                calls.Should().Contain(call => call.Expression.ToString() == "GameServices.CombatDamageTaken.ApplyDamageTakenModifiers",
                     Path.GetFileName(file) + " must honor reduction, immunity, redirection and survival effects");
             }
         }
@@ -230,10 +239,7 @@ public class DamageOverTimeStatusEffectTests
     [Test]
     public void AutoAttackSplash_DefersDamageEventsUntilTheNativeAttackReturns()
     {
-        var file = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs");
-        var method = CSharpSyntaxTree.ParseText(File.ReadAllText(file)).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.Text == "ApplyAutoAttackSplashEffects");
+        var method = CombatSource.Method("ApplyAutoAttackSplashEffects");
         var damageCalls = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Where(call => call.Expression.ToString() == "ApplyTriggeredDamage").ToArray();
         damageCalls.Should().NotBeEmpty();

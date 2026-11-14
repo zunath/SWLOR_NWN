@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Legacy.Crafting
 {

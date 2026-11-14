@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidStat,
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var bag = await CreateItemAsync(ctx, owner, "bag_ex", owner);
             foreach (var resref in new[] { "recipe_saberupg1", "recipe_staffupg1" })
                 await CreateItemAsync(ctx, owner, resref, bag);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, bag);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, bag);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 SetLocalString(controller, "CONSTRUCTED_DROID", JsonConvert.SerializeObject(new ConstructedDroid
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     contents.Add(item);
 
                 ctx.AssertEqual(1, contents.Count, "Every retired item is removed in the first pass");
-                ctx.AssertEqual(Droid.DroidControlItemResref, GetResRef(contents.Single()), "The surviving controller is preserved");
+                ctx.AssertEqual(DroidService.DroidControlItemResref, GetResRef(contents.Single()), "The surviving controller is preserved");
                 var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(contents.Single(), "CONSTRUCTED_DROID"));
                 ctx.AssertEqual(0, droid.ActivePerks.Count, "The controller after removed items is migrated in the same pass");
                 ctx.AssertEqual(0, droid.LearnedPerks.Count, "Retired learned instructions are normalized immediately");

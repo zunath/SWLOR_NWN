@@ -12,9 +12,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This should only be used in the OnAttacked events for creatures, placeables and doors.</remarks>
         public static uint GetLastAttacker(uint oAttackee = OBJECT_INVALID)
         {
-            if (oAttackee == OBJECT_INVALID)
-                oAttackee = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLastAttacker(oAttackee);
+            return NWScriptRuntime.Current.GetLastAttacker(oAttackee);
         }
 
         /// <summary>
@@ -24,7 +22,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bPassive">If true, attack is in passive mode (default: false)</param>
         public static void ActionAttack(uint oAttackee, bool bPassive = false)
         {
-            global::NWN.Core.NWScript.ActionAttack(oAttackee, bPassive ? 1 : 0);
+            NWScriptRuntime.Current.ActionAttack(oAttackee, bPassive);
         }
 
         /// <summary>
@@ -39,9 +37,7 @@ namespace SWLOR.NWN.API.NWScript
         public static SavingThrowResultType FortitudeSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
-            if (oSaveVersus == OBJECT_INVALID)
-                oSaveVersus = OBJECT_SELF;
-            return (SavingThrowResultType)global::NWN.Core.NWScript.FortitudeSave(oCreature, nDC, (int)nSaveType, oSaveVersus);
+            return NWScriptRuntime.Current.FortitudeSave(oCreature, nDC, nSaveType, oSaveVersus);
         }
 
         /// <summary>
@@ -56,9 +52,7 @@ namespace SWLOR.NWN.API.NWScript
         public static SavingThrowResultType ReflexSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
-            if (oSaveVersus == OBJECT_INVALID)
-                oSaveVersus = OBJECT_SELF;
-            return (SavingThrowResultType)global::NWN.Core.NWScript.ReflexSave(oCreature, nDC, (int)nSaveType, oSaveVersus);
+            return NWScriptRuntime.Current.ReflexSave(oCreature, nDC, nSaveType, oSaveVersus);
         }
 
         /// <summary>
@@ -73,9 +67,7 @@ namespace SWLOR.NWN.API.NWScript
         public static SavingThrowResultType WillSave(uint oCreature, int nDC, SavingThrowType nSaveType = SavingThrowType.All,
             uint oSaveVersus = OBJECT_INVALID)
         {
-            if (oSaveVersus == OBJECT_INVALID)
-                oSaveVersus = OBJECT_SELF;
-            return (SavingThrowResultType)global::NWN.Core.NWScript.WillSave(oCreature, nDC, (int)nSaveType, oSaveVersus);
+            return NWScriptRuntime.Current.WillSave(oCreature, nDC, nSaveType, oSaveVersus);
         }
 
         /// <summary>
@@ -86,7 +78,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>Return values: FALSE if oCaster or oTarget is an invalid object, -1 if spell cast is not a player spell, 1 if spell resisted, 2 if spell resisted via magic immunity, 3 if spell resisted via spell absorption</returns>
         public static int ResistSpell(uint oCaster, uint oTarget)
         {
-            return global::NWN.Core.NWScript.ResistSpell(oCaster, oTarget);
+            return NWScriptRuntime.Current.ResistSpell(oCaster, oTarget);
         }
 
         /// <summary>
@@ -99,9 +91,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This is not an action, and it assumes the attacker is already within range of the target.</remarks>
         public static TouchAttackReturn TouchAttackMelee(uint oTarget, bool bDisplayFeedback = true, uint oAttacker = OBJECT_INVALID)
         {
-            if (oAttacker == OBJECT_INVALID)
-                oAttacker = OBJECT_SELF;
-            return (TouchAttackReturn)global::NWN.Core.NWScript.TouchAttackMelee(oTarget, bDisplayFeedback ? 1 : 0, oAttacker);
+            return NWScriptRuntime.Current.TouchAttackMelee(oTarget, bDisplayFeedback, oAttacker);
         }
 
         /// <summary>
@@ -113,9 +103,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>0 on a miss, 1 on a hit, and 2 on a critical hit</returns>
         public static TouchAttackReturn TouchAttackRanged(uint oTarget, bool bDisplayFeedback = true, uint oAttacker = OBJECT_INVALID)
         {
-            if (oAttacker == OBJECT_INVALID)
-                oAttacker = OBJECT_SELF;
-            return (TouchAttackReturn)global::NWN.Core.NWScript.TouchAttackRanged(oTarget, bDisplayFeedback ? 1 : 0, oAttacker);
+            return NWScriptRuntime.Current.TouchAttackRanged(oTarget, bDisplayFeedback, oAttacker);
         }
 
         /// <summary>
@@ -126,9 +114,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This only works when the creature is in combat.</remarks>
         public static CombatMode GetLastAttackMode(uint oCreature = OBJECT_INVALID)
         {
-            if (oCreature == OBJECT_INVALID)
-                oCreature = OBJECT_SELF;
-            return (CombatMode)global::NWN.Core.NWScript.GetLastAttackMode(oCreature);
+            return NWScriptRuntime.Current.GetLastAttackMode(oCreature);
         }
 
         /// <summary>
@@ -138,7 +124,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last weapon used. Returns OBJECT_INVALID if the creature did not attack or has no weapon equipped</returns>
         public static uint GetLastWeaponUsed(uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetLastWeaponUsed(oCreature);
+            return NWScriptRuntime.Current.GetLastWeaponUsed(oCreature);
         }
 
         /// <summary>
@@ -148,7 +134,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The amount of damage dealt</returns>
         public static int GetDamageDealtByType(DamageType nDamageType)
         {
-            return global::NWN.Core.NWScript.GetDamageDealtByType((int)nDamageType);
+            return NWScriptRuntime.Current.GetDamageDealtByType(nDamageType);
         }
 
         /// <summary>
@@ -157,7 +143,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The total amount of damage dealt</returns>
         public static int GetTotalDamageDealt()
         {
-            return global::NWN.Core.NWScript.GetTotalDamageDealt();
+            return NWScriptRuntime.Current.GetTotalDamageDealt();
         }
 
         /// <summary>
@@ -167,9 +153,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The last object that damaged the target. Returns OBJECT_INVALID if the passed in object is not a valid object</returns>
         public static uint GetLastDamager(uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetLastDamager(oObject);
+            return NWScriptRuntime.Current.GetLastDamager(oObject);
         }
 
         /// <summary>
@@ -179,7 +163,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This should be used in conjunction with GetAttackTarget(). This value is set every time an attack is made, and is reset at the end of combat.</remarks>
         public static uint GetAttemptedAttackTarget()
         {
-            return global::NWN.Core.NWScript.GetAttemptedAttackTarget();
+            return NWScriptRuntime.Current.GetAttemptedAttackTarget();
         }
 
         /// <summary>
@@ -190,7 +174,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the weapon is effective against the target</returns>
         public static bool GetIsWeaponEffective(uint oVersus = OBJECT_INVALID, bool bOffHand = false)
         {
-            return global::NWN.Core.NWScript.GetIsWeaponEffective(oVersus, bOffHand ? 1 : 0) != 0;
+            return NWScriptRuntime.Current.GetIsWeaponEffective(oVersus, bOffHand);
         }
 
         /// <summary>
@@ -201,9 +185,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the object has effects from the feat</returns>
         public static int GetHasFeatEffect(int nFeat, uint oObject = OBJECT_INVALID)
         {
-            if (oObject == OBJECT_INVALID)
-                oObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetHasFeatEffect(nFeat, oObject);
+            return NWScriptRuntime.Current.GetHasFeatEffect(nFeat, oObject);
         }
 
         /// <summary>
@@ -215,7 +197,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Only returns a value if the creature has the feat and it is usable.</remarks>
         public static int GetFeatRemainingUses(FeatType nFeat, uint oCreature)
         {
-            return global::NWN.Core.NWScript.GetFeatRemainingUses((int)nFeat, oCreature);
+            return NWScriptRuntime.Current.GetFeatRemainingUses(nFeat, oCreature);
         }
     }
 }

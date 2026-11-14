@@ -3,9 +3,9 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
+using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.Tests.Service.Search;
 

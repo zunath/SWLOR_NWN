@@ -7,14 +7,14 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.QuestContractService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var weapon = await CreateItemAsync(ctx, owner, "b_longsword", owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
-                SetLocalInt(weapon, Item.NoEconomyVariable, 1);
+                SetLocalInt(weapon, ItemService.NoEconomyVariable, 1);
                 AddItemProperty(DurationType.Permanent,
                     ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Force), weapon);
             });

@@ -7,17 +7,14 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -125,7 +122,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 15f, "enemy to land an attack on the new tank");
             await ctx.DelaySecondsAsync(6f);
             ctx.AssertEqual(tank, GetAttackTarget(enemy), "Enemy continues attacking the table leader");
-            ctx.Assert(Combat.HasRecentAttackActivity(enemy, 3f), "Enemy continues taking attack rolls after the switch");
+            ctx.Assert(GameServices.CombatActivity.HasRecentAttackActivity(enemy, 3f), "Enemy continues taking attack rolls after the switch");
             await Activate(ctx, rival, enemy, FeatType.Provoke1);
             await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == rival, 8f, "second tank to take the enemy");
             ctx.Assert(Enmity.GetEnmityTable(enemy)[rival] > Enmity.GetEnmityTable(enemy)[tank], "Swap changes the threat leader");
@@ -182,7 +179,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(Enmity.GetEnmityTable(enemy)[tank] > 100000, "Each deficit is recovered independently");
             }
             await ctx.DelaySecondsAsync(6f);
-            ctx.Assert(enemies.All(enemy => GetAttackTarget(enemy) == tank && Combat.HasRecentAttackActivity(enemy, 3f)),
+            ctx.Assert(enemies.All(enemy => GetAttackTarget(enemy) == tank && GameServices.CombatActivity.HasRecentAttackActivity(enemy, 3f)),
                 "Both enemies continue attacking the area taunter");
             var first = Enmity.GetEnmityTable(enemies[0])[tank];
             ctx.Assert(Enmity.TryTaunt(tank, enemies[0], 400), "Repeated taunt succeeds");
@@ -350,7 +347,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(owner.Creature, () =>
             {
                 var cpu = CreateItemOnObject("d_bl_cpu2_m", owner.Creature);
-                var controller = CreateItemOnObject(Droid.DroidControlItemResref, owner.Creature);
+                var controller = CreateItemOnObject(DroidService.DroidControlItemResref, owner.Creature);
                 ctx.Track(cpu);
                 ctx.Track(controller);
                 ctx.Assert(GetIsObjectValid(cpu) && GetIsObjectValid(controller), "Droid controller fixtures exist");
@@ -383,7 +380,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             try
             {
-                await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == target && Combat.HasRecentAttackActivity(enemy, 3f), seconds, "actual NPC attack target to match taunter");
+                await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == target && GameServices.CombatActivity.HasRecentAttackActivity(enemy, 3f), seconds, "actual NPC attack target to match taunter");
             }
             catch (Exception error)
             {

@@ -1,0 +1,14 @@
+{
+  "function": "Combat.CalculateAutoAttackProcDamage (seeded d100)",
+  "description": "The damage of 40 consecutive auto-attacks using the game d100 as the roll; the generator restarts at the seed for each source set.",
+  "seed": 1703,
+  "inputs": "Four source sets: one proc source at 50 percent, a rare large proc, and two multi-source sets with a negative bonus.",
+  "rowCount": 4,
+  "columns": ["sources", "=> damagePerAttack"],
+  "rows": [
+    ["50:10", [10, 0, 10, 10, 10, 0, 0, 0, 0, 10, 0, 10, 10, 10, 10, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 10, 10, 0, 10, 0, 0, 0, 0, 0]],
+    ["5:100", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0]],
+    ["30:5,60:7,90:-3", [4, 9, -3, 2, 4, -3, -3, 0, -3, -3, 4, 4, 0, -3, -3, -3, 4, 9, 2, 9, 4, 12, -3, -3, -3, 9, 9, 4, -3, 4, 4, 4, 4, -3, 4, 4, -3, -3, 2, 2]],
+    ["95:3,10:20,40:-6", [-3, 23, 3, -3, -3, 3, -3, 3, -3, 3, 17, 3, 3, 3, 3, -3, -3, 3, 3, -3, 23, 3, -3, 3, 3, 3, 17, 0, 3, 3, 3, 3, 0, -3, 20, 3, 3, -3, 3, 3]]
+  ]
+}

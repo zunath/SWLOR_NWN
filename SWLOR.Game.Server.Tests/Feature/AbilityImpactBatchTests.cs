@@ -1,9 +1,9 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -15,12 +15,10 @@ public class AbilityImpactBatchTests
     [TestCase(uint.MaxValue, uint.MaxValue, uint.MaxValue, 0)]
     public void Arrivals_CompleteOneSummaryWithAllDistinctHits(uint first, uint second, uint third, int expectedTargets)
     {
-        var impactType = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
-        var impact = impactType.GetConstructors().Single().Invoke(new object[]
-        {
-            new AbilityDetail { IsAreaAbility = true }, 0, 0, 0, 0, 0, false, 0,
-            Array.Empty<TelegraphGeometry>(), new AbilityImpactSequence()
-        });
+        var impactType = AbilityInternals.TrackedImpactType;
+        var impact = AbilityInternals.NewTrackedImpact(
+            AbilityInternals.NoNeighbours(), new AbilityDetail { IsAreaAbility = true }, 0, 0, 0, 0, 0, false, 0,
+            Array.Empty<TelegraphGeometry>(), new AbilityImpactSequence());
         var summary = (AbilityImpactSummary)impactType.GetProperty("Summary")!.GetValue(impact)!;
         var completedSummaries = new List<AbilityImpactSummary>();
         var arrivals = new List<uint>();

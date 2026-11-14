@@ -1,6 +1,6 @@
 using System.Linq;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
@@ -41,7 +41,7 @@ internal sealed class _2_CorrectAppearanceType : ICharacterMigration
     }
 }
 
-/// <summary>Login applies the player movement rate (<see cref="Service.Stat.ApplyPlayerStats"/>), so a saved character needs no change.</summary>
+/// <summary>Login applies the player movement rate (<see cref="Domain.Character.IStatService.ApplyPlayerStats"/>), so a saved character needs no change.</summary>
 internal sealed class _3_AdjustPlayerSpeeds : ICharacterMigration
 {
     public int Version => 3;

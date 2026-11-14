@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition

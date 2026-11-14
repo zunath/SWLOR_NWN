@@ -1,14 +1,14 @@
 using NWN.Native.API;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 using ItemPropertyType = SWLOR.NWN.API.NWScript.Enum.Item.ItemPropertyType;
-using Ability = SWLOR.Game.Server.Service.Ability;
-using Skill = SWLOR.Game.Server.Service.Skill;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -127,8 +127,8 @@ namespace SWLOR.Game.Server.Native
             for (var index = pending.AttackIndex; index < round.m_nCurrentAttack; index++)
             {
                 if (!ResolveAttackRoll.IsSuccessfulAttackResult(round.GetAttack(index).m_nAttackResult)) continue;
-                CombatPoint.RecordWeaponAttackPoint(attacker, pending.Target, glove, Skill.GetWeaponSkill(attacker, glove));
-                Ability.RecordLeadershipWeaponHit(attacker, pending.Target);
+                CombatPoint.RecordWeaponAttackPoint(attacker, pending.Target, glove, GameServices.Skill.GetWeaponSkill(attacker, glove));
+                GameServices.Ability.RecordLeadershipWeaponHit(attacker, pending.Target);
                 Loot.RecordWeaponHitFindBonuses(attacker, pending.Target);
                 UsePerkFeat.ResolveQueuedWeaponAbilityHit(attacker, pending.Target, glove);
             }
@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Native
 
         public static int PrepareDualWieldAttacks(CNWSCombatRound round, int attacks)
         {
-            attacks = Math.Clamp(attacks, 2, Combat.MaxAttacksPerSwing * 2);
+            attacks = Math.Clamp(attacks, 2, CombatRules.MaxAttacksPerSwing * 2);
             // GetAttack has 50 slots; leave the final slot available for the engine's
             // post-roll cursor. Ordinary rounds restart well before reaching this bound.
             attacks = Math.Min(attacks, 49 - round.m_nCurrentAttack);

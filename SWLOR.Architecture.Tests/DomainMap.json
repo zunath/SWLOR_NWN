@@ -1,0 +1,140 @@
+{
+  "description": "Domain map for the cross-domain dependency guard (SWLOR.Architecture.Tests). Every type in Domain.<Domain> or a topic namespace below it belongs to that domain (each key below must be a declared domain); types directly in Feature belong to featureTypeDomain; code outside Domain, Service and Feature belongs to platformDomain. services: the services of each domain, which ConvertedServices.json must agree with (a converted service is Domain.<Domain>.<Name>Service behind I<Name>Service); tools/Refactor/Move-SupportNamespaces.ps1 also reads it to move a Service.<Name>Service folder into its domain. featureFolders: the first folders below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain, and every listed one must still exist. Edges into an unrestrictedTargetDomains domain are recorded but never fail. Edges out of a wiringPlatformAreas area (the composition root, which has to name every service it registers) are not dependencies and are left out.",
+  "platformDomain": "Platform",
+  "featureTypeDomain": "Gameplay",
+  "unrestrictedTargetDomains": ["Foundation", "Platform"],
+  "wiringPlatformAreas": ["Composition"],
+  "domains": {
+    "Foundation": {
+      "services": [
+        "DB", "Cache", "Messaging", "Communication", "BackgroundJob", "Migration", "Authorization",
+        "Conversation", "ConversationMenu", "Snippet", "PlayerFeedback", "ObjectVisibility",
+        "Walkmesh", "TileMagic", "AnimationPlayer", "NamedAnimation", "Animation", "Attribute"
+      ],
+      "featureFolders": [
+        "MigrationDefinition", "SnippetDefinition", "DialogDefinition"
+      ]
+    },
+    "UI": {
+      "services": [
+        "Gui", "ExtraHotbar", "ExtraHotbars"
+      ],
+      "featureFolders": [
+        "GuiDefinition"
+      ]
+    },
+    "Combat": {
+      "services": [
+        "Combat", "CombatPoint", "CombatRecorder", "Enmity", "PvpCombat", "Resistance", "Recast",
+        "Telegraph", "Targeting", "QueuedAttackAnimation",
+        "WeaponAttackEligibility", "WeaponDelay", "OrdinaryAttackTraits",
+        "PairedRangedTraits", "MeleeTechnique", "TwinPistolAbility", "TwinPistolEquipment",
+        "TwinPistolMastery", "PowerGloveEquipment", "Stealth", "Death", "Poisons", "BattleGrid",
+        "TemporaryStatModifier"
+      ],
+      "featureFolders": []
+    },
+    "Abilities": {
+      "services": [
+        "Ability", "AbilityCooldownVisual", "AbilityTargetingCache", "FieldEngineerPulseEmitters", "ForceControlCooldowns",
+        "QuickCast", "ReviveHistory", "Mimicry"
+      ],
+      "featureFolders": [
+        "AbilityDefinition"
+      ]
+    },
+    "Character": {
+      "services": [
+        "Stat", "Skill", "Perk", "StatusEffect", "Race", "Achievement", "Activity",
+        "PlayerDescriptor", "PlayerName", "PlayerIntroduction", "Disguise",
+        "EspionageInfiltration", "Language", "RoleplayXPDetection", "AppearanceRenderState", "TintMapState"
+      ],
+      "featureFolders": [
+        "PerkDefinition", "StatusEffectDefinition", "AppearanceDefinition"
+      ]
+    },
+    "Items": {
+      "services": [
+        "Item", "ItemTrash", "EquipmentUnequip", "KeyItem", "Loot", "LightsaberWorkbench",
+        "OverflowStorage", "Wardrobe"
+      ],
+      "featureFolders": [
+        "ItemDefinition", "LootTableDefinition"
+      ]
+    },
+    "Crafting": {
+      "services": [
+        "Craft", "Slicing", "Prospecting", "Scavenge"
+      ],
+      "featureFolders": [
+        "RecipeDefinition"
+      ]
+    },
+    "Economy": {
+      "services": [
+        "Bank", "Currency", "PlayerMarket", "Guild", "CasinoSlot", "GuildTaskXp"
+      ],
+      "featureFolders": []
+    },
+    "Quests": {
+      "services": [
+        "Quest", "QuestContractBoard", "QuestContract", "Faction", "CapstoneProof"
+      ],
+      "featureFolders": [
+        "QuestDefinition"
+      ]
+    },
+    "World": {
+      "services": [
+        "Area", "Planet", "Weather", "Music", "Shuttle", "Taxi", "Property", "Fishing", "HoloCom",
+        "Traps", "Notes"
+      ],
+      "featureFolders": [
+        "FishingLocationDefinition", "PropertyLayoutDefinition", "TrapDefinition"
+      ]
+    },
+    "Space": {
+      "services": [
+        "Space"
+      ],
+      "featureFolders": [
+        "ShipDefinition", "ShipModuleDefinition", "SpaceObjectDefinition"
+      ]
+    },
+    "Creatures": {
+      "services": [
+        "AI", "Spawn", "NPCGroup", "NPC", "CompanionControl"
+      ],
+      "featureFolders": [
+        "AIDefinition", "SpawnDefinition"
+      ]
+    },
+    "Companions": {
+      "services": [
+        "BeastMastery", "IncubationFieldNote", "Droid", "DroidEquipmentDiagnostics"
+      ],
+      "featureFolders": [
+        "BeastDefinition"
+      ]
+    },
+    "Social": {
+      "services": [
+        "ChatCommand", "ChatPortraitTells", "Party", "PlayerList", "ChatPortraitTell", "Performance"
+      ],
+      "featureFolders": [
+        "ChatCommandDefinition"
+      ]
+    },
+    "Administration": {
+      "services": [
+        "DMBlueprintCatalog", "DMCreatorFavorite", "DMCreatureManagerFavorite", "DMObjectDetails",
+        "DMObjectSearch", "DMPlayerDirectory", "DMPreference", "DMPresence"
+      ],
+      "featureFolders": []
+    },
+    "Gameplay": {
+      "services": ["ServerTask"],
+      "featureFolders": []
+    }
+  }
+}

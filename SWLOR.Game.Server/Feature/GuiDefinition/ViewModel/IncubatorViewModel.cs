@@ -3,17 +3,17 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -288,8 +288,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>"Wednesday (UTC)", or "Sunday (test)" while a tester's /incubationday override is set.</summary>
         private static string DescribeServerDay(string playerId)
         {
-            var suffix = IncubationTestTools.HasDayOverride(playerId) ? "test" : "UTC";
-            return $"{IncubationTestTools.GetServerDay(playerId)} ({suffix})";
+            var suffix = BeastMastery.HasIncubationDayOverride(playerId) ? "test" : "UTC";
+            return $"{BeastMastery.GetIncubationServerDay(playerId)} ({suffix})";
         }
 
         private void RefreshStageTracker(IncubationJob job, DateTime now)
@@ -490,7 +490,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 hasPendingStage);
 
             var unknown = 0;
-            var today = IncubationTestTools.GetServerDay(GetObjectUUID(Player));
+            var today = BeastMastery.GetIncubationServerDay(GetObjectUUID(Player));
             foreach (var mutation in beast.PossibleMutations)
             {
                 if (!IncubationFieldNote.TryGetNoteForTarget(mutation.Type, out var note) ||
@@ -757,7 +757,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ShowModal("Will you remove the DNA from the incubator? All enzymes will also be removed.", () =>
                 {
                     if (!RemoveDNA())
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                     SwitchViews();
                 }, SwitchViews);
             }
@@ -765,7 +765,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Targeting.EnterTargetingMode(Player, ObjectType.Item, "Select a DNA item from your inventory.", item =>
                 {
-                    if (GetResRef(item) != BeastMastery.DNAResref)
+                    if (GetResRef(item) != BeastMasteryService.DNAResref)
                     {
                         FloatingTextStringOnCreature("Only DNA items may be selected.", Player, false);
                         return;
@@ -897,7 +897,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var item = ObjectPlugin.Deserialize(serialized);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                         SwitchViews();
                         return;
                     }
@@ -935,7 +935,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         };
 
-        public Action OnClickHydrolase() => OnClickEnzyme("Hydrolase", BeastMastery.HydrolaseResrefPrefix,
+        public Action OnClickHydrolase() => OnClickEnzyme("Hydrolase", BeastMasteryService.HydrolaseResrefPrefix,
             () => _hydrolaseItem,
             (serialized, color, icon, detail) =>
             {
@@ -946,7 +946,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HydrolaseDetail = detail;
             });
 
-        public Action OnClickLyase() => OnClickEnzyme("Lyase", BeastMastery.LyaseResrefPrefix,
+        public Action OnClickLyase() => OnClickEnzyme("Lyase", BeastMasteryService.LyaseResrefPrefix,
             () => _lyaseItem,
             (serialized, color, icon, detail) =>
             {
@@ -957,7 +957,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LyaseDetail = detail;
             });
 
-        public Action OnClickIsomerase() => OnClickEnzyme("Isomerase", BeastMastery.IsomeraseResrefPrefix,
+        public Action OnClickIsomerase() => OnClickEnzyme("Isomerase", BeastMasteryService.IsomeraseResrefPrefix,
             () => _isomeraseItem,
             (serialized, color, icon, detail) =>
             {
@@ -1171,7 +1171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public override Action OnWindowClosed() => () =>
         {
             if (!RemoveDNA())
-                SendMessageToPC(Player, Item.ItemsHeldMessage);
+                SendMessageToPC(Player, ItemService.ItemsHeldMessage);
         };
 
         public void Refresh(PerkAcquiredRefreshEvent payload)

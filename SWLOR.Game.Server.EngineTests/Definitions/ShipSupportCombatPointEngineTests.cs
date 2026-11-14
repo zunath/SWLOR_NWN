@@ -3,9 +3,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -170,8 +170,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetLocalObject(pilot.Creature, "SPACE_TARGET", pilot.Creature);
 
             // Enemy ships are registered when real space encounters spawn; register the fixtures directly.
-            var npcShips = (Dictionary<uint, ShipStatus>)typeof(Space)
-                .GetField("_shipNPCs", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var npcShips = (Dictionary<uint, ShipStatus>)typeof(SWLOR.Game.Server.Domain.Space.SpaceService)
+                .GetField("_shipNPCs", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Space);
             var hostileShip = await SpawnHeldCreatureAsync(ctx, 6f, 0f, true);
             var hostileNonShip = await SpawnHeldCreatureAsync(ctx, 6f, 3f, true);
             var neutralShip = await SpawnHeldCreatureAsync(ctx, 6f, -3f, false);

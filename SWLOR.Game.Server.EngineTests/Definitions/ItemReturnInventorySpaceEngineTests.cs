@@ -8,15 +8,15 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.ItemDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -31,21 +31,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            var rodDetail = new FishingRodItemDefinition().BuildItems()[Fishing.FishingRodTag];
+            var rodDetail = new FishingRodItemDefinition().BuildItems()[FishingService.FishingRodTag];
             var rod = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(player, () =>
             {
                 rod = CreateItemOnObject("bamboo_rod", player);
-                ctx.AssertEqual(Fishing.FishingRodTag, GetTag(rod), "The player carries a fishing rod");
-                SetLocalString(rod, Fishing.ActiveBaitVariable, SerializeNewItem(ctx, "little_worm"));
-                SetLocalInt(rod, Fishing.RemainingBaitVariable, 7);
+                ctx.AssertEqual(FishingService.FishingRodTag, GetTag(rod), "The player carries a fishing rod");
+                SetLocalString(rod, FishingService.ActiveBaitVariable, SerializeNewItem(ctx, "little_worm"));
+                SetLocalInt(rod, FishingService.RemainingBaitVariable, 7);
                 var fillers = Fill(ctx, player);
                 var carried = Snapshot(player);
 
                 rodDetail.ApplyAction(player, rod, rod, GetLocation(player), 0);
                 AssertCarriedIntact(ctx, player, carried);
-                ctx.Assert(!string.IsNullOrEmpty(GetLocalString(rod, Fishing.ActiveBaitVariable)), "The rod keeps its bait");
-                ctx.AssertEqual(7, GetLocalInt(rod, Fishing.RemainingBaitVariable), "The rod keeps its bait count");
+                ctx.Assert(!string.IsNullOrEmpty(GetLocalString(rod, FishingService.ActiveBaitVariable)), "The rod keeps its bait");
+                ctx.AssertEqual(7, GetLocalInt(rod, FishingService.RemainingBaitVariable), "The rod keeps its bait count");
                 ctx.AssertEqual(0, CountCarried(player, "little_worm"), "No bait reaches the full inventory");
                 Free(fillers);
             });
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var carried = Snapshot(player);
                 rodDetail.ApplyAction(player, rod, rod, GetLocation(player), 0);
                 AssertCarriedIntact(ctx, player, carried);
-                ctx.AssertEqual(string.Empty, GetLocalString(rod, Fishing.ActiveBaitVariable), "Unloading empties the rod");
+                ctx.AssertEqual(string.Empty, GetLocalString(rod, FishingService.ActiveBaitVariable), "Unloading empties the rod");
                 ctx.AssertEqual(7, CarriedStackTotal(player, "little_worm"), "The remaining bait returns to the inventory");
             });
         }
@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     model.OnRetrieveItem()();
                     AssertCarriedIntact(ctx, player, carried);
                     ctx.Assert(DB.Get<WorldPropertyCategory>(category.Id).Items.ContainsKey(storedId), "The storage keeps the item");
-                    ctx.AssertEqual(Item.InventoryFullMessage, model.Instructions, "The window says the inventory is full");
+                    ctx.AssertEqual(ItemService.InventoryFullMessage, model.Instructions, "The window says the inventory is full");
                     Free(fillers);
                 });
                 await ctx.WaitFrameAsync();
@@ -406,7 +406,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(DB.Get<WorldProperty>(structure.Id) != null, "The structure stays placed");
                     ctx.Assert(DB.Get<WorldProperty>(parent.Id).ChildPropertyIds[PropertyChildType.Structure].Contains(structure.Id),
                         "The property still lists the structure");
-                    ctx.AssertEqual(Item.InventoryFullShortMessage, model.Instructions, "The window says the inventory is full");
+                    ctx.AssertEqual(ItemService.InventoryFullShortMessage, model.Instructions, "The window says the inventory is full");
                     Free(fillers);
                 });
                 await ctx.WaitFrameAsync();

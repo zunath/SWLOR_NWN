@@ -1,8 +1,8 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -11,14 +11,10 @@ public class AbilityDamageQueueTests
     [Test]
     public void DelayedImpacts_ShareLazyCastStateAcrossSeparatePhases()
     {
-        var impactType = typeof(Ability).GetNestedType(
-            "TrackedAbilityImpact", System.Reflection.BindingFlags.NonPublic)!;
-        var constructor = impactType.GetConstructors().Single();
-        object CreateImpact() => constructor.Invoke(new object[]
-        {
-            new AbilityDetail(), 0, 0, 0, 0, 0, true, 0,
-            Array.Empty<TelegraphGeometry>(), null
-        });
+        var impactType = AbilityInternals.TrackedImpactType;
+        var service = AbilityInternals.NoNeighbours();
+        object CreateImpact() => AbilityInternals.NewTrackedImpact(
+            service, new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, Array.Empty<TelegraphGeometry>(), null);
         var origin = CreateImpact();
         var firstPhase = CreateImpact();
         var secondPhase = CreateImpact();
@@ -43,14 +39,11 @@ public class AbilityDamageQueueTests
     [TestCase(true)]
     public void TrackedAbilityImpact_CreatesASequenceOnDemandAndPreservesSharedSequences(bool hasSharedSequence)
     {
-        var trackedImpactType = typeof(Ability).GetNestedType(
-            "TrackedAbilityImpact", System.Reflection.BindingFlags.NonPublic)!;
+        var trackedImpactType = AbilityInternals.TrackedImpactType;
         var sharedSequence = hasSharedSequence ? new AbilityImpactSequence() : null;
-        var trackedImpact = trackedImpactType.GetConstructors().Single().Invoke(new object[]
-        {
-            new AbilityDetail(), 0, 0, 0, 0, 0, true, 0,
-            Array.Empty<TelegraphGeometry>(), sharedSequence
-        });
+        var trackedImpact = AbilityInternals.NewTrackedImpact(
+            AbilityInternals.NoNeighbours(), new AbilityDetail(), 0, 0, 0, 0, 0, true, 0,
+            Array.Empty<TelegraphGeometry>(), sharedSequence);
         var storedSequence = trackedImpactType.GetField(
             "_sequence", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
         storedSequence.GetValue(trackedImpact).Should().BeSameAs(sharedSequence);
@@ -71,13 +64,10 @@ public class AbilityDamageQueueTests
     [Test]
     public void TrackedAbilityImpact_AddsDefenseIgnoreToTheCurrentImpact()
     {
-        var trackedImpactType = typeof(Ability).GetNestedType(
-            "TrackedAbilityImpact",
-            System.Reflection.BindingFlags.NonPublic);
+        var trackedImpactType = AbilityInternals.TrackedImpactType;
         trackedImpactType.Should().NotBeNull();
-        var constructor = trackedImpactType!.GetConstructors().Single();
-        var trackedImpact = constructor.Invoke(new object[]
-        {
+        var trackedImpact = AbilityInternals.NewTrackedImpact(
+            AbilityInternals.NoNeighbours(),
             new AbilityDetail(),
             0,
             0,
@@ -87,8 +77,7 @@ public class AbilityDamageQueueTests
             true,
             0,
             Array.Empty<TelegraphGeometry>(),
-            new AbilityImpactSequence()
-        });
+            new AbilityImpactSequence());
 
         trackedImpactType.GetMethod("AddDefenseIgnorePercentAdjustment")!
             .Invoke(trackedImpact, new object[] { 25 });
@@ -152,8 +141,9 @@ public class AbilityDamageQueueTests
         delayedBranch.IndexOf("ResolveImpact();", StringComparison.Ordinal)
             .Should().BeLessThan(delayedBranch.IndexOf("Activity.ClearBusy(activator);", StringComparison.Ordinal));
 
-        source.Should().Contain("public bool IsAwaitingImpact { get; set; }");
-        source.Should().Contain("if (activation.IsAwaitingImpact)\n                Combat.CompleteAbilityStaminaCostContext(activator, activation.Ability);");
+        File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityActiveActivation.cs"))
+            .Should().Contain("public bool IsAwaitingImpact { get; set; }");
+        source.Should().Contain("if (activation.IsAwaitingImpact)\n                GameServices.CombatResources.CompleteAbilityStaminaCostContext(activator, activation.Ability);");
 
         var delayedTargetValidation = source.Substring(
             source.IndexOf("private static bool IsDelayedImpactTargetValid", StringComparison.Ordinal),
@@ -184,13 +174,14 @@ public class AbilityDamageQueueTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var endImpactStart = source.IndexOf(
-            "public static AbilityImpactSummary EndAbilityImpact",
+            "public AbilityImpactSummary EndAbilityImpact",
             StringComparison.Ordinal);
         var trackedImpactLookupStart = source.IndexOf(
-            "private static TrackedAbilityImpact GetTrackedAbilityImpact",
+            "private TrackedAbilityImpact GetTrackedAbilityImpact",
             StringComparison.Ordinal);
         var queueDamageStart = source.IndexOf(
             "public void QueueDamageEffect",
@@ -228,13 +219,13 @@ public class AbilityDamageQueueTests
         flushBody.Should().Contain("EffectDamage(effect.Damage, effect.DamageType)");
 
         var preDamageValidation = flushBody.IndexOf(
-            "StatusEffect.NotifyPreDamageStatusEffects(",
+            "_statusEffect.NotifyPreDamageStatusEffects(",
             StringComparison.Ordinal);
         var damageApplication = flushBody.IndexOf(
             "EffectDamage(effect.Damage, effect.DamageType)",
             StringComparison.Ordinal);
         var reflection = flushBody.IndexOf(
-            "Combat.ApplyDamageReflectionEffects(",
+            "_service.ApplyDamageReflectionEffects(",
             StringComparison.Ordinal);
         preDamageValidation.Should().BeGreaterThan(-1);
         preDamageValidation.Should().BeLessThan(
@@ -274,13 +265,14 @@ public class AbilityDamageQueueTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var publicImpactStart = abilitySource.IndexOf(
-            "public static int ApplyHostileCombatImpact(",
+            "public int ApplyHostileCombatImpact(",
             StringComparison.Ordinal);
         var privateImpactStart = abilitySource.IndexOf(
-            "private static int ApplyHostileCombatImpact(",
+            "private int ApplyHostileCombatImpact(",
             StringComparison.Ordinal);
         publicImpactStart.Should().BeGreaterThan(-1);
         privateImpactStart.Should().BeGreaterThan(publicImpactStart);
@@ -289,7 +281,7 @@ public class AbilityDamageQueueTests
             privateImpactStart - publicImpactStart);
 
         primaryImpact.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
-        primaryImpact.Should().Contain("if (trackedImpact == null)\n                    Combat.ApplyDamageReflectionEffects(",
+        primaryImpact.Should().Contain("if (trackedImpact == null)\n                    ApplyDamageReflectionEffects(",
             "tracked hits must not reflect until each queued damage effect is applied");
     }
 
@@ -300,40 +292,41 @@ public class AbilityDamageQueueTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var primaryImpactBody = source.Substring(
-            source.IndexOf("public static int ApplyHostileCombatImpact(", StringComparison.Ordinal),
-            source.IndexOf("private static int ApplyHostileCombatImpact(", StringComparison.Ordinal) -
-            source.IndexOf("public static int ApplyHostileCombatImpact(", StringComparison.Ordinal));
+            source.IndexOf("public int ApplyHostileCombatImpact(", StringComparison.Ordinal),
+            source.IndexOf("private int ApplyHostileCombatImpact(", StringComparison.Ordinal) -
+            source.IndexOf("public int ApplyHostileCombatImpact(", StringComparison.Ordinal));
         var formulaSelectionBody = source.Substring(
-            source.IndexOf("private static int ApplyHostileCombatImpact(", StringComparison.Ordinal),
-            source.IndexOf("private static bool ShouldResolveCombatImpactHit", StringComparison.Ordinal) -
-            source.IndexOf("private static int ApplyHostileCombatImpact(", StringComparison.Ordinal));
+            source.IndexOf("private int ApplyHostileCombatImpact(", StringComparison.Ordinal),
+            source.IndexOf("private bool ShouldResolveCombatImpactHit", StringComparison.Ordinal) -
+            source.IndexOf("private int ApplyHostileCombatImpact(", StringComparison.Ordinal));
         var unscaledDamageBody = source.Substring(
-            source.IndexOf("private static int CalculateUnscaledCombatImpactDamage(", StringComparison.Ordinal),
-            source.IndexOf("private static int CalculateCombatImpactDamage(", StringComparison.Ordinal) -
-            source.IndexOf("private static int CalculateUnscaledCombatImpactDamage(", StringComparison.Ordinal));
+            source.IndexOf("private int CalculateUnscaledCombatImpactDamage(", StringComparison.Ordinal),
+            source.IndexOf("private int CalculateCombatImpactDamage(", StringComparison.Ordinal) -
+            source.IndexOf("private int CalculateUnscaledCombatImpactDamage(", StringComparison.Ordinal));
 
         source.Should().Contain("useUnscaledDamage: useUnscaledDamage",
             "the public combat-impact entry points must propagate unscaled damage through every area path");
         formulaSelectionBody.Should().Contain("useUnscaledDamage\n                ? CalculateUnscaledCombatImpactDamage(");
         formulaSelectionBody.Should().Contain("return ApplyHostileCombatImpact(",
             "unscaled damage must retain the primary ability damage, rider, and enmity path");
-        primaryImpactBody.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);");
+        primaryImpactBody.Should().Contain("SendTemporaryHitPointDamageFeedback(activator, target, damage);");
         primaryImpactBody.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
 
         unscaledDamageBody.Should().Contain("var trackedImpact = GetTrackedAbilityImpact(activator);");
         unscaledDamageBody.Should().Contain("baseDamage + (trackedImpact?.NextAbilityDamageBonus ?? 0)",
             "queued flat next-ability damage must not be consumed without affecting an unscaled hit");
-        unscaledDamageBody.Should().Contain("Combat.ApplyDamageDealtModifiers(");
+        unscaledDamageBody.Should().Contain("ApplyDamageDealtModifiers(");
         unscaledDamageBody.Should().Contain("isAbilityDamage: true");
         unscaledDamageBody.Should().Contain("ApplyCombatReadinessToActivatedAbilityMagnitude(activator, damage)");
-        unscaledDamageBody.Should().Contain("Resistance.ApplyResistanceToDamage(target, damageType, damage)");
-        unscaledDamageBody.Should().Contain("Combat.ApplyDamageTakenModifiers(");
+        unscaledDamageBody.Should().Contain("_resistance.ApplyResistanceToDamage(target, damageType, damage)");
+        unscaledDamageBody.Should().Contain("ApplyDamageTakenModifiers(");
         unscaledDamageBody.Should().NotContain("CalculateDamageWithCriticalMitigation");
-        unscaledDamageBody.Should().NotContain("Perk.ApplyForceAffinityMagnitude");
-        unscaledDamageBody.Should().NotContain("Combat.GetAbilityDamageBonus");
+        unscaledDamageBody.Should().NotContain("ApplyForceAffinityMagnitude");
+        unscaledDamageBody.Should().NotContain("GetAbilityDamageBonus");
     }
 
     [Test]
@@ -343,8 +336,9 @@ public class AbilityDamageQueueTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var usePerkFeatSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -359,9 +353,9 @@ public class AbilityDamageQueueTests
             usePerkFeatSource.IndexOf("/// Whenever a player enters the server", StringComparison.Ordinal) -
             usePerkFeatSource.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal));
         var abortImpactBody = abilitySource.Substring(
-            abilitySource.IndexOf("public static void AbortAbilityImpact(uint activator)", StringComparison.Ordinal),
-            abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal) -
-            abilitySource.IndexOf("public static void AbortAbilityImpact(uint activator)", StringComparison.Ordinal));
+            abilitySource.IndexOf("public void AbortAbilityImpact(uint activator)", StringComparison.Ordinal),
+            abilitySource.IndexOf("public bool TryQueueTrackedDamageEffect", StringComparison.Ordinal) -
+            abilitySource.IndexOf("public void AbortAbilityImpact(uint activator)", StringComparison.Ordinal));
 
         abortImpactBody.Should().Contain("_trackedAbilityImpacts.Remove(activator);");
         abortImpactBody.Should().Contain("Log.WriteStructured(");
@@ -413,31 +407,22 @@ public class AbilityDamageQueueTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
-        var combatSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
+        var combatSource = CombatSource.Read().Replace("\r\n", "\n");
         var queueMethod = abilitySource.Substring(
-            abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal),
-            abilitySource.IndexOf("private static TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
-            abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal));
-        var triggeredDamage = combatSource.Substring(
-            combatSource.IndexOf("public static int ApplyTriggeredDamage", StringComparison.Ordinal),
-            combatSource.IndexOf("private static void ApplyGuardiansResolve", StringComparison.Ordinal) -
-            combatSource.IndexOf("public static int ApplyTriggeredDamage", StringComparison.Ordinal));
-        var damageRiders = combatSource.Substring(
-            combatSource.IndexOf("private static void ApplyAbilityDamageRiders", StringComparison.Ordinal),
-            combatSource.IndexOf("private static void ApplyRicochetDamage", StringComparison.Ordinal) -
-            combatSource.IndexOf("private static void ApplyAbilityDamageRiders", StringComparison.Ordinal));
+            abilitySource.IndexOf("public bool TryQueueTrackedDamageEffect", StringComparison.Ordinal),
+            abilitySource.IndexOf("private TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
+            abilitySource.IndexOf("public bool TryQueueTrackedDamageEffect", StringComparison.Ordinal));
+        var triggeredDamage = CombatSource.Members("ApplyTriggeredDamage", "ApplyTriggeredDamageTargetAdjustment", "GetRangedDeflectionReflectionAmount", "GetRangedDeflectionReflectionRates", "ApplyRangedDeflectionReflection", "BuildDeflectingReturnCombatLogMessage");
+        var damageRiders = CombatSource.Members("ApplyAbilityDamageRiders", "ApplyFoggyMindResourceDrain", "GetAreaAbilityPulseSources", "ApplyAreaAbilityPulse", "ApplyAreaAbilityFragmentation", "GetAreaAbilityFragmentationStatAdjustment");
 
         queueMethod.Should().Contain("GetTrackedAbilityImpact(activator)");
         queueMethod.Should().Contain("trackedImpact.QueueDamageEffect(target, damage, damageType);");
         damageRiders.Should().Contain("StatType.KatarVenomCurrentSecondStrikeDamageBonus");
         damageRiders.Should().Contain("ApplyTriggeredDamage(activator, target, bonus, damageType);");
-        triggeredDamage.Should().Contain("Ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType)");
+        triggeredDamage.Should().Contain("_ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType)");
         triggeredDamage.Should().Contain("AssignCommand(");
     }
 
@@ -448,19 +433,20 @@ public class AbilityDamageQueueTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var buildActionCall = source.Substring(
             source.IndexOf("var action = BuildTelegraphedCombatImpactAction(", StringComparison.Ordinal),
             source.IndexOf("switch (shape)", StringComparison.Ordinal) -
             source.IndexOf("var action = BuildTelegraphedCombatImpactAction(", StringComparison.Ordinal));
         var buildActionSignature = source.Substring(
-            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal),
+            source.IndexOf("private ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal),
             source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal) -
-            source.IndexOf("private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal));
+            source.IndexOf("private ApplyTelegraphEffect BuildTelegraphedCombatImpactAction", StringComparison.Ordinal));
         var delayedImpactBody = source.Substring(
             source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal),
-            source.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            source.IndexOf("private int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
             source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
 
         buildActionCall.Should().Contain("trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0");
@@ -478,11 +464,12 @@ public class AbilityDamageQueueTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var delayedImpactBody = source.Substring(
             source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal),
-            source.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            source.IndexOf("private int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
             source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
 
         delayedImpactBody.Should().Contain("countsAsAttackAttempt: false",
@@ -496,29 +483,26 @@ public class AbilityDamageQueueTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
-        var combatSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
+        var combatSource = CombatSource.Read().Replace("\r\n", "\n");
         var telegraphMethod = abilitySource.Substring(
-            abilitySource.IndexOf("public static int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal),
-            abilitySource.IndexOf("private static void ShowAreaImpactFlash(", StringComparison.Ordinal) -
-            abilitySource.IndexOf("public static int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal));
+            abilitySource.IndexOf("public int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal),
+            abilitySource.IndexOf("private void ShowAreaImpactFlash(", StringComparison.Ordinal) -
+            abilitySource.IndexOf("public int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal));
         var delayedImpactBody = abilitySource.Substring(
             abilitySource.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal),
-            abilitySource.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            abilitySource.IndexOf("private int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
             abilitySource.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
 
-        telegraphMethod.Should().Contain("Combat.DeferAbilityStaminaCostContext(activator, trackedImpact?.Ability);");
+        telegraphMethod.Should().Contain("DeferAbilityStaminaCostContext(activator, trackedImpact?.Ability);");
         delayedImpactBody.Should().Contain("var impactStarted = false;");
         delayedImpactBody.Should().Contain("var impactEnded = false;");
         delayedImpactBody.Should().Contain("finally");
         delayedImpactBody.Should().Contain("if (impactStarted && !impactEnded)");
         delayedImpactBody.Should().Contain("AbortAbilityImpact(creator);");
-        delayedImpactBody.Should().Contain("Combat.CompleteDeferredAbilityStaminaCostContext(creator, ability);");
+        delayedImpactBody.Should().Contain("CompleteDeferredAbilityStaminaCostContext(creator, ability);");
 
         combatSource.Should().Contain("state.DeferredImpactCount++;");
         combatSource.Should().Contain("state.DeferredImpactCount = Math.Max(0, state.DeferredImpactCount - 1);");
@@ -531,8 +515,9 @@ public class AbilityDamageQueueTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs")).Replace("\r\n", "\n");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs")).Replace("\r\n", "\n");
         var weaponAbilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -561,7 +546,7 @@ public class AbilityDamageQueueTests
         hostileImpactSetup.Should().Contain("Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(");
         hostileImpactSetup.Should().Contain("profile.GetDefenseIgnorePercent(activator, activationIdleBonusSnapshot)",
             "the activation's defense-ignore snapshot must join the current tracked impact before instant or delayed damage resolves");
-        weaponAbilitySource.Should().NotContain("Combat.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore)",
+        weaponAbilitySource.Should().NotContain("GameServices.CombatAttackTiming.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore)",
             "granting a next-ability rider after BeginAbilityImpact would leak defense ignore to a later ability");
         abilitySource.Should().Contain("NextAbilityDefenseIgnorePercentAdjustment += adjustment;");
     }

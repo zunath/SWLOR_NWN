@@ -2,9 +2,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Feature;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -35,7 +35,7 @@ public class AuthoredCombatAnimationTests
     [Test]
     public void NativeAnimationAndOverwriteCallsReplaceAuthoredActivationMetadata()
     {
-        var builder = new AbilityBuilder().Create(FeatType.ShieldWall1, SWLOR.Game.Server.Service.PerkService.PerkType.ShieldWall);
+        var builder = new AbilityBuilder().Create(FeatType.ShieldWall1, SWLOR.Game.Server.Domain.Character.PerkType.ShieldWall);
         builder.UsesAnimation(AuthoredAnimation.ShieldWall).UsesAnimation(Animation.LoopingPause);
         builder.Build().Values.Single().AuthoredAnimation.Should().BeNull();
         builder.UsesAnimation(AuthoredAnimation.ShieldWall).UsesAnimationOverwrite("pause2");
@@ -131,14 +131,14 @@ public class AuthoredCombatAnimationTests
         var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln"))) root = root.Parent;
         root.Should().NotBeNull();
-        var death = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Death.cs"));
-        var stop = death.IndexOf("NamedAnimation.ClearOnDeath(player);", StringComparison.Ordinal);
+        var death = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Domain", "Combat", "DeathService.cs"));
+        var stop = death.IndexOf("_namedAnimation.ClearOnDeath(player);", StringComparison.Ordinal);
         stop.Should().BeGreaterThan(death.IndexOf("var player = GetLastPlayerDied();", StringComparison.Ordinal));
         stop.Should().BeLessThan(death.IndexOf("EffectResurrection()", StringComparison.Ordinal),
             "subdual revives the same object immediately, so its old custom mappings must already be gone");
         var npc = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "CreatureDeathAnimation.cs"));
         npc.Should().Contain("NamedAnimation.ClearOnDeath(creature);").And.Contain("UsePerkFeat.ClearQueuedAbility(creature);");
-        var clearQueue = death.IndexOf("UsePerkFeat.ClearQueuedAbility(player);", StringComparison.Ordinal);
+        var clearQueue = death.IndexOf("ClearQueuedAbility(player);", StringComparison.Ordinal);
         clearQueue.Should().BeGreaterThan(stop).And.BeLessThan(death.IndexOf("EffectResurrection()", StringComparison.Ordinal));
     }
 

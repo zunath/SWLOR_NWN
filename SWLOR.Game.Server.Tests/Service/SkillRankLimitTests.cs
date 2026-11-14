@@ -1,10 +1,11 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -20,14 +21,25 @@ public class SkillRankLimitTests
     private Dictionary<SkillType, SkillAttribute> _cache = null!;
     private Dictionary<SkillType, SkillAttribute> _original = null!;
 
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     /// <summary>Populates the skill cache from production metadata without starting the NWN engine.</summary>
     [SetUp]
     public void SetUp()
     {
+        _facadeScope = _facades.Install();
         _harness = SkillXPAwardTests.Harness;
-        _cache = (Dictionary<SkillType, SkillAttribute>)typeof(Skill)
-            .GetField("_allSkills", BindingFlags.Static | BindingFlags.NonPublic)!
-            .GetValue(null)!;
+        var service = _facades.Get<ISkillService>();
+        _cache = (Dictionary<SkillType, SkillAttribute>)service.GetType()
+            .GetField("_allSkills", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(service)!;
         _original = new(_cache);
         _cache.Clear();
         foreach (var type in Enum.GetValues<SkillType>())
@@ -41,6 +53,7 @@ public class SkillRankLimitTests
         _cache.Clear();
         foreach (var (type, detail) in _original)
             _cache[type] = detail;
+        _facadeScope.Dispose();
     }
 
     // ---- GiveSkillXP: gains ----
@@ -49,11 +62,11 @@ public class SkillRankLimitTests
     public void Gain_StopsAtTheLimit_DiscardsLeftoverXP_AndReturnsOnlyTheXPUsed()
     {
         var player = CreatePlayer(10, (SkillType.Mimicry, S(10, limit: 11)));
-        var used = Award(player, SkillType.Mimicry, Skill.GetRequiredXP(10) + 500);
+        var used = Award(player, SkillType.Mimicry, SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) + 500);
 
         player.Skills[SkillType.Mimicry].Rank.Should().Be(11);
         player.Skills[SkillType.Mimicry].XP.Should().Be(0);
-        used.Should().Be(Skill.GetRequiredXP(10));
+        used.Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10));
         WarningKeys.Should().BeEmpty();
     }
 
@@ -61,18 +74,18 @@ public class SkillRankLimitTests
     public void Gain_StoppedByTheLimit_DoesNotCountXPAlreadyOnTheSkill()
     {
         var player = CreatePlayer(10, (SkillType.Mimicry, S(10, xp: 20, limit: 11)));
-        var used = Award(player, SkillType.Mimicry, Skill.GetRequiredXP(10) + 100);
+        var used = Award(player, SkillType.Mimicry, SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) + 100);
 
         player.Skills[SkillType.Mimicry].Rank.Should().Be(11);
         player.Skills[SkillType.Mimicry].XP.Should().Be(0);
-        used.Should().Be(Skill.GetRequiredXP(10) - 20);
+        used.Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) - 20);
     }
 
     [Test]
     public void Gain_CrossesSeveralRanksBelowTheLimit()
     {
         var player = CreatePlayer(10, (SkillType.Mimicry, S(10, limit: 20)));
-        var xp = Skill.GetRequiredXP(10) + Skill.GetRequiredXP(11) + 7;
+        var xp = SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11) + 7;
         var used = Award(player, SkillType.Mimicry, xp);
 
         player.Skills[SkillType.Mimicry].Rank.Should().Be(12);
@@ -173,9 +186,9 @@ public class SkillRankLimitTests
     {
         var player = CreatePlayer(10, (SkillType.Mimicry, S(10, limit: 11)));
         player.XPDebt = 25;
-        var used = Award(player, SkillType.Mimicry, 25 + Skill.GetRequiredXP(10) + 300);
+        var used = Award(player, SkillType.Mimicry, 25 + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) + 300);
 
-        used.Should().Be(25 + Skill.GetRequiredXP(10));
+        used.Should().Be(25 + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10));
         player.Skills[SkillType.Mimicry].Rank.Should().Be(11);
     }
 
@@ -194,7 +207,7 @@ public class SkillRankLimitTests
     public void AwardStoppedAtMaxRank_ReturnsOnlyTheXPNeededForTheLastRank()
     {
         var player = CreatePlayer(49, (SkillType.Mimicry, S(49)));
-        Award(player, SkillType.Mimicry, Skill.GetRequiredXP(49) + 100).Should().Be(Skill.GetRequiredXP(49));
+        Award(player, SkillType.Mimicry, SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(49) + 100).Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(49));
         player.Skills[SkillType.Mimicry].Rank.Should().Be(50);
         player.Skills[SkillType.Mimicry].XP.Should().Be(0);
     }
@@ -261,9 +274,9 @@ public class SkillRankLimitTests
     public void Language_StopsAtItsLimit_MidAward()
     {
         var player = CreatePlayer(0, (SkillType.Mirialan, S(5, limit: 6)));
-        var used = Award(player, SkillType.Mirialan, Skill.GetRequiredXP(5) + Skill.GetRequiredXP(6));
+        var used = Award(player, SkillType.Mirialan, SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(5) + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(6));
 
-        used.Should().Be(Skill.GetRequiredXP(5));
+        used.Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(5));
         player.Skills[SkillType.Mirialan].Rank.Should().Be(6);
         player.Skills[SkillType.Mirialan].XP.Should().Be(0);
         WarningKeys.Should().BeEmpty();
@@ -273,7 +286,7 @@ public class SkillRankLimitTests
     public void Language_WithoutALimit_StillGainsRanks()
     {
         var player = CreatePlayer(0, (SkillType.Mirialan, S(5)));
-        var xp = Skill.GetRequiredXP(5) + 10;
+        var xp = SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(5) + 10;
         Award(player, SkillType.Mirialan, xp).Should().Be(xp);
         player.Skills[SkillType.Mirialan].Rank.Should().Be(6);
         player.Skills[SkillType.Mirialan].XP.Should().Be(10);
@@ -304,53 +317,53 @@ public class SkillRankLimitTests
     [Test]
     public void Decay_PicksAboveLimitSkillsFirst()
     {
-        var player = CreatePlayer(Skill.SkillCap,
+        var player = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(20, limit: 15)),
             (SkillType.TwinPistol, S(20)),
             (SkillType.BeastMastery, S(20, limit: 20)));
-        var used = Award(player, SkillType.Mimicry, Skill.GetRequiredXP(10));
+        var used = Award(player, SkillType.Mimicry, SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10));
 
-        used.Should().Be(Skill.GetRequiredXP(10));
+        used.Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10));
         player.Skills[SkillType.Mimicry].Rank.Should().Be(11);
         player.Skills[SkillType.Unarmed].Rank.Should().Be(19);
         player.Skills[SkillType.TwinPistol].Rank.Should().Be(20);
         player.Skills[SkillType.BeastMastery].Rank.Should().Be(20);
-        Skill.GetTotalContributingSkillRanks(player).Should().Be(Skill.SkillCap);
+        Skill.GetTotalContributingSkillRanks(player).Should().Be(SkillService.SkillCap);
     }
 
     [Test]
     public void Decay_NeverGoesBelowALimit_ThenMovesToUnlimitedSkills()
     {
-        var player = CreatePlayer(Skill.SkillCap,
+        var player = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(16, limit: 15)),
             (SkillType.TwinPistol, S(20)),
             (SkillType.BeastMastery, S(20, limit: 20)));
-        var xp = Skill.GetRequiredXP(10) + Skill.GetRequiredXP(11) + Skill.GetRequiredXP(12);
+        var xp = SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11) + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(12);
         Award(player, SkillType.Mimicry, xp).Should().Be(xp);
 
         player.Skills[SkillType.Mimicry].Rank.Should().Be(13);
         player.Skills[SkillType.Unarmed].Rank.Should().Be(15);
         player.Skills[SkillType.TwinPistol].Rank.Should().Be(18);
         player.Skills[SkillType.BeastMastery].Rank.Should().Be(20);
-        Skill.GetTotalContributingSkillRanks(player).Should().Be(Skill.SkillCap);
+        Skill.GetTotalContributingSkillRanks(player).Should().Be(SkillService.SkillCap);
     }
 
     [Test]
     public void Decay_StopsGainingOnceTheOnlyDecayCandidateReachesItsLimit()
     {
-        var player = CreatePlayer(Skill.SkillCap,
+        var player = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(16, limit: 15)));
-        var xp = Skill.GetRequiredXP(10) + Skill.GetRequiredXP(11) * 3;
+        var xp = SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11) * 3;
         var used = Award(player, SkillType.Mimicry, xp);
 
         player.Skills[SkillType.Mimicry].Rank.Should().Be(11);
         player.Skills[SkillType.Mimicry].XP.Should().Be(0);
         player.Skills[SkillType.Unarmed].Rank.Should().Be(15);
-        Skill.GetTotalContributingSkillRanks(player).Should().Be(Skill.SkillCap);
-        used.Should().Be(Skill.GetRequiredXP(10));
+        Skill.GetTotalContributingSkillRanks(player).Should().Be(SkillService.SkillCap);
+        used.Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10));
     }
 
     [Test]
@@ -392,7 +405,7 @@ public class SkillRankLimitTests
     [Test]
     public void AtTheCap_WhenEveryOtherSkillIsLockedOrAtItsLimit_XPIsBlocked()
     {
-        var player = CreatePlayer(Skill.SkillCap,
+        var player = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10, xp: 3)),
             (SkillType.Unarmed, S(20, limit: 20)),
             (SkillType.TwinPistol, S(20, locked: true)));
@@ -410,7 +423,7 @@ public class SkillRankLimitTests
     [Test]
     public void AtTheCap_BlockedAward_KeepsDebtRepaidAndReturnsIt()
     {
-        var player = CreatePlayer(Skill.SkillCap,
+        var player = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(20, limit: 20)));
         player.XPDebt = 30;
@@ -426,7 +439,7 @@ public class SkillRankLimitTests
     [Test]
     public void AtTheCap_BlockedAward_WithNoDebtReturnsZeroAndSavesNothing()
     {
-        var player = CreatePlayer(Skill.SkillCap,
+        var player = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(20, limit: 20)));
         Award(player, SkillType.Mimicry, 100).Should().Be(0);
@@ -436,7 +449,7 @@ public class SkillRankLimitTests
     [Test]
     public void AtTheCap_AnAboveLimitSkillKeepsXPFlowing()
     {
-        var player = CreatePlayer(Skill.SkillCap,
+        var player = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(21, limit: 20)));
         Award(player, SkillType.Mimicry, 100).Should().Be(100);
@@ -448,7 +461,7 @@ public class SkillRankLimitTests
     [Test]
     public void IsBlockedBySkillCap_RequiresTheCap_AndNoDecayCandidate()
     {
-        var blocked = CreatePlayer(Skill.SkillCap,
+        var blocked = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(20, limit: 20)));
         Skill.IsBlockedBySkillCap(blocked, SkillType.Mimicry).Should().BeTrue();
@@ -458,13 +471,13 @@ public class SkillRankLimitTests
         Skill.IsBlockedBySkillCap(blocked, SkillType.Mimicry).Should().BeFalse();
 
         // Below the cap nothing is blocked.
-        var belowCap = CreatePlayer(Skill.SkillCap - 1,
+        var belowCap = CreatePlayer(SkillService.SkillCap - 1,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(20, limit: 20)));
         Skill.IsBlockedBySkillCap(belowCap, SkillType.Mimicry).Should().BeFalse();
 
         // Languages do not count toward the cap, so the cap never blocks them.
-        var language = CreatePlayer(Skill.SkillCap, (SkillType.Mirialan, S(5)), (SkillType.Unarmed, S(20, limit: 20)));
+        var language = CreatePlayer(SkillService.SkillCap, (SkillType.Mirialan, S(5)), (SkillType.Unarmed, S(20, limit: 20)));
         Skill.IsBlockedBySkillCap(language, SkillType.Mirialan).Should().BeFalse();
     }
 
@@ -492,16 +505,16 @@ public class SkillRankLimitTests
             (SkillType.Unarmed, S(10, xp: 30)));
 
         Skill.GetMaxDistributableXP(player, SkillType.Mimicry)
-            .Should().Be(Skill.GetRequiredXP(10) - 30 + Skill.GetRequiredXP(11));
+            .Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) - 30 + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11));
 
-        var expectedToMax = Enumerable.Range(10, 40).Sum(Skill.GetRequiredXP) - 30;
+        var expectedToMax = Enumerable.Range(10, 40).Sum(level => Skill.GetRequiredXP(level)) - 30;
         Skill.GetMaxDistributableXP(player, SkillType.Unarmed).Should().Be(expectedToMax);
     }
 
     [Test]
     public void MaxDistributableXP_IsZeroWhileTheSkillCapBlocksTheSkill()
     {
-        var blocked = CreatePlayer(Skill.SkillCap,
+        var blocked = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(20, limit: 20)),
             (SkillType.TwinPistol, S(20, locked: true)));
@@ -515,11 +528,11 @@ public class SkillRankLimitTests
     public void MaxDistributableXP_AtTheCap_StopsAtTheRanksDecayCanSupply()
     {
         // Unarmed can give up 1 rank above its limit and Throwing 2 unlimited ranks: 3 ranks of Mimicry in all.
-        var player = CreatePlayer(Skill.SkillCap,
+        var player = CreatePlayer(SkillService.SkillCap,
             (SkillType.Mimicry, S(10, xp: 30)),
             (SkillType.Unarmed, S(21, limit: 20)),
             (SkillType.Throwing, S(2)));
-        var expected = Skill.GetRequiredXP(10) - 30 + Skill.GetRequiredXP(11) + Skill.GetRequiredXP(12);
+        var expected = SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) - 30 + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11) + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(12);
 
         Skill.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(expected);
         Award(player, SkillType.Mimicry, expected).Should().Be(expected);
@@ -531,8 +544,8 @@ public class SkillRankLimitTests
     [Test]
     public void MaxDistributableXP_AcceptsOneXPToCompleteARankTheCapHeldBack()
     {
-        var player = CreatePlayer(Skill.SkillCap,
-            (SkillType.Mimicry, S(10, xp: Skill.GetRequiredXP(10))),
+        var player = CreatePlayer(SkillService.SkillCap,
+            (SkillType.Mimicry, S(10, xp: SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10))),
             (SkillType.Unarmed, S(21, limit: 20)));
 
         Skill.GetMaxDistributableXP(player, SkillType.Mimicry).Should().Be(1);
@@ -544,12 +557,12 @@ public class SkillRankLimitTests
     [Test]
     public void MaxDistributableXP_BelowTheCap_CountsFreeRanksBeforeDecay()
     {
-        var player = CreatePlayer(Skill.SkillCap - 1,
+        var player = CreatePlayer(SkillService.SkillCap - 1,
             (SkillType.Mimicry, S(10)),
             (SkillType.Unarmed, S(21, limit: 20)));
 
         Skill.GetMaxDistributableXP(player, SkillType.Mimicry)
-            .Should().Be(Skill.GetRequiredXP(10) + Skill.GetRequiredXP(11));
+            .Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(10) + SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(11));
     }
 
     [Test]
@@ -559,7 +572,7 @@ public class SkillRankLimitTests
         Skill.GetMaxDistributableXP(atLimit, SkillType.Mirialan).Should().Be(0);
 
         var belowLimit = CreatePlayer(0, (SkillType.Mirialan, S(5, limit: 6)));
-        Skill.GetMaxDistributableXP(belowLimit, SkillType.Mirialan).Should().Be(Skill.GetRequiredXP(5));
+        Skill.GetMaxDistributableXP(belowLimit, SkillType.Mirialan).Should().Be(SWLOR.Game.Server.Domain.Character.SkillXPChart.GetRequiredXP(5));
     }
 
     // ---- RP XP window and rebuild (source shape; no engine seam) ----
@@ -637,9 +650,12 @@ public class SkillRankLimitTests
     private int Award(Player player, SkillType skill, int xp, uint source = NoSource) =>
         (int)_harness.GetMethod("AwardSkill")!.Invoke(null, new object[] { player, skill, xp, source })!;
 
-    private static List<SkillType> DecayCandidates(Player player, SkillType skill) =>
-        (List<SkillType>)typeof(Skill).GetMethod("GetDecayCandidates", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { player, skill })!;
+    private List<SkillType> DecayCandidates(Player player, SkillType skill)
+    {
+        var service = _facades.Get<ISkillService>();
+        return (List<SkillType>)service.GetType().GetMethod("GetDecayCandidates", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(service, new object[] { player, skill })!;
+    }
 
     private T Field<T>(string name) => (T)_harness.GetField(name)!.GetValue(null)!;
     private List<string> Warnings => Field<List<string>>("Warnings");

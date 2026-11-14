@@ -6,9 +6,10 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -104,11 +105,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var initialNativeHP = 0;
                 var initialize = typeof(Feature.PlayerInitialization);
                 var adjustStats = initialize.GetMethod("AdjustStats", BindingFlags.Static | BindingFlags.NonPublic);
-                var run = typeof(Migration).GetMethod("RunPlayerInitialization", BindingFlags.Static | BindingFlags.NonPublic);
+                var run = typeof(SWLOR.Game.Server.Domain.Foundation.IMigrationService).GetMethod("RunPlayerInitialization");
                 initialize.GetMethod("AutoLevelPlayer", BindingFlags.Static | BindingFlags.NonPublic)
                     .Invoke(null, new object[] { owner });
 
-                void Run() => run.Invoke(null, new object[] { saved,
+                void Run() => run.Invoke(Migration, new object[] { saved,
                     (Action<Player>)(player =>
                     {
                         var firstInitialization = player.Version == 0;
@@ -133,9 +134,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     catch (TargetInvocationException exception) when (exception.InnerException is InvalidOperationException)
                     { failed = true; }
                     ctx.AssertEqual(failExport, failed, "Only the injected export failure is expected");
-                    ctx.AssertEqual(Stat.BaseHP, saved.MaxHP, "HP budget is initialized once across retries");
-                    ctx.AssertEqual(Stat.BaseFP, saved.MaxFP, "FP budget is initialized once across retries");
-                    ctx.AssertEqual(Stat.BaseSTM, saved.MaxStamina, "Stamina budget is initialized once across retries");
+                    ctx.AssertEqual(StatService.BaseHP, saved.MaxHP, "HP budget is initialized once across retries");
+                    ctx.AssertEqual(StatService.BaseFP, saved.MaxFP, "FP budget is initialized once across retries");
+                    ctx.AssertEqual(StatService.BaseSTM, saved.MaxStamina, "Stamina budget is initialized once across retries");
                     ctx.AssertEqual(1, saved.Currencies[CurrencyType.RebuildToken], "Retries retain exactly one starting rebuild token");
                     ctx.AssertEqual(1, saved.Currencies[CurrencyType.LanguageToken], "Retries retain exactly one starting language token");
                     ctx.AssertEqual(failExport, saved.CharacterInitializationPending, "Completion follows a successful export");

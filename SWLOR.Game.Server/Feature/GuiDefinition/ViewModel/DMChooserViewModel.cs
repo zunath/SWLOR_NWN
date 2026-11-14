@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DMToolService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPageIndex = 0;
             ResultSummary = string.Empty;
             SelectedDetails = string.Empty;
-            DetailIcon = DMObjectDetails.NoSelectionIcon;
+            DetailIcon = DMObjectDetailsService.NoSelectionIcon;
             DetailTitle = string.Empty;
             CanJumpTo = false;
             CanBringHere = false;
@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 NuiFindWindow(Player, Gui.BuildWindowId(WindowType)) != WindowToken)
                 return;
 
-            if (!_scan.Continue(DMObjectSearch.ObjectsPerSlice))
+            if (!_scan.Continue(DMObjectSearchService.ObjectsPerSlice))
             {
                 if (isFirstSlice)
                 {
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var result = GetSelectedResult();
             if (result == null)
             {
-                DetailIcon = DMObjectDetails.NoSelectionIcon;
+                DetailIcon = DMObjectDetailsService.NoSelectionIcon;
                 DetailTitle = string.Empty;
                 SelectedDetails = "Select a result to see its details and actions.";
                 CanJumpTo = false;
@@ -355,13 +355,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static (string Icon, string Summary) GetRow(DMObjectSearchResult result)
         {
             if (!GetIsObjectValid(result.Object))
-                return (DMObjectDetails.NoSelectionIcon, "Gone");
+                return (DMObjectDetailsService.NoSelectionIcon, "Gone");
 
             if (result.Category != DMObjectCategory.Areas)
                 return DMObjectDetails.GetObjectRow(result.Object);
 
             var players = DMObjectDetails.CountPlayersInArea(result.Object);
-            return (DMObjectDetails.AreaIcon, players == 0 ? string.Empty : players.ToString());
+            return (DMObjectDetailsService.AreaIcon, players == 0 ? string.Empty : players.ToString());
         }
 
         private DMObjectSearchResult GetSelectedResult()

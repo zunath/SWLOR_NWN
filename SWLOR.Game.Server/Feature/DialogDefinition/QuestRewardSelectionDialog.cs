@@ -1,7 +1,7 @@
 using System.Linq;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Quests;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

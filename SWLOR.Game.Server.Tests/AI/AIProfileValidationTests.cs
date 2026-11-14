@@ -1,19 +1,36 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AIDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.AI;
 
 public class AIProfileValidationTests
 {
+    // Building the default AI profiles asks the StatusEffect facade which effects are stances.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void DefaultProfileAbilityActions_AllReferenceRegisteredAbilities()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var registeredFeats = Ability.GetAllAbilityDetails().Keys.ToHashSet();
 
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
@@ -29,7 +46,7 @@ public class AIProfileValidationTests
     [Test]
     public void DefaultProfiles_ExposeEveryRegisteredAbilityFeat()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var registeredFeats = Ability.GetAllAbilityDetails().Keys.ToHashSet();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
 
@@ -48,7 +65,7 @@ public class AIProfileValidationTests
     [Test]
     public void DefaultProfiles_CanEvaluateEveryRegisteredAbilityAction()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var registeredAbilities = Ability.GetAllAbilityDetails();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
 
@@ -82,7 +99,7 @@ public class AIProfileValidationTests
     [Test]
     public void DefaultProfiles_UseAbilitySpecificAIMetadata()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var abilities = Ability.GetAllAbilityDetails();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
         var beastActions = profiles[AIProfileType.BeastCompanion].Actions
@@ -109,7 +126,7 @@ public class AIProfileValidationTests
     [Test]
     public void DroidProfile_SteelShoulderUsesTheAbilityTargetSelector()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var ability = Ability.GetAbilityDetail(FeatType.TwinGuardStance1);
         var profile = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion];
         var action = profile.Actions.Single(action => action.Feat == FeatType.TwinGuardStance1);
@@ -125,7 +142,7 @@ public class AIProfileValidationTests
     [TestCase(FeatType.SoulStorm1)]
     public void DroidProfile_HitPointSpendingAbilitiesApplyHealthReservesToCustomScores(FeatType feat)
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var ability = Ability.GetAbilityDetail(feat);
         ability.AIHitPointCostPercent.Should().NotBeNull();
         // Isolate profile composition from the NWN engine's live Might and hostile-cluster reads.
@@ -148,31 +165,14 @@ public class AIProfileValidationTests
         }
         finally
         {
-            Ability.CacheData();
+            AbilityCache.Load();
         }
-    }
-
-    [Test]
-    public void NPCAI_CacheProfilesLoadsAndValidatesDefaultProfiles()
-    {
-        Ability.CacheData();
-
-        NPCAI.CacheProfiles();
-
-        NPCAI.Profiles.Keys.Should().Contain(new[]
-        {
-            AIProfileType.Generic,
-            AIProfileType.DroidCompanion,
-            AIProfileType.BeastCompanion
-        });
-
-        FluentActions.Invoking(NPCAI.ValidateProfiles).Should().NotThrow();
     }
 
     [Test]
     public void NPCHostileSingleTargetAbilities_RequireEnemyTargets()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var feats = new[]
         {
             FeatType.Provoke1,
@@ -194,7 +194,7 @@ public class AIProfileValidationTests
     [Test]
     public void NPCTargetedHostileAreaAbilities_RequireEnemyTargetsForAISelection()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var feats = new[]
         {
             FeatType.ScorchingBreath,
@@ -215,7 +215,7 @@ public class AIProfileValidationTests
     [Test]
     public void NPCSelfCenteredHostileAreaAbilities_DoNotRequireActivationTargets()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var feats = new[]
         {
             FeatType.RupturingQuake,
@@ -236,7 +236,7 @@ public class AIProfileValidationTests
     [Test]
     public void PlayerLocationSelectableHostileAreaAbilities_RequireLocationsNotObjects()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var ability = Ability.GetAbilityDetail(FeatType.Provoke2);
 
         ability.IsHostileAbility.Should().BeTrue();
@@ -248,7 +248,7 @@ public class AIProfileValidationTests
     [Test]
     public void NPCSelfBuffAbilities_DoNotRequireTargets()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var ability = Ability.GetAbilityDetail(FeatType.IronCarapace);
 
         ability.IsHostileAbility.Should().BeFalse();

@@ -2,14 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var kits = Snapshot(player).Keys.Where(item => GetResRef(item) == kit).ToArray();
                     ctx.AssertEqual(2, kits.Length, $"{recipe} + {kit}: both kits are carried");
-                    var start = CraftSessionService.Start(player, new CraftSessionStartRequest(recipe, OBJECT_INVALID, kits));
+                    var start = CraftSessions.Start(player, new CraftSessionStartRequest(recipe, OBJECT_INVALID, kits));
                     ctx.Assert(start.Succeeded, $"{recipe} starts: {start.Message}");
                     session = start.Session;
                 });
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
-                    ctx.Assert(CraftSessionService.Succeed(player, session, new MinigameMeter(100, 100), 10) != null, $"{recipe} succeeds");
+                    ctx.Assert(CraftSessions.Succeed(player, session, new MinigameMeter(100, 100), 10) != null, $"{recipe} succeeds");
                     AssertMerged(ctx, player, detail, kit, expected, "in the craft's script");
                 });
                 await ctx.WaitFrameAsync();
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(made.Count > 0, $"{detail.Resref} + {kit} ({when}): the crafted item is carried");
             foreach (var item in made)
             {
-                ctx.Assert(GetLocalBool(item, Item.PlayerProducedItemVariable),
+                ctx.Assert(GetLocalBool(item, ItemService.PlayerProducedItemVariable),
                     $"{detail.Resref} + {kit} ({when}): the remade item keeps the player-made mark");
                 var copy = ObjectPlugin.Deserialize(ObjectPlugin.Serialize(item));
                 foreach (var (target, label) in new[] { (item, "carried item"), (copy, "re-serialized copy") })

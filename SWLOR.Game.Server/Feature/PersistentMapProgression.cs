@@ -1,9 +1,9 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -12,11 +12,21 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Saves a player's area map progression when exiting an area.
         /// </summary>
+        [PlayerSession(PlayerReload.Quiesce,
+            "Saves the map exploration to Redis as at logout, so a restart after a failed reload loses nothing; no world effect.",
+            Step = nameof(SaveMapProgressionFor))]
         [NWNEventHandler(ScriptName.OnAreaExit)]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void SaveMapProgression()
         {
-            var player = GetExitingObject();
+            SaveMapProgressionFor(GetExitingObject());
+        }
+
+        /// <summary>
+        /// The work of <see cref="SaveMapProgression"/> for <paramref name="player"/>: the logout's handler, and a hot reload's quiescence step for a player who stays online.
+        /// </summary>
+        public static void SaveMapProgressionFor(uint player)
+        {
 
             if (!GetIsPC(player) || GetIsDM(player)) return;
 

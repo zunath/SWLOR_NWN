@@ -2,12 +2,8 @@ using SWLOR.CombatSim.Data;
 using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
-using SWLOR.Game.Server.Service.PvpCombatService;
-using SWLOR.Game.Server.Service.CombatService;
-using Combat = SWLOR.Game.Server.Service.Combat;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using DamageType = SWLOR.CombatSim.Scenario.DamageType;
 
@@ -263,10 +259,10 @@ namespace SWLOR.CombatSim.Engine
                         if (_resolvedUses[use].Info.Technique != null && spec.WeaponCombat?.AllowTechniqueAbilities != true)
                             throw new InvalidDataException("Technique abilities require an eligible weapon calibration.");
                         if (use.Damage?.WeaponPower != null &&
-                            (spec.WeaponLoadout == null || !Combat.IsWeaponSkillType(_resolvedUses[use].Info.SkillType)))
+                            (spec.WeaponLoadout == null || !CombatRules.IsWeaponSkillType(_resolvedUses[use].Info.SkillType)))
                             throw new InvalidDataException($"'{use.Feat}' WeaponPower needs a WeaponLoadout and a weapon skill.");
                         if (use.Damage is { WeaponPower: null } &&
-                            Combat.IsWeaponSkillType(_resolvedUses[use].Info.SkillType) &&
+                            CombatRules.IsWeaponSkillType(_resolvedUses[use].Info.SkillType) &&
                             perkStats.GetValueOrDefault(StatType.CadenceDamagePerCharge) > 0)
                             throw new InvalidDataException($"'{use.Feat}' cannot apply Cadence to calibrated final damage; supply explicit authored WeaponPower or omit Cadence.");
                         if (_resolvedUses[use].Info.TwinPistol != null && spec.WeaponLoadout == null)
@@ -438,15 +434,15 @@ namespace SWLOR.CombatSim.Engine
                     throw new InvalidDataException($"{use.Feat} power must match the source definition.");
                 use.WeaponPower = info.SourceWeaponPower;
                 use.IsControl = info.ImpactStatusTypes.Any(type =>
-                    ((SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect)Activator.CreateInstance(type)).Categories.HasFlag(
-                        SWLOR.Game.Server.Service.StatusEffectService.StatusEffectCategory.Control));
+                    ((SWLOR.Game.Server.Domain.Character.IStatusEffect)Activator.CreateInstance(type)).Categories.HasFlag(
+                        SWLOR.Game.Server.Domain.Character.StatusEffectCategory.Control));
             }
             if (use.MinimumStaminaBeforeUse < 0)
                 throw new InvalidDataException("MinimumStaminaBeforeUse must be nonnegative.");
             if (use.RequiredSetup is not ("Any" or "None" or "Opening" or "Finish" or "Distraction") || use.WeaponPower is < 0 or > 10000 || use.WeaponHits is < 1 or > 10 || use.WeaponDamagePercent is < 0 or > 100)
                 throw new InvalidDataException("Unsupported weapon ability calibration or rotation condition.");
             if (use.WeaponPower.HasValue && (use.Damage != null || !info.IsHostile ||
-                !SWLOR.Game.Server.Service.Combat.IsWeaponSkillType(info.WeaponImpactSkillType != SkillType.Invalid ? info.WeaponImpactSkillType : info.SkillType)))
+                !CombatRules.IsWeaponSkillType(info.WeaponImpactSkillType != SkillType.Invalid ? info.WeaponImpactSkillType : info.SkillType)))
                 throw new InvalidDataException("WeaponPower supports hostile weapon abilities with no flat Damage profile.");
             EffectCatalog.TryGet(feat, out var effect);
             if (effect == null && use.Damage == null && !use.WeaponPower.HasValue && info.TwinPistol == null)
@@ -793,7 +789,7 @@ namespace SWLOR.CombatSim.Engine
                 FpCost = fp,
                 StmCost = stm,
                 WeaponDamages = info.TwinPistol == null ? null : CaptureTwinWeaponDamage(caster.Spec.WeaponLoadout),
-                WeaponTraits = caster.Spec.WeaponLoadout != null && info.IsHostile && Combat.IsWeaponSkillType(info.SkillType)
+                WeaponTraits = caster.Spec.WeaponLoadout != null && info.IsHostile && CombatRules.IsWeaponSkillType(info.SkillType)
                     ? caster.WeaponTraits.Paired.CaptureAbility(WeaponNow, WeaponTraitState.Configuration(caster), true,
                         // Builders such as Lead Shot keep Cadence for the spenders, as on the server.
                         // A foreign ability gains nothing per charge without the Cadence trait, so it leaves them alone.
@@ -1352,7 +1348,7 @@ namespace SWLOR.CombatSim.Engine
 
         private static double AttackInterval(CombatantSpec spec) =>
             spec.WeaponCombat is { } weapon
-                ? SWLOR.Game.Server.Service.Combat.CalculateAttackSwingDelay(SWLOR.Game.Server.Service.Combat.CalculateEffectiveAttackDelay(weapon.AttackDelayMilliseconds(weapon.ExternalHastePercent))) / 1000d
+                ? CombatRules.CalculateAttackSwingDelay(CombatRules.CalculateEffectiveAttackDelay(weapon.AttackDelayMilliseconds(weapon.ExternalHastePercent))) / 1000d
                 : spec.WeaponLoadout != null ? WeaponInterval(spec.WeaponLoadout, spec.WeaponLoadout.HastePercent)
                 : spec.AutoAttack is { AttacksPerSecond: > 0 } attack ? 1.0 / attack.AttacksPerSecond : 2.0;
 
@@ -1511,7 +1507,7 @@ namespace SWLOR.CombatSim.Engine
             bool alwaysHits = false, int accuracyBonus = 0, Action beforeDamage = null)
         {
             var hitChance = damage.Accuracy is { } accuracy
-                ? Combat.CalculateHitRate(accuracy + attacker.GetStat(StatType.Accuracy) + accuracyBonus, target.Spec.Evasion, 0) / 100f
+                ? CombatRules.CalculateHitRate(accuracy + attacker.GetStat(StatType.Accuracy) + accuracyBonus, target.Spec.Evasion, 0) / 100f
                 : damage.GetHitChance(target.Name);
             if (target.IsDead)
                 return (false, 0);

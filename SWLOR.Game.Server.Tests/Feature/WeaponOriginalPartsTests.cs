@@ -2,7 +2,7 @@ using System.Collections;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum.Item;

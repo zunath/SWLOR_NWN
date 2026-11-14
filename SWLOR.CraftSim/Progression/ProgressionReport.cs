@@ -2,13 +2,13 @@ using System.Text;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
-using SWLOR.Game.Server.Service.CraftService.Research;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
+using SWLOR.Game.Server.Domain.Crafting.Research;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 using SWLOR.CraftSim.Report;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.CraftSim.Progression
 {
@@ -32,7 +32,7 @@ namespace SWLOR.CraftSim.Progression
             var gearNames = new[] { CraftingGearCatalog.NoGearName, CraftingGearCatalog.MidGearName, CraftingGearCatalog.BestGearName };
             var skills = model.Skills.ToList();
             var paths = skills.ToDictionary(s => s, s => gearNames.ToDictionary(g => g, g => model.Path(s, g, a)));
-            var rpHours = (double)Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP) / ProgressionAssumptions.RoleplayXpPerHour;
+            var rpHours = (double)Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(SkillXPChart.GetRequiredXP) / ProgressionAssumptions.RoleplayXpPerHour;
 
             text.AppendLine("# Crafting revamp: progression pace baseline (workstream 11)");
             text.AppendLine();
@@ -127,7 +127,7 @@ namespace SWLOR.CraftSim.Progression
             var mid = CraftingGearCatalog.MidGearName;
             text.AppendLine("## Decisions applied (owner, October 2026)");
             text.AppendLine();
-            text.AppendLine($"1. **Guild hand-ins give XP.** The Smithery, Engineering, Fabrication and Agriculture guilds pay {GuildTaskXp.XpPercent}% of `Skill.GetDeltaXP(task level - rank)` for every item handed in, in the guild's skill " +
+            text.AppendLine($"1. **Guild hand-ins give XP.** The Smithery, Engineering, Fabrication and Agriculture guilds pay {GuildTaskXpService.XpPercent}% of `Skill.GetDeltaXP(task level - rank)` for every item handed in, in the guild's skill " +
                             "(`GuildTaskXp`), with the task level the recipe level for a crafted item and the `FishType` level for a catch task. It goes through the crafting XP path, so Social and food bonuses apply, and the chart's cutoff stays: " +
                             "a hand-in five or more levels below the rank pays nothing, as crafting and quick craft (rank at least level + 5) do. The Hunter's Guild gives none.");
             text.AppendLine($"2. **Crafting XP x{Number(CraftMinigameXp.CraftingPaceMultiplier, 2)}.** `CraftMinigameXp.CraftingPaceMultiplier` multiplies the base XP of crafts in Smithery, Engineering, Fabrication and Agriculture's cooking, on top of each minigame's gate-6 band multiplier. " +
@@ -145,7 +145,7 @@ namespace SWLOR.CraftSim.Progression
             foreach (var skill in skills)
             {
                 var before = model.Path(skill, mid, today);
-                var plan = GuildHandInPlan.For(model.Guilds, GuildTaskCatalog.GuildOf(skill), GuildTaskXp.XpPercent / 100.0);
+                var plan = GuildHandInPlan.For(model.Guilds, GuildTaskCatalog.GuildOf(skill), GuildTaskXpService.XpPercent / 100.0);
                 var path = model.Path(skill, mid, after, plan);
                 todayHours.Add(before.TotalHours);
                 afterHours.Add(path.TotalHours);
@@ -652,7 +652,7 @@ namespace SWLOR.CraftSim.Progression
             var medianB = solver.MedianHours(a with { CraftXpMultiplier = optionB });
             var capForB = solver.SolveCap(a, medianB, XpTargetMetric.MedianSkill);
             var optionC = capForB.HasValue ? capForB.Value / 100 * 100 : NoCap;
-            var optionCTotal = Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(r => Math.Min(Skill.GetRequiredXP(r), optionC));
+            var optionCTotal = Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(r => Math.Min(SkillXPChart.GetRequiredXP(r), optionC));
             var options = new (string Name, string Change, ProgressionAssumptions Assumptions, double? GuildShare, string Migration)[]
             {
                 ("Today", "nothing", a, null, "no"),
@@ -677,7 +677,7 @@ namespace SWLOR.CraftSim.Progression
             text.AppendLine($"- **A: guild task XP only.** No craft XP change; the smallest change, with no stored-data conversion. It takes the median skill to {Number(medianA, 1)} h, " +
                             (medianA <= TargetHours ? "which meets the target." : $"which is {Number(medianA - TargetHours, 1)} h short of the {Number(TargetHours, 0)} h target."));
             text.AppendLine($"- **B: A plus one crafting-only multiplier, x{Number(optionB, 2)}.** The smallest round multiplier that brings the median skill to the target ({Number(medianB, 1)} h). One parameter on what crafts pay, retuned from the client timings later. It changes gains only, so stored XP and ranks need no conversion.");
-            text.AppendLine($"- **C: A plus a cap of {Whole(optionC)} XP on any rank's cost.** The same median as B by a different route: it cuts the climb from {Whole(Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(Skill.GetRequiredXP))} to {Whole(optionCTotal)} XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. " +
+            text.AppendLine($"- **C: A plus a cap of {Whole(optionC)} XP on any rank's cost.** The same median as B by a different route: it cuts the climb from {Whole(Enumerable.Range(0, ProgressionAssumptions.MaximumRank).Sum(SkillXPChart.GetRequiredXP))} to {Whole(optionCTotal)} XP and spares the late ranks that cost up to 16,000 XP and need 15-25 crafts each, while leaving the early ranks alone. " +
                             "It changes required XP per rank for the crafting skills, so it needs a crafting-specific table and the plan's migration (convert stored XP and ranks so nobody loses a rank).");
             text.AppendLine();
             text.AppendLine((needsMultiplier

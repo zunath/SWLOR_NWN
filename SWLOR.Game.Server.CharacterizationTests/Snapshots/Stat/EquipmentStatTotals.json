@@ -1,0 +1,20 @@
+{
+  "function": "EquipmentStatTotals.Add(ItemPropertyType, int subtype, int amount)",
+  "description": "Sums the Defense (per defense damage type), Evasion, FP and Stamina item properties of worn gear; every other property, and Defense of a damage type that has no Defense rating, is ignored.",
+  "seed": null,
+  "inputs": "Item property lists applied in order to a new EquipmentStatTotals. Defense subtypes are CombatDamageType ids (1 Physical, 2 Force, 3 Fire, 99 undefined, which is refused with an exception).",
+  "rowCount": 10,
+  "columns": ["scenario", "=> physicalDefense", "=> forceDefense", "=> fireDefense", "=> evasion", "=> fp", "=> stamina"],
+  "rows": [
+    ["none", 0, 0, 0, 0, 0, 0],
+    ["physical defense 5", 5, 0, 0, 0, 0, 0],
+    ["physical 5 + physical 3 + force 2", 8, 2, 0, 0, 0, 0],
+    ["fire defense 10 (no Defense rating)", 0, 0, 0, 0, 0, 0],
+    ["undefined damage type 99 defense 4", "ArgumentOutOfRangeException", null, null, null, null, null],
+    ["negative physical defense -6", -6, 0, 0, 0, 0, 0],
+    ["evasion 4 + evasion -1", 0, 0, 0, 3, 0, 0],
+    ["fp 3 + stamina 6", 0, 0, 0, 0, 3, 6],
+    ["HP bonus 10 (not an equipment record stat)", 0, 0, 0, 0, 0, 0],
+    ["mixed", 5, 2, 0, 4, 6, 9]
+  ]
+}

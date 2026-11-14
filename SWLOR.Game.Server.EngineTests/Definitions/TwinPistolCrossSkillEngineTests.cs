@@ -5,15 +5,14 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -50,8 +49,8 @@ public static class TwinPistolCrossSkillEngineTests
     public static async Task QueuedPlaceableReplacement(EngineTestContext ctx)
     {
         var amounts = new List<int>();
-        Combat.SetAutoAttackHitResolutionOverride(true);
-        Combat.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
             foreach (var stance in new[] { false, true })
@@ -111,8 +110,8 @@ public static class TwinPistolCrossSkillEngineTests
             if (GetIsObjectValid(_queuedActor)) PairedRangedTraits.ClearActor(_queuedActor);
             _queuedActor = OBJECT_INVALID;
             _queuedTarget = OBJECT_INVALID;
-            Combat.SetAutoAttackHitResolutionOverride(null);
-            Combat.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         }
     }
 
@@ -130,7 +129,7 @@ public static class TwinPistolCrossSkillEngineTests
         var weapon = await ctx.EquipItemAsync(actor, "b_pistol", InventorySlot.RightHand);
         var target = OBJECT_INVALID;
         var baseline = Array.Empty<int>();
-        Combat.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
         try
         {
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -207,7 +206,7 @@ public static class TwinPistolCrossSkillEngineTests
             OrdinaryAttackTraits.ClearActor(actor);
             PairedRangedTraits.ClearActor(actor);
             RangedWeaponAttackContext.Clear(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             if (GetIsObjectValid(actor)) AssignCommand(actor, () => ClearAllActions());
         }
 
@@ -267,7 +266,7 @@ public static class TwinPistolCrossSkillEngineTests
     [EngineTest("Twin Pistol stance damage costs and Haste reach native saber and rifle attacks without paired handling", Category = "TwinPistolCrossSkill", TimeoutSeconds = 180f)]
     public static async Task MeasuredNativeOrdinaryModifiers(EngineTestContext ctx)
     {
-        Combat.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
         try
         {
             foreach (var resref in new[] { "saber_train_1", "b_rifle" })
@@ -346,7 +345,7 @@ public static class TwinPistolCrossSkillEngineTests
                 DestroyObject(target);
             }
         }
-        finally { _observedTarget = OBJECT_INVALID; Combat.SetAutoAttackHitResolutionOverride(null); }
+        finally { _observedTarget = OBJECT_INVALID; GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null); }
     }
 
     [EngineTest("Twin Pistol cross-skill Converging refresh retains its status past the original native expiry", Category = "TwinPistolCrossSkill", TimeoutSeconds = 40f)]
@@ -364,7 +363,7 @@ public static class TwinPistolCrossSkillEngineTests
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 40f);
             ctx.MakeHostile(target);
         });
-        Combat.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
         try
         {
             AssignCommand(actor, () => ActionAttack(target));
@@ -380,7 +379,7 @@ public static class TwinPistolCrossSkillEngineTests
         {
             AssignCommand(actor, () => ClearAllActions());
             PairedRangedTraits.ClearActor(actor);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
         }
     }
 
@@ -396,8 +395,8 @@ public static class TwinPistolCrossSkillEngineTests
             ("trn_saberstaff_1", null, 1, false), ("b_twinpistol", null, 2, false),
             ("b_twinpistol", null, 2, true),
         };
-        Combat.SetAbilityHitResolutionOverride(true);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         var presentationActor = OBJECT_INVALID;
         try
         {
@@ -444,7 +443,7 @@ public static class TwinPistolCrossSkillEngineTests
                     {
                         var corpse = GetNearestObject(ObjectType.Placeable, target, nth);
                         if (!GetIsObjectValid(corpse) || GetDistanceBetween(target, corpse) > 10f) break;
-                        if (GetLocalObject(corpse, Loot.CorpseBodyVariable) != target) continue;
+                        if (GetLocalObject(corpse, LootService.CorpseBodyVariable) != target) continue;
                         ctx.Track(corpse);
                         break;
                     }
@@ -466,8 +465,8 @@ public static class TwinPistolCrossSkillEngineTests
         {
             PairedRangedPresentation.Release(presentationActor);
             _observedTarget = OBJECT_INVALID;
-            Combat.SetAbilityHitResolutionOverride(null);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
         }
     }
 
@@ -504,7 +503,7 @@ public static class TwinPistolCrossSkillEngineTests
             ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.AkimboStance, GetLocation(actor)),
                 $"Akimbo activates through the normal stance pipeline: {Ability.GetLastActivationDenialReason()}");
         });
-        Combat.SetAutoAttackHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
         try
         {
             await ctx.WaitUntilAsync(() => StatusEffect.GetStatusEffect<AkimboStanceStatusEffect>(actor) != null,
@@ -524,13 +523,13 @@ public static class TwinPistolCrossSkillEngineTests
                 ctx.Assert(StatusEffect.GetStatusEffect<AkimboStanceStatusEffect>(actor) != null, "A legal weapon swap retains Akimbo");
                 ctx.AssertEqual(stacks, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0, "Swapping preserves earned rhythm stacks");
                 ctx.AssertEqual(totalHaste, Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent), "Haste remains global with the saber");
-                ctx.AssertEqual(70, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "The saber inherits Akimbo's full ordinary damage cost");
+                ctx.AssertEqual(70, GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "The saber inherits Akimbo's full ordinary damage cost");
                 OrdinaryAttackTraits.RecordHit(actor, target, long.MaxValue - 1);
                 ctx.AssertEqual(stacks, StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor)?.Stacks ?? 0,
                     "A weapon swap does not reset the two-second rhythm grant cooldown");
                 CreaturePlugin.RunUnequip(actor, saber);
                 CreaturePlugin.RunEquip(actor, rifle, InventorySlot.RightHand);
-                ctx.AssertEqual(70, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "The rifle inherits the same ordinary damage cost");
+                ctx.AssertEqual(70, GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "The rifle inherits the same ordinary damage cost");
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.CrossfireStance, GetLocation(actor)),
                     $"Crossfire can activate with a rifle: {Ability.GetLastActivationDenialReason()}");
             });
@@ -542,20 +541,20 @@ public static class TwinPistolCrossSkillEngineTests
                     StatusEffect.GetStatusEffect<OrdinaryAttackHasteStatusEffect>(actor) == null, "Stance exclusivity removes Akimbo and its ramp");
                 ctx.AssertEqual(hasteBaseline + 10, Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent), "Crossfire has only its own global Haste");
                 ctx.AssertEqual(movementBaseline + 10, Stat.GetStatAdjustment(actor, StatType.MovementSpeedPercentAdjustment), "Crossfire grants global movement speed");
-                ctx.AssertEqual(80, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "Crossfire pays its global ordinary damage cost");
+                ctx.AssertEqual(80, GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "Crossfire pays its global ordinary damage cost");
                 CreaturePlugin.RunUnequip(actor, rifle);
                 ctx.Assert(!GetIsObjectValid(companion), "The earlier generated gun was destroyed with the pair");
                 CreaturePlugin.RunEquip(actor, main, InventorySlot.RightHand);
                 ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The original owned pair can be restored");
                 ctx.Assert(StatusEffect.GetStatusEffect<CrossfireStanceStatusEffect>(actor) != null, "Restoring the pair preserves the active cross-trained stance");
-                ctx.AssertEqual(80, Combat.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "Restoring the pair cannot shed the stance penalty");
+                ctx.AssertEqual(80, GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "Restoring the pair cannot shed the stance penalty");
                 ctx.Assert(!UsePerkFeat.TryUseAbility(actor, actor, FeatType.AkimboStance, GetLocation(actor)), "Equipment changes cannot reset Akimbo's original recast");
                 ClearAllActions();
             });
         }
         finally
         {
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             OrdinaryAttackTraits.ClearActor(actor);
             PairedRangedTraits.ClearActor(actor);
         }

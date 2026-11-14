@@ -3,21 +3,19 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using System.Collections.Generic;
 using System.Linq;
-using Skill = SWLOR.Game.Server.Service.Skill;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -803,17 +801,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var damageStat = GetAbilityScore(_target, damageAbility);
                 var itemDamage = Item.GetDMG(item);
                 var effectiveDamage = WeaponDamage.GetEffectiveDMG(_target, item, itemDamage);
-                var dmg = effectiveDamage + Combat.GetMiscDMGBonus(_target, itemType);
+                var dmg = effectiveDamage + GameServices.CombatQueries.GetMiscDMGBonus(_target, itemType);
                 var dmgText = $"{dmg} DMG";
                 var attack = Stat.GetAttack(_target, damageAbility, skill);
                 var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
-                var (min, max) = Combat.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
+                var (min, max) = CombatRules.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
                 var ordinaryDamageBonus = PairedRangedTraits.GetOrdinaryDamagePercentAdjustment(_target, GetAttackTarget(_target));
                 var ordinaryDamageAdjustment = Stat.GetStatAdjustment(_target, StatType.OrdinaryAttackDamagePercentAdjustment);
                 min += (int)Math.Ceiling(min * (ordinaryDamageBonus / 100f));
                 max += (int)Math.Ceiling(max * (ordinaryDamageBonus / 100f));
-                min = Combat.ApplyOrdinaryAttackDamageMultiplier(_target, min);
-                max = Combat.ApplyOrdinaryAttackDamageMultiplier(_target, max);
+                min = GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(_target, min);
+                max = GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(_target, max);
                 var tooltip = $"Est. Damage: {min} - {max}";
                 if (skill == SkillType.TwinPistol || ordinaryDamageBonus != 0 || ordinaryDamageAdjustment != 0)
                     tooltip += $"\nAttack skill: {Skill.GetSkillDetails(skill).Name}\nDamage attribute: {damageAbility}" +
@@ -958,7 +956,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static AbilityType GetEquipmentDamageAbility(uint creature, uint item)
         {
-            var ability = Combat.GetWeaponDamageAbilityType(creature, GetBaseItemType(item));
+            var ability = GameServices.CombatQueries.GetWeaponDamageAbilityType(creature, GetBaseItemType(item));
             for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
                 if (GetItemPropertyType(property) == ItemPropertyType.DamageStat)
                     ability = (AbilityType)GetItemPropertySubType(property);
@@ -973,33 +971,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 attackSkillType,
                 out var limitedAttackDelayReductionPercent,
                 out _);
-            var attackerDelayMilliseconds = Combat.CalculateAttackDelay(
+            var attackerDelayMilliseconds = GameServices.CombatAttackTiming.CalculateAttackDelay(
                 _target,
                 limitedAttackDelayReductionPercent);
-            var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(_target, attackSkillType);
-            var effectiveDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(attackerDelayMilliseconds, useDefaultMinimumDelay);
+            var useDefaultMinimumDelay = GameServices.CombatAttackTiming.HasNextAutoAttackNoDelay(_target, attackSkillType);
+            var effectiveDelayMilliseconds = CombatRules.CalculateEffectiveAttackDelay(attackerDelayMilliseconds, useDefaultMinimumDelay);
             var attackerDelaySeconds = attackerDelayMilliseconds / 1000f;
-            var baseDelaySeconds = Combat.BaseAttackDelayMilliseconds / 1000f;
+            var baseDelaySeconds = CombatRules.BaseAttackDelayMilliseconds / 1000f;
             var effectiveDelaySeconds = effectiveDelayMilliseconds / 1000f;
-            var swingDelaySeconds = Combat.CalculateAttackSwingDelay(effectiveDelayMilliseconds) / 1000f;
+            var swingDelaySeconds = CombatRules.CalculateAttackSwingDelay(effectiveDelayMilliseconds) / 1000f;
 
             string tooltip;
             if (useDefaultMinimumDelay)
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (next swing at {swingDelaySeconds:0.##}s resolves extra attacks at your fastest possible speed)";
-            else if (attackerDelayMilliseconds <= Combat.BaseAttackDelayMilliseconds)
+            else if (attackerDelayMilliseconds <= CombatRules.BaseAttackDelayMilliseconds)
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({baseDelaySeconds:0.##}s default minimum)";
-            else if (effectiveDelayMilliseconds < Combat.BaseAttackDelayMilliseconds)
+            else if (effectiveDelayMilliseconds < CombatRules.BaseAttackDelayMilliseconds)
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (swings every {swingDelaySeconds:0.##}s resolve extra attacks)";
             else
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({attackerDelaySeconds:0.##}s attacker - {baseDelaySeconds:0.##}s default)";
 
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetOffhandAttackWeapon();
-            var mainHandDelay = Combat.GetWeaponDelay(mainHand);
-            var offHandDelay = Combat.GetWeaponDelay(offHand);
+            var mainHandDelay = GameServices.CombatAttackTiming.GetWeaponDelay(mainHand);
+            var offHandDelay = GameServices.CombatAttackTiming.GetWeaponDelay(offHand);
             if (mainHandDelay > 0 && offHandDelay > 0)
                 tooltip += FormatPairedDelay(mainHandDelay, offHandDelay,
-                    Combat.CalculateOffhandAttackDelayReduction(_target), effectiveDelayMilliseconds);
+                    GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(_target), effectiveDelayMilliseconds);
 
             return (
                 $"{effectiveDelaySeconds:0.##}s",
@@ -1025,7 +1023,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Ranged Deflection", FormatPercent(Stat.GetRangedDeflectionChance(_target)), "Chance to negate a hostile ranged weapon auto-attack while wielding a weapon without a shield.");
             AddStat("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Chance to negate either a hostile melee or ranged weapon auto-attack while equipped with a shield. Shield Deflection replaces weapon deflection while the shield is equipped.");
             AddStat("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage and increase enmity gain.");
-            AddStat("Guard Reduction", FormatPercent(Combat.GetGuardDamageReductionPercent(_target)), "Amount of damage removed from a hit when Guard succeeds.");
+            AddStat("Guard Reduction", FormatPercent(GameServices.CombatDamageTaken.GetGuardDamageReductionPercent(_target)), "Amount of damage removed from a hit when Guard succeeds.");
             AddStat("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better.");
             AddStat("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better.");
             AddStat("Physical DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Physical)), "Bonus or penalty applied to Physical DEF. Already included in the Physical DEF shown on the Attributes tab.");
@@ -1039,7 +1037,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), FormatOffHandTooltip(
                 "Increases the chance to score a critical hit. Actual chance varies by target Vitality.",
                 GetIsObjectValid(offhandWeapon) ? FormatPercent(GetCriticalRate(Skill.GetWeaponSkill(_target, offhandWeapon))) : null));
-            AddStat("Next Ability Crit", FormatPercent(Combat.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)), "Conditional Critical Rate reserved for the next matching ability. It does not affect ordinary auto-attacks and is consumed only when the ability critically hits.");
+            AddStat("Next Ability Crit", FormatPercent(GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)), "Conditional Critical Rate reserved for the next matching ability. It does not affect ordinary auto-attacks and is consumed only when the ability critically hits.");
             AddStat("Assault Gadget Crit", FormatPercent(GetAssaultGadgetCriticalRate()), "Current Assault Gadget ability critical chance before target-specific bonuses. Includes the 5% baseline, Gadget Harness, Tactical Uplink, and other Devices ability bonuses; capped at 50%.");
             AddStat("Gadget DMG", DeviceAbilityEffects.GetAssaultGadgetWeaponDamageEquivalent(_target).ToString(), "DMG added to every Assault Gadget ability, the way weapon DMG is added to weapon abilities; Overload Barrage adds it only to its single-target strike. Rises with Devices rank: 6 below rank 10, then 10, 15, 19, 24, and 28 at ranks 10, 20, 30, 40, and 50. Droids use their level in place of Devices rank.");
             AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
@@ -1050,8 +1048,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
             AddStat("FP Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.FPCostPercentAdjustment)), "Adjusts the FP cost of abilities. Lower is better.");
             AddStat("STM Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AbilityStaminaCostPercentAdjustment)), "Adjusts the Stamina cost of abilities. Lower is better.");
-            AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
-            AddStat("Off-Hand Haste", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target)), "Increases off-hand attack speed. Only applies while dual wielding.");
+            AddStat("Haste", FormatPercent(GameServices.CombatAttackTiming.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
+            AddStat("Off-Hand Haste", FormatPercent(GameServices.CombatAttackTiming.CalculateOffhandAttackDelayReduction(_target)), "Increases off-hand attack speed. Only applies while dual wielding.");
             AddStat("Single Weapon DMG", FormatPercent(EquipmentPredicates.HasSingleWeapon(_target) ? WeaponDamage.GetSingleWeaponPercent(_target) : 0),
                 "Bonus to the item's weapon DMG with one eligible one-handed melee, pistol, or throwing weapon and an empty off hand. Includes the natural bonus and Doublehand; already included in equipped DMG.");
             AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
@@ -1082,7 +1080,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var threshold = group.Key;
                     var bonus = group.Sum(source => source[payload]);
-                    var active = Combat.IsCurrentFPAndStaminaAbovePercent(_target, threshold);
+                    var active = GameServices.CombatResources.IsCurrentFPAndStaminaAbovePercent(_target, threshold);
                     addStat($"Ability DMG above {threshold}% FP/STM",
                         active ? $"Active (+{bonus}{units})" : $"Inactive ({threshold}% required)",
                         $"Hostile combat abilities gain +{bonus}{units} while FP and STM are both above {threshold}%.");
@@ -1154,9 +1152,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var criticalRateAdjustment = Stat.GetStatAdjustment(
                 _target,
                 StatType.CriticalRatePercentAdjustment);
-            criticalRateAdjustment += Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType);
+            criticalRateAdjustment += GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(_target, skillType);
 
-            return Combat.CalculateCriticalRate(
+            return CombatRules.CalculateCriticalRate(
                 GetAbilityScore(_target, AbilityType.Perception),
                 GetAbilityScore(_target, AbilityType.Vitality),
                 GetSkillRank(skillType),
@@ -1165,7 +1163,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int GetAssaultGadgetCriticalRate()
         {
-            return Combat.GetAbilityCriticalRate(
+            return GameServices.CombatAbilityHit.GetAbilityCriticalRate(
                 _target,
                 SkillType.Devices,
                 false,
@@ -1271,7 +1269,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 < 25 => "Slightly reduced",
                 < 45 => "Reduced",
                 < 60 => "Strongly reduced",
-                >= Resistance.MaximumResistance => "Immune",
+                >= ResistanceRules.MaximumResistance => "Immune",
                 _ => "Greatly reduced"
             };
         }
@@ -1324,8 +1322,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var playerId = GetObjectUUID(_target);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {Skill.SkillCap}";
-                SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
+                SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}";
+                SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
                 APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
             }
             else if (BeastMastery.IsPlayerBeast(_target))
@@ -1333,8 +1331,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var beastId = BeastMastery.GetBeastId(_target);
                 var dbBeast = DB.Get<Beast>(beastId);
 
-                SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
-                APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
+                SP = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+                APOrLevel = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel}";
                 APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             }
         }
@@ -1422,8 +1420,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {Skill.SkillCap}";
-            SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {Skill.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
+            SkillRanks = $"{Skill.GetTotalContributingSkillRanks(dbPlayer)} / {SkillService.SkillCap}";
+            SP = $"{Skill.GetTotalSkillPoints(dbPlayer)} / {SkillService.TotalSkillPointCap} ({dbPlayer.UnallocatedSP})";
             APOrLevel = $"{dbPlayer.TotalAPAcquired} / {Skill.APCap} ({dbPlayer.UnallocatedAP})";
 
             RefreshStats();
@@ -1437,8 +1435,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var beastId = BeastMastery.GetBeastId(_target);
             var dbBeast = DB.Get<Beast>(beastId);
 
-            SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
-            APOrLevel = $"{dbBeast.Level} / {BeastMastery.MaxLevel}";
+            SP = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel} ({dbBeast.UnallocatedSP})";
+            APOrLevel = $"{dbBeast.Level} / {BeastMasteryService.MaxLevel}";
             APOrLevelTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
             RefreshCharacterStatsList();
         }

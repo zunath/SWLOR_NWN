@@ -1,22 +1,36 @@
+using SWLOR.Game.Server.EngineTests.Framework;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class LeadershipOffensivePartyBuffTests
 {
-    private static readonly Func<AbilityDetail, int, bool, bool> IsSuccessfulImpact = typeof(Combat)
-        .GetMethod("IsSuccessfulHostileAbilityImpact", BindingFlags.NonPublic | BindingFlags.Static)!
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
+    private static readonly Func<AbilityDetail, int, bool, bool> IsSuccessfulImpact = CombatMembers.FindMethod("IsSuccessfulHostileAbilityImpact")!
         .CreateDelegate<Func<AbilityDetail, int, bool, bool>>();
 
     [TestCase(SkillType.Leadership)]
@@ -59,11 +73,8 @@ public class LeadershipOffensivePartyBuffTests
     [Test]
     public void SharedCooldown_BlocksOtherSkillsAndReopensAfter45Seconds()
     {
-        var useTrigger = typeof(Combat).GetMethod("TryUseStatTrigger", BindingFlags.NonPublic | BindingFlags.Static,
-                null, new[] { typeof(uint), typeof(StatType), typeof(int) }, null)!
-            .CreateDelegate<Func<uint, StatType, int, bool>>();
-        var cooldowns = (Dictionary<(uint, StatType), DateTime>)typeof(Combat)
-            .GetField("_statTriggerCooldowns", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var useTrigger = CombatMembers.CreateDelegate<Func<uint, StatType, int, bool>>("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int));
+        var cooldowns = CombatMembers.FieldValue<Dictionary<(uint, StatType), DateTime>>("_statTriggerCooldowns");
         var key = (0xFFFFFFFEu, StatType.HostileAbilityPartyBuffDamagePercent);
         var otherKey = (0xFFFFFFFDu, key.Item2);
         cooldowns.Remove(key);
@@ -149,8 +160,7 @@ public class LeadershipOffensivePartyBuffTests
         const uint creature = 0xFFFFFFFC;
         const uint firstLeader = 0xFFFFFFFE;
         const uint secondLeader = 0xFFFFFFFD;
-        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
+        var creatureEffects = StatusEffectInternals.CreatureEffects;
         var activeIcon = activeAccuracy > 0 ? EffectIconType.MarkTarget2StatusEffect : EffectIconType.MarkTarget1StatusEffect;
         var active = new HostileAbilityPartyBuffStatusEffect(activeDamage, activeAccuracy, 16780505, activeIcon);
         active.ApplyEffect(firstLeader, creature, 20);
@@ -188,7 +198,7 @@ public class LeadershipOffensivePartyBuffTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
             root = root.Parent;
         root.Should().NotBeNull();
-        var combat = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var combat = CombatSource.Read();
         var impact = combat[combat.IndexOf("public static void ApplySuccessfulAbilityImpactRiders(", StringComparison.Ordinal)..];
         impact = impact[..impact.IndexOf("private static void ApplyCostlyAbilityHitEffects(", StringComparison.Ordinal)];
         impact.Should().Contain("ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);");
@@ -198,8 +208,8 @@ public class LeadershipOffensivePartyBuffTests
         buff.Should().Contain("IsSuccessfulHostileAbilityImpact(ability, damage, statusApplied)");
         buff.Should().Contain("TryUseStatTrigger(activator, StatType.HostileAbilityPartyBuffDamagePercent, cooldown)");
         buff.Should().Contain("sequence.TryTriggerPartyBuff()");
-        var statuses = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        var statuses = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
         statuses.Should().Contain("source != creature && GetIsReactionTypeHostile(creature, source)");
-        statuses.Should().Contain("Combat.ApplyHostileAbilityPartyBuff(source, Ability.GetActiveAbilityImpactSummary(source)?.Ability, 0, true);");
+        statuses.Should().Contain("ApplyHostileAbilityPartyBuff(source, GetActiveAbilityImpactSummary(source)?.Ability, 0, true);");
     }
 }

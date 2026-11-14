@@ -1,18 +1,17 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
-using SWLOR.Game.Server.Service.ProspectingService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     /// <summary>
-    /// The harvesters. Using one on a vein or a tree opens a Prospecting session (<see cref="ProspectingSessions"/>) instead of taking one
+    /// The harvesters. Using one on a vein or a tree opens a Prospecting session (<see cref="SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService"/>) instead of taking one
     /// unit after a delay: the session's actions spend the harvester's charges, and its Quick Harvest takes the units the node has left, a
     /// charge and a harvest delay for each, as every harvest did before.
     /// </summary>

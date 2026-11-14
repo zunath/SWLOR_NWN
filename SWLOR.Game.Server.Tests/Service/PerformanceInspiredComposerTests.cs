@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.Game.Server.Domain.Social;
 using static SWLOR.Game.Server.Tests.Service.PerformanceTestSnapshots;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -60,7 +60,7 @@ public class PerformanceInspiredComposerTests
     {
         var data = PerformanceInspiredComposer.Compose(Dancer(1, xpScaled: 6), Musician(2, xpScaled: 6), 0);
 
-        data.Should().Be(new SWLOR.Game.Server.Service.StatusEffectService.InspiredEffectData { XPBonusPercent = 12 });
+        data.Should().Be(new SWLOR.Game.Server.Domain.Character.InspiredEffectData { XPBonusPercent = 12 });
     }
 
     [TestCase(PerformanceSetType.KeenEar, 0, 1, 0, 0)]

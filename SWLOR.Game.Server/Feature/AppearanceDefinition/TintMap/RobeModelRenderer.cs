@@ -4,10 +4,10 @@ using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
@@ -59,8 +59,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
     public static class RobeModelRenderer
     {
-        private static RobeModelCatalog _catalog = new(Array.Empty<(string, int, int)>());
+        private static RobeModelCatalog Catalog => AppearanceRenderState.GetRobeCatalog();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Load()
         {
@@ -84,20 +85,20 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     throw new InvalidOperationException($"Invalid robe rendering row {row}.");
                 definitions.Add((model, phenotype, basePhenotype));
             }
-            _catalog = new RobeModelCatalog(definitions, reserved);
+            AppearanceRenderState.SetRobeCatalog(new RobeModelCatalog(definitions, reserved));
             Log.WriteStructured(LogGroup.Server, "Loaded {RobeRgbModelCount} robe RGB models.", definitions.Count);
         }
 
-        public static int GetBasePhenotype(uint creature) => _catalog.GetBasePhenotype((int)GetPhenoType(creature));
+        public static int GetBasePhenotype(uint creature) => Catalog.GetBasePhenotype((int)GetPhenoType(creature));
 
         public static bool SupportsRgb(TintMapMaterialSelection selection) =>
-            selection.ArmorPart != AppearanceArmor.Robe || _catalog.Supports(selection.ModelResref);
+            selection.ArmorPart != AppearanceArmor.Robe || Catalog.Supports(selection.ModelResref);
 
         public static bool Apply(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
         {
             var robe = selections.FirstOrDefault(selection => selection.ArmorPart == AppearanceArmor.Robe);
             var current = (int)GetPhenoType(creature);
-            var desired = _catalog.ResolvePhenotype(current, robe?.ModelResref);
+            var desired = Catalog.ResolvePhenotype(current, robe?.ModelResref);
             if (desired != current)
             {
                 var server = NWNXLib.g_pAppManager.m_pServerExoApp;
@@ -125,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     });
                 }
             }
-            return desired != _catalog.GetBasePhenotype(desired);
+            return desired != Catalog.GetBasePhenotype(desired);
         }
     }
 }

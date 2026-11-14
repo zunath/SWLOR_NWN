@@ -2,7 +2,6 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
@@ -10,16 +9,18 @@ using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Character;
+using Slicing = SWLOR.Game.Server.Domain.Crafting.Slicing;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class SlicingContentTests
+public class SlicingContentTests : SkillFacadeFixture
 {
     private static readonly Dictionary<string, int> TerminalAreas = new()
     {
@@ -371,7 +372,7 @@ public class SlicingContentTests
     public void SlicingSwapMode_CanOnlyBeArmedForMovableTiles()
     {
         var board = Slicing.GetBoard(1, 53);
-        var session = new SlicingSession.ActiveSlicingSession
+        var session = new ActiveSlicingSession
         {
             Board = board,
             SelectedIndex = -1
@@ -394,7 +395,7 @@ public class SlicingContentTests
     public void SlicingSelection_RemainsVisibleWhenIntegrityUsesDamagedArt()
     {
         var board = Slicing.GetBoard(1, 53);
-        var session = new SlicingSession.ActiveSlicingSession
+        var session = new ActiveSlicingSession
         {
             Source = SlicingSourceType.Lockbox,
             Board = board,
@@ -415,7 +416,7 @@ public class SlicingContentTests
         var core = board.Tiles.FindIndex(tile => tile.Type == SlicingTileType.Core);
         var route = board.Tiles.FindIndex(tile =>
             tile.Type is not SlicingTileType.Entry and not SlicingTileType.Core);
-        var session = new SlicingSession.ActiveSlicingSession
+        var session = new ActiveSlicingSession
         {
             Source = SlicingSourceType.Lockbox,
             Board = board

@@ -1,11 +1,10 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Collections.Generic;
 using System.Linq;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {

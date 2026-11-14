@@ -1,9 +1,8 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Crafting;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
 
 namespace SWLOR.CraftSim.Progression
 {
@@ -38,8 +37,6 @@ namespace SWLOR.CraftSim.Progression
             GuildHandInPlan plan = null)
         {
             ServerXp.ForDelta(0); // runs the XP chart's startup so GetDeltaXP has its cap
-            if (plan != null)
-                Guild.LoadData(); // sets Guild.MaxRank
 
             var recipesByLevel = recipes.ForNewCrafter(skill).GroupBy(r => r.Level).ToDictionary(g => g.Key, g => g.ToList());
             var demand = new Dictionary<int, LevelDemand>();
@@ -85,7 +82,7 @@ namespace SWLOR.CraftSim.Progression
                 var consumed = ConsumedShare(success);
                 var craftSeconds = cell.ActionsPerCraft * assumptions.SecondsPerAction + assumptions.OverheadSecondsPerCraft;
 
-                var required = Math.Min(Skill.GetRequiredXP(rank), assumptions.RequiredXpCap ?? int.MaxValue);
+                var required = Math.Min(SkillXPChart.GetRequiredXP(rank), assumptions.RequiredXpCap ?? int.MaxValue);
                 var remaining = (double)required;
                 double crafts = 0, handIns = 0, guildXp = 0, handInSeconds = 0, credits = 0;
                 double catchUpHandIns = 0, catchUpSeconds = 0, lockedCrafts = 0;
@@ -99,7 +96,7 @@ namespace SWLOR.CraftSim.Progression
                 if (plan != null && plan.QuickCraftCatchUp && offers != null && !plan.IgnoreGuildRank)
                 {
                     var lowestTier = offers.Min(o => o.Tier);
-                    while (guildRank < lowestTier && guildRank < Guild.MaxRank)
+                    while (guildRank < lowestTier && guildRank < ServerGuildRules.MaxRank)
                     {
                         var eligible = plan.CraftedTasks
                             .Where(t => t.Tier == guildRank && t.Level.Value + QuickCraftRules.RankMargin <= rank)
@@ -128,7 +125,7 @@ namespace SWLOR.CraftSim.Progression
 
                         var (taskCredits, basePoints) = plan.RewardsByTier[guildRank];
                         var pointsEach = GuildHandInPlan.GuildPointsFor(basePoints, guildRank);
-                        var handInsNeeded = Math.Max(0, Guild.GetGPRequiredForRank(guildRank) - guildPoints) / pointsEach;
+                        var handInsNeeded = Math.Max(0, ServerGuildRules.GetGPRequiredForRank(guildRank) - guildPoints) / pointsEach;
 
                         // The quick craft window needs the recipe made by hand once, successfully: a failed attempt is made again, and loses
                         // its components on the usual share of rolls, so the cost is the expected attempts to a first success.
@@ -150,7 +147,7 @@ namespace SWLOR.CraftSim.Progression
                         catchUpSeconds += seconds;
                         catchUpHandIns += handInsNeeded;
                         credits += handInsNeeded * taskCredits;
-                        guildPoints = Guild.GetGPRequiredForRank(guildRank);
+                        guildPoints = ServerGuildRules.GetGPRequiredForRank(guildRank);
                         guildRank++;
                     }
                 }

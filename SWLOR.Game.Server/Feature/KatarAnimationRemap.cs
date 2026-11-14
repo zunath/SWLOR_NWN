@@ -1,14 +1,15 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -19,13 +20,14 @@ namespace SWLOR.Game.Server.Feature
         private const string BaseItems2DA = "baseitems";
         private const string ItemClassColumn = "ItemClass";
         private const string SwordItemClassPrefix = "WSw";
-        private static readonly HashSet<BaseItem> _swordFamilyBaseItems = BuildSwordFamilyBaseItems();
+        private static readonly FrozenSet<BaseItem> _swordFamilyBaseItems = BuildSwordFamilyBaseItems();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void RegisterEquipmentAnimationRestoration()
         {
-            QueuedAttackAnimation.RestoreEquipmentAnimations -= RestoreCurrentEquipmentAnimations;
-            QueuedAttackAnimation.RestoreEquipmentAnimations += RestoreCurrentEquipmentAnimations;
+            QueuedAttackAnimation.RemoveRestoreEquipmentAnimationsHandler(RestoreCurrentEquipmentAnimations);
+            QueuedAttackAnimation.AddRestoreEquipmentAnimationsHandler(RestoreCurrentEquipmentAnimations);
         }
 
         private static void RestoreCurrentEquipmentAnimations(uint creature) =>
@@ -47,6 +49,15 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             SyncKatarRemapState(player);
+        }
+
+        /// <summary>
+        /// Reapplies the katar remap the creature's equipment needs, any creature (a hot reload clears an NPC's mappings whose owners went
+        /// with the old build, <see cref="SavedAnimationMappings.ResetCreatureMappingsForReload"/>).
+        /// </summary>
+        public static void SynchronizeEquipment(uint creature)
+        {
+            SyncKatarRemapState(creature);
         }
 
         [NWNEventHandler(ScriptName.OnModuleUnequip)]
@@ -143,7 +154,7 @@ namespace SWLOR.Game.Server.Feature
         }
 
         // Precompute all sword-family (WSw*) base items once to avoid runtime 2da scans.
-        private static HashSet<BaseItem> BuildSwordFamilyBaseItems()
+        private static FrozenSet<BaseItem> BuildSwordFamilyBaseItems()
         {
             var set = new HashSet<BaseItem>();
             var rowCount = Get2DARowCount(BaseItems2DA);
@@ -157,7 +168,7 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
-            return set;
+            return set.ToFrozenSet();
         }
     }
 }

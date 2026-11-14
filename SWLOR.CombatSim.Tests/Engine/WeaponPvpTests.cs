@@ -5,8 +5,9 @@ using SWLOR.CombatSim.Engine;
 using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.CombatSim.Tests.Support;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Tests.Engine;
@@ -65,8 +66,8 @@ public class WeaponPvpTests
         attacker.WeaponCombat.OffhandDelayReductionPercent = paired ? 30 : 0;
         var simulation = Spawn(attacker, Fighter("Target"), false);
         var weapon = simulation.Get("Attacker").Weapon;
-        var delay = SWLOR.Game.Server.Service.Combat.CalculateAttackDelayMilliseconds(220, paired ? 220 : 0, 0, paired ? 30 : 0);
-        weapon.AttackSeconds(0).Should().Be(SWLOR.Game.Server.Service.Combat.CalculateEffectiveAttackDelay(delay) / 1000d,
+        var delay = CombatRules.CalculateAttackDelayMilliseconds(220, paired ? 220 : 0, 0, paired ? 30 : 0);
+        weapon.AttackSeconds(0).Should().Be(CombatRules.CalculateEffectiveAttackDelay(delay) / 1000d,
             "the sim uses the server's paired delay for Power Gloves");
         simulation.Get("Attacker").NextAttackAt = 0;
         SimulationClock.RunUntil(simulation, () => weapon.Diagnostics.GetValueOrDefault("SwingAnimations") >= 3, 30, "three attack cycles");

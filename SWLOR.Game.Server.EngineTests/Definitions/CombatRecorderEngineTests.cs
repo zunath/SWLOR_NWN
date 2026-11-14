@@ -6,16 +6,14 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -65,8 +63,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(attacker);
             ctx.SeedRandom(4242);
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             CombatRecordWriter writer;
             int targetHitPointsBeforeDamage;
             try
@@ -130,8 +128,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
             }
@@ -229,8 +227,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(attacker);
             ctx.SeedRandom(4343);
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             CombatRecordWriter writer;
             try
             {
@@ -263,8 +261,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
             }
@@ -376,7 +374,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ChangeToStandardFaction(mark, StandardFaction.Defender);
             ctx.SeedRandom(4444);
 
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             CombatRecordWriter writer;
             int dummyMaxHitPoints;
             var registeredInsideImpact = true;
@@ -410,7 +408,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 dummyMaxHitPoints = GetMaxHitPoints(dummy);
 
                 // A Razor Trap placed on the mark goes off seconds later, outside any scope.
-                Combat.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
                 var placed = false;
                 await ctx.ExecuteInCreatureContextAsync(brawler, () =>
                 {
@@ -427,17 +425,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(pyro, () =>
                 {
                     Ability.BeginAbilityImpact(pyro, Ability.GetAbilityDetail(FeatType.CreepingTerror1));
-                    Combat.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
+                    GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
                     registeredInsideImpact = CombatRecorder.HasPendingDamage(pyro, dummy);
                     Ability.EndAbilityImpact(pyro);
-                    Combat.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
+                    GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
                     registeredOutsideImpact = CombatRecorder.HasPendingDamage(pyro, dummy);
                 });
             }
             finally
             {
-                Combat.SetAutoAttackHitResolutionOverride(null);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 AssignCommand(brawler, () => ClearAllActions());
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
@@ -549,8 +547,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(attacker);
             ctx.SeedRandom(4545);
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             CombatRecordWriter writer;
             var partialHit = 0;
             try
@@ -602,8 +600,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
             }
@@ -1085,7 +1083,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             CombatRecordWriter placementWriter = null;
             CombatRecordWriter writer;
             // The trap's one detonation must land.
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test trap placed", out var placedMessage), placedMessage);
@@ -1109,7 +1107,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.Stop("engine test", out _);
                 Traps.ClearTraps(owner);
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
 
             await ctx.WaitUntilAsync(() => writer.Completion.IsCompleted && placementWriter.Completion.IsCompleted, 10f,

@@ -1,14 +1,31 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AbilityRangeAuditTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     [Test]
     public void TargetedMeleePlayerAbilities_ReachLargeCreatureEngagementDistance()
     {
@@ -18,7 +35,7 @@ public class AbilityRangeAuditTests
                 entry.Value.RequiresTarget &&
                 entry.Value.IsHostileAbility &&
                 !entry.Value.IsAreaAbility &&
-                Combat.IsMeleeWeaponSkill(entry.Value.SkillType))
+                CombatRules.IsMeleeWeaponSkill(entry.Value.SkillType))
             .ToArray();
 
         auditedAbilities.Should().NotBeEmpty();

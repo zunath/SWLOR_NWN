@@ -1,12 +1,12 @@
 using System.Reflection;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CombatSim.Engine;
 
 public sealed class WeaponControlState
 {
-    private static readonly double PostControlSeconds = Convert.ToDouble(typeof(Ability)
+    private static readonly double PostControlSeconds = Convert.ToDouble(typeof(SWLOR.Game.Server.Domain.Abilities.AbilityService)
         .GetField("TemporaryImmunityBaseDurationSeconds", BindingFlags.NonPublic | BindingFlags.Static)?.GetRawConstantValue()
         ?? throw new InvalidDataException("Cannot read the production post-control immunity duration."));
 
@@ -65,14 +65,14 @@ public sealed class WeaponControlState
 
     public static double Duration(IStatusEffect status, int baseSeconds, int outgoingPercent, int resistance, bool pvp)
     {
-        var multiplier = Resistance.CalculateResistanceDamageMultiplier(resistance);
+        var multiplier = ResistanceRules.CalculateResistanceDamageMultiplier(resistance);
         if (multiplier <= 0) return 0;
-        var seconds = StatusEffect.CalculateAdjustedStatusDurationSeconds(baseSeconds, outgoingPercent);
+        var seconds = StatusEffectRules.CalculateAdjustedStatusDurationSeconds(baseSeconds, outgoingPercent);
         var frequency = Math.Max(1f, status.Frequency);
         var ticks = Math.Max(1, (int)Math.Ceiling(seconds / frequency));
-        var withoutResistance = StatusEffect.ClampHardCrowdControlDurationTicks(status.Categories, ticks, frequency, isPlayerAgainstPlayer: pvp);
+        var withoutResistance = StatusEffectRules.ClampHardCrowdControlDurationTicks(status.Categories, ticks, frequency, isPlayerAgainstPlayer: pvp);
         ticks = Math.Max(1, (int)Math.Round(ticks * multiplier));
-        ticks = StatusEffect.ClampHardCrowdControlDurationTicks(status.Categories, ticks, frequency, isPlayerAgainstPlayer: pvp);
+        ticks = StatusEffectRules.ClampHardCrowdControlDurationTicks(status.Categories, ticks, frequency, isPlayerAgainstPlayer: pvp);
         return Math.Max(0.1f, Math.Min(seconds + Math.Max(0, ticks-withoutResistance)*frequency, ticks*frequency));
     }
 }

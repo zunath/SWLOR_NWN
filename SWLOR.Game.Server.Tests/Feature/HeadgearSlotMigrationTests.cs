@@ -7,8 +7,9 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.Formats.Gff;
@@ -17,6 +18,22 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class HeadgearSlotMigrationTests
 {
+    // The migration reaches the droid's pending-restore key through the Droid accessor, which needs a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void NativeFixturesReallyContainHistoricalArmorAndProperties()
     {
@@ -53,7 +70,7 @@ public class HeadgearSlotMigrationTests
         HeadgearSlotMigration.IsLegacyHeadgear("ordinary_armor", BaseItem.Armor).Should().BeFalse();
         CharacterMigrations.VersionOf("_22_ReviseLootStats").Should().Be(22);
         CharacterMigrations.FindNamed("_23_RepairHeadgearSlots").Should().BeNull();
-        typeof(SWLOR.Game.Server.Service.Migration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
+        typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration._31_RepairHeadgearSlots").Should().BeNull();
     }
 
     [TestCase(0)]

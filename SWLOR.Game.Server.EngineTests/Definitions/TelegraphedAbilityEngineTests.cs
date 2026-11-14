@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -47,8 +47,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             // Keep auto-attacks from masking the ability's outcome and remove normal hit-roll
             // randomness. Damage, targeting, activation and status payloads remain unchanged.
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 ability.IsMimicryTechnique = false;
@@ -148,8 +148,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ability.IsMimicryTechnique = wasTechnique;
                 ability.ImpactDelay = originalImpactDelay;
                 ability.ImpactAction = originalImpact;
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
                 foreach (var marker in Telegraph.GetTelegraphsInArea(ctx.Arena)
                              .Where(pair => pair.Value.Data.Creator == caster))
                     Telegraph.CancelTelegraph(marker.Key);

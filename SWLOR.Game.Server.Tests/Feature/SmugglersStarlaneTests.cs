@@ -3,33 +3,45 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.QuestDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 [NonParallelizable]
 public class SmugglersStarlaneTests
 {
-    private object _originalItemNames = null!;
-    private static PropertyInfo ItemNameCache => typeof(Cache)
-        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
-
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
     [OneTimeSetUp]
     public void LoadItemNamesWithoutAnEngine()
     {
-        NPCGroup.CacheData();
-        _originalItemNames = ItemNameCache.GetValue(null)!;
+        _facades = new FacadeContainer();
+        using (_facades.Install())
+        {
+            NPCGroup.CacheData();
+        }
+
         var names = Directory.EnumerateFiles(Path.Combine(Root, "Module", "uti"), "*.uti.json")
             .ToDictionary(path => Path.GetFileName(path)[..^".uti.json".Length], path =>
                 JObject.Parse(File.ReadAllText(path))["LocalizedName"]?["value"]?["0"]?.Value<string>() ?? string.Empty);
-        ItemNameCache.SetValue(null, names);
+        CacheItemNames.Seed(_facades, names);
     }
 
     [OneTimeTearDown]
-    public void RestoreItemNames() => ItemNameCache.SetValue(null, _originalItemNames);
+    public void RestoreItemNames()
+    {
+        _facades.Dispose();
+    }
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
 
     private static string Root
     {

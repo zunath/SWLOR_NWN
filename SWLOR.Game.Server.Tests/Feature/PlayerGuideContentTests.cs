@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Collections;
 using System.Globalization;
 using System.Reflection;
@@ -7,17 +8,34 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerformanceService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.PvpCombatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.World;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class PlayerGuideContentTests
+public class PlayerGuideContentTests : SkillFacadeFixture
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     private static readonly string[] RequiredTopics =
     {
         "Common Questions",
@@ -255,32 +273,32 @@ public class PlayerGuideContentTests
     {
         var guideText = string.Join("\n", GetTopics().SelectMany(GetAllText));
 
-        guideText.Should().Contain($"up to {Skill.SkillCap} total ranks");
-        guideText.Should().Contain($"{Skill.StartingSkillPoints} starting SP");
+        guideText.Should().Contain($"up to {SkillService.SkillCap} total ranks");
+        guideText.Should().Contain($"{SkillService.StartingSkillPoints} starting SP");
         guideText.Should().Contain($"up to {Skill.APCap} AP");
 
         guideText.Should().Contain($"costs {HoloNetViewModel.BroadcastPrice} credits");
         guideText.Should().Contain($"limited to {HoloNetViewModel.MaxHoloNetTextLength} characters");
-        guideText.Should().Contain($"up to {Notes.MaxNumberOfNotes} notes");
-        guideText.Should().Contain($"up to {Notes.MaxNoteLength} characters");
-        guideText.Should().Contain($"up to {Notes.MaxNumberOfCategories} categories");
+        guideText.Should().Contain($"up to {NotesService.MaxNumberOfNotes} notes");
+        guideText.Should().Contain($"up to {NotesService.MaxNoteLength} characters");
+        guideText.Should().Contain($"up to {NotesService.MaxNumberOfCategories} categories");
         guideText.Should().Contain($"normal listing limit is {Player.DefaultMarketListingLimit} items");
 
-        guideText.Should().Contain($"up to {QuestContractBoard.MaxActiveContractsPerCDKey} published");
-        guideText.Should().Contain($"between 1 and {QuestContractBoard.MaxObjectives} item objectives");
-        guideText.Should().Contain($"up to {QuestContractBoard.MaxRewardItems} reward items");
-        guideText.Should().Contain($"{QuestContractBoard.ContractDurationDays} days");
-        guideText.Should().Contain($"{QuestContractBoard.PostingFeePercent} percent");
-        guideText.Should().Contain($"minimum fee of {QuestContractBoard.MinimumPostingFee} credits");
+        guideText.Should().Contain($"up to {QuestContractBoardService.MaxActiveContractsPerCDKey} published");
+        guideText.Should().Contain($"between 1 and {QuestContractBoardService.MaxObjectives} item objectives");
+        guideText.Should().Contain($"up to {QuestContractBoardService.MaxRewardItems} reward items");
+        guideText.Should().Contain($"{QuestContractBoardService.ContractDurationDays} days");
+        guideText.Should().Contain($"{QuestContractBoardService.PostingFeePercent} percent");
+        guideText.Should().Contain($"minimum fee of {QuestContractBoardService.MinimumPostingFee} credits");
 
         guideText.Should().Contain($"begin with {Player.DefaultDisguiseSlotLimit} identity slot");
-        guideText.Should().Contain($"base wait between disguise activations is {Disguise.ActivationDelayMinutes} minutes");
-        guideText.Should().Contain($"minimum wait of {Disguise.MinimumActivationDelayMinutes} minutes");
-        guideText.Should().Contain($"{Disguise.WipeCreditCost.ToString("N0", CultureInfo.InvariantCulture)} credits");
-        guideText.Should().Contain($"{Disguise.WipeRoleplayXPCost.ToString("N0", CultureInfo.InvariantCulture)} Available RP XP");
+        guideText.Should().Contain($"base wait between disguise activations is {DisguiseService.ActivationDelayMinutes} minutes");
+        guideText.Should().Contain($"minimum wait of {DisguiseService.MinimumActivationDelayMinutes} minutes");
+        guideText.Should().Contain($"{DisguiseService.WipeCreditCost.ToString("N0", CultureInfo.InvariantCulture)} credits");
+        guideText.Should().Contain($"{DisguiseService.WipeRoleplayXPCost.ToString("N0", CultureInfo.InvariantCulture)} Available RP XP");
 
-        guideText.Should().Contain($"{Property.ElectionRegistrationDays}-day candidate-registration period");
-        guideText.Should().Contain($"{Property.ElectionVotingDays} days of voting");
+        guideText.Should().Contain($"{PropertyCityGovernanceService.ElectionRegistrationDays}-day candidate-registration period");
+        guideText.Should().Contain($"{PropertyCityGovernanceService.ElectionVotingDays} days of voting");
     }
 
     [Test]
@@ -316,19 +334,19 @@ public class PlayerGuideContentTests
         var text = string.Join("\n", GetAllText(topic));
 
         text.Where(character => character > 127).Should().BeEmpty("guide text must use ASCII punctuation");
-        text.Should().Contain($"between {Combat.MinimumHitRate} and {Combat.MaximumHitRate} percent");
-        text.Should().Contain($"at most {Combat.MaximumCriticalRate} percent");
-        text.Should().Contain($"+{Combat.MaximumCriticalDamagePercentAdjustment} percent to a critical hit");
-        text.Should().Contain($"at most +{Combat.MaximumDamageBonusPercent} percent");
-        text.Should().Contain($"stop at {Combat.MaximumCombinedDamageReductionPercent} percent combined");
+        text.Should().Contain($"between {CombatRules.MinimumHitRate} and {CombatRules.MaximumHitRate} percent");
+        text.Should().Contain($"at most {CombatRules.MaximumCriticalRate} percent");
+        text.Should().Contain($"+{CombatRules.MaximumCriticalDamagePercentAdjustment} percent to a critical hit");
+        text.Should().Contain($"at most +{CombatRules.MaximumDamageBonusPercent} percent");
+        text.Should().Contain($"stop at {CombatRules.MaximumCombinedDamageReductionPercent} percent combined");
         text.Should().Contain("stance changes to ordinary weapon auto-attack damage apply after it");
         text.Should().Contain("Reductions from Leadership abilities, Guard, and elemental resistance are applied separately");
-        text.Should().Contain($"at most {Combat.MaximumGuardDamageReductionPercent} percent");
-        text.Should().Contain($"up to {Stat.MaximumDeflectionChanceCap} percent");
-        text.Should().Contain($"Shield Deflection stops at {Stat.MaximumShieldDeflectionChance} percent");
-        text.Should().Contain($"stop at {Resistance.MaximumResistance - 1} percent for players");
+        text.Should().Contain($"at most {CombatDamageTakenService.MaximumGuardDamageReductionPercent} percent");
+        text.Should().Contain($"up to {StatService.MaximumDeflectionChanceCap} percent");
+        text.Should().Contain($"Shield Deflection stops at {StatService.MaximumShieldDeflectionChance} percent");
+        text.Should().Contain($"stop at {ResistanceRules.MaximumResistance - 1} percent for players");
         text.Should().Contain("Movement speed stops at 150 percent of normal");
-        text.Should().Contain($"lasts at most {StatusEffect.MaximumHardCrowdControlDurationSeconds} seconds");
+        text.Should().Contain($"lasts at most {StatusEffectRules.MaximumHardCrowdControlDurationSeconds} seconds");
     }
 
     [Test]

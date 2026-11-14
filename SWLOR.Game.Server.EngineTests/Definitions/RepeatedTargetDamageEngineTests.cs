@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -22,7 +21,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 for (var hit = 1; hit <= 6; hit++)
                 {
-                    var damage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, skill,
+                    var damage = GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(attacker, target, 100, skill,
                         CombatDamageType.Physical, isAbilityDamage: false, canApplyRandomFlatBonuses: false);
                     var stacks = Math.Min(hit, 5);
                     ctx.AssertEqual(100 + stacks * 4, damage, $"{skill} auto-attack {hit} adds both bonuses");
@@ -45,14 +44,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var autoAttackStacks = Math.Min(hit, 5);
                     var weaponHitStacks = Math.Min(hit * 2 - 1, 5);
-                    var autoAttackDamage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, weaponSkill,
+                    var autoAttackDamage = GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(attacker, target, 100, weaponSkill,
                         CombatDamageType.Physical, isAbilityDamage: false, canApplyRandomFlatBonuses: false);
                     ctx.AssertEqual(100 + autoAttackStacks + weaponHitStacks * 3, autoAttackDamage,
                         $"{weaponSkill} auto-attack {hit} retains Rundown between abilities");
                     AssertStacks(ctx, attacker, autoAttackStacks, weaponHitStacks);
 
                     weaponHitStacks = Math.Min(hit * 2, 5);
-                    var abilityDamage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, weaponSkill,
+                    var abilityDamage = GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(attacker, target, 100, weaponSkill,
                         CombatDamageType.Physical, isAbilityDamage: true, canApplyRandomFlatBonuses: false);
                     ctx.AssertEqual(100 + weaponHitStacks * 3, abilityDamage,
                         $"{weaponSkill} weapon ability {hit} benefits only from Sustained Fire");
@@ -61,7 +60,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 foreach (var skill in new[] { SkillType.Force, SkillType.Devices })
                 {
-                    var damage = Combat.ApplyDamageDealtModifiers(attacker, target, 100, skill,
+                    var damage = GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(attacker, target, 100, skill,
                         CombatDamageType.Force, isAbilityDamage: true, canApplyRandomFlatBonuses: false);
                     ctx.AssertEqual(100, damage, $"{skill} does not receive weapon-hit bonuses");
                     AssertStacks(ctx, attacker, 5, 5);

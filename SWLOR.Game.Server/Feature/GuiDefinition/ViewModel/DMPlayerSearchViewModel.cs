@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DMToolService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.NWNX;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -523,14 +524,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // The target is exact, so a chat-portrait click the DM left unsent never blocks it.
                 var speaker = DMPresence.GetDM(Player);
-                SetLocalBool(speaker, PlayerName.DirectTellVariable, true);
+                SetLocalBool(speaker, PlayerNameService.DirectTellVariable, true);
                 try
                 {
                     ChatPlugin.SendMessage(ChatChannel.DMTell, message, speaker, target);
                 }
                 finally
                 {
-                    DeleteLocalBool(speaker, PlayerName.DirectTellVariable);
+                    DeleteLocalBool(speaker, PlayerNameService.DirectTellVariable);
                 }
                 DMPresence.SendMessage(Player, $"To {result.Name}: {message}");
                 Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(Player)} messaged {result.Name} ({result.PlayerId}): {message}");

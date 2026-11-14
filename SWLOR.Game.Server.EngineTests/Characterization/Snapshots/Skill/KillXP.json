@@ -1,0 +1,16 @@
+{
+  "function": "CombatPoint.OnCreatureDeath / Skill.GiveSkillXP",
+  "description": "A player with combat points against a creature kills it; each contributing skill receives XP by the creature's level, the skill's rank and its share of the combat points in its category.",
+  "seed": 20261030,
+  "inputs": "Creature sanddemon (level 45) killed with Random seeded 20261030. The headless player has the listed skill ranks and no other skills, no XP debt and no DM bonus. Combat points are added directly with CombatPoint.AddCombatPoint. Armor is exempt from combat points and always earns XP.",
+  "rowCount": 6,
+  "columns": ["skill", "rank", "combatPoints", "=> rankAfter", "=> xpBefore", "=> xpAfter"],
+  "rows": [
+    ["Vibroblade", 12, 6, 12, 0, 772],
+    ["Pistol", 30, 2, 30, 0, 257],
+    ["Force", 8, 3, 8, 0, 1029],
+    ["FirstAid", 20, 1, 20, 0, 1029],
+    ["Leadership", 5, 1, 5, 0, 1029],
+    ["Armor", 16, 0, 16, 0, 1029]
+  ]
+}

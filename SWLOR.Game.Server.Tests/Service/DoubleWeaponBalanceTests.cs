@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -18,6 +20,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class DoubleWeaponBalanceTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
     private sealed record ExpectedWeapon(string Resref, BaseItem BaseItem, int Damage, int DelayProperty);
 
     // Damage matches the corresponding one-handed tier/end; UTI delay property costs are displayed as ratings
@@ -236,7 +254,7 @@ public class DoubleWeaponBalanceTests
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         return document.RootElement.TryGetProperty("VarTable", out var variables) &&
                variables.GetProperty("value").EnumerateArray().Any(variable =>
-                   variable.GetProperty("Name").GetProperty("value").GetString() == Item.NoEconomyVariable &&
+                   variable.GetProperty("Name").GetProperty("value").GetString() == ItemService.NoEconomyVariable &&
                    variable.GetProperty("Value").GetProperty("value").GetInt32() == 1);
     }
 

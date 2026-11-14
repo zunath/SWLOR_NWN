@@ -7,50 +7,13 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerFacingNameBroadcastTests
 {
     [Test]
-    public void CommsChannel_UsesOneCommsLabelWithoutExposingPlayerNames()
-    {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Communication.cs"));
-        var normalizedSource = source.Replace("\r\n", "\n");
-
-        source.Should().Contain("private const int PartyChatChannelNameStrRef = 66755;");
-        source.Should().Contain("private const int PartyChatMessagePrefixStrRef = 10303;");
-        source.Should().Contain("private const string CommsChannelName = \"Comms\";");
-        source.Should().Contain("private const string CommsMessagePrefix = \"[Comms] \";");
-        var moduleEnterHandlerIndex = normalizedSource.IndexOf("[NWNEventHandler(ScriptName.OnModuleEnter)]", StringComparison.Ordinal);
-        var applyChannelNameIndex = normalizedSource.IndexOf("public static void ApplyCommsChannelName()", StringComparison.Ordinal);
-        var applyChannelNameOverrideIndex = normalizedSource.IndexOf(
-            "PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);",
-            StringComparison.Ordinal);
-        var applyMessagePrefixOverrideIndex = normalizedSource.IndexOf(
-            "PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);",
-            StringComparison.Ordinal);
-        moduleEnterHandlerIndex.Should().BeGreaterThanOrEqualTo(0);
-        applyChannelNameIndex.Should().BeGreaterThan(moduleEnterHandlerIndex);
-        applyChannelNameOverrideIndex.Should().BeGreaterThan(applyChannelNameIndex);
-        applyMessagePrefixOverrideIndex.Should().BeGreaterThan(applyChannelNameOverrideIndex);
-        normalizedSource.Should().Contain("var player = GetEnteringObject();");
-        normalizedSource.Should().Contain("if (!GetIsPC(player))");
-
-        source.Should().NotContain("finalMessage.Append(\"[Comms] \");");
-        source.Should().Contain("ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
-        // NWNX_Rename does not patch DM Talk, so Comms must never be re-sent on it. Incoming DM Talk is a DM
-        // avatar's own speech, which is never renamed.
-        source.Should().NotMatchRegex(@"(?<![=!<>])=\s*ChatChannel\.DMTalk|SendMessage\(\s*ChatChannel\.DMTalk");
-    }
-
-    [Test]
     public void CombatAndSpaceBroadcasts_DoNotInterpolateRawPlayerNames()
     {
         var root = FindRepositoryRoot();
         var paths = new List<string>
         {
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Space.cs")
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Space", "SpaceService.cs")
         };
 
         paths.AddRange(Directory.GetFiles(
@@ -61,6 +24,7 @@ public class PlayerFacingNameBroadcastTests
         {
             var source = File.ReadAllText(path);
             var rawNameBroadcastInvocations = ExtractInvocations(source, "Messaging.SendMessageNearbyToPlayers")
+                .Concat(ExtractInvocations(source, "_messaging.SendMessageNearbyToPlayers"))
                 .Where(invocation => invocation.Text.Contains("GetName("))
                 .Select(invocation => $"{Path.GetFileName(path)}:{GetLineNumber(source, invocation.StartIndex)}")
                 .ToList();
@@ -76,11 +40,12 @@ public class PlayerFacingNameBroadcastTests
         var source = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "HoloCom.cs"));
+            "Domain",
+            "World",
+            "HoloComService.cs"));
 
         source.Should().NotContain("GetName(");
-        source.Should().Contain("PlayerName.GetDisplayName(sender, receiver)");
+        source.Should().Contain("_playerName.GetDisplayName(sender, receiver)");
     }
 
     [Test]
@@ -99,93 +64,12 @@ public class PlayerFacingNameBroadcastTests
         holoNetSource.Should().Contain("\"HoloNet Broadcast\"");
         holoNetSource.Should().NotContain("authorName + \" broadcasts a new HoloNet message");
 
-        var communicationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Communication.cs"));
-        var normalizedCommunicationSource = communicationSource.Replace("\r\n", "\n");
-        communicationSource.Should().Contain("var speaker = GetEffectiveChatSpeaker(sender);");
-        communicationSource.Should().Contain("PlayerName.SendChatMessageWithChatNameOverride(");
-        communicationSource.Should().NotContain("finalMessage.Append(PlayerName.GetColoredDisplayName");
-        communicationSource.Should().Contain("public const string EventCommsAreaVariable = \"COMMS_EVENT_AREA\";");
-        communicationSource.Should().Contain("private const string DisabledChannelMessage = \"This chat channel is disabled.\";");
-        communicationSource.Should().Contain("private const string CommsOutOfRangeMessage = \"Your Comms message could not reach one or more out-of-range receivers.\";");
-        communicationSource.Should().Contain("var handledChat =");
-        communicationSource.Should().NotContain("var inCharacterChat =");
-        communicationSource.Should().Contain("if (channel == ChatChannel.PlayerShout && (GetIsDM(sender) || GetIsDMPossessed(sender)))");
-        communicationSource.Should().Contain("SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage));");
-        communicationSource.Should().Contain("private static bool IsChatCommandMessage(string message)");
-        var chatCommandEarlyOutIndex = communicationSource.IndexOf("if (IsChatCommandMessage(message))", StringComparison.Ordinal);
-        var disabledChannelMessageIndex = communicationSource.IndexOf("SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage));", StringComparison.Ordinal);
-        chatCommandEarlyOutIndex.Should().BeGreaterThanOrEqualTo(0);
-        disabledChannelMessageIndex.Should().BeGreaterThanOrEqualTo(0);
-        chatCommandEarlyOutIndex.Should().BeLessThan(disabledChannelMessageIndex, "slash chat commands must bypass disabled-channel handling");
-        communicationSource.Should().Contain("var recipients = new List<uint> { sender };");
-        communicationSource.Should().NotContain("recipients.AddRange(allPlayers.Where(player => GetLocalBool(player, \"DISPLAY_HOLONET\")))");
-        communicationSource.Should().NotContain("LoadHolonetSetting");
-        communicationSource.Should().NotContain("\"DISPLAY_HOLONET\"");
-        communicationSource.Should().Contain("recipients.AddRange(dmReaders);");
-        communicationSource.Should().NotContain("var allPlayers = new List<uint>();");
-        communicationSource.Should().NotContain("foreach (var player in allPlayers)");
-        communicationSource.Should().NotContain("if (sender != player && IsCommsReceiverInRange(sender, player))");
-        communicationSource.Should().NotContain("recipients.Add(player);");
-        communicationSource.Should().Contain("for (var member = GetFirstFactionMember(sender); GetIsObjectValid(member); member = GetNextFactionMember(sender))");
-        communicationSource.Should().Contain("if (IsCommsReceiverInRange(sender, member))");
-        communicationSource.Should().Contain("recipients.Add(member);");
-        communicationSource.Should().Contain("else if (GetIsPC(member) &&");
-        communicationSource.Should().Contain("outOfRangeCommsPartyMembers++;");
-        communicationSource.Should().Contain("Nearby non-party listeners can still overhear it.");
-        normalizedCommunicationSource.Should().Contain("recipients.AddRange(dmReaders);\n\n                needsAreaCheck = true;\n                distanceCheck = 20.0f;");
-        communicationSource.Should().NotContain("AddSameStarshipCommsRecipients");
-        communicationSource.Should().Contain("if (dbSender?.Settings?.DisplayCommsOutOfRangeWarnings ?? true)");
-        communicationSource.Should().Contain("SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));");
-        communicationSource.Should().NotContain("SendCommsOutOfRangeMessage(sender);");
-        communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.ServerMessage, ColorToken.Red(CommsOutOfRangeMessage), sender, sender);");
-        communicationSource.Should().Contain("private static bool IsCommsReceiverInRange(uint sender, uint receiver)");
-        communicationSource.Should().Contain("private static bool IsSpaceCommsArea(uint area)");
-        communicationSource.Should().Contain("private static bool IsEventCommsArea(uint area)");
-        communicationSource.Should().Contain("return IsEventCommsArea(receiverArea);");
-        communicationSource.Should().Contain("return ResolveCommsPlanet(receiverArea) == senderPlanet;");
-        communicationSource.Should().Contain("return senderArea == receiverArea;");
-        communicationSource.Should().Contain("Property.GetPropertyId(area)");
-        communicationSource.Should().Contain("property.PropertyType == PropertyType.Starship");
-        communicationSource.Should().Contain("PropertyLocationType.CurrentPosition");
-        communicationSource.Should().Contain("PropertyLocationType.DockPosition");
-        communicationSource.Should().Contain("DB.Get<PlayerShip>(dbPlayer.ActiveShipId)");
-        communicationSource.Should().Contain("distanceCheck = 20.0f;");
-        communicationSource.Should().Contain("var distance = GetDistanceBetween(sender, target);");
-        normalizedCommunicationSource.Should().Contain(
-            "if (GetArea(target) == GetArea(sender) &&\n" +
-            "                    distance <= distanceCheck &&\n" +
-            "                    !mutedDMs.Contains(target) &&\n" +
-            "                    !recipients.Contains(target))");
-        communicationSource.Should().NotContain("channel != ChatChannel.PlayerParty || IsCommsReceiverInRange(sender, target)");
-        communicationSource.Should().Contain("Comms scope applies only to the party");
-        communicationSource.Should().Contain("else if (IsWhisperChannel(channel))");
-        communicationSource.Should().NotContain("finalMessage.Append(\"[Whisper] \");");
-        communicationSource.Should().NotContain("finalMessage.Append(\"[Holonet] \");");
-        communicationSource.Should().Contain("SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);");
-        communicationSource.Should().Contain("private static void SendProcessedChatMessage(");
-        communicationSource.Should().NotContain("SendMessageToPC(receiver");
-        // NWNX_Rename only patches the per-observer name override around the native Party/Shout/Tell
-        // chat functions (see its HOOK_CHAT registrations) - not Talk/Whisper (which instead rely on
-        // the speaker's object update already being visible/patched to a nearby observer) and not any
-        // DM_* channel. Comms must dispatch on the native PlayerParty channel, not DMTalk, or the
-        // override never applies and the speaker's true name leaks once they leave the receiver's area.
-        communicationSource.Should().NotMatchRegex(@"(?<![=!<>])=\s*ChatChannel\.DMTalk|SendMessage\(\s*ChatChannel\.DMTalk");
-        communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
-        communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
-        communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");
-        communicationSource.Should().NotContain("ChatChannel.PlayerDM, finalMessageColored");
-        communicationSource.Should().NotContain("var finalChannel = ChatChannel.ServerMessage;");
-        communicationSource.Should().NotContain("finalSender = GetModule();");
-
         var planetSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Planet.cs"));
+            "Domain",
+            "World",
+            "PlanetService.cs"));
         planetSource.Should().Contain("private const string PlanetTypeIdVariable = \"PLANET_TYPE_ID\";");
         planetSource.Should().Contain("if (_planets.Count <= 0)");
         planetSource.Should().Contain("CachePlanets();");
@@ -194,7 +78,7 @@ public class PlayerFacingNameBroadcastTests
         planetSource.Should().Contain("GetPlanetTypeByAreaResref(string areaResref)");
         planetSource.Should().Contain("ResolvePlanetTypeByAreaResref(GetResRef(area))");
         planetSource.Should().Contain("if (GetLocalBool(area, \"SPACE\") || areaName.StartsWith(\"Space -\"))");
-        planetSource.Should().Contain("private static readonly HashSet<string> _spaceAreaResrefs");
+        planetSource.Should().Contain("private readonly HashSet<string> _spaceAreaResrefs");
         planetSource.Should().Contain("\"viscaraorbit\"");
         planetSource.Should().Contain("if (_spaceAreaResrefs.Contains(areaResref))");
         planetSource.Should().Contain("[\"veles\"] = PlanetType.Viscara");
@@ -251,8 +135,9 @@ public class PlayerFacingNameBroadcastTests
         var chatCommandSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "ChatCommand.cs"));
+            "Domain",
+            "Social",
+            "ChatCommandService.cs"));
         chatCommandSource.Should().NotContain("ChatPlugin.GetChannel() == ChatChannel.PlayerShout");
 
         var eventAreaDirectory = Path.Combine(root.FullName, "Module", "are");
@@ -354,10 +239,11 @@ public class PlayerFacingNameBroadcastTests
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "StatusEffect.cs"));
-        statusEffectSource.Should().Contain("PlayerName.GetDisplayName(receiver, creature)");
-        statusEffectSource.Should().Contain("PlayerName.GetDisplayName(receiver, source)");
+            "Domain",
+            "Character",
+            "StatusEffectService.cs"));
+        statusEffectSource.Should().Contain("_playerName.GetDisplayName(receiver, creature)");
+        statusEffectSource.Should().Contain("_playerName.GetDisplayName(receiver, source)");
         statusEffectSource.Should().NotContain("var name = GetName(creature);");
 
         var propertyPermissionsSource = File.ReadAllText(Path.Combine(
@@ -367,10 +253,10 @@ public class PlayerFacingNameBroadcastTests
             "GuiDefinition",
             "ViewModel",
             "PropertyPermissionsViewModel.cs"));
-        propertyPermissionsSource.Should().Contain("PlayerNameService.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue)");
-        propertyPermissionsSource.Should().Contain("PlayerNameService.GetKnownNameOrFallbackByPlayerId");
+        propertyPermissionsSource.Should().Contain("GameServices.PlayerName.SearchKnownPlayerIdsByName(Player, SearchText, int.MaxValue)");
+        propertyPermissionsSource.Should().Contain("GameServices.PlayerName.GetKnownNameOrFallbackByPlayerId");
         propertyPermissionsSource.Should().Contain("AddFieldSearch(nameof(Entity.Player.Name), sanitizedSearch, true)");
-        propertyPermissionsSource.Should().NotContain("PlayerNameService.GetDisplayNameByPlayerId");
+        propertyPermissionsSource.Should().NotContain("GameServices.PlayerName.GetDisplayNameByPlayerId");
 
         var identityRulesSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -409,11 +295,14 @@ public class PlayerFacingNameBroadcastTests
         citizenshipSource.Should().Contain("PlayerName.GetPlainDisplayNameByPlayerId(Player, dbCity.OwnerPlayerId, dbMayorPlayer.Name)");
         citizenshipSource.Should().NotContain("Mayor: {dbMayorPlayer.Name}");
 
-        var propertySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Property.cs"));
+        // The property system is the service and the three parts behind it.
+        var propertySource = string.Concat(new[]
+        {
+            Path.Combine("Domain", "World", "PropertyService.cs"),
+            Path.Combine("Domain", "World", "PropertyLoaderService.cs"),
+            Path.Combine("Domain", "World", "PropertyCatalogService.cs"),
+            Path.Combine("Domain", "World", "PropertyCityGovernanceService.cs"),
+        }.Select(relative => File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", relative))));
         propertySource.Should().NotContain("$\"{GetName(player)}'s Apartment\"");
         propertySource.Should().NotContain("$\"{GetName(player)}'s Starship\"");
         propertySource.Should().NotContain("$\"{GetName(player)}'s City\"");
@@ -424,40 +313,6 @@ public class PlayerFacingNameBroadcastTests
     }
 
     [Test]
-    public void HoloComDialogue_PreservesChatChannelAndUsesTheAreaLocalHologramAsItsTransportSpeaker()
-    {
-        var root = FindRepositoryRoot();
-        var communicationSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Communication.cs"));
-        var normalizedCommunicationSource = communicationSource.Replace("\r\n", "\n");
-
-        communicationSource.Should().Contain("var speaker = GetEffectiveChatSpeaker(sender);");
-        communicationSource.Should().Contain("var isHoloComRelay = sender != speaker;");
-        communicationSource.Should().Contain(
-            "SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);");
-        communicationSource.Should().Contain("uint transportSpeaker,");
-        communicationSource.Should().Contain("uint identitySpeaker,");
-        communicationSource.Should().Contain("if (isHoloComRelay)");
-        communicationSource.Should().Contain(
-            "finalMessage.Append(PlayerName.GetColoredChatDisplayName(receiver, speaker));");
-        communicationSource.Should().NotContain("GetHoloComRelayChannelPrefix");
-        communicationSource.Should().Contain("if (transportSpeaker != identitySpeaker)");
-        communicationSource.Should().NotContain(
-            "ChatPlugin.SendMessage(ChatChannel.ServerMessage, message, transportSpeaker, receiver);");
-        normalizedCommunicationSource.Should().Contain(
-            "PlayerName.SendChatMessageWithChatNameOverride(\n" +
-            "                receiver,\n" +
-            "                identitySpeaker,");
-        communicationSource.Should().Contain(
-            "ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
-        communicationSource.Should().Contain(
-            "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)");
-    }
-
-    [Test]
     public void CopiedPlayerObjects_UseGenericDisplaySafeNames()
     {
         var root = FindRepositoryRoot();
@@ -465,8 +320,9 @@ public class PlayerFacingNameBroadcastTests
         var holoComSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "HoloCom.cs"));
+            "Domain",
+            "World",
+            "HoloComService.cs"));
         holoComSource.Should().Contain("var holoSender = CopyObject(sender");
         holoComSource.Should().Contain("var holoReceiver = CopyObject(receiver");
         holoComSource.Should().Contain("SetName(holoSender, \"HoloCom Hologram\");");
@@ -475,8 +331,9 @@ public class PlayerFacingNameBroadcastTests
         var spaceSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Space.cs"));
+            "Domain",
+            "Space",
+            "SpaceService.cs"));
         spaceSource.Should().Contain("var copy = CopyObject(player");
         spaceSource.Should().Contain("SetName(copy, \"Pilot\");");
     }

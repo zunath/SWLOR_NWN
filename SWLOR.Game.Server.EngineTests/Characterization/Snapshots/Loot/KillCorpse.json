@@ -1,0 +1,12 @@
+{
+  "function": "Loot.SpawnLootOnCreatureDeath / Loot.ProcessCorpse",
+  "description": "A killed creature rolls its LOOT_TABLE_n entries and moves its items and gold into a corpse container.",
+  "seed": 20261030,
+  "inputs": "Creature sanddemon killed with Random seeded 20261030 immediately before the death effect; each row is one item in the corpse, written as 'blueprint xStackSize [Type/Subtype/Cost/Param, ...]'.",
+  "rowCount": 2,
+  "columns": ["item", "=> gold"],
+  "rows": [
+    ["fiberp_high x1", 0],
+    ["herb_t x1", 0]
+  ]
+}

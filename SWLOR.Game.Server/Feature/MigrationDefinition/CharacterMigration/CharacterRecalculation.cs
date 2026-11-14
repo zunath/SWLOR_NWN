@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.MigrationService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
@@ -35,12 +35,12 @@ internal static class CharacterRecalculation
         if (character.AppliesRecordEffects)
         {
             var record = character.Record;
-            record.MaxHP = Stat.BaseHP;
+            record.MaxHP = StatService.BaseHP;
             record.HPRegen = 0;
-            record.MaxFP = Stat.BaseFP;
+            record.MaxFP = StatService.BaseFP;
             record.FP = SavedEquipmentStats.GetMaxFP(character);
             record.FPRegen = 0;
-            record.MaxStamina = Stat.BaseSTM;
+            record.MaxStamina = StatService.BaseSTM;
             record.Stamina = SavedEquipmentStats.GetMaxStamina(character);
             record.STMRegen = 0;
             foreach (var (type, _) in Skill.GetActiveCraftingSkills())
@@ -53,7 +53,7 @@ internal static class CharacterRecalculation
             record.Accuracy = 0;
             record.ForceAttack = 0;
             record.CombatReadiness = 0;
-            foreach (var defense in Combat.GetDefenseDamageTypes())
+            foreach (var defense in GameServices.CombatDamageCatalog.GetDefenseDamageTypes())
                 record.Defenses[defense] = 0;
             foreach (var resistance in Resistance.GetAllResistanceTypes())
                 record.Resistances[resistance] = 0;
@@ -80,7 +80,7 @@ internal static class CharacterRecalculation
     }
 
     /// <summary>
-    /// Saved-data <see cref="Perk.GetPlayerEffectivePerkLevel(uint, PerkType)"/>: the highest owned perk level whose
+    /// Saved-data <see cref="Domain.Character.IPerkService.GetPlayerEffectivePerkLevel(uint, PerkType)"/>: the highest owned perk level whose
     /// requirements the record (and its active beast) meet.
     /// </summary>
     public static int GetEffectivePerkLevel(SavedCharacter character, PerkType perkType)
@@ -99,7 +99,7 @@ internal static class CharacterRecalculation
         return 0;
     }
 
-    /// <summary>Saved-data <see cref="Perk.RestorePlayerFeats"/>: native feats granted by every owned player perk.</summary>
+    /// <summary>Saved-data <see cref="Domain.Character.IPerkService.RestorePlayerFeats"/>: native feats granted by every owned player perk.</summary>
     public static void RestorePlayerFeats(SavedCharacter character)
     {
         foreach (var (perkType, level) in character.Record.Perks.ToList())
@@ -129,19 +129,19 @@ internal static class CharacterRecalculation
     {
         var original = QuickCast.GetOriginalFeat(feat);
         return character.HasFeat(original) ||
-               Service.AbilityService.QuickCastFeatMap.TryGetAlias(original, out var alias) && character.HasFeat(alias);
+               SWLOR.Game.Server.Domain.Abilities.QuickCastFeatMap.TryGetAlias(original, out var alias) && character.HasFeat(alias);
     }
 
     private static void RemoveQuickCastFeat(SavedCharacter character, FeatType feat)
     {
         var original = QuickCast.GetOriginalFeat(feat);
         character.RemoveFeat(original);
-        if (Service.AbilityService.QuickCastFeatMap.TryGetAlias(original, out var alias))
+        if (SWLOR.Game.Server.Domain.Abilities.QuickCastFeatMap.TryGetAlias(original, out var alias))
             character.RemoveFeat(alias);
     }
 
     /// <summary>
-    /// Saved-data <see cref="QuickCast.ApplyPreferences"/>: each ability feat the character knows is held in the form
+    /// Saved-data <see cref="Domain.Abilities.IQuickCastService.ApplyPreferences"/>: each ability feat the character knows is held in the form
     /// its automatic-targeting setting asks for, on the feat list and the quickbar.
     /// </summary>
     public static void ApplyQuickCastPreferences(SavedCharacter character)
@@ -149,7 +149,7 @@ internal static class CharacterRecalculation
         var settings = character.Record.Settings;
         if (settings == null)
             return;
-        foreach (var (alias, original) in Service.AbilityService.QuickCastFeatMap.Originals)
+        foreach (var (alias, original) in SWLOR.Game.Server.Domain.Abilities.QuickCastFeatMap.Originals)
         {
             var hasOriginal = character.HasFeat(original);
             var hasAlias = character.HasFeat(alias);
@@ -171,7 +171,7 @@ internal static class CharacterRecalculation
                 continue;
             var current = (FeatType)slots[index].IntParameter;
             var original = QuickCast.GetOriginalFeat(current);
-            if (!Service.AbilityService.QuickCastFeatMap.TryGetAlias(original, out var alias))
+            if (!SWLOR.Game.Server.Domain.Abilities.QuickCastFeatMap.TryGetAlias(original, out var alias))
                 continue;
             var desired = KnowsQuickCastFeat(character, original) && QuickCast.UsesAutomaticTarget(original, settings) ? alias : original;
             if (current != desired)

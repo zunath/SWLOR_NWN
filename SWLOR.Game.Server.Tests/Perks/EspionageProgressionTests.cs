@@ -1,16 +1,36 @@
 using System.Reflection;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class EspionageProgressionTests
 {
+    // The craft rules reach the crafting service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [TestCase(PerkType.Stealth)]
     [TestCase(PerkType.Poisoncraft)]
     [TestCase(PerkType.Trapcraft)]
@@ -95,7 +115,7 @@ public class EspionageProgressionTests
     [TestCase(4, true, 0, false)]
     public void TrapAccess_UsesTheSameTierRulesForPlacementDetectionAndDisarm(int trapcraft, bool master, int tier, bool allowed)
     {
-        Assert.That(Traps.CanUseTrapTier(trapcraft, master, tier), Is.EqualTo(allowed));
+        Assert.That(new TrapsService(new InMemoryDBService(), FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPvpCombatService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>()).CanUseTrapTier(trapcraft, master, tier), Is.EqualTo(allowed));
     }
 
     private static PerkDetail BuildPerk(PerkType profession)

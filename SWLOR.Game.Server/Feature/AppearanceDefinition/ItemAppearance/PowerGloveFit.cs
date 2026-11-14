@@ -1,12 +1,13 @@
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using FitVector = System.Numerics.Vector3;
+using SWLOR.Game.Server.Domain.Combat;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 
@@ -19,6 +20,8 @@ public static class PowerGloveFit
     private const string AppliedTranslationYVariable = "POWER_GLOVE_FIT_Y";
     private const string AppliedTranslationZVariable = "POWER_GLOVE_FIT_Z";
 
+    [PlayerSession(PlayerReload.LoginOnly,
+        "The glove fit stays in the engine.")]
     [NWNEventHandler(ScriptName.OnModuleEnter)]
     public static void OnModuleEnter() => RefreshInventory(GetEnteringObject());
 
@@ -253,7 +256,7 @@ public static class PowerGloveFit
     private static bool IsPowerGlove(uint item) => GetIsObjectValid(item) &&
         GetObjectType(item) == ObjectType.Item && (GetBaseItemType(item) == BaseItem.PowerGlove ||
             PowerGloveEquipment.IsGeneratedCompanion(item) && PowerGloveEquipment.IsLinkedPair(
-                GetItemPossessor(item), GetLocalObject(item, PowerGloveEquipment.MainWeaponVariable), item));
+                GetItemPossessor(item), GetLocalObject(item, PowerGloveEquipmentService.MainWeaponVariable), item));
 
     private static void Release(uint item)
     {

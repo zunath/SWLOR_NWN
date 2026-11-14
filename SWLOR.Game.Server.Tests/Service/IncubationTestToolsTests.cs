@@ -5,7 +5,9 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
-using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -15,8 +17,25 @@ public class IncubationTestToolsTests
 {
     private const string PlayerId = "incubation-test-tools-player";
 
+    // The weekday overrides are state of the beast mastery instance, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
     [TearDown]
-    public void ClearOverride() => IncubationTestTools.ClearDayOverride(PlayerId);
+    public void ClearOverride()
+    {
+        BeastMastery.ClearIncubationDayOverride(PlayerId);
+        _facadeScope.Dispose();
+    }
 
     [Test]
     public void FinishRunningStages_EndsOnlyRunningStagesAndKeepsTheStage()
@@ -43,14 +62,14 @@ public class IncubationTestToolsTests
 
         requirement.CheckRequirements(mine).Should().NotBeEmpty();
 
-        IncubationTestTools.SetDayOverride(PlayerId, day);
+        BeastMastery.SetIncubationDayOverride(PlayerId, day);
 
-        IncubationTestTools.GetServerDay(PlayerId).Should().Be(day);
+        BeastMastery.GetIncubationServerDay(PlayerId).Should().Be(day);
         requirement.CheckRequirements(mine).Should().BeEmpty();
         requirement.CheckRequirements(other).Should().NotBeEmpty();
 
-        IncubationTestTools.ClearDayOverride(PlayerId);
-        IncubationTestTools.GetServerDay(PlayerId).Should().Be(DateTime.UtcNow.DayOfWeek);
+        BeastMastery.ClearIncubationDayOverride(PlayerId);
+        BeastMastery.GetIncubationServerDay(PlayerId).Should().Be(DateTime.UtcNow.DayOfWeek);
     }
 
     [TestCase("monday", true, DayOfWeek.Monday)]

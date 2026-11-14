@@ -33,6 +33,15 @@ SCRIPTS = ('run-client.sh', 'server-entry.sh', 'ui.sh')
 
 PROJECT_PREFIX = 'swlor-live-'
 SERVER_PORT = 5121
+# The NWNX .NET entry the stack boots (--entry), with its NWNX_DOTNET_* values and the folder of dotnet/ the game
+# build goes in. host: SWLOR.Game.Host in dotnet/ loads the game from dotnet/game/. native: the game's own
+# ServerManager.Bootstrap with the game in dotnet/ (production's entry until the host is measured no slower).
+DOTNET_ENTRIES = {
+    'host': {'assembly': '/nwn/home/dotnet/SWLOR.Game.Host',
+             'entrypoint': 'SWLOR.Game.Host.Bootstrap.NativeBootstrap', 'method': 'Initialize', 'game_folder': 'game'},
+    'native': {'assembly': '/nwn/home/dotnet/SWLOR.Game.Server',
+               'entrypoint': 'SWLOR.Game.Server.Core.ServerManager', 'method': 'Bootstrap', 'game_folder': ''},
+}
 # Character select "Play" button at the profile's 1280x720 window and UI scale 1.0.
 PLAY_BUTTON = (742, 591)
 # First row of the character list; a DM's Play stays disabled until its avatar row is selected.
@@ -646,6 +655,12 @@ def create(options) -> Stack:
     tlk_dir = resolved(options.tlk_dir, deployed / 'tlk' if deployed else None)
     module = resolved(options.module, deployed / 'modules' / DEFAULT_MODULE if deployed else None)
     dotnet = resolved(options.dotnet, REPO_ROOT / 'SWLOR.Game.Server' / 'bin' / options.configuration / 'net10.0')
+    entry_name = getattr(options, 'entry', None) or 'host'
+    if entry_name not in DOTNET_ENTRIES:
+        raise LiveStackError(f'--entry must be one of {", ".join(sorted(DOTNET_ENTRIES))}, not {entry_name}.')
+    entry = DOTNET_ENTRIES[entry_name]
+    host_dotnet = resolved(getattr(options, 'host_dotnet', None),
+                           REPO_ROOT / 'SWLOR.Game.Host' / 'bin' / options.configuration / 'net10.0')
     install = resolved(options.client_install or os.environ.get('NWN_LINUX_CLIENT_INSTALL'), STEAM_INSTALL)
     cdkey = resolved(options.cdkey, Path.home() / 'Documents' / 'Neverwinter Nights' / 'cdkey.ini')
     server_env = resolved(options.server_env_file, SERVER_DOCKER_DIR / 'swlor.env')
@@ -664,6 +679,10 @@ def create(options) -> Stack:
         'cdkey.ini (--cdkey)': cdkey.is_file(),
         'server env file (--server-env-file)': server_env.is_file(),
     }
+    if entry_name == 'host':
+        checks['host build (--host-dotnet; build SWLOR.Game.Host with -c Release -p:RunPostBuildEvent=Never)'] = (
+            (host_dotnet / 'SWLOR.Game.Host.dll').is_file()
+            and (host_dotnet / 'SWLOR.Game.Host.runtimeconfig.json').is_file())
     if mode == 'player':
         checks['character .bic (--character)'] = (character is not None and character.is_file()
                                                   and character.suffix.lower() == '.bic')
@@ -724,7 +743,9 @@ def create(options) -> Stack:
         'client_image': client_image_tag(), 'max_seconds': max_seconds,
         'cdkey_source': str(cdkey),
         'inputs': {'hak_dir': str(hak_dir), 'tlk_dir': str(tlk_dir), 'module': str(module),
-                   'dotnet': str(dotnet), 'client_install': str(install),
+                   'dotnet': str(dotnet), 'dotnet_entry': entry_name,
+                   'host_dotnet': str(host_dotnet) if entry_name == 'host' else '',
+                   'client_install': str(install),
                    'server_env_file': str(server_env), 'server_env_overrides': sorted(extra_env),
                    'swlor_environment': swlor_environment,
                    # Values can be secrets, so keep only a digest that tells runs apart.
@@ -768,10 +789,11 @@ def create(options) -> Stack:
         (run_dir / 'bin' / 'prepare-server-home.sh').write_bytes(text.encode('utf-8'))
         stack.state['inputs']['scripts_sha256'] = {
             path.name: sha256(path) for path in sorted((run_dir / 'bin').iterdir())}
-        shutil.copytree(dotnet, run_dir / 'dotnet')
+        stage_dotnet(entry_name, dotnet, host_dotnet, run_dir / 'dotnet')
         # The copy is deleted at teardown, so record what identifies the server code that ran.
         stack.state['inputs']['dotnet_sha256'] = build_digest(run_dir / 'dotnet')
-        stack.state['inputs']['build_source_revision'] = build_source_revision(run_dir / 'dotnet')
+        stack.state['inputs']['build_source_revision'] = build_source_revision(
+            run_dir / 'dotnet' / entry['game_folder'])
         stack.state['inputs']['tool_checkout_commit'] = source_commit()
         # The deploy home is shared; serve and hash a private copy so a repack cannot swap it.
         shared_before = shared_deploy_manifest(module, tlk_dir, hak_dir)
@@ -855,6 +877,11 @@ def create(options) -> Stack:
             'SWLOR_LIVE_DM_PASSWORD': secrets.token_hex(12) if mode == 'dm' else '',
             'SWLOR_LIVE_ADMIN_CDKEY': public_key if mode == 'dm' else '',
             'SWLOR_LIVE_MAX_SECONDS': str(max_seconds),
+            # The entry staged in dotnet/, whatever the base env file says.
+            'SWLOR_LIVE_DOTNET_ENTRY': entry_name,
+            'SWLOR_LIVE_DOTNET_ASSEMBLY': entry['assembly'],
+            'SWLOR_LIVE_DOTNET_ENTRYPOINT': entry['entrypoint'],
+            'SWLOR_LIVE_DOTNET_METHOD': entry['method'],
         }), 'utf-8')
     except BaseException:
         try:
@@ -961,6 +988,16 @@ def build_digest(directory: Path) -> str:
         digest.update(path.relative_to(directory).as_posix().encode('utf-8') + b'\0')
         digest.update(sha256(path).encode('ascii') + b'\n')
     return digest.hexdigest()
+
+
+def stage_dotnet(entry_name: str, game: Path, host: Path, target: Path) -> None:
+    """Copy the builds into the run's dotnet/ in the entry's layout: the host there and the game in game/, or the
+    game there."""
+    if entry_name == 'host':
+        shutil.copytree(host, target)
+        shutil.copytree(game, target / DOTNET_ENTRIES['host']['game_folder'])
+    else:
+        shutil.copytree(game, target)
 
 
 def build_source_revision(dotnet: Path) -> str:
@@ -1074,7 +1111,7 @@ def seed_player(stack: Stack, uuid: str) -> None:
     log(f'Player record {uuid} ' + ('seeded' if reply == 'OK' else 'already existed'))
 
 
-def start_client(stack: Stack, cdkey: Path) -> None:
+def start_client(stack: Stack, cdkey: Path, connect_timeout: float = 300) -> None:
     target = stack.profile / 'cdkey.ini'
     target.unlink(missing_ok=True)
     # Create the copy owner-only before writing the key into it.
@@ -1088,7 +1125,7 @@ def start_client(stack: Stack, cdkey: Path) -> None:
     stack.save()
     stack.ui('wait-window', '180', timeout=240)
     log('Client window is up')
-    verify_public_cdkey(stack)
+    verify_public_cdkey(stack, connect_timeout)
 
 
 def verify_public_cdkey(stack: Stack, timeout: float = 300) -> None:

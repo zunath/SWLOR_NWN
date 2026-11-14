@@ -1,10 +1,10 @@
 using System;
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 _level,
                 mimicryPotency,
                 amount => Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount),
-                amount => Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Ice),
-                amount => Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Ice));
+                amount => GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Ice),
+                amount => GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Ice));
             if (damage > 0)
             {
                 AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Ice.GetNWScriptDamageType()), creature));

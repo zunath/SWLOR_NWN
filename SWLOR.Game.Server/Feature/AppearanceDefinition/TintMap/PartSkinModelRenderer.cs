@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
@@ -7,6 +8,7 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ItemAppearanceType = SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
@@ -17,13 +19,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     /// </summary>
     public static class PartSkinModelRenderer
     {
-        private static PartSkinModelCatalog _catalog = new(
-            Array.Empty<(string, string)>(), Array.Empty<(string, string, string)>());
-        public static readonly AppearanceArmor[] Parts = PartSkinModelCatalog.PartNames.Keys.ToArray();
-        // Holds only parts that currently render through an alias.
-        private static readonly Dictionary<(uint Creature, AppearanceArmor Part), (uint Item, ushort Source, ushort Render)> Projections = new();
-        private static int _pruneAt = 1024;
+        private static PartSkinModelCatalog Catalog => AppearanceRenderState.GetPartSkinCatalog();
+        public static readonly ImmutableArray<AppearanceArmor> Parts = PartSkinModelCatalog.PartNames.Keys.ToImmutableArray();
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Load()
         {
@@ -34,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             for (var row = 0; row < Get2DARowCount("partrender"); row++)
                 renders.Add((Get2DAString("partrender", "LAYOUT", row), Get2DAString("partrender", "SOURCE", row),
                     Get2DAString("partrender", "RENDER", row)));
-            _catalog = new PartSkinModelCatalog(layouts, renders);
+            AppearanceRenderState.SetPartSkinCatalog(new PartSkinModelCatalog(layouts, renders));
         }
 
         public static void Apply(uint creature)
@@ -44,36 +43,30 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (string.IsNullOrEmpty(body) || !GetIsObjectValid(armor))
             {
                 foreach (var part in Parts)
-                    Projections.Remove((creature, part));
+                    AppearanceRenderState.RemovePartSkinProjection(creature, part);
                 return;
             }
             var refresh = false;
             foreach (var part in Parts)
             {
                 var source = checked((ushort)GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)part));
-                var rendered = _catalog.Resolve(body, part, source);
-                var key = (creature, part);
-                var projected = Projections.TryGetValue(key, out var previous);
+                var rendered = Catalog.Resolve(body, part, source);
+                var projected = AppearanceRenderState.TryGetPartSkinProjection(creature, part, out var previous);
                 if (rendered == source)
                 {
                     // A dropped alias must be resent for the same armor (robe removed or part changed).
-                    if (Projections.Remove(key))
+                    if (AppearanceRenderState.RemovePartSkinProjection(creature, part))
                         refresh |= previous.Item == armor;
                     continue;
                 }
                 var projection = (Item: armor, Source: source, Render: rendered);
                 if (projected && previous == projection)
                     continue;
-                Projections[key] = projection;
+                AppearanceRenderState.StorePartSkinProjection(creature, part, projection);
                 refresh = true;
             }
-            if (Projections.Count >= _pruneAt)
-            {
-                foreach (var key in Projections.Keys.Where(key => !GetIsObjectValid(key.Creature)).ToArray())
-                    Projections.Remove(key);
-                // Grow past the live population so a full cache is not rescanned on every call.
-                _pruneAt = Math.Max(1024, Projections.Count * 2);
-            }
+            // Pruning (and growing past the live population) lives with the projection table.
+            AppearanceRenderState.PrunePartSkinProjections();
             // Publish every projection before refreshing, so nested tint application terminates.
             if (refresh)
                 EquippedItemAppearance.Refresh(creature, armor, resetShaderOverrides: false);
@@ -81,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         public static ushort GetItemProjection(CNWSItem item, AppearanceArmor part, ushort source)
         {
-            if (!Projections.TryGetValue((item.m_oidPossessor, part), out var projection) ||
+            if (!AppearanceRenderState.TryGetPartSkinProjection(item.m_oidPossessor, part, out var projection) ||
                 projection.Item != item.m_idSelf || projection.Source != source)
                 return source;
             var owner = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(item.m_oidPossessor);

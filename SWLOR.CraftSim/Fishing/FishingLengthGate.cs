@@ -1,6 +1,6 @@
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Scenario;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.World;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Fishing

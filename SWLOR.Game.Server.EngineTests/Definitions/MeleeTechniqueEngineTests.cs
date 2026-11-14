@@ -6,13 +6,12 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -27,8 +26,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.MeasuredTechnique, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.PracticedForm, 3);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 await Cast(ctx, caster, target, FeatType.Jab1);
@@ -82,8 +81,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SetNPCPerkLevel(caster, perk, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.FinishingCombination, 2);
             ctx.SetNPCPerkLevel(caster, PerkType.SpinningRhythm, 3);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 await Cast(ctx, caster, caster, FeatType.FlowStance1);
@@ -155,8 +154,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     spent++;
             }
             MeleeTechnique.TechniqueLanded += OnSpent;
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 var start = Stat.GetCurrentStamina(caster);
@@ -190,8 +189,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SetNPCPerkLevel(caster, PerkType.Jab, 4);
                 ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
                 ctx.SetNPCPerkLevel(caster, PerkType.PalmStrike, 1);
-                Combat.SetAbilityHitResolutionOverride(true);
-                Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 try
                 {
                     await Cast(ctx, caster, target, FeatType.Jab4);
@@ -231,8 +230,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SetNPCPerkLevel(caster, PerkType.DirtyFighting, 1);
                 ctx.SetNPCPerkLevel(caster, PerkType.Uppercut, 1);
             }
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 await Cast(ctx, first, target, FeatType.DirtyJab1);
@@ -266,14 +265,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.DirtyJab, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.Uppercut, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.CatchYourBreath, 1);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 await Cast(ctx, caster, target, FeatType.DirtyJab1);
                 await ctx.DelaySecondsAsync(1.05f);
                 var stamina = Stat.GetCurrentStamina(caster);
-                Combat.SetAbilityHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
                 await Cast(ctx, caster, target, FeatType.Uppercut1);
                 ctx.AssertEqual(MeleeTechniqueStage.Distraction, MeleeTechnique.GetSetupStage(caster, target), "a missed heavy strike preserves Rattled");
                 ctx.Assert(StatusEffect.HasStatusEffect(target, typeof(RattledStatusEffect), caster), "the independent weakening remains after a missed heavy strike");
@@ -299,7 +298,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
             });
             ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "periodic damage cannot charge Payback");
-            await ctx.ExecuteInCreatureContextAsync(attacker, () => Combat.ApplyTriggeredDamage(attacker, caster, 5, CombatDamageType.Physical));
+            await ctx.ExecuteInCreatureContextAsync(attacker, () => GameServices.CombatHitEffects.ApplyTriggeredDamage(attacker, caster, 5, CombatDamageType.Physical));
             ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "triggered and reflected damage cannot charge Payback");
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
@@ -334,8 +333,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
             ctx.AssertEqual(2, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "a melee-to-ranged swap preserves the independent Payback charge");
             var stamina = Stat.GetCurrentStamina(caster);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 await Cast(ctx, caster, attacker, FeatType.Provoke1);
@@ -383,8 +382,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 await ctx.EquipItemAsync(player.Creature, "t_pglove", InventorySlot.RightHand);
             }
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var player in new[] { standard, sensitive })
@@ -440,7 +439,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var jab = Ability.GetAbilityDetail(FeatType.Jab1);
             var main = await ctx.EquipItemAsync(caster, "t_katar", InventorySlot.RightHand);
             var off = await ctx.EquipItemAsync(caster, "t_katar", InventorySlot.LeftHand);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -492,8 +491,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Flow Stance rewards short and full finishers with mutually exclusive windows", Category = "MeleeTechnique", TimeoutSeconds = 45f)]
         public static async Task ReactiveFinisherWindows(EngineTestContext ctx)
         {
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var fullSequence in new[] { false, true })
@@ -578,14 +577,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); Combat.SetAutoAttackHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null); }
         }
 
         [EngineTest("The queued technique hook clears another enemy's setup and preserves same-target weave", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
         public static async Task QueuedAttemptTargetOwnership(EngineTestContext ctx)
         {
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var sameTarget in new[] { false, true })
@@ -609,7 +608,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(UsePerkFeat.TryGetQueuedWeaponAbility(caster, SkillType.Unarmed, out var queuedAbility) &&
                                queuedAbility == Ability.GetAbilityDetail(FeatType.SoulStrike1),
                         "the native resolver accepts the owned cross-skill queue before taking the attack roll");
-                    ctx.Assert(!Combat.HasRecentAttackActivity(caster, 60f), "the fixture has not taken a native attack roll yet");
+                    ctx.Assert(!GameServices.CombatActivity.HasRecentAttackActivity(caster, 60f), "the fixture has not taken a native attack roll yet");
                     var hitPoints = GetCurrentHitPoints(deliveryTarget);
                     const int attackIndex = 17;
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -637,7 +636,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     UsePerkFeat.ClearQueuedAbility(caster);
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); Combat.SetAutoAttackHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null); }
         }
 
         [EngineTest("Independent Bruiser retaliation requires hostile direct HP damage and survives weapon swaps", Category = "MeleeTechnique", TimeoutSeconds = 40f)]
@@ -649,8 +648,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.Uppercut, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.Payback, 1);
             StatusEffect.ApplyStatusEffect(caster, caster, new BruiserStanceStatusEffect(), -1);
-            Combat.SetAbilityHitResolutionOverride(false);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(caster, target), "no opener or Rattled is active");
@@ -662,7 +661,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
                 });
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, target), "periodic damage cannot grant a counter");
-                await ctx.ExecuteInCreatureContextAsync(target, () => Combat.ApplyTriggeredDamage(target, caster, 5, CombatDamageType.Physical));
+                await ctx.ExecuteInCreatureContextAsync(target, () => GameServices.CombatHitEffects.ApplyTriggeredDamage(target, caster, 5, CombatDamageType.Physical));
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, target), "triggered or reflected damage cannot grant a counter");
                 await ctx.EquipItemAsync(caster, "b_pistol", InventorySlot.RightHand);
                 var baselineHP = GetCurrentHitPoints(caster);
@@ -703,8 +702,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.Uppercut, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.Haymaker, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.CatchYourBreath, 1);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 var stamina = Stat.GetCurrentStamina(caster);
@@ -723,8 +722,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Unarmed setup bonuses follow melee and ranged swaps and other skill abilities", Category = "MeleeTechnique", TimeoutSeconds = 60f)]
         public static async Task CrossWeaponSetupBonuses(EngineTestContext ctx)
         {
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 foreach (var (weapon, skill, feat, perk) in new[]
@@ -779,11 +778,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(DateTime.UtcNow < establishedAt.AddSeconds(7), "the swap cannot refresh Opening's original expiry");
                     ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(caster, target, ability), "expired setup cannot grant another skill accuracy");
                     ResetOverrides(caster);
-                    Combat.SetAbilityHitResolutionOverride(true);
-                    Combat.SetAutoAttackHitResolutionOverride(false);
+                    GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+                    GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 }
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); Combat.SetAutoAttackHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null); }
         }
 
         [EngineTest("Measured Technique captures ten accuracy for a spender against Opening and Perfect Form against Finish", Category = "MeleeTechnique", TimeoutSeconds = 30f)]
@@ -805,8 +804,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var originalImpact = ability.ImpactAction;
                 var capturedAccuracy = -1;
                 var consumedStage = MeleeTechniqueStage.Opening;
-                Combat.SetAbilityHitResolutionOverride(true);
-                Combat.SetAutoAttackHitResolutionOverride(false);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
                 try
                 {
                     ability.ImpactAction = (source, enemy, level, location) =>
@@ -879,8 +878,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.Payback, 1);
             var discountedAbility = Ability.GetAbilityDetail(FeatType.DirtyJab1);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 await Cast(ctx, caster, caster, FeatType.FlowStance1);
@@ -942,8 +941,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var (caster, target) = await CreateFixture(ctx);
             ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.PerfectForm, 1);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 await AssertPerfectFormRefused(ctx, caster, target, "with no setup");
@@ -970,8 +969,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     landings.Add(stage);
             }
             MeleeTechnique.TechniqueLanded += OnLanded;
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 var stamina = await StartPerfectFormNearFinishExpiry(ctx, caster, target);
@@ -1000,8 +999,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.PalmStrike, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.PerfectForm, 1);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 var stamina = await StartPerfectFormNearFinishExpiry(ctx, caster, target);
@@ -1089,8 +1088,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void ResetOverrides(uint caster)
         {
-            Combat.SetAbilityHitResolutionOverride(null);
-            Combat.SetAutoAttackHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             AssignCommand(caster, () => ClearAllActions());
         }
     }

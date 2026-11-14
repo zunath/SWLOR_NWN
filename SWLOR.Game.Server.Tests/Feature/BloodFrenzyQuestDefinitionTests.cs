@@ -2,13 +2,12 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Reflection;
 using System.Reflection.Emit;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature.QuestDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -105,7 +104,7 @@ public class BloodFrenzyQuestDefinitionTests
     {
         var quests = new BloodFrenzyQuestDefinition().BuildQuests();
         var finalQuest = quests[FinalQuestId];
-        var giveAchievement = GetAchievementMethod(nameof(Achievement.GiveAchievement));
+        var giveAchievement = GetAchievementMethod(nameof(IAchievementService.GiveAchievement));
 
         finalQuest.OnCompleteActions.Should()
             .ContainSingle(action => DelegateCallsMethodWithIntArgument(
@@ -398,8 +397,8 @@ public class BloodFrenzyQuestDefinitionTests
             Path.Combine(root.FullName, "Module", "utc", "bf_kess.utc.json"),
             Path.Combine(root.FullName, "Module", "utc", "bf_pulsedroid.utc.json"),
             Path.Combine(root.FullName, "Module", "utc", "bf_scavenger.utc.json"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "KeyItemService", "KeyItemType.cs"),
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "NPCService", "NPCGroupType.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Items", "KeyItemType.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Creatures", "NPCGroupType.cs"),
         };
 
         foreach (var file in contentFiles)
@@ -467,8 +466,9 @@ public class BloodFrenzyQuestDefinitionTests
 
     private static MethodInfo GetKeyItemMethod(string methodName)
     {
-        return typeof(KeyItem)
-            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+        // The quest delegates call the service through the interface (the facade was removed, P2-ZJ).
+        return typeof(IKeyItemService)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method =>
                 method.Name == methodName &&
                 method.GetParameters()
@@ -478,8 +478,9 @@ public class BloodFrenzyQuestDefinitionTests
 
     private static MethodInfo GetAchievementMethod(string methodName)
     {
-        return typeof(Achievement)
-            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+        // The quest delegates call the service through the interface (the facade was removed, P2-ZE).
+        return typeof(IAchievementService)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(method =>
                 method.Name == methodName &&
                 method.GetParameters()

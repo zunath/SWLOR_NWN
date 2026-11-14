@@ -1,9 +1,9 @@
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Reflection;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.CombatSim.Data
 {
@@ -15,6 +15,8 @@ namespace SWLOR.CombatSim.Data
     {
         // Ability delegates take an object id; outside the engine any non-zero id works for data-only lambdas.
         private const uint PlaceholderObject = 0x7F000000;
+
+        private static readonly object ContainerGate = new();
 
         private readonly Dictionary<FeatType, AbilityInfo> _abilities = new();
         private readonly List<string> _loadErrors = new();
@@ -31,9 +33,21 @@ namespace SWLOR.CombatSim.Data
 
         public static AbilityCatalog Load()
         {
+            EnsureServerContainer();
             var catalog = new AbilityCatalog(PerkCatalog.Load());
             catalog.LoadAll();
             return catalog;
+        }
+
+        // A few delegates read status effects through the server's static facade (Anger's recast). A tool with no game
+        // server builds the server's container itself, as SWLOR.CLI does.
+        private static void EnsureServerContainer()
+        {
+            lock (ContainerGate)
+            {
+                if (!CompositionRoot.IsBuilt)
+                    CompositionRoot.Build(CompositionRoot.ServerHost);
+            }
         }
 
         public AbilityInfo Get(FeatType feat)
@@ -99,7 +113,7 @@ namespace SWLOR.CombatSim.Data
                 WeaponAreaRadius = detail.Targeting is { Shape: AbilityTargetingShapeType.Sphere } targeting &&
                     targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf) ? targeting.SizeX : 0f,
                 MaximumAreaTargets = weapon?.Profile.Read<int>("MaximumAreaTargets") ?? 0,
-                ImpactStatusFactory = detail.MeleeTechnique == null ? null : ReadImpactCapture<Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect>>(detail, "statusFactory"),
+                ImpactStatusFactory = detail.MeleeTechnique == null ? null : ReadImpactCapture<Func<SWLOR.Game.Server.Domain.Character.IStatusEffect>>(detail, "statusFactory"),
                 Name = detail.Name,
                 PerkName = perk?.Name ?? detail.Name,
                 RecastGroup = detail.RecastGroup.ToString(),
@@ -123,7 +137,7 @@ namespace SWLOR.CombatSim.Data
                 WeaponAbilityCadenceOnHit = detail.WeaponAbilityCadenceOnHit,
                 WeaponAbilityCadenceDamagePerCharge = detail.WeaponAbilityCadenceDamagePerCharge,
                 // Mirrors PairedRangedTraits.ChainKey: every rank of one ability shares its key.
-                CadenceChainKey = detail.EffectiveLevelPerkType != SWLOR.Game.Server.Service.PerkService.PerkType.Invalid
+                CadenceChainKey = detail.EffectiveLevelPerkType != SWLOR.Game.Server.Domain.Character.PerkType.Invalid
                     ? (int)detail.EffectiveLevelPerkType
                     : StringComparer.Ordinal.GetHashCode(detail.Name ?? string.Empty) | int.MinValue
             };

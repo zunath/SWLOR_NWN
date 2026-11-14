@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Enumeration
     // - Add settings in WeatherService.cs for the planet name to tailor its climate.
     // - Add areas named according to the format "PlanetName - AreaName".  The planet name should be everything up to the first
     //   hyphen, except the trailing space.
-    // - Add the planet to the Planet.cs service class.
+    // - Add the planet to the PlanetService class (Domain/World/PlanetService.cs).
     [Flags]
     public enum PlanetType
     {

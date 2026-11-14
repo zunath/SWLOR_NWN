@@ -1,16 +1,31 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Armor;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class NativeAnimationPreviewTests
 {
+    private Support.FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new Support.FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void WristRocketRanksKeepTheOriginalNativeCastBeforeLaunchingAndPreviewThatGesture()
     {
@@ -96,10 +111,10 @@ public class NativeAnimationPreviewTests
     [TestCase(float.PositiveInfinity)]
     public void NativePreviewRejectsInvalidSpeed(float speed)
     {
-        var builder = new AbilityBuilder().Create(FeatType.ThrowLightsaber1, SWLOR.Game.Server.Service.PerkService.PerkType.ThrowLightsaber);
+        var builder = new AbilityBuilder().Create(FeatType.ThrowLightsaber1, SWLOR.Game.Server.Domain.Character.PerkType.ThrowLightsaber);
         Action configure = () => builder.UsesNativeAnimationPreview(Animation.SaberThrow, 3.833f, speed);
         configure.Should().Throw<ArgumentOutOfRangeException>();
-        Action preview = () => SWLOR.Game.Server.Service.NamedAnimation.PlayNativePreview(0, Animation.SaberThrow, speed);
+        Action preview = () => new NamedAnimationService().PlayNativePreview(0, Animation.SaberThrow, speed);
         preview.Should().Throw<ArgumentOutOfRangeException>();
     }
 
@@ -184,7 +199,7 @@ public class NativeAnimationPreviewTests
     [TestCase(601f)]
     public void NativePreviewRequiresAValidDuration(float duration)
     {
-        var builder = new AbilityBuilder().Create(FeatType.Provoke1, SWLOR.Game.Server.Service.PerkService.PerkType.Provoke);
+        var builder = new AbilityBuilder().Create(FeatType.Provoke1, SWLOR.Game.Server.Domain.Character.PerkType.Provoke);
         Action configure = () => builder.UsesNativeAnimationPreview(Animation.FireForgetTaunt, duration);
         configure.Should().Throw<ArgumentOutOfRangeException>();
         var clip = AuthoredAnimation.Provoke;

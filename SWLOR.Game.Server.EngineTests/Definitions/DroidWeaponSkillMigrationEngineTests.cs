@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -131,20 +130,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         upgraded = SavedCharacterMigration.Run(owner, DB.Get<Player>(player.Id), "_24_CorrectCarapaceBracers");
                         var character = SavedCharacterMigration.Load(ctx, upgraded);
                         MigrationEngineTests.AssertMigratedDroidWeaponSkills(ctx,
-                            SavedCharacterMigration.FindItem(character, Droid.DroidControlItemResref), "Character migration");
+                            SavedCharacterMigration.FindItem(character, DroidService.DroidControlItemResref), "Character migration");
                         var retried = SavedCharacterMigration.Run(upgraded.File, upgraded.Record, "_24_CorrectCarapaceBracers");
                         ctx.Assert(retried.File.SequenceEqual(upgraded.File), "A retry makes no further change");
                     });
                     login = await PlayerAbilityFixture.CreateFromCharacterAsync(ctx, upgraded.File, upgraded.Record, 8f);
                     owner = login.Creature;
-                    controller = SavedCharacterMigration.FindItem(owner, Droid.DroidControlItemResref);
+                    controller = SavedCharacterMigration.FindItem(owner, DroidService.DroidControlItemResref);
                     // The fixture still holds the original controller, so the reloaded copy gets its own UUID.
                     controllerId = GetObjectUUID(controller);
                 }
 
                 for (var cycle = 1; cycle <= 2; cycle++)
                 {
-                    ctx.AssertEqual(1, Items(owner).Count(item => GetResRef(item) == Droid.DroidControlItemResref), $"Cycle {cycle}: exactly one controller");
+                    ctx.AssertEqual(1, Items(owner).Count(item => GetResRef(item) == DroidService.DroidControlItemResref), $"Cycle {cycle}: exactly one controller");
                     ctx.AssertEqual(controllerId, GetObjectUUID(controller), $"Cycle {cycle}: the controller keeps its identity");
                     ctx.AssertEqual(owner, GetItemPossessor(controller), $"Cycle {cycle}: the owner keeps the controller");
                     await ctx.ExecuteInCreatureContextAsync(owner, () =>
@@ -194,7 +193,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(string.Empty, Bank.WithdrawItem(owner, banked.Id), "The controller is withdrawn");
             });
             await ctx.WaitFrameAsync();
-            var withdrawn = MigrationEngineTests.FindHeadgear(owner, Droid.DroidControlItemResref);
+            var withdrawn = MigrationEngineTests.FindHeadgear(owner, DroidService.DroidControlItemResref);
             ctx.Assert(GetIsObjectValid(withdrawn), "The withdrawn controller is carried");
             return withdrawn;
         }

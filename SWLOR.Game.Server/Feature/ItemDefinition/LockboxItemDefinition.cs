@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

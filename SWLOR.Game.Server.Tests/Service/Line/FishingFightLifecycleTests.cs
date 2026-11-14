@@ -1,10 +1,11 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Line;
 
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Service.Line;
 /// Covers a bite and its fight from the cast's pick of a fish to the end: what a bite spends and pays, how each ending and each way
 /// of leaving settles, and that nothing a fight does changes the bait, the XP or the fishing point.
 /// </summary>
-public class FishingFightLifecycleTests
+public class FishingFightLifecycleTests : SkillFacadeFixture
 {
     private const uint Player = 11;
     private const uint Rod = 22;
@@ -23,7 +24,10 @@ public class FishingFightLifecycleTests
     [OneTimeSetUp]
     public void LoadTheXpChart()
     {
-        Skill.CacheXPChartData();
+        using (SkillFacades.Install())
+        {
+            Skill.CacheXPChartData();
+        }
     }
 
     [SetUp]

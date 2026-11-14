@@ -1,19 +1,19 @@
-using System.Collections;
-using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AbilityImpactShapeTests
 {
     private const uint Activator = 0x7F000101;
+
+    private readonly AbilityService _service = AbilityInternals.NoNeighbours();
 
     [Test]
     public void SingleTargetAbility_RecordingTwoTargets_KeepsAuthoredShape()
@@ -24,8 +24,8 @@ public class AbilityImpactShapeTests
             Invoke(impact, "RecordTarget", 11u);
             Invoke(impact, "RecordTarget", 12u);
 
-            Ability.IsSingleTargetImpact(Activator, ability).Should().BeTrue();
-            Ability.IsAreaImpact(Activator, ability).Should().BeFalse();
+            _service.IsSingleTargetImpact(Activator, ability).Should().BeTrue();
+            _service.IsAreaImpact(Activator, ability).Should().BeFalse();
         });
     }
 
@@ -38,8 +38,8 @@ public class AbilityImpactShapeTests
             Invoke(impact, "RecordShape", SkillType.Invalid, false);
             Invoke(impact, "RecordTarget", 11u);
 
-            Ability.IsSingleTargetImpact(Activator, ability).Should().BeFalse();
-            Ability.IsAreaImpact(Activator, ability).Should().BeFalse();
+            _service.IsSingleTargetImpact(Activator, ability).Should().BeFalse();
+            _service.IsAreaImpact(Activator, ability).Should().BeFalse();
         });
     }
 
@@ -57,8 +57,8 @@ public class AbilityImpactShapeTests
             Invoke(impact, "RecordTarget", 11u);
             Invoke(impact, "RecordTarget", 12u);
 
-            Ability.IsAreaImpact(Activator, ability).Should().BeTrue();
-            Ability.IsSingleTargetImpact(Activator, ability).Should().BeFalse();
+            _service.IsAreaImpact(Activator, ability).Should().BeTrue();
+            _service.IsSingleTargetImpact(Activator, ability).Should().BeFalse();
         });
     }
 
@@ -79,8 +79,8 @@ public class AbilityImpactShapeTests
             Invoke(impact, "RecordShape", SkillType.Vibroblade, true);
             Invoke(impact, "RecordTarget", 11u);
 
-            Ability.IsAreaImpact(Activator, ability).Should().BeTrue();
-            Ability.IsSingleTargetImpact(Activator, ability).Should().BeFalse();
+            _service.IsAreaImpact(Activator, ability).Should().BeTrue();
+            _service.IsSingleTargetImpact(Activator, ability).Should().BeFalse();
         });
     }
 
@@ -103,16 +103,11 @@ public class AbilityImpactShapeTests
         offenders.Should().BeEmpty("every hostile ability must call IsAreaAbility() or IsSingleTargetAbility()");
     }
 
-    private static void WithTrackedImpact(AbilityDetail ability, Action<object> assert)
+    private void WithTrackedImpact(AbilityDetail ability, Action<object> assert)
     {
-        var impactType = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
-        var impact = impactType.GetConstructors().Single().Invoke(new object[]
-        {
-            ability, 0, 0, 0, 0, 0, false, 0, Array.Empty<TelegraphGeometry>(), new AbilityImpactSequence()
-        });
-        var impacts = (IDictionary)typeof(Ability)
-            .GetField("_trackedAbilityImpacts", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        var impact = AbilityInternals.NewTrackedImpact(
+            _service, ability, 0, 0, 0, 0, 0, false, 0, Array.Empty<TelegraphGeometry>(), new AbilityImpactSequence());
+        var impacts = AbilityInternals.TrackedImpacts(_service);
         impacts[Activator] = impact;
         try
         {

@@ -2,17 +2,15 @@ using SWLOR.Game.Server.Core;
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
@@ -25,9 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string FieldEngineerPulseMarkerTag = "field_engineer_pulse_marker";
         private const string BeaconShotSound = "cb_sh_blstrfire1";
 
-        private static readonly Dictionary<uint, List<FieldEngineerPulseEmitter>> _activeFieldEngineerPulseEmitters = new();
-
-        private sealed class FieldEngineerPulseEmitter
+        public sealed class FieldEngineerPulseEmitter
         {
             public FieldEngineerPulseEmitter(
                 uint activator,
@@ -478,13 +474,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         public static bool ExtendActiveFieldEngineerPulses(uint activator, float seconds)
         {
             if (seconds <= 0f ||
-                !_activeFieldEngineerPulseEmitters.TryGetValue(activator, out var emitters))
+                !FieldEngineerPulseEmitters.TryGetSnapshot(activator, out var emitters))
             {
                 return false;
             }
 
             var extendedAny = false;
-            foreach (var emitter in emitters.ToArray())
+            foreach (var emitter in emitters)
             {
                 if (!IsFieldEngineerEmitterValid(emitter))
                 {
@@ -502,11 +498,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         public static bool TriggerActiveFieldEngineerPulses(uint activator)
         {
-            if (!_activeFieldEngineerPulseEmitters.TryGetValue(activator, out var emitters))
+            if (!FieldEngineerPulseEmitters.TryGetSnapshot(activator, out var emitters))
                 return false;
 
             var triggeredAny = false;
-            foreach (var emitter in emitters.ToArray())
+            foreach (var emitter in emitters)
             {
                 if (!IsFieldEngineerEmitterValid(emitter))
                 {
@@ -526,13 +522,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static void TrackFieldEngineerPulseEmitter(FieldEngineerPulseEmitter emitter)
         {
-            if (!_activeFieldEngineerPulseEmitters.TryGetValue(emitter.Activator, out var emitters))
-            {
-                emitters = new List<FieldEngineerPulseEmitter>();
-                _activeFieldEngineerPulseEmitters[emitter.Activator] = emitters;
-            }
-
-            emitters.Add(emitter);
+            FieldEngineerPulseEmitters.Track(emitter);
             RefreshFieldEngineerPulseEmitterIndicator(emitter);
 
             EnsureFieldEngineerPulseEmitterMarker(emitter);
@@ -844,8 +834,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static bool IsFieldEngineerEmitterTracked(FieldEngineerPulseEmitter emitter)
         {
-            return _activeFieldEngineerPulseEmitters.TryGetValue(emitter.Activator, out var emitters) &&
-                   emitters.Contains(emitter);
+            return FieldEngineerPulseEmitters.IsTracked(emitter);
         }
 
         private static bool IsFieldEngineerEmitterValid(FieldEngineerPulseEmitter emitter)
@@ -855,20 +844,48 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                    GetIsObjectValid(GetAreaFromLocation(emitter.Location));
         }
 
+        /// <summary>
+        /// While a hot reload quiesces the old build: every Field Engineer emitter ends now. Its pulses and its marker's removal are
+        /// closures the reload drops, and the emitters hold the pulse callbacks, so they cannot be carried; without this each marker
+        /// placeable (and its visual) would stay in the area for good. Markers whose emitter already ended but still waited on a beacon
+        /// in flight are found by their tag.
+        /// </summary>
+        [ReloadHook(ReloadHookPhase.Quiesce)]
+        public static void EndFieldEngineerPulsesForReload(IReadOnlyList<uint> players)
+        {
+            foreach (var emitter in FieldEngineerPulseEmitters.TakeAll())
+            {
+                if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
+                    Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
+                if (GetIsObjectValid(emitter.MarkerObject))
+                    DestroyObject(emitter.MarkerObject);
+            }
+
+            var markers = new List<uint>();
+            for (var index = 0; ; index++)
+            {
+                var marker = GetObjectByTag(FieldEngineerPulseMarkerTag, index);
+                if (!GetIsObjectValid(marker))
+                    break;
+                markers.Add(marker);
+            }
+
+            foreach (var marker in markers)
+                DestroyObject(marker);
+        }
+
         private static void RemoveFieldEngineerPulseEmitter(FieldEngineerPulseEmitter emitter)
         {
-            if (!_activeFieldEngineerPulseEmitters.TryGetValue(emitter.Activator, out var emitters))
+            if (!FieldEngineerPulseEmitters.TryRemove(emitter))
                 return;
 
-            emitters.Remove(emitter);
             if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
                 Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
 
             if (emitter.PendingProjectileImpacts == 0 && GetIsObjectValid(emitter.MarkerObject))
                 DestroyObject(emitter.MarkerObject);
 
-            if (emitters.Count <= 0)
-                _activeFieldEngineerPulseEmitters.Remove(emitter.Activator);
+            FieldEngineerPulseEmitters.ReleaseIfEmpty(emitter.Activator);
         }
 
         private static uint GetNearestHostileCreature(uint activator, Location location, float radius)

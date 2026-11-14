@@ -15,7 +15,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The area object. Returns OBJECT_INVALID on error</returns>
         public static uint GetArea(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetArea(oTarget);
+            return NWScriptRuntime.Current.GetArea(oTarget);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The value returned depends on the object type of the caller: 1) If the caller is a door, it returns the object that last triggered it. 2) If the caller is a trigger, area of effect, module, area or encounter, it returns the object that last entered it. When used for doors, this should only be called from the OnAreaTransitionClick event. Otherwise, it should only be called in OnEnter scripts.</remarks>
         public static uint GetEnteringObject()
         {
-            return global::NWN.Core.NWScript.GetEnteringObject();
+            return NWScriptRuntime.Current.GetEnteringObject();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This function works on triggers, areas of effect, modules, areas and encounters. Should only be called in OnExit scripts.</remarks>
         public static uint GetExitingObject()
         {
-            return global::NWN.Core.NWScript.GetExitingObject();
+            return NWScriptRuntime.Current.GetExitingObject();
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The position vector. Returns (0.0f, 0.0f, 0.0f) on error</returns>
         public static Vector3 GetPosition(uint oTarget)
         {
-            return global::NWN.Core.NWScript.GetPosition(oTarget);
+            return NWScriptRuntime.Current.GetPosition(oTarget);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to play background music for</param>
         public static void MusicBackgroundPlay(uint oArea)
         {
-            global::NWN.Core.NWScript.MusicBackgroundPlay(oArea);
+            NWScriptRuntime.Current.MusicBackgroundPlay(oArea);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to stop background music for</param>
         public static void MusicBackgroundStop(uint oArea)
         {
-            global::NWN.Core.NWScript.MusicBackgroundStop(oArea);
+            NWScriptRuntime.Current.MusicBackgroundStop(oArea);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nDelay">The delay in milliseconds</param>
         public static void MusicBackgroundSetDelay(uint oArea, int nDelay)
         {
-            global::NWN.Core.NWScript.MusicBackgroundSetDelay(oArea, nDelay);
+            NWScriptRuntime.Current.MusicBackgroundSetDelay(oArea, nDelay);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTrack">The track number to set</param>
         public static void MusicBackgroundChangeDay(uint oArea, int nTrack)
         {
-            global::NWN.Core.NWScript.MusicBackgroundChangeDay(oArea, nTrack);
+            NWScriptRuntime.Current.MusicBackgroundChangeDay(oArea, nTrack);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTrack">The track number to set</param>
         public static void MusicBackgroundChangeNight(uint oArea, int nTrack)
         {
-            global::NWN.Core.NWScript.MusicBackgroundChangeNight(oArea, nTrack);
+            NWScriptRuntime.Current.MusicBackgroundChangeNight(oArea, nTrack);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to play battle music for</param>
         public static void MusicBattlePlay(uint oArea)
         {
-            global::NWN.Core.NWScript.MusicBattlePlay(oArea);
+            NWScriptRuntime.Current.MusicBattlePlay(oArea);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to stop battle music for</param>
         public static void MusicBattleStop(uint oArea)
         {
-            global::NWN.Core.NWScript.MusicBattleStop(oArea);
+            NWScriptRuntime.Current.MusicBattleStop(oArea);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTrack">The track number to set</param>
         public static void MusicBattleChange(uint oArea, int nTrack)
         {
-            global::NWN.Core.NWScript.MusicBattleChange(oArea, nTrack);
+            NWScriptRuntime.Current.MusicBattleChange(oArea, nTrack);
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to play ambient sound for</param>
         public static void AmbientSoundPlay(uint oArea)
         {
-            global::NWN.Core.NWScript.AmbientSoundPlay(oArea);
+            NWScriptRuntime.Current.AmbientSoundPlay(oArea);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to stop ambient sound for</param>
         public static void AmbientSoundStop(uint oArea)
         {
-            global::NWN.Core.NWScript.AmbientSoundStop(oArea);
+            NWScriptRuntime.Current.AmbientSoundStop(oArea);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTrack">The track number to set</param>
         public static void AmbientSoundChangeDay(uint oArea, int nTrack)
         {
-            global::NWN.Core.NWScript.AmbientSoundChangeDay(oArea, nTrack);
+            NWScriptRuntime.Current.AmbientSoundChangeDay(oArea, nTrack);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nTrack">The track number to set</param>
         public static void AmbientSoundChangeNight(uint oArea, int nTrack)
         {
-            global::NWN.Core.NWScript.AmbientSoundChangeNight(oArea, nTrack);
+            NWScriptRuntime.Current.AmbientSoundChangeNight(oArea, nTrack);
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This can be used to update the lighting after changing any tile lights or if placeables with lights have been added/deleted.</remarks>
         public static void RecomputeStaticLighting(uint oArea)
         {
-            global::NWN.Core.NWScript.RecomputeStaticLighting(oArea);
+            NWScriptRuntime.Current.RecomputeStaticLighting(oArea);
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The day track number</returns>
         public static int MusicBackgroundGetDayTrack(uint oArea)
         {
-            return global::NWN.Core.NWScript.MusicBackgroundGetDayTrack(oArea);
+            return NWScriptRuntime.Current.MusicBackgroundGetDayTrack(oArea);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The night track number</returns>
         public static int MusicBackgroundGetNightTrack(uint oArea)
         {
-            return global::NWN.Core.NWScript.MusicBackgroundGetNightTrack(oArea);
+            return NWScriptRuntime.Current.MusicBackgroundGetNightTrack(oArea);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nVolume">The volume level (0-100)</param>
         public static void AmbientSoundSetDayVolume(uint oArea, int nVolume)
         {
-            global::NWN.Core.NWScript.AmbientSoundSetDayVolume(oArea, nVolume);
+            NWScriptRuntime.Current.AmbientSoundSetDayVolume(oArea, nVolume);
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nVolume">The volume level (0-100)</param>
         public static void AmbientSoundSetNightVolume(uint oArea, int nVolume)
         {
-            global::NWN.Core.NWScript.AmbientSoundSetNightVolume(oArea, nVolume);
+            NWScriptRuntime.Current.AmbientSoundSetNightVolume(oArea, nVolume);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The battle track number</returns>
         public static int MusicBackgroundGetBattleTrack(uint oArea)
         {
-            return global::NWN.Core.NWScript.MusicBackgroundGetBattleTrack(oArea);
+            return NWScriptRuntime.Current.MusicBackgroundGetBattleTrack(oArea);
         }
 
         /// <summary>
@@ -229,9 +229,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the area is interior or underground</returns>
         public static bool GetIsAreaInterior(uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetIsAreaInterior(oArea) != 0;
+            return NWScriptRuntime.Current.GetIsAreaInterior(oArea);
         }
 
         /// <summary>
@@ -242,7 +240,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If called on an interior area, this will always return WEATHER_CLEAR.</remarks>
         public static Weather GetWeather(uint oArea)
         {
-            return (Weather)global::NWN.Core.NWScript.GetWeather(oArea);
+            return NWScriptRuntime.Current.GetWeather(oArea);
         }
 
         /// <summary>
@@ -252,7 +250,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>AREA_NATURAL if the area is natural, AREA_ARTIFICIAL otherwise. Returns AREA_INVALID on error</returns>
         public static Natural GetIsAreaNatural(uint oArea)
         {
-            return (Natural)global::NWN.Core.NWScript.GetIsAreaNatural(oArea);
+            return NWScriptRuntime.Current.GetIsAreaNatural(oArea);
         }
 
         /// <summary>
@@ -262,7 +260,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the area is above ground, false if underground</returns>
         public static bool GetIsAreaAboveGround(uint oArea)
         {
-            return global::NWN.Core.NWScript.GetIsAreaAboveGround(oArea) != 0;
+            return NWScriptRuntime.Current.GetIsAreaAboveGround(oArea);
         }
 
         /// <summary>
@@ -272,9 +270,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to change the sky for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         public static void SetSkyBox(Skybox nSkyBox, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetSkyBox((int)nSkyBox, oArea);
+            NWScriptRuntime.Current.SetSkyBox(nSkyBox, oArea);
         }
 
         /// <summary>
@@ -285,9 +281,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to set fog color for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetFogColor((int)nFogType, (int)nFogColor, oArea);
+            NWScriptRuntime.Current.SetFogColor(nFogType, nFogColor, oArea);
         }
 
         /// <summary>
@@ -297,9 +291,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The skybox constant (SKYBOX_*)</returns>
         public static Skybox GetSkyBox(uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            return (Skybox)global::NWN.Core.NWScript.GetSkyBox(oArea);
+            return NWScriptRuntime.Current.GetSkyBox(oArea);
         }
 
         /// <summary>
@@ -310,9 +302,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The fog color constant (FOG_COLOR_*)</returns>
         public static FogColor GetFogColor(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            return (FogColor)global::NWN.Core.NWScript.GetFogColor((int)nFogType, oArea);
+            return NWScriptRuntime.Current.GetFogColor(nFogType, oArea);
         }
 
         /// <summary>
@@ -323,9 +313,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="oArea">The area to set fog amount for. If no valid area is specified, uses the area of caller. If an object other than an area is specified, uses the area that the object is currently in (default: OBJECT_SELF)</param>
         public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetFogAmount((int)nFogType, nFogAmount, oArea);
+            NWScriptRuntime.Current.SetFogAmount(nFogType, nFogAmount, oArea);
         }
 
         /// <summary>
@@ -336,9 +324,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The fog amount</returns>
         public static int GetFogAmount(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetFogAmount((int)nFogType, oArea);
+            return NWScriptRuntime.Current.GetFogAmount(nFogType, oArea);
         }
 
         /// <summary>
@@ -349,7 +335,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Possible values include: TILESET_RESREF_BEHOLDER_CAVES, TILESET_RESREF_CASTLE_INTERIOR, TILESET_RESREF_CITY_EXTERIOR, TILESET_RESREF_CITY_INTERIOR, TILESET_RESREF_CRYPT, TILESET_RESREF_DESERT, TILESET_RESREF_DROW_INTERIOR, TILESET_RESREF_DUNGEON, TILESET_RESREF_FOREST, TILESET_RESREF_FROZEN_WASTES, TILESET_RESREF_ILLITHID_INTERIOR, TILESET_RESREF_MICROSET, TILESET_RESREF_MINES_AND_CAVERNS, TILESET_RESREF_RUINS, TILESET_RESREF_RURAL, TILESET_RESREF_RURAL_WINTER, TILESET_RESREF_SEWERS, TILESET_RESREF_UNDERDARK</remarks>
         public static string GetTilesetResRef(uint oArea)
         {
-            return global::NWN.Core.NWScript.GetTilesetResRef(oArea);
+            return NWScriptRuntime.Current.GetTilesetResRef(oArea);
         }
 
         /// <summary>
@@ -360,9 +346,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The number of tiles that the area is wide/high, or zero on error</returns>
         public static int GetAreaSize(Dimension nAreaDimension, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetAreaSize((int)nAreaDimension, oArea);
+            return NWScriptRuntime.Current.GetAreaSize(nAreaDimension, oArea);
         }
 
         /// <summary>
@@ -373,7 +357,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>If the area is in a module, the .are and .git data is left behind and you can spawn from it again. If the area is a temporary copy, the data will be deleted and you cannot spawn it again via the resref.</remarks>
         public static int DestroyArea(uint oArea)
         {
-            return global::NWN.Core.NWScript.DestroyArea(oArea);
+            return NWScriptRuntime.Current.DestroyArea(oArea);
         }
 
 
@@ -387,7 +371,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The new area is accessible immediately, but initialization scripts for the area and all contained creatures will only run after the current script finishes (so you can clean up objects before returning). When spawning a second instance of an existing area, you will have to manually adjust all transitions (doors, triggers) with the relevant script commands, or players might end up in the wrong area. Areas cannot have duplicate ResRefs, so your new area will have an autogenerated, sequential resref starting with "nw_"; for example: nw_5. You cannot influence this resref. If you destroy an area, that resref will become free for reuse for the next area created. If you need to know the resref of your new area, you can call GetResRef on it. When instancing an area from a loaded savegame, it will spawn the area as it was at time of save, NOT at module creation. This is because the savegame replaces the module data. Due to technical limitations, polymorphed creatures, personal reputation, and associates will currently fail to restore correctly.</remarks>
         public static uint CreateArea(string sSourceResRef, string sNewTag = "", string sNewName = "")
         {
-            return global::NWN.Core.NWScript.CreateArea(sSourceResRef, sNewTag, sNewName);
+            return NWScriptRuntime.Current.CreateArea(sSourceResRef, sNewTag, sNewName);
         }
 
         /// <summary>
@@ -398,7 +382,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This is similar to CreateArea, except this variant will copy all changes made to the source area since it has spawned. CreateArea() will instance the area from the .are and .git data as it was at creation. The new area is accessible immediately, but initialization scripts for the area and all contained creatures will only run after the current script finishes (so you can clean up objects before returning). You will have to manually adjust all transitions (doors, triggers) with the relevant script commands, or players might end up in the wrong area. Areas cannot have duplicate ResRefs, so your new area will have an autogenerated, sequential resref starting with "nw_"; for example: nw_5. You cannot influence this resref. If you destroy an area, that resref will become free for reuse for the next area created. If you need to know the resref of your new area, you can call GetResRef on it.</remarks>
         public static uint CopyArea(uint oArea)
         {
-            return global::NWN.Core.NWScript.CopyArea(oArea);
+            return NWScriptRuntime.Current.CopyArea(oArea);
         }
 
         /// <summary>
@@ -407,7 +391,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The first area in the module</returns>
         public static uint GetFirstArea()
         {
-            return global::NWN.Core.NWScript.GetFirstArea();
+            return NWScriptRuntime.Current.GetFirstArea();
         }
 
         /// <summary>
@@ -416,7 +400,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The next area in the module, or OBJECT_INVALID if no more areas are loaded</returns>
         public static uint GetNextArea()
         {
-            return global::NWN.Core.NWScript.GetNextArea();
+            return NWScriptRuntime.Current.GetNextArea();
         }
 
         /// <summary>
@@ -427,7 +411,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The first object in the area. Returns OBJECT_INVALID on error</returns>
         public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
-            return global::NWN.Core.NWScript.GetFirstObjectInArea(oArea, (int)nObjectFilter);
+            return NWScriptRuntime.Current.GetFirstObjectInArea(oArea, nObjectFilter);
         }
 
         /// <summary>
@@ -438,7 +422,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The next object in the area. Returns OBJECT_INVALID on error</returns>
         public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID, ObjectType nObjectFilter = ObjectType.All)
         {
-            return global::NWN.Core.NWScript.GetNextObjectInArea(oArea, (int)nObjectFilter);
+            return NWScriptRuntime.Current.GetNextObjectInArea(oArea, nObjectFilter);
         }
 
         /// <summary>
@@ -448,7 +432,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The location of the object</returns>
         public static Location GetLocation(uint oObject)
         {
-            return global::NWN.Core.NWScript.GetLocation(oObject);
+            return NWScriptRuntime.Current.GetLocation(oObject);
         }
 
         /// <summary>
@@ -457,7 +441,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="lLocation">The location to jump to. If invalid, nothing will happen</param>
         public static void ActionJumpToLocation(Location lLocation)
         {
-            global::NWN.Core.NWScript.ActionJumpToLocation(lLocation);
+            NWScriptRuntime.Current.ActionJumpToLocation(lLocation);
         }
 
         /// <summary>
@@ -469,7 +453,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The created location</returns>
         public static Location Location(uint oArea, Vector3 vPosition, float fOrientation)
         {
-            return global::NWN.Core.NWScript.Location(oArea, vPosition, fOrientation);
+            return NWScriptRuntime.Current.Location(oArea, vPosition, fOrientation);
         }
 
         /// <summary>
@@ -482,7 +466,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void ApplyEffectAtLocation(DurationType nDurationType, Effect eEffect, Location lLocation,
             float fDuration = 0.0f)
         {
-            global::NWN.Core.NWScript.ApplyEffectAtLocation((int)nDurationType, eEffect, lLocation, fDuration);
+            NWScriptRuntime.Current.ApplyEffectAtLocation(nDurationType, eEffect, lLocation, fDuration);
         }
 
         /// <summary>
@@ -493,7 +477,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bExplored">Whether the map should be completely explored or hidden (default: true)</param>
         public static void ExploreAreaForPlayer(uint oArea, uint oPlayer, bool bExplored = true)
         {
-            global::NWN.Core.NWScript.ExploreAreaForPlayer(oArea, oPlayer, bExplored ? 1 : 0);
+            NWScriptRuntime.Current.ExploreAreaForPlayer(oArea, oPlayer, bExplored);
         }
 
         /// <summary>
@@ -504,7 +488,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Rebinding a transition will NOT change the other end of the transition; for example, with normal doors you will have to do either end separately. Any valid game object can hold a transition target, but only some are used by the game engine (doors and triggers). This might change in the future. You can still set and query them for other game objects from nwscript. Transition target objects are cached: The toolset-configured destination tag is used for a lookup only once, at first use. Thus, attempting to use SetTag() to change the destination for a transition will not work in a predictable fashion.</remarks>
         public static void SetTransitionTarget(uint oTransition, uint oTarget)
         {
-            global::NWN.Core.NWScript.SetTransitionTarget(oTransition, oTarget);
+            NWScriptRuntime.Current.SetTransitionTarget(oTransition, oTarget);
         }
 
         /// <summary>
@@ -514,7 +498,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nWeather">The weather type (WEATHER_* constant). WEATHER_USER_AREA_SETTINGS will set the area back to random weather. WEATHER_CLEAR, WEATHER_RAIN, WEATHER_SNOW will make the weather go to the appropriate precipitation without stopping</param>
         public static void SetWeather(uint oTarget, WeatherType nWeather)
         {
-            global::NWN.Core.NWScript.SetWeather(oTarget, (int)nWeather);
+            NWScriptRuntime.Current.SetWeather(oTarget, nWeather);
         }
 
         /// <summary>
@@ -529,7 +513,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Keep in mind that tile exploration also controls object visibility in areas and the fog of war for interior and underground areas.</remarks>
         public static int SetTileExplored(uint creature, uint area, int x, int y, bool newState)
         {
-            return global::NWN.Core.NWScript.SetTileExplored(creature, area, x, y, newState ? 1 : 0);
+            return NWScriptRuntime.Current.SetTileExplored(creature, area, x, y, newState);
         }
 
         /// <summary>
@@ -543,7 +527,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Keep in mind that tile exploration also controls object visibility in areas and the fog of war for interior and underground areas.</remarks>
         public static int GetTileExplored(uint creature, uint area, int x, int y)
         {
-            return global::NWN.Core.NWScript.GetTileExplored(creature, area, x, y);
+            return NWScriptRuntime.Current.GetTileExplored(creature, area, x, y);
         }
 
         /// <summary>
@@ -555,7 +539,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>Keep in mind that tile exploration also controls object visibility in areas and the fog of war for interior and underground areas. This means that if you turn off auto exploration, it falls to you to manage this through SetTileExplored(); otherwise, the player will not be able to see anything.</remarks>
         public static int SetCreatureExploresMinimap(uint creature, bool newState)
         {
-            return global::NWN.Core.NWScript.SetCreatureExploresMinimap(creature, newState ? 1 : 0);
+            return NWScriptRuntime.Current.SetCreatureExploresMinimap(creature, newState);
         }
 
         /// <summary>
@@ -565,7 +549,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>True if the creature is set to auto-explore (on by default), false if creature is not actually a creature</returns>
         public static int GetCreatureExploresMinimap(uint creature)
         {
-            return global::NWN.Core.NWScript.GetCreatureExploresMinimap(creature);
+            return NWScriptRuntime.Current.GetCreatureExploresMinimap(creature);
         }
 
         /// <summary>
@@ -575,7 +559,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The surface material. Returns 0 if the location is invalid or has no surface type</returns>
         public static int GetSurfaceMaterial(Location at)
         {
-            return global::NWN.Core.NWScript.GetSurfaceMaterial(at);
+            return NWScriptRuntime.Current.GetSurfaceMaterial(at);
         }
 
         /// <summary>
@@ -585,7 +569,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The z-offset of the walkmesh. Returns -6.0 for invalid locations</returns>
         public static float GetGroundHeight(Location at)
         {
-            return global::NWN.Core.NWScript.GetGroundHeight(at);
+            return NWScriptRuntime.Current.GetGroundHeight(at);
         }
 
         /// <summary>
@@ -597,9 +581,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This function will tell you if the creature has triggered an onEnter event, not if it is physically within the space of the subarea</remarks>
         public static bool GetIsInSubArea(uint oCreature, uint oSubArea = OBJECT_INVALID)
         {
-            if (oSubArea == OBJECT_INVALID)
-                oSubArea = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetIsInSubArea(oCreature, oSubArea) != 0;
+            return NWScriptRuntime.Current.GetIsInSubArea(oCreature, oSubArea);
         }
 
         /// <summary>
@@ -610,7 +592,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="nMainLight2Color">The main light 2 color (TILE_MAIN_LIGHT_COLOR_* constant)</param>
         public static void SetTileMainLightColor(Location lTileLocation, int nMainLight1Color, int nMainLight2Color)
         {
-            global::NWN.Core.NWScript.SetTileMainLightColor(lTileLocation, nMainLight1Color, nMainLight2Color);
+            NWScriptRuntime.Current.SetTileMainLightColor(lTileLocation, nMainLight1Color, nMainLight2Color);
         }
 
         /// <summary>
@@ -622,7 +604,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetTileSourceLightColor(Location lTileLocation, int nSourceLight1Color,
             int nSourceLight2Color)
         {
-            global::NWN.Core.NWScript.SetTileSourceLightColor(lTileLocation, nSourceLight1Color, nSourceLight2Color);
+            NWScriptRuntime.Current.SetTileSourceLightColor(lTileLocation, nSourceLight1Color, nSourceLight2Color);
         }
 
         /// <summary>
@@ -632,7 +614,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The main light 1 color (TILE_MAIN_LIGHT_COLOR_* constant)</returns>
         public static int GetTileMainLight1Color(Location lTile)
         {
-            return global::NWN.Core.NWScript.GetTileMainLight1Color(lTile);
+            return NWScriptRuntime.Current.GetTileMainLight1Color(lTile);
         }
 
         /// <summary>
@@ -642,7 +624,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The main light 2 color (TILE_MAIN_LIGHT_COLOR_* constant)</returns>
         public static int GetTileMainLight2Color(Location lTile)
         {
-            return global::NWN.Core.NWScript.GetTileMainLight2Color(lTile);
+            return NWScriptRuntime.Current.GetTileMainLight2Color(lTile);
         }
 
         /// <summary>
@@ -652,7 +634,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The source light 1 color (TILE_SOURCE_LIGHT_COLOR_* constant)</returns>
         public static int GetTileSourceLight1Color(Location lTile)
         {
-            return global::NWN.Core.NWScript.GetTileSourceLight1Color(lTile);
+            return NWScriptRuntime.Current.GetTileSourceLight1Color(lTile);
         }
 
         /// <summary>
@@ -662,7 +644,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The source light 2 color (TILE_SOURCE_LIGHT_COLOR_* constant)</returns>
         public static int GetTileSourceLight2Color(Location lTile)
         {
-            return global::NWN.Core.NWScript.GetTileSourceLight2Color(lTile);
+            return NWScriptRuntime.Current.GetTileSourceLight2Color(lTile);
         }
 
         /// <summary>
@@ -672,7 +654,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bEnabled">Whether the map pin is enabled (0=Off, 1=On) (default: true)</param>
         public static void SetMapPinEnabled(uint oMapPin, bool bEnabled = true)
         {
-            global::NWN.Core.NWScript.SetMapPinEnabled(oMapPin, bEnabled ? 1 : 0);
+            NWScriptRuntime.Current.SetMapPinEnabled(oMapPin, bEnabled);
         }
 
         /// <summary>
@@ -682,7 +664,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The area's object ID</returns>
         public static uint GetAreaFromLocation(Location lLocation)
         {
-            return global::NWN.Core.NWScript.GetAreaFromLocation(lLocation);
+            return NWScriptRuntime.Current.GetAreaFromLocation(lLocation);
         }
 
         /// <summary>
@@ -692,7 +674,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The position vector</returns>
         public static Vector3 GetPositionFromLocation(Location lLocation)
         {
-            return global::NWN.Core.NWScript.GetPositionFromLocation(lLocation);
+            return NWScriptRuntime.Current.GetPositionFromLocation(lLocation);
         }
 
         /// <summary>
@@ -704,7 +686,7 @@ namespace SWLOR.NWN.API.NWScript
         public static void SetAreaTransitionBMP(AreaTransition nPredefinedAreaTransition,
             string sCustomAreaTransitionBMP = "")
         {
-            global::NWN.Core.NWScript.SetAreaTransitionBMP((int)nPredefinedAreaTransition, sCustomAreaTransitionBMP);
+            NWScriptRuntime.Current.SetAreaTransitionBMP(nPredefinedAreaTransition, sCustomAreaTransitionBMP);
         }
 
 
@@ -719,7 +701,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>The predefined values in the toolset are: NONE: vDirection=(1.0, 1.0, 0.0), fMagnitude=0.0, fYaw=0.0, fPitch=0.0; LIGHT: vDirection=(1.0, 1.0, 0.0), fMagnitude=1.0, fYaw=100.0, fPitch=3.0; HEAVY: vDirection=(1.0, 1.0, 0.0), fMagnitude=2.0, fYaw=150.0, fPitch=5.0</remarks>
         public static void SetAreaWind(uint oArea, Vector3 vDirection, float fMagnitude, float fYaw, float fPitch)
         {
-            global::NWN.Core.NWScript.SetAreaWind(oArea, vDirection, fMagnitude, fYaw, fPitch);
+            NWScriptRuntime.Current.SetAreaWind(oArea, vDirection, fMagnitude, fYaw, fPitch);
         }
 
         /// <summary>
@@ -730,9 +712,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The light color</returns>
         public static int GetAreaLightColor(AreaLightColorType nColorType, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetAreaLightColor((int)nColorType, oArea);
+            return NWScriptRuntime.Current.GetAreaLightColor(nColorType, oArea);
         }
 
         /// <summary>
@@ -748,9 +728,7 @@ namespace SWLOR.NWN.API.NWScript
             uint oArea = OBJECT_INVALID,
             float fFadeTime = 0.0f)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetAreaLightColor((int)nColorType, (int)nColor, oArea, fFadeTime);
+            NWScriptRuntime.Current.SetAreaLightColor(nColorType, nColor, oArea, fFadeTime);
         }
 
         /// <summary>
@@ -761,9 +739,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The light direction vector</returns>
         public static Vector3 GetAreaLightDirection(AreaLightDirectionType nLightType, uint oArea = OBJECT_INVALID)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetAreaLightDirection((int)nLightType, oArea);
+            return NWScriptRuntime.Current.GetAreaLightDirection(nLightType, oArea);
         }
 
         /// <summary>
@@ -779,9 +755,7 @@ namespace SWLOR.NWN.API.NWScript
             uint oArea = OBJECT_INVALID,
             float fFadeTime = 0.0f)
         {
-            if (oArea == OBJECT_INVALID)
-                oArea = OBJECT_SELF;
-            global::NWN.Core.NWScript.SetAreaLightDirection((int)nLightType, vDirection, oArea, fFadeTime);
+            NWScriptRuntime.Current.SetAreaLightDirection(nLightType, vDirection, oArea, fFadeTime);
         }
 
         /// <summary>
@@ -795,9 +769,7 @@ namespace SWLOR.NWN.API.NWScript
             ObjectType nResidentObjectType = ObjectType.Creature,
             PersistentZone nPersistentZone = PersistentZone.Active)
         {
-            if (oPersistentObject == OBJECT_INVALID)
-                oPersistentObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetFirstInPersistentObject(oPersistentObject, (int)nResidentObjectType, (int)nPersistentZone);
+            return NWScriptRuntime.Current.GetFirstInPersistentObject(oPersistentObject, nResidentObjectType, nPersistentZone);
         }
 
         /// <summary>
@@ -811,9 +783,7 @@ namespace SWLOR.NWN.API.NWScript
             ObjectType nResidentObjectType = ObjectType.Creature,
             PersistentZone nPersistentZone = PersistentZone.Active)
         {
-            if (oPersistentObject == OBJECT_INVALID)
-                oPersistentObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetNextInPersistentObject(oPersistentObject, (int)nResidentObjectType, (int)nPersistentZone);
+            return NWScriptRuntime.Current.GetNextInPersistentObject(oPersistentObject, nResidentObjectType, nPersistentZone);
         }
 
         /// <summary>
@@ -823,9 +793,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The creator of the area of effect object. Returns OBJECT_INVALID if the object is not a valid Area of Effect object</returns>
         public static uint GetAreaOfEffectCreator(uint oAreaOfEffectObject = OBJECT_INVALID)
         {
-            if (oAreaOfEffectObject == OBJECT_INVALID)
-                oAreaOfEffectObject = OBJECT_SELF;
-            return global::NWN.Core.NWScript.GetAreaOfEffectCreator(oAreaOfEffectObject);
+            return NWScriptRuntime.Current.GetAreaOfEffectCreator(oAreaOfEffectObject);
         }
 
         /// <summary>
@@ -836,7 +804,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The distance between the locations</returns>
         public static float GetDistanceBetweenLocations(Location lLocationA, Location lLocationB)
         {
-            return global::NWN.Core.NWScript.GetDistanceBetweenLocations(lLocationA, lLocationB);
+            return NWScriptRuntime.Current.GetDistanceBetweenLocations(lLocationA, lLocationB);
         }
 
         /// <summary>
@@ -855,7 +823,7 @@ namespace SWLOR.NWN.API.NWScript
             int nHeight = 0,
             SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting)
         {
-            global::NWN.Core.NWScript.SetTile(locTile, nTileID, nOrientation, nHeight, (int)nFlags);
+            NWScriptRuntime.Current.SetTile(locTile, nTileID, nOrientation, nHeight, nFlags);
         }
 
         /// <summary>
@@ -865,7 +833,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The tile ID. Returns -1 on error</returns>
         public static int GetTileID(Location locTile)
         {
-            return global::NWN.Core.NWScript.GetTileID(locTile);
+            return NWScriptRuntime.Current.GetTileID(locTile);
         }
 
         /// <summary>
@@ -875,7 +843,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The tile orientation. Returns -1 on error</returns>
         public static int GetTileOrientation(Location locTile)
         {
-            return global::NWN.Core.NWScript.GetTileOrientation(locTile);
+            return NWScriptRuntime.Current.GetTileOrientation(locTile);
         }
 
         /// <summary>
@@ -885,7 +853,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The tile height. Returns -1 on error</returns>
         public static int GetTileHeight(Location locTile)
         {
-            return global::NWN.Core.NWScript.GetTileHeight(locTile);
+            return NWScriptRuntime.Current.GetTileHeight(locTile);
         }
 
         /// <summary>
@@ -895,7 +863,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This can be used to update the grass of an area after changing a tile with SetTile() that will have or used to have grass.</remarks>
         public static void ReloadAreaGrass(uint oArea)
         {
-            global::NWN.Core.NWScript.ReloadAreaGrass(oArea);
+            NWScriptRuntime.Current.ReloadAreaGrass(oArea);
         }
 
         /// <summary>
@@ -907,7 +875,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="bAnimLoop3">The state of animation loop 3</param>
         public static void SetTileAnimationLoops(Location locTile, bool bAnimLoop1, bool bAnimLoop2, bool bAnimLoop3)
         {
-            global::NWN.Core.NWScript.SetTileAnimationLoops(locTile, bAnimLoop1 ? 1 : 0, bAnimLoop2 ? 1 : 0, bAnimLoop3 ? 1 : 0);
+            NWScriptRuntime.Current.SetTileAnimationLoops(locTile, bAnimLoop1, bAnimLoop2, bAnimLoop3);
         }
 
         /// <summary>
@@ -924,7 +892,7 @@ namespace SWLOR.NWN.API.NWScript
             SetTileFlagType nFlags = SetTileFlagType.RecomputeLighting,
             string sTileset = "")
         {
-            global::NWN.Core.NWScript.SetTileJson(oArea, jTileData, (int)nFlags, sTileset);
+            NWScriptRuntime.Current.SetTileJson(oArea, jTileData, nFlags, sTileset);
         }
 
         /// <summary>
@@ -934,7 +902,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <remarks>This can be used to update the edge tiles after changing a tile with SetTile().</remarks>
         public static void ReloadAreaBorder(uint oArea)
         {
-            global::NWN.Core.NWScript.ReloadAreaBorder(oArea);
+            NWScriptRuntime.Current.ReloadAreaBorder(oArea);
         }
     }
 }

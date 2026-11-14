@@ -8,10 +8,8 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -79,7 +77,7 @@ public class ForceUniversalTests
         source.Should().Contain("SkillType.Force,\n                ForcePush3BaseDamage,");
         source.Split("useUnscaledDamage: true", StringSplitOptions.None)
             .Should().HaveCount(4, "all three Force Push ranks must bypass stat and critical scaling");
-        source.Should().NotContain("Combat.ApplyTriggeredDamage(",
+        source.Should().NotContain("GameServices.CombatHitEffects.ApplyTriggeredDamage(",
             "Force Push damage should retain the primary ability-damage pipeline");
     }
 
@@ -141,7 +139,7 @@ public class ForceUniversalTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ThrowLightsaberAbilityDefinition.cs").FullName);
 
         source.Should().Contain("candidate => candidate == target || IsTargetAlongPath");
-        source.Should().Contain("Combat.BuildAbilityNoTargetCombatLogMessage");
+        source.Should().Contain("GameServices.CombatFeedback.BuildAbilityNoTargetCombatLogMessage");
     }
 
     [Test]
@@ -383,7 +381,7 @@ public class ForceUniversalTests
     [TestCase(7)]
     public void ForceConvergence_TicksAddUpToExactlyTheFortyPercentBudget(int maxFP)
     {
-        var total = SWLOR.Game.Server.Service.GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercent);
+        var total = SWLOR.Game.Server.Domain.Foundation.GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercent);
         var ticks = Enumerable.Range(1, ForceConvergenceStatusEffect.FPRestoreTicks)
             .Select(tick => ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, tick)
                             - ForceConvergenceStatusEffect.GetFPRestoredThroughTick(total, tick - 1))

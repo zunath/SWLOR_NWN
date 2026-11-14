@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.SnippetService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
@@ -105,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                 .Argument("amount", SnippetArgumentType.Amount)
                 .AppearsWhenAction((_, args) =>
                     TryReadAmount("condition-random-chance", args, out var chance) &&
-                    SWLOR.Game.Server.Service.Random.D100(1) <= Math.Clamp(chance, 0, 100));
+                    SWLOR.Game.Server.Domain.Foundation.Random.D100(1) <= Math.Clamp(chance, 0, 100));
         }
 
         private void PlayerClassCondition()

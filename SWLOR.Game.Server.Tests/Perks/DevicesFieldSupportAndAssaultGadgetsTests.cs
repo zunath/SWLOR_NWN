@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -6,19 +7,33 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class DevicesFieldSupportAndAssaultGadgetsTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     private static readonly string[] RankConstants = { "Rank1BaseDamage", "Rank2BaseDamage", "Rank3BaseDamage" };
 
     // Assault Gadgets add Gadget DMG the way weapon abilities add weapon DMG, so each ability's
@@ -144,12 +159,13 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         // stuck at the minimum Gadget DMG.
         Enum.GetNames(typeof(DroidStatSubType)).Should().NotContain("Devices");
 
-        var cacheDroidLevels = typeof(Droid).GetMethod("CacheDroidLevels", BindingFlags.NonPublic | BindingFlags.Static);
+        var droid = _facades.Get<IDroidService>();
+        var cacheDroidLevels = typeof(DroidService).GetMethod("CacheDroidLevels", BindingFlags.NonPublic | BindingFlags.Instance);
         cacheDroidLevels.Should().NotBeNull();
-        cacheDroidLevels!.Invoke(null, null);
-        var levelsByTier = (Dictionary<int, int>)typeof(Droid)
-            .GetField("_levelsByTier", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        cacheDroidLevels!.Invoke(droid, null);
+        var levelsByTier = (Dictionary<int, int>)typeof(DroidService)
+            .GetField("_levelsByTier", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .GetValue(droid)!;
 
         var gadgetDMGByTier = levelsByTier.OrderBy(tier => tier.Key).ToDictionary(
             tier => tier.Key,
@@ -355,26 +371,25 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     [Test]
     public void AssaultGadgetCriticalChance_IsAdditiveAndObservable()
     {
-        Combat.CalculateAbilityCriticalChance(0).Should().Be(5);
-        Combat.CalculateAbilityCriticalChance(8).Should().Be(13,
+        CombatRules.CalculateAbilityCriticalChance(0).Should().Be(5);
+        CombatRules.CalculateAbilityCriticalChance(8).Should().Be(13,
             "Gadget Harness adds eight points to the five-percent ability baseline");
-        Combat.CalculateAbilityCriticalChance(13).Should().Be(18,
+        CombatRules.CalculateAbilityCriticalChance(13).Should().Be(18,
             "Gadget Harness and Tactical Uplink stack additively");
-        Combat.CalculateAbilityCriticalChance(100).Should().Be(50);
-        Combat.CalculateAbilityCriticalChance(-100).Should().Be(5);
+        CombatRules.CalculateAbilityCriticalChance(100).Should().Be(50);
+        CombatRules.CalculateAbilityCriticalChance(-100).Should().Be(5);
 
         var root = FindRepositoryRoot();
         var characterSheet = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "CharacterSheetViewModel.cs").FullName);
         var ability = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
-        var combat = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+            (root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
+        var combat = CombatSource.Read();
 
         characterSheet.Should().Contain("Assault Gadget Crit");
-        ability.Split("Combat.SendAbilityCriticalHitFeedback(").Should().HaveCount(3,
+        ability.Split("                SendAbilityCriticalHitFeedback(").Should().HaveCount(3,
             "player and NPC-scaled ability criticals both need visible combat feedback");
-        combat.Should().Contain("PlayerName.GetColoredDisplayName(observer, attacker)");
+        combat.Should().Contain("_playerName.GetColoredDisplayName(observer, attacker)");
         combat.Should().Contain("critically hits");
     }
 

@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
@@ -26,14 +26,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string KilledByPlayerVariable = "REVIVE_KILLED_BY_PLAYER";
         private const string BeastKilledByPlayerVariable = "REVIVE_BEAST_KILLED_BY_PLAYER_";
 
-        private static readonly Dictionary<string, DateTime> _lastMidFightReviveAt = new();
-        private static readonly Dictionary<string, DateTime> _deathAt = new();
-
         /// <summary>Records when a player died and whether a player, or a player's pet or droid, dealt the killing blow.</summary>
         public static void RecordPlayerDeath(uint deceased, uint killer)
         {
             SetLocalBool(deceased, KilledByPlayerVariable, PvpCombat.IsPlayerControlled(killer));
-            _deathAt[GetObjectUUID(deceased)] = DateTime.UtcNow;
+            ReviveHistory.RecordDeath(GetObjectUUID(deceased), DateTime.UtcNow);
         }
 
         /// <summary>Records on the master whether this beast was killed by a player or a player's pet.</summary>
@@ -43,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return;
 
             SetLocalBool(master, BeastKilledByPlayerVariable + beastId, PvpCombat.IsPlayerControlled(killer));
-            _deathAt[BeastDeathKey(master, beastId)] = DateTime.UtcNow;
+            ReviveHistory.RecordDeath(BeastDeathKey(master, beastId), DateTime.UtcNow);
         }
 
         public static string ValidateResuscitation(uint caster, uint body)
@@ -72,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         public static void RecordResuscitation(uint caster, uint body)
         {
             if (PvpCombat.IsPlayer(body) && IsMidFight(caster, body))
-                _lastMidFightReviveAt[GetObjectUUID(body)] = DateTime.UtcNow;
+                ReviveHistory.RecordMidFightRevive(GetObjectUUID(body), DateTime.UtcNow);
         }
 
         public static bool IsWithinMidFightLockout(DateTime? lastMidFightReviveAt, DateTime now)
@@ -90,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static DateTime? GetLastMidFightRevive(uint body)
         {
-            return _lastMidFightReviveAt.TryGetValue(GetObjectUUID(body), out var revivedAt) ? revivedAt : null;
+            return ReviveHistory.GetLastMidFightRevive(GetObjectUUID(body));
         }
 
         private static string ValidatePvp(uint caster, uint body, bool killedByPlayer, string deathKey)
@@ -124,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static DateTime? GetDeathTime(string key)
         {
-            return _deathAt.TryGetValue(key, out var diedAt) ? diedAt : null;
+            return ReviveHistory.GetDeathTime(key);
         }
 
         private static bool HasPartyTakenRecentDamageNear(uint caster, uint body)
@@ -141,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 // The dead never record their killing blow as recent damage, so the time they died stands in for it.
                 var recentlyHit = GetIsDead(member)
                     ? IsWithinPartyDamageWindow(GetDeathTime(GetObjectUUID(member)), DateTime.UtcNow)
-                    : Combat.HasRecentDamageTaken(member, PartyDamageWindowSeconds);
+                    : GameServices.CombatActivity.HasRecentDamageTaken(member, PartyDamageWindowSeconds);
                 if (recentlyHit)
                     return true;
             }

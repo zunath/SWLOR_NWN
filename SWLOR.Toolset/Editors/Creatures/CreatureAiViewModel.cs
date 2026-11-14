@@ -1,5 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 
 namespace SWLOR.Toolset.Editors.Creatures

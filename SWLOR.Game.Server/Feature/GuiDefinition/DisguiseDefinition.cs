@@ -1,8 +1,8 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -262,8 +262,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             group.SetScrollbars(NuiScrollbars.None);
             group.AddColumn(col =>
             {
-                AddTextField(col, "Private Slot Label  (only you see this)", model => model.PrivateName, Disguise.MaxPrivateNameLength);
-                AddTextField(col, "Public Description  (shown to others)", model => model.Descriptor, PlayerName.MaxKnownNameLength);
+                AddTextField(col, "Private Slot Label  (only you see this)", model => model.PrivateName, DisguiseService.MaxPrivateNameLength);
+                AddTextField(col, "Public Description  (shown to others)", model => model.Descriptor, PlayerNameService.MaxKnownNameLength);
                 AddBiographyField(col);
                 AddSoundSetField(col);
 
@@ -319,7 +319,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindValue(model => model.Biography)
                     .SetPlaceholder("Describe what others can observe while this disguise is active.")
                     .SetIsMultiline(true)
-                    .SetMaxLength(Disguise.MaxBiographyLength)
+                    .SetMaxLength(DisguiseService.MaxBiographyLength)
                     .SetWidth(FormFieldWidth)
                     .SetHeight(BiographyFieldHeight)
                     .BindIsEnabled(model => model.IsEditMode);

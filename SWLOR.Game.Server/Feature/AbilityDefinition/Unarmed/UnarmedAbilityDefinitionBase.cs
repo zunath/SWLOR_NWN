@@ -1,10 +1,10 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
 {
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                 .UsesImpactAnimation(Animation.DoubleStrike)
                 .HasActivationAction((activator, target, level, location) =>
                 {
-                    Combat.StoreAbilityActivationIdleBonuses(activator, SkillType.Unarmed);
+                    GameServices.CombatActivity.StoreAbilityActivationIdleBonuses(activator, SkillType.Unarmed);
                     return true;
                 })
                 .HasImpactAction((activator, target, level, location) =>
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Unarmed
                     }
                     finally
                     {
-                        Combat.ClearAbilityActivationIdleBonuses(activator);
+                        GameServices.CombatActivity.ClearAbilityActivationIdleBonuses(activator);
                     }
                 })
                 .RequirementStamina(stamina);

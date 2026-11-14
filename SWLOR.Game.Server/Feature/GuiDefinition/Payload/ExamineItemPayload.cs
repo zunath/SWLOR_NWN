@@ -1,5 +1,6 @@
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
 {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
             BaseItemName = GetBaseItemName(type);
             ItemName = IsIdentified ? GetName(item) : ExamineItemSheet.UnidentifiedTitle(BaseItemName);
             Description = GetDescription(item, false, IsIdentified);
-            IconResref = Service.Item.GetIconResref(item);
+            IconResref = Item.GetIconResref(item);
             IconSlotWidth = GetBaseItemSlots(type, "InvSlotWidth");
             IconSlotHeight = GetBaseItemSlots(type, "InvSlotHeight");
             if (trackLiveItem)
@@ -52,12 +53,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
         public void Capture(uint item)
         {
             ItemProperties = IsIdentified
-                ? ExamineItemSheet.SortProperties(Service.Item.BuildItemPropertyString(item))
+                ? ExamineItemSheet.SortProperties(Item.BuildItemPropertyString(item))
                 : string.Empty;
             Weight = GetWeight(item);
             StackSize = GetItemStackSize(item);
             Charges = GetItemCharges(item);
-            ItemDMG = Service.Item.GetDMG(item);
+            ItemDMG = Item.GetDMG(item);
             HasItemDMG = GetItemHasItemProperty(item, ItemPropertyType.DMG);
         }
 

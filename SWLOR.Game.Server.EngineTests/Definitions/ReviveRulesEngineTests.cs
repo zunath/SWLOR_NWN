@@ -1,9 +1,11 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -54,7 +56,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 var attacker = ctx.SpawnCreature("nw_rat001", -3f);
                 AssignCommand(attacker, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(1), caster));
-                await ctx.WaitUntilAsync(() => Combat.HasRecentDamageTaken(caster, 1f), 3f, "the caster to register damage");
+                await ctx.WaitUntilAsync(() => GameServices.CombatActivity.HasRecentDamageTaken(caster, 1f), 3f, "the caster to register damage");
                 // Only the one scripted hit may count, so the attacker can't keep the window open.
                 DestroyObject(attacker);
 
@@ -82,7 +84,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ctx.Assert(!GetIsReactionTypeHostile(player.Creature, caster), "the player is not hostile to the caster");
                 ReviveRules.RecordPlayerDeath(body, player.Creature);
-                ctx.Assert(!Combat.HasRecentDamageTaken(caster, ReviveRules.PartyDamageWindowSeconds), "nobody in the party was hit");
+                ctx.Assert(!GameServices.CombatActivity.HasRecentDamageTaken(caster, ReviveRules.PartyDamageWindowSeconds), "nobody in the party was hit");
 
                 var (activated, denial) = await TryReviveAsync(ctx, caster, body);
                 ctx.Assert(!activated, "the revive is refused right after the kill");
@@ -139,7 +141,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // them back up well before the 4-second cast would finish.
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), caster);
                 await ctx.WaitUntilAsync(() => GetIsDead(caster), 5f, "the caster to die");
-                Combat.ApplyDamageTakenEffects(caster, attacker, 50);
+                GameServices.CombatDamageTaken.ApplyDamageTakenEffects(caster, attacker, 50);
                 ApplyEffectToObject(DurationType.Instant, EffectResurrection(), caster);
                 await ctx.WaitUntilAsync(() => !GetIsDead(caster), 2f, "the caster to be back up");
 
@@ -203,7 +205,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 if (!GetIsObjectValid(placeable) || GetDistanceBetween(body, placeable) > 10f)
                     break;
 
-                if (GetLocalObject(placeable, Loot.CorpseBodyVariable) == body)
+                if (GetLocalObject(placeable, LootService.CorpseBodyVariable) == body)
                 {
                     DestroyObject(placeable);
                     break;

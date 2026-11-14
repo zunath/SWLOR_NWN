@@ -1,19 +1,30 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class EquipmentRecipeProgressionTests
 {
-    private static readonly Dictionary<RecipeType, RecipeDetail> Recipes = typeof(IRecipeListDefinition).Assembly
-        .GetTypes()
-        .Where(type => typeof(IRecipeListDefinition).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
-        .SelectMany(type => ((IRecipeListDefinition)Activator.CreateInstance(type)!).BuildRecipes())
-        .GroupBy(pair => pair.Key)
-        .ToDictionary(group => group.Key, group => group.First().Value);
+    private static readonly Dictionary<RecipeType, RecipeDetail> Recipes = BuildAllRecipes();
+
+    // Some recipe definitions read the skill catalog through the Skill facade while they build, which needs a container.
+    private static Dictionary<RecipeType, RecipeDetail> BuildAllRecipes()
+    {
+        using var facades = new FacadeContainer();
+        using (facades.Install())
+        {
+            return typeof(IRecipeListDefinition).Assembly
+                .GetTypes()
+                .Where(type => typeof(IRecipeListDefinition).IsAssignableFrom(type) && !type.IsInterface && !type.IsAbstract)
+                .SelectMany(type => ((IRecipeListDefinition)Activator.CreateInstance(type)!).BuildRecipes())
+                .GroupBy(pair => pair.Key)
+                .ToDictionary(group => group.Key, group => group.First().Value);
+        }
+    }
 
     public static IEnumerable<TestCaseData> IntermediateRecipes() => Recipes
         .Where(pair => IsIntermediateEquipment(pair.Value))

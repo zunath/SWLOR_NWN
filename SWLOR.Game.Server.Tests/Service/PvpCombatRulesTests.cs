@@ -1,8 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PvpCombatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -80,13 +79,22 @@ public class PvpCombatRulesTests
     {
         const StatusEffectCategory hardControl = StatusEffectCategory.Control | StatusEffectCategory.HardCrowdControl;
 
-        StatusEffect.ClampHardCrowdControlDurationTicks(hardControl, 60, 1f, isPlayerAgainstPlayer: true)
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(hardControl, 60, 1f, isPlayerAgainstPlayer: true)
             .Should().Be(15, "the 30-second budget applies first, then players take half");
-        StatusEffect.ClampHardCrowdControlDurationTicks(hardControl, 10, 1f, isPlayerAgainstPlayer: true).Should().Be(5);
-        StatusEffect.ClampHardCrowdControlDurationTicks(hardControl, 10, 1f).Should().Be(10, "NPC targets keep the full duration");
-        StatusEffect.ClampHardCrowdControlDurationTicks(StatusEffectCategory.Control, 10, 1f, isPlayerAgainstPlayer: true)
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(hardControl, 10, 1f, isPlayerAgainstPlayer: true).Should().Be(5);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(hardControl, 10, 1f).Should().Be(10, "NPC targets keep the full duration");
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(StatusEffectCategory.Control, 10, 1f, isPlayerAgainstPlayer: true)
             .Should().Be(10, "soft control is not shortened");
-        StatusEffect.ClampHardCrowdControlDurationTicks(hardControl, 60, 1f, isSelfApplied: true, isPlayerAgainstPlayer: true)
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(hardControl, 60, 1f, isSelfApplied: true, isPlayerAgainstPlayer: true)
             .Should().Be(60, "self-applied control such as subdual keeps its duration");
+    }
+
+    [Test]
+    public void TheRampTablesKeepTheOrderTheStepsWereWrittenIn()
+    {
+        PvpCombatRules.HealingReductionSteps.Select(step => (step.AtSeconds, step.Percent)).Should().Equal(
+            (120f, 10), (150f, 20), (180f, 30), (210f, 45), (240f, 60));
+        PvpCombatRules.DamageIncreaseSteps.Select(step => (step.AtSeconds, step.Percent)).Should().Equal(
+            (180f, 20), (210f, 40), (240f, 60), (270f, 80), (300f, 100));
     }
 }

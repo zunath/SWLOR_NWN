@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWNX;
@@ -91,9 +90,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return item;
         }
 
-        private static void Repair(uint item) => typeof(Item)
-            .GetMethod("EnsureItemAndContentsActivations", BindingFlags.Static | BindingFlags.NonPublic)
-            .Invoke(null, new object[] { item });
+        private static void Repair(uint item) => ItemInternals.Invoke("EnsureItemAndContentsActivations", item);
 
         private static int CountActivations(uint item)
         {

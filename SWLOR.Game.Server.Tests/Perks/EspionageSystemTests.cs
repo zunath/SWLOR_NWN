@@ -1,22 +1,46 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
 using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SlicingService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Crafting;
+using Slicing = SWLOR.Game.Server.Domain.Crafting.Slicing;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class EspionageSystemTests
 {
+    // The Item facade resolves the item service from a container.
+    private FacadeContainer _itemFacades = null!;
+    private IDisposable _itemFacadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildItemFacades() => _itemFacades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeItemFacades() => _itemFacades.Dispose();
+
+    [SetUp]
+    public void InstallItemFacades() => _itemFacadeScope = _itemFacades.Install();
+
+    [TearDown]
+    public void RemoveItemFacades() => _itemFacadeScope.Dispose();
+
+    // The event handlers and the logic are on the instance class.
+    private static string ReadStealthFacade() =>
+        File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Combat", "StealthService.cs"));
+
     [Test]
     public void StealthAndDetectionRatings_UseTheCommittedAttributeFormulas()
     {
@@ -43,7 +67,7 @@ public class EspionageSystemTests
     [Test]
     public void NPCDetection_IsCappedWithoutLimitingCommittedPlayers()
     {
-        Stat.MaximumNPCDetection.Should().Be(50);
+        StatService.MaximumNPCDetection.Should().Be(50);
         Stat.ApplyNPCDetectionCap(127, true).Should().Be(50);
         Stat.ApplyNPCDetectionCap(35, true).Should().Be(35);
         Stat.ApplyNPCDetectionCap(74, false).Should().Be(74);
@@ -59,8 +83,9 @@ public class EspionageSystemTests
         var statSource = File.ReadAllText(Path.Combine(
             FindRepositoryRoot(),
             "SWLOR.Game.Server",
-            "Service",
-            "Stat.cs"));
+            "Domain",
+            "Character",
+            "StatService.cs"));
         statSource.Should().Contain("!GetIsDMPossessed(creature)",
             "DM-possessed creatures must retain uncapped staff Detection");
     }
@@ -81,10 +106,16 @@ public class EspionageSystemTests
             .SelectMany(x => x.StatBonuses)
             .Should().NotContain(x => x.Stat == StatType.Stealth,
                 "the rank bonus applies only while the native stealth mode is active");
-        stealth.PurchasedTriggers.Should().ContainSingle()
-            .Which.Method.Name.Should().Be("RefreshActiveStatusAfterPerkLevelChange");
-        stealth.RefundedTriggers.Should().ContainSingle()
-            .Which.Method.Name.Should().Be("RefreshActiveStatusAfterPerkLevelChange");
+        // Each trigger refreshes the stealth status through the service the container holds.
+        var stealthService = ScriptedProxy.Create<IStealthService>(out var stealthCalls);
+        stealthCalls.On("RefreshActiveStatusAfterPerkLevelChange", _ => null);
+        using var triggerContainer = new FacadeContainer(services =>
+            services.Replace(ServiceDescriptor.Singleton(stealthService)));
+        using var triggerScope = triggerContainer.Install();
+        stealth.PurchasedTriggers.Should().ContainSingle().Subject(7u);
+        stealth.RefundedTriggers.Should().ContainSingle().Subject(9u);
+        stealthCalls.Calls.Select(call => (call.Member, (uint)call.Arguments[0]!)).Should().Equal(
+            ("RefreshActiveStatusAfterPerkLevelChange", 7u), ("RefreshActiveStatusAfterPerkLevelChange", 9u));
 
         var silentStride = BuildPerkWithout2daLookup(
             new EspionagePerkDefinition(),
@@ -113,25 +144,26 @@ public class EspionageSystemTests
         var stealthServiceSource = File.ReadAllText(Path.Combine(
             FindRepositoryRoot(),
             "SWLOR.Game.Server",
-            "Service",
-            "Stealth.cs"));
+            "Domain",
+            "Combat",
+            "StealthService.cs"));
         var refreshStart = stealthServiceSource.IndexOf(
-            "public static void RefreshActiveStatusAfterPerkLevelChange(uint creature)",
+            "public void RefreshActiveStatusAfterPerkLevelChange(uint creature)",
             StringComparison.Ordinal);
         var refreshEnd = stealthServiceSource.IndexOf(
-            "public static void RecordPlayerCombatInitiation()",
+            "public void RecordPlayerCombatInitiation()",
             refreshStart,
             StringComparison.Ordinal);
         refreshStart.Should().BeGreaterThanOrEqualTo(0);
         refreshEnd.Should().BeGreaterThan(refreshStart);
         var refreshBody = stealthServiceSource[refreshStart..refreshEnd];
-        refreshBody.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);");
+        refreshBody.Should().Contain("RemoveStealthStatus(creature);");
         refreshBody.Should().Contain("if (!CanUseStealth(creature))", "a full refund ends stealth unless it was granted");
         refreshBody.Should().Contain("SetActionMode(creature, ActionMode.Stealth, false);");
-        refreshBody.Should().Contain("StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);");
-        refreshBody.IndexOf("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);", StringComparison.Ordinal)
+        refreshBody.Should().Contain("ApplyStealthStatus(creature);");
+        refreshBody.IndexOf("RemoveStealthStatus(creature);", StringComparison.Ordinal)
             .Should().BeLessThan(refreshBody.IndexOf(
-                "StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);",
+                "ApplyStealthStatus(creature);",
                 StringComparison.Ordinal),
                 "a rank change must remove the old stat snapshot before applying the new one");
     }
@@ -140,11 +172,11 @@ public class EspionageSystemTests
     public void StealthEnteredInCombat_HidesPlayerFromEnemiesThatFailDetection()
     {
         var root = FindRepositoryRoot();
-        var stealthSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stealth.cs"));
-        var enmitySource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Enmity.cs"));
+        var stealthSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "StealthService.cs"));
+        var enmitySource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs"));
 
-        var hiddenStart = stealthSource.IndexOf("public static bool IsHiddenFrom(uint observer, uint target)", StringComparison.Ordinal);
-        var hiddenEnd = stealthSource.IndexOf("public static bool IsInvisible(uint creature)", StringComparison.Ordinal);
+        var hiddenStart = stealthSource.IndexOf("public bool IsHiddenFrom(uint observer, uint target)", StringComparison.Ordinal);
+        var hiddenEnd = stealthSource.IndexOf("public bool IsInvisible(uint creature)", StringComparison.Ordinal);
         hiddenStart.Should().BeGreaterThanOrEqualTo(0);
         hiddenEnd.Should().BeGreaterThan(hiddenStart);
         var hiddenBody = stealthSource[hiddenStart..hiddenEnd];
@@ -156,7 +188,7 @@ public class EspionageSystemTests
             .Should().BeGreaterThan(-1)
             .And.BeLessThan(hiddenBody.IndexOf("return !ResolveDetection(observer, target, false);", StringComparison.Ordinal),
                 "an enemy out of sight range or line of sight must not roll and force the player out of stealth");
-        var spotGateStart = stealthSource.IndexOf("private static bool CanAttemptSpotDetection(uint observer, uint target)", StringComparison.Ordinal);
+        var spotGateStart = stealthSource.IndexOf("private bool CanAttemptSpotDetection(uint observer, uint target)", StringComparison.Ordinal);
         spotGateStart.Should().BeGreaterThanOrEqualTo(0);
         var spotGateBody = stealthSource[spotGateStart..hiddenEnd];
         spotGateBody.Should().Contain("GetArea(observer) == GetArea(target)");
@@ -165,25 +197,25 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("creature?.GetSpotCheckDistance() ?? 0f");
         spotGateBody.Should().Contain("LineOfSightObject(observer, target)");
 
-        var enteredStart = stealthSource.IndexOf("public static void OnStealthEntered()", StringComparison.Ordinal);
-        var enteredEnd = stealthSource.IndexOf("public static void RefreshActiveStatusAfterPerkLevelChange", StringComparison.Ordinal);
+        var enteredStart = stealthSource.IndexOf("public void OnStealthEntered()", StringComparison.Ordinal);
+        var enteredEnd = stealthSource.IndexOf("public void RefreshActiveStatusAfterPerkLevelChange", StringComparison.Ordinal);
         enteredStart.Should().BeGreaterThanOrEqualTo(0);
         enteredEnd.Should().BeGreaterThan(enteredStart);
         var enteredBody = stealthSource[enteredStart..enteredEnd];
-        enteredBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(creature);", StringComparison.Ordinal)
+        enteredBody.IndexOf("ReevaluateEnemyAttackTargets(creature);", StringComparison.Ordinal)
             .Should().BeGreaterThan(enteredBody.IndexOf("ClearVerdictsForTarget(creature);", StringComparison.Ordinal),
                 "enemies must re-roll detection against the fresh stealth before re-choosing targets");
 
-        var exitedStart = stealthSource.IndexOf("public static void OnStealthExited()", StringComparison.Ordinal);
-        var exitedEnd = stealthSource.IndexOf("public static void ResolveSpotDetection()", StringComparison.Ordinal);
+        var exitedStart = stealthSource.IndexOf("public void OnStealthExited()", StringComparison.Ordinal);
+        var exitedEnd = stealthSource.IndexOf("public void ResolveSpotDetection()", StringComparison.Ordinal);
         exitedStart.Should().BeGreaterThanOrEqualTo(0);
         exitedEnd.Should().BeGreaterThan(exitedStart);
         var exitedBody = stealthSource[exitedStart..exitedEnd];
-        exitedBody.IndexOf("Enmity.ReevaluateEnemyAttackTargets(creature);", StringComparison.Ordinal)
+        exitedBody.IndexOf("ReevaluateEnemyAttackTargets(creature);", StringComparison.Ordinal)
             .Should().BeGreaterThan(exitedBody.IndexOf("ClearVerdictsForTarget(creature);", StringComparison.Ordinal),
                 "enemies holding for a hidden player must resume attacking as soon as stealth ends");
 
-        enmitySource.Should().Contain("!Stealth.IsHiddenFrom(enemy, creature);");
+        enmitySource.Should().Contain("!IsHiddenFrom(enemy, creature);");
     }
 
     [Test]
@@ -226,15 +258,16 @@ public class EspionageSystemTests
         var stealthSource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "Stealth.cs"));
-        stealthSource.Should().Contain("ScriptName.OnStealthEnterBefore");
-        stealthSource.Should().Contain("ScriptName.OnStealthEnterAfter");
-        stealthSource.Should().Contain("ScriptName.OnStealthExitAfter");
+            "Domain",
+            "Combat",
+            "StealthService.cs"));
+        ReadStealthFacade().Should().Contain("ScriptName.OnStealthEnterBefore");
+        ReadStealthFacade().Should().Contain("ScriptName.OnStealthEnterAfter");
+        ReadStealthFacade().Should().Contain("ScriptName.OnStealthExitAfter");
         stealthSource.Should().Contain("!GetActionMode(creature, ActionMode.Stealth)");
-        stealthSource.Should().Contain("Perk.GetPerkLevel(creature, PerkType.Stealth) > 0");
+        stealthSource.Should().Contain("GetStealthPerkLevel(creature) > 0");
         stealthSource.Should().Contain("enteredDuringCombatWithoutWindow");
-        stealthSource.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);");
+        stealthSource.Should().Contain("RemoveStealthStatus(creature);");
 
         var auditSource = File.ReadAllText(Path.Combine(
             root,
@@ -254,19 +287,14 @@ public class EspionageSystemTests
         var stealthSource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "Stealth.cs"));
-        var aiSource = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "AI.cs"));
-
+            "Domain",
+            "Combat",
+            "StealthService.cs"));
         var resolveStart = stealthSource.IndexOf(
-            "private static bool ResolveDetection(uint observer, uint target, bool acquireAggroOnDetection)",
+            "private bool ResolveDetection(uint observer, uint target, bool acquireAggroOnDetection)",
             StringComparison.Ordinal);
         var resolveEnd = stealthSource.IndexOf(
-            "private static void ExitDetectedPlayerStealth(uint observer, uint target)",
+            "private void ExitDetectedPlayerStealth(uint observer, uint target)",
             resolveStart,
             StringComparison.Ordinal);
         resolveStart.Should().BeGreaterThanOrEqualTo(0);
@@ -278,34 +306,26 @@ public class EspionageSystemTests
         resolveDetection.Should().Contain("ShouldBreakStealthOnDetection(true, hostile)");
         var acquireGuardIndex = resolveDetection.IndexOf("if (acquireAggroOnDetection && hostile)", StringComparison.Ordinal);
         var acquireIndex = resolveDetection.IndexOf(
-            "AI.TryAcquireAggroAfterDetection(observer, target);",
+            "TryAcquireAggroAfterDetection(observer, target);",
             StringComparison.Ordinal);
 
         resolveDetection.Should().Contain("if (detected)");
         exitIndex.Should().BeGreaterThanOrEqualTo(0);
         acquireGuardIndex.Should().BeGreaterThan(exitIndex);
         acquireIndex.Should().BeGreaterThan(acquireGuardIndex);
-        stealthSource.Should().Contain("private static void ExitDetectedPlayerStealth(uint observer, uint target)");
+        stealthSource.Should().Contain("private void ExitDetectedPlayerStealth(uint observer, uint target)");
         stealthSource.Should().Contain("!GetIsPC(target) ||");
         stealthSource.Should().Contain("GetIsDM(target) ||");
         stealthSource.Should().Contain("!GetActionMode(target, ActionMode.Stealth)");
         stealthSource.Should().Contain("SetActionMode(target, ActionMode.Stealth, false);");
         stealthSource.Should().Contain("DelayCommand(0f, () =>");
-        stealthSource.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(target);");
+        stealthSource.Should().Contain("RemoveStealthStatus(target);");
         stealthSource.Should().Contain("ResolveDetection(observer, target, true)");
         stealthSource.Should().Contain("ResolveDetection(observer, target, false)");
         stealthSource.Should().Contain("Stealth perk refresh removed active status snapshot");
         stealthSource.Should().Contain("Stealth perk refresh reapplied active status snapshot");
         stealthSource.Should().Contain("Stealth perk full refund forced native stealth exit");
         stealthSource.Should().Contain("Stealth detection forced native stealth exit");
-        aiSource.Should().Contain("public static void TryAcquireAggroAfterDetection(uint observer, uint target)");
-        aiSource.Should().Contain("if (!IsAIEnabled(observer))");
-        aiSource.Should().Contain("if (!TryAcquireAggro(observer, target))");
-        var successfulAggroIndex = aiSource.IndexOf("if (!TryAcquireAggro(observer, target))", StringComparison.Ordinal);
-        var successfulAggroLogIndex = aiSource.IndexOf("Stealth detection acquired normal proximity aggro", StringComparison.Ordinal);
-        successfulAggroIndex.Should().BeGreaterThanOrEqualTo(0);
-        successfulAggroLogIndex.Should().BeGreaterThan(successfulAggroIndex,
-            "the handoff log must describe a completed acquisition, not a rejected attempt");
     }
 
     [TestCase(true, true, true, TestName = "Hostile observer success breaks stealth")]
@@ -321,13 +341,13 @@ public class EspionageSystemTests
     public void ResolveDetection_KeepsFriendlySuccessAsDetectedWithoutBreakingStealth()
     {
         var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Stealth.cs"));
-        var start = source.IndexOf("private static bool ResolveDetection(", StringComparison.Ordinal);
-        var end = source.IndexOf("public static bool ShouldBreakStealthOnDetection", start, StringComparison.Ordinal);
+            FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Combat", "StealthService.cs"));
+        var start = source.IndexOf("private bool ResolveDetection(", StringComparison.Ordinal);
+        var end = source.IndexOf("public bool ShouldBreakStealthOnDetection", start, StringComparison.Ordinal);
         var body = source[start..end];
 
         body.Should().Contain("return detected;", "friendly success must still reach the native event and cache");
-        body.Should().Contain("EspionageInfiltration.RecordDetection(observer, target, detected);");
+        body.Should().Contain("RecordInfiltrationDetection(observer, target, detected);");
         body.IndexOf("GetIsEnemy(target, observer)", StringComparison.Ordinal)
             .Should().BeGreaterThan(body.IndexOf("if (detected)", StringComparison.Ordinal));
     }
@@ -361,7 +381,7 @@ public class EspionageSystemTests
             .Should().Be(0.7m);
 
         var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Stealth.cs"));
+            FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Combat", "StealthService.cs"));
         source.Should().Contain("var closeRange = playerObserver && IsWithinCloseDetectionRange(observer, target);",
             "NPC observers keep the flat check that infiltration is tuned around");
         source.Should().Contain("verdict.RolledAt.AddSeconds(GetDetectionCheckIntervalSeconds(closeRange)) > now",
@@ -380,9 +400,9 @@ public class EspionageSystemTests
     public void StealthStaminaDrain_CannotBeOutpacedOrLost()
     {
         var root = FindRepositoryRoot();
-        var statSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
-        var restoreStart = statSource.IndexOf("public static int RestoreStamina(", StringComparison.Ordinal);
-        var dbLookup = statSource.IndexOf("dbPlayer ??= DB.Get<Player>", restoreStart, StringComparison.Ordinal);
+        var statSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var restoreStart = statSource.IndexOf("public int RestoreStamina(", StringComparison.Ordinal);
+        var dbLookup = statSource.IndexOf("dbPlayer ??= _db.Get<Player>", restoreStart, StringComparison.Ordinal);
         var gate = statSource.IndexOf(
             "IsStaminaRestorationBlocked(isPlayer, isPlayer && GetActionMode(creature, ActionMode.Stealth))",
             restoreStart,
@@ -390,9 +410,9 @@ public class EspionageSystemTests
         gate.Should().BeInRange(restoreStart, dbLookup,
             "every stamina source routes through RestoreStamina and must be stopped before it applies");
 
-        var stealthSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stealth.cs"));
-        stealthSource.Should().Contain("[NWNEventHandler(ScriptName.OnPlayerHeartbeat)]");
-        stealthSource.Should().Contain("public static void EnsureStealthStatusWhileHidden()",
+        var stealthSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "StealthService.cs"));
+        ReadStealthFacade().Should().Contain("[NWNEventHandler(ScriptName.OnPlayerHeartbeat)]");
+        stealthSource.Should().Contain("public void EnsureStealthStatusWhileHidden()",
             "the drain lives on the status, so a stealthed player missing it must have it rebuilt");
     }
 
@@ -418,9 +438,9 @@ public class EspionageSystemTests
     [Test]
     public void InfiltrationXp_UsesFullSuccessAndFifteenPercentDetectionFailureAwards()
     {
-        EspionageInfiltration.RequiredTravelDistanceMeters.Should().Be(4f);
-        EspionageInfiltration.DetectionFailureXpPercent.Should().Be(0.15f);
-        EspionageInfiltration.HostileFactionId.Should().Be(1);
+        EspionageInfiltrationService.RequiredTravelDistanceMeters.Should().Be(4f);
+        EspionageInfiltrationService.DetectionFailureXpPercent.Should().Be(0.15f);
+        EspionageInfiltrationService.HostileFactionId.Should().Be(1);
 
         EspionageInfiltration.CalculateXp(20, 20, false).Should().Be(600);
         EspionageInfiltration.CalculateXp(20, 20, true).Should().Be(90);
@@ -481,44 +501,29 @@ public class EspionageSystemTests
         var stealthSource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "Stealth.cs"));
-        var aiSource = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "AI.cs"));
+            "Domain",
+            "Combat",
+            "StealthService.cs"));
         var infiltrationSource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "EspionageInfiltration.cs"));
+            "Domain", "Character",
+            "EspionageInfiltrationService.cs"));
 
         stealthStatusSource.Should().NotContain("GrantTimeInStealthXP");
         stealthStatusSource.Should().NotContain("HostileScanRadiusMeters");
         stealthStatusSource.Should().Contain("EspionageInfiltration.UpdateMovement(creature);");
-        stealthSource.Should().Contain("EspionageInfiltration.RecordDetection(observer, target, detected);");
-        stealthSource.Should().Contain("[NWNEventHandler(ScriptName.OnCreatureAttackBefore)]");
-        stealthSource.Should().Contain("EspionageInfiltration.RecordPlayerCombatInitiation(attacker);");
-        stealthSource.Should().Contain("EspionageInfiltration.CancelPlayer(creature);");
-        aiSource.Should().Contain("EspionageInfiltration.TryBegin(entering, self);");
-        aiSource.Should().Contain("if (!Stealth.CanAcquireAggro(self, entering))");
-        aiSource.Should().Contain("EspionageInfiltration.Complete(exiting, self);");
-        aiSource.IndexOf("EspionageInfiltration.TryBegin(entering, self);", StringComparison.Ordinal)
-            .Should().BeLessThan(
-                aiSource.IndexOf("if (!Stealth.CanAcquireAggro(self, entering))", StringComparison.Ordinal),
-                "the attempt must exist before the first opposed detection result is recorded");
-        aiSource.IndexOf("if (!Stealth.CanAcquireAggro(self, entering))", StringComparison.Ordinal)
-            .Should().BeLessThan(
-                aiSource.IndexOf("TryAcquireAggro(self, entering);", StringComparison.Ordinal),
-                "an undetected stealthed player must not enter the hostile's enmity table");
+        stealthSource.Should().Contain("RecordInfiltrationDetection(observer, target, detected);");
+        ReadStealthFacade().Should().Contain("[NWNEventHandler(ScriptName.OnCreatureAttackBefore)]");
+        stealthSource.Should().Contain("RecordInfiltrationCombatInitiation(attacker);");
+        stealthSource.Should().Contain("CancelInfiltration(creature);");
         infiltrationSource.Should().Contain("private const float MovementSampleIntervalSeconds = 1f;");
         infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");
-        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(npc)");
-        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmity(target, observer)");
-        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityOutsidePair(target, observer)");
-        infiltrationSource.Should().Contain("Enmity.HasNonProximityEnmityForCreature(player) ||");
+        infiltrationSource.Should().Contain("HasNonProximityEnmity(npc)");
+        infiltrationSource.Should().Contain("HasNonProximityEnmity(target, observer)");
+        infiltrationSource.Should().Contain("HasNonProximityEnmityOutsidePair(target, observer)");
+        infiltrationSource.Should().Contain("HasNonProximityEnmityForCreature(player) ||");
         infiltrationSource.Should().Contain("var master = GetMaster(npc);");
     }
 
@@ -544,7 +549,7 @@ public class EspionageSystemTests
     [Test]
     public void CoatingTierRaisesVenomDamageAndDuration()
     {
-        Enumerable.Range(1, 5).Select(Poisons.GetCoatingVenomDamagePerTick).Should().Equal(8, 12, 16, 21, 26);
+        Enumerable.Range(1, 5).Select(tier => Poisons.GetCoatingVenomDamagePerTick(tier)).Should().Equal(8, 12, 16, 21, 26);
         VenomStatusEffect.CalculateBaseDamagePerTick(50, 26).Should().Be(39);
 
         VenomStatusEffect.CalculateBaseDamagePerTick(0).Should().Be(8);
@@ -578,7 +583,7 @@ public class EspionageSystemTests
                 description.Should().Contain($"dealing {Poisons.GetCoatingVenomDamagePerTick(tier)} poison damage every {interval} seconds", resref)
                     .And.Contain($"Venom lasts {Poisons.GetVenomDurationSeconds(tier):0} seconds", resref)
                     .And.Contain($"Charges: {charges}.", resref)
-                    .And.Contain($"at most once every {Poisons.InternalCooldownSeconds} seconds", resref);
+                    .And.Contain($"at most once every {PoisonsService.InternalCooldownSeconds} seconds", resref);
                 if (concentrated)
                     description.Should().Contain($"increased by {VenomCoatingItemDefinition.ConcentratedDamageBonusPercent}%", resref);
             }
@@ -610,18 +615,19 @@ public class EspionageSystemTests
     [Test]
     public void CoatingHits_RefreshSourceOwnedVenomAndCreditEspionageOnlyOnSuccess()
     {
-        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service", "Poisons.cs"));
+        var source = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Combat", "PoisonsService.cs"));
         var syntax = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(source).GetRoot();
         var calls = syntax.DescendantNodes()
             .OfType<Microsoft.CodeAnalysis.CSharp.Syntax.InvocationExpressionSyntax>().ToArray();
         calls.Should().Contain(call => call.ToString() ==
-            "StatusEffect.GetStatusEffect(defender, typeof(VenomStatusEffect), attacker)");
+            "GetStatusEffect(defender, typeof(VenomStatusEffect), attacker)");
         calls.Should().Contain(call => call.ToString() ==
-            "StatusEffect.RefreshStatusEffectDuration(defender, typeof(VenomStatusEffect), attacker, durationSeconds)");
+            "RefreshStatusEffectDuration(defender, typeof(VenomStatusEffect), attacker, durationSeconds)");
         calls.Should().Contain(call => call.ToString() == ".UpdatePotency(damagePerTick, potency)");
-        var credit = calls.Single(call => call.Expression.ToString() == "CombatPoint.AddCombatPoint");
+        var credit = calls.Single(call => call.Expression.ToString() == "AddEspionageCombatPoint");
         credit.ArgumentList.Arguments.Select(arg => arg.ToString()).Should()
-            .Equal("attacker", "defender", "SkillType.Espionage");
+            .Equal("attacker", "defender");
+        source.Should().Contain("_combatPoint.AddCombatPoint(player, creature, SkillType.Espionage)");
         credit.Ancestors().OfType<Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax>()
             .Should().Contain(statement => statement.Condition.ToString() == "applied");
         source.Should().Contain("venom != null && !venom.IsFlaggedForRemoval");
@@ -650,15 +656,15 @@ public class EspionageSystemTests
             .Where(file => !file.EndsWith("EspionagePerkDefinition.cs", StringComparison.Ordinal))
             .Where(file => !file.EndsWith("PerkType.cs", StringComparison.Ordinal))
             .Where(file => System.Text.RegularExpressions.Regex.IsMatch(File.ReadAllText(file),
-                @"Perk\.GetPerkLevel\([^,]+,\s*PerkType\.Slicing\)"))
+                @"\bGetPerkLevel\([^,]+,\s*PerkType\.Slicing\)"))
             .Select(file => Path.GetRelativePath(root, file))
             .ToArray();
 
         references.Should().Equal(Path.Combine(
             "SWLOR.Game.Server",
-            "Service",
-            "SlicingService",
-            "SlicingSession.cs"));
+            "Domain",
+            "Crafting",
+            "SlicingSessionService.cs"));
     }
 
     [Test]

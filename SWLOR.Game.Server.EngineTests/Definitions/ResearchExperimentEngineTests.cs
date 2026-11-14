@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Experiment;
-using SWLOR.Game.Server.Service.CraftService.Research;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
+using SWLOR.Game.Server.Domain.Crafting.Research;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -65,8 +65,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(DB.Get<ResearchJob>(legacy.Id).Experiment == null, "A job without an experiment loads without one");
 
                 // A logout settles the open experiment, once, and leaves the legacy job alone.
-                ctx.AssertEqual(1, ResearchExperimentService.SettleOpenExperiments(PlayerId), "One open experiment settles");
-                ctx.AssertEqual(0, ResearchExperimentService.SettleOpenExperiments(PlayerId), "Settling again changes nothing");
+                ctx.AssertEqual(1, CraftResearchExperiment.SettleOpenExperiments(PlayerId), "One open experiment settles");
+                ctx.AssertEqual(0, CraftResearchExperiment.SettleOpenExperiments(PlayerId), "Settling again changes nothing");
 
                 for (var reload = 0; reload < 2; reload++)
                 {

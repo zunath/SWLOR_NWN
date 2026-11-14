@@ -2,8 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -64,8 +63,8 @@ public class LeadershipCivicPerkRegressionTests
         placeCityHall.Should().Contain("Perk.GetPerkLevel(player, PerkType.CityManagement) < 1");
         placeCityHall.Should().Contain("The City Management I perk is required to establish a city.");
 
-        var property = ReadSource("Service", "Property.cs");
-        var processCityLevel = ExtractMethod(property, "private static void ProcessCityLevel(WorldProperty city)");
+        var property = ReadSource("Domain", "World", "PropertyCityGovernanceService.cs");
+        var processCityLevel = ExtractMethod(property, "private void ProcessCityLevel(WorldProperty city)");
         processCityLevel.Should().Contain("mayor.Perks[PerkType.CityManagement] + 1");
         processCityLevel.Should().Contain("if (mayorLevel < currentLevel)");
         processCityLevel.Should().Contain("for (var level = 1; level <= 5; level++)");
@@ -105,8 +104,8 @@ public class LeadershipCivicPerkRegressionTests
     {
         CalculateDiscountedWeeklyBasePrice(perkRank, dailyLayoutPrice).Should().Be(expectedWeeklyBasePrice);
 
-        var property = ReadSource("Service", "Property.cs");
-        var processUpkeep = ExtractMethod(property, "private static void ProcessUpkeep(DateTime now, WorldProperty city)");
+        var property = ReadSource("Domain", "World", "PropertyCityGovernanceService.cs");
+        var processUpkeep = ExtractMethod(property, "private void ProcessUpkeep(DateTime now, WorldProperty city)");
         processUpkeep.Should().Contain("dbMayor.Perks[PerkType.Upkeep] * 0.05f");
         processUpkeep.Should().Contain("var basePrice = layout.PricePerDay * 7;");
         processUpkeep.Should().Contain("basePrice -= (int)(basePrice * upkeepReductionPercent);");
@@ -129,22 +128,22 @@ public class LeadershipCivicPerkRegressionTests
     {
         CalculateGuildRelationsBonus(perkRank, baseAmount).Should().Be(expectedBonus);
 
-        var guild = ReadSource("Service", "Guild.cs");
+        var guild = ReadSource("Domain", "Economy", "GuildService.cs");
         var calculateGP = ExtractMethod(
             guild,
-            "public static int CalculateGPReward(uint player, GuildType guild, int baseAmount)");
-        calculateGP.Should().Contain("Perk.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f");
+            "public int CalculateGPReward(uint player, GuildType guild, int baseAmount)");
+        calculateGP.Should().Contain("_perk.GetPerkLevel(player, PerkType.GuildRelations) * 0.05f");
         calculateGP.Should().Contain("var rankBonus = 0.25f * dbGuild.Rank;");
         calculateGP.Should().Contain("GetAbilityModifier(AbilityType.Social, player) * 0.05f");
         calculateGP.Should().Contain("(perkBonus * baseAmount)");
         calculateGP.Should().Contain("return (int)amount;");
 
-        var quest = ReadSource("Service", "Quest.cs");
+        var quest = ReadSource("Domain", "Quests", "QuestService.cs");
         var calculateCredits = ExtractMethod(
             quest,
-            "public static int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)");
+            "public int CalculateQuestGoldReward(uint player, bool isGuildQuest, int baseAmount)");
         calculateCredits.Should().Contain("if (isGuildQuest)");
-        calculateCredits.Should().Contain("Perk.GetPerkLevel(player, PerkType.GuildRelations)");
+        calculateCredits.Should().Contain("_perk.GetPerkLevel(player, PerkType.GuildRelations)");
         calculateCredits.Should().Contain("guildRelations = perkLevel * 0.05f;");
         calculateCredits.Should().Contain("(int)(baseAmount * guildRelations)");
     }

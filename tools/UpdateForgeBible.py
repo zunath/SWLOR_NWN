@@ -32,7 +32,7 @@ from UpdateCraftingProgressionBible import (  # noqa: E402
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-RULES = ROOT / "SWLOR.Game.Server" / "Service" / "CraftService" / "Minigame" / "Forge" / "ForgeRules.cs"
+RULES = ROOT / "SWLOR.Game.Server" / "Domain" / "Crafting" / "Minigame" / "Forge" / "ForgeRules.cs"
 TOP_RECIPE_RULES = RULES.parent.parent / "TopRecipeRules.cs"
 SHEET = "System Changes & Migrations"
 MARKER = "Smithery recipes are crafted in the Plasma Forge"

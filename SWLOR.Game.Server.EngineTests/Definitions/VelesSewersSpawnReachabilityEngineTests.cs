@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Area;
 using NWNXLib = NWN.Native.API.NWNXLib;
@@ -117,8 +117,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static Dictionary<string, List<Vector3>> GetBakedPoints()
         {
-            var field = typeof(Walkmesh).GetField("_walkmeshesByArea", BindingFlags.NonPublic | BindingFlags.Static);
-            return (Dictionary<string, List<Vector3>>)field!.GetValue(null)!;
+            var walkmesh = GameServices.Walkmesh;
+            var field = walkmesh.GetType().GetField("_walkmeshesByArea", BindingFlags.NonPublic | BindingFlags.Instance);
+            return (Dictionary<string, List<Vector3>>)field!.GetValue(walkmesh)!;
         }
 
         private static uint FindArea(string resref)

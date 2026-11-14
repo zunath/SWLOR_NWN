@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -41,8 +42,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Shattering Strike I strength, below the 15% default.
             ctx.Assert(StatusEffect.ApplyStatusEffect(caster, source, new SunderStatusEffect(12), 60f), "setup Sunder must apply");
             var ability = new SunderingSweepAbilityDefinition().BuildAbilities()[FeatType.SunderingSweep1];
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 Ability.BeginAbilityImpact(caster, ability);
@@ -57,8 +58,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
 
             ctx.Assert(StatusEffect.HasStatusEffect(recipient, typeof(SunderStatusEffect)), "the recipient must receive Sunder");
@@ -117,8 +118,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.MakeHostile(enemy);
             }
 
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
                 for (var rank = 1; rank <= feats.Length; rank++)
@@ -163,8 +164,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
     }

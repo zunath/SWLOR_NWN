@@ -18,9 +18,9 @@ from xml.sax.saxutils import escape, unescape
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_WORKBOOK = ROOT / "design" / "bible" / "SWLOR Design Bible.xlsx"
 SERVICE = ROOT / "SWLOR.Game.Server" / "Service"
-PACE_SOURCE = SERVICE / "CraftService" / "Minigame" / "CraftMinigameXp.cs"
+PACE_SOURCE = ROOT / "SWLOR.Game.Server" / "Domain" / "Crafting" / "Minigame" / "CraftMinigameXp.cs"
 GUILD_SOURCE = SERVICE / "GuildTaskXp.cs"
-RESEARCH_SOURCE = SERVICE / "CraftService" / "Research" / "ResearchXpRules.cs"
+RESEARCH_SOURCE = ROOT / "SWLOR.Game.Server" / "Domain" / "Crafting" / "Research" / "ResearchXpRules.cs"
 TAB = "System Changes & Migrations"
 MARKER = "Crafting progression pace"
 NUMBER_STYLE = "3"

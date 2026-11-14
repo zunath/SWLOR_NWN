@@ -583,7 +583,7 @@ public static class PowerGloveFitEngineTests
                     label + " preserves the fitted normal or wide body");
                 var restored = GloveInventory(wearer);
                 ctx.AssertEqual(2, restored.Count, label + " retains exactly two real Power Gloves including the bag item");
-                ctx.AssertEqual(1, InventoryItems(wearer).Count(PowerGloveEquipment.IsGeneratedCompanion), label + " retains exactly one temporary cosmetic hand");
+                ctx.AssertEqual(1, InventoryItems(wearer).Count(item => PowerGloveEquipment.IsGeneratedCompanion(item)), label + " retains exactly one temporary cosmetic hand");
                 ctx.Assert(companionIdentity != GetObjectUUID(left), label + " regenerates the cosmetic hand instead of retaining a saved economy object");
                 ctx.Assert(!GetIsObjectValid(GetObjectByUUID(companionIdentity)), label + " leaves no archived companion behind");
                 ctx.Assert(!Item.IsEconomyRestricted(right), label + " keeps the real glove available to the economy");

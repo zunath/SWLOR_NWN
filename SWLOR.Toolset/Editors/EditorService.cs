@@ -21,7 +21,8 @@ using SWLOR.Toolset.Shell;
 using ToolsetDockFactory = SWLOR.Toolset.Shell.ToolsetDockFactory;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Workspace;
-using GameItem = SWLOR.Game.Server.Service.Item;
+using GameItem = SWLOR.Game.Server.Domain.Items.ItemService;
+using EconomyRestriction = SWLOR.Game.Server.Domain.Items.EconomyRestriction;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 
 namespace SWLOR.Toolset.Editors
@@ -272,10 +273,10 @@ namespace SWLOR.Toolset.Editors
         /// Independent snapshots of open graph-native conversations for the background text search.
         /// The worker never observes a graph while the editor is mutating its ordered collections.
         /// </summary>
-        public IReadOnlyDictionary<string, SWLOR.Game.Server.Service.ConversationService.ConversationGraph>
+        public IReadOnlyDictionary<string, SWLOR.Game.Server.Domain.Foundation.ConversationGraph>
             SnapshotOpenNuiConversationGraphs()
         {
-            var graphs = new Dictionary<string, SWLOR.Game.Server.Service.ConversationService.ConversationGraph>(
+            var graphs = new Dictionary<string, SWLOR.Game.Server.Domain.Foundation.ConversationGraph>(
                 StringComparer.OrdinalIgnoreCase);
             foreach (var editor in _openNuiConversations.Values)
                 graphs[editor.ResRef] = editor.SnapshotGraph();
@@ -2519,7 +2520,9 @@ namespace SWLOR.Toolset.Editors
                 var baseItem = item.GetIntOrNull("BaseItem") ?? -1;
                 var noEconomy = new VarTable(item).GetInt(GameItem.NoEconomyVariable) == 1;
                 var hasInventoryIcon = _previewRenderer?.RenderItemIcon(item) != null;
-                if (GameItem.IsEconomyRestricted(
+                // The editor has no service container, so it applies the server's stateless data-only classifier
+                // directly instead of going through the Item facade.
+                if (EconomyRestriction.IsRestricted(
                         (BaseItem)baseItem,
                         name ?? string.Empty,
                         noEconomy,
@@ -2894,8 +2897,8 @@ namespace SWLOR.Toolset.Editors
                 return GuildStoreChoices();
             if (key == Domain.Editors.Creatures.CreatureChoiceKeys.BeastTypes)
             {
-                return Enum.GetValues<SWLOR.Game.Server.Service.BeastMasteryService.BeastType>()
-                    .Where(value => value != SWLOR.Game.Server.Service.BeastMasteryService.BeastType.Invalid)
+                return Enum.GetValues<SWLOR.Game.Server.Domain.Companions.BeastType>()
+                    .Where(value => value != SWLOR.Game.Server.Domain.Companions.BeastType.Invalid)
                     .Select(value => new BehaviorChoice((int)value, $"{Humanize(value.ToString())} ({(int)value})"))
                     .ToList();
             }

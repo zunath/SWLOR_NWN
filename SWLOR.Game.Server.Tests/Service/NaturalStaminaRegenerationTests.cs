@@ -1,12 +1,30 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class NaturalStaminaRegenerationTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [TestCase(0, 0, 0, 10)]
     [TestCase(10, 0, 0, 12)]
     [TestCase(26, 0, 0, 16)]
@@ -64,7 +82,7 @@ public class NaturalStaminaRegenerationTests
     public void BeastNaturalStaminaRegeneration_WaitsSixSecondsAfterStaminaSpend()
     {
         var spentAt = new DateTime(2026, 8, 25, 12, 0, 0, DateTimeKind.Utc);
-        var availableAt = spentAt.AddSeconds(Stat.BeastNaturalStaminaRegenDelaySeconds);
+        var availableAt = spentAt.AddSeconds(StatService.BeastNaturalStaminaRegenDelaySeconds);
 
         Stat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, spentAt.Ticks)
             .Should().BeFalse();
@@ -89,25 +107,21 @@ public class NaturalStaminaRegenerationTests
     public void BeastHeartbeat_UsesDelayedStaminaRegenerationWithoutCombatGating()
     {
         var root = FindRepositoryRoot();
-        var beastMastery = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Service",
-            "BeastMastery.cs"));
         var stat = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "Stat.cs"));
+            "Domain",
+            "Character",
+            "StatService.cs"));
 
-        beastMastery.Should().Contain("Stat.RestoreBeastStats();");
+        // That the beast heartbeat calls Stat.RestoreBeastStats is pinned by BeastMasteryServiceTests.
         stat.Should().Contain("RestoreNPCStats(false, true);");
-        stat.Should().Contain("BeastMastery.IsPlayerBeast(creature)");
+        stat.Should().Contain("_beastMastery.IsPlayerBeast(creature)");
 
         var restoreBeastStats = stat.Substring(
-            stat.IndexOf("public static void RestoreBeastStats()", StringComparison.Ordinal),
-            stat.IndexOf("public static bool IsNaturalStaminaRegenerationAvailable", StringComparison.Ordinal) -
-            stat.IndexOf("public static void RestoreBeastStats()", StringComparison.Ordinal));
+            stat.IndexOf("public void RestoreBeastStats()", StringComparison.Ordinal),
+            stat.IndexOf("public bool IsNaturalStaminaRegenerationAvailable", StringComparison.Ordinal) -
+            stat.IndexOf("public void RestoreBeastStats()", StringComparison.Ordinal));
         restoreBeastStats.Should().NotContain("GetIsInCombat");
     }
 

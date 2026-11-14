@@ -16,8 +16,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <param name="fDelay">The delay before destruction (default: 0.0f).</param>
         public static void DestroyObject(uint oDestroy, float fDelay = 0.0f)
         {
-            global::NWN.Core.NWScript.DestroyObject(oDestroy, fDelay);
-            ExecuteScript("object_destroyed", oDestroy);
+            NWScriptRuntime.Current.DestroyObject(oDestroy, fDelay);
         }
     }
 }

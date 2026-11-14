@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

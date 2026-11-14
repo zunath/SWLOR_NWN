@@ -1,8 +1,8 @@
 using System.Linq;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.DisguiseService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           "\n\nA real wipe touches more than one ledger: customs pings, docking records, old warrants, and the mirrors people swear they do not keep.\n\n" +
                           "Choose how you are paying for the silence.";
 
-            page.AddResponse($"Pay {Disguise.WipeCreditCost:N0} credits", () =>
+            page.AddResponse($"Pay {DisguiseService.WipeCreditCost:N0} credits", () =>
             {
                 model.PaymentMethod = DisguisePaymentMethod.Credits;
                 GoToPage(ConfirmationPageId);
             });
 
-            page.AddResponse($"Spend {Disguise.WipeRoleplayXPCost:N0} RP XP", () =>
+            page.AddResponse($"Spend {DisguiseService.WipeRoleplayXPCost:N0} RP XP", () =>
             {
                 model.PaymentMethod = DisguisePaymentMethod.RoleplayXP;
                 GoToPage(ConfirmationPageId);
@@ -97,8 +97,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
 
             var paymentText = model.PaymentMethod == DisguisePaymentMethod.Credits
-                ? $"{Disguise.WipeCreditCost:N0} credits"
-                : $"{Disguise.WipeRoleplayXPCost:N0} RP XP";
+                ? $"{DisguiseService.WipeCreditCost:N0} credits"
+                : $"{DisguiseService.WipeRoleplayXPCost:N0} RP XP";
 
             page.Header = "Last chance. Once I send this job, the identity comes apart: the retired disguise record, the paper trail, and the names people attached to it. No refund, no restore, no quiet undo.\n\n" +
                           BuildDisguiseSummary(disguise) +

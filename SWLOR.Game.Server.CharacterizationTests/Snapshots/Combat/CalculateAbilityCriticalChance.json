@@ -1,0 +1,22 @@
+{
+  "function": "Combat.CalculateAbilityCriticalChance",
+  "description": "Ability critical chance in percent: the minimum critical rate plus the total adjustment, clamped to 5-50.",
+  "seed": null,
+  "inputs": "Total percent adjustment values from -1000 to 1000000 including both clamp boundaries.",
+  "rowCount": 12,
+  "columns": ["totalPercentAdjustment", "=> criticalChance"],
+  "rows": [
+    [-1000, 5],
+    [-100, 5],
+    [-5, 5],
+    [-1, 5],
+    [0, 5],
+    [1, 6],
+    [20, 25],
+    [44, 49],
+    [45, 50],
+    [46, 50],
+    [100, 50],
+    [1000000, 50]
+  ]
+}

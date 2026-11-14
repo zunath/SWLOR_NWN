@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 {

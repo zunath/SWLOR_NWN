@@ -1,19 +1,36 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class EnmityTests
 {
+    private FacadeContainer _container = null!;
+    private IDisposable _installed = null!;
+    private EnmityService _enmity = null!;
+
+    [OneTimeSetUp]
+    public void BuildContainer()
+    {
+        _container = new FacadeContainer();
+        _enmity = (EnmityService)_container.Get<IEnmityService>();
+    }
+
+    [OneTimeTearDown]
+    public void DisposeContainer() => _container.Dispose();
+
     [SetUp]
     public void SetUp()
     {
+        _installed = _container.Install();
         EnemyEnmityTables().Clear();
         CreatureToEnemies().Clear();
         ProximityEnmityAmounts().Clear();
@@ -24,6 +41,7 @@ public class EnmityTests
     [TearDown]
     public void TearDown()
     {
+        _installed.Dispose();
         EnemyEnmityTables().Clear();
         CreatureToEnemies().Clear();
         ProximityEnmityAmounts().Clear();
@@ -471,7 +489,7 @@ public class EnmityTests
     [Test]
     public void GetStaleAttackRecoverySeconds_UsesShorterWindowForMultiAttackSwingCadence()
     {
-        var recoverySeconds = GetStaleAttackRecoverySeconds(Combat.MinimumAttackDelayMilliseconds);
+        var recoverySeconds = GetStaleAttackRecoverySeconds(CombatRules.MinimumAttackDelayMilliseconds);
 
         recoverySeconds.Should().BeApproximately(4.5f, 0.01f);
         recoverySeconds.Should().BeLessThan(6f);
@@ -488,12 +506,12 @@ public class EnmityTests
     [Test]
     public void GetWeaponEngagementRange_UsesTheEquippedWeaponSkill()
     {
-        Combat.GetWeaponEngagementRange(SkillType.Rifle).Should().Be(10f);
-        Combat.GetWeaponEngagementRange(SkillType.Pistol).Should().Be(10f);
-        Combat.GetWeaponEngagementRange(SkillType.Throwing).Should().Be(10f);
-        Combat.GetWeaponEngagementRange(SkillType.Lightsaber).Should().Be(1.5f);
-        Combat.GetWeaponEngagementRange(SkillType.Katar).Should().Be(1.5f);
-        Combat.GetWeaponEngagementRange(SkillType.Invalid).Should().Be(1.5f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Rifle).Should().Be(10f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Pistol).Should().Be(10f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Throwing).Should().Be(10f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Lightsaber).Should().Be(1.5f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Katar).Should().Be(1.5f);
+        CombatRules.GetWeaponEngagementRange(SkillType.Invalid).Should().Be(1.5f);
     }
 
     [Test]
@@ -503,21 +521,22 @@ public class EnmityTests
         var nativeSource = File.ReadAllText(Path.Combine(
             repositoryRoot,
             "SWLOR.Game.Server",
-            "Native",
-            "OnAIActionAttackObject.cs"));
+            "NativeSinks",
+            "OnAIActionAttackObjectSink.cs"));
         var enmitySource = File.ReadAllText(Path.Combine(
             repositoryRoot,
             "SWLOR.Game.Server",
-            "Service",
-            "Enmity.cs"));
+            "Domain",
+            "Combat",
+            "EnmityService.cs"));
 
-        nativeSource.Should().Contain("Combat.GetWeaponEngagementRange(attackSkillType)");
-        nativeSource.Should().Contain("Combat.IsRangedWeaponSkill(attackSkillType)");
+        nativeSource.Should().Contain("CombatRules.GetWeaponEngagementRange(attackSkillType)");
+        nativeSource.Should().Contain("CombatRules.IsRangedWeaponSkill(attackSkillType)");
         nativeSource.Should().Contain("var isPlayerCreature = pCreature.m_bPlayerCharacter == 1");
         nativeSource.Should().Contain("? pCreature.GetRangeWeaponEquipped() == 1");
         nativeSource.Should().Contain("? ResolveEngineDesiredAttackRange(");
         nativeSource.Should().Contain(": ResolveWeaponEngagementRange(");
-        enmitySource.Should().Contain("Combat.GetWeaponEngagementRange(skillType)");
+        enmitySource.Should().Contain("CombatRules.GetWeaponEngagementRange(skillType)");
         enmitySource.Should().NotContain("GetPreferredAttackDistance");
 
         ResolveNativeWeaponEngagementRange(10f, 30f, true).Should().Be(10f);
@@ -555,34 +574,34 @@ public class EnmityTests
         ShouldMoveIntoAttackRange(2.26f, SkillType.Lightsaber, 1.5f).Should().BeTrue();
     }
 
-    private static Dictionary<uint, Dictionary<uint, int>> EnemyEnmityTables()
+    private Dictionary<uint, Dictionary<uint, int>> EnemyEnmityTables()
     {
         return GetField<Dictionary<uint, Dictionary<uint, int>>>("_enemyEnmityTables");
     }
 
-    private static Dictionary<uint, List<uint>> CreatureToEnemies()
+    private Dictionary<uint, List<uint>> CreatureToEnemies()
     {
         return GetField<Dictionary<uint, List<uint>>>("_creatureToEnemies");
     }
 
-    private static Dictionary<uint, Dictionary<uint, int>> ProximityEnmityAmounts()
+    private Dictionary<uint, Dictionary<uint, int>> ProximityEnmityAmounts()
     {
         return GetField<Dictionary<uint, Dictionary<uint, int>>>("_proximityEnmityAmounts");
     }
 
-    private static Dictionary<uint, DateTime> AttackCommandTimes()
+    private Dictionary<uint, DateTime> AttackCommandTimes()
     {
         return GetField<Dictionary<uint, DateTime>>("_attackCommandTimes");
     }
 
-    private static T GetField<T>(string name)
+    private T GetField<T>(string name)
     {
-        return (T)typeof(Enmity)
-            .GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!
-            .GetValue(null)!;
+        return (T)typeof(EnmityService)
+            .GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(_enmity)!;
     }
 
-    private static bool ShouldIssueAttackCommand(
+    private bool ShouldIssueAttackCommand(
         uint attackTarget,
         uint desiredTarget,
         ActionType currentAction,
@@ -593,9 +612,9 @@ public class EnmityTests
         float recoverySeconds = 6f,
         uint pendingTarget = OBJECT_INVALID)
     {
-        return (bool)typeof(Enmity)
-            .GetMethod("ShouldIssueAttackCommand", BindingFlags.Static | BindingFlags.NonPublic)!
-            .Invoke(null, new object[]
+        return (bool)typeof(EnmityService)
+            .GetMethod("ShouldIssueAttackCommand", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(_enmity, new object[]
             {
                 attackTarget,
                 desiredTarget,
@@ -609,7 +628,7 @@ public class EnmityTests
             })!;
     }
 
-    private static bool ShouldRecoverStaleAttack(
+    private bool ShouldRecoverStaleAttack(
         uint attackTarget,
         uint desiredTarget,
         ActionType currentAction,
@@ -618,12 +637,12 @@ public class EnmityTests
         bool hasRecentAttack,
         float recoverySeconds)
     {
-        return (bool)typeof(Enmity)
-            .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+        return (bool)typeof(EnmityService)
+            .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
             .Single(method =>
                 method.Name == "ShouldRecoverStaleAttack" &&
                 method.GetParameters().Length == 7)
-            .Invoke(null, new object[]
+            .Invoke(_enmity, new object[]
             {
                 attackTarget,
                 desiredTarget,
@@ -635,25 +654,25 @@ public class EnmityTests
             })!;
     }
 
-    private static bool ShouldMoveIntoAttackRange(float distance, SkillType skillType, float moveRange)
+    private bool ShouldMoveIntoAttackRange(float distance, SkillType skillType, float moveRange)
     {
-        return (bool)typeof(Enmity)
-            .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+        return (bool)typeof(EnmityService)
+            .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
             .Single(method =>
                 method.Name == "ShouldMoveIntoAttackRange" &&
                 method.GetParameters().Length == 3)
-            .Invoke(null, new object[] { distance, skillType, moveRange })!;
+            .Invoke(_enmity, new object[] { distance, skillType, moveRange })!;
     }
 
-    private static float GetStaleAttackRecoverySeconds(int effectiveDelayMilliseconds)
+    private float GetStaleAttackRecoverySeconds(int effectiveDelayMilliseconds)
     {
-        return (float)typeof(Enmity)
-            .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+        return (float)typeof(EnmityService)
+            .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic)
             .Single(method =>
                 method.Name == "GetStaleAttackRecoverySeconds" &&
                 method.GetParameters().Length == 1 &&
                 method.GetParameters()[0].ParameterType == typeof(int))
-            .Invoke(null, new object[] { effectiveDelayMilliseconds })!;
+            .Invoke(_enmity, new object[] { effectiveDelayMilliseconds })!;
     }
 
     private static float ResolveNativeWeaponEngagementRange(
@@ -698,10 +717,10 @@ public class EnmityTests
         return directory!;
     }
 
-    private static bool HasOnlyProximityEnmity(uint creature, uint enemy)
+    private bool HasOnlyProximityEnmity(uint creature, uint enemy)
     {
-        return (bool)typeof(Enmity)
-            .GetMethod("HasOnlyProximityEnmity", BindingFlags.Static | BindingFlags.NonPublic)!
-            .Invoke(null, new object[] { creature, enemy })!;
+        return (bool)typeof(EnmityService)
+            .GetMethod("HasOnlyProximityEnmity", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(_enmity, new object[] { creature, enemy })!;
     }
 }

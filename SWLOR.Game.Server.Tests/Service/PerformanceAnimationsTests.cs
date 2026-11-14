@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.PerformanceService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;

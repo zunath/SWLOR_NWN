@@ -1,0 +1,32 @@
+{
+  "function": "RecipeBuilder (Create, Category, Level, SkillUpToRank, Quantity, Resref, EffectDescription, EnhancementSlots, ResearchCostModifier, Inactive, Requirement*, Component, Build)",
+  "description": "What the recipe builder produces for a call sequence: the defaults of a new recipe, a quantity below 1 becoming 1, a practice rank limit below 1 being rejected, a repeated component or enhancement slot call replacing the earlier one, effect lines adding up, and a recipe type created twice being rejected.",
+  "seed": null,
+  "inputs": "Hand-written call sequences, one per row; the result lists skill, category, level, practice rank limit, quantity, resref, active flag, enhancement type and slots, research cost modifier, components, requirements and effect lines of each recipe built, or the exception.",
+  "rowCount": 22,
+  "columns": ["case", "=> result"],
+  "rows": [
+    ["defaults", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["category and level", "BasicKnife: Smithery/Knife/level 12/limit null/x1/null/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["quantity 7", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x7/null/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["quantity 1", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["quantity 0 becomes 1", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["quantity -3 becomes 1", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["practice rank limit 25", "BasicKnife: Smithery/Uncategorized/level 0/limit 25/x1/null/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["practice rank limit 1", "BasicKnife: Smithery/Uncategorized/level 0/limit 1/x1/null/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["practice rank limit 0 is rejected", "throws ArgumentOutOfRangeException(rank)"],
+    ["practice rank limit -4 is rejected", "throws ArgumentOutOfRangeException(rank)"],
+    ["resref", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/b_knife/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["components in order, repeated one replaced", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components [ref_veldite x5, wood x1]/requirements []/effects []"],
+    ["component quantity zero kept", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components [wood x0]/requirements []/effects []"],
+    ["enhancement slots, second call replaces", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/Armor 3/cost 0/components []/requirements []/effects []"],
+    ["research cost modifier", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0.25/components []/requirements []/effects []"],
+    ["inactive", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active false/None 0/cost 0/components []/requirements []/effects []"],
+    ["unlock requirement", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components []/requirements [RecipeUnlockRequirement Recipe must be learned.]/effects []"],
+    ["perk requirement", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components []/requirements [RecipePerkRequirement Requires Poisoncraft 2.]/effects []"],
+    ["requirements in order", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components []/requirements [RecipePerkRequirement Requires Trapcraft 1., RecipeUnlockRequirement Recipe must be learned.]/effects []"],
+    ["effect lines add up", "BasicKnife: Smithery/Uncategorized/level 0/limit null/x1/null/active true/None 0/cost 0/components []/requirements []/effects [Line one, Line two, Line three]"],
+    ["two recipes keep creation order", "BasicSpear: Smithery/Uncategorized/level 3/limit null/x1/null/active true/None 0/cost 0/components []/requirements []/effects [] | BasicKnife: Engineering/Uncategorized/level 9/limit null/x1/null/active true/None 0/cost 0/components []/requirements []/effects []"],
+    ["same recipe type twice is rejected", "throws ArgumentException()"]
+  ]
+}

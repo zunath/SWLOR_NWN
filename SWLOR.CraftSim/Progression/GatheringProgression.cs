@@ -1,7 +1,7 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Gathering;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Crafting;
 
 namespace SWLOR.CraftSim.Progression
 {
@@ -68,7 +68,7 @@ namespace SWLOR.CraftSim.Progression
                 if (xpPerSecond <= 0)
                     throw new InvalidOperationException($"Gathering rank {rank} earns no XP with {strategy}, so the climb never ends.");
 
-                steps.Add(new GatheringStep(rank, CraftRankMilestones.TierForRank(rank), activity, xpPerSecond, Skill.GetRequiredXP(rank)));
+                steps.Add(new GatheringStep(rank, CraftRankMilestones.TierForRank(rank), activity, xpPerSecond, SkillXPChart.GetRequiredXP(rank)));
             }
 
             return new GatheringPath(strategy, steps);

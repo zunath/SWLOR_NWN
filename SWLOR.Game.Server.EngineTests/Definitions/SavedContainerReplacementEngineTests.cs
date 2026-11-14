@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -151,7 +150,7 @@ public static partial class MigrationEngineTests
             ctx.Assert(kits > 0 && kits < 20, $"The bag fills with retired kits ({kits})");
 
             SavedCharacterMigration.EnsureDataLoaded();
-            var migrate = typeof(Service.Migration).Assembly
+            var migrate = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly
                 .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration.SavedObsoleteItemMigration")!
                 .GetMethod("MigrateSerialized", BindingFlags.NonPublic | BindingFlags.Static)!;
             var arguments = new object[] { ObjectPlugin.Serialize(bag), null, null };

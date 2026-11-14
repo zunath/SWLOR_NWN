@@ -4,7 +4,7 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Harvesting;
 using SWLOR.CraftSim.Scenario;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
 
 namespace SWLOR.CraftSim.Cli
 {

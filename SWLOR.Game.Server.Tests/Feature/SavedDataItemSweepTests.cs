@@ -6,15 +6,16 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PlayerMarketService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.Formats.Gff;
 using SWLOR.NWN.Formats.TwoDA;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -28,6 +29,23 @@ public partial class SavedDataItemSweepTests
     private static readonly Type Document = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData")!;
     private static readonly Type NodeType = Document.GetNestedType("Node", BindingFlags.NonPublic)!;
     private static readonly Type ListingType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.RootListing")!;
+
+    // The sweep names the market category of a converted item through the static PlayerMarket class, which forwards to
+    // the container's player market service; the server's boot builds that container, so these tests install one.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
 
     [Test]
     public void LootRevision_ShiftsEachCatalogStatAndSavesPropertiesTheWayTheEngineDoes()
@@ -307,7 +325,7 @@ public partial class SavedDataItemSweepTests
                 new(entry.Key, retired.Subtype, 0, 0, 0),
             };
             // Item Resistance caps at 100.
-            if (amount + 5 <= Resistance.MaximumResistance)
+            if (amount + 5 <= ResistanceRules.MaximumResistance)
                 cases.Add(new(entry.Key, retired.Subtype, 0, amount + 5, 0));
             return cases;
         });

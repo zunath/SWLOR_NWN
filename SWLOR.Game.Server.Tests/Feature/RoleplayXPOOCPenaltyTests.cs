@@ -4,7 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.RoleplayXPService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -439,7 +439,7 @@ public class RoleplayXPOOCPenaltyTests
     {
         var root = FindRepositoryRoot();
         var roleplayXpSource = ReadServerSource("Feature", "RoleplayXP.cs");
-        var allowanceSource = ReadServerSource("Service", "RoleplayXPService", "OOCAllowance.cs");
+        var allowanceSource = ReadServerSource("Domain", "Character", "OOCAllowance.cs");
         var adminPlayerAdvanced = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Admin",

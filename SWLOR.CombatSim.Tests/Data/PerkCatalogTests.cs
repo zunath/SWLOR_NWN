@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Data;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CombatSim.Tests.Data
 {

@@ -1,13 +1,13 @@
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Reaction;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Reaction;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var request = new CraftSessionStartRequest(_recipe, _blueprintItem, Array.Empty<uint>());
-            var result = CraftSessionService.Start(Player, request);
+            var result = CraftSessions.Start(Player, request);
             if (!result.Succeeded)
             {
                 SetStatus(result.Message, GuiColor.Red);
@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 $"Stop the reaction? Each stack of components has a {CraftOutcomeRules.ChanceToLoseItemPercent}% chance to be lost, and the attempt earns {(int)(CraftOutcomeRules.FailureXpFraction * 100)}% of the base XP.",
                 () =>
                 {
-                    var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.WindowClosed, _engine?.Turn);
+                    var settlement = CraftSessions.Fail(Player, CraftSessionEndReason.WindowClosed, _engine?.Turn);
                     EndAttempt(DescribeFailure("You stopped the reaction.", settlement), GuiColor.Red);
                 },
                 null,
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_engine == null || _session == null)
                 return;
 
-            if (!CraftSessionService.IsActive(Player, _session))
+            if (!CraftSessions.IsActive(Player, _session))
             {
                 EndAttempt("Your craft was interrupted.", GuiColor.Red);
                 return;
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // The saved craft counts its actions, so a craft settled with no window (a logout, a death, a restart) is held to the same pace.
             if (result.Status == MinigameStatus.InProgress)
-                CraftSessionService.RecordActions(Player, _session, _engine.Turn);
+                CraftSessions.RecordActions(Player, _session, _engine.Turn);
 
             switch (result.Status)
             {
@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     CompleteSuccess();
                     break;
                 case MinigameStatus.Failed:
-                    var settlement = CraftSessionService.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
+                    var settlement = CraftSessions.Fail(Player, CraftSessionEndReason.Broken, _engine.Turn);
                     EndAttempt(DescribeFailure("The piece broke.", settlement), GuiColor.Red);
                     break;
                 default:
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void CompleteSuccess()
         {
-            var success = CraftSessionService.Succeed(Player, _session, _engine.Meters.Quality, _engine.Turn);
+            var success = CraftSessions.Succeed(Player, _session, _engine.Meters.Quality, _engine.Turn);
             if (success == null)
             {
                 EndAttempt("Your craft was interrupted.", GuiColor.Red);

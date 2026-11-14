@@ -506,6 +506,39 @@ class LiveClientHelperTests(unittest.TestCase):
         self.assertRegex(stack.host_user(), r'^\d+:\d+$')
         self.assertRegex(stack.server_image(), r'^zunath/nwn-dotnet:')
 
+    def test_compose_boots_the_entry_the_stack_staged(self):
+        compose = stack.COMPOSE_FILE.read_text('utf-8')
+        for variable, value in (('SWLOR_DOTNET_ENTRY', 'ENTRY'), ('NWNX_DOTNET_ASSEMBLY', 'ASSEMBLY'),
+                                ('NWNX_DOTNET_ENTRYPOINT', 'ENTRYPOINT'), ('NWNX_DOTNET_METHOD', 'METHOD')):
+            self.assertIn(f'{variable}: ${{SWLOR_LIVE_DOTNET_{value}}}', compose)
+
+    def test_the_host_entry_matches_the_server_env_file(self):
+        env = dict(line.split('=', 1) for line in
+                   (stack.SERVER_DOCKER_DIR / 'swlor.env').read_text('utf-8').splitlines()
+                   if '=' in line and not line.startswith('#'))
+        host = stack.DOTNET_ENTRIES['host']
+        self.assertEqual(env['SWLOR_DOTNET_ENTRY'].strip(), 'host')
+        self.assertEqual(env['NWNX_DOTNET_ASSEMBLY'].strip(), host['assembly'])
+        self.assertEqual(env['NWNX_DOTNET_ENTRYPOINT'].strip(), host['entrypoint'])
+        self.assertEqual(env['NWNX_DOTNET_METHOD'].strip(), host['method'])
+
+    def test_the_host_entry_stages_the_game_in_its_game_folder(self):
+        game = self.root / 'game-build'
+        host = self.root / 'host-build'
+        game.mkdir()
+        host.mkdir()
+        (game / 'SWLOR.Game.Server.dll').write_bytes(b'game')
+        (host / 'SWLOR.Game.Host.dll').write_bytes(b'host')
+
+        stack.stage_dotnet('host', game, host, self.root / 'hosted')
+        stack.stage_dotnet('native', game, host, self.root / 'native')
+
+        self.assertEqual((self.root / 'hosted' / 'SWLOR.Game.Host.dll').read_bytes(), b'host')
+        self.assertEqual((self.root / 'hosted' / 'game' / 'SWLOR.Game.Server.dll').read_bytes(), b'game')
+        self.assertEqual((self.root / 'native' / 'SWLOR.Game.Server.dll').read_bytes(), b'game')
+        self.assertFalse((self.root / 'native' / 'SWLOR.Game.Host.dll').exists())
+        self.assertFalse((self.root / 'native' / 'game').exists())
+
 
 if __name__ == '__main__':
     unittest.main()

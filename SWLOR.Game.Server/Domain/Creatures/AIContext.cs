@@ -1,0 +1,196 @@
+using SWLOR.Game.Server.Core;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+
+namespace SWLOR.Game.Server.Domain.Creatures
+{
+    public sealed class AIContext
+    {
+        private uint _currentEnmityTarget;
+        private bool _currentEnmityTargetLoaded;
+        private int? _selfHealthPercent;
+        private int? _selfHitPoints;
+        private int? _selfMaxHitPoints;
+
+        public uint Self { get; }
+        public AITriggerType Trigger { get; }
+        public uint EventTarget { get; }
+        public AIProfile Profile { get; }
+        public AIState State { get; }
+        public IReadOnlyList<uint> Allies { get; }
+        public uint EvaluatedTarget { get; private set; }
+
+        public AIContext(
+            uint self,
+            AITriggerType trigger,
+            uint eventTarget,
+            AIProfile profile,
+            AIState state,
+            IReadOnlyList<uint> allies)
+        {
+            Self = self;
+            Trigger = trigger;
+            EventTarget = eventTarget;
+            Profile = profile;
+            State = state;
+            Allies = allies ?? new List<uint>();
+            EvaluatedTarget = OBJECT_INVALID;
+        }
+
+        public uint CurrentEnmityTarget
+        {
+            get
+            {
+                if (_currentEnmityTargetLoaded)
+                    return _currentEnmityTarget;
+
+                _currentEnmityTargetLoaded = true;
+                _currentEnmityTarget = CompanionControl.IsRegisteredCompanion(Self)
+                    ? CompanionControl.PeekAuthorizedTarget(Self)
+                    : Enmity.GetHighestEnmityTarget(Self);
+
+                return _currentEnmityTarget;
+            }
+        }
+
+        /// <summary>
+        /// Resolves <see cref="CurrentEnmityTarget"/> to the highest-enmity creature this NPC can
+        /// attack, skipping creatures hidden by invisibility, so its decisions never aim at a target
+        /// it cannot see. Live trigger processing calls this because the check reads creature effects.
+        /// </summary>
+        public void UseAttackableEnmityTarget()
+        {
+            _currentEnmityTargetLoaded = true;
+            _currentEnmityTarget = CompanionControl.IsRegisteredCompanion(Self)
+                ? CompanionControl.PeekAuthorizedTarget(Self)
+                : Enmity.GetHighestEnmityAttackTarget(Self);
+        }
+
+        public uint Master => GetMaster(Self);
+
+        public int SelfHealthPercent => _selfHealthPercent ??= GetHealthPercent(Self);
+        public int SelfHitPoints => _selfHitPoints ??= GetCurrentHitPoints(Self);
+        public int SelfMaxHitPoints => _selfMaxHitPoints ??= GetMaxHitPoints(Self);
+
+        public int TargetHealthPercent => GetIsObjectValid(EvaluatedTarget)
+            ? GetHealthPercent(EvaluatedTarget)
+            : 100;
+
+        public bool IsOutsideHomeRadius
+        {
+            get
+            {
+                var home = HomeLocation;
+                return GetIsObjectValid(GetAreaFromLocation(home)) &&
+                       (GetAreaFromLocation(home) != GetArea(Self) ||
+                        GetDistanceBetweenLocations(GetLocation(Self), home) > 15f);
+            }
+        }
+
+        public Location HomeLocation => GetLocalLocation(Self, "HOME_LOCATION");
+
+        public float DistanceToMaster => GetIsObjectValid(Master)
+            ? GetDistanceBetween(Self, Master)
+            : 999f;
+
+        public float ElapsedCombatSeconds => State.CombatStartedTime == default
+            ? 0f
+            : (float)(Clock.UtcNow - State.CombatStartedTime).TotalSeconds;
+
+        public bool HasFeat(SWLOR.NWN.API.NWScript.Enum.FeatType feat)
+        {
+            return GetHasFeat(feat, Self);
+        }
+
+        public void SetEvaluatedTarget(uint target)
+        {
+            EvaluatedTarget = target;
+        }
+
+        public int CountHostilesNearTarget(float radius)
+        {
+            return CountHostilesNearTarget(radius, null);
+        }
+
+        /// <summary>
+        /// Counts living enemies within the radius of the evaluated target (or this creature) that
+        /// this creature can see. Enemies hidden by invisibility or undetected stealth are left out,
+        /// so they never justify an area ability.
+        /// </summary>
+        public int CountHostilesNearTarget(float radius, Func<uint, bool> predicate)
+        {
+            var origin = GetIsObjectValid(EvaluatedTarget)
+                ? GetLocation(EvaluatedTarget)
+                : GetLocation(Self);
+
+            var count = 0;
+            foreach (var creature in ObjectSnapshot.InShape(Shape.Sphere, radius, origin, true, ObjectType.Creature))
+            {
+                if (!GetIsObjectValid(creature))
+                    continue;
+
+                if (creature != Self &&
+                    GetIsEnemy(creature, Self) &&
+                    GetCurrentHitPoints(creature) > 0 &&
+                    !Stealth.IsHiddenFrom(Self, creature) &&
+                    (predicate == null || predicate(creature)))
+                {
+                    count++;
+                }
+
+            }
+
+            return count;
+        }
+
+        public uint GetLowestHealthAlly(bool includeSelf, float maxRange)
+        {
+            var candidates = Allies
+                .Where(GetIsObjectValid)
+                .Where(x => GetCurrentHitPoints(x) > 0)
+                .ToList();
+
+            if (includeSelf && !candidates.Contains(Self))
+                candidates.Add(Self);
+
+            var master = Master;
+            if (GetIsObjectValid(master) && !candidates.Contains(master))
+                candidates.Add(master);
+
+            var best = OBJECT_INVALID;
+            var bestHealth = 101;
+
+            foreach (var candidate in candidates)
+            {
+                if (!includeSelf && candidate == Self)
+                    continue;
+
+                if (candidate != Self && maxRange > 0f && GetDistanceBetween(Self, candidate) > maxRange)
+                    continue;
+
+                var health = GetHealthPercent(candidate);
+                if (health < bestHealth)
+                {
+                    best = candidate;
+                    bestHealth = health;
+                }
+            }
+
+            return best;
+        }
+
+        private static int GetHealthPercent(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return 100;
+
+            var max = Math.Max(1, GetMaxHitPoints(creature));
+            var current = Math.Max(0, GetCurrentHitPoints(creature));
+            return current * 100 / max;
+        }
+    }
+}

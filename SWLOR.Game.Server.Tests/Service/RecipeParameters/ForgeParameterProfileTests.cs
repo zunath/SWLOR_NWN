@@ -1,13 +1,14 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.RecipeParameters;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service.RecipeParameters;
 
 /// <summary>Covers how the Plasma Forge profile turns a recipe's category, level and components into parameters.</summary>
-public class ForgeParameterProfileTests
+public class ForgeParameterProfileTests : SkillFacadeFixture
 {
     private static readonly ForgeParameterProfile Profile = new();
 

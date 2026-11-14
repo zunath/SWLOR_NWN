@@ -40,7 +40,7 @@ Quest definition:
 
 NPC group:
 
-- Add a `[NPCGroup("Display Name")]` entry to `SWLOR.Game.Server/Service/NPCService/NPCGroupType.cs` only when no group already matches.
+- Add a `[NPCGroup("Display Name")]` entry to `SWLOR.Game.Server/Domain/Creatures/NPCGroupType.cs` only when no group already matches.
 - Use the next integer value.
 - For generated capstone groups, prefix the enum identifier with the planet from the line's `AreaGroup.PlanetType`, not `Capstone_`.
 - Set enemy `VarTable` `QUEST_NPC_GROUP_ID` to that integer in `Module/utc/<enemy>.utc.json` or the relevant placed creature.

@@ -4,9 +4,10 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 
@@ -14,12 +15,15 @@ namespace SWLOR.Game.Server.Tests.Service.Prospecting;
 /// Covers the ladder of levels Gathering XP is measured at, which harvesting, Prospecting and refining share, the rank milestones that
 /// replace Might and Perception, and the gems the harvesting loot tables hold.
 /// </summary>
-public class GatheringXpTests
+public class GatheringXpTests : SkillFacadeFixture
 {
     [OneTimeSetUp]
     public void LoadTheXpChart()
     {
-        Skill.CacheXPChartData();
+        using (SkillFacades.Install())
+        {
+            Skill.CacheXPChartData();
+        }
     }
 
     [TestCase(1, 5)]

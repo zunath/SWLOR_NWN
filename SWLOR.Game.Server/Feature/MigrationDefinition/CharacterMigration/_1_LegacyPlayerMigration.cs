@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
@@ -63,13 +63,13 @@ internal sealed class _1_LegacyPlayerMigration : ICharacterMigration
     {
         var record = character.Record;
         // A record that already holds this change still has its maximum HP written to the file's levels.
-        character.AdjustPlayerMaxHP(character.AppliesRecordEffects ? Stat.BaseHP - record.MaxHP : 0);
+        character.AdjustPlayerMaxHP(character.AppliesRecordEffects ? StatService.BaseHP - record.MaxHP : 0);
         character.WriteInteger("BaseAttackBonus", 1, 0);
         if (!character.AppliesRecordEffects)
             return;
         record.BAB = 1;
-        record.MaxFP = Stat.BaseFP;
-        record.MaxStamina = Stat.BaseSTM;
+        record.MaxFP = StatService.BaseFP;
+        record.MaxStamina = StatService.BaseSTM;
         record.HP = character.GetCurrentHitPoints();
         record.FP = SavedEquipmentStats.GetMaxFP(character);
         record.Stamina = SavedEquipmentStats.GetMaxStamina(character);

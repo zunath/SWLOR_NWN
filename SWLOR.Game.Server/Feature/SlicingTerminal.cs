@@ -1,8 +1,8 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.SlicingService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Crafting;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
-            var tier = GetLocalInt(terminal, SlicingSession.TierVariable);
+            var tier = GetLocalInt(terminal, SlicingSessionService.TierVariable);
 
             if (!SlicingSession.TryStart(player, terminal, SlicingSourceType.Terminal, tier, out var error))
             {

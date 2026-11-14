@@ -4,6 +4,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
@@ -119,7 +120,7 @@ public partial class SavedDataItemSweepTests
     public void PelvisConsolidation_CharacterRetryChangesOnlyTheOldFile()
     {
         const BindingFlags members = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance;
-        var characterType = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.SavedCharacter")!;
+        var characterType = ServerAssembly.GetType("SWLOR.Game.Server.Domain.Foundation.SavedCharacter")!;
         var migrationType = ServerAssembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration._25_ConsolidatePelvisAppearance")!;
         var migration = Activator.CreateInstance(migrationType, true)!;
         var record = new Player { Version = 25, CharacterFileVersion = 25, HP = 17, FP = 13, Stamina = 11,
@@ -221,14 +222,13 @@ public partial class SavedDataItemSweepTests
     [NonParallelizable]
     public void PelvisConsolidation_NormalizesLegacyRgbInheritanceWithoutChangingExplicitSiblingColors(bool alreadyExplicit)
     {
-        var indexField = typeof(TintMapMaterialRegistry).GetField("_equipmentMaterialIndex", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var originalIndex = indexField.GetValue(null);
+        var tintMapState = _facades.Get<ITintMapStateService>();
         var layers = new[] { TintMapLayerType.Cloth1, TintMapLayerType.Cloth2 };
-        indexField.SetValue(null, new TintMapEquipmentMaterialIndex(new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>
+        tintMapState.LoadMaterials(new Dictionary<string, List<TintMapMaterialDefinition>>
         {
-            ["pfh0_chest001"] = new[] { new TintMapMaterialDefinition("Torso", "torso_inherit", layers) },
-            ["pfh0_neck001"] = new[] { new TintMapMaterialDefinition("Neck", "neck_explicit", layers) },
-        }));
+            ["pfh0_chest001"] = new List<TintMapMaterialDefinition> { new("Torso", "torso_inherit", layers) },
+            ["pfh0_neck001"] = new List<TintMapMaterialDefinition> { new("Neck", "neck_explicit", layers) },
+        });
         try
         {
             const int rgb = 0x01112233;
@@ -255,7 +255,7 @@ public partial class SavedDataItemSweepTests
         }
         finally
         {
-            indexField.SetValue(null, originalIndex);
+            tintMapState.LoadMaterials(new Dictionary<string, List<TintMapMaterialDefinition>>());
         }
     }
 

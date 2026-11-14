@@ -1,0 +1,140 @@
+# SWLOR boot handler classification for hot reload: SWLOR.Game.Server only
+# One line per handler of a boot script, in the order the registry runs them: class, then Namespace.Type.Method.
+# Classes (BootReload): Rerun = the new build runs it again; BootOnly = never again after boot (a mixed handler is split into the two);
+# NativeHook = installs a native hook; Retire = runs at shutdown and when a generation retires. UNCLASSIFIED fails EveryBootHandlerHasABootPhase.
+# The rule and the reasons are in SWLOR.Game.Server/Readmes/MaintainabilityRefactorHotReload.md section 2.
+# Regenerate (build first so the handlers are current): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~BootHandlerClassificationTests"   (PowerShell: $env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS)   (build SWLOR.Game.Server.Tests first so the generator sees your handler)
+
+mod_preload (5)
+  Rerun       SWLOR.Game.Server.Domain.Foundation.DBService.Connect
+  BootOnly    SWLOR.Game.Server.Domain.Foundation.DBService.SyncIndexes
+  Rerun       SWLOR.Game.Server.Feature.EventRegistration.StartServerEvents
+  BootOnly    SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
+  BootOnly    SWLOR.Game.Server.Feature.ServerTasks.ProcessBootStart
+
+db_loaded (1)
+  BootOnly    SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterDatabaseLoaded
+
+mod_content_chg (1)
+  BootOnly    SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
+
+mod_cache_bef (44)
+  Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
+  Rerun       SWLOR.Game.Server.Domain.World.AreaService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Companions.BeastMasteryService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Foundation.CacheService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Social.ChatCommandService.OnModuleLoad
+  Rerun       SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.LoadDamageTypes
+  Rerun       SWLOR.Game.Server.Domain.Foundation.ConversationMenuService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Economy.CurrencyService.CacheCurrencies
+  Rerun       SWLOR.Game.Server.Domain.Companions.DroidService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Quests.FactionService.LoadFactions
+  Rerun       SWLOR.Game.Server.Domain.World.FishingService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Economy.GuildService.LoadData
+  Rerun       SWLOR.Game.Server.Domain.Items.ItemService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Items.KeyItemService.LoadData
+  Rerun       SWLOR.Game.Server.Domain.Items.LootService.RegisterLootTables
+  Rerun       SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.ResetProfiles
+  Rerun       SWLOR.Game.Server.Domain.World.MusicService.LoadSongList
+  Rerun       SWLOR.Game.Server.Domain.Creatures.NPCGroupService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Foundation.ObjectVisibilityService.LoadVisibilityObjects
+  Rerun       SWLOR.Game.Server.Domain.Character.PerkService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.World.PlanetService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Economy.PlayerMarketService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.World.PropertyService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Quests.QuestService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Combat.RecastService.CacheRecastGroups
+  Rerun       SWLOR.Game.Server.Domain.Character.SkillService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Character.SkillService.LoadMappings
+  Rerun       SWLOR.Game.Server.Domain.Character.SkillService.CacheXPChartData
+  Rerun       SWLOR.Game.Server.Domain.Foundation.SnippetService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Space.SpaceService.LoadSpaceSystem
+  Rerun       SWLOR.Game.Server.Domain.Creatures.SpawnService.LoadSpawnTables
+  BootOnly    SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
+  Rerun       SWLOR.Game.Server.Domain.Character.StatService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
+  Rerun       SWLOR.Game.Server.Domain.World.WeatherService.LoadData
+  Rerun       SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration
+  Rerun       SWLOR.Game.Server.Feature.UnarmedMastery.Register
+  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.NeckModelRenderer.Load
+  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.PartSkinModelRenderer.Load
+  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.RobeModelRenderer.Load
+  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.ShoulderModelRenderer.Load
+  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapMaterialRegistry.Load
+
+mod_cache_aft (15)
+  Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Creatures.AIService.CacheAIData
+  Rerun       SWLOR.Game.Server.Domain.Foundation.ConversationService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Administration.DMBlueprintCatalogService.LoadCustomPalettes
+  Rerun       SWLOR.Game.Server.Domain.UI.GuiService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Companions.IncubationFieldNoteService.LoadDisplayText
+  BootOnly    SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterCacheLoaded
+  Rerun       SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Character.PerkService.CachePerkFeatData
+  Rerun       SWLOR.Game.Server.Domain.Foundation.AnimationPreviewCatalog.CacheCategories
+  Rerun       SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterUnequipGuard
+  Rerun       SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterAttackRules
+  Rerun       SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.RegisterUnequipGuard
+  Rerun       SWLOR.Game.Server.Feature.UnarmedTechniqueProfile.Register
+  Rerun       SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.CacheSpawnBeastEggHelp
+
+mod_load (46)
+  Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds
+  Rerun       SWLOR.Game.Server.Domain.World.AreaService.RemoveInstancesFromCache
+  Rerun       SWLOR.Game.Server.Domain.Foundation.FrameProfiler.Load
+  Rerun       SWLOR.Game.Server.Domain.Character.LanguageService.LoadTranslators
+  BootOnly    SWLOR.Game.Server.Domain.Economy.PlayerMarketService.RemoveOldListings
+  BootOnly    SWLOR.Game.Server.Domain.World.PropertyService.OnModuleLoad
+  Rerun       SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces
+  Rerun       SWLOR.Game.Server.Domain.Combat.ResistanceService.LoadResistanceTypes
+  Rerun       SWLOR.Game.Server.Domain.World.ShuttleService.LoadShuttleFlights
+  BootOnly    SWLOR.Game.Server.Domain.World.ShuttleService.DeliverOfflinePassengers
+  BootOnly    SWLOR.Game.Server.Domain.Space.SpaceService.AssignLandingPointIds
+  Rerun       SWLOR.Game.Server.Domain.Space.SpaceService.LoadLandingPoints
+  Rerun       SWLOR.Game.Server.Domain.Foundation.WalkmeshService.RetrieveWalkmeshes
+  BootOnly    SWLOR.Game.Server.Domain.World.WeatherService.InitializeWeather
+  Rerun       SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.StartAudienceTick
+  Rerun       SWLOR.Game.Server.Domain.Social.PerformanceWindowsService.ReserveGuiIds
+  NativeHook  SWLOR.Game.Server.Native.ChatPortraitSpeakers.RegisterHooks
+  NativeHook  SWLOR.Game.Server.Native.ClientJsonUtf8Guard.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.GetDamageRoll.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.NeckAppearanceSerialization.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.OnAIActionAttackObject.RegisterHook
+  Rerun       SWLOR.Game.Server.Native.PairedRangedPresentation.StartParking
+  NativeHook  SWLOR.Game.Server.Native.PlayerCreation.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.PlayerFileCheckpoint.RegisterHooks
+  NativeHook  SWLOR.Game.Server.Native.PlayerListNamePrivacy.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.PlayerSlotAssignment.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.QuickbarFeatLoading.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.ResolveAttackRoll.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.SavedPlayerInventory.RegisterHook
+  NativeHook  SWLOR.Game.Server.Native.StaleDriveAfterJump.RegisterHooks
+  NativeHook  SWLOR.Game.Server.Native.VitalityHitPoints.RegisterHooks
+  NativeHook  SWLOR.Game.Server.Native.WeaponAttackAnimation.RegisterHooks
+  BootOnly    SWLOR.Game.Server.Feature.AreaConfiguration.ApplyAreaConfiguration
+  BootOnly    SWLOR.Game.Server.Feature.CZ220FlightsTerminal.SpawnHangarFlightsTerminal
+  Rerun       SWLOR.Game.Server.Feature.EquipmentStats.RegisterStatActions
+  BootOnly    SWLOR.Game.Server.Feature.FeatConfiguration.ConfigureFeats
+  BootOnly    SWLOR.Game.Server.Feature.FeedbackMessageConfiguration.ConfigureFeedbackMessages
+  Rerun       SWLOR.Game.Server.Feature.RoleplayXP.LoadOOCDetection
+  BootOnly    SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp
+  Rerun       SWLOR.Game.Server.Feature.ServerTasks.StartRestartReminders
+  Rerun       SWLOR.Game.Server.Feature.StoreManagement.LoadStores
+  BootOnly    SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
+  BootOnly    SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
+  Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances
+  Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel.LoadCategories
+  Rerun       SWLOR.Game.Server.Feature.DialogDefinition.CoxxionTerminalDialog.LoadDoors
+
+app_shutdown (2)
+  Retire      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.StopOnShutdown
+  Retire      SWLOR.Game.Server.Domain.Foundation.Log.OnApplicationShutdown
+
+== TOTALS ==
+BootOnly    19
+NativeHook  15
+Rerun       78
+Retire      2

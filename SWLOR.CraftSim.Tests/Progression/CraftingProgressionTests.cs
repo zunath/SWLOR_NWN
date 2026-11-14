@@ -4,9 +4,9 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.CraftSim.Tests.Progression
 {
@@ -30,7 +30,7 @@ namespace SWLOR.CraftSim.Tests.Progression
             var path = PerfectCrafter();
 
             path.Steps.Select(s => s.Rank).Should().Equal(Enumerable.Range(0, 50));
-            path.Steps.Select(s => s.RequiredXp).Should().Equal(Enumerable.Range(0, 50).Select(Skill.GetRequiredXP));
+            path.Steps.Select(s => s.RequiredXp).Should().Equal(Enumerable.Range(0, 50).Select(level => Skill.GetRequiredXP(level)));
             path.RequiredXp.Should().Be(411_125);
         }
 

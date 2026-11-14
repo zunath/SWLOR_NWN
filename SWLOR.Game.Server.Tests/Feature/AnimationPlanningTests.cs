@@ -7,13 +7,14 @@ using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class AnimationPlanningTests
+public class AnimationPlanningTests : SkillFacadeFixture
 {
     /// <summary>Performance activity clips (design/animations/performance) that are installed and previewable but are not ability animations.</summary>
     public static readonly IReadOnlyDictionary<string, string> PerformanceActivityClips = new Dictionary<string, string>

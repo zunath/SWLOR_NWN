@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using Node = SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData.Node;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 
@@ -28,8 +28,6 @@ internal static class SavedDroidBoostItemMigration
     private const string DroidItemIdVariable = "DROID_ITEM_ID";
     private const string RecipesVariable = "RECIPES";
     private const string BlueprintRecipeIdVariable = StoredItemDataMigration.DroidBoostStoredItemMigration.BlueprintRecipeIdVariable;
-
-    private static IReadOnlyDictionary<int, string> _blueprintNames;
 
     /// <summary>
     /// Main thread only: reads the blueprint name of every replacement droid boost recipe, which the engine
@@ -48,7 +46,8 @@ internal static class SavedDroidBoostItemMigration
     }
 
     /// <summary>Supplies the blueprint names (by recipe ID) directly, for tests and for callers that read them elsewhere.</summary>
-    public static void Load(IReadOnlyDictionary<int, string> blueprintNames) => _blueprintNames = blueprintNames;
+    public static void Load(IReadOnlyDictionary<int, string> blueprintNames) =>
+        Migration.CharacterData.DroidBoostBlueprintNames = blueprintNames;
 
     /// <summary>Migrates every equipped and carried item, including container contents, once.</summary>
     internal static bool MigrateCharacter(SavedCharacter character)
@@ -198,7 +197,7 @@ internal static class SavedDroidBoostItemMigration
         }
 
         var isConstructedDroidController =
-            item.ResRef == Droid.DroidControlItemResref &&
+            item.ResRef == DroidService.DroidControlItemResref &&
             !string.IsNullOrWhiteSpace(item.GetLocalString(ConstructedDroidVariable));
         var addedArmorStat = AddArmorSkillRankIfNeeded(item, isDroidCpu || isConstructedDroidController, hasArmorStat, tier);
 
@@ -414,9 +413,10 @@ internal static class SavedDroidBoostItemMigration
     /// </summary>
     private static string GetBlueprintName(int recipeId)
     {
-        if (_blueprintNames == null)
+        var blueprintNames = Migration.CharacterData.DroidBoostBlueprintNames;
+        if (blueprintNames == null)
             throw new InvalidOperationException("Saved droid blueprint names are not loaded.");
-        return _blueprintNames.TryGetValue(recipeId, out var name)
+        return blueprintNames.TryGetValue(recipeId, out var name)
             ? name
             : throw new InvalidOperationException($"No blueprint name is loaded for recipe {recipeId}.");
     }

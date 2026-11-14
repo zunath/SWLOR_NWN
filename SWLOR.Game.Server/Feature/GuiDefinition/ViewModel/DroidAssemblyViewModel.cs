@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -644,7 +645,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public override Action OnWindowClosed() => () =>
         {
             if (!Reset())
-                SendMessageToPC(Player, Item.ItemsHeldMessage);
+                SendMessageToPC(Player, ItemService.ItemsHeldMessage);
         };
 
         public Action OnClickCPU() => () =>
@@ -668,7 +669,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         var part = Droid.LoadDroidPartItemPropertyDetails(item);
                         if (!Item.TryAcquireItem(Player, item))
                         {
-                            ShowError(Item.InventoryFullMessage);
+                            ShowError(ItemService.InventoryFullMessage);
                             return;
                         }
 
@@ -713,7 +714,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        ShowError(Item.InventoryFullMessage);
+                        ShowError(ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -756,7 +757,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        ShowError(Item.InventoryFullMessage);
+                        ShowError(ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -799,7 +800,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        ShowError(Item.InventoryFullMessage);
+                        ShowError(ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -842,7 +843,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var part = Droid.LoadDroidPartItemPropertyDetails(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        ShowError(Item.InventoryFullMessage);
+                        ShowError(ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -889,7 +890,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal("Are you sure you want to reset everything?", () =>
             {
                 if (!Reset())
-                    ShowError(Item.InventoryFullMessage);
+                    ShowError(ItemService.InventoryFullMessage);
             });
         };
 
@@ -924,7 +925,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal("You are about to construct the droid. Are you sure you want to continue?", () =>
             {
-                var controller = CreateItemOnObject(Droid.DroidControlItemResref, Player);
+                var controller = CreateItemOnObject(DroidService.DroidControlItemResref, Player);
                 SetName(controller, $"Droid Controller: {Name}");
 
                 var constructedDroid = Droid.LoadConstructedDroid(controller);

@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DMToolService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PageNumbers = new GuiBindingList<GuiComboEntry>();
             SelectedPageIndex = 0;
             ResultSummary = string.Empty;
-            DetailIcon = DMObjectDetails.NoSelectionIcon;
+            DetailIcon = DMObjectDetailsService.NoSelectionIcon;
             DetailTitle = string.Empty;
             DetailBody = string.Empty;
             HasSelection = false;
@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var blueprint in _pageResults)
             {
                 var (icon, summary) = _unavailable.Contains(blueprint)
-                    ? (DMObjectDetails.NoSelectionIcon, DMFavoriteList.UnavailableCategory)
+                    ? (DMObjectDetailsService.NoSelectionIcon, DMFavoriteList.UnavailableCategory)
                     : DMObjectDetails.GetBlueprintRow(blueprint);
                 icons.Add(icon);
                 names.Add(GetRowName(blueprint));
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var blueprint = GetSelectedBlueprint();
             if (blueprint == null)
             {
-                DetailIcon = DMObjectDetails.NoSelectionIcon;
+                DetailIcon = DMObjectDetailsService.NoSelectionIcon;
                 DetailTitle = string.Empty;
                 DetailBody = "Select a blueprint to see its details and create it.";
                 HasSelection = false;
@@ -340,7 +340,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             FavoriteButtonText = DMFavoriteList.Contains(_favorites, blueprint) ? RemoveFavoriteText : AddFavoriteText;
             if (_unavailable.Contains(blueprint))
             {
-                DetailIcon = DMObjectDetails.NoSelectionIcon;
+                DetailIcon = DMObjectDetailsService.NoSelectionIcon;
                 DetailTitle = blueprint.Name;
                 DetailBody = $"The {blueprint.Source} palette no longer lists '{blueprint.Resref}', so it cannot be created. " +
                              "It may have been renamed or removed. Remove it from your favorites if you no longer need it.";

@@ -2,14 +2,31 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class MigrationDataTests
 {
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope?.Dispose();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
     // Production has run player migration 25 and server migration 30. The next release adds player migration
     // NextPlayerVersion (crafting perk conversion and enzyme resize) and server
     // migration NextServerVersion (enzyme resize); update these at each post-release cleanup.
@@ -17,7 +34,7 @@ public class MigrationDataTests
     private const int ReleasedServerVersion = 30;
     private const int NextPlayerVersion = ReleasedPlayerVersion + 1;
     private const int NextServerVersion = ReleasedServerVersion + 1;
-    private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Service.Migration).Assembly;
+    private static readonly Assembly ServerAssembly = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly;
 
     [Test]
     public void CharacterMigrationsHaveUniqueVersionsAndOneCombinedItemUpdate()
@@ -71,7 +88,7 @@ public class MigrationDataTests
     [Test]
     public void AFailedLaterPhaseCannotCheckpointAnEarlierHigherVersion()
     {
-        var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;
+        var type = ServerAssembly.GetType("SWLOR.Game.Server.Domain.Foundation.ServerMigrationState")!;
         var state = Activator.CreateInstance(type, 20)!;
         var run = type.GetMethod("Run")!;
         run.Invoke(state, new object[] { new StandInMigration(22, MigrationExecutionType.PostDatabaseLoad), (Action<IServerMigration>)(_ => { }) });
@@ -96,7 +113,7 @@ public class MigrationDataTests
     [Test]
     public void SuccessfulPhasesKeepTheHighestCompletedVersion()
     {
-        var type = ServerAssembly.GetType("SWLOR.Game.Server.Service.MigrationService.ServerMigrationState")!;
+        var type = ServerAssembly.GetType("SWLOR.Game.Server.Domain.Foundation.ServerMigrationState")!;
         var state = Activator.CreateInstance(type, 20)!;
         foreach (var migration in new IServerMigration[]
                  {
@@ -110,10 +127,10 @@ public class MigrationDataTests
     [Test]
     public void RetiredServerMigrations_StartNewDatabasesAtTheBaselineAndRejectOlderOnes()
     {
-        var migration = ServerAssembly.GetType("SWLOR.Game.Server.Service.Migration")!;
-        var baseline = (int)migration.GetField("RetiredServerMigrationVersion", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-        var resolve = migration.GetMethod("ResolveConfiguration", BindingFlags.NonPublic | BindingFlags.Static)!;
-        ServerConfiguration Resolve(ServerConfiguration stored) => (ServerConfiguration)resolve.Invoke(null, new object[] { stored! })!;
+        var baseline = Game.Server.Domain.Foundation.MigrationService.RetiredServerMigrationVersion;
+        var db = new Tests.Support.InMemoryDBService();
+        var service = new Game.Server.Domain.Foundation.MigrationService(db, new Game.Server.Domain.Items.OverflowStorageService(db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
+        ServerConfiguration Resolve(ServerConfiguration stored) => service.ResolveConfiguration(stored!);
 
         baseline.Should().Be(ReleasedServerVersion, "every server migration production has run is retired");
         Resolve(null!).MigrationVersion.Should().Be(baseline, "a new database has nothing for the retired migrations to change");

@@ -1,18 +1,16 @@
+using SWLOR.Game.Server.EngineTests.Framework;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Leadership;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.Formats.Tlk;
 
@@ -20,6 +18,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class LeadershipCombatUpgradeTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void LeadershipBibleManifest_ContainsBatch()
     {
@@ -103,16 +117,13 @@ public class LeadershipCombatUpgradeTests
         var flash = new FlashStatusEffect(15);
         flash.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-15);
 
-        var classifier = typeof(Combat).GetMethod(
-            "IsWeaponOrForceAbility",
-            BindingFlags.NonPublic | BindingFlags.Static);
+        CombatMembers.FindMethod("IsWeaponOrForceAbility").Should().NotBeNull();
 
-        classifier.Should().NotBeNull();
-        classifier!.Invoke(null, new object[] { SkillType.BeastMastery }).Should().Be(true,
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.BeastMastery).Should().Be(true,
             "NPC natural-creature abilities such as Disorienting Screech resolve through Beast Mastery");
-        classifier.Invoke(null, new object[] { SkillType.Force }).Should().Be(true);
-        classifier.Invoke(null, new object[] { SkillType.Rifle }).Should().Be(true);
-        classifier.Invoke(null, new object[] { SkillType.Mimicry }).Should().Be(false,
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.Force).Should().Be(true);
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.Rifle).Should().Be(true);
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.Mimicry).Should().Be(false,
             "the physical/Force modifier deliberately does not affect player Mimicry techniques");
     }
 
@@ -123,7 +134,7 @@ public class LeadershipCombatUpgradeTests
         var breakMorale = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "BreakMoraleAbilityDefinition.cs").FullName);
         (breakMorale.Split("LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus").Length - 1).Should().Be(2);
         var affectedTargetGuard = breakMorale.IndexOf("if (affected.Count <= 0)", StringComparison.Ordinal);
-        var markTargetRider = breakMorale.IndexOf("Combat.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);", StringComparison.Ordinal);
+        var markTargetRider = breakMorale.IndexOf("GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);", StringComparison.Ordinal);
         affectedTargetGuard.Should().BeGreaterThanOrEqualTo(0);
         markTargetRider.Should().BeGreaterThan(affectedTargetGuard,
             "Break Morale must grant Mark Target once after at least one direct status application succeeds");
@@ -191,7 +202,7 @@ public class LeadershipCombatUpgradeTests
         temporaryHitPoints.Should().NotContain("Dictionary<(uint Target, string EffectKey)",
             "ownership belongs to the game object and must not leak through process-global tracking");
 
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var combat = CombatSource.Read();
         combat.Should().Contain("new HostileAbilityPartyBuffStatusEffect(");
         combat.Should().Contain("AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius)");
         combat.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
@@ -325,7 +336,7 @@ public class LeadershipCombatUpgradeTests
             .Should().Be(74,
                 "direct Other damage that already received Leadership must receive only the generic stage");
 
-        var forcePortion = Combat.GetIncomingPhysicalToForceConversionPortion(100, 40);
+        var forcePortion = CombatRules.GetIncomingPhysicalToForceConversionPortion(100, 40);
         var physicalPortion = 100 - forcePortion;
         var adjustedPhysicalPortion = ApplyTypedLeadershipDamageTakenPercentageModifier(
                 physicalPortion,
@@ -358,22 +369,10 @@ public class LeadershipCombatUpgradeTests
     public void LeadershipPhysicalAndForceReduction_CoversNonDirectDamageWithoutDoubleApplyingDirectDamage()
     {
         var root = FindRepositoryRoot();
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
-        var genericStage = combat[combat.IndexOf(
-            "public static int ApplyDamageTakenModifiers(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "private static int ApplyDamageTakenPercentageModifiers(",
-            StringComparison.Ordinal)];
-        var percentageStage = combat[combat.IndexOf(
-            "private static int ApplyDamageTakenPercentageModifiers(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "private static int ApplyDamageTakenRedirectToStatusSource(",
-            StringComparison.Ordinal)];
-        var typedStage = combat[combat.IndexOf(
-            "private static int ApplyTargetStatusDamageModifiers(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "public static int ApplyTwinBladeAbilityShapeDamageModifier(",
-            StringComparison.Ordinal)];
+        var combat = CombatSource.Read();
+        var genericStage = CombatSource.Members("ApplyDamageTakenModifiers");
+        var percentageStage = CombatSource.Members("ApplyDamageTakenPercentageModifiers", "ApplyTypedLeadershipDamageTakenModifier", "GetLeadershipPhysicalDamageTakenPercentAdjustment", "GetLeadershipForceDamageTakenPercentAdjustment", "ApplyTypedLeadershipDamageTakenPercentageModifier");
+        var typedStage = CombatSource.Members("ApplyTargetStatusDamageModifiers");
 
         genericStage.Should().Contain("bool typedLeadershipReductionAlreadyApplied = false");
         genericStage.Should().Contain("ApplyDamageTakenPercentageModifiers(");
@@ -390,36 +389,28 @@ public class LeadershipCombatUpgradeTests
         typedStage.Should().NotContain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         typedStage.Should().NotContain("StatType.LeadershipForceDamageTakenPercentAdjustment");
 
-        var directTypedStage = combat[combat.IndexOf(
-            "public static int ApplyTypedLeadershipDamageTakenModifier(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "private static int ApplyTypedLeadershipDamageTakenPercentageModifier(",
-            StringComparison.Ordinal)];
+        var directTypedStage = CombatSource.Members("ApplyTypedLeadershipDamageTakenModifier", "GetLeadershipPhysicalDamageTakenPercentAdjustment", "GetLeadershipForceDamageTakenPercentAdjustment");
         directTypedStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
         directTypedStage.Should().Contain("GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)");
         directTypedStage.Should().Contain("GetLeadershipForceDamageTakenPercentAdjustment(defender)");
 
-        var combinedLeadershipChannels = combat[combat.IndexOf(
-            "private static int GetLeadershipPhysicalDamageTakenPercentAdjustment(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "private static int ApplyTypedLeadershipDamageTakenPercentageModifier(",
-            StringComparison.Ordinal)];
+        var combinedLeadershipChannels = CombatSource.Members("GetLeadershipPhysicalDamageTakenPercentAdjustment", "GetLeadershipForceDamageTakenPercentAdjustment");
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment");
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment");
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
 
-        var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
         (ability.Split("typedLeadershipReductionAlreadyApplied: true").Length - 1).Should().Be(3,
             "all direct ability damage paths apply typed Leadership in the explicit post-conversion stage");
         (ability.Split("ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)").Length - 1)
             .Should().Be(2);
         var unscaledStart = ability.IndexOf(
-            "private static int CalculateUnscaledCombatImpactDamage(",
+            "private int CalculateUnscaledCombatImpactDamage(",
             StringComparison.Ordinal);
         unscaledStart.Should().BeGreaterThanOrEqualTo(0);
         var unscaledEnd = ability.IndexOf(
-            "private static int CalculateCombatImpactDamage(",
+            "private int CalculateCombatImpactDamage(",
             unscaledStart,
             StringComparison.Ordinal);
         unscaledEnd.Should().BeGreaterThan(unscaledStart);
@@ -440,19 +431,12 @@ public class LeadershipCombatUpgradeTests
         nativeDamageRoll.Should().Contain(
             "ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)");
 
-        var triggeredDamage = combat[combat.IndexOf(
-            "public static int ApplyTriggeredDamage(",
-            StringComparison.Ordinal)..];
-        triggeredDamage = triggeredDamage[..triggeredDamage.IndexOf("public static ", 1, StringComparison.Ordinal)];
+        var triggeredDamage = CombatSource.Members("ApplyTriggeredDamage");
         triggeredDamage.Should().Contain("bool typedLeadershipReductionAlreadyApplied = false");
         triggeredDamage.Should().Contain(
             "typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied");
 
-        var conversion = combat[combat.IndexOf(
-            "public static int ApplyIncomingPhysicalToForceConversion(",
-            StringComparison.Ordinal)..combat.IndexOf(
-            "public static int ApplyStatusSourceAccuracyModifiers(",
-            StringComparison.Ordinal)];
+        var conversion = CombatSource.Members("ApplyIncomingPhysicalToForceConversion");
         conversion.Should().Contain("typedLeadershipReductionAlreadyApplied: false",
             "the converted Force portion must apply its own typed Leadership channel");
     }
@@ -600,11 +584,7 @@ public class LeadershipCombatUpgradeTests
 
     private static void ReconcileLeadershipDamageReduction(CreatureStatusEffect tracker)
     {
-        var method = typeof(StatusEffect).GetMethod(
-            "ReconcileLeadershipDamageReduction",
-            BindingFlags.Static | BindingFlags.NonPublic);
-        method.Should().NotBeNull();
-        method!.Invoke(null, new object[] { tracker });
+        StatusEffectInternals.Invoke<object?>("ReconcileLeadershipDamageReduction", tracker);
     }
 
     private static int ApplyDamageTakenPercentageModifiers(
@@ -612,9 +592,7 @@ public class LeadershipCombatUpgradeTests
         CombatDamageType damageType,
         bool typedLeadershipReductionAlreadyApplied)
     {
-        var method = typeof(Combat).GetMethod(
-            "ApplyDamageTakenPercentageModifiers",
-            BindingFlags.Static | BindingFlags.NonPublic);
+        var method = CombatMembers.FindMethod("ApplyDamageTakenPercentageModifiers");
         method.Should().NotBeNull();
         method!.GetParameters().Select(x => x.Name).Should().Equal(
             "damage",
@@ -625,7 +603,8 @@ public class LeadershipCombatUpgradeTests
             "genericAdjustment",
             "typedLeadershipReductionAlreadyApplied",
             "targetStatusDamagePercentAdjustment");
-        return (int)method.Invoke(null, new object[]
+        // An instance member of the damage taken part since P2-CB8: CombatMembers calls it on the installed container's part.
+        return (int)CombatMembers.Invoke("ApplyDamageTakenPercentageModifiers", new object[]
         {
             damage,
             damageType,
@@ -645,9 +624,7 @@ public class LeadershipCombatUpgradeTests
         int forceAdjustment,
         int otherAdjustment)
     {
-        var method = typeof(Combat).GetMethod(
-            "ApplyTypedLeadershipDamageTakenPercentageModifier",
-            BindingFlags.Static | BindingFlags.NonPublic);
+        var method = CombatMembers.FindMethod("ApplyTypedLeadershipDamageTakenPercentageModifier");
         method.Should().NotBeNull();
         method!.GetParameters().Select(x => x.Name).Should().Equal(
             "damage",
@@ -655,7 +632,7 @@ public class LeadershipCombatUpgradeTests
             "leadershipPhysicalAdjustment",
             "leadershipForceAdjustment",
             "leadershipOtherAdjustment");
-        return (int)method.Invoke(null, new object[]
+        return (int)CombatMembers.Invoke("ApplyTypedLeadershipDamageTakenPercentageModifier", new object[]
         {
             damage,
             damageType,

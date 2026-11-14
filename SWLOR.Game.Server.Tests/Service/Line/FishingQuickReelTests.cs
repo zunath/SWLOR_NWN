@@ -1,10 +1,11 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
-using SWLOR.Game.Server.Service.FishingService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Line;
 
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Service.Line;
 /// Covers Quick Reel, the choice at the start of a bite (owner decision, October 2026): today's catch roll at a fixed Willpower score, no
 /// fight time, today's XP for the bite and nothing more, and bait spent as before.
 /// </summary>
-public class FishingQuickReelTests
+public class FishingQuickReelTests : SkillFacadeFixture
 {
     private const uint Player = 11;
     private const uint Rod = 22;
@@ -34,7 +35,10 @@ public class FishingQuickReelTests
     [OneTimeSetUp]
     public void LoadTheXpChart()
     {
-        Skill.CacheXPChartData();
+        using (SkillFacades.Install())
+        {
+            Skill.CacheXPChartData();
+        }
     }
 
     [SetUp]

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature;
@@ -5,14 +6,32 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Rifle;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class StaminaSustainTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     [Test]
     public void OrdinaryRotations_PreserveUsefulActionsAcrossShortAndLongEncounters()
     {
@@ -75,7 +94,7 @@ public class StaminaSustainTests
     {
         const int trials = 200;
         double casts = 0, attempts = 0, stamina = 0, firstDeferred = 0, hits = 0;
-        var maximum = Stat.GetMaxStamina(Stat.BaseSTM, might, gear);
+        var maximum = Stat.GetMaxStamina(StatService.BaseSTM, might, gear);
         for (var trial = 0; trial < trials; trial++)
         {
             var random = new System.Random(1729 + trial);
@@ -123,7 +142,7 @@ public class StaminaSustainTests
                         // (5 base + skill/10 + at most 3 PER-vs-VIT), without Gambler.
                         critical |= random.NextDouble() < 0.10;
                     }
-                    if (critical) current = Math.Min(maximum, current + Combat.CalculateAbilityHitStaminaRestore(cost, 0, refund));
+                    if (critical) current = Math.Min(maximum, current + CombatRules.CalculateAbilityHitStaminaRestore(cost, 0, refund));
                     if (conduit) fp = Math.Min(70, fp + cost * 20 / 100);
                 }
             }

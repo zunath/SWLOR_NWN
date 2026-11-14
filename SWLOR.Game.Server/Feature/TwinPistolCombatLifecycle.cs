@@ -1,10 +1,10 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -67,6 +67,8 @@ namespace SWLOR.Game.Server.Feature
             PairedRangedPresentation.Release(actor);
         }
 
+        [PlayerSession(PlayerReload.LogoutOnly,
+            "Ends channels and forgets in-flight shots; those go with the old build and expire within a round.")]
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public static void OnExit()
         {
@@ -93,7 +95,7 @@ namespace SWLOR.Game.Server.Feature
             RangedWeaponAttackContext.Clear(actor);
             PairedRangedTraits.ClearCombatState(actor);
             TwinPistolMastery.ClearTrialState(actor);
-            Combat.ClearAttackSwingDebt(actor);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(actor);
         }
 
         private static void ClearEquipment(uint actor)
@@ -102,7 +104,7 @@ namespace SWLOR.Game.Server.Feature
             TwinPistolAbility.Cancel(actor);
             RangedWeaponAttackContext.Clear(actor);
             TwinPistolMastery.RecordTargetChange(actor, OBJECT_INVALID);
-            Combat.ClearAttackSwingDebt(actor);
+            GameServices.CombatAttackTiming.ClearAttackSwingDebt(actor);
         }
     }
 }

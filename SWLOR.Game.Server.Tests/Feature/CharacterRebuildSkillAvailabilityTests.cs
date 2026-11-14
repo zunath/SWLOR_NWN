@@ -2,16 +2,16 @@ using System.Collections;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 [NonParallelizable]
-public class CharacterRebuildSkillAvailabilityTests
+public class CharacterRebuildSkillAvailabilityTests : SkillFacadeFixture
 {
     private const BindingFlags PrivateInstance = BindingFlags.Instance | BindingFlags.NonPublic;
     private Dictionary<SkillType, SkillAttribute> _cache;
@@ -21,9 +21,10 @@ public class CharacterRebuildSkillAvailabilityTests
     [SetUp]
     public void SetUp()
     {
-        _cache = (Dictionary<SkillType, SkillAttribute>)typeof(Skill)
-            .GetField("_activeSkillsContributingToCap", BindingFlags.Static | BindingFlags.NonPublic)!
-            .GetValue(null)!;
+        var service = SkillFacades.Get<ISkillService>();
+        _cache = (Dictionary<SkillType, SkillAttribute>)service.GetType()
+            .GetField("_activeSkillsContributingToCap", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(service)!;
         _original = new(_cache);
         _cache.Clear();
         foreach (var type in Enum.GetValues<SkillType>())

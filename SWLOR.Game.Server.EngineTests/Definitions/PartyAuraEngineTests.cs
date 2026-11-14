@@ -1,10 +1,9 @@
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -215,8 +214,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void InvokeParty(string methodName, params object[] arguments)
         {
-            typeof(Party).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static)
-                .Invoke(null, arguments);
+            PartyCaches.Invoke(methodName, arguments);
         }
 
         private static async Task<uint> SpawnHeldCreatureAsync(EngineTestContext ctx, float xOffset, float yOffset)

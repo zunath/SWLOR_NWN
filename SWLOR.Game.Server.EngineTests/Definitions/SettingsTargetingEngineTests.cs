@@ -8,8 +8,8 @@ using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -35,8 +35,7 @@ public static class SettingsTargetingEngineTests
 
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
-        var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-            .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var windows = GuiInternals.PlayerWindows();
         var playerWindows = new Dictionary<GuiWindowType, GuiPlayerWindow>();
         foreach (var type in new[] { GuiWindowType.PlayerStatus, GuiWindowType.PlayerStatusPortrait, GuiWindowType.PlayerStatusPortraitSpace })
         {
@@ -52,9 +51,7 @@ public static class SettingsTargetingEngineTests
             var legacySettings = (JObject)JObject.Parse(DB.GetRawJson<Player>(fixture.Id))[nameof(Player.Settings)];
             legacySettings.Remove(nameof(PlayerSettings.SelfQuickCastEnabled));
             legacySettings.Remove(nameof(PlayerSettings.EnemyQuickCastEnabled));
-            typeof(DB).GetMethod("SetUnindexedJsonProperty", BindingFlags.Static | BindingFlags.NonPublic)
-                .MakeGenericMethod(typeof(Player)).Invoke(null,
-                    new object[] { fixture.Id, nameof(Player.Settings), legacySettings.ToString(Formatting.None) });
+            DB.SetUnindexedJsonProperty<Player>(fixture.Id, nameof(Player.Settings), legacySettings.ToString(Formatting.None));
             var persistedLegacy = JObject.Parse(DB.GetRawJson<Player>(fixture.Id))[nameof(Player.Settings)];
             ctx.Assert(persistedLegacy[nameof(PlayerSettings.SelfQuickCastEnabled)] == null &&
                        persistedLegacy[nameof(PlayerSettings.EnemyQuickCastEnabled)] == null,

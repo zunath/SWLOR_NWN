@@ -1,8 +1,8 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Prospecting;
@@ -144,9 +144,9 @@ public class ProspectingPerkEngineTests
     {
         var node = Node(3, "r");
 
-        ProspectingSetup.ForNode(node, 5, 0, 1).Effects.Should().BeSameAs(ProspectingEffects.None);
-        ProspectingSetup.ForNode(node, 5, 0, 1, null).Effects.Should().BeSameAs(ProspectingEffects.None);
-        new ProspectingSetup(node, 5).Effects.Should().BeSameAs(ProspectingEffects.None);
+        ProspectingSetup.ForNode(node, 5, 0, 1).Effects.Should().Be(ProspectingEffects.None);
+        ProspectingSetup.ForNode(node, 5, 0, 1, null).Effects.Should().Be(ProspectingEffects.None);
+        new ProspectingSetup(node, 5).Effects.Should().Be(ProspectingEffects.None);
         ProspectingSetup.ForNode(node, 5, 0, 1, StripMiningStyle).Effects.Should().BeSameAs(StripMiningStyle);
         new ProspectingSetup(node, 5, effects: StripMiningStyle).Effects.Should().BeSameAs(StripMiningStyle);
     }

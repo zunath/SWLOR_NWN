@@ -9,18 +9,16 @@ using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -450,10 +448,10 @@ public static class TwinPistolPvpBalanceEngineTests
             native.m_pcCombatRound.StartCombatRound(target);
             native.m_pcCombatRound.m_nCurrentAttack = 0;
             native.m_pcCombatRound.GetAttack(0).m_bRangedAttack = 1;
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             native.ResolveAttackRoll(NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject());
             ctx.AssertEqual(4, native.m_pcCombatRound.GetAttack(0).m_nAttackResult, "The actual native main hand misses");
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             LaunchCompanion(ctx, actor, target, companion);
             var shot = RangedWeaponAttackContext.GetRoll(actor, target, 0);
             ctx.Assert(shot is { Ordinary: false, Completed: true, Damage: 0 },
@@ -498,8 +496,8 @@ public static class TwinPistolPvpBalanceEngineTests
             foreach (var weapon in new[] { main, companion })
                 ReplaceProperty(weapon, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 20));
             TemporaryStatModifier.Add(actor, StatType.CriticalRatePercentAdjustment, -100, 90f);
-            Combat.SetAutoAttackHitResolutionOverride(true);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         });
         return (main, companion);
     }
@@ -555,7 +553,7 @@ public static class TwinPistolPvpBalanceEngineTests
         PairedRangedAttackCycle.Cancel(actor);
         RangedWeaponAttackContext.Clear(actor);
         PairedRangedTraits.ClearActor(actor);
-        Combat.ClearAttackSwingDebt(actor);
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(actor);
         ObjectPlugin.SetCurrentHitPoints(target, GetMaxHitPoints(target));
         SetIsTemporaryEnemy(target, actor);
         if (GetIsPC(target))
@@ -592,8 +590,8 @@ public static class TwinPistolPvpBalanceEngineTests
 
     private static void Cleanup(uint actor, params uint[] otherPlayers)
     {
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (GetIsObjectValid(actor))
         {
             AssignCommand(actor, () => ClearAllActions());

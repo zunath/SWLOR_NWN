@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
 

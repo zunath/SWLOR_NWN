@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -152,7 +151,7 @@ public static class TwinPistolFocusedBurstEngineTests
                     StatType.NextAttackGuardedHitDMGBonus);
                 TemporaryStatModifier.Add(actor, StatType.NextAttackGuardedHitEnmityBonus, 90, 30f,
                     StatType.NextAttackGuardedHitDMGBonus);
-                Combat.GrantNextAbilityDamageBonus(actor, (int)PerkType.FocusedBurst, 333, 30);
+                GameServices.CombatAbilityBonus.GrantNextAbilityDamageBonus(actor, (int)PerkType.FocusedBurst, 333, 30);
             });
             await WaitFrames(ctx, () => Impacts.Count >= 6, "all three captured-bonus volleys");
             await InActorFrame(ctx, actor, () =>
@@ -172,10 +171,10 @@ public static class TwinPistolFocusedBurstEngineTests
             var threat = Enmity.GetEnmityTable(target).GetValueOrDefault(actor) - initialThreat;
             ctx.AssertEqual(damage + 2 * (100 + 60), threat,
                 "Three waves share each hand's original base-plus-guarded flat threat budget rather than tripling it");
-            var freshGuarded = Combat.ConsumeNextAttackGuardedHitBonuses(actor);
+            var freshGuarded = GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitBonuses(actor);
             ctx.AssertEqual(2000, freshGuarded.DMGBonus, "Later waves consume none of the newly armed guarded damage");
             ctx.AssertEqual(90, freshGuarded.EnmityBonus, "Later waves consume none of the newly armed guarded threat");
-            ctx.AssertEqual(333, Combat.ConsumeNextAbilityDamageBonus(actor, PerkType.FocusedBurst),
+            ctx.AssertEqual(333, GameServices.CombatAbilityBonus.ConsumeNextAbilityDamageBonus(actor, PerkType.FocusedBurst),
                 "Later waves consume none of the newly armed next-ability damage");
             ctx.AssertEqual(stamina - Cost(), Stat.GetCurrentStamina(actor), "Captured and newly armed bonuses add no extra activation payment");
             ctx.Assert(OnRecast(actor), "Finishing all damage portions retains the paid cooldown");
@@ -244,7 +243,7 @@ public static class TwinPistolFocusedBurstEngineTests
                     TemporaryStatModifier.Add(actor, StatType.SameTargetHostileAbilityStaminaRestore, 1, 30f);
                 });
 
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             await ctx.ExecuteInCreatureContextAsync(actor, () => ActionAttack(target));
             await ctx.WaitUntilAsync(() => GetIsInCombat(actor) && GetAttackTarget(actor) == target,
                 8f, "the native ordinary attack to establish combat before channeling");
@@ -255,11 +254,11 @@ public static class TwinPistolFocusedBurstEngineTests
                 if (timingBuff)
                 {
                     TemporaryStatModifier.Add(actor, StatType.ActivationDelayFlatAdjustment, -30, 30f);
-                    Combat.GrantNextAbilityNoDelay(actor, SkillType.TwinPistol, 30, 75);
+                    GameServices.CombatAttackTiming.GrantNextAbilityNoDelay(actor, SkillType.TwinPistol, 30, 75);
                 }
                 started = Environment.TickCount64;
                 Press(ctx, actor, target);
-                Combat.SetAutoAttackHitResolutionOverride(true);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             });
             var hands = crossTrained ? 1 : 2;
             await WaitFrames(ctx, () => Impacts.Count >= hands, "the first paid volley");
@@ -274,7 +273,7 @@ public static class TwinPistolFocusedBurstEngineTests
                 ActionAttack(target);
             });
             await WaitFrames(ctx, () => !Activity.IsBusy(actor), "the fixed channel to finish");
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             await InActorFrame(ctx, actor, () => ClearAllActions());
             PairedRangedAttackCycle.Cancel(actor);
             EndObservation();
@@ -409,8 +408,8 @@ public static class TwinPistolFocusedBurstEngineTests
             player.Update(record => record.Stamina = Stat.GetMaxStamina(actor));
             Ability.ClearLastCompletedAbilityImpactSummary(actor);
         });
-        Combat.SetAbilityHitResolutionOverride(true);
-        Combat.SetAutoAttackHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         return (target, main, Stat.GetCurrentStamina(actor));
     }
 
@@ -464,8 +463,8 @@ public static class TwinPistolFocusedBurstEngineTests
     private static void Cleanup(uint actor)
     {
         EndObservation();
-        Combat.SetAutoAttackHitResolutionOverride(null);
-        Combat.SetAbilityHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
         if (!GetIsObjectValid(actor)) return;
         AssignCommand(actor, () => ClearAllActions());
         TwinPistolAbility.Cancel(actor);

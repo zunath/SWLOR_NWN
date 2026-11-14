@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {

@@ -3,11 +3,10 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ExtraHotbarService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -337,7 +336,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _placedScreen = default;
             TitleBar = false;
             IsTransparent = true;
-            for (var slot = 0; slot < ExtraHotbars.MaxSlots; slot++)
+            for (var slot = 0; slot < ExtraHotbarsService.MaxSlots; slot++)
             {
                 Set(string.Empty, IconProperty(slot));
                 Set(false, HasIconProperty(slot));
@@ -417,7 +416,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             _handItems = null;
-            for (var slot = 0; slot < ExtraHotbars.MaxSlots; slot++)
+            for (var slot = 0; slot < ExtraHotbarsService.MaxSlots; slot++)
                 RefreshSlot(slot, _bar.Slots[slot]);
 
             // A bar is fitted from where it sits, so it first catches up with a screen change it has not seen yet.
@@ -547,7 +546,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         // Open bars numbered below barLimit, other than this one.
-        private List<GuiRectangle> GetOtherBarBounds(float scale, int barLimit = ExtraHotbars.BarCount)
+        private List<GuiRectangle> GetOtherBarBounds(float scale, int barLimit = ExtraHotbarsService.BarCount)
         {
             var bounds = new List<GuiRectangle>();
             for (var index = 0; index < barLimit; index++)
@@ -716,7 +715,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (System.Math.Abs(Geometry.X - _placedX) < 0.5f && System.Math.Abs(Geometry.Y - _placedY) < 0.5f)
                 return;
 
-            KeepClear(ExtraHotbars.BarCount);
+            KeepClear(ExtraHotbarsService.BarCount);
         }
 
         /// <summary>

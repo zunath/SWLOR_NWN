@@ -1,8 +1,8 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When the module loads, load the tile magic configured on every area.
         /// </summary>
+        [BootPhase(BootReload.BootOnly, NothingToAdopt = "The tile changes stay in the engine.")]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ApplyAreaConfiguration()
         {

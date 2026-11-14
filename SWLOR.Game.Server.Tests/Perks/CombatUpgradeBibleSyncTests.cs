@@ -12,21 +12,36 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.Formats.Tlk;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
-public class CombatUpgradeBibleSyncTests
+public class CombatUpgradeBibleSyncTests : SkillFacadeFixture
 {
+    // Reading an ability's recast reads the creature's status effects through the facade.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly HashSet<string> ScopedTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         "Aura",
@@ -428,7 +443,7 @@ public class CombatUpgradeBibleSyncTests
                     Path.Combine("Feature", "PerkDefinition"),
                     StringComparison.OrdinalIgnoreCase))
                 .Where(file => !file.EndsWith(
-                    Path.Combine("Service", "StatService", "StatType.cs"),
+                    Path.Combine("Domain", "Character", "StatType.cs"),
                     StringComparison.OrdinalIgnoreCase))
                 .Select(File.ReadAllText));
         var missingConsumers = grantedStats
@@ -1297,8 +1312,8 @@ public class CombatUpgradeBibleSyncTests
         var recipeTypeSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "CraftService",
+            "Domain",
+            "Crafting",
             "RecipeType.cs"));
         var enumRecipeTypes = Regex.Matches(recipeTypeSource, @"(?m)^\s*(Instruction[A-Za-z0-9]+)\s*=")
             .Select(match => match.Groups[1].Value)
@@ -1512,7 +1527,7 @@ public class CombatUpgradeBibleSyncTests
             var row = discsByResref[item.Resref];
             var detail = perks[item.Perk];
             var level = detail.PerkLevels[item.Level];
-            var tier = Server.Service.Perk.GetPerkLevelTier(item.Perk, item.Level);
+            var tier = Perk.GetPerkLevelTier(item.Perk, item.Level);
             var skill = detail.PerkLevels.Values.SelectMany(rank => rank.Requirements)
                 .OfType<PerkRequirementSkill>().First().Type;
             var name = item.Name["Instruction Disc: ".Length..];

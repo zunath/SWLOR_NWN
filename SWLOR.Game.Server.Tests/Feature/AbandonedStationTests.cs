@@ -2,15 +2,15 @@ using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Quests;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -36,10 +36,6 @@ public class AbandonedStationTests
         ("ABANDONED_STATION_DIRECTOR", Chambers, 1, 30, 30),
     };
 
-    private object _originalItemNames = null!;
-
-    private static PropertyInfo ItemNameCache => typeof(Cache)
-        .GetProperty("ItemNamesByResref", BindingFlags.NonPublic | BindingFlags.Static)!;
 
     private static string Root
     {
@@ -52,11 +48,27 @@ public class AbandonedStationTests
         }
     }
 
+    // The guild service is an instance behind the static Guild class: the fixture loads it once into a container of its
+    // own and installs that container for every test, as the server's boot does for the facades.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [OneTimeSetUp]
     public void LoadItemNamesForGuildTaskTitles()
     {
-        Guild.LoadData();
-        NPCGroup.CacheData();
+        _facades = new FacadeContainer();
+        using (_facades.Install())
+        {
+            Guild.LoadData();
+            NPCGroup.CacheData();
+        }
+
         var names = Directory.EnumerateFiles(Path.Combine(Root, "Module", "uti"), "*.uti.json")
             .ToDictionary(path => Path.GetFileName(path)[..^".uti.json".Length], path =>
             {
@@ -64,12 +76,14 @@ public class AbandonedStationTests
                 return document.RootElement.GetProperty("LocalizedName").GetProperty("value")
                     .TryGetProperty("0", out var name) ? name.GetString() ?? string.Empty : string.Empty;
             });
-        _originalItemNames = ItemNameCache.GetValue(null)!;
-        ItemNameCache.SetValue(null, names);
+        CacheItemNames.Seed(_facades, names);
     }
 
     [OneTimeTearDown]
-    public void RestoreItemNames() => ItemNameCache.SetValue(null, _originalItemNames);
+    public void RestoreItemNames()
+    {
+        _facades.Dispose();
+    }
 
     private static JsonElement Load(string type, string name)
     {

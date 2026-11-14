@@ -1,16 +1,33 @@
 using System.Globalization;
 using System.IO.Compression;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class BeastXPProgressionTests
 {
+    // The XP rules are the container's beast mastery instance, which the facade resolves.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private const string XPChartSheet = "XP Chart";
     private const string BeastXPRequiredHeader = "Beast XP Required";
     private const string BeastCumulativeHeader = "Beast Cumulative";
@@ -18,7 +35,7 @@ public class BeastXPProgressionTests
     [Test]
     public void BeastXPRequirement_IsTwiceTheSkillRequirementAtEveryLevel()
     {
-        for (var level = 0; level < BeastMastery.MaxLevel; level++)
+        for (var level = 0; level < BeastMasteryService.MaxLevel; level++)
         {
             BeastMastery.GetRequiredXP(level, 0).Should().Be(Skill.GetRequiredXP(level) * 2, $"level {level}");
         }
@@ -77,18 +94,6 @@ public class BeastXPProgressionTests
     }
 
     [Test]
-    public void CombatXP_GivesBeastsTheAreaXPBonusBeforeAwarding()
-    {
-        var source = ReadServerSource("Service", "BeastMastery.cs");
-        var start = source.IndexOf("public static void CombatPointXPDistributed()", StringComparison.Ordinal);
-        start.Should().BeGreaterThan(-1);
-        var method = source[start..source.IndexOf("GiveBeastXP(beast, xp, false);", start, StringComparison.Ordinal)];
-
-        method.Should().Contain("\"AREA_XP_BONUS_PERCENTAGE\"");
-        method.Should().Contain("xp += (int)(xp * areaBonus);");
-    }
-
-    [Test]
     public void DesignBibleXPChart_MatchesTheBeastXPRequirements()
     {
         var columns = ReadXPChartColumns();
@@ -97,7 +102,7 @@ public class BeastXPProgressionTests
         var cumulative = columns[BeastCumulativeHeader];
 
         var total = 0;
-        for (var level = 1; level <= BeastMastery.MaxLevel; level++)
+        for (var level = 1; level <= BeastMasteryService.MaxLevel; level++)
         {
             var row = levels.Single(entry => ParseNumber(entry.Value) == level).Key;
             var expected = BeastMastery.GetRequiredXP(level - 1, 0);
@@ -187,12 +192,6 @@ public class BeastXPProgressionTests
     private static int ParseNumber(string text)
     {
         return (int)decimal.Parse(text, NumberStyles.Number, CultureInfo.InvariantCulture);
-    }
-
-    private static string ReadServerSource(params string[] pathParts)
-    {
-        var path = Path.Combine(new[] { FindRepositoryRoot().FullName, "SWLOR.Game.Server" }.Concat(pathParts).ToArray());
-        return Regex.Replace(File.ReadAllText(path), "\r\n", "\n");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

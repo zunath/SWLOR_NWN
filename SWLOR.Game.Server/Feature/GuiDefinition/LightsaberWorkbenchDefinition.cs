@@ -1,8 +1,8 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddSpacer();
                         row.AddComboBox()
-                            .AddOption("Match Blade", LightsaberWorkbench.MatchBladeLightColor)
+                            .AddOption("Match Blade", LightsaberWorkbenchService.MatchBladeLightColor)
                             .AddOption("Blue", (int)LightColor.Blue)
                             .AddOption("Yellow", (int)LightColor.Yellow)
                             .AddOption("Purple", (int)LightColor.Purple)

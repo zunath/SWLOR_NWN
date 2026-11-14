@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         private const int LogVersion = 29;
 
         public static void Run() =>
-            typeof(Migration).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredItemSweep")!
+            typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly.GetType("SWLOR.Game.Server.Feature.MigrationDefinition.StoredItemSweep")!
                 .GetMethod("Migrate", BindingFlags.NonPublic | BindingFlags.Static)!
                 .Invoke(null, new object[] { LogVersion });
     }

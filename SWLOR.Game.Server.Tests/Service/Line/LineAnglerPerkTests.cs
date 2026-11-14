@@ -1,11 +1,12 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
-using SWLOR.Game.Server.Service.FishingService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Line;
 
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Tests.Service.Line;
 /// Covers what an Angler's perks change in the Line: the numbers the engine reads from <see cref="LineAnglerEffects"/>, Fish Sense and
 /// how many turns it lasts, how a rare fish takes the line, and that a bite carries the angler's perks into the fight.
 /// </summary>
-public class LineAnglerPerkTests
+public class LineAnglerPerkTests : SkillFacadeFixture
 {
     private static LineAnglerEffects FromTotals(Dictionary<StatType, int> totals) =>
         LineAnglerEffects.FromStatTotals(stat => totals.GetValueOrDefault(stat));

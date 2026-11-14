@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Toolset.Domain.Editors.Items
 {

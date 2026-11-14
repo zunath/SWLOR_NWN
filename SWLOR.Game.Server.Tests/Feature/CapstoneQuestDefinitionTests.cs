@@ -7,19 +7,17 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.LootTableDefinition;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AchievementService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SpawnService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
-public class CapstoneQuestDefinitionTests
+public class CapstoneQuestDefinitionTests : SkillFacadeFixture
 {
     private const int SignatureAbilityFeatStart = 2719;
     private const int SignatureAbilityFeatEnd = 2753;
@@ -720,8 +718,8 @@ public class CapstoneQuestDefinitionTests
         var recastGroupPath = Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "AbilityService",
+            "Domain",
+            "Abilities",
             "RecastGroup.cs");
         var recastGroupSource = File.ReadAllText(recastGroupPath);
         recastGroupSource.Should().NotContain("CapstoneSignature");
@@ -780,7 +778,7 @@ public class CapstoneQuestDefinitionTests
                     var rawCost = GetItemPropertyCost(skinJson.RootElement, 133, subtype);
                     rawCost.Should().NotBeNull($"{skinResref} must define every resistance family");
 
-                    var decoded = Resistance.DecodeItemPropertyCostTableValue(rawCost!.Value);
+                    var decoded = ResistanceRules.DecodeItemPropertyCostTableValue(rawCost!.Value);
                     decoded.Should().BeInRange(-100, 100, $"{skinResref} resistance values must be valid SWLOR ratings");
                     values.Add(decoded);
 

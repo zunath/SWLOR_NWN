@@ -1,5 +1,5 @@
 using SWLOR.Game.Server.Feature.AbilityDefinition;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {

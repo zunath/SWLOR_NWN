@@ -1,7 +1,8 @@
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Native;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service
@@ -15,6 +16,9 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void EachHandUsesItsOwnProfileAndNestedScopesRestoreTheOriginalSource()
         {
+            // The current source of each actor is state of the container's combat queries service.
+            using var facades = new FacadeContainer();
+            using var installed = facades.Install();
             var main = Gun(11, 22, CombatDamageType.Physical);
             var companion = Gun(12, 14, CombatDamageType.Electrical);
             var activation = new WeaponImpactActivation();
@@ -31,6 +35,19 @@ namespace SWLOR.Game.Server.Tests.Service
                 Assert.That(WeaponImpactProfile.Get(1).Weapon, Is.SameAs(main));
             }
             Assert.That(WeaponImpactProfile.Get(1), Is.Null);
+        }
+
+        [Test]
+        public void EachContainerKeepsItsOwnSources()
+        {
+            using var first = new FacadeContainer();
+            using var second = new FacadeContainer();
+            var shot = Gun(11, 22, CombatDamageType.Physical);
+            using var firstScope = first.Install();
+            using var profile = new WeaponImpactProfile(1, shot, new WeaponImpactActivation());
+
+            Assert.That(first.Get<ICombatQueriesService>().GetWeaponImpactProfile(1), Is.SameAs(profile));
+            Assert.That(second.Get<ICombatQueriesService>().GetWeaponImpactProfile(1), Is.Null);
         }
 
         [Test]

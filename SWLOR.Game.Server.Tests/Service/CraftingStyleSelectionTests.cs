@@ -7,12 +7,11 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -206,17 +205,20 @@ public class CraftingStyleSelectionTests
     [Test]
     public void LoginRestoresTheSelectedStyles()
     {
-        var handler = Method(Source("Service", "CraftService", "CraftingStyleSelection.cs"), "OnPlayerEnter");
+        var handler = Method(Source("Domain", "Crafting", "CraftService.cs"), "RestoreCraftingStylesOnEnter");
 
         handler.AttributeLists.ToString().Should().Contain("NWNEventHandler(ScriptName.OnModuleEnter)");
-        Squash(handler).Should().Contain("Restore(GetEnteringObject())");
+        Squash(handler).Should().Contain("RestoreCraftingStyles(GetEnteringObject())");
+        Squash(Method(Source("Domain", "Crafting", "CraftService.cs"), "RestoreCraftingStyles")).Should().Contain("_craftStyleEffects.Restore(creature)");
     }
 
     [Test]
     public void EveryReviveRestoresTheSelectedStyles_ThroughTheOneHookEveryReviveCalls()
     {
         Squash(Method(Source("Feature", "PlayerTemporaryEffects.cs"), "RestoreGhostAfterRevive"))
-            .Should().Contain("CraftingStyleSelection.Restore(creature)");
+            .Should().Contain("RestoreGhostNow(creature)");
+        Squash(Method(Source("Feature", "PlayerTemporaryEffects.cs"), "RestoreGhostNow"))
+            .Should().Contain("CraftStyleEffects.Restore(creature)");
 
         var gameServer = Path.Combine(FindRepositoryRoot().FullName, "SWLOR.Game.Server");
         var revives = Directory.EnumerateFiles(gameServer, "*.cs", SearchOption.AllDirectories)
@@ -230,7 +232,9 @@ public class CraftingStyleSelectionTests
         foreach (var file in revives)
         {
             Regex.Matches(file.Text, Regex.Escape("EffectResurrection()")).Count.Should().Be(
-                Regex.Matches(file.Text, Regex.Escape("RestoreGhostAfterRevive(")).Count,
+                // A converted service wraps the call in a one-line protected virtual method; that line is not a revive.
+                Regex.Matches(string.Join('\n', file.Text.Split('\n').Where(line => !line.Contains("protected virtual"))),
+                    Regex.Escape("RestoreGhostAfterRevive(")).Count,
                 $"every revive in {Path.GetFileName(file.Path)} must call RestoreGhostAfterRevive, which restores the crafting styles");
         }
     }
@@ -238,19 +242,19 @@ public class CraftingStyleSelectionTests
     [Test]
     public void ChangingTheStyleInTheWindowRecordsIt_AndARefundedStyleIsForgotten()
     {
-        var styles = Source("Service", "CraftService", "Minigame", "Circuit", "CircuitStyles.cs");
+        var styles = Source("Domain", "Crafting", "Minigame", "Circuit", "CircuitStyles.cs");
 
-        Squash(Method(styles, "Select")).Should().Contain("CraftingStyleSelection.Record(player,Skill,PerkOf(style))");
-        Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftingStyleSelection.ClearIfSelected(player,Skill,PerkOf(style))");
+        Squash(Method(styles, "Select")).Should().Contain("CraftStyleEffects.Record(player,Skill,PerkOf(style))");
+        Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftStyleEffects.ClearIfSelected(player,Skill,PerkOf(style))");
     }
 
     [Test]
     public void ChangingTheSmitheryStyleInTheWindowRecordsIt_AndARefundedStyleIsForgotten()
     {
-        var styles = Source("Service", "CraftService", "Minigame", "Forge", "ForgeStyles.cs");
+        var styles = Source("Domain", "Crafting", "Minigame", "Forge", "ForgeStyles.cs");
 
-        Squash(Method(styles, "Select")).Should().Contain("CraftingStyleSelection.Record(player,Skill,PerkOf(style))");
-        Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftingStyleSelection.ClearIfSelected(player,Skill,PerkOf(style))");
+        Squash(Method(styles, "Select")).Should().Contain("CraftStyleEffects.Record(player,Skill,PerkOf(style))");
+        Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftStyleEffects.ClearIfSelected(player,Skill,PerkOf(style))");
     }
 
     [Test]
@@ -290,7 +294,7 @@ public class CraftingStyleSelectionTests
     {
         var initialize = Method(Source("Feature", "GuiDefinition", "ViewModel", "CircuitCraftViewModel.cs"), "Initialize");
 
-        Squash(initialize).Should().Contain("CraftingStyleSelection.Restore(Player)");
+        Squash(initialize).Should().Contain("CraftStyleEffects.Restore(Player)");
     }
 
     [Test]
@@ -298,7 +302,7 @@ public class CraftingStyleSelectionTests
     {
         var window = Source("Feature", "GuiDefinition", "ViewModel", "ForgeViewModel.cs");
 
-        Squash(Method(window, "Initialize")).Should().Contain("CraftingStyleSelection.Restore(Player)");
+        Squash(Method(window, "Initialize")).Should().Contain("CraftStyleEffects.Restore(Player)");
         Squash(Method(window, "Initialize")).Should().Contain("ForgeStyles.RemoveUnowned(Player)");
         Squash(Method(window, "RefreshStyles")).Should().Contain("ForgeStyles.Owned(Player)");
     }
@@ -405,10 +409,10 @@ public class CraftingStyleSelectionTests
     [Test]
     public void ChangingAGatheringStyleInTheWindowRecordsIt_AndARefundedStyleIsForgotten()
     {
-        var styles = Source("Service", "CraftService", "Minigame", "Gathering", "GatheringStyles.cs");
+        var styles = Source("Domain", "Crafting", "Minigame", "Gathering", "GatheringStyles.cs");
 
-        Squash(Method(styles, "Select")).Should().Contain("CraftingStyleSelection.Record(player,Skill,PerkOf(style))");
-        Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftingStyleSelection.ClearIfSelected(player,Skill,PerkOf(style))");
+        Squash(Method(styles, "Select")).Should().Contain("CraftStyleEffects.Record(player,Skill,PerkOf(style))");
+        Squash(Method(styles, "RemoveUnowned")).Should().Contain("CraftStyleEffects.ClearIfSelected(player,Skill,PerkOf(style))");
     }
 
     [Test]
@@ -429,8 +433,8 @@ public class CraftingStyleSelectionTests
         var viewModel = Source("Feature", "GuiDefinition", "ViewModel", window);
 
         var initialize = Squash(Method(viewModel, "Initialize"));
-        initialize.Should().Contain("CraftingStyleSelection.Restore(Player)");
-        initialize.IndexOf("CraftingStyleSelection.Restore(Player)", StringComparison.Ordinal)
+        initialize.Should().Contain("CraftStyleEffects.Restore(Player)");
+        initialize.IndexOf("CraftStyleEffects.Restore(Player)", StringComparison.Ordinal)
             .Should().BeLessThan(initialize.IndexOf("GatheringStyles.RemoveUnowned(Player)", StringComparison.Ordinal),
                 "a style comes back before an unowned one is removed, as in the Circuit window");
         Squash(Method(viewModel, "OnClickStyle")).Should().Contain("GatheringStyles.Select(Player,_styleRows[row])");

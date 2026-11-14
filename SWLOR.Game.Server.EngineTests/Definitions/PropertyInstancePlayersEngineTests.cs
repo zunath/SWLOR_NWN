@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Reflection;
 using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.NWN.API;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
@@ -23,8 +21,7 @@ public static class PropertyInstancePlayersEngineTests
         using var crew = await PlayerAbilityFixture.CreateAsync(ctx, 2f);
         var instance = ctx.CreateInstancedArea(GetResRef(ctx.Arena));
         var propertyId = "engine-instance-players/" + crew.Id;
-        var instances = (IDictionary)typeof(Property)
-            .GetField("_propertyInstances", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var instances = PropertyCaches.Instances;
 
         Property.RegisterInstance(propertyId, instance, default);
         try

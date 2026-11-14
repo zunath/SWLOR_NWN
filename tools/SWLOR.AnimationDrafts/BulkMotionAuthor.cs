@@ -328,7 +328,7 @@ internal static class BulkMotionAuthor
             SourceModelSha256 = modelHash, Animations = reports }, Json) + "\n");
         var root = Directory.GetParent(Path.GetFullPath(output))?.Parent?.FullName;
         if (root != null && Directory.Exists(Path.Combine(root, "SWLOR.Game.Server")))
-            pending.Add(Path.Combine(root, "SWLOR.Game.Server/Service/AnimationService/ActiveAbilityAnimationCatalog.cs"), RenderCatalog(entries));
+            pending.Add(Path.Combine(root, "SWLOR.Game.Server/Domain/Foundation/ActiveAbilityAnimationCatalog.cs"), RenderCatalog(entries));
         var changes = pending.Select(pair =>
         {
             var before = Capture(pair.Key);
@@ -348,7 +348,7 @@ internal static class BulkMotionAuthor
     {
         static string Q(string value) => JsonSerializer.Serialize(value);
         var lines = new List<string> { "// Generated from design/animations/active-abilities.json and saved animation projects.",
-            "using System.Collections.Generic;", "using SWLOR.NWN.API.NWScript.Enum;", "", "namespace SWLOR.Game.Server.Service.AnimationService;", "",
+            "using System.Collections.Generic;", "using SWLOR.NWN.API.NWScript.Enum;", "", "namespace SWLOR.Game.Server.Domain.Foundation;", "",
             "public static class ActiveAbilityAnimationCatalog", "{", "    public static IReadOnlyList<AbilityAnimationEntry> Entries { get; } = new AbilityAnimationEntry[]", "    {" };
         foreach (var entry in entries)
         {
@@ -356,7 +356,7 @@ internal static class BulkMotionAuthor
             foreach (var feat in feats)
                 if (!Enum.IsDefined(typeof(SWLOR.NWN.API.NWScript.Enum.FeatType), feat))
                     throw new InvalidDataException("Unknown feat: " + feat);
-            if (!Enum.TryParse<SWLOR.Game.Server.Service.AnimationService.AnimationEquipmentRequirement>(entry.EquipmentRequirement, out var requirement) ||
+            if (!Enum.TryParse<SWLOR.Game.Server.Domain.Foundation.AnimationEquipmentRequirement>(entry.EquipmentRequirement, out var requirement) ||
                 !Enum.IsDefined(requirement))
                 throw new InvalidDataException($"{entry.Id}: declare a valid EquipmentRequirement before generating the catalog.");
             var equipment = $", EquipmentRequirement: AnimationEquipmentRequirement.{requirement}";

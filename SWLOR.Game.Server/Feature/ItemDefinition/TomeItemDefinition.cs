@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CurrencyService;
-using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -69,8 +68,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 40)
                 .IncreasesStat(StatType.ActiveStealthBonus, 20)
-                .TriggerPurchase(Service.Stealth.RefreshActiveStatusAfterPerkLevelChange)
-                .TriggerRefund(Service.Stealth.RefreshActiveStatusAfterPerkLevelChange);
+                .TriggerPurchase(player => GameServices.Stealth.RefreshActiveStatusAfterPerkLevelChange(player))
+                .TriggerRefund(player => GameServices.Stealth.RefreshActiveStatusAfterPerkLevelChange(player));
         }
 
         private void BackAttack()

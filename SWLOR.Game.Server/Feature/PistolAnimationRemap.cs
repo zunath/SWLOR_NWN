@@ -1,11 +1,10 @@
 using System;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {

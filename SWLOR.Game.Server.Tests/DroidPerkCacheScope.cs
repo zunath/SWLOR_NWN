@@ -1,14 +1,15 @@
 using System.Reflection;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests;
 
-// Install real definition data without PerkBuilder.Build's native icon lookup.
+// Install real definition data without PerkBuilder.Build's native icon lookup, into the perk tables of the installed
+// FacadeContainer.
 internal sealed class DroidPerkCacheScope : IDisposable
 {
-    private readonly Dictionary<PerkType, PerkDetail> _cache = GetCache<Dictionary<PerkType, PerkDetail>>("_allPerks");
-    private readonly Dictionary<PerkType, Dictionary<int, int>> _tiers = GetCache<Dictionary<PerkType, Dictionary<int, int>>>("_perkLevelTiers");
+    private readonly Dictionary<PerkType, PerkDetail> _cache = PerkInternals.AllPerks;
+    private readonly Dictionary<PerkType, Dictionary<int, int>> _tiers = PerkInternals.PerkLevelTiers;
     private readonly Dictionary<PerkType, PerkDetail> _original;
     private readonly Dictionary<PerkType, Dictionary<int, int>> _originalTiers;
 
@@ -56,6 +57,4 @@ internal sealed class DroidPerkCacheScope : IDisposable
         foreach (var entry in _originalTiers)
             _tiers.Add(entry.Key, entry.Value);
     }
-
-    private static T GetCache<T>(string name) => (T)typeof(Perk).GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
 }

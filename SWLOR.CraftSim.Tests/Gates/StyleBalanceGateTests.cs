@@ -4,7 +4,7 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Domain.Crafting;
 using static SWLOR.CraftSim.Tests.Support.BenchHarness;
 
 namespace SWLOR.CraftSim.Tests.Gates
@@ -17,13 +17,13 @@ namespace SWLOR.CraftSim.Tests.Gates
         {
             public string Name => "spy";
             public string Title => "Spy";
-            public SWLOR.Game.Server.Service.SkillService.SkillType Skill => SWLOR.Game.Server.Service.SkillService.SkillType.Smithery;
-            public SWLOR.Game.Server.Service.CraftService.Minigame.CraftMinigameType Minigame => SWLOR.Game.Server.Service.CraftService.Minigame.CraftMinigameType.Forge;
+            public SWLOR.Game.Server.Domain.Character.SkillType Skill => SWLOR.Game.Server.Domain.Character.SkillType.Smithery;
+            public SWLOR.Game.Server.Domain.Crafting.Minigame.CraftMinigameType Minigame => SWLOR.Game.Server.Domain.Crafting.Minigame.CraftMinigameType.Forge;
             public double SecondsPerAction => 6;
             public IReadOnlyList<CraftStylePair> StylePairs { get; init; } = Array.Empty<CraftStylePair>();
             public System.Collections.Concurrent.ConcurrentBag<(int Recipe, string Style, int Roll)> FirstRolls { get; } = new();
 
-            public SWLOR.Game.Server.Service.CraftService.Minigame.ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
+            public SWLOR.Game.Server.Domain.Crafting.Minigame.ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
             {
                 FirstRolls.Add(((int)request.Recipe.Type, request.Style?.Name ?? "", request.Random.D100()));
                 return new TableEngine(request.Random, 70);

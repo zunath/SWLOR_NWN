@@ -9,13 +9,13 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -218,7 +218,7 @@ public static class MimicryLoadoutEngineTests
         await ctx.WaitUntilAsync(() => GetIsInCombat(player), 15f, "the native player to enter combat");
         var before = JsonConvert.SerializeObject(DB.Get<Player>(fixture.Id));
         var slots = Enumerable.Range(0, 36).Select(slot => PlayerPlugin.GetQuickBarSlot(player, slot)).ToArray();
-        ctx.Assert(!Mimicry.ApplyLoadout(player, second, new[] { Wave, Trait }, out var error) && error.Contains("combat"), "native combat denies Apply");
+        ctx.Assert(!GameServices.Mimicry.ApplyLoadout(player, second, new[] { Wave, Trait }, out var error) && error.Contains("combat"), "native combat denies Apply");
         ctx.AssertEqual(before, JsonConvert.SerializeObject(DB.Get<Player>(fixture.Id)), "combat denial leaves the persisted record unchanged");
         ctx.Assert(GetHasFeat(Rush, player) && !GetHasFeat(Wave, player), "combat denial leaves native feats unchanged");
         for (var slot = 0; slot < 36; slot++)
@@ -273,13 +273,13 @@ public static class MimicryLoadoutEngineTests
         var (first, second) = Prepare(fixture);
         Apply(ctx, fixture.Creature, first, Rush, Trait);
         foreach (var invalid in new[] { new[] { Rush, Rush }, new[] { (FeatType)int.MaxValue } })
-            ctx.Assert(!Mimicry.ApplyLoadout(fixture.Creature, second, invalid, out _), "duplicate or unavailable techniques are denied");
+            ctx.Assert(!GameServices.Mimicry.ApplyLoadout(fixture.Creature, second, invalid, out _), "duplicate or unavailable techniques are denied");
         fixture.Update(record => record.LearnedTechniques.Remove(Wave));
-        ctx.Assert(!Mimicry.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "unlearned techniques are denied");
+        ctx.Assert(!GameServices.Mimicry.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "unlearned techniques are denied");
         fixture.Update(record => { record.LearnedTechniques[Wave] = DateTime.UtcNow; record.Skills[SkillType.Mimicry].Rank = 0; });
-        ctx.Assert(!Mimicry.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "insufficient rank is denied");
+        ctx.Assert(!GameServices.Mimicry.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "insufficient rank is denied");
         fixture.Update(record => { record.Skills[SkillType.Mimicry].Rank = 50; record.Perks.Clear(); });
-        ctx.Assert(!Mimicry.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "insufficient slot budget is denied");
+        ctx.Assert(!GameServices.Mimicry.ApplyLoadout(fixture.Creature, second, new[] { Wave }, out _), "insufficient slot budget is denied");
         await ctx.WaitFrameAsync();
         AssertSet(ctx, new[] { Rush, Trait }, DB.Get<Player>(fixture.Id).EquippedTechniques, "all invalid applies preserve the equipped set");
         ctx.AssertEqual(first, DB.Get<Player>(fixture.Id).ActiveMimicryLoadoutId, "all invalid applies preserve the active ID");
@@ -317,7 +317,7 @@ public static class MimicryLoadoutEngineTests
     }
 
     private static void Apply(EngineTestContext ctx, uint player, string id, params FeatType[] feats)
-        => ctx.Assert(Mimicry.ApplyLoadout(player, id, feats, out var error), $"apply succeeds: {error}");
+        => ctx.Assert(GameServices.Mimicry.ApplyLoadout(player, id, feats, out var error), $"apply succeeds: {error}");
 
     private static void Bind(TechniquesViewModel model, uint player)
     {

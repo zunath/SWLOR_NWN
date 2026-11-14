@@ -48,7 +48,7 @@ public class DiscordWebhookCallerSafetyTests
     [Test]
     public void PropertyBroadcastDoesNotMoveItsCallerOntoAnAsyncContinuation()
     {
-        var method = FindMethod(ReadSource("Service/Property.cs"), "BroadcastPropertyEvent");
+        var method = FindMethod(ReadSource("Domain/World/PropertyCityGovernanceService.cs"), "BroadcastPropertyEvent");
         method.DescendantNodes().OfType<AwaitExpressionSyntax>().Should().BeEmpty();
         method.ReturnType.ToString().Should().Be("void");
         method.ToString().Should().Contain(".GetResult()");
@@ -61,12 +61,12 @@ public class DiscordWebhookCallerSafetyTests
         foreach (var path in Directory.EnumerateFiles(ServerRoot(), "*.cs", SearchOption.AllDirectories))
         {
             var source = File.ReadAllText(path);
-            if (!source.Contains("BackgroundJob.EnqueueDiscordWebhook", StringComparison.Ordinal))
+            if (!source.Contains(".EnqueueDiscordWebhook", StringComparison.Ordinal))
                 continue;
 
             var root = CSharpSyntaxTree.ParseText(source).GetRoot();
             foreach (var call in root.DescendantNodes().OfType<InvocationExpressionSyntax>()
-                         .Where(call => call.Expression.ToString() == "BackgroundJob.EnqueueDiscordWebhook"))
+                         .Where(call => call.Expression.ToString() is "BackgroundJob.EnqueueDiscordWebhook" or "_backgroundJob.EnqueueDiscordWebhook"))
             {
                 var method = call.Ancestors().OfType<MethodDeclarationSyntax>().First();
                 callers.Add(Path.GetFileNameWithoutExtension(path) + "." + method.Identifier.ValueText);
@@ -78,7 +78,7 @@ public class DiscordWebhookCallerSafetyTests
             "BugReportViewModel.SubmitBugReportToDiscord",
             "HoloNetViewModel.SubmitBroadcastAsync",
             "DMChatCommand.SendDMShoutWebhookAsync",
-            "Property.BroadcastPropertyEvent",
+            "PropertyCityGovernanceService.BroadcastPropertyEvent",
             "ServerTasks.SendServerLifecycleNotification"
         }, "each new caller must be checked for native calls after its asynchronous enqueue");
     }

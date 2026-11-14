@@ -3,8 +3,13 @@ using System.Reflection;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.Testing;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -40,14 +45,37 @@ public sealed class PassengerShuttleInteriorTests
         SelectInterior(objects).Should().Be("shuttle");
     }
 
-    private static string SelectInterior(IEnumerable<(string Tag, ObjectType Type)> objects) =>
-        (string)typeof(Shuttle).GetMethod("SelectFlightInterior", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { objects })!;
+    /// <summary>
+    /// The interior the shuttle instance copies for a flight when the module's shuttle template holds these objects:
+    /// a passenger logs in to a flight still in the air, so the instance creates the interior on demand.
+    /// </summary>
+    private static string SelectInterior(IEnumerable<(string Tag, ObjectType Type)> objects)
+    {
+        var now = new DateTime(2026, 3, 1, 12, 0, 0, DateTimeKind.Utc);
+        using var bench = new ShuttleBench(now);
+        var template = bench.AddArea("shuttle");
+        foreach (var (tag, type) in objects)
+            bench.AddObject(tag, type, template);
+        var passenger = bench.AddPlayer("passenger", bench.AddArea("starport"), new Vector3(1f, 1f, 0f));
+        bench.Db.Store.With(new Player("passenger") { RebuildComplete = true });
+        bench.Db.Store.With(new ShuttleRide("passenger")
+        {
+            Status = ShuttleRideStatus.InTransit,
+            Origin = PlanetType.Viscara,
+            Destination = PlanetType.Tatooine,
+            FlightId = "flight",
+            ArrivalUtc = now.AddMinutes(5)
+        });
+
+        bench.Service.TryGetLoginRedirect(passenger.Id, out _).Should().BeTrue();
+
+        return bench.Areas.Created.Should().ContainSingle().Subject.Source;
+    }
 
     [Test]
     public void FlightTemplateHasABoardingPointAndUsablePilotChair()
     {
-        var resref = typeof(Shuttle).GetField("ShuttleInteriorResref",
+        var resref = typeof(ShuttleService).GetField("ShuttleInteriorResref",
             BindingFlags.NonPublic | BindingFlags.Static)!.GetRawConstantValue()!.ToString();
         var area = ReadResource("are", resref!);
         var contents = ReadResource("git", resref!);
@@ -68,7 +96,7 @@ public sealed class PassengerShuttleInteriorTests
     [Test]
     public void StatusConsoleStandsInTheSeatingCabinInsteadOfOnTheBoardingDivider()
     {
-        var tag = typeof(Shuttle).GetField("ConsoleWaypointTag",
+        var tag = typeof(ShuttleService).GetField("ConsoleWaypointTag",
             BindingFlags.NonPublic | BindingFlags.Static)!.GetRawConstantValue()!.ToString();
         var waypoints = Objects(ReadResource("git", "shuttle"), "WaypointList").ToList();
         var console = waypoints.Single(point => Value<string>(point, "Tag") == tag);
@@ -159,26 +187,27 @@ public sealed class PassengerShuttleInteriorTests
     [Test]
     public void FlightTemplateIsExcludedFromPersistentLocationAreaCache()
     {
-        var cache = (Dictionary<string, uint>)typeof(Area)
-            .GetProperty("AreasByResref", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
-        var original = new Dictionary<string, uint>(cache);
-        try
-        {
-            cache["shuttle"] = 123;
-            cache["shuttle_test_landing"] = 456;
+        const uint shuttleArea = 123;
+        const uint landingArea = 456;
+        var engine = new FakeNWScript();
+        engine.SetReturnSequence("GetFirstArea", shuttleArea);
+        engine.SetReturnSequence("GetNextArea", landingArea);
+        engine.SetReturnHandler("GetIsObjectValid", arguments => (uint)arguments[0]! is shuttleArea or landingArea);
+        engine.SetReturnHandler("GetResRef", arguments => (uint)arguments[0]! == shuttleArea ? "shuttle" : "shuttle_test_landing");
+        var areas = new AreaService(new InMemoryDBService(), FacadeForwarder.LazyFor<IPropertyService>());
+        using var facades = new FacadeContainer();
+        using var facadeScope = facades.Install();
 
-            Area.RemoveInstancesFromCache();
-
-            cache.Should().NotContainKey("shuttle");
-            cache["shuttle_test_landing"].Should().Be(456);
-        }
-        finally
+        using (NWScriptRuntime.Override(engine))
         {
-            cache.Clear();
-            foreach (var entry in original)
-                cache.Add(entry.Key, entry.Value);
+            areas.CacheData();
+            areas.GetAreas().Should().ContainKey("shuttle");
+
+            areas.RemoveInstancesFromCache();
         }
+
+        areas.GetAreas().Should().NotContainKey("shuttle");
+        areas.GetAreas()["shuttle_test_landing"].Should().Be(landingArea);
     }
 
     private static IEnumerable<JObject> Objects(JObject resource, string list) =>

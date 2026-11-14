@@ -6,15 +6,33 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class CombatReadinessEquipmentTests
 {
+    // The compiled production code reaches the Power Glove facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private Type _harness = null!;
     private string _root = null!;
 
@@ -26,11 +44,8 @@ public class CombatReadinessEquipmentTests
             root = root.Parent;
         root.Should().NotBeNull();
         _root = root!.FullName;
-        var methods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
-                "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(node => node.Identifier.ValueText is "GetCombatReadinessPercent" or "GetEquippedCombatReadiness"
-                or "RefreshCombatReadinessEquipment" or "AdjustCombatReadiness");
+        var methods = StatHarnessSource.Methods(node => node.Identifier.ValueText is "GetCombatReadinessPercent" or "GetEquippedCombatReadiness"
+            or "RefreshCombatReadinessEquipment" or "AdjustCombatReadiness");
         var equipmentMethods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
                 "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()
@@ -41,16 +56,16 @@ public class CombatReadinessEquipmentTests
             using System;
             using System.Collections.Generic;
             using SWLOR.Game.Server.Core;
-            using SWLOR.Game.Server.Service.StatService;
+            using SWLOR.Game.Server.Domain.Character;
             using SWLOR.NWN.API.NWScript.Enum;
             using SWLOR.NWN.API.NWScript.Enum.Item;
-            using PowerGloveEquipment = SWLOR.Game.Server.Service.PowerGloveEquipment;
+            using static SWLOR.Game.Server.Composition.GameServices;
             using Stat = ReadinessHarness;
 
             public static class ReadinessHarness
             {
                 private const int NumberOfInventorySlots = 18;
-                private const int MaximumCombatReadinessPercent = {{Stat.MaximumCombatReadinessPercent}};
+                private const int MaximumCombatReadinessPercent = {{StatService.MaximumCombatReadinessPercent}};
                 private static readonly uint[] Slots = new uint[NumberOfInventorySlots];
                 private static readonly Dictionary<uint, List<(ItemPropertyType Type, int Amount)>> Properties = new();
                 private static readonly Dictionary<uint, BaseItem> BaseItems = new();
@@ -143,7 +158,7 @@ public class CombatReadinessEquipmentTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
-            .Split(Path.PathSeparator).Append(typeof(Stat).Assembly.Location)
+            .Split(Path.PathSeparator).Append(typeof(IStatService).Assembly.Location)
             .Append(typeof(InventorySlot).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("CombatReadinessEquipmentHarness",
@@ -372,13 +387,9 @@ public class CombatReadinessEquipmentTests
         var registration = File.ReadAllText(Path.Combine(_root, "SWLOR.Game.Server", "Feature", "EventRegistration.cs"));
         registration.Should().Contain("SubscribeEvent(\"NWNX_ON_ITEM_EQUIP_AFTER\", ScriptName.OnItemEquipValidateAfter)");
         registration.Should().Contain("SubscribeEvent(\"NWNX_ON_ITEM_UNEQUIP_AFTER\", ScriptName.OnItemUnequipAfter)");
-
-        var migration = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
-                "SWLOR.Game.Server", "Service", "Migration.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "AfterCharacterInitialization");
-        migration.AttributeLists.ToString().Should().Contain("ScriptName.OnCharacterInitAfter");
-        migration.Body!.Statements[^3].ToString().Should().Be("Stat.RefreshCombatReadinessEquipment(player);");
-        migration.Body.Statements[^4].ToString().Should().Be("Perk.RestorePlayerFeats(player);");
+        typeof(MigrationService).GetMethod(nameof(MigrationService.AfterCharacterInitialization))!
+            .GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).Should().Equal(ScriptName.OnCharacterInitAfter);
+        // MigrationServiceTests pins the login order: feats, then combat readiness (third from last), max HP, equipment stats.
     }
 
     private int Read() => (int)Call("GetCombatReadinessPercent", 1u)!;

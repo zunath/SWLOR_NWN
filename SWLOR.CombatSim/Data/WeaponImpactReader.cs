@@ -1,10 +1,9 @@
 using System.Reflection;
 using System.Reflection.Emit;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Data
@@ -105,9 +104,13 @@ namespace SWLOR.CombatSim.Data
 
         private static object Capture(object closure, string name) => closure.GetType().GetField(name, Fields)?.GetValue(closure);
 
+        private static bool IsAbilityAccessor(MethodBase method) =>
+            method.DeclaringType == typeof(GameServices) && method.Name == "get_" + nameof(GameServices.Ability);
+
         /// <summary>
         /// A static impact whose only call is Ability.ApplyCombatImpact(activator, target, location, skill, power, duration,
-        /// typeof(Status), false, ...): the three constants before the status token are the skill, power and duration.
+        /// typeof(Status), false, ...): the three constants before the status token are the skill, power and duration. The
+        /// call reads the service from <see cref="GameServices.Ability"/> before its arguments, then calls the interface.
         /// </summary>
         private static WeaponImpact ReadDirectCombatImpact(MethodInfo method)
         {
@@ -116,8 +119,9 @@ namespace SWLOR.CombatSim.Data
             var module = method.Module;
             var calls = il.Where(x => x.Code == OpCodes.Call || x.Code == OpCodes.Callvirt)
                 .Select(x => module.ResolveMethod((int)x.Operand)).ToList();
-            var impact = calls.Where(m => m.DeclaringType == typeof(Ability) && m.Name == nameof(Ability.ApplyCombatImpact)).ToList();
-            if (impact.Count != 1 || calls.Any(m => !impact.Contains(m) && !(m.DeclaringType == typeof(Type) && m.Name == nameof(Type.GetTypeFromHandle))))
+            var impact = calls.Where(m => m.DeclaringType == typeof(IAbilityService) && m.Name == nameof(IAbilityService.ApplyCombatImpact)).ToList();
+            if (impact.Count != 1 || calls.Count(IsAbilityAccessor) != 1 ||
+                calls.Any(m => !impact.Contains(m) && !IsAbilityAccessor(m) && !(m.DeclaringType == typeof(Type) && m.Name == nameof(Type.GetTypeFromHandle))))
                 return null;
             var token = il.FindIndex(x => x.Code == OpCodes.Ldtoken);
             if (token < 6 || il[token + 1].Code != OpCodes.Call || TryConstant(il[token + 2]) != 0 ||

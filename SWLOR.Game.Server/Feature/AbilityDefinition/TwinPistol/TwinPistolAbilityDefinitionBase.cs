@@ -1,11 +1,10 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
 {
@@ -44,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinPistol
                 builder.GrantsWeaponAbilityCadence(spec.CadenceOnHit);
 
             if (spec.VolleyCount > 1)
-                builder.IsChanneledAbility(TwinPistolAbility.InterruptChannel, suppressAutoAttacks: true)
+                builder.IsChanneledAbility(actor => TwinPistolAbility.InterruptChannel(actor), suppressAutoAttacks: true)
                     .HasFixedActivationDelay(spec.ChannelSeconds)
                     .UsesAnimation(channelAnimation);
             else

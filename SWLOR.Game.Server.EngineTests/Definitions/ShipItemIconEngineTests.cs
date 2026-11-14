@@ -2,8 +2,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -73,7 +72,7 @@ public static partial class MigrationEngineTests
     {
         var owner = ctx.SpawnCreature("civilian");
         await ctx.WaitFrameAsync();
-        var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
         var item = await CreateItemAsync(ctx, owner, "hull_rep_1", owner);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {

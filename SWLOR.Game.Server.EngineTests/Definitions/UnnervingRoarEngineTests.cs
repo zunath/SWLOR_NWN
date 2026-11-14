@@ -1,16 +1,14 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -38,7 +36,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(evasionBefore >= 150, $"The target starts with high Evasion: {evasionBefore}");
 
             // Every hit roll misses, so only an impact without one can apply the debuff.
-            Combat.SetAbilityHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
             try
             {
                 var attempted = false;
@@ -59,7 +57,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
 
             var evasionAfter = Stat.GetEvasion(target, SkillType.Invalid);
@@ -84,14 +82,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             ctx.SetNPCResources(caster, 50, 50);
 
-            var action = NPCAI.Profiles[AIProfileType.Generic].Actions
+            var action = AIInternals.Profiles[AIProfileType.Generic].Actions
                 .Single(candidate => candidate.Type == AIActionType.Ability && candidate.Feat == FeatType.UnnervingRoar);
             Enmity.ModifyEnmity(target, caster, 10);
             var context = new AIContext(caster, AITriggerType.Heartbeat, target,
                 new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
             // The AI's own resolution, which falls back to the default selector when the action has none.
-            var resolveTarget = typeof(NPCAI).GetMethod("ResolveTarget", BindingFlags.NonPublic | BindingFlags.Static)!;
-            uint ResolveTarget(AIContext aiContext) => (uint)resolveTarget.Invoke(null, new object[] { aiContext, action })!;
+            uint ResolveTarget(AIContext aiContext) => (uint)AIInternals.Invoke("ResolveTarget", aiContext, action);
             var selected = ResolveTarget(context);
             ctx.AssertEqual(caster, selected, "Unnerving Roar is centered on the caster with one enemy in range");
             context.SetEvaluatedTarget(selected);

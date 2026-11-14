@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The permanent NWNX DotNET entry (MaintainabilityRefactorHotReload.md, section 3): NWNX loads this assembly and calls
+       SWLOR.Game.Host.Bootstrap.NativeBootstrap.Initialize, which starts the Nwn.Hosting native host and loads the game
+       build (SWLOR.Game.Server, deployed beside it in game/) as a generation. It references nothing of the game: the
+       game is reached only through Nwn.Hosting.Contracts and SWLOR.Game.Contracts, and the native hooks live in
+       SWLOR.Game.NativeHooks (a rule in SWLOR.Architecture.Tests keeps it that way). -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>x64</PlatformTarget>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nwn.Hosting" Version="0.1.0-preview.3" />
+    <PackageReference Include="Nwn.Hosting.Contracts" Version="0.1.0-preview.3" />
+    <PackageReference Include="NWN.Core" Version="8193.37.7" />
+    <PackageReference Include="NWN.Native" Version="8193.37.8" />
+    <PackageReference Include="StackExchange.Redis" Version="3.0.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Game.Contracts\SWLOR.Game.Contracts.csproj" />
+    <!-- The native hook trampolines: the host resolves their engine functions when it starts and shares the assembly
+         with every generation (HostOptions.SharedAssemblyNames), so the hooks NWNX calls outlive each game build. -->
+    <ProjectReference Include="..\SWLOR.Game.NativeHooks\SWLOR.Game.NativeHooks.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Thread-pool workers never retire. A worker that exits after a reload frees objects of the live generation, so
+         the package's ReloadHost refuses to start without this (Nwn.Hosting docs/threads-outlive-generations.md). NWNX
+         reads this project's runtimeconfig.json when it starts the runtime for the host entry. -->
+    <RuntimeHostConfigurationOption Include="System.Threading.ThreadPool.ThreadsToKeepAlive" Value="-1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="SWLOR.Game.Host.Tests" />
+  </ItemGroup>
+
+</Project>

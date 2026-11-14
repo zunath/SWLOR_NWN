@@ -1,0 +1,20 @@
+{
+  "function": "CraftSessionService (start and succeed)",
+  "description": "Starts a craft session for a recipe, finishes it with a full quality meter and records the session and the outcome the quality produced.",
+  "seed": 20261101,
+  "inputs": "Recipe TwinElectroblade3 (level 27, Smithery, makes 1x twin_elec_3, components elec_good x5, ref_plagionite x3) crafted by a headless player with Smithery rank 24. Random is reseeded with 20261101 before the craft succeeds with a full quality meter after 10 actions.",
+  "rowCount": 10,
+  "columns": ["step", "=> value"],
+  "rows": [
+    ["start succeeded", true],
+    ["start message", ""],
+    ["inventory items once the components are committed", 0],
+    ["quality fraction", 1],
+    ["quality percent", 100],
+    ["outcome XP", 0],
+    ["vendor value bonus", 516],
+    ["enhancements", 0],
+    ["food duration bonus seconds", 0],
+    ["food bonus charges", 0]
+  ]
+}

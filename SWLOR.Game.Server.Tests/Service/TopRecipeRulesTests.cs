@@ -1,9 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

@@ -2,14 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -26,16 +24,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var bonus = rank == 1 ? 5 : 8;
                 IStatusEffect effect = rank == 1 ? new FocusStim1StatusEffect() : new FocusStim2StatusEffect();
-                ctx.AssertEqual(0, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Queued accuracy starts without a bonus or idle snapshot");
                 var accuracy = Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment);
                 ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, effect, 120f), "Focus Stim applies");
-                ctx.AssertEqual(bonus, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                ctx.AssertEqual(bonus, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Focus Stim affects the queued weapon roll without an idle snapshot");
-                ctx.AssertEqual(76 + bonus, Combat.CalculateHitRate(2, 0,
-                    Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade)),
+                ctx.AssertEqual(76 + bonus, CombatRules.CalculateHitRate(2, 0,
+                    GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade)),
                     "Focus Stim adds percentage points to the queued hit chance");
-                ctx.AssertEqual(0, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Mimicry),
+                ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Mimicry),
                     "Focus Stim excludes Mimicry");
                 ctx.AssertEqual(accuracy, Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment),
                     "Focus Stim does not change ordinary attack accuracy");
@@ -44,13 +42,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     (int)SkillType.Vibroblade, 30f, StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
                 TemporaryStatModifier.Replace(attacker, StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
                     3, 30f, StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
-                ctx.AssertEqual(bonus + 3, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                ctx.AssertEqual(bonus + 3, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Focus Stim stacks with the matching idle bonus");
-                ctx.AssertEqual(bonus, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Rifle),
+                ctx.AssertEqual(bonus, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Rifle),
                     "Focus Stim remains when the idle bonus belongs to another skill");
-                Combat.ClearQueuedWeaponAbilityActivationBonuses(attacker);
+                GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(attacker);
                 StatusEffect.RemoveAllStatusEffects(attacker);
-                ctx.AssertEqual(0, Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
+                ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Removing Focus Stim removes its accuracy bonus");
             }
         }
@@ -75,7 +73,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 for (var hit = 0; hit < 100; hit++)
                 {
                     SetLocalInt(beast, "STAMINA", 0);
-                    Combat.ApplyDamageDealtEffects(beast, target, 10, SkillType.BeastMastery);
+                    GameServices.CombatHitEffects.ApplyDamageDealtEffects(beast, target, 10, SkillType.BeastMastery);
                     var restored = Stat.GetCurrentStamina(beast);
                     ctx.Assert(restored is 0 or 1, "Each proc restores exactly one STM");
                     procs += restored;
@@ -86,7 +84,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             StatusEffect.RemoveAllStatusEffects(target);
             SetLocalInt(beast, "STAMINA", 0);
             for (var hit = 0; hit < 100; hit++)
-                Combat.ApplyDamageDealtEffects(beast, target, 10, SkillType.BeastMastery);
+                GameServices.CombatHitEffects.ApplyDamageDealtEffects(beast, target, 10, SkillType.BeastMastery);
             ctx.AssertEqual(0, Stat.GetCurrentStamina(beast), "Non-bleeding targets never restore STM");
         }
 
@@ -116,7 +114,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var epicenter = Ability.GetAbilityDetail(FeatType.Epicenter1);
             var immuneTargetAccuracy = Stat.GetStatAdjustment(immuneTarget, StatType.AccuracyPercentAdjustment);
             TemporaryStatModifier.Add(immuneTarget, StatType.KnockdownImmunity, 1, 120f, "ENGINE_TEST_KNOCKDOWN_IMMUNITY");
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 async Task ApplyEpicenter(uint target)
@@ -139,7 +137,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "Epicenter's non-Control additional status applies despite Knockdown immunity");
                 ctx.Assert(!StatusEffect.HasStatusEffect<KnockdownStatusEffect>(immuneTarget),
                     "the target's Knockdown immunity rejects Epicenter's Control status");
-                ctx.AssertEqual(0, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetStatusAppliedNextAttackDamageBonus(caster),
                     "Sunder alone must not trigger Charged Blows");
                 ctx.AssertEqual(immuneTargetAccuracy,
                     Stat.GetStatAdjustment(immuneTarget, StatType.AccuracyPercentAdjustment),
@@ -152,7 +150,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(StatusEffect.HasStatusEffect<SunderStatusEffect>(controlTarget), "Epicenter applies Sunder");
                 ctx.Assert(StatusEffect.HasStatusEffect<KnockdownStatusEffect>(controlTarget),
                     "a fresh target accepts Epicenter's Control status");
-                ctx.AssertEqual(10, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                ctx.AssertEqual(10, GameServices.CombatAbilityBonus.GetStatusAppliedNextAttackDamageBonus(caster),
                     "successfully applied Control triggers Charged Blows");
                 ctx.AssertEqual(controlTargetAccuracy - 10,
                     Stat.GetStatAdjustment(controlTarget, StatType.AccuracyPercentAdjustment),
@@ -160,7 +158,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -200,14 +198,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             var defense = Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment);
-            ctx.Assert(!Combat.HasRecentGuardedHit(caster, 30f), "the caster starts without a guarded hit");
+            ctx.Assert(!GameServices.CombatDamageTaken.HasRecentGuardedHit(caster, 30f), "the caster starts without a guarded hit");
             await ApplyGuardCounter(unguardedTarget);
             ctx.Assert(!StatusEffect.HasStatusEffect<DazedStatusEffect>(unguardedTarget),
                 "without a guarded hit Guard Counter III inflicts no Daze");
             ctx.AssertEqual(defense, Stat.GetStatAdjustment(caster, StatType.PhysicalDefensePercentAdjustment),
                 "without its Daze Guard Counter III is not a Control ability for Guard Training");
 
-            Combat.TrackGuardedHit(caster);
+            GameServices.CombatDamageTaken.TrackGuardedHit(caster);
             await ApplyGuardCounter(guardedTarget);
             ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(guardedTarget),
                 "after a guarded hit Guard Counter III inflicts Daze");
@@ -226,13 +224,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.ScrapperControl, 1);
 
             // Queued abilities roll with the weapon attack, so the category accuracy must be added there.
-            int QueuedHitChance(FeatType feat) => Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+            int QueuedHitChance(FeatType feat) => GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
                 caster, SkillType.Katar, Ability.GetAbilityDetail(feat));
             var baseline = QueuedHitChance(FeatType.GuardCounter1);
             ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter3),
                 "without a guarded hit Guard Counter III is not a control ability for Scrapper Control");
 
-            Combat.TrackGuardedHit(caster);
+            GameServices.CombatDamageTaken.TrackGuardedHit(caster);
             ctx.AssertEqual(baseline + 3, QueuedHitChance(FeatType.GuardCounter3),
                 "after a guarded hit Scrapper Control adds +3% Ability Accuracy to Guard Counter III's queued roll");
             ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter1),
@@ -274,26 +272,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ChangeToStandardFaction(target, StandardFaction.Defender);
             }
 
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await ApplyReprisal(quietTarget);
                 ctx.Assert(!StatusEffect.HasStatusEffect<DazedStatusEffect>(quietTarget),
                     "Reprisal does not Daze a target that has not damaged you");
-                ctx.AssertEqual(0, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetStatusAppliedNextAttackDamageBonus(caster),
                     "without its Daze Reprisal does not trigger Charged Blows");
 
-                Combat.ApplyDamageDealtEffects(attackingTarget, caster, 5, SkillType.Invalid);
-                ctx.Assert(Combat.HasRecentDamageTarget(attackingTarget, caster, 30f), "the target recently damaged the caster");
+                GameServices.CombatHitEffects.ApplyDamageDealtEffects(attackingTarget, caster, 5, SkillType.Invalid);
+                ctx.Assert(GameServices.CombatActivity.HasRecentDamageTarget(attackingTarget, caster, 30f), "the target recently damaged the caster");
                 await ApplyReprisal(attackingTarget);
                 ctx.Assert(StatusEffect.HasStatusEffect<DazedStatusEffect>(attackingTarget),
                     "Reprisal Dazes a target that recently damaged you");
-                ctx.AssertEqual(10, Combat.GetStatusAppliedNextAttackDamageBonus(caster),
+                ctx.AssertEqual(10, GameServices.CombatAbilityBonus.GetStatusAppliedNextAttackDamageBonus(caster),
                     "the conditional Daze triggers Charged Blows like any applied Control status");
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -350,7 +348,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Enmity.ModifyEnmity(ally, challengedTarget, 1);
             StatusEffect.ApplyStatusEffect(caster, challengedTarget, new ChallengeEnmityStatusEffect(25), 60f);
 
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 await ApplyJointLock(allyAttacker);
@@ -373,7 +371,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
         }
 
@@ -396,19 +394,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             StatusEffectCategory Categories(FeatType feat) =>
                 Ability.GetAbilityDetail(feat).ResolveImpactStatusCategories(defender);
 
-            Combat.ApplyDamageTakenEffects(defender, attacker, 5);
-            ctx.AssertEqual((0, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter1)),
+            GameServices.CombatDamageTaken.ApplyDamageTakenEffects(defender, attacker, 5);
+            ctx.AssertEqual((0, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter1)),
                 "a Katar ability without a Control status does not spend Breaker Reversal");
-            ctx.AssertEqual((0, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
+            ctx.AssertEqual((0, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
                 "Guard Counter III without a guarded hit is not a Control ability");
-            ctx.AssertEqual((20, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.JointLock1)),
+            ctx.AssertEqual((20, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.JointLock1)),
                 "the next Katar control ability spends Breaker Reversal's +20 DMG");
-            ctx.AssertEqual((0, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.JointLock1)),
+            ctx.AssertEqual((0, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.JointLock1)),
                 "the bonus is spent once");
 
-            Combat.ApplyDamageTakenEffects(defender, attacker, 5);
-            Combat.TrackGuardedHit(defender);
-            ctx.AssertEqual((20, 0, 0), Combat.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
+            GameServices.CombatDamageTaken.ApplyDamageTakenEffects(defender, attacker, 5);
+            GameServices.CombatDamageTaken.TrackGuardedHit(defender);
+            ctx.AssertEqual((20, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter3)),
                 "Guard Counter III after a guarded hit is a control ability for Breaker Reversal");
         }
 
@@ -435,7 +433,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             })
             {
                 var ability = Ability.GetAbilityDetail(feat);
-                var action = NPCAI.Profiles[AIProfileType.BeastCompanion].Actions
+                var action = AIInternals.Profiles[AIProfileType.BeastCompanion].Actions
                     .Single(candidate => candidate.Type == AIActionType.Ability && candidate.Feat == feat);
                 var context = new AIContext(beast, AITriggerType.Heartbeat, target,
                     new AIProfile { Type = AIProfileType.BeastCompanion }, new AIState(), Array.Empty<uint>());
@@ -495,15 +493,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var maxSTM = Stat.GetMaxStamina(beast);
             SetLocalInt(beast, "FP", maxFP - 1);
             SetLocalInt(beast, "STAMINA", maxSTM - 1);
-            DeleteLocalInt(beast, Stat.SuppressNaturalRegenVariable);
+            DeleteLocalInt(beast, StatService.SuppressNaturalRegenVariable);
             SetLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT", DateTime.UtcNow.AddMinutes(1).Ticks.ToString());
-            await ctx.ExecuteInCreatureContextAsync(beast, Stat.RestoreBeastStats);
+            await ctx.ExecuteInCreatureContextAsync(beast, () => Stat.RestoreBeastStats());
             ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP regenerates while stamina is delayed");
             ctx.AssertEqual(maxSTM - 1, Stat.GetCurrentStamina(beast), "Spending stamina delays its regeneration");
             DeleteLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT");
-            await ctx.ExecuteInCreatureContextAsync(beast, Stat.RestoreBeastStats);
+            await ctx.ExecuteInCreatureContextAsync(beast, () => Stat.RestoreBeastStats());
             ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina regenerates when its delay expires");
-            await ctx.ExecuteInCreatureContextAsync(beast, Stat.RestoreBeastStats);
+            await ctx.ExecuteInCreatureContextAsync(beast, () => Stat.RestoreBeastStats());
             ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP stays capped");
             ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina stays capped");
         }
@@ -519,7 +517,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var ability = Ability.GetAbilityDetail(entry.Item1);
                 await ctx.ExecuteInCreatureContextAsync(beast, () => ability.ImpactAction(beast, beast, 1, GetLocation(beast)));
                 ctx.AssertEqual(entry.Item2, Stat.GetStatAdjustment(beast, StatType.DamageTakenPercentAdjustment), "Buff reduction");
-                ctx.AssertEqual(100 + entry.Item2, Combat.ApplyDamageTakenModifiers(beast, 100), "Reduction of a 100-point hit");
+                ctx.AssertEqual(100 + entry.Item2, GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(beast, 100), "Reduction of a 100-point hit");
                 StatusEffect.RemoveAllStatusEffects(beast);
             }
             StatusEffect.ApplyStatusEffect(beast, beast, new ForceSuppressionStatusEffect(), 30f);
@@ -540,7 +538,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitMaximumCount, 3, 120f);
             TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitCooldownSeconds, 90, 120f);
             TemporaryStatModifier.Add(caster, StatType.MimicryPotencyPercent, 100, 120f);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 foreach (var feat in new[] { FeatType.PiercingQuillsTechnique, FeatType.DarkShockTechnique,
@@ -566,7 +564,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var attack = Ability.GetAbilityDetail(FeatType.ApexBite1);
                 for (var stack = 0; stack < 3; stack++)
                 {
-                    ctx.AssertEqual(75, Combat.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
+                    ctx.AssertEqual(75, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
                         "Control-only casts preserve every First Strike stack without starting recharge");
                     Stat.SetNPCMaxHitPoints(target, 1000, true);
                     Ability.BeginAbilityImpact(caster, attack);
@@ -577,10 +575,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                     finally { Ability.EndAbilityImpact(caster); }
                 }
-                ctx.AssertEqual(0, Combat.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
+                ctx.AssertEqual(0, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
                     "Damaging attacks consume all three stacks and enter recharge normally");
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
         }
 
         [EngineTest("Flash preserves armed activation bonuses through its delayed impact", Category = "CombatPerkRegression", TimeoutSeconds = 15f)]
@@ -592,8 +590,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, caster);
             Prepare(ctx, target);
             ctx.MakeHostile(target);
-            Combat.GrantNextAbilityDamageBonus(caster, (int)PerkType.Flash, 31, 120);
-            Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.HeavyVibroblade, 37, 11, 120);
+            GameServices.CombatAbilityBonus.GrantNextAbilityDamageBonus(caster, (int)PerkType.Flash, 31, 120);
+            GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.HeavyVibroblade, 37, 11, 120);
             TemporaryStatModifier.Add(caster, StatType.NextAttackGuardedHitDMGBonus, 41, 120,
                 StatType.NextAttackGuardedHitDMGBonus);
             TemporaryStatModifier.Add(caster, StatType.NextAttackGuardedHitCriticalRatePercentAdjustment, 13, 120,
@@ -602,7 +600,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 StatType.NextAttackGuardedHitDMGBonus);
             var ability = Ability.GetAbilityDetail(FeatType.Flash1);
             var hp = GetCurrentHitPoints(target);
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 Ability.BeginAbilityImpact(caster, ability);
@@ -616,16 +614,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(StatusEffect.HasStatusEffect(target, typeof(FlashStatusEffect)),
                     "Flash delayed impact resolves");
                 ctx.AssertEqual(hp, GetCurrentHitPoints(target), "Flash causes no direct damage");
-                ctx.AssertEqual(31, Combat.ConsumeNextAbilityDamageBonus(caster, PerkType.Flash), "Perk damage remains armed");
-                var skill = Combat.ConsumeNextSkillAbilityBonuses(caster, SkillType.HeavyVibroblade);
+                ctx.AssertEqual(31, GameServices.CombatAbilityBonus.ConsumeNextAbilityDamageBonus(caster, PerkType.Flash), "Perk damage remains armed");
+                var skill = GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(caster, SkillType.HeavyVibroblade);
                 ctx.AssertEqual(37, skill.DamageBonus, "Skill damage remains armed");
                 ctx.AssertEqual(11, skill.CriticalRatePercentAdjustment, "Skill critical rate remains armed");
-                var guarded = Combat.ConsumeNextAttackGuardedHitBonuses(caster);
+                var guarded = GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitBonuses(caster);
                 ctx.AssertEqual(41, guarded.DMGBonus, "Guarded damage remains armed");
                 ctx.AssertEqual(13, guarded.CriticalRatePercentAdjustment, "Guarded critical rate remains armed");
                 ctx.AssertEqual(43, guarded.EnmityBonus, "Guarded enmity remains armed");
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
         }
 
         [EngineTest("Repeated damage uses captured bonuses once and preserves newer bonuses", Category = "CombatPerkRegression", TimeoutSeconds = 15f)]
@@ -640,19 +638,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Stat.SetNPCMaxHitPoints(target, 1000, true);
             var ability = new AbilityDetail { SkillType = SkillType.Force, IsHostileAbility = true,
                 ActivationType = AbilityActivationType.Casted };
-            Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
+            GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
             Ability.BeginAbilityImpact(caster, ability);
             var pulse = Ability.CaptureRepeatedAbilityImpact(caster, () => Ability.ApplyCombatImpact(
                 caster, target, GetLocation(target), SkillType.Force, 10, 0, null, false,
                 resolvesHit: false, canCritical: false, useUnscaledDamage: true), baseDamage: 10);
             Ability.EndAbilityImpact(caster);
-            Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 101, 0, 120);
+            GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 101, 0, 120);
             await ctx.ExecuteInCreatureContextAsync(caster, pulse);
             var first = Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage;
             await ctx.ExecuteInCreatureContextAsync(caster, pulse);
             var second = Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage;
             ctx.Assert(first > second && second > 0, "Only the first impacting pulse uses the captured damage");
-            ctx.AssertEqual(101, Combat.ConsumeNextSkillAbilityBonuses(caster, SkillType.Force).DamageBonus,
+            ctx.AssertEqual(101, GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(caster, SkillType.Force).DamageBonus,
                 "Pulses preserve bonuses granted after the originating cast");
         }
 
@@ -667,7 +665,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SWLOR.NWN.API.NWNX.CreaturePlugin.SetRawAbilityScore(caster, AbilityType.Willpower, 26);
             var budgets = new[] { 10, 20, 30, 43 };
             var feats = new[] { FeatType.ForceChoke1, FeatType.ForceChoke2, FeatType.ForceChoke3, FeatType.ForceChoke4 };
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 for (var i = 0; i < targets.Length; i++)
@@ -694,7 +692,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitCooldownSeconds, 90, 120f);
                 var choke = Ability.GetAbilityDetail(FeatType.ForceChoke1);
                 ctx.Assert(choke.DealsDeferredDamage, "Choke declares its damaging status effect");
-                ctx.AssertEqual(75, Combat.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
+                ctx.AssertEqual(75, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
                     "First Strike is initially available for Choke");
                 Ability.BeginAbilityImpact(caster, choke);
                 try
@@ -705,9 +703,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 finally { Ability.EndAbilityImpact(caster); }
                 ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
                     "Choke applies the hostile-hit damage bonus despite having no immediate base damage");
-                ctx.AssertEqual(0, Combat.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
+                ctx.AssertEqual(0, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
                     "Choke consumes the applied First Strike stack");
-                Combat.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
+                GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
                 Ability.BeginAbilityImpact(caster, choke);
                 try
                 {
@@ -718,7 +716,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
                     "Choke applies captured flat damage even without a separate base-damage rider");
             }
-            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
         }
 
         [EngineTest("Apex Bite critical chance belongs to its impact and Overclocked Analyzer increases status procs", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]
@@ -731,8 +729,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, target);
             ctx.MakeHostile(target);
             var passiveCritical = Stat.GetStatAdjustment(caster, StatType.CriticalRatePercentAdjustment);
-            var baseRate = Combat.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false);
-            ctx.AssertEqual(baseRate + 25, Combat.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false, 25), "Apex Bite impact critical chance");
+            var baseRate = GameServices.CombatAbilityHit.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false);
+            ctx.AssertEqual(baseRate + 25, GameServices.CombatAbilityHit.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false, 25), "Apex Bite impact critical chance");
             var apex = Ability.GetAbilityDetail(FeatType.ApexBite1);
             var criticals = 0;
             ctx.SeedRandom(54321);

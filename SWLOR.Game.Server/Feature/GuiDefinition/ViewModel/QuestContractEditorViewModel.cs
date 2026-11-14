@@ -3,10 +3,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set
             {
-                var sanitized = SanitizeNumber(value, 1, QuestContractBoard.MaxObjectiveQuantity);
+                var sanitized = SanitizeNumber(value, 1, QuestContractBoardService.MaxObjectiveQuantity);
                 Set(sanitized);
 
                 if (sanitized != value)
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set
             {
-                var sanitized = SanitizeNumber(value, 1, QuestContractBoard.MaxObjectiveQuantity);
+                var sanitized = SanitizeNumber(value, 1, QuestContractBoardService.MaxObjectiveQuantity);
                 Set(sanitized);
 
                 // See RewardCreditsText - push clamped values back to the client's text box.
@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             IsAddObjectiveEnabled = _selectedSearchIndex >= 0
                 && _selectedSearchIndex < _searchResults.Count
-                && (ObjectiveLabels?.Count ?? 0) < QuestContractBoard.MaxObjectives;
+                && (ObjectiveLabels?.Count ?? 0) < QuestContractBoardService.MaxObjectives;
         }
 
         private void LoadObjectiveDetail(QuestContract draft)
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RewardItemIconResrefs = icons;
             RewardItemLabels = labels;
-            IsAddRewardItemEnabled = rewardItems.Count < QuestContractBoard.MaxRewardItems;
+            IsAddRewardItemEnabled = rewardItems.Count < QuestContractBoardService.MaxRewardItems;
         }
 
         private void UpdateCostSummary()
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _selectedSearchIndex = -1;
 
-            var results = Cache.SearchItemsByName(ItemSearchText, QuestContractBoard.MaxItemSearchResults);
+            var results = Cache.SearchItemsByName(ItemSearchText, QuestContractBoardService.MaxItemSearchResults);
 
             _searchResults.Clear();
             var labels = new GuiBindingList<string>();
@@ -402,8 +402,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (results.Count == 0)
                 StatusText = "No items found. Try a different search.";
-            else if (results.Count >= QuestContractBoard.MaxItemSearchResults)
-                StatusText = $"Showing the first {QuestContractBoard.MaxItemSearchResults} matches. Refine your search to narrow it down.";
+            else if (results.Count >= QuestContractBoardService.MaxItemSearchResults)
+                StatusText = $"Showing the first {QuestContractBoardService.MaxItemSearchResults} matches. Refine your search to narrow it down.";
             else
                 StatusText = string.Empty;
 
@@ -428,9 +428,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var draft = QuestContractBoard.GetOrCreateDraft(Player);
 
-            if (draft.Objectives.Count >= QuestContractBoard.MaxObjectives)
+            if (draft.Objectives.Count >= QuestContractBoardService.MaxObjectives)
             {
-                StatusText = $"A contract can have at most {QuestContractBoard.MaxObjectives} objectives.";
+                StatusText = $"A contract can have at most {QuestContractBoardService.MaxObjectives} objectives.";
                 return;
             }
 
@@ -444,8 +444,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (!int.TryParse(NewObjectiveQuantityText, out var quantity) || quantity < 1)
                 quantity = 1;
-            if (quantity > QuestContractBoard.MaxObjectiveQuantity)
-                quantity = QuestContractBoard.MaxObjectiveQuantity;
+            if (quantity > QuestContractBoardService.MaxObjectiveQuantity)
+                quantity = QuestContractBoardService.MaxObjectiveQuantity;
 
             draft.Objectives.Add(new QuestContractObjective
             {
@@ -487,8 +487,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (!int.TryParse(ObjectiveQuantityText, out var quantity) || quantity < 1)
                 quantity = 1;
-            if (quantity > QuestContractBoard.MaxObjectiveQuantity)
-                quantity = QuestContractBoard.MaxObjectiveQuantity;
+            if (quantity > QuestContractBoardService.MaxObjectiveQuantity)
+                quantity = QuestContractBoardService.MaxObjectiveQuantity;
 
             draft.Objectives[_selectedObjectiveIndex].Quantity = quantity;
             DB.Set(draft);
@@ -530,9 +530,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var draft = SaveDetails();
 
-            var title = QuestContractBoard.SanitizeContractText(draft.Title, QuestContractBoard.MaxTitleLength);
-            var description = QuestContractBoard.SanitizeContractText(draft.Description, QuestContractBoard.MaxDescriptionLength);
-            var validationError = QuestContractBoard.ValidateDraft(draft, title, description, Cache.GetItemNameByResref);
+            var title = QuestContractBoard.SanitizeContractText(draft.Title, QuestContractBoardService.MaxTitleLength);
+            var description = QuestContractBoard.SanitizeContractText(draft.Description, QuestContractBoardService.MaxDescriptionLength);
+            var validationError = QuestContractBoard.ValidateDraft(draft, title, description, resref => Cache.GetItemNameByResref(resref));
 
             if (!string.IsNullOrWhiteSpace(validationError))
             {

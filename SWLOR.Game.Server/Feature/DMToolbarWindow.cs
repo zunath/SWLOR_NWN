@@ -1,7 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature
     /// </summary>
     public static class DMToolbarWindow
     {
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Opens the toolbar at login; the reload reopens the windows that were open.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void OpenToolbar()

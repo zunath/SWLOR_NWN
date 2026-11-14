@@ -4,9 +4,12 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -21,6 +24,12 @@ public class PlayerMigrationTests
     private const int PerkConversionTokenVersion = 26;
 
     private static int Latest => CharacterMigrations.LatestVersion;
+
+    private static MigrationService NewMigrationService()
+    {
+        var db = new InMemoryDBService();
+        return new MigrationService(db, new OverflowStorageService(db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
+    }
 
     private static Player Record(int version, int tokens = RebuildTokens)
     {
@@ -170,7 +179,7 @@ public class PlayerMigrationTests
         var original = saved;
         var saves = 0;
         var fileSaved = false;
-        var record = typeof(Server.Native.PlayerCreation).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var record = typeof(Server.NativeSinks.PlayerCreationSink).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
         void Run() => record.Invoke(null, new object[] { result, "creation-test", (Func<Player?>)(() => saved),
             (Action)(() => fileSaved = true),
             (Action<Player>)(player => { fileSaved.Should().BeTrue(); saved = player; saves++; }) });
@@ -188,7 +197,7 @@ public class PlayerMigrationTests
     [Test]
     public void FailedCreationIdentitySaveCannotAuthorizeDestructiveInitialization()
     {
-        var record = typeof(Server.Native.PlayerCreation).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var record = typeof(Server.NativeSinks.PlayerCreationSink).GetMethod("RecordValidatedCreation", BindingFlags.Static | BindingFlags.NonPublic)!;
         Action run = () => record.Invoke(null, new object[] { 0u, "creation-test", (Func<Player?>)(() => null),
             (Action)(() => throw new InvalidOperationException("Injected identity export failure")),
             (Action<Player>)(_ => Assert.Fail("No initialization intent may be saved after an export failure")) });
@@ -224,11 +233,9 @@ public class PlayerMigrationTests
             starterStateWritten = true;
             fileVersion = version;
         }
-        void Run() => typeof(Migration).GetMethod("RunPlayerInitialization", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { saved.ToObject<Player>()!, (Action<Player>)Initialize,
-                (Action<Player>)Save, (Func<int>)(() => fileVersion), (Action<int>)SaveFile });
+        void Run() => NewMigrationService().RunPlayerInitialization(saved.ToObject<Player>()!, Initialize, Save, () => fileVersion, SaveFile);
 
-        ((Action)Run).Should().Throw<TargetInvocationException>();
+        ((Action)Run).Should().Throw<InvalidOperationException>();
         saved["CharacterInitializationPending"]!.Value<bool>().Should().BeTrue();
         saved["Currencies"]!["RebuildToken"]!.Value<int>().Should().Be(1);
         fail = false;
@@ -244,11 +251,10 @@ public class PlayerMigrationTests
     public void NewCharacterIntentMustBeDurableBeforeChangingTheCharacter()
     {
         var initialized = false;
-        Action run = () => typeof(Migration).GetMethod("RunPlayerInitialization", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { new Player("new-character"), (Action<Player>)(_ => initialized = true),
-                (Action<Player>)(_ => throw new InvalidOperationException("Database unavailable")),
-                (Func<int>)(() => 0), (Action<int>)(_ => Assert.Fail("File save must not be reached")) });
-        run.Should().Throw<TargetInvocationException>();
+        Action run = () => NewMigrationService().RunPlayerInitialization(new Player("new-character"), _ => initialized = true,
+            _ => throw new InvalidOperationException("Database unavailable"),
+            () => 0, _ => Assert.Fail("File save must not be reached"));
+        run.Should().Throw<InvalidOperationException>();
         initialized.Should().BeFalse();
     }
 }

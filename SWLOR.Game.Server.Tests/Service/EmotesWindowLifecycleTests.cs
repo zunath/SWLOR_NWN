@@ -1,163 +1,78 @@
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
-using static SWLOR.Game.Server.Tests.Service.DMPossessionHarness;
+using SWLOR.Game.Server.Domain.Administration;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Space;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.ChatCommandDefinition;
+using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
+/// <summary>
+/// The Emotes window from login to the chat command: the real GUI and DM presence instances over the engine model of DM
+/// possession, with the window itself a fake view model. (This used to recompile the production methods with Roslyn.)
+/// </summary>
+[TestFixture]
 public class EmotesWindowLifecycleTests
 {
     private const uint DM = 1;
     private const uint Creature = 2;
     private const uint Player = 3;
-    private DMPossessionHarness _harness = null!;
 
-    [OneTimeSetUp]
-    public void CompileProductionCommandAndWindowLifecycle()
-    {
-        _harness = Compile($$"""
-            public enum GuiWindowType { Emotes }
-            public enum AuthorizationLevel { All }
-            public class GuiPayloadBase { }
-            public class GuiRectangle { public float X, Y, Width = 150, Height = 300; }
-            public class Player
-            {
-                public string Id;
-                public Player(string id) { Id = id; }
-                public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries = new();
-            }
-            public static class DB
-            {
-                public static readonly Dictionary<string, Player> Records = new();
-                public static T Get<T>(string id) where T : class => Records.GetValueOrDefault(id) as T;
-                public static void Set(Player player) => Records[player.Id] = player;
-            }
-            public class ViewModel
-            {
-                public GuiRectangle Geometry = new();
-                public uint BoundTo;
-                public int Binds, Closes;
-                public void Bind(uint player, int token, GuiRectangle initial, GuiWindowType type,
-                    GuiPayloadBase payload, uint tether) { BoundTo = player; Binds++; }
-                public Action OnWindowClosed() => () => Closes++;
-            }
-            public class GuiPlayerWindow
-            {
-                public ViewModel ViewModel = new();
-                public int WindowToken;
-            }
-            public class Template
-            {
-                public GuiRectangle InitialGeometry = new();
-                public object Window = new();
-                public string WindowId = "GUI_WINDOW_Emotes";
-                public bool KeepsOpenOnAreaChange;
-                public Func<GuiPlayerWindow> CreatePlayerWindowAction = () => new();
-            }
-            public static class NativeGui
-            {
-                public static uint Entering, Exiting;
-                public static readonly Dictionary<uint, int> Windows = new();
-                private static int _token;
-                public static uint GetEnteringObject() => Entering;
-                public static uint GetExitingObject() => Exiting;
-                public static object JsonObjectGet(object json, string key) => json;
-                public static int JsonGetInt(object json) => 1;
-                public static string JsonGetString(object json) => "";
-                public static int NuiFindWindow(uint target, string id) => Windows.GetValueOrDefault(target);
-                public static int NuiCreate(uint target, object json, string id) => Windows[target] = ++_token;
-                public static void NuiDestroy(uint target, int token) => Windows.Remove(target);
-            }
-            public static class Gui
-            {
-                private static readonly Dictionary<GuiWindowType, Template> _windowTemplates = new()
-                    { [GuiWindowType.Emotes] = new() };
-                {{Field("Service/Gui.cs", "_playerWindows")}}
-                private static uint GetEnteringObject() => NativeGui.GetEnteringObject();
-                private static uint GetExitingObject() => NativeGui.GetExitingObject();
-                private static object JsonObjectGet(object json, string key) => NativeGui.JsonObjectGet(json, key);
-                private static int JsonGetInt(object json) => NativeGui.JsonGetInt(json);
-                private static string JsonGetString(object json) => NativeGui.JsonGetString(json);
-                private static int NuiFindWindow(uint target, string id) => NativeGui.NuiFindWindow(target, id);
-                private static int NuiCreate(uint target, object json, string id) => NativeGui.NuiCreate(target, json, id);
-                private static void NuiDestroy(uint target, int token) => NativeGui.NuiDestroy(target, token);
-                {{Method("Service/Gui.cs", "CreatePlayerWindows")}}
-                {{Method("Service/Gui.cs", "SavePlayerWindowGeometry")}}
-                {{Method("Service/Gui.cs", "SaveWindowGeometry")}}
-                {{Method("Service/Gui.cs", "BuildWindowId")}}
-                {{Method("Service/Gui.cs", "IsWindowOpen")}}
-                {{Method("Service/Gui.cs", "TogglePlayerWindow")}}
-                {{Method("Service/Gui.cs", "ClosePlayerWindow")}}
-                {{Method("Service/Gui.cs", "GetPlayerWindow")}}
-                {{Method("Service/Gui.cs", "CloseAllWindows")}}
-                public static int Owners => _playerWindows.Count;
-                public static void Reset() => _playerWindows.Clear();
-            }
-            public static class DMPresence
-            {
-                {{Field("Service/DMPresence.cs", "_windowTargets")}}
-                {{Method("Service/DMPresence.cs", "GetDM")}}
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "IsControlledByDM")}}
-                {{Method("Service/DMPresence.cs", "ToggleWindow")}}
-                {{Method("Service/DMPresence.cs", "GetWindowTargets")}}
-                {{Method("Service/DMPresence.cs", "GetShownOn")}}
-                public static void Reset() => _windowTargets.Clear();
-            }
-            public class CommandBuilder
-            {
-                public static readonly Dictionary<string, Action<uint, uint, object, string[]>> Commands = new();
-                private string[] _aliases;
-                public CommandBuilder Create(params string[] aliases) { _aliases = aliases; return this; }
-                public CommandBuilder Description(string text) => this;
-                public CommandBuilder Permissions(AuthorizationLevel level) => this;
-                public void Action(Action<uint, uint, object, string[]> action)
-                { foreach (var alias in _aliases) Commands[alias] = action; }
-            }
-            public class SystemChatCommand
-            {
-                private readonly CommandBuilder _builder = new();
-                public SystemChatCommand() { EmotesWindowCommand(); }
-                {{Method("Feature/ChatCommandDefinition/SystemChatCommand.cs", "EmotesWindowCommand")}}
-            }
-            public static class Driver
-            {
-                public static void Reset()
-                {
-                    Gui.Reset(); DMPresence.Reset(); NativeGui.Windows.Clear(); DB.Records.Clear();
-                    new SystemChatCommand();
-                }
-                public static void Login(uint player)
-                {
-                    NativeGui.Entering = player;
-                    DB.Records.TryAdd(GetObjectUUID(player), new Player(GetObjectUUID(player)));
-                    Gui.CreatePlayerWindows();
-                }
-                public static void Logout(uint player)
-                {
-                    NativeGui.Exiting = player;
-                    Gui.SavePlayerWindowGeometry();
-                    NativeGui.Windows.Clear();
-                    World.Players.RemoveAll(p => p.Character == player);
-                }
-                public static void Command(uint actor, string alias) =>
-                    CommandBuilder.Commands[alias](actor, OBJECT_INVALID, null, Array.Empty<string>());
-                public static void Transition(uint actor)
-                { NativeGui.Entering = actor; Gui.CloseAllWindows(); }
-                public static object Window(uint owner) => Gui.GetPlayerWindow(owner, GuiWindowType.Emotes);
-                public static uint BoundTo(uint owner) => Gui.GetPlayerWindow(owner, GuiWindowType.Emotes).ViewModel.BoundTo;
-                public static int Owners() => Gui.Owners;
-                public static int OpenWindows() => NativeGui.Windows.Count;
-                public static int Binds(uint owner) => Gui.GetPlayerWindow(owner, GuiWindowType.Emotes).ViewModel.Binds;
-                public static void DirectCreatureToggle(uint actor) => Gui.TogglePlayerWindow(actor, GuiWindowType.Emotes);
-            }
-            """);
-    }
+    private DMPossessionEngine _world = null!;
+    private InMemoryDBService _db = null!;
+    private DMPresenceService _presence = null!;
+    private TestGuiService _gui = null!;
+    private FacadeContainer _facades = null!;
+    private IDisposable _scope = null!;
+    private Dictionary<string, ChatCommandDetail> _commands = null!;
+    private readonly Dictionary<(uint Target, string Id), int> _windows = new();
+    private readonly HashSet<int> _destroyed = new();
+    private readonly HashSet<uint> _known = new();
+    private int _tokens;
 
     [SetUp]
-    public void Reset()
+    public void SetUp()
     {
-        _harness.Reset();
-        _harness.Invoke("Driver", "Reset");
+        _world = new DMPossessionEngine();
+        _db = new InMemoryDBService();
+        _presence = new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>());
+        _gui = new TestGuiService(_db, _presence, typeof(FakeEmotesDefinition));
+        _facades = new FacadeContainer(services =>
+        {
+            services.Replace(ServiceDescriptor.Singleton<IDMPresenceService>(_presence));
+            services.Replace(ServiceDescriptor.Singleton<IGuiService>(_gui));
+        });
+        _scope = _facades.Install();
+        _windows.Clear();
+        _destroyed.Clear();
+        _known.Clear();
+        _tokens = 0;
+
+        _world.Engine.SetReturnHandler("NuiCreate", args => _windows[((uint)args[0]!, (string)args[2]!)] = ++_tokens);
+        // NuiDestroy returns nothing, so the fake only records it: a window is open until a destroy names its token.
+        _world.Engine.SetReturnHandler("NuiFindWindow", args =>
+        {
+            SyncDestroyed();
+            return _windows.TryGetValue(((uint)args[0]!, (string)args[1]!), out var token) && !_destroyed.Contains(token) ? token : 0;
+        });
+        _world.Engine.SetReturn("JsonGetInt", 1);
+
+        _gui.CacheData();
+        _commands = new SystemChatCommand().BuildChatCommands();
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        _scope.Dispose();
+        _facades.Dispose();
+        _world.Dispose();
     }
 
     [TestCase("emotegui")]
@@ -171,7 +86,7 @@ public class EmotesWindowLifecycleTests
         Command(Player, alias);
         OpenWindows.Should().Be(0);
         Command(Player, alias);
-        _harness.Invoke("Driver", "Transition", Player);
+        Transition(Player);
         OpenWindows.Should().Be(0);
         Command(Player, alias);
         OpenWindows.Should().Be(1);
@@ -186,13 +101,13 @@ public class EmotesWindowLifecycleTests
         Login(Player, isDM);
         var window = Window(Player);
         Command(Player);
-        _harness.Invoke("Driver", "Logout", Player);
+        Logout(Player);
         OpenWindows.Should().Be(0);
         Login(Player, isDM);
         Window(Player).Should().BeSameAs(window);
         Command(Player);
         OpenWindows.Should().Be(1);
-        _harness.Invoke<int>("Driver", "Binds", Player).Should().Be(2);
+        Model(Player).BindCount.Should().Be(2);
         Command(Player);
         OpenWindows.Should().Be(0);
         Command(Player);
@@ -205,18 +120,17 @@ public class EmotesWindowLifecycleTests
     public void PossessedCreatureIsNotRegisteredButCommandUsesTheDMsWindow(int possessionType)
     {
         Login(DM, isDM: true);
-        _harness.Possess(DM, Creature, possessionType);
-        Action direct = () => _harness.Invoke("Driver", "DirectCreatureToggle", Creature);
-        direct.Should().Throw<System.Reflection.TargetInvocationException>()
-            .WithInnerException<KeyNotFoundException>();
+        _world.Possess(DM, Creature, possessionType);
+        var direct = () => _gui.TogglePlayerWindow(Creature, GuiWindowType.Emotes);
+        direct.Should().Throw<KeyNotFoundException>();
 
         Command(Creature);
         OpenWindows.Should().Be(1);
-        BoundTo(DM).Should().Be(Creature);
+        Model(DM).BoundTo.Should().Be(Creature);
         Command(Creature);
         OpenWindows.Should().Be(0);
         Command(Creature);
-        _harness.Invoke("Driver", "Transition", Creature);
+        Transition(Creature);
         OpenWindows.Should().Be(0);
         Command(Creature);
         OpenWindows.Should().Be(1);
@@ -230,19 +144,19 @@ public class EmotesWindowLifecycleTests
         Login(DM, isDM: true);
         var window = Window(DM);
         Command(DM);
-        _harness.Possess(DM, Creature, possessionType);
+        _world.Possess(DM, Creature, possessionType);
         Command(Creature);
         OpenWindows.Should().Be(1);
-        BoundTo(DM).Should().Be(Creature);
-        _harness.Release(DM);
-        _harness.Possess(DM, 4, possessionType);
+        Model(DM).BoundTo.Should().Be(Creature);
+        _world.Release(DM);
+        _world.Possess(DM, 4, possessionType);
         Command(4);
         OpenWindows.Should().Be(1);
-        BoundTo(DM).Should().Be(4);
-        _harness.Release(DM);
+        Model(DM).BoundTo.Should().Be(4);
+        _world.Release(DM);
         Command(DM);
         OpenWindows.Should().Be(1);
-        BoundTo(DM).Should().Be(DM);
+        Model(DM).BoundTo.Should().Be(DM);
         Command(DM);
         OpenWindows.Should().Be(0);
         Command(DM);
@@ -253,12 +167,60 @@ public class EmotesWindowLifecycleTests
 
     private void Login(uint player, bool isDM = false)
     {
-        _harness.AddPlayer(player, isDM);
-        _harness.Invoke("Driver", "Login", player);
+        if (_known.Add(player))
+        {
+            _world.AddPlayer(player, isDM);
+            _db.With(new Player(player.ToString()));
+        }
+
+        _world.Engine.SetReturn("GetEnteringObject", player);
+        _gui.CreatePlayerWindows();
     }
-    private void Command(uint actor, string alias = "emotesgui") => _harness.Invoke("Driver", "Command", actor, alias);
-    private object Window(uint owner) => _harness.Invoke("Driver", "Window", owner);
-    private uint BoundTo(uint owner) => _harness.Invoke<uint>("Driver", "BoundTo", owner);
-    private int OpenWindows => _harness.Invoke<int>("Driver", "OpenWindows");
-    private int Owners => _harness.Invoke<int>("Driver", "Owners");
+
+    private void Logout(uint player)
+    {
+        _world.Engine.SetReturn("GetExitingObject", player);
+        _gui.SavePlayerWindowGeometry();
+        foreach (var token in _windows.Values)
+            _destroyed.Add(token);
+    }
+
+    private void Command(uint actor, string alias = "emotesgui") =>
+        _commands[alias].DoAction(actor, Invalid, null!, Array.Empty<string>());
+
+    private void Transition(uint actor)
+    {
+        _world.Engine.SetReturn("GetEnteringObject", actor);
+        _gui.CloseAllWindows();
+    }
+
+    private GuiPlayerWindow Window(uint owner) => _gui.GetPlayerWindow(owner, GuiWindowType.Emotes);
+    private FakeViewModel Model(uint owner) => (FakeViewModel)Window(owner).ViewModel;
+    private int OpenWindows
+    {
+        get
+        {
+            SyncDestroyed();
+            return _windows.Values.Count(token => !_destroyed.Contains(token));
+        }
+    }
+
+    private void SyncDestroyed()
+    {
+        foreach (var call in _world.Engine.CallsTo("NuiDestroy"))
+            _destroyed.Add((int)call.Arguments[1]!);
+    }
+    // How many of the characters in play have a window cache; looking up a character without one throws.
+    private int Owners => new uint[] { DM, Creature, Player, 4 }.Count(owner =>
+    {
+        try
+        {
+            Window(owner);
+            return true;
+        }
+        catch (KeyNotFoundException)
+        {
+            return false;
+        }
+    });
 }

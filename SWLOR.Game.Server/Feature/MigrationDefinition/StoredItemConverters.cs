@@ -1,6 +1,6 @@
 using System;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PlayerMarketService;
+using SWLOR.Game.Server.Domain.Economy;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 

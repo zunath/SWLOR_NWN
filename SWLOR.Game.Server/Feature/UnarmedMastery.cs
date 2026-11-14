@@ -1,8 +1,8 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.QuestDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature
     {
         private const int MinimumOpponentLevel = 45;
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void Register()
         {

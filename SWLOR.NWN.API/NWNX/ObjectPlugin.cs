@@ -22,7 +22,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static int GetLocalVariableCount(uint obj)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetLocalVariableCount(obj);
+            return ObjectPluginRuntime.Current.GetLocalVariableCount(obj);
         }
 
 
@@ -43,12 +43,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static LocalVariable GetLocalVariable(uint obj, int index)
         {
-            var coreResult = global::NWN.Core.NWNX.ObjectPlugin.GetLocalVariable(obj, index);
-            return new LocalVariable
-            {
-                Key = coreResult.key,
-                Type = (LocalVariableType)coreResult.type
-            };
+            return ObjectPluginRuntime.Current.GetLocalVariable(obj, index);
         }
 
         /// <summary>
@@ -65,7 +60,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetPosition(uint obj, Vector3 pos, bool updateSubareas = true)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetPosition(obj, pos, updateSubareas ? 1 : 0);
+            ObjectPluginRuntime.Current.SetPosition(obj, pos, updateSubareas);
         }
 
         /// <summary>
@@ -75,7 +70,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="hp">The hit points.</param>
         public static void SetCurrentHitPoints(uint creature, int hp)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetCurrentHitPoints(creature, hp);
+            ObjectPluginRuntime.Current.SetCurrentHitPoints(creature, hp);
         }
 
         /// <summary>
@@ -85,7 +80,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="hp">The maximum hit points.</param>
         public static void SetMaxHitPoints(uint creature, int hp)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetMaxHitPoints(creature, hp);
+            ObjectPluginRuntime.Current.SetMaxHitPoints(creature, hp);
         }
 
         /// <summary>
@@ -95,7 +90,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>A base64 string representation of the object.</returns>
         public static string Serialize(uint obj)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.Serialize(obj);
+            return ObjectPluginRuntime.Current.Serialize(obj);
         }
 
         /// <summary>
@@ -105,7 +100,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The object.</returns>
         public static uint Deserialize(string serialized)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.Deserialize(serialized);
+            return ObjectPluginRuntime.Current.Deserialize(serialized);
         }
 
         /// <summary>
@@ -115,7 +110,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The name of the dialog resref.</returns>
         public static string GetDialogResref(uint obj)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetDialogResref(obj);
+            return ObjectPluginRuntime.Current.GetDialogResref(obj);
         }
 
         /// <summary>
@@ -125,7 +120,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="dialog">The name of the dialog resref.</param>
         public static void SetDialogResref(uint obj, string dialog)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetDialogResref(obj, dialog);
+            ObjectPluginRuntime.Current.SetDialogResref(obj, dialog);
         }
 
         /// <summary>
@@ -135,7 +130,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="appearance">The appearance id.</param>
         public static void SetAppearance(uint placeable, int appearance)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetAppearance(placeable, appearance);
+            ObjectPluginRuntime.Current.SetAppearance(placeable, appearance);
         }
 
         /// <summary>
@@ -145,7 +140,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The appearance id.</returns>
         public static int GetAppearance(uint obj)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetAppearance(obj);
+            return ObjectPluginRuntime.Current.GetAppearance(obj);
         }
 
         /// <summary>
@@ -156,7 +151,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>True if the object has the visual effect applied to it.</returns>
         public static bool GetHasVisualEffect(uint obj, int nVfx)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetHasVisualEffect(obj, nVfx) != 0;
+            return ObjectPluginRuntime.Current.GetHasVisualEffect(obj, nVfx);
         }
 
         /// <summary>
@@ -167,7 +162,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>Damage immunity as a percentage.</returns>
         public static int GetDamageImmunity(uint obj, int damageType)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetDamageImmunity(obj, damageType);
+            return ObjectPluginRuntime.Current.GetDamageImmunity(obj, damageType);
         }
 
         /// <summary>
@@ -178,7 +173,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="pos">The position.</param>
         public static void AddToArea(uint obj, uint area, Vector3 pos)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.AddToArea(obj, area, pos);
+            ObjectPluginRuntime.Current.AddToArea(obj, area, pos);
         }
 
         /// <summary>
@@ -188,7 +183,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>True if placeable is static.</returns>
         public static bool GetPlaceableIsStatic(uint obj)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetPlaceableIsStatic(obj) != 0;
+            return ObjectPluginRuntime.Current.GetPlaceableIsStatic(obj);
         }
 
         /// <summary>
@@ -199,7 +194,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Will not update for PCs until they re-enter the area.</remarks>
         public static void SetPlaceableIsStatic(uint obj, bool isStatic)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetPlaceableIsStatic(obj, isStatic ? 1 : 0);
+            ObjectPluginRuntime.Current.SetPlaceableIsStatic(obj, isStatic);
         }
 
         /// <summary>
@@ -209,7 +204,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>True/False or -1 on error.</returns>
         public static bool GetAutoRemoveKey(uint obj)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetAutoRemoveKey(obj) != 0;
+            return ObjectPluginRuntime.Current.GetAutoRemoveKey(obj);
         }
 
         /// <summary>
@@ -219,7 +214,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="bRemoveKey">True/False.</param>
         public static void SetAutoRemoveKey(uint obj, bool bRemoveKey)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetAutoRemoveKey(obj, bRemoveKey ? 1 : 0);
+            ObjectPluginRuntime.Current.SetAutoRemoveKey(obj, bRemoveKey);
         }
 
         /// <summary>
@@ -229,7 +224,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>A string of vertex positions.</returns>
         public static string GetTriggerGeometry(uint oTrigger)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetTriggerGeometry(oTrigger);
+            return ObjectPluginRuntime.Current.GetTriggerGeometry(oTrigger);
         }
 
         /// <summary>
@@ -239,7 +234,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="sGeometry">Needs to be in the following format -> {x.x, y.y, z.z} or {x.x, y.y}. Example Geometry: "{1.0, 1.0, 0.0}{4.0, 1.0, 0.0}{4.0, 4.0, 0.0}{1.0, 4.0, 0.0}". The Z position is optional and will be calculated dynamically based on terrain height if it's not provided. The minimum number of vertices is 3.</param>
         public static void SetTriggerGeometry(uint oTrigger, string sGeometry)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetTriggerGeometry(oTrigger, sGeometry);
+            ObjectPluginRuntime.Current.SetTriggerGeometry(oTrigger, sGeometry);
         }
 
         /// <summary>
@@ -250,7 +245,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="sAlias">The alias of the resource directory to add the .git file to. Default: UserDirectory/nwnx.</param>
         public static void Export(uint oObject, string sFileName, string sAlias = "NWNX")
         {
-            global::NWN.Core.NWNX.ObjectPlugin.Export(oObject, sFileName, sAlias);
+            ObjectPluginRuntime.Current.Export(oObject, sFileName, sAlias);
         }
 
         /// <summary>
@@ -261,7 +256,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The value or 0 on error.</returns>
         public static int GetInt(uint obj, string variableName)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetInt(obj, variableName);
+            return ObjectPluginRuntime.Current.GetInt(obj, variableName);
         }
 
         /// <summary>
@@ -273,7 +268,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="persist">When true, the value is persisted to GFF, this means that it'll be saved in the .bic file of a player's character or when an object is serialized.</param>
         public static void SetInt(uint obj, string variableName, int newValue, bool persist)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetInt(obj, variableName, newValue, persist ? 1 : 0);
+            ObjectPluginRuntime.Current.SetInt(obj, variableName, newValue, persist);
         }
 
         /// <summary>
@@ -283,7 +278,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="variableName">The variable name.</param>
         public static void DeleteInt(uint obj, string variableName)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.DeleteInt(obj, variableName);
+            ObjectPluginRuntime.Current.DeleteInt(obj, variableName);
         }
 
         /// <summary>
@@ -294,7 +289,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The value or "" on error.</returns>
         public static string GetString(uint obj, string variableName)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetString(obj, variableName);
+            return ObjectPluginRuntime.Current.GetString(obj, variableName);
         }
 
         /// <summary>
@@ -306,7 +301,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="persist">When true, the value is persisted to GFF, this means that it'll be saved in the .bic file of a player's character or when an object is serialized.</param>
         public static void SetString(uint obj, string variableName, string newValue, bool persist)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetString(obj, variableName, newValue, persist ? 1 : 0);
+            ObjectPluginRuntime.Current.SetString(obj, variableName, newValue, persist);
         }
 
         /// <summary>
@@ -316,7 +311,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="variableName">The variable name.</param>
         public static void DeleteString(uint obj, string variableName)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.DeleteString(obj, variableName);
+            ObjectPluginRuntime.Current.DeleteString(obj, variableName);
         }
 
         /// <summary>
@@ -327,7 +322,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The value or 0.0f on error.</returns>
         public static float GetFloat(uint obj, string variableName)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetFloat(obj, variableName);
+            return ObjectPluginRuntime.Current.GetFloat(obj, variableName);
         }
 
         /// <summary>
@@ -339,7 +334,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="persist">When true, the value is persisted to GFF, this means that it'll be saved in the .bic file of a player's character or when an object is serialized.</param>
         public static void SetFloat(uint obj, string variableName, float newValue, bool persist)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetFloat(obj, variableName, newValue, persist ? 1 : 0);
+            ObjectPluginRuntime.Current.SetFloat(obj, variableName, newValue, persist);
         }
 
         /// <summary>
@@ -349,7 +344,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="variableName">The variable name.</param>
         public static void DeleteFloat(uint obj, string variableName)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.DeleteFloat(obj, variableName);
+            ObjectPluginRuntime.Current.DeleteFloat(obj, variableName);
         }
 
         /// <summary>
@@ -359,7 +354,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="regexString">The regular expression, for example .*Test.* removes every variable that has Test in it.</param>
         public static void DeleteVarRegex(uint obj, string regexString)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.DeleteVarRegex(obj, regexString);
+            ObjectPluginRuntime.Current.DeleteVarRegex(obj, regexString);
         }
 
         /// <summary>
@@ -371,7 +366,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>The Z value of vPosition is ignored.</remarks>
         public static bool GetPositionIsInTrigger(uint obj, Vector3 position)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetPositionIsInTrigger(obj, position) != 0;
+            return ObjectPluginRuntime.Current.GetPositionIsInTrigger(obj, position);
         }
 
         /// <summary>
@@ -381,7 +376,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The object's type (NWNX_OBJECT_TYPE_INTERNAL_*).</returns>
         public static InternalObjectType GetInternalObjectType(uint oObject)
         {
-            return (InternalObjectType)global::NWN.Core.NWNX.ObjectPlugin.GetInternalObjectType(oObject);
+            return ObjectPluginRuntime.Current.GetInternalObjectType(oObject);
         }
 
         /// <summary>
@@ -393,7 +388,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Useful to give deserialized items to an object, may not work if oItem is already possessed by an object.</remarks>
         public static bool AcquireItem(uint oObject, uint oItem)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.AcquireItem(oObject, oItem) != 0;
+            return ObjectPluginRuntime.Current.AcquireItem(oObject, oItem);
         }
 
 
@@ -406,7 +401,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>-1 if defender has no immunity, 2 if the defender is immune.</returns>
         public static int DoSpellImmunity(uint oDefender, uint oCaster, int nSpellId = -1)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.DoSpellImmunity(oDefender, oCaster, nSpellId);
+            return ObjectPluginRuntime.Current.DoSpellImmunity(oDefender, oCaster, nSpellId);
         }
 
         /// <summary>
@@ -420,7 +415,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>-1 defender no immunity. 2 if immune. 3 if immune, but the immunity has a limit (example: mantles).</returns>
         public static int DoSpellLevelAbsorption(uint oDefender, uint oCaster, int nSpellId = -1, int nSpellLevel = -1, int nSpellSchool = -1)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.DoSpellLevelAbsorption(oDefender, oCaster, nSpellId, nSpellLevel, nSpellSchool);
+            return ObjectPluginRuntime.Current.DoSpellLevelAbsorption(oDefender, oCaster, nSpellId, nSpellLevel, nSpellSchool);
         }
 
         /// <summary>
@@ -440,7 +435,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Unlike the native GetCurrentHitpoints function, this excludes temporary hitpoints.</remarks>
         public static int GetCurrentHitPoints(uint creature)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetCurrentHitPoints(creature);
+            return ObjectPluginRuntime.Current.GetCurrentHitPoints(creature);
         }
 
         /// <summary>
@@ -450,7 +445,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>True if oDoor has a visible model.</returns>
         public static bool GetDoorHasVisibleModel(uint oDoor)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetDoorHasVisibleModel(oDoor) != 0;
+            return ObjectPluginRuntime.Current.GetDoorHasVisibleModel(oDoor);
         }
 
         /// <summary>
@@ -460,7 +455,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>True if oObject is destroyable.</returns>
         public static bool GetIsDestroyable(uint oObject)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetIsDestroyable(oObject) != 0;
+            return ObjectPluginRuntime.Current.GetIsDestroyable(oObject);
         }
 
 
@@ -470,7 +465,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="oObject">The object that applied the spell effects.</param>
         public static void ClearSpellEffectsOnOthers(uint oObject)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.ClearSpellEffectsOnOthers(oObject);
+            ObjectPluginRuntime.Current.ClearSpellEffectsOnOthers(oObject);
         }
 
         /// <summary>
@@ -480,7 +475,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The UUID or "" when the object does not have or cannot have an UUID.</returns>
         public static string PeekUUID(uint oObject)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.PeekUUID(oObject);
+            return ObjectPluginRuntime.Current.PeekUUID(oObject);
         }
 
         /// <summary>
@@ -491,7 +486,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Only works on placeables.</remarks>
         public static void SetHasInventory(uint obj, bool bHasInventory)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetHasInventory(obj, bHasInventory ? 1 : 0);
+            ObjectPluginRuntime.Current.SetHasInventory(obj, bHasInventory);
         }
 
         /// <summary>
@@ -502,7 +497,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>The returned value will be an engine animation constant, not a NWScript ANIMATION_ constant.</remarks>
         public static int GetCurrentAnimation(uint oObject)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetCurrentAnimation(oObject);
+            return ObjectPluginRuntime.Current.GetCurrentAnimation(oObject);
         }
 
         /// <summary>
@@ -512,7 +507,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The AI level (AI_LEVEL_* -1 to 4).</returns>
         public static int GetAILevel(uint oObject)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetAILevel(oObject);
+            return ObjectPluginRuntime.Current.GetAILevel(oObject);
         }
 
         /// <summary>
@@ -522,7 +517,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="nLevel">The level to set (AI_LEVEL_* -1 to 4).</param>
         public static void SetAILevel(uint oObject, int nLevel)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetAILevel(oObject, nLevel);
+            ObjectPluginRuntime.Current.SetAILevel(oObject, nLevel);
         }
 
         /// <summary>
@@ -533,7 +528,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="nGender">0 = Male, 1 = Female.</param>
         public static string GetMapNote(uint oObject, int nID = 0, int nGender = 0)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetMapNote(oObject, nID, nGender);
+            return ObjectPluginRuntime.Current.GetMapNote(oObject, nID, nGender);
         }
 
         /// <summary>
@@ -545,7 +540,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="nGender">0 = Male, 1 = Female.</param>
         public static void SetMapNote(uint oObject, string sMapNote, int nID = 0, int nGender = 0)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetMapNote(oObject, sMapNote, nID, nGender);
+            ObjectPluginRuntime.Current.SetMapNote(oObject, sMapNote, nID, nGender);
         }
 
         /// <summary>
@@ -556,7 +551,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Should be called in a spell script.</remarks>
         public static int GetLastSpellCastFeat(uint oObject)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetLastSpellCastFeat(oObject);
+            return ObjectPluginRuntime.Current.GetLastSpellCastFeat(oObject);
         }
 
         /// <summary>
@@ -567,7 +562,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Should be retrieved with GetEnteringObject.</remarks>
         public static void SetLastTriggered(uint oObject, uint oLast)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetLastTriggered(oObject, oLast);
+            ObjectPluginRuntime.Current.SetLastTriggered(oObject, oLast);
         }
 
         /// <summary>
@@ -577,7 +572,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The remaining duration, in seconds, or zero on failure.</returns>
         public static float GetAoEObjectDurationRemaining(uint oAoE)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetAoEObjectDurationRemaining(oAoE);
+            return ObjectPluginRuntime.Current.GetAoEObjectDurationRemaining(oAoE);
         }
 
         /// <summary>
@@ -588,7 +583,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>ActionStartConversation()'s bPrivateConversation parameter will overwrite this flag.</remarks>
         public static void SetConversationPrivate(uint oObject, bool bPrivate)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetConversationPrivate(oObject, bPrivate ? 1 : 0);
+            ObjectPluginRuntime.Current.SetConversationPrivate(oObject, bPrivate);
         }
 
         /// <summary>
@@ -598,7 +593,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="fRadius">The radius, must be bigger than 0.0f.</param>
         public static void SetAoEObjectRadius(uint oAoE, float fRadius)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetAoEObjectRadius(oAoE, fRadius);
+            ObjectPluginRuntime.Current.SetAoEObjectRadius(oAoE, fRadius);
         }
 
         /// <summary>
@@ -608,7 +603,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The radius or 0.0f on error.</returns>
         public static float GetAoEObjectRadius(uint oAoE)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetAoEObjectRadius(oAoE);
+            return ObjectPluginRuntime.Current.GetAoEObjectRadius(oAoE);
         }
 
         /// <summary>
@@ -619,7 +614,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Should be called in a spell script.</remarks>
         public static bool GetLastSpellCastSpontaneous(uint oObject)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetLastSpellCastSpontaneous(oObject) != 0;
+            return ObjectPluginRuntime.Current.GetLastSpellCastSpontaneous(oObject);
         }
 
         /// <summary>
@@ -630,7 +625,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>Should be called in a spell script.</remarks>
         public static int GetLastSpellCastDomainLevel(uint oObject)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetLastSpellCastDomainLevel(oObject);
+            return ObjectPluginRuntime.Current.GetLastSpellCastDomainLevel(oObject);
         }
 
         /// <summary>
@@ -640,7 +635,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <param name="sUUID">The UUID to force.</param>
         public static void ForceAssignUUID(uint oObject, string sUUID)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.ForceAssignUUID(oObject, sUUID);
+            ObjectPluginRuntime.Current.ForceAssignUUID(oObject, sUUID);
         }
 
         /// <summary>
@@ -650,7 +645,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>Returns a count of how many items are in the object's inventory.</returns>
         public static int GetInventoryItemCount(uint oObject)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetInventoryItemCount(oObject);
+            return ObjectPluginRuntime.Current.GetInventoryItemCount(oObject);
         }
 
         /// <summary>
@@ -667,7 +662,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void OverrideSpellProjectileVFX(uint oCreature, int nProjectileType = -1, int nProjectilePathType = -1, int nSpellID = -1, bool bPersist = false)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.OverrideSpellProjectileVFX(oCreature, nProjectileType, nProjectilePathType, nSpellID, bPersist ? 1 : 0);
+            ObjectPluginRuntime.Current.OverrideSpellProjectileVFX(oCreature, nProjectileType, nProjectilePathType, nSpellID, bPersist);
         }
 
         /// <summary>
@@ -677,7 +672,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>To initialize the hooks used by this function it is recommended to call this function once in your module load script.</remarks>
         public static bool GetLastSpellInstant()
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetLastSpellInstant() != 0;
+            return ObjectPluginRuntime.Current.GetLastSpellInstant();
         }
 
         /// <summary>
@@ -690,7 +685,7 @@ namespace SWLOR.NWN.API.NWNX
         /// </remarks>
         public static void SetTrapCreator(uint oObject, uint oCreator)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetTrapCreator(oObject, oCreator);
+            ObjectPluginRuntime.Current.SetTrapCreator(oObject, oCreator);
         }
 
         /// <summary>
@@ -702,7 +697,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <returns>The localized string.</returns>
         public static string GetLocalizedName(uint oObject, int nLanguage, int nGender = 0)
         {
-            return global::NWN.Core.NWNX.ObjectPlugin.GetLocalizedName(oObject, nLanguage, nGender);
+            return ObjectPluginRuntime.Current.GetLocalizedName(oObject, nLanguage, nGender);
         }
 
         /// <summary>
@@ -715,7 +710,7 @@ namespace SWLOR.NWN.API.NWNX
         /// <remarks>You may have to SetName(oObject, "") for the translated string to show.</remarks>
         public static void SetLocalizedName(uint oObject, string sName, int nLanguage, int nGender = 0)
         {
-            global::NWN.Core.NWNX.ObjectPlugin.SetLocalizedName(oObject, sName, nLanguage, nGender);
+            ObjectPluginRuntime.Current.SetLocalizedName(oObject, sName, nLanguage, nGender);
         }
     }
 }

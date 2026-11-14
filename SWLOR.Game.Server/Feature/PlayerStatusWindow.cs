@@ -2,10 +2,11 @@ using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            Combat.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());
+            GameServices.CombatDamageTaken.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());
             Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
         }
 
@@ -139,6 +140,8 @@ namespace SWLOR.Game.Server.Feature
             Gui.PublishRefreshEvent(player, new TargetStatusRefreshEvent());
         }
 
+        [PlayerSession(PlayerReload.LoginOnly,
+            "Opens the vitals window at login; the reload reopens the windows that were open.")]
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         [NWNEventHandler(ScriptName.OnAreaEnter)]
         public static void LoadPlayerStatusWindow()

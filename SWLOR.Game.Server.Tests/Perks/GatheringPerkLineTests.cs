@@ -2,16 +2,14 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
-using SWLOR.Game.Server.Service.LootService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.ScavengeService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -22,6 +20,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class GatheringPerkLineTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private static readonly PerkType[] Prospector = GatheringPerkLines.Prospector.ToArray();
 
     private static readonly PerkType[] TreasureSeeker = GatheringPerkLines.TreasureSeeker.ToArray();
@@ -587,12 +601,12 @@ public class GatheringPerkLineTests
 
         GatheringLoadout.All.Select(loadout => loadout.Slug).Should().Equal(expected);
         GatheringLoadout.All.Select(loadout => loadout.Name).Should().OnlyHaveUniqueItems();
-        GatheringLoadout.All.First().Should().BeSameAs(GatheringLoadout.None);
+        GatheringLoadout.All.First().Should().Be(GatheringLoadout.None);
         GatheringLoadout.Perked.Should().HaveCount(7).And.NotContain(GatheringLoadout.None);
         foreach (var loadout in GatheringLoadout.All)
         {
-            GatheringLoadout.Find(loadout.Slug).Should().BeSameAs(loadout);
-            GatheringLoadout.Find(loadout.Slug.ToUpperInvariant()).Should().BeSameAs(loadout, "a command line may use any case");
+            GatheringLoadout.Find(loadout.Slug).Should().Be(loadout);
+            GatheringLoadout.Find(loadout.Slug.ToUpperInvariant()).Should().Be(loadout, "a command line may use any case");
         }
 
         GatheringLoadout.Find("nothing").Should().BeNull();

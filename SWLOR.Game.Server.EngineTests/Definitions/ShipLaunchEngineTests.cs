@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -331,12 +331,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         /// <summary>Reads live reservations so tests can assert cleanup without exposing production test seams.</summary>
-        private static IDictionary PendingLaunches() => (IDictionary)typeof(Space)
-            .GetField("_pendingShipLaunches", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        private static IDictionary PendingLaunches() => (IDictionary)typeof(SWLOR.Game.Server.Domain.Space.SpaceService)
+            .GetField("_pendingShipLaunches", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Space);
 
         /// <summary>Reads the live ship clone registry to exercise emergency towing with a real NPC ship.</summary>
-        private static IDictionary ShipClones() => (IDictionary)typeof(Space)
-            .GetField("_shipClones", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        private static IDictionary ShipClones() => (IDictionary)typeof(SWLOR.Game.Server.Domain.Space.SpaceService)
+            .GetField("_shipClones", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(Space);
 
         /// <summary>Advances only the request's timeout to test expiry without a thirty-second wall-clock delay.</summary>
         private static void ExpirePendingLaunch(PlayerAbilityFixture actor)
@@ -352,8 +352,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var actor = await PlayerAbilityFixture.CreateAsync(ctx);
             actor.Update(player => player.Perks[PerkType.Starships] = 1);
             var statusWindows = new[] { GuiWindowType.PlayerStatus, GuiWindowType.PlayerStatusPortrait, GuiWindowType.PlayerStatusPortraitSpace };
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var windows = GuiInternals.PlayerWindows();
             windows[actor.Id] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             foreach (var type in statusWindows)
             {

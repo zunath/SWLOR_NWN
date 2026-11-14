@@ -1,7 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.DMToolService;
+using SWLOR.Game.Server.Domain.Administration;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

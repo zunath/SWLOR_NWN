@@ -7,10 +7,9 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.QuestContractService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -298,7 +297,7 @@ public static partial class MigrationEngineTests
         var owner = ctx.SpawnCreature("nw_rat001");
         await ctx.WaitFrameAsync();
         var gloves = await CreateItemAsync(ctx, owner, RevisedGloves, owner);
-        var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
         string saved = null;
         string identity = null;
         await ctx.ExecuteInCreatureContextAsync(owner, () =>

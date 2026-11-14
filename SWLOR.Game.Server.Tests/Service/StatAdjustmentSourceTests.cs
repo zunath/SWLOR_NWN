@@ -1,29 +1,44 @@
+using SWLOR.Game.Server.EngineTests.Framework;
 using System.Collections;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class StatAdjustmentSourceTests
 {
+    // The code under test reaches converted services through their static facades, which resolve from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
     private const uint Creature = 61249;
     private const BindingFlags PrivateStatic = BindingFlags.NonPublic | BindingFlags.Static;
     private static Dictionary<uint, CreatureStatusEffect> Effects =>
-        (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", PrivateStatic)!.GetValue(null)!;
+        StatusEffectInternals.CreatureEffects;
 
     [TearDown]
     public void Cleanup()
     {
         Effects.Remove(Creature);
-        ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!.GetValue(null)!).Remove(Creature);
+        TemporaryStatModifierInternals.Modifiers.Remove(Creature);
+        _facadeScope.Dispose();
     }
 
     [TestCase(false)]
@@ -96,12 +111,12 @@ public class StatAdjustmentSourceTests
             }
         }
         for (var index = 0; index < 100; index++)
-            Combat.GetHighResourceAbilityDamageBonus(Creature);
+            GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(Creature);
 
         var before = GC.GetAllocatedBytesForCurrentThread();
         var adjustment = 0;
         for (var index = 0; index < 1000; index++)
-            adjustment += Combat.GetHighResourceAbilityDamageBonus(Creature);
+            adjustment += GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(Creature);
         var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
         adjustment.Should().Be(0);
@@ -160,15 +175,14 @@ public class StatAdjustmentSourceTests
         AddTemporary("expired", StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 40);
         AddTemporary("live", StatType.HighFPAndStaminaAbilityDamageBonus, 2);
         AddTemporary("live", StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 20);
-        var modifiers = (IEnumerable)((IDictionary)typeof(TemporaryStatModifier)
-            .GetField("_modifiers", PrivateStatic)!.GetValue(null)!)[Creature]!;
+        var modifiers = (IEnumerable)TemporaryStatModifierInternals.Modifiers[Creature]!;
         foreach (var modifier in modifiers)
         {
             if ((string)modifier.GetType().GetProperty("Group")!.GetValue(modifier)! == "expired")
                 modifier.GetType().GetProperty("Expiration")!.SetValue(modifier, DateTime.UtcNow.AddSeconds(-1));
         }
         // The heartbeat uses this same purge; the native UI notification is covered in engine tests.
-        typeof(TemporaryStatModifier).GetMethod("PurgeExpired", PrivateStatic)!.Invoke(null, new object[] { Creature });
+        TemporaryStatModifierInternals.Invoke("PurgeExpired", Creature);
         ReadDamageSources().Should().Equal((2, 20));
     }
 
@@ -207,8 +221,7 @@ public class StatAdjustmentSourceTests
         AddStatus(Payload((StatType.AreaAbilityPulseDamage, 8), (StatType.AreaAbilityPulseRadiusMeters, 5)));
         AddStatus(Payload((StatType.AreaAbilityPulseDamage, 3), (StatType.AreaAbilityPulseRadiusMeters, 2)));
         var ability = new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true };
-        var pulses = (IReadOnlyList<StatAdjustmentSource>)typeof(Combat).GetMethod("GetAreaAbilityPulseSources", PrivateStatic)!
-            .Invoke(null, new object[] { Creature, ability, true })!;
+        var pulses = (IReadOnlyList<StatAdjustmentSource>)CombatMembers.Invoke("GetAreaAbilityPulseSources", Creature, ability, true);
         pulses.Select(source => (source[StatType.AreaAbilityPulseDamage], source[StatType.AreaAbilityPulseRadiusMeters]))
             .Should().BeEquivalentTo(new[] { (8, 5), (3, 2) });
     }
@@ -219,8 +232,7 @@ public class StatAdjustmentSourceTests
     [TestCase(true, true, true)]
     public void IneligibleOrMissingPulses_DoNotAllocatePerTarget(bool hostile, bool area, bool firstTarget)
     {
-        var apply = typeof(Combat).GetMethod("ApplyAreaAbilityPulse", PrivateStatic)!
-            .CreateDelegate<Action<uint, uint, AbilityDetail, bool>>();
+        var apply = CombatMembers.CreateDelegate<Action<uint, uint, AbilityDetail, bool>>("ApplyAreaAbilityPulse");
         var ability = new AbilityDetail { IsHostileAbility = hostile, IsAreaAbility = area };
         for (var index = 0; index < 100; index++)
             apply(Creature, Creature, ability, firstTarget);
@@ -243,13 +255,12 @@ public class StatAdjustmentSourceTests
         AddStatus(Payload((payload, 12), (StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 60)));
         AddTemporary("other-source", payload, 7);
         AddTemporary("other-source", StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80);
-        var impactType = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
+        var impactType = AbilityInternals.TrackedImpactType;
+        var service = AbilityInternals.NoNeighbours();
         Func<uint, StatType, IReadOnlyList<StatAdjustmentSource>> CreateImpactReader()
         {
-            var impact = impactType.GetConstructors().Single().Invoke(new object[]
-            {
-                new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, null, null
-            });
+            var impact = AbilityInternals.NewTrackedImpact(
+                service, new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, null, null);
             return impactType.GetMethod("GetStatSources")!
                 .CreateDelegate<Func<uint, StatType, IReadOnlyList<StatAdjustmentSource>>>(impact);
         }
@@ -297,8 +308,7 @@ public class StatAdjustmentSourceTests
     }
 
     private static void AddTemporary(string group, StatType stat, int amount) =>
-        typeof(TemporaryStatModifier).GetMethod("AddInternal", PrivateStatic)!
-            .Invoke(null, new object[] { Creature, stat, amount, 30f, group, false });
+        TemporaryStatModifierInternals.Invoke("AddInternal", Creature, stat, amount, 30f, group, false);
 
     private sealed class PayloadEffect : StatusEffectBase
     {

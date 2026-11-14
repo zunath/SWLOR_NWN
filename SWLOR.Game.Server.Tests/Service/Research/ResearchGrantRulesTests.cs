@@ -1,10 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Research;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Research;
 
 namespace SWLOR.Game.Server.Tests.Service.Research;
 
@@ -52,7 +51,7 @@ public class ResearchGrantRulesTests
     [Test]
     public void TheMaximumLevelMatchesTheCraftConstant()
     {
-        ResearchGrantRules.MaxLevel.Should().Be(Craft.MaxResearchLevel);
+        ResearchGrantRules.MaxLevel.Should().Be(CraftService.MaxResearchLevel);
     }
 
     [TestCase(1, ResearchLevelGrant.ItemBonus, "Item Bonus +1")]

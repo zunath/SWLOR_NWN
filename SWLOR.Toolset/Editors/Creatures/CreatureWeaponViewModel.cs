@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using CommunityToolkit.Mvvm.ComponentModel;

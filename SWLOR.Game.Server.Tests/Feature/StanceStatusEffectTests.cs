@@ -6,11 +6,12 @@ using NUnit.Framework;
 using System.Reflection;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
+
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -18,18 +19,26 @@ public class StanceStatusEffectTests
 {
     private const uint Player = 0x01000001;
 
+    // The Gui, StatusEffect and Mimicry facades resolve from a container; a fresh one per test gives each test empty
+    // trackers and trait caches.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
     [SetUp]
     public void SetUp()
     {
+        _facades = new FacadeContainer();
+        _facadeScope = _facades.Install();
         StatusEffect.CacheData();
         ResetStatusEffects();
-        ClearMimicryTraitCaches();
     }
 
     [TearDown]
     public void TearDown()
     {
         ResetStatusEffects();
+        _facadeScope.Dispose();
+        _facades.Dispose();
     }
 
     [Test]
@@ -384,24 +393,9 @@ public class StanceStatusEffectTests
         throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 
-    // Mimicry.CacheData(), run by earlier fixtures such as AbilityDescriptionTests, fills static trait caches that make
-    // Stat lookups call NWScript's GetIsPC, which throws without the engine.
-    private static void ClearMimicryTraitCaches()
-    {
-        foreach (var fieldName in new[] { "_traitStatsByStat", "_traitResistancesByResistance" })
-        {
-            var cache = typeof(Mimicry)
-                .GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static)!
-                .GetValue(null)!;
-            cache.GetType().GetMethod("Clear")!.Invoke(cache, null);
-        }
-    }
-
     private static Dictionary<uint, CreatureStatusEffect> CreatureEffects()
     {
-        return (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
-            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
-            .GetValue(null)!;
+        return StatusEffectInternals.CreatureEffects;
     }
 
     private sealed record PathInfo(string FullName)

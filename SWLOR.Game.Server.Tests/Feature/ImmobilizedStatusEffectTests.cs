@@ -1,12 +1,29 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class ImmobilizedStatusEffectTests
 {
+    // The code under test reaches the Stat facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void ImmobilizedStatusEffect_UsesTheLegOnlyNativeRoot()
     {
@@ -36,11 +53,11 @@ public class ImmobilizedStatusEffectTests
     {
         var root = FindRepositoryRoot();
         var server = Path.Combine(root, "SWLOR.Game.Server");
-        var holoCom = File.ReadAllText(Path.Combine(server, "Service", "HoloCom.cs"));
+        var holoCom = File.ReadAllText(Path.Combine(server, "Domain", "World", "HoloComService.cs"));
         var craft = File.ReadAllText(Path.Combine(
             server,
-            "Service",
-            "CraftService",
+            "Domain",
+            "Crafting",
             "Minigame",
             "NwnCraftSessionWorld.cs"));
         var temporaryEffects = File.ReadAllText(Path.Combine(server, "Feature", "PlayerTemporaryEffects.cs"));

@@ -1,8 +1,10 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -38,14 +40,14 @@ public class CharacterSheetCombatUpgradeTests
         foreach (var method in new[] { "public static void PlayerFPAdjusted()", "public static void PlayerSTMAdjusted()" })
             ExtractMethod(publisher, method).Should().Contain("Gui.PublishCharacterSheetRefreshEvent(player");
 
-        var feedback = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "PlayerFeedback.cs"));
-        var restore = ExtractMethod(feedback, "public static void SendResourceRestored(");
+        var feedback = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Foundation", "PlayerFeedbackService.cs"));
+        var restore = ExtractMethod(feedback, "public void SendResourceRestored(");
         restore.Should().Contain("GetMaster(creature)");
         restore.Should().Contain("SendMessageToPC(receiver");
-        restore.Should().Contain("PlayerName.GetDisplayName(receiver, creature)");
+        restore.Should().Contain("GetDisplayName(receiver, creature)");
 
-        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
-        var regeneration = ExtractMethod(stats, "private static void RestoreNPCStats(");
+        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var regeneration = ExtractMethod(stats, "private void RestoreNPCStats(");
         regeneration.Should().Contain("if (fp != previousFP)");
         regeneration.Should().Contain("ExecuteScript(\"pc_fp_adjusted\", self)");
         regeneration.Should().Contain("if (stm != previousSTM)");
@@ -59,8 +61,8 @@ public class CharacterSheetCombatUpgradeTests
         var root = FindRepositoryRoot().FullName;
         var viewModel = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
         viewModel.Should().Contain("Stat.GetAttackPercentAdjustment(_target, SkillType.Force)");
-        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Stat.cs"));
-        ExtractMethod(stats, "private static int ApplyPostAttackStatusModifiers(")
+        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        ExtractMethod(stats, "private int ApplyPostAttackStatusModifiers(")
             .Should().Contain("GetAttackPercentAdjustment(creature, skillType)");
     }
 
@@ -120,8 +122,8 @@ public class CharacterSheetCombatUpgradeTests
         refresh.Should().Contain("offhandAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target)");
         refresh.Should().Contain("GetEquipmentDamageAbility(_target, item)");
         refresh.Should().Contain("PairedRangedTraits.GetOrdinaryDamagePercentAdjustment(_target, GetAttackTarget(_target))");
-        refresh.Should().Contain("Combat.ApplyOrdinaryAttackDamageMultiplier(_target, min)");
-        refresh.Should().Contain("Combat.ApplyOrdinaryAttackDamageMultiplier(_target, max)");
+        refresh.Should().Contain("GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(_target, min)");
+        refresh.Should().Contain("GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(_target, max)");
         refresh.Should().Contain("StatType.OrdinaryAttackDamagePercentAdjustment");
         refresh.Should().NotContain("if (skill == SkillType.TwinPistol)\n                {", "ordinary trait bonuses must apply across weapon skills");
         refresh.Should().NotContain("CaptureOrdinary", "opening the sheet cannot capture or commit an attack");
@@ -220,24 +222,25 @@ public class CharacterSheetCombatUpgradeTests
     [Test]
     public void ForceAccuracy_IgnoresWeaponStatOverrideButRetainsWeaponAccuracyBonus()
     {
-        var applyItemProperty = typeof(Stat).GetMethod(
+        var applyItemProperty = typeof(StatService).GetMethod(
             "ApplyAccuracyItemProperty",
-            BindingFlags.NonPublic | BindingFlags.Static);
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        var service = RuntimeHelpers.GetUninitializedObject(typeof(StatService));
 
         applyItemProperty.Should().NotBeNull();
 
         var weaponStatOverride = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty!.Invoke(
-            null,
+            service,
             new object[] { AbilityType.Willpower, 7, ItemPropertyType.AccuracyStat, (int)AbilityType.Agility, false })!;
         weaponStatOverride.Should().Be((AbilityType.Agility, 7));
 
         var forceStatOverride = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
-            null,
+            service,
             new object[] { AbilityType.Willpower, 7, ItemPropertyType.AccuracyStat, (int)AbilityType.Agility, true })!;
         forceStatOverride.Should().Be((AbilityType.Willpower, 7));
 
         var forceAccuracyBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
-            null,
+            service,
             new object[] { AbilityType.Willpower, 7, ItemPropertyType.Accuracy, 4, true })!;
         forceAccuracyBonus.Should().Be((AbilityType.Willpower, 11));
 
@@ -245,7 +248,7 @@ public class CharacterSheetCombatUpgradeTests
         foreach (var legacyType in new[] { ItemPropertyType.AccuracyBonus, ItemPropertyType.EnhancementBonus })
         {
             var legacyBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
-                null,
+                service,
                 new object[] { AbilityType.Willpower, 7, legacyType, 5, true })!;
             legacyBonus.Should().Be((AbilityType.Willpower, 7));
         }
@@ -254,11 +257,7 @@ public class CharacterSheetCombatUpgradeTests
     [Test]
     public void ForceHitChecks_UseTheSameWillpowerAccuracyModeAsTheCharacterSheet()
     {
-        var combat = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server",
-            "Service",
-            "Combat.cs"));
+        var combat = CombatSource.Read();
         var method = ExtractMethod(combat, "private static int GetAbilityAccuracy(");
 
         method.Should().Contain("var usesForceAccuracy = skillType == SkillType.Force;");
@@ -297,7 +296,7 @@ public class CharacterSheetCombatUpgradeTests
         attackDelay.Should().Contain("WeaponAttackTiming.GetTimingSkill(_target)");
         attackDelay.Should().Contain("StatusEffect.TryGetLimitedAttackDelayReduction(");
         attackDelay.Should().Contain("limitedAttackDelayReductionPercent");
-        attackDelay.Should().Contain("Combat.CalculateAttackDelay(");
+        attackDelay.Should().Contain("GameServices.CombatAttackTiming.CalculateAttackDelay(");
 
         var damageTaken = ExtractMethod(viewModel, "private int GetDamageTakenPercent(CombatDamageType damageType)");
         damageTaken.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
@@ -325,10 +324,10 @@ public class CharacterSheetCombatUpgradeTests
             "the sheet must mirror runtime's separate multiplicative typed and Leadership stages");
 
         var criticalRate = ExtractMethod(viewModel, "private int GetCriticalRate(SkillType skillType)");
-        criticalRate.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType)");
+        criticalRate.Should().Contain("GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(_target, skillType)");
         criticalRate.Should().NotContain("GetPersistentNextSkillAbilityCriticalRateBonus");
         viewModel.Should().Contain("AddStat(\"Next Ability Crit\"");
-        viewModel.Should().Contain("Combat.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)");
+        viewModel.Should().Contain("GameServices.CombatAbilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)");
     }
 
     [Test]
@@ -341,7 +340,7 @@ public class CharacterSheetCombatUpgradeTests
             "Feature",
             "PlayerStatusWindow.cs"));
         var method = ExtractMethod(source, "public static void PlayerDamaged()");
-        var sharedDamageEffects = "Combat.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());";
+        var sharedDamageEffects = "GameServices.CombatDamageTaken.ApplyDamageTakenEffects(player, GetLastDamager(player), GetTotalDamageDealt());";
         var sheetRefresh = "Gui.PublishRefreshEvent(player, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));";
 
         method.Should().Contain(sharedDamageEffects);

@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             foreach (var helper in new[] { "PistolBaseItemMigration", "LegacySaberMigration" })
             {
-                var item = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+                var item = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
                 string saved = null;
                 string uuid = null;
                 var tag = "cleanup_" + Guid.NewGuid().ToString("N");

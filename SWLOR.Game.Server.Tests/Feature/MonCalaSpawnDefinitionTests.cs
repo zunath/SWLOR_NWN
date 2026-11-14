@@ -12,12 +12,12 @@ using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Feature.SpawnDefinition;
-using SWLOR.Game.Server.Service.AnimationService;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -75,13 +75,15 @@ public class MonCalaSpawnDefinitionTests
     public void MonCalaNamedRareEliteSpawnTables_ArePlacedInOneAreaFile()
     {
         var root = FindRepositoryRoot();
-        var gitFiles = Directory.GetFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json");
+        // Each area file is read once, not once per spawn table.
+        var gitFiles = Directory.GetFiles(Path.Combine(root.FullName, "Module", "git"), "*.git.json")
+            .ToDictionary(file => file, file => File.ReadAllText(file));
 
         foreach (var spec in NamedRareEliteSpecs)
         {
             var filesWithTable = gitFiles
-                .Where(file => File.ReadAllText(file).Contains($"\"value\": \"{spec.SpawnTableId}\"", StringComparison.Ordinal))
-                .Select(Path.GetFileName)
+                .Where(file => file.Value.Contains($"\"value\": \"{spec.SpawnTableId}\"", StringComparison.Ordinal))
+                .Select(file => Path.GetFileName(file.Key))
                 .Distinct()
                 .ToArray();
 
@@ -646,10 +648,20 @@ public class MonCalaSpawnDefinitionTests
     private static int FindWorkbookRowByCellText(XDocument worksheet, IReadOnlyList<string> sharedStrings, string column, string text)
     {
         XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        // One pass over the cells of the column; asking GetWorkbookCellText for every row would scan the whole sheet once per row.
         return worksheet
-            .Descendants(ns + "row")
-            .Select(row => int.Parse(row.Attribute("r")?.Value ?? "0", CultureInfo.InvariantCulture))
-            .Single(row => GetWorkbookCellText(worksheet, sharedStrings, $"{column}{row}") == text);
+            .Descendants(ns + "c")
+            .Where(cell => IsCellInColumn(cell.Attribute("r")?.Value, column) && ReadCellText(cell, ns, sharedStrings) == text)
+            .Select(cell => int.Parse(cell.Attribute("r")!.Value.Substring(column.Length), CultureInfo.InvariantCulture))
+            .Single();
+    }
+
+    private static bool IsCellInColumn(string address, string column)
+    {
+        return address != null &&
+               address.Length > column.Length &&
+               address.StartsWith(column, StringComparison.Ordinal) &&
+               char.IsDigit(address[column.Length]);
     }
 
     private static string GetWorkbookCellText(XDocument worksheet, IReadOnlyList<string> sharedStrings, string address)
@@ -659,9 +671,11 @@ public class MonCalaSpawnDefinitionTests
             .Descendants(ns + "c")
             .SingleOrDefault(candidate => candidate.Attribute("r")?.Value == address);
 
-        if (cell == null)
-            return string.Empty;
+        return cell == null ? string.Empty : ReadCellText(cell, ns, sharedStrings);
+    }
 
+    private static string ReadCellText(XElement cell, XNamespace ns, IReadOnlyList<string> sharedStrings)
+    {
         var type = cell.Attribute("t")?.Value;
         if (type == "inlineStr")
             return string.Concat(cell.Descendants(ns + "t").Select(text => text.Value));

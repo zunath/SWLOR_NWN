@@ -1,9 +1,10 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Feature
 
             // Max HP can also drop natively (a Vitality penalty), leaving shields above the cap.
             AbilityDefinition.TemporaryHitPointEffects.EnforceMaximumTotal(player);
-            if (GetLocalInt(player, Stat.SuppressNaturalRegenVariable) != 0) return;
+            if (GetLocalInt(player, StatService.SuppressNaturalRegenVariable) != 0) return;
 
             using var recorderAttribution = CombatRecorder.BeginAttribution(player, CombatRecordSourceKind.Regeneration);
             var tick = GetLocalInt(player, "NATURAL_REGENERATION_TICK") + 1;
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Feature
         private static void ApplyLowResourceIntervalRestore(uint player)
         {
             var threshold = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalThresholdPercent);
-            if (threshold <= 0 || !Combat.IsCurrentFPAndStaminaAtOrBelowPercent(player, threshold))
+            if (threshold <= 0 || !GameServices.CombatResources.IsCurrentFPAndStaminaAtOrBelowPercent(player, threshold))
                 return;
 
             var fpRestore = Stat.GetStatAdjustment(player, StatType.LowFPAndStaminaIntervalFPRestore);

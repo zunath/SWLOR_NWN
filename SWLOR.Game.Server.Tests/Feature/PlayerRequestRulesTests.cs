@@ -2,9 +2,8 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PlayerMarketService;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -94,7 +93,7 @@ public class PlayerRequestRulesTests
             using var item = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{resref}.uti.json")));
             item.RootElement.GetProperty("AddCost").GetProperty("value").GetInt32().Should().Be(50, resref);
             item.RootElement.GetProperty("VarTable").GetProperty("value")[0].GetProperty("Name").GetProperty("value").GetString()
-                .Should().Be(PlayerMarket.NoMarketListingVariable, resref);
+                .Should().Be(PlayerMarketService.NoMarketListingVariable, resref);
             blueprint.Should().Contain($"\"{resref}\"");
             placed.Should().Contain($"\"{resref}\"");
         }

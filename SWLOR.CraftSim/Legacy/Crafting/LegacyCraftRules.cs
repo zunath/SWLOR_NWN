@@ -16,7 +16,7 @@ namespace SWLOR.CraftSim.Legacy.Crafting
         /// <summary>Highest skill rank any crafting skill reaches.</summary>
         public const int MaximumRank = 50;
 
-        /// <summary>A recipe needs the crafter's rank to be at least its level minus this (Craft.cs:327-331).</summary>
+        /// <summary>A recipe needs the crafter's rank to be at least its level minus this (CraftService.cs:374-377).</summary>
         public const int RecipeUnlockOffset = 3;
 
         /// <summary>CraftViewModel.cs:446-454: gear CP plus 0.75 per rank, and a flat 31 from rank 25.</summary>
@@ -73,7 +73,7 @@ namespace SWLOR.CraftSim.Legacy.Crafting
             return (int)((baseQuality + muscleMemoryBonus + control * 0.75f) * recipeDiff);
         }
 
-        /// <summary>The lowest rank that may craft a recipe (Craft.cs:327-331).</summary>
+        /// <summary>The lowest rank that may craft a recipe (CraftService.cs:374-377).</summary>
         public static int RequiredRank(int recipeLevel) => Math.Max(recipeLevel - RecipeUnlockOffset, 0);
 
         /// <summary>Stacks consumed per success: n x (1 + 0.65 x (1 - p) / p), as failures lose each stack at 65% (CraftViewModel.cs:1601-1641).</summary>

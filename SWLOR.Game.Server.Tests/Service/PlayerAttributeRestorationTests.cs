@@ -1,17 +1,33 @@
-using System.Reflection;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class PlayerAttributeRestorationTests
 {
+    // The overload this test calls is a member of the stat service, reached through GameServices.Stat.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void OlderCharacterFileRecoversEverySavedAttributeIncludingCappedInvestments()
     {
@@ -69,20 +85,6 @@ public class PlayerAttributeRestorationTests
     }
 
     [Test]
-    public void LoginRestoresFinalAttributesForEveryUpgradedCharacter()
-    {
-        var source = ReadSource("Service", "Migration.cs");
-        var method = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
-            .OfType<MethodDeclarationSyntax>().Single(node => node.Identifier.Text == "AfterCharacterInitialization");
-        var restore = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(node => node.Expression.ToString() == "Stat.RestorePlayerAttributes");
-        restore.Ancestors().OfType<StatementSyntax>().Where(statement => statement is IfStatementSyntax or ForEachStatementSyntax)
-            .Should().BeEmpty("every character that passes the upgrade check needs its attributes restored");
-        restore.SpanStart.Should().BeLessThan(method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(node => node.Expression.ToString() == "Perk.RestorePlayerFeats").SpanStart);
-    }
-
-    [Test]
     public void AttributePurchasesApplySavedTotalInsteadOfIncrementingStaleCharacterScore()
     {
         var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs");
@@ -92,8 +94,7 @@ public class PlayerAttributeRestorationTests
 
     private static void Restore(Player player, Action<AbilityType, int> setScore)
     {
-        typeof(Stat).GetMethod("RestorePlayerAttributes", BindingFlags.Static | BindingFlags.NonPublic)!
-            .Invoke(null, new object[] { player, setScore });
+        Stat.RestorePlayerAttributes(player, setScore);
     }
 
     private static string ReadSource(params string[] path)

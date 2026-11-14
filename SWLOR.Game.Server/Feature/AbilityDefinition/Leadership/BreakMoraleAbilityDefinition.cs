@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 {
@@ -130,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             if (affected.Count <= 0)
                 return;
 
-            Combat.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);
+            GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), location);
             var untagged = affected.Where(hostile => !CombatPoint.HasCombatPoints(activator, hostile)).ToList();
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);

@@ -16,15 +16,15 @@ namespace SWLOR.CraftSim.Legacy
             "Rules ported. `CraftViewModel.cs` was deleted from the game server after its rules were ported, so they are frozen and cited to commit `" +
             CraftViewModelCommit + "`; the others are checked against the source by `LegacySourceTests`:";
 
-        public const string RecipeLevelChart = Server + "Service/CraftService/RecipeLevelChart.cs";
-        public const string Craft = Server + "Service/Craft.cs";
+        public const string RecipeLevelChart = Server + "Domain/Crafting/RecipeLevelChart.cs";
+        public const string Craft = Server + "Domain/Crafting/CraftService.cs";
         public const string Harvester = Server + "Feature/ItemDefinition/HarvesterItemDefinition.cs";
-        public const string ProspectingNode = Server + "Service/CraftService/Minigame/Prospecting/ProspectingNode.cs";
-        public const string GatheringLevels = Server + "Service/CraftService/GatheringLevels.cs";
-        public const string Scavenge = Server + "Service/ScavengeService/ScavengeQuickSearch.cs";
+        public const string ProspectingNode = Server + "Domain/Crafting/Minigame/Prospecting/ProspectingNode.cs";
+        public const string GatheringLevels = Server + "Domain/Crafting/GatheringLevels.cs";
+        public const string Scavenge = Server + "Domain/Crafting/ScavengeQuickSearch.cs";
         public const string ScavengeSite = Server + "Feature/ScavengePoint.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
-        public const string FishingFight = Server + "Service/FishingService/FishingFightLifecycle.cs";
+        public const string FishingFight = Server + "Domain/World/FishingFightLifecycle.cs";
         public const string EquipmentStats = Server + "Feature/EquipmentStats.cs";
 
         public static readonly SourceReference ActionRanks = SourceReference.Frozen(
@@ -79,11 +79,11 @@ namespace SWLOR.CraftSim.Legacy
             "Enhancement transfer chance", CraftViewModel, 1420, 1468, CraftViewModelCommit);
 
         public static readonly SourceReference RecipeUnlockOffset = new(
-            "Recipe rank requirement", Craft, 327, 331,
+            "Recipe rank requirement", Craft, 374, 377,
             "var requiredRank = recipe.Level - RecipeSkillUnlockOffset;", "return Math.Max(requiredRank, 0);");
 
         public static readonly SourceReference GearStats = new(
-            "Crafting gear stats", EquipmentStats, 929, 1075,
+            "Crafting gear stats", EquipmentStats, 929, 1125,
             "Stat.AdjustControl(dbPlayer, skillType, amount);", "Stat.AdjustCraftsmanship(dbPlayer, skillType, amount);",
             "Stat.AdjustCPBonus(dbPlayer, skillType, amount);", "GetItemPropertyCostTableValue(ip)");
 
@@ -96,7 +96,7 @@ namespace SWLOR.CraftSim.Legacy
             "random.Next(1, ProspectingRules.PoolDie + 1)");
 
         public static readonly SourceReference HarvestXp = new(
-            "Harvest XP", GatheringLevels, 20, 23,
+            "Harvest XP", GatheringLevels, 21, 24,
             "LevelsPerTier * (Math.Max(1, tier) - 1) + FirstTierLevel", "Skill.GetDeltaXP(ForTier(tier) - gatheringRank)");
 
         // The scavenge rules live in Quick Search now, which plays today's search at the parity reference (Perception modifier 0). The
@@ -117,31 +117,31 @@ namespace SWLOR.CraftSim.Legacy
             "success ? deltaXp : deltaXp / 4", "dc += random.Next(1, 4);");
 
         public static readonly SourceReference ScavengeXp = new(
-            "Scavenge XP level", ScavengeSite, 93, 93,
+            "Scavenge XP level", ScavengeSite, 108, 108,
             "Skill.GetDeltaXP(10 * requiredLevel - rank),");
 
         public static readonly SourceReference RefineryOres = new(
-            "Ore tiers and XP per unit", Refinery, 35, 52,
+            "Ore tiers and XP per unit", Refinery, 36, 53,
             "{\"raw_veldite\", new OreDetail(1, \"ref_veldite\", 25)}", "{\"raw_scordspar\", new OreDetail(2, \"ref_scordspar\", 50)}",
             "{\"raw_plagionite\", new OreDetail(3, \"ref_plagionite\", 75)}", "{\"raw_keromber\", new OreDetail(4, \"ref_keromber\", 100)}",
             "{\"raw_jasioclase\", new OreDetail(5, \"ref_jasioclase\", 125)}", "{\"raw_arkoxit\", new OreDetail(5, \"ref_arkoxit\", 150)}");
 
         public static readonly SourceReference RefineryBatch = new(
-            "Refinery batch size", Refinery, 61, 61,
+            "Refinery batch size", Refinery, 62, 62,
             "private const int BaseItemsRefinedPerCore = 3;");
 
         public static readonly SourceReference RefineryCores = new(
-            "Power cores per batch", Refinery, 172, 177,
+            "Power cores per batch", Refinery, 173, 178,
             "BaseItemsRefinedPerCore + Math.Max(0, refineryManagementLevel)", "(int)Math.Ceiling(itemCount / (float)Math.Max(1, itemsPerCore))");
 
         // Refining pays each ore's flat XP times the rank's share of the curve (GatheringLevels.RefiningXp), not the flat XP alone.
         public static readonly SourceReference RefineryXp = new(
-            "Refining XP", Refinery, 356, 360,
+            "Refining XP", Refinery, 365, 369,
             "xp += GatheringLevels.RefiningXp(refinedItem.XPGranted, refinedItem.RequiredLevel, gatheringRank, stackSize);",
             "Skill.GiveSkillXP(Player, SkillType.Gathering, xp, false, false);");
 
         public static readonly SourceReference FishingXp = new(
-            "Fishing XP per bite", FishingFight, 58, 68,
+            "Fishing XP per bite", FishingFight, 62, 72,
             "Skill.GetDeltaXP(bite.Fish.Level - bite.Rank)");
 
         public static readonly IReadOnlyList<SourceReference> All = new[]

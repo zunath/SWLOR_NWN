@@ -7,11 +7,10 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.ConversationService;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.Engine;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 
@@ -223,8 +222,7 @@ public static class StarshipDockReturnEngineTests
         return property;
     }
 
-    private static void RunCleanUpData() =>
-        typeof(Property).GetMethod("CleanUpData", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
+    private static void RunCleanUpData() => PropertyCaches.CleanUpData();
 
     private static Task Restart(EngineTestContext ctx, PlayerAbilityFixture actor) =>
         ctx.ExecuteInCreatureContextAsync(actor.Creature, RunCleanUpData);
@@ -282,8 +280,7 @@ public static class StarshipDockReturnEngineTests
 
     private static Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> InstallWindows(PlayerAbilityFixture actor)
     {
-        var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-            .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+        var windows = GuiInternals.PlayerWindows();
         windows.Add(actor.Id, new Dictionary<GuiWindowType, GuiPlayerWindow>());
         foreach (var type in new[] { GuiWindowType.Conversation, GuiWindowType.ShipManagement })
         {

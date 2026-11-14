@@ -11,7 +11,7 @@ namespace SWLOR.NWN.API.NWScript
         /// <returns>The orientation value</returns>
         public static float GetFacingFromLocation(Location lLocation)
         {
-            return global::NWN.Core.NWScript.GetFacingFromLocation(lLocation);
+            return NWScriptRuntime.Current.GetFacingFromLocation(lLocation);
         }
     }
 }

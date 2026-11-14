@@ -3,8 +3,8 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -16,7 +16,7 @@ public class DroidInstructionMigrationTests
     [Test]
     public void HistoricalInstructionsDoNotBecomeDifferentAbilitiesWhenAnIdIsReused()
     {
-        var method = typeof(SWLOR.Game.Server.Service.Migration).Assembly
+        var method = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly
             .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ObsoleteItemMigration")!
             .GetMethod("RemoveReassignedDroidPerks", BindingFlags.NonPublic | BindingFlags.Static)!;
         var perks = new List<DroidPerk> { new((PerkType)23, 1), new(PerkType.MedKit, 2) };
@@ -33,7 +33,7 @@ public class DroidInstructionMigrationTests
     [Test]
     public void MissingHistoricalInstructionListNeedsNoChange()
     {
-        var method = typeof(SWLOR.Game.Server.Service.Migration).Assembly
+        var method = typeof(SWLOR.Game.Server.Domain.Foundation.MigrationService).Assembly
             .GetType("SWLOR.Game.Server.Feature.MigrationDefinition.ObsoleteItemMigration")!
             .GetMethod("RemoveReassignedDroidPerks", BindingFlags.NonPublic | BindingFlags.Static)!;
         method.Invoke(null, new object?[] { null }).Should().Be(false);

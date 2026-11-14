@@ -15,8 +15,11 @@ public class ItemStackReductionTests
     [OneTimeSetUp]
     public void CompileProductionReduceItemStack()
     {
-        var method = ReadSource("Service/Item.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var method = ReadSource("Domain/Items/ItemService.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(m => m.Identifier.ValueText == "ReduceItemStack");
+        // The converted service's instance method runs here as a static member, its injected recorder as the stand-in.
+        var methodText = method.ToFullString().Replace("public bool ReduceItemStack", "public static bool ReduceItemStack")
+            .Replace("_combatRecorder.", "CombatRecorder.");
         var source = $$"""
             using System;
             using System.Collections.Generic;
@@ -38,7 +41,7 @@ public class ItemStackReductionTests
             }
             public static class Item
             {
-                {{method}}
+                {{methodText}}
             }
             public static class Harness
             {

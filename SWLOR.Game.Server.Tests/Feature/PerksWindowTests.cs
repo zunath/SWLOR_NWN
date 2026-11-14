@@ -4,8 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Feature.PerkDefinition;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -71,13 +70,15 @@ public class PerksWindowTests
         var perkSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Perk.cs"));
+            "Domain",
+            "Character",
+            "PerkService.cs"));
         var recastSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Service",
-            "Recast.cs"));
+            "Domain",
+            "Combat",
+            "RecastService.cs"));
 
         viewModelSource.Should().Contain("selectedDetails += $\"[{categoryDetail.Name}]\\n\";");
         viewModelSource.Should().Contain("var recastGroupText = BuildRecastGroupText(detail);");
@@ -91,10 +92,10 @@ public class PerksWindowTests
         var recastMethodEnd = viewModelSource.IndexOf("private (bool meetsRequirements,", recastMethodStart, StringComparison.Ordinal);
         viewModelSource[recastMethodStart..recastMethodEnd].Should().NotContain("string.Join",
             "the recast display must use one active ability group rather than joining every granted feat");
-        perkSource.Should().Contain("private static readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk");
-        perkSource.Should().Contain("public static RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)");
-        recastSource.Should().Contain("private static readonly Dictionary<RecastGroup, string> _recastNames");
-        recastSource.Should().Contain("private static readonly HashSet<RecastGroup> _visibleRecastGroups");
+        perkSource.Should().Contain("private readonly Dictionary<PerkType, RecastGroup> _activeAbilityRecastGroupByPerk");
+        perkSource.Should().Contain("public RecastGroup GetActiveAbilityRecastGroup(PerkType perkType)");
+        recastSource.Should().Contain("private readonly Dictionary<RecastGroup, string> _recastNames");
+        recastSource.Should().Contain("private readonly HashSet<RecastGroup> _visibleRecastGroups");
 
         var categoryIndex = viewModelSource.IndexOf("selectedDetails += $\"[{categoryDetail.Name}]\\n\";");
         var recastIndex = viewModelSource.IndexOf("var recastGroupText = BuildRecastGroupText(detail);");

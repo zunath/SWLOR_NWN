@@ -5,8 +5,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -88,8 +87,8 @@ public static partial class MigrationEngineTests
         // Login rebuilds max FP, max STM and Evasion from worn gear, so start from records the gear explains.
         fixture.Update(record =>
         {
-            record.MaxFP = Stat.BaseFP;
-            record.MaxStamina = Stat.BaseSTM;
+            record.MaxFP = StatService.BaseFP;
+            record.MaxStamina = StatService.BaseSTM;
             record.Evasion = 0;
         });
         await ctx.ExecuteInCreatureContextAsync(player, () => Stat.RefreshPlayerEquipmentStats(player));

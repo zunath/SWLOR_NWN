@@ -1,10 +1,9 @@
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Legacy.Gathering;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
-using SWLOR.Game.Server.Service.ScavengeService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
 
 namespace SWLOR.CraftSim.Search
 {

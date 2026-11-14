@@ -2,9 +2,9 @@ using System.Numerics;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.TelegraphService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -236,11 +236,10 @@ public class AreaShapeElevationTests
         float lengthOrRadius,
         float width)
     {
-        var method = typeof(Ability)
-            .GetMethod("IsPositionInCombatImpactShape", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = AbilityInternals.Method("IsPositionInCombatImpactShape");
 
         return (bool)method.Invoke(
-            null,
+            AbilityInternals.NoNeighbours(),
             new object[]
             {
                 position,
@@ -254,8 +253,8 @@ public class AreaShapeElevationTests
 
     private static bool InvokeTelegraphShape(Vector3 position, TelegraphType shape, Vector2 size)
     {
-        var method = typeof(Telegraph)
-            .GetMethod("IsPositionInTelegraph", BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = typeof(SWLOR.Game.Server.Domain.Combat.TelegraphService)
+            .GetMethod("IsPositionInTelegraph", BindingFlags.Instance | BindingFlags.NonPublic)!;
         var data = new TelegraphData
         {
             Shape = shape,
@@ -264,6 +263,7 @@ public class AreaShapeElevationTests
             Size = size
         };
 
-        return (bool)method.Invoke(null, new object[] { position, data })!;
+        // The shape tests use neither the DM presence nor the party service.
+        return (bool)method.Invoke(new SWLOR.Game.Server.Domain.Combat.TelegraphService(null!, null!), new object[] { position, data })!;
     }
 }

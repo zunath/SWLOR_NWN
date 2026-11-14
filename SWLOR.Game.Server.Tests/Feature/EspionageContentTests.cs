@@ -1,8 +1,8 @@
 using System.Text.Json;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.ItemDefinition;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Tests.Feature;

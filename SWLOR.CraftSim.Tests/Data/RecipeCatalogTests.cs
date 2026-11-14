@@ -2,7 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Data
 {

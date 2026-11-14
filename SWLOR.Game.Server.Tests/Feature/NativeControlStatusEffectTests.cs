@@ -1,13 +1,30 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class NativeControlStatusEffectTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void StatusEffectBase_CentralizesNativeEffectTags()
     {
@@ -15,14 +32,15 @@ public class NativeControlStatusEffectTests
         var statusEffectBase = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "StatusEffectService",
+            "Domain",
+            "Character",
             "StatusEffectBase.cs"));
         var statusEffectService = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "StatusEffect.cs"));
+            "Domain",
+            "Character",
+            "StatusEffectService.cs"));
 
         statusEffectBase.Should().Contain("protected Effect TagNativeEffect");
         statusEffectBase.Should().Contain("void RemoveNativeEffects");
@@ -132,13 +150,14 @@ public class NativeControlStatusEffectTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
+            "Domain",
+            "Abilities",
+            "AbilityService.cs"));
         var methodStart = abilitySource.IndexOf(
-            "private static void ApplyTemporaryImmunitySingle(",
+            "private void ApplyTemporaryImmunitySingle(",
             StringComparison.Ordinal);
         var methodEnd = abilitySource.IndexOf(
-            "public static bool HasTemporaryImmunity(",
+            "public bool HasTemporaryImmunity(",
             methodStart,
             StringComparison.Ordinal);
         methodStart.Should().BeGreaterThanOrEqualTo(0);
@@ -174,9 +193,10 @@ public class NativeControlStatusEffectTests
         var abilitySource = File.ReadAllText(Path.Combine(
             root,
             "SWLOR.Game.Server",
-            "Service",
-            "Ability.cs"));
-        var method = ExtractMethod(abilitySource, "public static void ApplyPostControlImmunity(");
+            "Domain",
+            "Abilities",
+            "AbilityService.cs"));
+        var method = ExtractMethod(abilitySource, "public void ApplyPostControlImmunity(");
 
         method.Should().Contain(
             "TemporaryImmunityBaseDurationSeconds - Math.Max(0f, secondsSinceControlEnded)");
@@ -262,7 +282,7 @@ public class NativeControlStatusEffectTests
                 "stacks during its duration or blocks without ever releasing");
         }
 
-        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"))
+        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"))
             .Should().Contain("HasActiveHardCrowdControlStatus(target)",
                 "the shared immunity gate must treat an active hard-CC status as immunity");
     }

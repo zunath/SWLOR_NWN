@@ -3,13 +3,14 @@ using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -446,7 +447,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
                 if (!Item.TryAcquireItem(Player, item))
                 {
-                    Instructions = Item.InventoryFullShortMessage;
+                    Instructions = ItemService.InventoryFullShortMessage;
                     InstructionColor = GuiColor.Red;
                     return;
                 }

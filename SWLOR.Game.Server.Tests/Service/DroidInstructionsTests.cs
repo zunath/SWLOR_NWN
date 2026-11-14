@@ -1,17 +1,33 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.AIDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Creatures;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
-public class DroidInstructionsTests
+public class DroidInstructionsTests : SkillFacadeFixture
 {
+    // Building the default AI profiles asks the StatusEffect facade which effects are stances.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private DroidPerkCacheScope _perks;
 
     [SetUp]
@@ -74,7 +90,7 @@ public class DroidInstructionsTests
     [Test]
     public void EveryInstructionRankGrantsARegisteredCompanionAbility()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var abilities = Ability.GetAllAbilityDetails();
         var actions = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion]
             .Actions.Where(action => action.Type == AIActionType.Ability).Select(action => action.Feat).ToHashSet();
@@ -117,7 +133,7 @@ public class DroidInstructionsTests
     [Test]
     public void CapstonesCannotBeUploadedOrSelectedFromSavedDroidInstructions()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var capstones = Ability.GetAllAbilityDetails().Values
             .Where(ability => ability.RecastGroup == RecastGroup.Capstone)
             .Select(ability => ability.EffectiveLevelPerkType)
@@ -144,7 +160,7 @@ public class DroidInstructionsTests
     [Test]
     public void LeadershipForceAndPassiveWeaponTraitsRemainUnavailable()
     {
-        Ability.CacheData();
+        AbilityCache.Load();
         var abilities = Ability.GetAllAbilityDetails();
         foreach (var (perk, detail) in Perk.GetAllPerks())
         foreach (var (rank, level) in detail.PerkLevels)

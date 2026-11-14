@@ -1,0 +1,543 @@
+using System.Reflection;
+using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Composition;
+
+namespace SWLOR.Game.Server.Tests.Service;
+
+/// <summary>
+/// Proves <see cref="CombatSource"/> and <see cref="CombatMembers"/> keep the source-reading and reflection tests of
+/// <c>Combat</c> honest while it is split: the two rewrites restore only what a move changes, and a changed condition, a
+/// removed call or a different argument still fails a needle.
+/// </summary>
+[TestFixture]
+public class CombatSourceTests
+{
+    private static readonly string PartService = Lines(
+        "namespace SWLOR.Game.Server.Domain.Combat",
+        "{",
+        "    public class CombatFooService : ICombatFooService",
+        "    {",
+        "        private const int Limit = 5;",
+        "        private readonly ICombatQueriesService _queries;",
+        "        private readonly IOtherService _other;",
+        "",
+        "        public CombatFooService(ICombatQueriesService queries, IOtherService other)",
+        "        {",
+        "            _queries = queries;",
+        "            _other = other;",
+        "        }",
+        "",
+        "        private int Compute(uint creature, int damage)",
+        "        {",
+        "            if (damage > 10)",
+        "                return _queries.GetWeapon(creature, damage);",
+        "            _other.GetWeapon(creature);",
+        "            return _queries.Fallback<int>(creature) + Limit;",
+        "        }",
+        "",
+        "        public virtual void Hook() { }",
+        "        public override string ToString() => string.Empty;",
+        "        private static int AlreadyStatic() => 1;",
+        "        public int Bonus { get; }",
+        "        protected internal int Wide(int value) => value;",
+        "",
+        "        private sealed class Nested",
+        "        {",
+        "            public int Inner() => 1;",
+        "        }",
+        "    }",
+        "}");
+
+    private static string Lines(params string[] lines) => string.Join("\r\n", lines) + "\r\n";
+
+    private static string Normalised(string? text = null) => CombatSource.Normalise(text ?? PartService, "CombatFooService");
+
+    [Test]
+    public void StaticIsRestoredOnMembersAtMemberIndentation()
+    {
+        var text = Normalised();
+
+        text.Should().Contain("        private static int Compute(uint creature, int damage)");
+        text.Should().Contain("        public static int Bonus { get; }");
+        text.Should().Contain("        private static int AlreadyStatic() => 1;");
+        text.Should().NotContain("static static");
+    }
+
+    [Test]
+    public void StaticIsNotAddedWhereTheMoveDidNotRemoveIt()
+    {
+        var text = Normalised();
+
+        text.Should().Contain("        private const int Limit = 5;");
+        text.Should().Contain("        public CombatFooService(ICombatQueriesService queries, IOtherService other)");
+        text.Should().Contain("        private readonly ICombatQueriesService _queries;");
+        text.Should().Contain("        private readonly IOtherService _other;");
+        text.Should().Contain("        public virtual void Hook() { }");
+        text.Should().Contain("        public override string ToString() => string.Empty;");
+        text.Should().Contain("            public int Inner() => 1;", "members of a nested type are left alone");
+    }
+
+    [Test]
+    public void ACallThroughAnInjectedPartLosesItsReceiver()
+    {
+        var text = Normalised();
+
+        text.Should().Contain("                return GetWeapon(creature, damage);");
+        text.Should().Contain("            return Fallback<int>(creature) + Limit;");
+        text.Should().Contain("            _queries = queries;", "an assignment is not a call");
+    }
+
+    [Test]
+    public void ACallOnAnythingElseKeepsItsReceiver()
+    {
+        Normalised().Should().Contain("            _other.GetWeapon(creature);",
+            "only fields declared as an ICombat...Service in the same file are rewritten");
+    }
+
+    [Test]
+    public void TheRealSourceHoldsAMovedMemberOnceWithItsBody()
+    {
+        var source = CombatSource.Read();
+
+        Occurrences(source, "uint GetRelevantSkillWeapon(").Should().Be(1);
+        Occurrences(source, "bool TryUseStatTrigger(").Should().Be(2, "it has two overloads");
+        CombatSource.Method("GetRelevantSkillWeapon").Body.Should().NotBeNull("the one declaration left is the body");
+    }
+
+    private static int Occurrences(string text, string needle)
+    {
+        var count = 0;
+        for (var index = text.IndexOf(needle, StringComparison.Ordinal); index >= 0; index = text.IndexOf(needle, index + 1, StringComparison.Ordinal))
+            count++;
+        return count;
+    }
+
+    [Test]
+    public void ACallOnACombatServiceThatIsNotAPartKeepsItsReceiver()
+    {
+        var text = Lines(
+            "        private readonly ICombatRecorderService _combatRecorder;",
+            "        private readonly ICombatPointService _combatPoint;",
+            "        private void Record(uint creature)",
+            "        {",
+            "            using var scope = _combatRecorder.BeginRiderAttribution(creature, 1);",
+            "            _combatPoint.AddCombatPoint(creature);",
+            "        }");
+
+        var normalised = Normalised(text);
+
+        normalised.Should().Contain("using var scope = _combatRecorder.BeginRiderAttribution(creature, 1);",
+            "CombatRecorder converted on its own, so the move did not take its facade's name away");
+        normalised.Should().Contain("_combatPoint.AddCombatPoint(creature);");
+    }
+
+    [Test]
+    public void AReceiverIsOnlyRemovedFromAFieldThisFileDeclares()
+    {
+        var text = Lines(
+            "        private int Compute()",
+            "        {",
+            "            return _queries.GetWeapon(1);",
+            "        }");
+
+        Normalised(text).Should().Contain("_queries.GetWeapon(1)");
+    }
+
+    [Test]
+    public void ALongerNameDoesNotLoseItsPrefixByAccident()
+    {
+        var text = Lines(
+            "        private readonly ICombatQueriesService _queries;",
+            "        private int Compute()",
+            "        {",
+            "            return my_queries.GetWeapon(1) + _queries2.Other(2) + x._queries.Third(3);",
+            "        }");
+
+        Normalised(text).Should().Contain("return my_queries.GetWeapon(1) + _queries2.Other(2) + x._queries.Third(3);");
+    }
+
+    [Test]
+    public void ANeedleFromTheOriginalStillMatchesTheMovedBody()
+    {
+        var original = "if (damage > 10)\r\n                return GetWeapon(creature, damage);";
+
+        Normalised().Should().Contain(original);
+    }
+
+    [Test]
+    public void AChangedConditionStillFailsTheNeedle()
+    {
+        var changed = PartService.Replace("damage > 10", "damage > 11");
+
+        Normalised(changed).Should().NotContain("if (damage > 10)");
+    }
+
+    [Test]
+    public void ARemovedCallStillFailsTheNeedle()
+    {
+        var removed = PartService.Replace("                return _queries.GetWeapon(creature, damage);", "                return 0;");
+
+        Normalised(removed).Should().NotContain("GetWeapon(creature, damage)");
+    }
+
+    [Test]
+    public void ACallMovedToAnotherReceiverStillFailsAnExactNeedle()
+    {
+        var moved = PartService.Replace("return _queries.GetWeapon(creature, damage);", "return _other.GetWeapon(creature, damage);");
+
+        Normalised(moved).Should().NotContain("return GetWeapon(creature, damage);");
+    }
+
+    [Test]
+    public void ADifferentArgumentStillFailsTheNeedle()
+    {
+        var changed = PartService.Replace("GetWeapon(creature, damage)", "GetWeapon(creature, damage + 1)");
+
+        Normalised(changed).Should().NotContain("GetWeapon(creature, damage);");
+    }
+
+    [Test]
+    public void ALineEndingIsKept()
+    {
+        var text = "        private int A()\n        {\n            return _q.B();\n        }\n";
+
+        Normalised(text).Should().Be("        private static int A()\n        {\n            return _q.B();\n        }\n");
+    }
+
+    [Test]
+    public void CombinedSourceReadsThePartServices()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "mr-p2-cb0-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var server = Path.Combine(root, "SWLOR.Game.Server");
+            Write(server, "Service/Combat.cs", "FACADE\r\n");
+            Write(server, "Service/CombatParts/Combat.Activity.cs", "PARTIAL\r\n");
+            Write(server, "Domain/Combat/CombatRules.cs", "RULES");
+            Write(server, "Domain/Combat/CombatFooService.cs", PartService);
+            Write(server, "Domain/Combat/ICombatFooService.cs", "INTERFACE\r\n");
+            Write(server, "Domain/Combat/CombatPointService.cs", "OTHER SERVICE\r\n");
+            Write(server, "Domain/Combat/CombatRecordWriter.cs", "NOT A SERVICE\r\n");
+            Write(server, "Domain/Combat/StealthService.cs", "ANOTHER\r\n");
+
+            var files = CombatSource.Load(root);
+
+            files.Select(file => Path.GetFileName(file.FullPath)).Should().Equal(
+                new[] { "CombatFooService.cs", "CombatRules.cs" },
+                "P2-ZP deleted Service/Combat.cs and the partial class files are gone, so a stray one is not read");
+            var text = CombatSource.Combine(files);
+            text.Should().NotContain("FACADE").And.NotContain("PARTIAL");
+            text.Should().Contain("private static int Compute(uint creature, int damage)");
+            text.Should().Contain("RULES\r\n", "a file without a final line break still ends one");
+            text.Should().NotContain("INTERFACE").And.NotContain("OTHER SERVICE").And.NotContain("NOT A SERVICE").And.NotContain("ANOTHER");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public void TheRealSourceIsThePartServicesWithoutTheRemovedFacade()
+    {
+        CombatSource.Paths().Should().NotContain(path => Path.GetFileName(path) == "Combat.cs");
+        Path.GetFileName(CombatSource.Paths()[0]).Should().Be("CombatAbilityActivationService.cs");
+        var source = CombatSource.Read();
+        source.Should().Contain("public static int CalculateHitRate(");
+        source.Should().Contain("uint GetRelevantSkillWeapon(");
+        source.Should().Contain("void RefreshStatDrivenTrackerEffects(");
+        CombatSource.IsCombatFile(CombatSource.Paths()[0]).Should().BeTrue();
+    }
+
+    [Test]
+    public void TheServicesThatAreNotPartsOfCombatExistAndAreNotRead()
+    {
+        var domain = Path.GetDirectoryName(CombatSource.Paths()[0])!;
+
+        foreach (var name in CombatParts.OtherServices)
+        {
+            File.Exists(Path.Combine(domain, name + ".cs")).Should().BeTrue($"{name} is a service of its own, so the exclusion is still needed");
+            CombatSource.IsCombatFile(Path.Combine(domain, name + ".cs")).Should().BeFalse();
+        }
+    }
+
+    [Test]
+    public void TheTreesFindAMethodAndItsCallsAcrossTheFiles()
+    {
+        CombatSource.Trees().Should().NotBeEmpty();
+        CombatSource.Method("ApplyAutoAttackSplashEffects").Identifier.Text.Should().Be("ApplyAutoAttackSplashEffects");
+        CombatSource.Nodes<InvocationExpressionSyntax>().Should().NotBeEmpty();
+    }
+
+    [TestCase("CombatQueriesService", true)]
+    [TestCase("CombatService", true)]
+    [TestCase("CombatRules", true)]
+    [TestCase("CombatPointService", false)]
+    [TestCase("CombatRecorderService", false)]
+    [TestCase("ICombatQueriesService", false)]
+    [TestCase("PvpCombatService", false)]
+    [TestCase("CombatRecordWriter", false)]
+    public void PartTypeNamesFollowTheSplitPlan(string name, bool isPart)
+    {
+        CombatParts.IsPartTypeName(name).Should().Be(isPart);
+    }
+
+    [Test]
+    public void ReflectionFindsThePrivateMembersTheTestsUse()
+    {
+        CombatMembers.FindMethod("CalculateResourceRestoreFromCost").Should().NotBeNull();
+        CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int)).Should().NotBeNull();
+        CombatMembers.FindField("_attackSwingDebts").Should().NotBeNull();
+        CombatMembers.FindField("_lastAttackActivity").Should().NotBeNull();
+        CombatMembers.FindField("_lastCombatAbilityUse").Should().NotBeNull();
+    }
+
+    [Test]
+    public void ReflectionReachesTheTimingAndActivityTablesOfTheInstalledContainer()
+    {
+        // CombatAttackDelayTests reads the swing debts and RifleIdleReadinessEngineTests the activity records this way.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+        const BindingFlags Instance = BindingFlags.NonPublic | BindingFlags.Instance;
+
+        var debts = CombatMembers.FieldValue<Dictionary<uint, float>>("_attackSwingDebts");
+        ((object)debts).Should().BeSameAs(typeof(CombatAttackTimingService).GetField("_attackSwingDebts", Instance)!
+            .GetValue(facades.Get<ICombatAttackTimingService>()));
+        var attacks = CombatMembers.FieldValue<Dictionary<uint, DateTime>>("_lastAttackActivity");
+        ((object)attacks).Should().BeSameAs(typeof(CombatActivityService).GetField("_lastAttackActivity", Instance)!
+            .GetValue(facades.Get<ICombatActivityService>()));
+        var abilities = CombatMembers.FieldValue<Dictionary<uint, DateTime>>("_lastCombatAbilityUse");
+        ((object)abilities).Should().BeSameAs(typeof(CombatActivityService).GetField("_lastCombatAbilityUse", Instance)!
+            .GetValue(facades.Get<ICombatActivityService>()));
+
+        GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(0xFFFFFFF1, 1500);
+        debts.Should().ContainKey(0xFFFFFFF1, "the facade and the reflected table are the same instance's");
+        GameServices.CombatAttackTiming.ClearAttackSwingDebt(0xFFFFFFF1);
+        debts.Should().NotContainKey(0xFFFFFFF1);
+    }
+
+    [TestCase("_autoAttackCycleCriticalCounts")]
+    [TestCase("_repeatedTargetDamageStates")]
+    [TestCase("_meleeRepeatedTargetDamageStates")]
+    [TestCase("_rangedRepeatedTargetDamageStates")]
+    [TestCase("_sameTargetPressureStates")]
+    public void ReflectionReachesTheDamageModifierTablesOfTheInstalledContainer(string name)
+    {
+        // The damage modifier stacks moved from static fields of Combat to the instance; a test that reads one by name
+        // gets the installed container's table.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.DeclaringType.Should().Be(typeof(CombatDamageModifiersService));
+        CombatMembers.FieldValue<object>(name).Should().BeSameAs(field.GetValue(facades.Get<ICombatDamageModifiersService>()));
+    }
+
+    [TestCase("_criticalHitSequenceStates", typeof(CombatHitEffectsService))]
+    [TestCase("_autoAttackCycleCounts", typeof(CombatHitEffectsService))]
+    [TestCase("_sourceStatusAutoAttackCycleCounts", typeof(CombatHitEffectsService))]
+    [TestCase("_meleeAutoAttackCycleCounts", typeof(CombatHitEffectsService))]
+    [TestCase("MimicryTraitProcs", typeof(CombatHitEffectsService))]
+    [TestCase("_abilityHitResolutionOverride", typeof(CombatAbilityHitService))]
+    [TestCase("_autoAttackHitResolutionOverride", typeof(CombatAbilityHitService))]
+    public void ReflectionReachesTheHitTablesAndOverridesOfTheInstalledContainer(string name, Type owner)
+    {
+        // The hit effect tables, the proc table and the two test overrides of the hit rolls moved from static fields of Combat
+        // to the instance; a test that reads one by name gets the installed container's.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.IsInitOnly.Should().Be(!name.EndsWith("Override", StringComparison.Ordinal), "only the test overrides are written after construction");
+        field.DeclaringType.Should().Be(owner);
+        object instance = owner == typeof(CombatHitEffectsService)
+            ? facades.Get<ICombatHitEffectsService>()
+            : facades.Get<ICombatAbilityHitService>();
+        if (field.FieldType.IsValueType)
+            CombatMembers.FieldValue<object>(name).Should().Be(field.GetValue(instance));
+        else
+            CombatMembers.FieldValue<object>(name).Should().BeSameAs(field.GetValue(instance));
+    }
+
+    [TestCase("_recentGuardedHits")]
+    [TestCase("_recentDeflections")]
+    public void ReflectionReachesTheDamageTakenTablesOfTheInstalledContainer(string name)
+    {
+        // The recent guarded hits and deflections moved from static fields of Combat to the instance; a test that reads one by
+        // name gets the installed container's table, which Combat's forwarders write.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.IsInitOnly.Should().BeTrue();
+        field.DeclaringType.Should().Be(typeof(CombatDamageTakenService));
+        var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
+        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatDamageTakenService>()));
+
+        // A record put into the reflected table is the one Combat's forwarder reads.
+        var engine = new SWLOR.NWN.API.Testing.FakeNWScript();
+        engine.SetReturn("GetIsObjectValid", true);
+        using var runtime = SWLOR.NWN.API.NWScript.NWScriptRuntime.Override(engine);
+        const uint creature = 0xFFFFFFF2;
+        const SWLOR.Game.Server.Domain.Combat.DeflectionSource shield = SWLOR.Game.Server.Domain.Combat.DeflectionSource.Shield;
+        if (name == "_recentGuardedHits")
+        {
+            table[creature] = SWLOR.Game.Server.Core.Clock.UtcNow;
+            GameServices.CombatDamageTaken.HasRecentGuardedHit(creature, 6f).Should().BeTrue();
+        }
+        else
+        {
+            table[(creature, shield)] = SWLOR.Game.Server.Core.Clock.UtcNow;
+            GameServices.CombatDamageTaken.HasRecentDeflection(creature, shield, 6f).Should().BeTrue();
+        }
+    }
+
+    [TestCase("_sameTargetHostileAbilityHitCounts")]
+    [TestCase("_areaAbilityTargetHitSequences")]
+    public void ReflectionReachesTheImpactTablesOfTheInstalledContainer(string name)
+    {
+        // The same-target hit counts and the area ability hit sequences moved from static fields of Combat to the instance; a
+        // test that reads one by name gets the installed container's table, which Combat's forget forwarder clears.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.IsInitOnly.Should().BeTrue();
+        field.DeclaringType.Should().Be(typeof(CombatAbilityImpactService));
+        var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
+        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatAbilityImpactService>()));
+
+        // The hit sequence state moved with its table; Combat keeps no copy of the type either.
+        var value = name == "_sameTargetHostileAbilityHitCounts"
+            ? (object)1
+            : Activator.CreateInstance(typeof(CombatAbilityImpactService).GetNestedType("TargetHitSequenceState", BindingFlags.NonPublic)!)!;
+
+        // A record put into the reflected table is the one the part's forget step clears.
+        const uint creature = 0xFFFFFFF3;
+        table[(creature, 0xFFFFFFF4u)] = value;
+        table[(0xFFFFFFF5u, 0xFFFFFFF6u)] = value;
+        CombatMembers.FindMethod("ForgetImpactState")!.IsStatic.Should().BeFalse("it is the part's instance method");
+        CombatMembers.Invoke("ForgetImpactState", creature);
+        table.Keys.Cast<(uint, uint)>().Should().Equal((0xFFFFFFF5u, 0xFFFFFFF6u));
+    }
+
+    [TestCase("GetAreaAbilityPulseSources")]
+    [TestCase("GetAreaAbilityFragmentationStatAdjustment")]
+    [TestCase("ApplyAreaAbilityPulse")]
+    public void ReflectionReachesTheImpactPartsPrivateHelpersOnTheInstalledContainer(string name)
+    {
+        // AreaAbilityFragmentationTests and StatAdjustmentSourceTests call these by name; they are private members of the
+        // impact part now, with no forwarder on Combat, and CombatMembers calls them on the installed container's instance.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        var method = CombatMembers.FindMethod(name);
+        method.Should().NotBeNull();
+        method!.IsStatic.Should().BeFalse("only the impact part has it");
+        method.IsPrivate.Should().BeTrue();
+        method.DeclaringType.Should().Be(typeof(CombatAbilityImpactService));
+    }
+
+    [Test]
+    public void ReflectionReachesTheActivationSequenceTableOfTheInstalledContainer()
+    {
+        // The hostile ability sequence per activator moved from a static field of Combat to the ability activation part; a test
+        // that reads it by name gets the installed container's table, which Combat's forget forwarder clears.
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+        const string name = "_hostileAbilitySequenceStates";
+
+        var field = CombatMembers.FindField(name);
+        field.Should().NotBeNull();
+        field!.IsStatic.Should().BeFalse();
+        field.IsInitOnly.Should().BeTrue();
+        field.DeclaringType.Should().Be(typeof(CombatAbilityActivationService));
+        var table = CombatMembers.FieldValue<System.Collections.IDictionary>(name);
+        table.Should().BeSameAs(field.GetValue(facades.Get<ICombatAbilityActivationService>()));
+
+        // A record put into the reflected table is the one Combat's forget forwarder removes.
+        const uint creature = 0xFFFFFFF3;
+        var state = Activator.CreateInstance(field.FieldType.GetGenericArguments()[1], nonPublic: true)!;
+        table[creature] = state;
+        CombatMembers.CreateDelegate<Action<uint>>("ForgetActivationState", typeof(uint))(creature);
+        table.Contains(creature).Should().BeFalse();
+    }
+
+    [Test]
+    public void TheTestOverridesOfTheHitRollsAreTheInstalledContainersAndCombatSetsThem()
+    {
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+
+        GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
+        GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
+        try
+        {
+            CombatMembers.FieldValue<bool?>("_abilityHitResolutionOverride").Should().BeFalse();
+            CombatMembers.FieldValue<bool?>("_autoAttackHitResolutionOverride").Should().BeTrue();
+            GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride().Should().BeTrue();
+            facades.Get<ICombatAbilityHitService>().GetAutoAttackHitResolutionOverride().Should().BeTrue();
+        }
+        finally
+        {
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
+        }
+
+        CombatMembers.FieldValue<bool?>("_abilityHitResolutionOverride").Should().BeNull();
+        GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride().Should().BeNull();
+    }
+
+    [Test]
+    public void ReflectionReachesAPartsInstanceMembersInTheInstalledContainer()
+    {
+        using var facades = new FacadeContainer();
+        using var installed = facades.Install();
+        var resources = facades.Get<ICombatResourcesService>();
+
+        var cooldowns = CombatMembers.FieldValue<Dictionary<(uint, StatType), DateTime>>("_statTriggerCooldowns");
+        ((object)cooldowns).Should().BeSameAs(typeof(CombatResourcesService)
+            .GetField("_statTriggerCooldowns", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(resources));
+        CombatMembers.FindMethod("TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int))!.IsStatic.Should().BeFalse(
+            "it is the part's instance method");
+        var trigger = CombatMembers.CreateDelegate<Func<uint, StatType, int, bool>>(
+            "TryUseStatTrigger", typeof(uint), typeof(StatType), typeof(int));
+        trigger(0xFFFFFFF0, StatType.SideAttackSkillType, 30).Should().BeTrue();
+        cooldowns.Should().ContainKey((0xFFFFFFF0, StatType.SideAttackSkillType));
+
+        CombatMembers.FindMethod("IsWeaponOrForceAbility")!.IsStatic.Should().BeFalse("only the queries service has it");
+        CombatMembers.Invoke("IsWeaponOrForceAbility", SkillType.Force).Should().Be(true);
+        CombatMembers.CreateDelegate<Func<SkillType, bool>>("IsWeaponOrForceAbility")(SkillType.Mimicry).Should().BeFalse();
+        CombatMembers.Invoke("CalculateResourceRestoreFromCost", 10, 50).Should().Be(5, "a static member needs no instance");
+    }
+
+    [Test]
+    public void ReflectionReturnsNullForAMemberThatDoesNotExist()
+    {
+        CombatMembers.FindMethod("NoSuchMethod").Should().BeNull();
+        CombatMembers.FindField("_noSuchField").Should().BeNull();
+        var invoke = () => CombatMembers.FieldValue<int>("_noSuchField");
+        invoke.Should().Throw<MissingFieldException>();
+    }
+
+    private static void Write(string server, string relative, string text)
+    {
+        var path = Path.Combine(server, relative.Replace('/', Path.DirectorySeparatorChar));
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        File.WriteAllText(path, text);
+    }
+}

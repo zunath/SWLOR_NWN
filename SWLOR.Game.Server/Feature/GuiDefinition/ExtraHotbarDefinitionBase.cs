@@ -2,10 +2,8 @@ using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ExtraHotbarService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -23,8 +21,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             var window = _builder.CreateWindow(WindowType)
                 .SetInitialGeometry(ExtraHotbarViewModel.InitialX, InitialY,
-                    ExtraHotbarViewModel.GetWidth(ExtraHotbars.MaxSlots, ExtraHotbarLayout.Horizontal),
-                    ExtraHotbarViewModel.GetHeight(ExtraHotbars.MaxSlots, ExtraHotbarLayout.Horizontal, false))
+                    ExtraHotbarViewModel.GetWidth(ExtraHotbarsService.MaxSlots, ExtraHotbarLayout.Horizontal),
+                    ExtraHotbarViewModel.GetHeight(ExtraHotbarsService.MaxSlots, ExtraHotbarLayout.Horizontal, false))
                 .BindTitle(model => model.TitleBar)
                 .SetIsClosable(false)
                 .SetIsResizable(false)
@@ -36,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             // Hidden widgets still take up layout space, so each slot count gets a layout holding only those slots.
             foreach (var layout in System.Enum.GetValues<ExtraHotbarLayout>())
             {
-                for (var slotCount = 1; slotCount <= ExtraHotbars.MaxSlots; slotCount++)
+                for (var slotCount = 1; slotCount <= ExtraHotbarsService.MaxSlots; slotCount++)
                 {
                     var count = slotCount;
                     window.DefinePartialView(ExtraHotbarViewModel.SlotsPartial(layout, count),

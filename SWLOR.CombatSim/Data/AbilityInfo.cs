@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Data
@@ -9,13 +9,13 @@ namespace SWLOR.CombatSim.Data
     public sealed class AbilityInfo
     {
         public FeatType Feat { get; init; }
-        public SWLOR.Game.Server.Service.AbilityService.MeleeTechniqueDetail Technique { get; init; }
+        public SWLOR.Game.Server.Domain.Abilities.MeleeTechniqueDetail Technique { get; init; }
         public int? SourceWeaponPower { get; init; }
         public int ImpactStatusDuration { get; init; }
-        public Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect> ImpactStatusFactory { get; init; }
+        public Func<SWLOR.Game.Server.Domain.Character.IStatusEffect> ImpactStatusFactory { get; init; }
         public IReadOnlyList<Type> ImpactStatusTypes { get; init; } = Array.Empty<Type>();
         /// <summary>The source's configured instance of an impact status (Rending Strike's Exposed), when it supplies one.</summary>
-        public Func<SWLOR.Game.Server.Service.StatusEffectService.IStatusEffect> WeaponStatusFactory { get; init; }
+        public Func<SWLOR.Game.Server.Domain.Character.IStatusEffect> WeaponStatusFactory { get; init; }
         /// <summary>The skill the source passes to its combat impact; Rending Strike's definition itself declares none.</summary>
         public SkillType WeaponImpactSkillType { get; init; }
         /// <summary>Savage Cleave II-III restore STM per secondary target hit; the simulator refuses multi-target hits rather than guess the amount.</summary>
@@ -60,7 +60,7 @@ namespace SWLOR.CombatSim.Data
         public bool IsAimed { get; init; }
         public bool IsHealing { get; init; }
         public string ForceAffinity { get; init; }
-        public SWLOR.Game.Server.Service.CombatService.TwinPistolAbilitySpec TwinPistol { get; init; }
+        public SWLOR.Game.Server.Domain.Combat.TwinPistolAbilitySpec TwinPistol { get; init; }
 
         /// <summary>The ability keeps Cadence instead of spending it (Twin Pistol builders).</summary>
         public bool KeepsWeaponAbilityCadence { get; init; }

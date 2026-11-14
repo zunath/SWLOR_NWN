@@ -1,0 +1,22 @@
+{
+  "function": "Stat.GetBeastNaturalRegenAmount(int attribute)",
+  "description": "FP or stamina a beast restores per heartbeat: 1 plus one per ten points of the governing attribute (never negative).",
+  "seed": null,
+  "inputs": "attribute {-10,-1,0,1,9,10,11,19,20,55,100,999}.",
+  "rowCount": 12,
+  "columns": ["attribute", "=> amount"],
+  "rows": [
+    [-10, 1],
+    [-1, 1],
+    [0, 1],
+    [1, 1],
+    [9, 1],
+    [10, 2],
+    [11, 2],
+    [19, 2],
+    [20, 3],
+    [55, 6],
+    [100, 11],
+    [999, 100]
+  ]
+}

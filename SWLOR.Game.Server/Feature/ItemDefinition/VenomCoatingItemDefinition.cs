@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ItemService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
@@ -105,14 +106,14 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             var lines = new List<string>
             {
-                $"{Poisons.GetCoatingVenomDamagePerTick(tier)} poison damage every {VenomStatusEffect.TickIntervalSeconds}s"
+                $"{PoisonsCoatingTiers.GetVenomDamagePerTick(tier)} poison damage every {VenomStatusEffect.TickIntervalSeconds}s"
             };
 
             if (concentrated)
                 lines.Add($"+{ConcentratedDamageBonusPercent}% Venom damage");
 
-            lines.Add($"Venom lasts {Poisons.GetVenomDurationSeconds(tier):0}s");
-            lines.Add($"{(concentrated ? ConcentratedCharges : BaseCharges)} charges, 1 use per {Poisons.InternalCooldownSeconds}s");
+            lines.Add($"Venom lasts {PoisonsCoatingTiers.GetVenomDurationSeconds(tier):0}s");
+            lines.Add($"{(concentrated ? ConcentratedCharges : BaseCharges)} charges, 1 use per {PoisonsService.InternalCooldownSeconds}s");
 
             return lines;
         }

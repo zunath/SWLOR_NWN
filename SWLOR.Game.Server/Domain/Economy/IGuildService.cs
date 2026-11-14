@@ -1,0 +1,82 @@
+using System.Collections.Generic;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Domain.Quests;
+
+namespace SWLOR.Game.Server.Domain.Economy
+{
+    /// <summary>
+    /// The guilds, a player's guild points and rank, and the guild tasks on offer. Static callers reach
+    /// the container's instance of this interface through <c>GameServices.Guild</c>; the event handlers are on <see cref="GuildService"/>.
+    /// </summary>
+    public interface IGuildService
+    {
+        /// <summary>
+        /// The highest guild rank, set when the module caches.
+        /// </summary>
+        int MaxRank { get; }
+
+        /// <summary>
+        /// When the guild tasks on offer were chosen, or null before they have been.
+        /// </summary>
+        DateTime? DateTasksLoaded { get; }
+
+        /// <summary>
+        /// When the module caches, cache relevant data and load guild tasks.
+        /// </summary>
+        void LoadData();
+
+        /// <summary>
+        /// Retrieves a guild's detail by the specified type.
+        /// </summary>
+        /// <param name="guild">The type of guild to retrieve</param>
+        /// <returns>A guild detail.</returns>
+        GuildAttribute GetGuild(GuildType guild);
+
+        /// <summary>
+        /// Works out the guild points a player earns for a base amount, with their rank, perk and social bonuses.
+        /// </summary>
+        int CalculateGPReward(uint player, GuildType guild, int baseAmount);
+
+        /// <summary>
+        /// Gives guild points to a player, ranking them up when they have enough.
+        /// </summary>
+        void GiveGuildPoints(uint player, GuildType guild, int amount);
+
+        /// <summary>
+        /// After quests are registered, refresh the available guild tasks.
+        /// </summary>
+        void RefreshGuildTasks();
+
+        /// <summary>
+        /// Whether a guild's board hides a task the player completed since the tasks were loaded. Most guilds keep a completed
+        /// task off the board until the next server start; a guild marked <see cref="GuildAttribute.TasksRefreshAfterCompletion"/>
+        /// puts it back at once, so the player can take another task of the same tier.
+        /// </summary>
+        /// <param name="guild">The guild whose board is being built.</param>
+        /// <param name="dateLastCompleted">When the player last completed the task, or null if they have not.</param>
+        /// <param name="dateTasksLoaded">When the guild's tasks were loaded, or null before they are.</param>
+        bool IsCompletedTaskHidden(GuildType guild, DateTime? dateLastCompleted, DateTime? dateTasksLoaded);
+
+        /// <summary>
+        /// Retrieves quest details associated with the active guild tasks by rank.
+        /// </summary>
+        /// <param name="guild">The guild type to retrieve for</param>
+        /// <param name="rank">The rank to retrieve for</param>
+        /// <returns>A list of active guild tasks</returns>
+        List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank);
+
+        /// <summary>
+        /// Retrieves quest details associated with the active guild tasks.
+        /// </summary>
+        /// <param name="guild">The guild type to retrieve for</param>
+        /// <returns>A list of active guild tasks</returns>
+        Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild);
+
+        /// <summary>
+        /// Retrieves the GP required to reach next rank.
+        /// </summary>
+        /// <param name="rank">The rank to search by</param>
+        /// <returns>The amount of GP required to reach the next rank</returns>
+        int GetGPRequiredForRank(int rank);
+    }
+}

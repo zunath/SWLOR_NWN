@@ -1,9 +1,7 @@
 using NWN.Native.API;
 using SWLOR.Game.Server.Core.Extensions;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.FrameProfilerService;
-using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Core

@@ -7,11 +7,10 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.FrameProfilerService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using Vector3 = System.Numerics.Vector3;
 using Vector4 = System.Numerics.Vector4;
 
@@ -440,12 +439,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var actor = await PlayerAbilityFixture.CreateAsync(ctx);
             var created = new List<EntityBase>();
             var layout = Space.GetShipDetailByItemTag(ShipItemTag).Layout;
-            var entrances = (Dictionary<PropertyLayoutType, Vector4>)typeof(Property)
-                .GetField("_entrancesByLayout", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-            var instances = (Dictionary<string, PropertyInstance>)typeof(Property)
-                .GetField("_propertyInstances", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var entrances = PropertyCaches.EntrancesByLayout;
+            var instances = PropertyCaches.Instances;
+            var windows = GuiInternals.PlayerWindows();
             var originalEntrance = entrances[layout];
             var originalPropertyId = Property.GetPropertyId(ctx.Arena);
             var registeredInstances = new List<string>();

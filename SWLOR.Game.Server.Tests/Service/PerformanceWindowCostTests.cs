@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -41,7 +41,7 @@ public class PerformanceWindowCostTests
             source.Should().NotContain("AssignCommand(");
         }
 
-        var windows = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceWindows.cs"));
+        var windows = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceWindowsService.cs"));
         windows.Should().NotContain("Scheduler.");
         windows.Should().NotContain("DelayCommand(");
     }
@@ -49,11 +49,11 @@ public class PerformanceWindowCostTests
     [Test]
     public void BeatLoop_PushesToTheWindowAndFallsBackToOneLineOfScreenText()
     {
-        var source = File.ReadAllText(SourcePath("Service", "Performance.cs"));
-        var windows = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceWindows.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceService.cs"));
+        var windows = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceWindowsService.cs"));
 
         source.Should().NotContain("FloatingTextStringOnCreature(", "floating text also lands in the chat log on every beat");
-        CountOf(source, "PerformanceWindows.ShowFallbackStrip(").Should().Be(1, "only the closed-window fallback uses it");
+        CountOf(source, "_windows.ShowFallbackStrip(").Should().Be(1, "only the closed-window fallback uses it");
         CountOf(windows, "PostString(").Should().Be(2, "the strip is drawn and cleared under one reserved id");
         source.Should().Contain("view.ShowBeat(session, outcome);");
         source.Should().Contain("ShowBeatProgress(");
@@ -64,7 +64,7 @@ public class PerformanceWindowCostTests
     [Test]
     public void BeatLoop_NeverTouchesTheGuiServiceDirectly()
     {
-        var source = File.ReadAllText(SourcePath("Service", "Performance.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceService.cs"));
 
         source.Should().NotContain("Gui.");
         source.Should().NotContain("NuiSetBind");
@@ -73,12 +73,12 @@ public class PerformanceWindowCostTests
     [Test]
     public void WatchingWindow_IsDrawnFromTheAudienceTickAndFollowClicksOnly()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
-        CountOf(source, "PerformanceWindows.ShowWatching(").Should().Be(2, "the tick and a Follow click");
+        CountOf(source, "_windows.ShowWatching(").Should().Be(2, "the tick and a Follow click");
         CountOf(source, "Scheduler.ScheduleRepeating(").Should().Be(1);
-        CountOf(source, "DB.Get<Player>(").Should().Be(1, "the debt and the window share one read per watcher per tick");
-        CountOf(source, "DB.Set(").Should().Be(1);
+        CountOf(source, "_db.Get<Player>(").Should().Be(1, "the debt and the window share one read per watcher per tick");
+        CountOf(source, "_db.Set(").Should().Be(1);
     }
 
     [Test]

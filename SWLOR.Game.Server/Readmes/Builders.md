@@ -15,7 +15,7 @@ All builders use a fluent interface, allowing method chaining for clean, readabl
 
 ### 1. AbilityBuilder
 
-**Location**: `Service/AbilityService/AbilityBuilder.cs`
+**Location**: `Domain/Abilities/AbilityBuilder.cs`
 
 The AbilityBuilder is used to create player abilities and combat skills. It's one of the most complex builders, supporting casted abilities and weapon-triggered abilities.
 
@@ -67,7 +67,7 @@ private static void SmokeBomb(AbilityBuilder builder)
 
 ### 2. PerkBuilder
 
-**Location**: `Service/PerkService/PerkBuilder.cs`
+**Location**: `Domain/Character/PerkBuilder.cs`
 
 The PerkBuilder creates player perks that can be purchased with skill points. Perks have multiple levels with different costs and effects.
 
@@ -97,7 +97,7 @@ builder.Create(PerkCategoryType.HeavyVibrobladeDefense, PerkType.AngerStrike)
 
 ### 3. ChatCommandBuilder
 
-**Location**: `Service/ChatCommandService/ChatCommandBuilder.cs`
+**Location**: `Domain/Social/ChatCommandBuilder.cs`
 
 The ChatCommandBuilder creates chat commands that players can use in-game.
 
@@ -121,7 +121,7 @@ builder.Create("heal", "cure")
 
 ### 4. RecipeBuilder
 
-**Location**: `Service/CraftService/RecipeBuilder.cs`
+**Location**: `Domain/Crafting/RecipeBuilder.cs`
 
 The RecipeBuilder creates crafting recipes for the crafting system.
 
@@ -146,7 +146,7 @@ builder.Create(RecipeType.Lightsaber, SkillType.Engineering)
 
 ### 5. BeastBuilder
 
-**Location**: `Service/BeastMasteryService/BeastBuilder.cs`
+**Location**: `Domain/Companions/BeastBuilder.cs`
 
 The BeastBuilder creates beast companion configurations for the beastmaster system.
 
@@ -179,7 +179,7 @@ builder.Create(BeastType.Wolf)
 
 ### 6. ItemBuilder
 
-**Location**: `Service/ItemService/ItemBuilder.cs`
+**Location**: `Domain/Items/ItemBuilder.cs`
 
 The ItemBuilder creates item configurations that define how items behave when used.
 
@@ -205,7 +205,7 @@ builder.Create("health_potion")
 
 ### 7. QuestBuilder
 
-**Location**: `Service/QuestService/QuestBuilder.cs`
+**Location**: `Domain/Quests/QuestBuilder.cs`
 
 The QuestBuilder creates quest configurations for the quest system.
 
@@ -227,7 +227,7 @@ builder.Create("quest_kill_rats", "Kill the Rats")
 
 ### 8. ShipBuilder
 
-**Location**: `Service/SpaceService/ShipBuilder.cs`
+**Location**: `Domain/Space/ShipBuilder.cs`
 
 The ShipBuilder creates ship configurations for the space combat system.
 
@@ -281,7 +281,7 @@ builder.AddPage("main", page => {
 
 ### 11. SnippetBuilder
 
-**Location**: `Service/SnippetService/SnippetBuilder.cs`
+**Location**: `Domain/Foundation/SnippetBuilder.cs`
 
 The SnippetBuilder creates conversation snippets for conditional dialog options.
 
@@ -304,7 +304,7 @@ builder.Create("has_quest_item")
 
 ### 12. PropertyLayoutBuilder
 
-**Location**: `Service/PropertyService/PropertyLayoutBuilder.cs`
+**Location**: `Domain/World/PropertyLayoutBuilder.cs`
 
 The PropertyLayoutBuilder creates property layout configurations.
 
@@ -327,7 +327,7 @@ builder.Create(PropertyLayoutType.Apartment)
 
 ### 13. FishingLocationBuilder
 
-**Location**: `Service/FishingService/FishingLocationBuilder.cs`
+**Location**: `Domain/World/FishingLocationBuilder.cs`
 
 The FishingLocationBuilder creates fishing location configurations.
 
@@ -348,7 +348,7 @@ builder.Create(FishingLocationType.Dantooine)
 
 ### 14. ShipModuleBuilder
 
-**Location**: `Service/SpaceService/ShipModuleBuilder.cs`
+**Location**: `Domain/Space/ShipModuleBuilder.cs`
 
 The ShipModuleBuilder creates ship module configurations.
 
@@ -371,7 +371,7 @@ builder.Create("laser_cannon")
 
 ### 15. SpaceObjectBuilder
 
-**Location**: `Service/SpaceService/SpaceObjectBuilder.cs`
+**Location**: `Domain/Space/SpaceObjectBuilder.cs`
 
 The SpaceObjectBuilder creates space object configurations for space combat.
 
@@ -392,7 +392,7 @@ builder.Create("asteroid_01")
 
 ### 16. LootTableBuilder
 
-**Location**: `Service/LootService/LootTableBuilder.cs`
+**Location**: `Domain/Items/LootTableBuilder.cs`
 
 The LootTableBuilder creates loot table configurations for creature drops.
 
@@ -413,7 +413,7 @@ builder.Create("rat_loot")
 
 ### 17. GuiWindowBuilder
 
-**Location**: `Service/GuiService/GuiWindowBuilder.cs`
+**Location**: `Domain/UI/GuiWindowBuilder.cs`
 
 The GuiWindowBuilder creates NUI windows (definition + partial views) for the MVVM GUI
 layer. Windows also need a `GuiWindowType` enum entry and a ViewModel deriving

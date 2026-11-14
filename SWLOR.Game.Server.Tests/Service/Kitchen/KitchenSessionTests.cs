@@ -1,19 +1,36 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Kitchen;
-using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
+using SWLOR.Game.Server.Domain.Crafting.RecipeParameters;
+using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.NWN.API.NWScript.NWScript;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Kitchen;
 
 /// <summary>Covers the Kitchen against the craft session: committing the materials, finishing a dish and ruining one.</summary>
 public class KitchenSessionTests
 {
+    // The craft rules reach the crafting service through its static facade, which resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     private const RecipeType Cooked = RecipeType.MynockMeatBall;
 
     private FakeCraftSessionWorld _world;

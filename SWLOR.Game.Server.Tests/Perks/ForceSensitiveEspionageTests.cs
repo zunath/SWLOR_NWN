@@ -1,19 +1,20 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Espionage;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -23,6 +24,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class ForceSensitiveEspionageTests
 {
+    // The converted stealth, disguise and infiltration facades resolve their instances from a container.
+    private SWLOR.Game.Server.Tests.Support.FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new SWLOR.Game.Server.Tests.Support.FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void UninstallFacades() => _facadeScope.Dispose();
+
     private static readonly PerkType[] SharedPerks =
     {
         PerkType.Stealth, PerkType.BackAttack, PerkType.Slicing, PerkType.SilentStride,
@@ -181,8 +198,8 @@ public class ForceSensitiveEspionageTests
         var decoy = new DecoyStatusEffect(penalty);
         decoy.StatGroup.Stats[StatType.AccuracyToStatusSourcePercentAdjustment].Should().Be(-penalty);
         ((DecoyStatusEffect)decoy.Clone()).AccuracyPenaltyPercent.Should().Be(penalty);
-        decoy.ResistanceType.Should().Be(SWLOR.Game.Server.Service.CombatService.ResistanceType.Mind);
-        decoy.StackingType.Should().Be(SWLOR.Game.Server.Service.StatusEffectService.StatusEffectStackType.StackFromMultipleSources,
+        decoy.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Combat.ResistanceType.Mind);
+        decoy.StackingType.Should().Be(SWLOR.Game.Server.Domain.Character.StatusEffectStackType.StackFromMultipleSources,
             "each caster's Decoy only penalizes attacks against that caster");
         new DecoyStatusEffect().AccuracyPenaltyPercent.Should().Be(DecoyStatusEffect.DefaultAccuracyPenaltyPercent);
     }
@@ -226,13 +243,13 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void CloudedMind_BlocksDetectionClearsVerdictsAndEndsOnDamage()
     {
-        var stealth = ReadSource("Service", "Stealth.cs");
-        var rollStart = stealth.IndexOf("private static bool GetOrRollVerdict", StringComparison.Ordinal);
-        var rollBody = stealth[rollStart..stealth.IndexOf("public static bool IsDetectionRollSuccessful", StringComparison.Ordinal)];
+        var stealth = ReadSource("Domain", "Combat", "StealthService.cs");
+        var rollStart = stealth.IndexOf("private bool GetOrRollVerdict", StringComparison.Ordinal);
+        var rollBody = stealth[rollStart..stealth.IndexOf("public bool IsDetectionRollSuccessful", StringComparison.Ordinal)];
         rollBody.Should().Contain("IsStealthDetectionBlocked(observer)");
         rollBody.Should().Contain("IsCloudedDetectionRollSuccessful(detectionDie, playerObserver)");
 
-        stealth.Should().Contain("return Stat.GetStatAdjustment(observer, StatType.StealthDetectionBlocked) > 0;");
+        stealth.Should().Contain("return GetStealthDetectionBlockedAdjustment(observer) > 0;");
         stealth.Should().NotContain("CloudedMindStatusEffect", "shared detection reads the stat, never the perk's status class");
         new CloudedMindStatusEffect().StatGroup.Stats[StatType.StealthDetectionBlocked].Should().Be(1);
         new CloudedMindStatusEffect().SendsApplicationMessage.Should().BeFalse(
@@ -255,10 +272,10 @@ public class ForceSensitiveEspionageTests
         // Covers buffs a hidden caster's FP spend triggers (Danger Sense, Force Convergence) and
         // any status applied by or to a creature in stealth.
         StatusEffect.ShouldAnnounceNearby(bearerHidden, sourceHidden).Should().Be(nearby);
-        var source = ReadSource("Service", "StatusEffect.cs");
-        source.Should().Contain("if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), sourceIsOther && Stealth.IsConcealed(source)))",
+        var source = ReadSource("Domain", "Character", "StatusEffectService.cs");
+        source.Should().Contain("if (ShouldAnnounceNearby(_stealth.IsConcealed(creature), sourceIsOther && _stealth.IsConcealed(source)))",
             "application messages");
-        source.Should().Contain("if (ShouldAnnounceNearby(Stealth.IsConcealed(creature), false))", "worn-off messages");
+        source.Should().Contain("if (ShouldAnnounceNearby(_stealth.IsConcealed(creature), false))", "worn-off messages");
     }
 
     [TestCase(false, false, true)]
@@ -267,27 +284,27 @@ public class ForceSensitiveEspionageTests
     [TestCase(true, true, false)]
     public void NearbyMessages_GoOnlyToTheHiddenSenderOrActor(bool senderHidden, bool actorHidden, bool nearby)
     {
-        Messaging.ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
-        var messaging = ReadSource("Service", "Messaging.cs");
-        messaging.Should().Contain("if (!ShouldDeliverNearby(Stealth.IsConcealed(sender), Stealth.IsConcealed(concealedActor)))");
-        var ability = ReadSource("Service", "Ability.cs");
+        new MessagingService(FacadeForwarder.For<IStealthService>()).ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
+        var messaging = ReadSource("Domain", "Foundation", "MessagingService.cs");
+        messaging.Should().Contain("if (!ShouldDeliverNearby(IsConcealed(sender), IsConcealed(concealedActor)))");
+        var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
         ability.Should().Contain("                60f,\n                activator);", "ability combat-log lines name the activator");
     }
 
     [Test]
     public void HiddenPlayers_EmitNoSoundsEffectsOrHumsForOthers()
     {
-        var stealth = ReadSource("Service", "Stealth.cs");
+        var stealth = ReadSource("Domain", "Combat", "StealthService.cs");
         stealth.Should().Contain("(GetActionMode(creature, ActionMode.Stealth) || IsInvisible(creature))");
-        stealth.Should().Contain("LightsaberAudio.SilenceWhileHidden(creature);");
-        stealth.Should().Contain("LightsaberAudio.RestoreAfterHidden(creature);");
+        stealth.Should().Contain("SilenceLightsaberWhileHidden(creature);");
+        stealth.Should().Contain("RestoreLightsaberAfterHidden(creature);");
 
         var usePerkFeat = ReadSource("Feature", "UsePerkFeat.cs");
         usePerkFeat.Should().Contain("if (Stealth.IsConcealed(activator))\n                return;", "ability sounds reach only the hidden activator");
         usePerkFeat.Should().Contain("ability.ActivationVisualEffect != VisualEffect.None && !Stealth.IsConcealed(activator)");
 
-        var ability = ReadSource("Service", "Ability.cs");
-        ability.Should().Contain("if (Stealth.IsConcealed(recipient))\n            {\n                ShowVisualEffectToPlayer(recipient, recipient, visuals.Effect);");
+        var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
+        ability.Should().Contain("if (_stealth.IsConcealed(recipient))\n            {\n                ShowVisualEffectToPlayer(recipient, recipient, visuals.Effect);");
 
         foreach (var file in new[] { "GhostProtocolAbilityDefinition.cs", "SharedPresenceAbilityDefinition.cs" })
         {
@@ -299,15 +316,15 @@ public class ForceSensitiveEspionageTests
         ReadSource("Feature", "AbilityDefinition", "Espionage", "CloudMindAbilityDefinition.cs")
             .Should().Contain("Ability.ShowVisualEffectToPlayer(activator, target, VisualEffect.Vfx_Imp_Confusion_S);");
         new CloudedMindStatusEffect().SendsWornOffMessage.Should().BeFalse("its expiry would hint at a hidden caster");
-        ReadSource("Service", "HoloCom.cs").Should().Contain("FloatingTextStringOnCreature(message, receiver, !Stealth.IsConcealed(receiver));");
+        ReadSource("Domain", "World", "HoloComService.cs").Should().Contain("FloatingTextStringOnCreature(message, receiver, !IsConcealed(receiver));");
         var saber = ReadSource("Feature", "LightsaberAudio.cs");
         saber.Should().Contain("if (Stealth.IsConcealed(player))\n            {\n                if (GetIsPC(player))\n                    PlayerPlugin.PlaySound(player, \"saberon\", player);");
         saber.Should().Contain("PlayerPlugin.PlaySound(player, \"saberoff\", player);", "unequipping while hidden is heard only by the hidden player");
         saber.Should().Contain("if (!GetActionMode(player, ActionMode.Stealth))\n                ApplyHum(player);", "the hum is tied to stealth, whose exit restores it");
         saber.Should().Contain("if (!GetIsObjectValid(player) || GetActionMode(player, ActionMode.Stealth))", "leaving stealth restores the hum even while invisible");
-        var stealthSource = ReadSource("Service", "Stealth.cs");
-        stealthSource.Should().Contain("LightsaberAudio.SilenceWhileHidden(creature);", "entering stealth silences held sabers");
-        stealthSource.Should().Contain("LightsaberAudio.RestoreAfterHidden(creature);", "leaving stealth gives the hum back");
+        var stealthSource = ReadSource("Domain", "Combat", "StealthService.cs");
+        stealthSource.Should().Contain("SilenceLightsaberWhileHidden(creature);", "entering stealth silences held sabers");
+        stealthSource.Should().Contain("RestoreLightsaberAfterHidden(creature);", "leaving stealth gives the hum back");
         new GhostProtocolAbilityDefinition().BuildAbilities()[FeatType.GhostProtocol].DisplaysActivationMessage
             .Should().BeFalse("the nearby broadcast would announce that someone is entering stealth");
     }
@@ -324,19 +341,19 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void BypassXp_ChecksEligibilityWhenAttemptsStartAndWhenXpIsGranted()
     {
-        var source = ReadSource("Service", "EspionageInfiltration.cs");
-        var start = source[source.IndexOf("private static bool CanStartAttempt", StringComparison.Ordinal)..];
+        var source = ReadSource("Domain", "Character", "EspionageInfiltrationService.cs");
+        var start = source[source.IndexOf("private bool CanStartAttempt", StringComparison.Ordinal)..];
         start[..start.IndexOf("var master = GetMaster(npc);", StringComparison.Ordinal)]
-            .Should().Contain("!IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsStealthDetectionBlocked(npc))");
-        var record = source[source.IndexOf("public static void RecordDetection", StringComparison.Ordinal)..];
-        record = record[..record.IndexOf("if (!AI.IsInAggroRange(observer, target))", StringComparison.Ordinal)];
-        record.Should().Contain("if (Stealth.IsStealthDetectionBlocked(observer))",
+            .Should().Contain("!IsBypassXpEligible(HasGrantedStealth(player), IsStealthDetectionBlocked(npc))");
+        var record = source[source.IndexOf("public void RecordDetection", StringComparison.Ordinal)..];
+        record = record[..record.IndexOf("if (!_ai.IsInAggroRange(observer, target))", StringComparison.Ordinal)];
+        record.Should().Contain("if (IsStealthDetectionBlocked(observer))",
             "an attempt a clouded observer let through never pays, even after the cloud lifts");
         record.Should().Contain("TryMarkResolved(target, observer);");
         source.Should().NotContain("CloudedMindStatusEffect");
-        var grant = source[source.IndexOf("private static void GrantXp", StringComparison.Ordinal)..];
-        grant[..grant.IndexOf("Skill.GiveSkillXP", StringComparison.Ordinal)]
-            .Should().Contain("IsBypassXpEligible(Stealth.HasGrantedStealth(player), Stealth.IsStealthDetectionBlocked(npc))");
+        var grant = source[source.IndexOf("private void GrantXp", StringComparison.Ordinal)..];
+        grant[..grant.IndexOf("GiveSkillXP(player", StringComparison.Ordinal)]
+            .Should().Contain("IsBypassXpEligible(HasGrantedStealth(player), IsStealthDetectionBlocked(npc))");
     }
 
     [TestCase(true, false, false, false, true)]
@@ -374,20 +391,20 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void GrantedStealth_PassesEveryOwnershipCheckSkipsUpkeepAndUsesTheCasterBonus()
     {
-        var stealth = ReadSource("Service", "Stealth.cs");
-        stealth.Should().Contain("return Perk.GetPerkLevel(creature, PerkType.Stealth) > 0 || HasGrantedStealth(creature);");
-        stealth.Should().NotContain("Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0",
+        var stealth = ReadSource("Domain", "Combat", "StealthService.cs");
+        stealth.Should().Contain("return GetStealthPerkLevel(creature) > 0 || HasGrantedStealth(creature);");
+        stealth.Should().NotContain("GetStealthPerkLevel(creature) <= 0",
             "the gate, entry, refresh and heartbeat paths all honor granted stealth through CanUseStealth");
         stealth.Should().Contain("var ownsStealth = CanUseStealth(creature);");
         stealth.Should().Contain("if (GetLocalInt(creature, GrantedStealthVariable) == generation)",
             "a grant whose entry never happened still expires with its window");
         stealth.Should().Contain("var generation = ScheduleTimedExit(creature, durationSeconds);");
 
-        stealth.Should().Contain("[NWNEventHandler(ScriptName.OnModuleEnter)]\n        public static void ClearGrantedStealthOnEnter()",
+        stealth.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleEnter\)\]\s+public void ClearGrantedStealthOnEnter\(\)",
             "a grant saved with the character must not survive a reconnect");
-        stealth.Should().Contain("[NWNEventHandler(ScriptName.OnModuleExit)]\n        public static void ClearGrantedStealthOnExit()");
-        var exitStart = stealth.IndexOf("public static void OnStealthExited()", StringComparison.Ordinal);
-        stealth[exitStart..stealth.IndexOf("public static void ResolveSpotDetection()", StringComparison.Ordinal)]
+        stealth.Should().MatchRegex(@"\[NWNEventHandler\(ScriptName\.OnModuleExit\)\]\s+public void ClearGrantedStealthOnExit\(\)");
+        var exitStart = stealth.IndexOf("public void OnStealthExited()", StringComparison.Ordinal);
+        stealth[exitStart..stealth.IndexOf("public void ResolveSpotDetection()", StringComparison.Ordinal)]
             .Should().Contain("ClearGrantedStealth(creature);");
 
         var status = ReadSource("Feature", "StatusEffectDefinition", "StealthStatusEffect.cs");
@@ -416,12 +433,12 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void ForcePowerHelper_DrivesForceDisruptionAndFpSpendTriggers()
     {
-        var ability = ReadSource("Service", "Ability.cs");
-        ability.Should().Contain("if (IsForcePower(activator, ability) &&\n                Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)",
+        var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
+        ability.Should().Contain("if (IsForcePower(activator, ability) &&\n                GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)",
             "Force Disruption blocks the new powers");
-        var combat = ReadSource("Service", "Combat.cs");
+        var combat = CombatSource.Read().Replace("\r\n", "\n");
         var triggerStart = combat.IndexOf("private static void ApplyForceFPCostActivatedEffects", StringComparison.Ordinal);
-        combat.Substring(triggerStart, 400).Should().Contain("!Ability.IsForcePower(activator, ability)",
+        combat.Substring(triggerStart, 400).Should().Contain("!_ability.IsForcePower(activator, ability)",
             "Danger Sense and Force Convergence fire on the new powers' FP spend");
     }
 

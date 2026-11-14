@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -119,7 +118,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 IsSingleTargetAbility = !isArea,
                 SkillType = skill
             };
-            Combat.ApplyAbilityActivatedEffects(caster, target, FeatType.Invalid, ability, new AbilityImpactSummary
+            GameServices.CombatAbilityActivation.ApplyAbilityActivatedEffects(caster, target, FeatType.Invalid, ability, new AbilityImpactSummary
             {
                 Ability = ability,
                 SkillType = skill,

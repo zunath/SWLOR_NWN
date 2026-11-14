@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.KeyItemService;
-using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {

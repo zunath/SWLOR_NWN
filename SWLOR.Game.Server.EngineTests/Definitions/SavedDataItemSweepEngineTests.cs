@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -224,7 +223,7 @@ public static partial class MigrationEngineTests
         // Droid parts and controllers saved before the Unarmed and Twin Pistol skills: a CPU, and a controller with
         // a boosted Katar and zero ranged skills that saves that CPU.
         var legacyCpu = await CreateItemAsync(ctx, owner, LegacyDroidCpu, owner);
-        var legacyController = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        var legacyController = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
             StampLegacyDroidCpu(legacyCpu);
@@ -274,7 +273,7 @@ public static partial class MigrationEngineTests
         var bag = await CreateItemAsync(ctx, owner, "bag_sm", owner);
         var nestedGloves = await CreateItemAsync(ctx, owner, RevisedGloves, bag);
         var nestedArtwork = await CreateItemAsync(ctx, owner, "aen_hp1", bag);
-        var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+        var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
         var creatureGloves = await CreateItemAsync(ctx, savedCreature, RevisedGloves, savedCreature);
         var creatureArtwork = await CreateItemAsync(ctx, savedCreature, "aen_hp1", savedCreature);
         var creaturePistol = await CreateItemAsync(ctx, savedCreature, "b_pistol", savedCreature);
@@ -422,7 +421,7 @@ public static partial class MigrationEngineTests
         {
             damageType.TryGetElementalResistanceType(out var resistance);
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Resistance, (int)resistance,
-                Resistance.EncodeItemPropertyCostTableValue(Math.Min(amount + 5, Resistance.MaximumResistance))), item);
+                Resistance.EncodeItemPropertyCostTableValue(Math.Min(amount + 5, ResistanceRules.MaximumResistance))), item);
         }
         else
             // Current constructors reject the retired elemental Defense subtypes, so they are written natively.

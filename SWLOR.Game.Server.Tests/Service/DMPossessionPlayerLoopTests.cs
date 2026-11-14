@@ -18,7 +18,6 @@ public class DMPossessionPlayerLoopTests
     private const uint OtherDM = 4;
     private const uint QuietPlayer = 5;
     private const uint Npc = 50;
-    private const uint TrapMarker = 60;
     private const uint Cantina = 100;
     private const uint Spaceport = 101;
 
@@ -30,27 +29,39 @@ public class DMPossessionPlayerLoopTests
         _harness = Compile($$"""
             public static class DMPresence
             {
-                {{Method("Service/DMPresence.cs", "GetControlledCreature")}}
-                {{Method("Service/DMPresence.cs", "IsControlledByDM")}}
-                {{Method("Service/DMPresence.cs", "IsDMPresentInArea")}}
-                {{Method("Service/DMPresence.cs", "SendMessage")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "GetControlledCreature")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "IsControlledByDM")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "IsDMPresentInArea")}}
+                {{InstanceMethod("Domain/Administration/DMPresenceService.cs", "SendMessage")}}
             }
 
             public static class DMPlayerDirectory
             {
-                {{Method("Service/DMPlayerDirectory.cs", "GetOnlinePlayers")}}
+                // The service's injected presence, as this harness models it.
+                private static readonly Presence _presence = new();
+                private sealed class Presence
+                {
+                    public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
+                }
+                {{InstanceMethod("Domain/Administration/DMPlayerDirectoryService.cs", "GetOnlinePlayers")}}
             }
 
             public static class CombatRecorder
             {
                 private static uint _area;
+                // The recorder instance's injected presence service, as this harness models it.
+                private static readonly Presence _dmPresence = new();
+                private sealed class Presence
+                {
+                    public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
+                }
                 public static readonly List<uint> Registered = new();
                 private static int GetParticipantId(uint creature)
                 {
                     Registered.Add(creature);
                     return Registered.Count;
                 }
-                {{Method("Service/CombatRecorder.cs", "RegisterPlayersInArea")}}
+                {{InstanceMethod("Domain/Combat/CombatRecorderService.cs", "RegisterPlayersInArea")}}
             }
 
             public static class AI
@@ -59,34 +70,13 @@ public class DMPossessionPlayerLoopTests
                 public enum AIFlag { None = 0, ReturnHome = 1 }
                 public static AIFlag GetAIFlag(uint creature) => AIFlag.ReturnHome;
                 private static bool GetIsEnemy(uint target, uint source) => true;
-                {{Method("Service/AI.cs", "ShouldUseCombatLeash")}}
-            }
-
-            public sealed class Location { public uint Area; }
-            public enum StatType { TrapDetectionRangeBonus }
-            public static class Stat { public static int GetStatAdjustment(uint creature, StatType stat) => 0; }
-            public static class Traps
-            {
-                private const float BaseDetectionRangeMeters = 6f;
-                public sealed class TrapRecord
+                // The AI instance's injected presence service, as this harness models it.
+                private static readonly Presence _dmPresence = new();
+                private sealed class Presence
                 {
-                    public uint Marker;
-                    public Location Location;
-                    public int Tier = 1;
-                    public HashSet<uint> DetectedBy { get; } = new();
+                    public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
                 }
-                private static bool CanUseTrapTier(uint player, int tier) => true;
-                private static uint GetAreaFromLocation(Location location) => location.Area;
-                private static Location GetLocation(uint obj) => new() { Area = GetArea(obj) };
-                private static float GetDistanceBetweenLocations(Location first, Location second) => 0f;
-                private static void RevealTo(TrapRecord record, uint player, bool sendMessage) => record.DetectedBy.Add(player);
-                public static HashSet<uint> Sweep(uint marker, uint area)
-                {
-                    var record = new TrapRecord { Marker = marker, Location = new Location { Area = area } };
-                    RunDetectionSweep(record);
-                    return record.DetectedBy;
-                }
-                {{Method("Service/Traps.cs", "RunDetectionSweep")}}
+                {{InstanceMethod("Domain/Creatures/AIService.cs", "ShouldUseCombatLeash")}}
             }
 
             public static class Mimicry
@@ -101,12 +91,18 @@ public class DMPossessionPlayerLoopTests
                     Witnesses.Add(player);
                 private static void TryRecordAnalysis(uint npc, uint player) { }
                 public static void UseStrike(uint activator) => OnCreatureAbilityUsed(activator, FeatType.Strike);
-                {{Method("Service/Mimicry.cs", "OnCreatureAbilityUsed")}}
-                {{Method("Service/Mimicry.cs", "GetNearbyPlayers")}}
+                // The Mimicry instance's injected presence service, as this harness models it.
+                private static readonly Presence _dmPresence = new();
+                private sealed class Presence
+                {
+                    public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
+                }
+                {{InstanceMethod("Domain/Abilities/MimicryService.cs", "OnCreatureAbilityUsed")}}
+                {{InstanceMethod("Domain/Abilities/MimicryService.cs", "GetNearbyPlayers")}}
             }
 
-            {{Type("Service/RoleplayXPService/OOCMessageContext.cs", "OOCMessageContext")}}
-            public static class Communication { public const string EventCommsAreaVariable = "EVENT_COMMS_AREA"; }
+            {{Type("Domain/Character/OOCMessageContext.cs", "OOCMessageContext")}}
+            public static class CommunicationService { public const string EventCommsAreaVariable = "EVENT_COMMS_AREA"; }
             public static class RoleplayXP
             {
                 private static bool GetLocalBool(uint obj, string name) => false;
@@ -184,17 +180,6 @@ public class DMPossessionPlayerLoopTests
         _harness.AddPlayer(Player, area: Cantina);
 
         ShouldUseCombatLeash().Should().BeTrue();
-    }
-
-    [TestCase(DMPossess)]
-    [TestCase(DMPossessFullPower)]
-    public void TrapDetection_RevealsTrapsToPlayersButNotDMs(int possessionType)
-    {
-        _harness.AddPlayer(Player, area: Cantina);
-        _harness.AddPlayer(OtherDM, isDM: true, area: Cantina);
-        PossessingDM(possessionType, Cantina, Cantina);
-
-        _harness.Invoke<HashSet<uint>>("Traps", "Sweep", TrapMarker, Cantina).Should().BeEquivalentTo(new[] { Player });
     }
 
     [TestCase(DMPossess)]

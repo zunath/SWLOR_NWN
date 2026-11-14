@@ -1,14 +1,13 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
@@ -16,6 +15,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class ForceLightGuardianTests
 {
+    // Applying a status effect checks the combat recorder, which the facade resolves from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void ForceLightGuardianAbilities_MatchCombatBible()
     {
@@ -150,8 +165,8 @@ public class ForceLightGuardianTests
         var scaling = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityEffectScaling.cs").FullName);
         scaling.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(source, target, effectKey, amount, durationSeconds)");
 
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
-        combat.Should().Contain("StatusEffect.GetStatusEffectSourceWithStat(");
+        var combat = CombatSource.Read();
+        combat.Should().Contain("_statusEffect.GetStatusEffectSourceWithStat(");
         combat.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(");
         combat.Should().Contain("TemporaryHitPointEffectKey.FatalDamageSave");
 
@@ -190,13 +205,13 @@ public class ForceLightGuardianTests
         var weaponProcessDamage = weaponDamage.Substring(
             weaponProcessDamageStart,
             weaponAddDamageStart - weaponProcessDamageStart);
-        var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
         var abilityPreDamageNotification = abilityDamage.IndexOf(
-            "StatusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
+            "_statusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);
         abilityPreDamageNotification.Should().BeGreaterThan(-1);
         var abilityPostDamageNotification = abilityDamage.IndexOf(
-            "StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);",
+            "_statusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);
         var immediateDamageApplication = abilityDamage.IndexOf(
             "EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType())",
@@ -221,13 +236,13 @@ public class ForceLightGuardianTests
             queuedDamageFlushStart,
             pendingDamageEffectStart - queuedDamageFlushStart);
         var queuedPreDamageNotification = queuedDamageFlush.IndexOf(
-            "StatusEffect.NotifyPreDamageStatusEffects(",
+            "_statusEffect.NotifyPreDamageStatusEffects(",
             StringComparison.Ordinal);
         var queuedDamageApplication = queuedDamageFlush.IndexOf(
             "EffectDamage(effect.Damage, effect.DamageType)",
             StringComparison.Ordinal);
         var queuedReflection = queuedDamageFlush.IndexOf(
-            "Combat.ApplyDamageReflectionEffects(",
+            "_service.ApplyDamageReflectionEffects(",
             StringComparison.Ordinal);
         queuedPreDamageNotification.Should().BeGreaterThan(-1);
         queuedPreDamageNotification.Should().BeLessThan(
@@ -242,7 +257,7 @@ public class ForceLightGuardianTests
             StringComparison.Ordinal);
         weaponPreDamageNotification.Should().BeGreaterThan(-1);
         weaponPreDamageNotification.Should().BeLessThan(
-            weaponProcessDamage.IndexOf("Combat.ApplyDamageReflectionEffects(", weaponPreDamageNotification, StringComparison.Ordinal),
+            weaponProcessDamage.IndexOf("GameServices.CombatDamageTaken.ApplyDamageReflectionEffects(", weaponPreDamageNotification, StringComparison.Ordinal),
             "an exhausted conditional reflection status must be removed before weapon reflection is calculated");
         weaponProcessDamage.Should().NotContain("PublishDamageDealtEvent(",
             "reflection must retain its original position in weapon damage calculation rather than moving across damage-dealt callbacks");
@@ -252,14 +267,14 @@ public class ForceLightGuardianTests
     public void LastStandOfTheLight_HasDyingFallbackBeforeForcedPlayerDeath()
     {
         var root = FindRepositoryRoot();
-        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
-        var death = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Death.cs").FullName);
+        var combat = CombatSource.Read();
+        var death = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Combat" / "DeathService.cs").FullName);
 
         combat.Should().Contain("public static bool TryPreventFatalDamageAndGrantTemporaryHP(");
         combat.Should().Contain("var isDyingFallback = restoreToOneHP && currentHP <= 0;");
         combat.Should().Contain("SetCurrentHitPoints(defender, 1);");
 
-        death.Should().Contain("if (Combat.TryPreventFatalDamageAndGrantTemporaryHP(player, 0, restoreToOneHP: true))");
+        death.Should().Contain("if (TryPreventFatalDamageAndGrantTemporaryHP(player, 0, restoreToOneHP: true))");
         death.Should().Contain("return;");
         death.Should().Contain("ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);");
     }

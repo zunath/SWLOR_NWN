@@ -3,7 +3,7 @@ using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Domain.World;
 using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.Game.Server.Tests.Feature;

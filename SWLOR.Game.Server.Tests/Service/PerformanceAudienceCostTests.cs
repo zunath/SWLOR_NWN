@@ -1,9 +1,9 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Diagnostics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.PerformanceService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Character;
 using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -103,7 +103,7 @@ public class PerformanceAudienceCostTests
     [Test]
     public void AudienceTick_UsesOneModuleWideScheduleAndProfilesIt()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
         CountOf(source, "Scheduler.ScheduleRepeating(").Should().Be(1);
         source.Should().Contain("FrameProfiler.Stop(FrameMetric.Scheduler, profilerStart, \"PerformanceAudienceTick\")");
@@ -112,14 +112,14 @@ public class PerformanceAudienceCostTests
     [Test]
     public void AudienceTick_FindsWatchersInOnePassOverOnlinePlayersAndReadsThePlayerOncePerWatcher()
     {
-        var source = File.ReadAllText(SourcePath("Service", "PerformanceService", "PerformanceAudience.cs"));
+        var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
         CountOf(source, "GetFirstPC()").Should().Be(1);
         source.Should().NotContain("GetFirstObjectInArea");
         source.Should().NotContain("GetNearestObject");
-        CountOf(source, "DB.Get<Player>(").Should().Be(1);
-        CountOf(source, "DB.Set(").Should().Be(1);
-        CountOf(source, "Skill.GiveSkillXP(").Should().Be(1);
+        CountOf(source, "_db.Get<Player>(").Should().Be(1);
+        CountOf(source, "_db.Set(").Should().Be(1);
+        CountOf(source, "_skill.GiveSkillXP(").Should().Be(1);
     }
 
     [Test]
@@ -127,28 +127,30 @@ public class PerformanceAudienceCostTests
     {
         var shared = new[]
         {
-            SourcePath("Service", "Death.cs"),
-            SourcePath("Service", "Fishing.cs"),
-            SourcePath("Service", "Stat.cs"),
-            SourcePath("Service", "StatusEffect.cs"),
-            SourcePath("Service", "Combat.cs")
+            SourcePath("Domain", "Combat", "DeathService.cs"),
+            SourcePath("Domain", "World", "FishingService.cs"),
+            SourcePath("Domain", "Character", "StatService.cs"),
+            SourcePath("Domain", "Character", "StatusEffectService.cs")
         };
 
-        foreach (var file in shared)
+        // Combat is one shared system however many files hold it.
+        var sources = shared.ToDictionary(file => Path.GetFileName(file), file => File.ReadAllText(file));
+        sources["Combat"] = CombatSource.Read();
+
+        foreach (var (name, source) in sources)
         {
-            var source = File.ReadAllText(file);
-            source.Should().NotContain("InspiredStatusEffect", $"{Path.GetFileName(file)} is a shared system");
+            source.Should().NotContain("InspiredStatusEffect", $"{name} is a shared system");
             source.Should().NotContain("PerkType.Requiem");
             source.Should().NotContain("PerkType.StandingOvation");
             source.Should().NotContain("PerkType.LightFeet");
             source.Should().NotContain("PerkType.AnglersLullaby");
         }
 
-        File.ReadAllText(SourcePath("Service", "Stat.cs"))
+        File.ReadAllText(SourcePath("Domain", "Character", "StatService.cs"))
             .Should().Contain("StatType.OutOfCombatMovementSpeedPercentAdjustment");
-        File.ReadAllText(SourcePath("Service", "CraftService", "Minigame", "Line", "LineAnglerEffects.cs"))
+        File.ReadAllText(SourcePath("Domain", "Crafting", "Minigame", "Line", "LineAnglerEffects.cs"))
             .Should().Contain("StatType.AnglerTensionCap");
-        File.ReadAllText(SourcePath("Service", "Death.cs")).Should().Contain("IDeathDebtWaiverStatusEffect");
+        File.ReadAllText(SourcePath("Domain", "Combat", "DeathService.cs")).Should().Contain("IDeathDebtWaiverStatusEffect");
     }
 
     [Test]
@@ -159,7 +161,7 @@ public class PerformanceAudienceCostTests
             Environment.NewLine,
             Directory.EnumerateFiles(productionRoot, "*.cs", SearchOption.AllDirectories)
                 .Where(file => !file.Contains(Path.Combine("Feature", "PerkDefinition"), StringComparison.OrdinalIgnoreCase))
-                .Where(file => !file.EndsWith(Path.Combine("Service", "StatService", "StatType.cs"), StringComparison.OrdinalIgnoreCase))
+                .Where(file => !file.EndsWith(Path.Combine("Domain", "Character", "StatType.cs"), StringComparison.OrdinalIgnoreCase))
                 .Select(File.ReadAllText));
 
         var stats = Enum.GetValues<StatType>().Where(stat => (int)stat >= 1300 && (int)stat <= 1313).ToArray();

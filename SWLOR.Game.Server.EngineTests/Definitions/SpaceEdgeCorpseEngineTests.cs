@@ -1,7 +1,7 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.LootService;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions

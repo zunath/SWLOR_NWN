@@ -6,13 +6,11 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -47,7 +45,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetAILevel(target, AILevel.VeryLow);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 390f);
 
-            Combat.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
                 var wristRocket = await MeasureAbility(ctx, fixture, target, FeatType.WristRocket3, false);
@@ -67,7 +65,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Combat.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
                 AssignCommand(player, () => ClearAllActions());
             }
         }

@@ -8,7 +8,11 @@ Read only the sections the task needs:
 - Writing a test: "How to Write a New Engine Test" (attribute contract, `EngineTestContext` API, player fixture, timing, worked example).
 - Migration or persistence change: "Persistence and migration coverage".
 - Ability or perk coverage: "The ability behavior coverage program" and "The perk coverage program".
-- Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`.
+- Output locking for the maintainability refactor: "Characterization scenarios (output locking)". After every `master` sync: "Refreshing the snapshots after a `master` sync".
+- Persistence, event chains or migrations without the engine: "Integration tier (real Redis, fake engine)".
+- Running tests: "How to Run Locally". Concurrent runs collide on one compose project; see `AgentEnvironment.md`. A run that
+  crosses 10:00 UTC is killed by the server's daily restart ("CI", "The daily server restart").
+- The nightly and labelled-pull-request workflow: "CI".
 - Changing the runner itself: "Project Layout and Isolation", "Architecture Overview", "Environment Variable Reference".
 
 ## What It Is and Why
@@ -32,6 +36,25 @@ real spawned creatures in an instanced arena and exercise the real systems direc
 
 This is the intended venue for integration-testing new combat-upgrade perks and abilities
 end-to-end, in addition to their NUnit coverage.
+
+## Integration tier (real Redis, fake engine)
+
+`SWLOR.Game.Server.IntegrationTests` runs the server's real container (`CompositionRoot.RegisterServerServices`) and the real
+`DBService` against a throwaway `redislabs/redismod:latest` container, with `FakeNWScript` and the plugin fakes standing in for
+the engine. It covers persistence round trips of every entity type, search queries, index rebuilds, event chains
+(first entry, skill XP, perk refund, bank, market, quests) and the server-migration runner. It is not part of
+`run-unit-tests.sh`; the `integration-tests` job of `maintainability-ci.yml` runs it.
+
+```bash
+dotnet build SWLOR.Game.Server.sln -c Release -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly
+bash scripts/ci/run-integration-tests.sh [--filter <expr>] [--out <dir>] [--dump <dump.rdb>]
+```
+
+The script starts its own container (tmpfs data, published on 127.0.0.1 only, removed on exit) and sets `NWNX_REDIS_HOST` and a
+throwaway marker key; the tests refuse a Redis that is not local and marked. It needs Docker and `SWLOR_Haks` with `sw_2da`,
+`sw_tlk` and `sw_ability`. Tests extend `IntegrationTestBase` (empty database, container and fake engine per test).
+`--dump` (or `SWLOR_INTEGRATION_DUMP`) enables the production-copy test: it copies that `dump.rdb` into a container of its own
+(the file is only read), runs the pending migrations and checks a second boot changes nothing. Never commit or print dump contents.
 
 ## Project Layout and Isolation
 
@@ -58,8 +81,10 @@ Because nothing references it, the test assembly is never loaded implicitly. `Se
 loads it explicitly - only when `SWLOR_ENGINE_TESTS_ENABLED` is set, and only if the file exists
 (so it is a silent no-op in production) - just before `LoadScripts()`, so the script registry's
 assembly scan finds its `[NWNEventHandler]` methods. It is loaded into the game assembly's own
-`AssemblyLoadContext`; a plain `Assembly.LoadFrom` would land in the default context and hand the
-test code a second, incompatible copy of every game type it references.
+`AssemblyLoadContext` from its bytes (`Core/EngineTestAssemblyLoader`); a plain `Assembly.LoadFrom` would land in
+the default context and hand the test code a second, incompatible copy of every game type it references.
+On the host entry that context is the generation's, so the test code unloads with the generation and a hot reload
+that publishes the engine-test assembly with its candidate runs the new build's tests (`HotReload.md`).
 
 What *does* live in game code is a small set of public observability/determinism seams the tests
 consume: `Combat.SetAbilityHitResolutionOverride` / `SetAutoAttackHitResolutionOverride`,
@@ -188,7 +213,7 @@ Every `[EngineTest]` method receives one of these, scoped to that single test ru
 | `SetNPCPerkLevel(npc, PerkType, level)` | Caps an NPC's effective perk level via the `PERK_LEVEL_{id}` local int. NPCs default to a perk's max level when this is unset. |
 | `SetNPCResources(npc, fp, stamina)` | Sets an NPC's current FP/Stamina pools (stored as the `FP`/`STAMINA` local ints NPCs use). |
 | `MakeHostile(creature)` | Moves a creature to the standard `Hostile` faction so other spawned creatures treat it as an enemy. |
-| `SeedRandom(seed)` | Reseeds the shared combat RNG (`Service.Random.SetSeed`) so hit/crit/damage rolls are deterministic for this test. Cleanup restores a fresh time-seeded RNG afterward, so determinism never leaks into later tests or a server kept running for debugging. |
+| `SeedRandom(seed)` | Reseeds the shared combat RNG (`Domain.Foundation.Random.SetSeed`) so hit/crit/damage rolls are deterministic for this test. Cleanup restores a fresh time-seeded RNG afterward, so determinism never leaks into later tests or a server kept running for debugging. |
 | `Assert(condition, message)` | Throws `EngineTestAssertionException` (-> `Failed`) if `condition` is false. |
 | `AssertEqual<T>(expected, actual, label)` | Throws with a formatted `"{label}: expected 'X' but was 'Y'."` message if not equal. |
 | `Fail(message)` | Unconditionally throws `EngineTestAssertionException`. |
@@ -201,7 +226,7 @@ Every `[EngineTest]` method receives one of these, scoped to that single test ru
 
 ### Determinism
 
-Combat rolls go through the shared `Service.Random` instance. Call `ctx.SeedRandom(someFixedSeed)`
+Combat rolls go through the shared `Domain.Foundation.Random` instance. Call `ctx.SeedRandom(someFixedSeed)`
 at the start of a test that depends on hit/crit/damage outcomes so repeated runs behave the same
 way (see `CombatPipelineEngineTests`, which seeds with a fixed integer before commanding an
 attack).
@@ -456,12 +481,14 @@ as `/nwn/home`, holding `modules/`, `hak/`, `tlk/`, `swlor.env` and receiving `d
 `SWLOR_ENGINE_TEST_SERVER_HOME` env var, the repo's `enginetests-home/` directory when it holds
 `swlor.env`, the repo's `debugserver/` directory when it exists (the dev-machine convention used by
 the normal `SWLOR.Runner` flow), and finally
-`SWLOR.Game.Server/Docker/` (the layout the CI workflow stages - that folder is tracked compose
-*configuration*, not inherently a runtime home). Both scripts:
+`SWLOR.Game.Server/Docker/` (a last resort: that folder is tracked compose
+*configuration*, not a runtime home; the CI workflow passes its own `--server-home`). Both scripts:
 
-1. Build `SWLOR.Game.Server` in `Release` (unless skipped) with `-p:RunPostBuildEvent=Never` (so
-   the normal Windows-only CLI post-build deploy step doesn't run), then copy the build output from
-   `SWLOR.Game.Server.EngineTests/bin/{Configuration}/net10.0` into `<server home>/dotnet`.
+1. Build `SWLOR.Game.Server.EngineTests` (and, for the host entry, `SWLOR.Game.Host`) in `Release` (unless skipped) with
+   `-p:RunPostBuildEvent=Never` (so the normal Windows-only CLI post-build deploy step doesn't run), then stage the
+   output into `<server home>/dotnet` for the chosen entry (see "The .NET entry" below): the game build and the
+   engine-test assembly from `SWLOR.Game.Server/bin/{Configuration}/net10.0` and
+   `SWLOR.Game.Server.EngineTests/bin/{Configuration}/net10.0`.
 2. Delete any stale `engine-test-results.json` from a previous run.
 3. Run `docker compose -p swlor-engine-tests -f <repo>/SWLOR.Game.Server/Docker/docker-compose.enginetests.yml
    up --abort-on-container-exit --exit-code-from swlor-server` from the server home (the dedicated
@@ -485,7 +512,9 @@ which become zero-byte files - Beamdog's dedicated-server data does the same wit
 models and textures, because the server never reads them - so the HAKs take about 0.4 GB instead
 of 11 GB. Never deploy them. It packs with the native tools that `Setup.sh` prepares, about
 4 minutes in all, and later runs skip steps whose inputs are unchanged (`--force` redoes them).
-A full sweep took about 75 minutes in a 4-core cloud session, so pass `--timeout-minutes 120`.
+A full sweep took about 75 minutes in a 4-core cloud session when the suite had a few hundred tests; with 910 it takes about
+3 hours (the `CI` section has the details), so pass `--timeout-minutes 270`. The `CI` section below runs this flow on a hosted
+runner, with a 300 MB sparse `SWLOR_Haks` fetch in place of the full checkout.
 
 Usage:
 
@@ -509,6 +538,26 @@ scripts/run-engine-tests.sh --server-home /opt/nwn/home
 `SWLOR_ENGINE_TEST_FILTER` and `SWLOR_ENGINE_TEST_ARENA_RESREF` env vars picked up by
 `docker-compose.enginetests.yml`.
 
+**The .NET entry.** Both runners boot the server through the host by default (`-Entry host` / `--entry host`), as
+development servers do; `-Entry native` / `--entry native` boots `SWLOR.Game.Server`'s own bootstrap, production's entry.
+The compose file boots the entry the runner staged, whatever the home's `swlor.env` says. `-Collectible true|false` /
+`--collectible true|false` sets the host's collectible switch (blank keeps the host's default, collectible outside
+production). A run on either entry is a full run: the suite, the report and the exit code are the same.
+
+| | host (default) | native |
+|---|---|---|
+| Staged into `<home>/dotnet` | `SWLOR.Game.Host` | the game build |
+| Staged into `<home>/dotnet/game` | the game build and `SWLOR.Game.Server.EngineTests.dll` | nothing |
+| NWNX entry (`NWNX_DOTNET_*`) | `SWLOR.Game.Host`, `SWLOR.Game.Host.Bootstrap.NativeBootstrap`, `Initialize` | `SWLOR.Game.Server`, `SWLOR.Game.Server.Core.ServerManager`, `Bootstrap` |
+
+The runners hand the choice to compose through `SWLOR_ENGINE_TEST_DOTNET_ENTRY`, `_ASSEMBLY`, `_ENTRYPOINT`, `_METHOD` and
+`SWLOR_ENGINE_TEST_GAME_COLLECTIBLE`; hot reload is off in every engine run (`SWLOR_ENGINE_TEST_HOT_RELOAD`, default
+`false`; only `scripts/run-hot-reload-check.sh` turns it on, and with `--engine-filter` each new generation schedules the filtered suite
+again; the `HotReloadPlayers` scenario keeps a headless player across those reloads). Compare the two entries with the same filter, for example
+`-Filter CombatLoad -Entry host` and `-Filter CombatLoad -Entry native`, and read the tails, not p50 ("Combat load
+measurement"). `EngineRunnerParityTests` keeps the two runners, the compose file, the workflow and
+`Update-EngineCharacterization.ps1` on the same switches and values.
+
 `docker-compose.enginetests.yml` itself only starts the two services actually needed to run tests
 (`redis`, `swlor-server`) - not the full dev stack in `docker-compose.yml`. Redis uses a `tmpfs`
 data directory so every run starts against a fresh, empty database, there are no restart policies
@@ -528,7 +577,7 @@ ranges and killed the run (Redis exit 139, server exit 137, no report). The comm
 image's default module list; keep it in sync if the image changes.
 
 **Hard wall clock**: both runner scripts enforce a timeout on the containerized run
-(`-TimeoutMinutes` / `--timeout-minutes`, default 90; a full sweep takes roughly 45). On expiry
+(`-TimeoutMinutes` / `--timeout-minutes`, default 90, which a full sweep of 910 tests now exceeds: pass 270). On expiry
 the stack is torn down and the run is reported as failed. This exists because
 `docker compose up --abort-on-container-exit` blocks until a container exits, and a server that
 boots healthy but schedules no tests - a missing harness assembly, a filter matching nothing -
@@ -585,38 +634,213 @@ Read the numbers with these limits in mind:
 - The driver waits on wall-clock time, so when frames run long it issues fewer casts. Compare casts
   completed alongside frame times; a saturated server reports close to 1000 managed ms per second.
 
+### Characterization scenarios (output locking)
+
+`SWLOR.Game.Server.EngineTests/Characterization/` locks today's engine-side outputs for the maintainability refactor
+(`MaintainabilityRefactorSpecs.md`, P0-4d2). Each scenario drives the real systems through fixed creatures, records what
+a refactor could change into a snapshot, and compares it with the checked-in file. They all use `Category =
+"Characterization"`:
+
+```powershell
+scripts/run-engine-tests.ps1 -Filter Characterization
+```
+
+What they record (snapshot area in brackets):
+
+| Scenario | Records |
+|---|---|
+| Weapon attacks, one per weapon class (14) [`Combat/WeaponAttacks.*`] | 30 swings through the native `ResolveAttackRoll` and `GetDamageRoll` hooks: hit, critical, miss, physical damage |
+| Weapon procs, melee and ranged (2) [`Combat/WeaponProcs.*`] | The same swings with damage, bleed, poison and stamina-restore riders: damage, stamina, status effects on the target |
+| Abilities, one per skill (20) [`Ability/*`] | Representative abilities through `UsePerkFeat.TryUseAbility`: accepted or denied, impact summary, FP and stamina spent, HP change, status effects with remaining seconds, queued state, recast (seconds from the frozen clock until the cooldown the activation started ends) |
+| Status effects (1) [`StatusEffect/TickingAndExpiry`] | Bleed, poison, burn, regeneration, stat buffs, stun, extend and refresh, stepped a second at a time over a frozen clock |
+| Kill (1) [`Skill/KillXP`, `Loot/KillCorpse`] | Skill XP a headless player earns from combat points when a real module creature dies, and the corpse loot |
+| Loot tables (1) [`Loot/TableDraws`] | `Loot.SpawnLoot` draws from eight table setups: items, stack sizes, item properties, gold |
+| Crafting (2) [`Craft/*`] | Two attempts at different recipe tiers through the crafting window: status, progress, quality, durability, item made, XP |
+
+How they stay deterministic:
+
+- **Clock.** Every scenario creates a `FrozenClock` (`Characterization/Support`), which holds `Clock` at 2026-01-15 12:00 UTC
+  and moves it only when the scenario calls `Advance`. Status effect durations, tick anchors and temporary modifier
+  expiry are then functions of the scenario's own steps. Only the files listed in `tools/Refactor/ClockSeamFiles.txt` read time through `Clock` (it includes `Recast`, `AbilityCooldownVisual`, `Enmity`, `MeleeTechnique`, `AIService` and the crafting window); a reader outside the list still sees the system clock, so add its file there and re-run `tools/Refactor/Apply-ClockSeam.ps1` before recording what it produces. Status effects tick by advancing one second and running
+  `StatusEffect.OnNWNStatusEffectInterval`, which is what the server does every second.
+- **Random.** `ctx.SeedRandom(seed)` runs inside the same synchronous step as the calls that roll, and is repeated
+  before each independent step, so a draw by another system between frames cannot shift a sequence. Weapon swings are
+  resolved in a loop with no `await`, so no frame, timer or animation can change how many happen.
+- **Quiet fixtures.** `ScenarioArena` instances a flat corridor and clears its spawn tables; `ScenarioActors` spawns
+  stock humanoids with AI, heartbeat and perception scripts removed, regeneration suppressed and 2000 HP. Nothing but the
+  scenario acts.
+- **Recorded values.** Only values that do not depend on object ids, wall-clock time or frame timing: recast cooldowns are
+  recorded as seconds from the frozen clock, never as absolute times, and there are no ids. Each snapshot's `inputs` line states the fixtures and the seeds.
+
+Snapshots use the JSON format of `SWLOR.Game.Server.CharacterizationTests` (`Characterization/Support/SnapshotTable.cs` and
+`SnapshotJson.cs` are copies; the engine-test assembly does not reference that project). The server runs in a
+container that cannot see the source tree, so `Characterization/Snapshots/**/*.json` are embedded in the assembly at
+build time and the scenario compares against the embedded file.
+
+The snapshots depend on the module and the 2DA and TLK data, as well as on the code. Pack the module from the checkout
+you are testing (`Module\PackModule.cmd`) and use `sw_2da`, `sw_ability` and `sw_tlk` built from the pinned
+`SWLOR_Haks` commit before judging a mismatch; a stale server home produces diffs that no code change explains.
+`tools/Refactor/Update-EngineCharacterization.ps1` does all of that (see "Refreshing the snapshots after a `master`
+sync" below); the steps here are what it automates.
+
+To regenerate after an intended, approved behaviour change:
+
+```powershell
+$env:SWLOR_UPDATE_SNAPSHOTS = "1"
+scripts/run-engine-tests.ps1 -Filter Characterization
+```
+
+The compose file passes the variable through, the scenarios write each snapshot that differs to
+`<results directory>/characterization/`, and the runner scripts copy those files into the project's `Snapshots` folder.
+Review the diff of the snapshot files, then run again without the variable (the run builds again, which embeds the new
+files). Never regenerate to make a failing scenario pass.
+
+To add a scenario: create a `FrozenClock` and a `ScenarioArena`, spawn fixtures with `ScenarioActors`, seed `Random` inside the
+step that rolls, build a `SnapshotTable` of the outcomes and call `ScenarioSnapshot.Verify(area, name, table)`.
+
+#### Refreshing the snapshots after a `master` sync
+
+Every sync of `feature/maintainability-refactor` (`tools/Refactor/Sync-MaintainabilityBranch.ps1`) can change the module
+or hak content the scenarios read (loot tables, recipes, abilities, 2DA rows, TLK text), so the engine snapshots must be
+brought in step with the branch after each sync. In the worktree that holds the merge (snapshot folder clean, sparse
+`SWLOR_Haks` at the commit the branch pins, which the sync script moves), with Docker running:
+
+```powershell
+powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1            # update, then confirm
+powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -WaitMinutes 45   # queue behind another run
+powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -CheckOnly        # compare only, change nothing
+powershell -NoProfile -File tools/Refactor/Update-EngineCharacterization.ps1 -Entry native     # boot the runs through the native entry
+```
+
+The runs boot through the host entry unless `-Entry native` says otherwise (`-Collectible true|false` is passed on to the
+runner for the host); both pass the same `-Entry` to `scripts/run-engine-tests.ps1`. The snapshots must be identical under
+both entries, so a refresh on either entry that changes them is a finding, not a result.
+
+It runs the procedure above without the manual preparation, in about 30 minutes (measured 28: module pack 3.5 minutes,
+hak build 10 seconds, each of the two engine runs 12 minutes including its build):
+
+1. Refuses to start (exit 5) while the `swlor-engine-tests` compose project has any container. `scripts/run-engine-tests.ps1`
+   tears that project down at the start and the end of a run, so a second run would destroy the first agent's run. The
+   script never stops or removes those containers; wait and run it again, or pass `-WaitMinutes`.
+2. Packs the module from the worktree under the throwaway name `swlor_et_characterization` and rebuilds `sw_2da` and
+   `sw_ability` and copies `sw_tlk.tlk` from the worktree's pinned `SWLOR_Haks`.
+3. Prepares a throwaway server home outside the repository (default `C:\Temp\swlor-engine-characterization-<id>\`):
+   `swlor.env` and `settings.tml` from `SWLOR.Game.Server/Docker`, the module, the TLK, and a hak set in which every
+   other hak is an NTFS hard link to the shared dev server's hak set (`-BaseHakDirectory`, default `debugserver\hak`; the
+   files are only read). Nothing is written to `debugserver`, `enginetests-home` or the repository's ignored folders.
+4. Runs `scripts/run-engine-tests.ps1 -Filter Characterization` with `SWLOR_UPDATE_SNAPSHOTS=1`, lists the snapshot
+   files that changed with their changed row counts, then runs it again without the variable to confirm (skipped when
+   nothing changed, because the first run already compared every snapshot).
+5. Removes the home and the compose containers its runs created. `-KeepHome` keeps the home and `-ReuseHome <folder>`
+   repeats a run in it without packing again.
+
+The script commits and reverts nothing. **Explain every changed row before committing:** find the `master` commit or file that
+explains it (`git diff -U0 -- SWLOR.Game.Server.EngineTests/Characterization/Snapshots`, then `git log origin/master --
+<file>` for the loot table, recipe, 2DA row or text behind it). Content that `master` changed is drift to record; any row
+that no `master` content change explains is a regression in the branch: stop, keep the evidence and report it instead of
+committing the snapshot. Commit the explained snapshot files with the sync (or the sync's follow-up) and say in the sync log
+which master commits caused them.
+
+Exit codes: 0 passed; 1 an engine run failed (after a failed update run the snapshots written are partial: discard them,
+do not commit); 4 the script could not run (dirty snapshot folder, `SWLOR_Haks` not at the pinned commit, no Docker,
+no base hak set); 5 the compose project is in use. The script is also the way to check that the committed snapshots still
+match the branch at any time (`-CheckOnly`), for example after a `SWLOR_Haks` pointer change.
+
+## Coverage floors
+
+`bash scripts/ci/run-unit-tests.sh --out <dir>` ends with `tools/Refactor/check_coverage.py <dir>/coverage`, which merges the
+Cobertura files (a source line counts once, covered if any project hit it), drops the `excludes` listed in
+`tools/Refactor/CoverageFloors.json` (each with its reason) and compares the `SWLOR.Game.Server` figure and each area with the
+file's floors. Areas: each top-level folder, `Domain/<Domain>`, `Service` (the files directly in the folder: static helpers and data types) and `Service/folders` (the old `Service.<Name>Service` support folders, empty since P2-Z2 moved them into `Domain/<Domain>`, so it has no floor), and every other
+`SWLOR.*` assembly. A drop fails the run; `--no-coverage` or naming projects skips the check. Integration-tier coverage stays
+out of the measure (it needs Docker and Redis and runs in its own job).
+
+- Coverage rose: the check says so; run `python tools/Refactor/check_coverage.py <dir>/coverage --update` and commit the JSON.
+  `--update` only raises floors (whole percents, rounded down). Lowering one is a by-hand edit with the reason in the pull
+  request (code moved to another area, or deleted); never lower a floor to hide missing tests.
+- `--top-files N` lists the files with the most uncovered lines. Tests: `python -B -m unittest tools.tests.test_check_coverage`.
+
 ## CI
 
-`.github/workflows/engine-tests.yml` runs on `ubuntu-latest` with a 60-minute timeout, triggered by:
+`.github/workflows/engine-tests.yml` runs the suite for the maintainability refactor (`MaintainabilityRefactorPlan.md`) on
+`ubuntu-24.04` (the server image is Linux, and Docker on Windows runners cannot run Linux containers). Triggers:
 
-- `workflow_dispatch`, with an optional `filter` input (`SWLOR_ENGINE_TEST_FILTER`).
-- `schedule` - nightly at `0 9 * * *`, outside normal contributor hours.
-- `pull_request` into `feature/combat-upgrade`, path-filtered to
-  `SWLOR.Game.Server/**`, `SWLOR.NWN.API/**`, `SWLOR.CLI/**`, `Module/**`,
-  `SWLOR.Game.Server.sln`, and the workflow file itself.
+- `schedule`: nightly at 01:00 UTC (21:00 US Eastern), the whole suite.
+- `pull_request` into `feature/maintainability-refactor`, only with a label. `engine-tests` runs the whole suite;
+  `engine-tests-characterization` runs only the Characterization scenarios (`-Filter Characterization`), which are the
+  refactor's output lock and take about 40 minutes with setup. With both labels the whole suite runs. A run starts when the
+  label is added and again on every push while it is on; adding some other label does not restart it.
+- `workflow_dispatch` with an optional `filter` (the same text `--filter` takes; a short one such as `a` matches nearly every
+  test), a `timeout_minutes` wall clock (10 to 270, default 270; a narrow filter can ask for less), a `ref` (default
+  `feature/maintainability-refactor`), an `entry` (`host`, the default, or `native`, passed to the runner as `--entry`) and a
+  `collectible` (blank, `true` or `false`, passed as `--collectible`). The nightly and the labelled pull requests always boot
+  the host.
 
-It checks out with `submodules: recursive` and `fetch-depth: 1`, builds `SWLOR.CLI` (which pulls in
-`SWLOR.Game.Server`/`SWLOR.NWN.API`), downloads the `neverwinter.nim` Linux release tools
-(`nwn_erf`/`nwn_gff`/`nwn_tlk`) and renames them to `*.exe` next to `SWLOR.CLI.dll` so `HakBuilder`/
-`ModulePacker`'s hardcoded process names resolve, builds the hak files via `SWLOR.CLI --hak`
-(retargeting `Build/hakbuilder.json`'s `OutputPath` to `SWLOR.Game.Server/Docker/`), packs the
-module via `SWLOR.CLI --pack` into `SWLOR.Game.Server/Docker/modules/`, stages the
-already-built server assembly (a transitive output of the CLI build) into
-`SWLOR.Game.Server/Docker/dotnet/`, then runs `scripts/run-engine-tests.sh --skip-build --filter`
-so the server is not compiled a second time. Engine test results and server logs are uploaded as
-artifacts on every run (`if: always()`), each with 14-day retention.
+GitHub fires `schedule` and lists `workflow_dispatch` only for workflow files on the default branch (`master`), and the refactor
+branch does not merge there until the end. The workflow therefore checks out the refactor branch itself for those two triggers,
+so an identical copy of the file on `master` is all the nightly needs. Until a copy exists there, only the labelled pull
+requests run it.
 
-**This workflow has not yet had a successful (or attempted) run on GitHub-hosted runners**, per its
-own header comment - treat early runs as a debugging exercise, not a working pipeline. The biggest
-risk is `SWLOR_Haks`: it's a roughly 13GB git submodule, and even with `fetch-depth: 1` the checked
-out working tree is still that large, which may exceed a hosted runner's disk space and/or the job
-time budget. The header also flags, in rough order of likelihood after that: the Linux
-`neverwinter.nim` binaries haven't been confirmed to produce byte-identical or even game-compatible
-output versus the pinned Windows tools in `SWLOR_Haks/`, nor has their CLI argument compatibility
-with `HakBuilder.cs`/`ModulePacker.cs` been verified; renaming the extension-less Linux binaries to
-`*.exe` is a workaround, not an upstream-supported flow; and NWN server boot inside the container
-(NWNX/NWSync/licensing, engine startup timing) has only been exercised via the normal
-`docker-compose.yml` dev flow, not in a CI sandbox network context.
+What a run does, all through the scripts a cloud session or dev machine uses (run them in this order to reproduce a CI run):
+
+1. Chooses the filter and the wall clock from the trigger, frees runner disk space, checks out the branch (a pull request's
+   merge result), and runs `tools/WaitOutServerRestart.py` (see "The daily server restart" below).
+2. Installs the pinned .NET SDK, runs the unit tests of the summary tool, the restart check, the HAK staging and the HAK fetch
+   (seconds), installs `libpcre3` and downloads the pinned native NWN tools (`tools/native-tools.json`, checksum verified)
+   for `nwn_erf` and `nwn_gff`.
+3. `scripts/ci/fetch-engine-test-haks.sh` fetches the part of the pinned `SWLOR_Haks` commit the server needs. The module lists
+   all 119 HAKs, but the dedicated server never reads models, textures or sounds (`prepare-engine-test-home.sh` makes those
+   zero-byte files), and they are 147,000 of the 207,000 files. The script does a blobless depth-1 fetch (4 MB of trees) and a
+   sparse non-cone checkout of the HAK folders and `sw_tlk` without those file types (in any case): about 59,000 files, 300 MB,
+   50 MB over the wire. The full history is never cloned. The left-out files stay in the index as skip-worktree entries; do not
+   write files at those paths or run `git sparse-checkout disable` or anything else that needs their content in that checkout,
+   or git downloads the 11 GB of blobs. (`git diff HEAD`, `git ls-files` and `git ls-tree`, which `prepare-engine-test-home.sh`
+   runs, need no blob and no network there.)
+4. `scripts/prepare-engine-test-home.sh` builds the server-only HAKs and the TLK from it (the names of the left-out files
+   come from the index, so the HAKs equal those built from a full checkout), packs `Module/` with `SWLOR.CLI --pack`
+   (the Characterization snapshots need the module and the 2DA/TLK data of the branch itself), and pulls the Docker images.
+5. `scripts/run-engine-tests.sh` builds the test project (and the host) and runs the suite in the pinned server image on the chosen entry, with a wall clock of
+   270 minutes (120 for the quick label; a manual run can ask for less). Its exit code is the job's result.
+6. `tools/EngineTestSummary.py` writes the job summary (verdict, failed tests, per-category table, slowest tests) and
+   annotations, and the job uploads the `engine-test-results` artifact (14 days): `engine-test-results.json`, the runner output
+   `engine-tests.log`, and the server's `logs/` and `app_logs/`.
+
+Time: setup is expected to take 25 to 30 minutes (on a 20-core dev machine the module pack alone took 3.5 minutes and the HAKs
+about 3; the hosted runner has four vCPUs and has not been timed). The whole suite (910 tests, 6 of them skipped by design) took
+about 3 hours locally (142 minutes for the first 901 tests, then the long ones: the five `WeaponRotationBalance` tests run 6.8
+minutes each); the Characterization scenarios take 11 minutes. Test time is mostly in-game waiting, so a hosted runner should
+be close to the local figure.
+
+The job fails when any engine test fails, when no test ran, when the server container exits non-zero (even after a green
+report), and when the server dies without writing a report. A run that hits its wall clock fails too, and says so: the log
+carries `TIMED OUT after N minute(s)`, and the summary and an error annotation call it a timeout, not a failed test. The job's
+own limit (355 minutes: setup 30, a restart wait of at most 15, the build 5, the wall clock, teardown 5, the upload 10) is
+above that on purpose, so GitHub never kills the job before the script has reported.
+
+### The daily server restart
+
+`ServerTasks.ProcessAutoRestart` shuts the game server down for the whole 30 seconds after 10:00:00 UTC every day, with no
+exception for engine-test runs. A run that crosses that moment ends without a report ("No report found ... the server likely
+crashed", with `Server shutting down for automated restart.` in the log); it happened to the first full local run of this
+workflow, 26 minutes in. Do not start a long engine run in the hours before 10:00 UTC. The workflow handles it three ways: the
+nightly starts at 01:00 UTC, `tools/WaitOutServerRestart.py` waits up to 15 minutes when a run would cross the restart and
+otherwise fails the job at its first step with an error saying to run it again after 10:01 UTC (a job has six hours in all, so
+a long wait leaves no room for a 3 hour run). It plans for the worst case, setup and build (35 minutes) plus the whole wall clock: 305
+minutes for a full run, so a full run started between about 05:00 and 09:45 UTC fails at once, and 155 minutes for the quick
+label. And
+`EngineTestSummary.py` names the restart when it cuts a run off anyway. The
+real fix is a guard in `ProcessAutoRestart` for `ApplicationSettings.EngineTestsEnabled`; after it lands, delete the check and
+this section.
+
+Running the same steps on your machine: `scripts/ci/fetch-engine-test-haks.sh` (needs `SWLOR_Haks` empty or absent: it replaces
+it), then `scripts/prepare-engine-test-home.sh --server-home <dir>`, then `scripts/run-engine-tests.sh --server-home <dir>`.
+On a Windows checkout `prepare-engine-test-home.sh` and `run-engine-tests.sh` carry CRLF line endings; convert them first
+(`sed -i 's/\r$//'`), or use `run-engine-tests.ps1` with a home from the normal deploy flow.
+
+**This workflow has not yet run on GitHub-hosted runners**: Actions has been locked for the account by a billing issue since it
+was written. Its steps were verified one by one on a dev machine (see the pull request that added it); what only a hosted
+runner can show is the apt and native-tool step, free disk space, Docker Hub pulls, and the job's total time. Treat the first
+runs as a shake-out.
 
 ## Known Gaps and Non-Goals
 

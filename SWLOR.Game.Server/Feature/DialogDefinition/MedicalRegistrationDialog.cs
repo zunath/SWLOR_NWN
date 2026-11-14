@@ -1,6 +1,6 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Domain.Foundation;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -164,8 +164,8 @@ public static class ForceEspionageEngineTests
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
             StatusEffect.ApplyStatusEffect(player.Creature, bug, new DecoyStatusEffect(8), 30f));
 
-        ctx.AssertEqual(184, Combat.ApplyStatusSourceAccuracyModifiers(bug, player.Creature, 200), "8% off a rating of 200");
-        ctx.AssertEqual(200, Combat.ApplyStatusSourceAccuracyModifiers(bug, other.Creature, 200), "no penalty against anyone else");
+        ctx.AssertEqual(184, GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(bug, player.Creature, 200), "8% off a rating of 200");
+        ctx.AssertEqual(200, GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(bug, other.Creature, 200), "no penalty against anyone else");
     }
 
     [EngineTest("Shared Presence hides a party member without the Stealth perk, without upkeep, for its window",
@@ -320,8 +320,8 @@ public static class ForceEspionageEngineTests
     private static async Task JoinPartyAsync(EngineTestContext ctx, uint leader, uint member)
     {
         await ctx.ExecuteInCreatureContextAsync(member, () =>
-            typeof(Party).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Static)!
-                .Invoke(null, new object[] { leader, member }));
+            typeof(Domain.Social.PartyService).GetMethod("AddToParty", BindingFlags.NonPublic | BindingFlags.Instance)!
+                .Invoke(Party, new object[] { leader, member }));
         ctx.Assert(Party.IsInParty(leader, member), "the member joins the caster's party");
     }
 

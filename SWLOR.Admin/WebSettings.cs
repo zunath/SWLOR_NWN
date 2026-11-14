@@ -22,6 +22,10 @@
             Environment.SetEnvironmentVariable("SWLOR_APP_LOG_DIRECTORY", LogDirectory);
             Environment.SetEnvironmentVariable("NWNX_REDIS_HOST", $"{RedisIP}:{Port}");
 
+            // DB forwards to the service container, which the game server builds at boot. This site builds it itself.
+            if (!SWLOR.Game.Server.Composition.CompositionRoot.IsBuilt)
+                SWLOR.Game.Server.Composition.CompositionRoot.Build(SWLOR.Game.Server.Composition.CompositionRoot.ServerHost);
+
             DB.Load();
         }
 

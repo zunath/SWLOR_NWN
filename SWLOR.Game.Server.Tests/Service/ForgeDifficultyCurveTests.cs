@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Forge;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

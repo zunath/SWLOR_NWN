@@ -1,7 +1,8 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -40,8 +41,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var agility = GetAbilityModifier(AbilityType.Agility, source);
             var amount = System.Math.Max(1, d4() + agility * 2 * _level);
             amount = Resistance.ApplyResistanceToDamage(creature, ResistanceType, amount);
-            amount = Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Electrical, out var targetStatusDamageAdjustment);
-            amount = Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Electrical,
+            amount = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Electrical, out var targetStatusDamageAdjustment);
+            amount = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Electrical,
                 deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (amount <= 0)
                 return;

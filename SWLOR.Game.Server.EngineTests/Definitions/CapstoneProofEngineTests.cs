@@ -2,12 +2,13 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Service.NPCService;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 
@@ -107,11 +108,11 @@ public static class CapstoneProofEngineTests
         ctx.Assert(BeastMastery.IsPlayerBeast(beast), "The beast is owned by the player.");
         var keys = new[] { "primal_overrun", "untouchable_instinct", "force_bonded_beast", "apex_bite", "unbreakable_beast", "alpha_rhythm" };
         await ctx.ExecuteInCreatureContextAsync(fixture.Creature, () =>
-            Combat.ApplyDamageDealtEffects(fixture.Creature, enemy, 1, SkillType.Vibroblade, CombatDamageType.Physical));
+            GameServices.CombatHitEffects.ApplyDamageDealtEffects(fixture.Creature, enemy, 1, SkillType.Vibroblade, CombatDamageType.Physical));
         foreach (var key in keys)
             ctx.Assert(!CapstoneProof.HasProof(fixture.Creature, enemy, key), "The master's own hit does not prove " + key);
         await ctx.ExecuteInCreatureContextAsync(beast, () =>
-            Combat.ApplyDamageDealtEffects(beast, enemy, 1, SkillType.BeastMastery, CombatDamageType.Physical));
+            GameServices.CombatHitEffects.ApplyDamageDealtEffects(beast, enemy, 1, SkillType.BeastMastery, CombatDamageType.Physical));
         foreach (var key in keys)
         {
             ctx.Assert(CapstoneProof.HasProof(fixture.Creature, enemy, key), "The beast's hit proves " + key);

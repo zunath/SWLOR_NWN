@@ -3,16 +3,17 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;
+using SWLOR.Game.Server.Domain.Items;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -761,7 +762,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skipPageLoad = true;
             _myShips = dbPlayerShips;
             _sharedPropertyIds = new List<string>();
-            ShipCountRegistered = $"Ships: {dbPlayerShips.Count} / {Space.MaxRegisteredShips}";
+            ShipCountRegistered = $"Ships: {dbPlayerShips.Count} / {SpaceService.MaxRegisteredShips}";
             IsMyShipsToggled = true;
             IsOtherShipsToggled = false;
             SelectedPageIndex = 0;
@@ -1338,7 +1339,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ToggleRegisterButtons()
         {
-            IsRegisterEnabled = _shipIds.Count < Space.MaxRegisteredShips && IsMyShipsToggled;
+            IsRegisterEnabled = _shipIds.Count < SpaceService.MaxRegisteredShips && IsMyShipsToggled;
 
             if (SelectedShipIndex > -1)
             {
@@ -1397,9 +1398,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), playerId, false);
                 var registeredShipCount = (int)DB.SearchCount(query);
 
-                if (registeredShipCount >= Space.MaxRegisteredShips)
+                if (registeredShipCount >= SpaceService.MaxRegisteredShips)
                 {
-                    FloatingTextStringOnCreature($"You may only have {Space.MaxRegisteredShips} ships registered at a time.", Player, false);
+                    FloatingTextStringOnCreature($"You may only have {SpaceService.MaxRegisteredShips} ships registered at a time.", Player, false);
                     return;
                 }
 
@@ -1445,7 +1446,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(ship);
 
                 // Update the UI with the new ship details.
-                ShipCountRegistered = $"Ships: {registeredShipCount + 1} / {Space.MaxRegisteredShips}";
+                ShipCountRegistered = $"Ships: {registeredShipCount + 1} / {SpaceService.MaxRegisteredShips}";
                 _myShips.Add(ship);
                 _shipIds.Add(ship.Id);
                 ShipNames.Add(property.CustomName);
@@ -1485,7 +1486,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (!Item.TryAcquireItem(Player, ObjectPlugin.Deserialize(dbShip.SerializedItem)))
                     {
-                        FloatingTextStringOnCreature(Item.InventoryFullMessage, Player, false);
+                        FloatingTextStringOnCreature(ItemService.InventoryFullMessage, Player, false);
                         return;
                     }
 
@@ -1504,7 +1505,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ShipToggles.RemoveAt(SelectedShipIndex);
                     SelectedShipIndex = -1;
                     ToggleRegisterButtons();
-                    ShipCountRegistered = $"Ships: {_shipIds.Count} / {Space.MaxRegisteredShips}";
+                    ShipCountRegistered = $"Ships: {_shipIds.Count} / {SpaceService.MaxRegisteredShips}";
                     LoadShip();
 
                     FloatingTextStringOnCreature("Ship unregistered!", Player, false);
@@ -1655,7 +1656,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        SendMessageToPC(Player, Item.InventoryFullMessage);
+                        SendMessageToPC(Player, ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -1730,7 +1731,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        SendMessageToPC(Player, Item.InventoryFullMessage);
+                        SendMessageToPC(Player, ItemService.InventoryFullMessage);
                         return;
                     }
 
@@ -1804,7 +1805,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var moduleBonus = Space.GetModuleBonus(item);
                     if (!Item.TryAcquireItem(Player, item))
                     {
-                        SendMessageToPC(Player, Item.InventoryFullMessage);
+                        SendMessageToPC(Player, ItemService.InventoryFullMessage);
                         return;
                     }
 

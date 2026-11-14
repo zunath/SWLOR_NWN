@@ -1,9 +1,7 @@
 using SWLOR.CombatSim.Data;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 
 namespace SWLOR.CombatSim.Engine;
@@ -22,7 +20,7 @@ public sealed partial class Simulation
         if (caster.Weapon == null || target?.Weapon == null) return 0;
         var a = caster.Spec.WeaponCombat; var d = target.Spec.WeaponCombat;
         var accuracy = caster.Weapon.SetupAccuracy(target, _now);
-        return (Combat.CalculateHitRate(a.Accuracy + accuracy, WeaponCombatState.Adjust(d.Evasion, target.Weapon.EvasionPercent(_now)), 0) - Combat.CalculateHitRate(a.Accuracy, d.Evasion, 0)) / 100f;
+        return (CombatRules.CalculateHitRate(a.Accuracy + accuracy, WeaponCombatState.Adjust(d.Evasion, target.Weapon.EvasionPercent(_now)), 0) - CombatRules.CalculateHitRate(a.Accuracy, d.Evasion, 0)) / 100f;
     }
     private bool ApplyWeaponAbility(Combatant caster, Combatant target, PendingCast cast, bool alwaysHits = false)
     {
@@ -143,7 +141,7 @@ public sealed partial class Simulation
         if (conditional.RequiredStatus != null && !HasWeaponStatus(target, conditional.RequiredStatus)) return;
         if (conditional.RequiredCategory != StatusEffectCategory.None && !WeaponCombatState.HasCategory(target, conditional.RequiredCategory, _now)) return;
         var status = (IStatusEffect)Activator.CreateInstance(conditional.Status);
-        var outgoing = StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
+        var outgoing = StatusEffectRules.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
         var pvp = IsPlayerVersusPlayer(caster, target);
         if (!conditional.ConvertsRequiredStatus)
         {
@@ -216,7 +214,7 @@ public sealed partial class Simulation
         {
             var status = ability.WeaponStatusFactory?.Invoke() is { } configured && configured.GetType() == type
                 ? configured : (IStatusEffect)Activator.CreateInstance(type);
-            var outgoing = StatusEffect.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
+            var outgoing = StatusEffectRules.GetOutgoingDurationPercentAdjustment(status.Categories, caster.Weapon.Stat);
             var pvp = IsPlayerVersusPlayer(caster, target);
             if (status is HamstringStatusEffect)
             {
@@ -281,7 +279,7 @@ public sealed partial class Simulation
         // Stat.ApplyPostAccuracyStatusModifiers: a percent of accuracy, rounded away from zero.
         var accuracyPercent = attacker.Weapon.AccuracyPercent(_now);
         var accuracy = accuracyPercent == 0 ? a.Accuracy : WeaponCombatState.Adjust(a.Accuracy, accuracyPercent);
-        return Combat.CalculateHitRate(accuracy + accuracyBonus - penalty, evasion, hitPercent);
+        return CombatRules.CalculateHitRate(accuracy + accuracyBonus - penalty, evasion, hitPercent);
     }
 
     private bool RollWeapon(Combatant attacker, Combatant target, int power, int accuracyBonus, int hitPercent, bool ordinary,
@@ -298,18 +296,18 @@ public sealed partial class Simulation
             return false;
         }
         if (ordinary) power += attacker.Weapon.TakeLandedOrdinaryPower(_now);
-        var criticalChance = ordinary ? Combat.CalculateCriticalRate(a.Perception, d.Vitality, a.WeaponSkillRank, 0) : Combat.CalculateAbilityCriticalChance(0);
-        var critical = a.EnableCriticals && _random.Next(1, 101) <= criticalChance ? Combat.StandardCriticalRating : 0;
+        var criticalChance = ordinary ? CombatRules.CalculateCriticalRate(a.Perception, d.Vitality, a.WeaponSkillRank, 0) : CombatRules.CalculateAbilityCriticalChance(0);
+        var critical = a.EnableCriticals && _random.Next(1, 101) <= criticalChance ? CombatRules.StandardCriticalRating : 0;
         var attack = WeaponCombatState.Adjust(a.Attack, attacker.Weapon.Stat(StatType.AttackPercentAdjustment));
         var defense = WeaponCombatState.Adjust(d.Defense, target.Weapon.DefensePercent(_now));
-        var (min, max) = Combat.CalculateDamageRange(attack, power, a.Might, defense, d.Vitality, critical, ordinary ? Math.Clamp(a.WeaponRequiredSkillRank/10+1,1,6) : 0);
+        var (min, max) = CombatRules.CalculateDamageRange(attack, power, a.Might, defense, d.Vitality, critical, ordinary ? Math.Clamp(a.WeaponRequiredSkillRank/10+1,1,6) : 0);
         var amount = (int)(float)(_random.NextDouble() * (max - min) + min);
         // Production order after the roll: critical modifier, auto-attack riders, ApplyDamageDealtModifiers, then
         // MeleeTechnique.ApplyOrdinaryDamageModifiers (Low Kick) or Combat Readiness.
         amount = attacker.Weapon.ApplyCriticalDamage(amount, critical, target, _now);
         if (ordinary) amount = attacker.Weapon.ApplyAutoAttackDamage(amount, () => _random.Next(1, 101));
         amount = attacker.Weapon.ApplyDamageDealt(amount, target, ordinary, _now);
-        if (ordinary) amount = Combat.ApplyPercentDamageAdjustment(amount, -attacker.Weapon.LowKick.Values.Select(x => x.Penalty).DefaultIfEmpty().Max());
+        if (ordinary) amount = CombatRules.ApplyPercentDamageAdjustment(amount, -attacker.Weapon.LowKick.Values.Select(x => x.Penalty).DefaultIfEmpty().Max());
         if (!ordinary && attacker.Spec.CombatReadinessPercent > 0)
             amount += (int)Math.Ceiling(amount * (attacker.Spec.CombatReadinessPercent / 100f));
         beforeDamage?.Invoke();

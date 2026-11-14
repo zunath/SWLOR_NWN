@@ -3,12 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
-using SWLOR.Game.Server.Service.AIService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -57,7 +56,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
             var part = await CreateItemAsync(ctx, owner, "d_hd_mpv1", owner);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceFire, 15), part);
@@ -81,7 +80,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var owner = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidInstruction, (int)PerkType.MedKit, 2), controller);
@@ -117,7 +116,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var tier = 1; tier <= 5; tier++)
             {
                 var cpu = await CreateItemAsync(ctx, owner, $"d_bl_cpu{tier}_m", owner);
-                var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+                var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
                 var droid = OBJECT_INVALID;
                 DroidItemPropertyDetails expected = null;
                 await ctx.ExecuteInCreatureContextAsync(owner, () =>
@@ -152,7 +151,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(15, Stat.GetNPCStats(droid).Resistances[ResistanceType.Fire], "Resistance reaches combat skin");
                 ctx.Assert(GetHasFeat(FeatType.MedKit1, droid), "Active instruction grants AI feat");
                 ctx.AssertEqual(1, Perk.GetPerkLevel(droid, PerkType.MedKit), "Instruction rank reaches ability execution");
-                ctx.AssertEqual(AIProfileType.DroidCompanion, NPCAI.GetProfileType(droid), "Droid companion AI is installed");
+                ctx.AssertEqual(AIProfileType.DroidCompanion, AI.GetAIProfile(droid), "Droid companion AI is installed");
                 await ctx.ExecuteInCreatureContextAsync(owner, () => DestroyObject(droid));
                 await ctx.WaitFrameAsync();
             }
@@ -164,7 +163,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var owner = ctx.SpawnCreature("civilian");
             await ctx.WaitFrameAsync();
             var cpu = await CreateItemAsync(ctx, owner, "d_bl_cpu5_m", owner);
-            var controller = await CreateItemAsync(ctx, owner, Droid.DroidControlItemResref, owner);
+            var controller = await CreateItemAsync(ctx, owner, DroidService.DroidControlItemResref, owner);
             var droid = OBJECT_INVALID;
             await ctx.ExecuteInCreatureContextAsync(owner, () =>
             {

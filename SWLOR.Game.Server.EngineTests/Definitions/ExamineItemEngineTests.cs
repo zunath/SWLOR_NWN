@@ -9,9 +9,10 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -25,8 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var playerWindow = template.CreatePlayerWindowAction();
             var model = (ExamineItemViewModel)playerWindow.ViewModel;
             model.Geometry = new GuiRectangle(40f, 45f, 440f, 560f);
-            var windows = (Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>>)typeof(Gui)
-                .GetField("_playerWindows", BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
+            var windows = GuiInternals.PlayerWindows();
             ctx.Assert(!windows.ContainsKey(observer.Id), "headless fixture GUI registration must be isolated");
             windows.Add(observer.Id, new Dictionary<GuiWindowType, GuiPlayerWindow> { [GuiWindowType.ExamineItem] = playerWindow });
             var snapshots = new JArray();

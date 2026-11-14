@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Performance
 {
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Performance
 
         private static void PlayInstrumentImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            Service.Performance.TogglePlayInstrument(activator, level);
+            GameServices.Performance.TogglePlayInstrument(activator, level);
         }
     }
 }

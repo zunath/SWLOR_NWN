@@ -1,8 +1,9 @@
-using SWLOR.Game.Server.Service.StatusEffectService;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -40,8 +41,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var perception = GetAbilityModifier(AbilityType.Perception, source);
             var damage = System.Math.Max(1, d2() + perception * _level);
             damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damage);
-            damage = Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Poison, out var targetStatusDamageAdjustment);
-            damage = Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Poison,
+            damage = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Poison, out var targetStatusDamageAdjustment);
+            damage = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Poison,
                 deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment);
             if (damage > 0)
             {

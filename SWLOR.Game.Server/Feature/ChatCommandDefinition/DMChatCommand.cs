@@ -7,23 +7,23 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.BeastMasteryService;
-using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.ChatCommandService;
-using SWLOR.Game.Server.Service.CombatRecorderService;
-using SWLOR.Game.Server.Service.FactionService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.QuestService;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.MusicService;
-using Faction = SWLOR.Game.Server.Service.Faction;
+using SWLOR.Game.Server.Domain.Gameplay;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Composition;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             return _builder.Build();
         }
 
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void CacheSpawnBeastEggHelp()
         {
@@ -177,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    var learnedCount = Mimicry.GrantAllTechniques(user);
+                    var learnedCount = GameServices.Mimicry.GrantAllTechniques(user);
                     SendMessageToPC(user,
                         $"Learned {learnedCount} new Mimicry technique(s). Open the Techniques window to equip them.");
                 });
@@ -861,7 +862,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void AdjustFactionStanding()
         {
             _builder.Create("adjustfactionstanding")
-                .Description($"Modifies a player's standing toward a particular faction. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
+                .Description($"Modifies a player's standing toward a particular faction. Scale ranges from {FactionService.MinimumFaction} to {FactionService.MaximumFaction}")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
                 .Validate((user, args) =>
@@ -870,7 +871,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                        ((FactionType)factionId) == FactionType.Invalid)
                     {
                         var error = "Invalid faction Id. Must be one of the following values:";
-                        foreach (var (faction, detail) in Faction.GetAllFactions())
+                        foreach (var (faction, detail) in GameServices.Faction.GetAllFactions())
                         {
                             error += $"{(int) faction} = {detail.Name}";
                         }
@@ -880,12 +881,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     if(!int.TryParse(args[1], out var amount))
                     {
-                        return $"Invalid amount. Must be a value ranging from {Faction.MinimumFaction} to {Faction.MaximumFaction}";
+                        return $"Invalid amount. Must be a value ranging from {FactionService.MinimumFaction} to {FactionService.MaximumFaction}";
                     }
 
-                    if (amount < Faction.MinimumFaction || amount > Faction.MaximumFaction)
+                    if (amount < FactionService.MinimumFaction || amount > FactionService.MaximumFaction)
                     {
-                        return $"Invalid amount. Must be a value ranging from {Faction.MinimumFaction} to {Faction.MaximumFaction}";
+                        return $"Invalid amount. Must be a value ranging from {FactionService.MinimumFaction} to {FactionService.MaximumFaction}";
                     }
 
                     return string.Empty;
@@ -903,7 +904,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     foreach (var (faction, standingDetail) in dbPlayer.Factions)
                     {
-                        var factionDetail = Faction.GetFactionDetail(faction);
+                        var factionDetail = GameServices.Faction.GetFactionDetail(faction);
 
                         SendMessageToPC(user, $"{factionDetail.Name}: {standingDetail.Standing}");
                     }
@@ -913,7 +914,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void GetFactionStanding()
         {
             _builder.Create("getfactionstanding")
-                .Description($"Retrieves a player's standing towards all factions. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
+                .Description($"Retrieves a player's standing towards all factions. Scale ranges from {FactionService.MinimumFaction} to {FactionService.MaximumFaction}")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
@@ -930,7 +931,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     foreach (var (faction, standingDetail) in dbPlayer.Factions)
                     {
-                        var factionDetail = Faction.GetFactionDetail(faction);
+                        var factionDetail = GameServices.Faction.GetFactionDetail(faction);
 
                         SendMessageToPC(user, $"{factionDetail.Name}: {standingDetail.Standing}");
                     }
@@ -1367,7 +1368,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             {
                                 var playerId = GetObjectUUID(target);
                                 var dbPlayer = DB.Get<Player>(playerId);
-                                level = dbPlayer.Skills[Service.SkillService.SkillType.Piloting].Rank;
+                                level = dbPlayer.Skills[SWLOR.Game.Server.Domain.Character.SkillType.Piloting].Rank;
                             }
                             var targetName = GetName(target);
                             var targetStatus = Space.GetShipStatus(target);

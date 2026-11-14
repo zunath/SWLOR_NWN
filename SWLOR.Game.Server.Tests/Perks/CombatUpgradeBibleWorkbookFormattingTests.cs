@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
@@ -5,12 +6,29 @@ using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class CombatUpgradeBibleWorkbookFormattingTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     private const decimal MinimumNotesColumnWidth = 45m;
     private static readonly XNamespace SpreadsheetNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     private static readonly XNamespace RelationshipNs = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
@@ -206,47 +224,47 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             .Where(row => row.TryGetValue("A", out var name) && !string.IsNullOrWhiteSpace(name))
             .ToDictionary(row => row["A"], StringComparer.Ordinal);
 
-        AssertStatRange(stats, "Combat Readiness", 0, Stat.MaximumCombatReadinessPercent);
-        AssertStatRange(stats, "Shield Deflection", 0, Stat.MaximumShieldDeflectionChance);
-        AssertStatRange(stats, "Melee / Ranged Deflection", 0, Stat.MaximumDeflectionChanceCap);
-        AssertStatRange(stats, "Guard", 0, Stat.MaximumGuardChance);
-        AssertStatRange(stats, "Critical Rate", Combat.MinimumCriticalRate, Combat.MaximumCriticalRate);
-        AssertStatRange(stats, "Critical Damage", 0, Combat.MaximumCriticalDamagePercentAdjustment);
+        AssertStatRange(stats, "Combat Readiness", 0, StatService.MaximumCombatReadinessPercent);
+        AssertStatRange(stats, "Shield Deflection", 0, StatService.MaximumShieldDeflectionChance);
+        AssertStatRange(stats, "Melee / Ranged Deflection", 0, StatService.MaximumDeflectionChanceCap);
+        AssertStatRange(stats, "Guard", 0, StatService.MaximumGuardChance);
+        AssertStatRange(stats, "Critical Rate", CombatRules.MinimumCriticalRate, CombatRules.MaximumCriticalRate);
+        AssertStatRange(stats, "Critical Damage", 0, CombatRules.MaximumCriticalDamagePercentAdjustment);
         AssertStatRange(
             stats,
             "Enmity",
-            Enmity.MinimumEnmityPercentAdjustment,
-            Enmity.MaximumEnmityPercentAdjustment);
-        AssertStatRange(stats, "Haste", 0, Combat.MaximumAttackDelayAdjustmentPercent);
-        AssertStatRange(stats, "Slow", 0, Combat.MaximumAttackDelayAdjustmentPercent);
+            EnmityService.MinimumEnmityPercentAdjustment,
+            EnmityService.MaximumEnmityPercentAdjustment);
+        AssertStatRange(stats, "Haste", 0, CombatRules.MaximumAttackDelayAdjustmentPercent);
+        AssertStatRange(stats, "Slow", 0, CombatRules.MaximumAttackDelayAdjustmentPercent);
         AssertStatRange(
             stats,
             "Movement Speed",
-            (decimal)Stat.MinimumMovementSpeedMultiplier,
-            (decimal)Stat.MaximumMovementSpeedMultiplier);
+            (decimal)StatService.MinimumMovementSpeedMultiplier,
+            (decimal)StatService.MaximumMovementSpeedMultiplier);
         AssertStatRange(
             stats,
             "Damage-Derived Healing per Hit",
             0,
-            Combat.MaximumDamageDerivedHealingPercentPerHit);
-        AssertStatRange(stats, "Hit Rate", Combat.MinimumHitRate, Combat.MaximumHitRate);
-        AssertStatRange(stats, "Damage Bonus per Hit", 0, Combat.MaximumDamageBonusPercent);
+            CombatRules.MaximumDamageDerivedHealingPercentPerHit);
+        AssertStatRange(stats, "Hit Rate", CombatRules.MinimumHitRate, CombatRules.MaximumHitRate);
+        AssertStatRange(stats, "Damage Bonus per Hit", 0, CombatRules.MaximumDamageBonusPercent);
         AssertStatRange(
             stats,
             "Single Damage Reduction Modifier",
             0,
-            Combat.MaximumNormalDamageReductionPercent);
+            CombatRules.MaximumNormalDamageReductionPercent);
         AssertStatRange(
             stats,
             "Combined Damage Reduction per Hit",
             0,
-            Combat.MaximumCombinedDamageReductionPercent);
+            CombatRules.MaximumCombinedDamageReductionPercent);
 
-        stats["Melee / Ranged Deflection"]["K"].Should().Contain($"independent default chance cap of {Stat.DefaultMeleeDeflectionChanceCap}%");
+        stats["Melee / Ranged Deflection"]["K"].Should().Contain($"independent default chance cap of {StatService.DefaultMeleeDeflectionChanceCap}%");
         stats["Melee / Ranged Deflection"]["K"].Should().Contain("activated combat abilities or Force powers");
         stats["Shield Deflection"]["K"].Should().Contain("completely replaces Melee and Ranged Deflection");
-        stats["Guard"]["K"].Should().Contain($"reduces damage by {Combat.BaseGuardDamageReductionPercent}% by default");
-        stats["Guard"]["K"].Should().Contain($"{Combat.MaximumGuardDamageReductionPercent}% hard limit");
+        stats["Guard"]["K"].Should().Contain($"reduces damage by {CombatDamageTakenService.BaseGuardDamageReductionPercent}% by default");
+        stats["Guard"]["K"].Should().Contain($"{CombatDamageTakenService.MaximumGuardDamageReductionPercent}% hard limit");
         stats["Damage-Derived Healing per Hit"]["K"].Should().Contain("after Combat Readiness and healing-received modifiers");
     }
 

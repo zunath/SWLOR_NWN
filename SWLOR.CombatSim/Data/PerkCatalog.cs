@@ -1,7 +1,5 @@
 using System.Reflection;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Data
@@ -66,7 +64,7 @@ namespace SWLOR.CombatSim.Data
                     }
 
                     totals.TryGetValue(bonus.Stat, out var current);
-                    totals[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, value);
+                    totals[bonus.Stat] = StatRules.AggregateStatAdjustment(bonus.Stat, current, value);
                 }
             }
 
@@ -84,7 +82,7 @@ namespace SWLOR.CombatSim.Data
                 var source = new Dictionary<StatType,int>();
                 foreach (var bonus in perk.StatBonuses.Concat(level.StatBonuses))
                 {
-                    try { source[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, source.GetValueOrDefault(bonus.Stat), bonus.Calculate(PlaceholderObject)); }
+                    try { source[bonus.Stat] = StatRules.AggregateStatAdjustment(bonus.Stat, source.GetValueOrDefault(bonus.Stat), bonus.Calculate(PlaceholderObject)); }
                     catch (Exception ex) { throw new InvalidDataException($"Cannot evaluate source stat {entry}/{bonus.Stat} outside the engine.", ex); }
                 }
                 if (source.Count > 0) result.Add(source);

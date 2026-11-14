@@ -1,6 +1,5 @@
 using SWLOR.CombatSim.Scenario;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CombatSim.Engine
 {
@@ -99,7 +98,7 @@ namespace SWLOR.CombatSim.Engine
             foreach (var status in Statuses.Values)
             {
                 if (status.Stats.TryGetValue(stat, out var bonus))
-                    total = Stat.AggregateStatAdjustment(stat, total, bonus);
+                    total = StatRules.AggregateStatAdjustment(stat, total, bonus);
             }
 
             return total;

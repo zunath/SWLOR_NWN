@@ -2,7 +2,9 @@ using System.Linq;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -12,6 +14,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 /// </summary>
 public class BattleGridTests
 {
+    // The facade resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     [Test]
     public void SectionsMeetEdgeToEdgeAroundTheCenter()
     {
@@ -30,13 +48,13 @@ public class BattleGridTests
     public void GridEdgesSpanTheReportedSquareCount()
     {
         var settings = new BattleGridSettings(1.5f, 4, 1, 0f);
-        var sectionSize = settings.SquareSize * BattleGrid.SquaresPerSection;
+        var sectionSize = settings.SquareSize * BattleGridService.SquaresPerSection;
 
         var centers = BattleGrid.GetSectionCenters(Vector3.Zero, settings);
 
         var west = centers.Min(c => c.X) - sectionSize / 2f;
         var east = centers.Max(c => c.X) + sectionSize / 2f;
-        (east - west).Should().BeApproximately(settings.SectionsWide * BattleGrid.SquaresPerSection * settings.SquareSize, 0.001f);
+        (east - west).Should().BeApproximately(settings.SectionsWide * BattleGridService.SquaresPerSection * settings.SquareSize, 0.001f);
         west.Should().BeApproximately(-east, 0.001f, "the grid is centered on its placed spot");
     }
 
@@ -58,8 +76,8 @@ public class BattleGridTests
         var low = BattleGrid.Clamp(new BattleGridSettings(0f, 0, -2, -20f));
         var high = BattleGrid.Clamp(new BattleGridSettings(50f, 40, 9, 30f));
 
-        low.Should().Be(new BattleGridSettings(BattleGrid.MinSquareSize, BattleGrid.MinSections, BattleGrid.MinSections, BattleGrid.MinHeight));
-        high.Should().Be(new BattleGridSettings(BattleGrid.MaxSquareSize, BattleGrid.MaxSections, BattleGrid.MaxSections, BattleGrid.MaxHeight));
+        low.Should().Be(new BattleGridSettings(BattleGridService.MinSquareSize, BattleGridService.MinSections, BattleGridService.MinSections, BattleGridService.MinHeight));
+        high.Should().Be(new BattleGridSettings(BattleGridService.MaxSquareSize, BattleGridService.MaxSections, BattleGridService.MaxSections, BattleGridService.MaxHeight));
     }
 
     [Test]
@@ -68,7 +86,7 @@ public class BattleGridTests
         // Repeated 0.1 m height steps drift off their decimal value; the label and stored height must not.
         var height = 0f;
         for (var step = 0; step < 7; step++)
-            height += BattleGrid.HeightStep;
+            height += BattleGridService.HeightStep;
 
         var clamped = BattleGrid.Clamp(new BattleGridSettings(1.5f + 0.0001f, 2, 2, height));
 
@@ -79,7 +97,7 @@ public class BattleGridTests
     [Test]
     public void LargestGridStaysWithinTheAnchorBudget()
     {
-        BattleGrid.GetSectionCenters(Vector3.Zero, new BattleGridSettings(BattleGrid.MaxSquareSize, BattleGrid.MaxSections, BattleGrid.MaxSections, 0f))
+        BattleGrid.GetSectionCenters(Vector3.Zero, new BattleGridSettings(BattleGridService.MaxSquareSize, BattleGridService.MaxSections, BattleGridService.MaxSections, 0f))
             .Should().HaveCount(64, "each section is one invisible placeable");
     }
 }

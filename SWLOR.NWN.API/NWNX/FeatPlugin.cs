@@ -33,13 +33,7 @@ namespace SWLOR.NWN.API.NWNX
             uint param3 = 0xDEADBEEF,
             uint param4 = 0xDEADBEEF)
         {
-            global::NWN.Core.NWNX.FeatPlugin.SetFeatModifier(
-                (int)featType,
-                (int)modifierType,
-                (int)param1,
-                (int)param2,
-                (int)param3,
-                (int)param4);
+            FeatPluginRuntime.Current.SetFeatModifier(featType, modifierType, param1, param2, param3, param4);
         }
     }
 }

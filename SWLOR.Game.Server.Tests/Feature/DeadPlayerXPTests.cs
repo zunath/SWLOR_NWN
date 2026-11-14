@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -8,8 +9,8 @@ public class DeadPlayerXPTests
     [Test]
     public void SkillXP_GuardsDeadPlayersAtAwardBoundary()
     {
-        var source = ReadServerSource("Service", "Skill.cs");
-        var method = ExtractMethod(source, "public static int GiveSkillXP(");
+        var source = ReadServerSource("Domain", "Character", "SkillService.cs");
+        var method = ExtractMethod(source, "public int GiveSkillXP(");
 
         AssertDeadPlayerGuardExitsBefore(method, "player", "return 0;", "var modifiedSkills");
     }
@@ -17,10 +18,10 @@ public class DeadPlayerXPTests
     [Test]
     public void CombatPointDistribution_SkipsDeadPlayersBeforeSkillAndBeastXPHooks()
     {
-        var source = ReadServerSource("Service", "CombatPoint.cs");
-        var method = ExtractMethod(source, "static void DistributeSkillXP()");
+        var source = ReadServerSource("Domain", "Combat", "CombatPointService.cs");
+        var method = ExtractMethod(source, "void DistributeSkillXP()");
 
-        AssertDeadPlayerGuardExitsBefore(method, "player", "continue;", "Skill.GiveSkillXP");
+        AssertDeadPlayerGuardExitsBefore(method, "player", "continue;", "GiveSkillXP(");
         AssertDeadPlayerGuardExitsBefore(method, "player", "continue;", "SWLOR_COMBAT_POINT_DISTRIBUTED");
     }
 
@@ -52,16 +53,16 @@ public class DeadPlayerXPTests
     [Test]
     public void QuestKillCreditAndCompletion_SkipDeadPlayersBeforeRewards()
     {
-        var questSource = ReadServerSource("Service", "Quest.cs");
-        var questEncounterSource = ReadServerSource("Service", "QuestService", "QuestEncounter.cs");
-        var questDetailSource = ReadServerSource("Service", "QuestService", "QuestDetail.cs");
-        var killProgression = ExtractMethod(questSource, "public static void ProgressKillTargetObjectives()");
-        var encounterKillCredit = ExtractMethod(questEncounterSource, "private static void ProgressKillCredit(");
+        var questSource = ReadServerSource("Domain", "Quests", "QuestService.cs");
+        var questEncounterSource = ReadServerSource("Domain", "Quests", "QuestEncounterService.cs");
+        var questDetailSource = ReadServerSource("Domain", "Quests", "QuestDetail.cs");
+        var killProgression = ExtractMethod(questSource, "public void ProgressKillTargetObjectives()");
+        var encounterKillCredit = ExtractMethod(questEncounterSource, "private void ProgressKillCredit(");
         var canComplete = ExtractMethod(questDetailSource, "public bool CanComplete(uint player)");
         var advance = ExtractMethod(questDetailSource, "public bool Advance(uint player, uint questSource)");
         var complete = ExtractMethod(questDetailSource, "public void Complete(uint player, uint questSource, IQuestReward selectedReward)");
 
-        killProgression.Should().Contain("QuestEncounter.ProgressKillCredit(creature, npcGroupType, possibleQuests);");
+        killProgression.Should().Contain("_encounters.ProgressKillCredit(creature, npcGroupType, possibleQuests);");
         AssertDeadPlayerGuardExitsBefore(encounterKillCredit, "player", "return;", "killTargetObjective.Advance(player, questId);");
         AssertDeadPlayerGuardExitsBefore(encounterKillCredit, "player", "return;", "questDetail.Advance(player, encounterCreature);");
         AssertDeadPlayerGuardExitsBefore(canComplete, "player", "return false;", "var playerId = GetObjectUUID(player);");

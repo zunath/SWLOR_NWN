@@ -6,10 +6,8 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -97,12 +95,12 @@ public class ForceDarkManipulatorTests
         var creepingTerrorDot = new CreepingTerrorDamageStatusEffect();
         creepingTerrorDot.Name.Should().Be("Creeping Terror");
         creepingTerrorDot.Frequency.Should().Be(3f);
-        creepingTerrorDot.ResistanceType.Should().Be(SWLOR.Game.Server.Service.CombatService.ResistanceType.Disruption);
+        creepingTerrorDot.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Combat.ResistanceType.Disruption);
 
         var forceChokeDot = new ForceChokeDamageStatusEffect();
         forceChokeDot.Name.Should().Be("Force Choke");
         forceChokeDot.Frequency.Should().Be(3f);
-        forceChokeDot.ResistanceType.Should().Be(SWLOR.Game.Server.Service.CombatService.ResistanceType.Disruption);
+        forceChokeDot.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Combat.ResistanceType.Disruption);
     }
 
     [Test]
@@ -125,7 +123,7 @@ public class ForceDarkManipulatorTests
         creepingTerror.Should().Contain("Ability.ApplyHostileCombatImpact");
         creepingTerror.Should().Contain("statusEffect: typeof(HobbleStatusEffect)");
         creepingTerror.Should().Contain("awardsCombatPoints: false");
-        creepingTerror.Should().Contain("Combat.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force,");
+        creepingTerror.Should().Contain("GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force,");
         creepingTerror.Should().Contain("CreepingTerror1Damage = 10");
         creepingTerror.Should().Contain("CreepingTerror2Damage = 14");
         creepingTerror.Should().Contain("CreepingTerror3Damage = 18");
@@ -169,7 +167,7 @@ public class ForceDarkManipulatorTests
         var immobilized = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ImmobilizedStatusEffect.cs").FullName);
         immobilized.Should().Contain("Enmity.AttackHighestEnmityTarget(creature)");
 
-        var staminaRequirement = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "AbilityService" / "AbilityRequirementStamina.cs").FullName);
+        var staminaRequirement = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityRequirementStamina.cs").FullName);
         staminaRequirement.Should().Contain("AbilityStaminaCostPercentAdjustment");
 
         var forceDamageOverTime = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceDamageOverTimeStatusEffectBase.cs").FullName);

@@ -6,16 +6,33 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class MaxHitPointsReconciliationTests
 {
+    // The compiled production code reaches the Power Glove facade, which resolves its instance from a container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveFacades() => _facadeScope.Dispose();
+
     // The reported character: 40 native levels and Vitality 18, so each level adds its hit die plus 4.
     private const int NativeLevels = 40;
     private const int VitalityModifier = 4;
@@ -33,10 +50,7 @@ public class MaxHitPointsReconciliationTests
             root = root.Parent;
         root.Should().NotBeNull();
         _root = root!.FullName;
-        var methods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
-                "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(node => node.Identifier.ValueText is "AdjustPlayerMaxHP" or "RefreshPlayerMaxHP" or "GetEquippedHPBonus");
+        var methods = StatHarnessSource.Methods(node => node.Identifier.ValueText is "AdjustPlayerMaxHP" or "RefreshPlayerMaxHP" or "GetEquippedHPBonus");
         var equipmentMethods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
                 "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()
@@ -50,13 +64,13 @@ public class MaxHitPointsReconciliationTests
             using SWLOR.Game.Server.Core.Bioware;
             using SWLOR.NWN.API.NWScript.Enum;
             using SWLOR.NWN.API.NWScript.Enum.Item;
-            using PowerGloveEquipment = SWLOR.Game.Server.Service.PowerGloveEquipment;
+            using static SWLOR.Game.Server.Composition.GameServices;
             using Stat = HitPointHarness;
 
             public static class HitPointHarness
             {
                 private const int NumberOfInventorySlots = 18;
-                public const int BaseHP = {{Stat.BaseHP}};
+                public const int BaseHP = {{StatService.BaseHP}};
                 private const uint OBJECT_SELF = 1;
                 private static readonly uint[] Slots = new uint[NumberOfInventorySlots];
                 private static readonly Dictionary<uint, List<(ItemPropertyType Type, int Amount)>> Properties = new();
@@ -83,10 +97,7 @@ public class MaxHitPointsReconciliationTests
                 {
                     public static int GetCurrentHitPoints(uint creature) => CurrentHP;
                 }
-                public static class TemporaryHitPointEffects
-                {
-                    public static void ScheduleLimitCheck(uint creature) { }
-                }
+                private static void ScheduleTemporaryHitPointLimitCheck(uint creature) { }
                 public static class BiowareXP2
                 {
                     public static void IPSafeAddItemProperty(uint item, ItemProperty ip, float duration,
@@ -193,7 +204,7 @@ public class MaxHitPointsReconciliationTests
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)
-            .Split(Path.PathSeparator).Append(typeof(Stat).Assembly.Location)
+            .Split(Path.PathSeparator).Append(typeof(IStatService).Assembly.Location)
             .Append(typeof(InventorySlot).Assembly.Location).Distinct()
             .Select(path => MetadataReference.CreateFromFile(path));
         var compilation = CSharpCompilation.Create("MaxHitPointsReconciliationHarness",
@@ -206,7 +217,7 @@ public class MaxHitPointsReconciliationTests
     }
 
     [SetUp]
-    public void Reset() => Call("Reset", Stat.BaseHP, 0);
+    public void Reset() => Call("Reset", StatService.BaseHP, 0);
 
     [Test]
     public void ReportedDriftedRecord_HidesTheFirstGearHPBehindTheLevelFloor()
@@ -227,14 +238,14 @@ public class MaxHitPointsReconciliationTests
     {
         Call("Reset", DriftedRecordMaxHP, 0);
         Equip(InventorySlot.Chest, 125);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP + 125);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP + 125);
         MaxHP().Should().Be(355, "the 125 HP piece adds all of its HP to the 230 HP naked maximum");
         Call("Refreshes").Should().Be(1, "the status window shows the corrected maximum");
         Equip(InventorySlot.Cloak, 120);
         MaxHP().Should().Be(475);
         Equip(InventorySlot.Cloak, 0);
         Equip(InventorySlot.Chest, 0);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP);
         MaxHP().Should().Be(230);
     }
 
@@ -249,7 +260,7 @@ public class MaxHitPointsReconciliationTests
 
         // Saved gear loads without equip events, so the login refresh repairs the record itself.
         Call("RefreshPlayerMaxHP", 1u);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP + 245);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP + 245);
         MaxHP().Should().Be(475);
         Call("Writes").Should().Be(1);
         Call("RefreshPlayerMaxHP", 1u);
@@ -259,9 +270,9 @@ public class MaxHitPointsReconciliationTests
     [Test]
     public void ActiveFoodHP_StaysInTheRecord()
     {
-        Call("Reset", Stat.BaseHP + 30, 30);
+        Call("Reset", StatService.BaseHP + 30, 30);
         Equip(InventorySlot.Chest, 125);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP + 125 + 30);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP + 125 + 30);
         Call("Writes").Should().Be(1, "only the equip delta is written; reconciliation finds nothing to change");
         Call("Refreshes").Should().Be(0);
     }
@@ -272,11 +283,11 @@ public class MaxHitPointsReconciliationTests
         Equip(InventorySlot.Chest, 125);
         // The before handler removes the HP, then the native unequip fails and the item stays worn.
         Call("BeforeChange", (int)InventorySlot.Chest, false);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP);
         Call("AfterChange", (int)InventorySlot.Chest);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP + 125);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP + 125);
         Equip(InventorySlot.Chest, 0);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP);
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP);
     }
 
     [Test]
@@ -285,7 +296,7 @@ public class MaxHitPointsReconciliationTests
         Equip(InventorySlot.Chest, 125);
         Call("SetHP", (int)InventorySlot.Chest, 160);
         Equip(InventorySlot.Chest, 0);
-        Call("RecordMaxHP").Should().Be(Stat.BaseHP, "removing the larger value must not push the record below the base");
+        Call("RecordMaxHP").Should().Be(StatService.BaseHP, "removing the larger value must not push the record below the base");
     }
 
     [Test]
@@ -327,11 +338,7 @@ public class MaxHitPointsReconciliationTests
         var scripts = typeof(EquipmentStats).GetMethod(nameof(EquipmentStats.RefreshMaxHPAfterEquipmentChange))!
             .GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).ToArray();
         scripts.Should().BeEquivalentTo([ScriptName.OnItemEquipValidateAfter, ScriptName.OnItemUnequipAfter]);
-
-        var migration = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
-                "SWLOR.Game.Server", "Service", "Migration.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.ValueText == "AfterCharacterInitialization");
-        migration.Body!.Statements.Select(statement => statement.ToString()).Should().Contain("Stat.RefreshPlayerMaxHP(player);");
+        // MigrationServiceTests pins that the login runs the max HP refresh.
     }
 
     private int MaxHP() => (int)Call("MaxHP")!;

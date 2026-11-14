@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.DroidService;
-using SWLOR.Game.Server.Service.MigrationService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using Live = SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 

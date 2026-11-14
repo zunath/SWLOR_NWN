@@ -1,13 +1,12 @@
+using SWLOR.Game.Server.Tests.Support;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
-using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.Game.Server.Domain.Character;
+using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -19,6 +18,22 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class SkillSelectorStackingTests
 {
+    // Combat is split into services (Readmes/MaintainabilityRefactorCombatSplit.md): its parts resolve from the container.
+    private FacadeContainer _facades = null!;
+    private IDisposable _facadeScope = null!;
+
+    [OneTimeSetUp]
+    public void BuildCombatFacades() => _facades = new FacadeContainer();
+
+    [OneTimeTearDown]
+    public void DisposeCombatFacades() => _facades.Dispose();
+
+    [SetUp]
+    public void InstallCombatFacades() => _facadeScope = _facades.Install();
+
+    [TearDown]
+    public void RemoveCombatFacades() => _facadeScope.Dispose();
+
     [Test]
     public void TwoForceAccuracyBuffs_BothApplyToForceAbilitiesAndNothingElse()
     {
@@ -72,14 +87,14 @@ public class SkillSelectorStackingTests
         var ricochetToss = PerkSource<ThrowingPerkDefinition>("RicochetToss", PerkType.RicochetToss, 1);
         var sources = new[] { flurryBleed, ricochetToss };
 
-        Combat.SumSkillSelectedStatAdjustment(
+        CombatRules.SumSkillSelectedStatAdjustment(
                 sources,
                 SkillType.Throwing,
                 StatType.AbilityDamageToBleedingTargetSkillType,
                 StatType.AbilityDamageToBleedingTargetBonus)
             .Should().Be(12, "Flurry Bleed III still grants its authored +12 DMG alongside Ricochet Toss");
 
-        Combat.SumSkillSelectedStatAdjustment(
+        CombatRules.SumSkillSelectedStatAdjustment(
                 sources,
                 SkillType.Throwing,
                 StatType.AbilityDamageToBleedingTargetSkillType,
@@ -88,7 +103,7 @@ public class SkillSelectorStackingTests
 
         foreach (var skill in new[] { SkillType.Vibroblade, SkillType.Pistol, SkillType.Force })
         {
-            Combat.SumSkillSelectedStatAdjustment(
+            CombatRules.SumSkillSelectedStatAdjustment(
                     sources,
                     skill,
                     StatType.AbilityDamageToBleedingTargetSkillType,
@@ -97,7 +112,7 @@ public class SkillSelectorStackingTests
         }
 
         // Ricochet Toss gates its own splash on the same selector.
-        Combat.CanTriggerBleedingTargetAbilitySplash(ricochetToss, SkillType.Throwing, true, 25)
+        CombatRules.CanTriggerBleedingTargetAbilitySplash(ricochetToss, SkillType.Throwing, true, 25)
             .Should().BeTrue();
     }
 
@@ -130,7 +145,7 @@ public class SkillSelectorStackingTests
 
         foreach (var skill in new[] { SkillType.Throwing, SkillType.Vibroblade })
         {
-            Combat.SumSkillSelectedStatAdjustment(
+            CombatRules.SumSkillSelectedStatAdjustment(
                     new[] { unscoped },
                     skill,
                     StatType.AbilityDamageToBleedingTargetSkillType,
@@ -200,11 +215,11 @@ public class SkillSelectorStackingTests
         if (directory == null)
             throw new DirectoryNotFoundException("Could not locate SWLOR.Game.Server.sln from the test directory.");
 
-        return File.ReadAllText(Path.Combine(directory.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        return CombatSource.Read();
     }
 
     private static int Sum(IReadOnlyList<StatAdjustmentSource> sources, SkillType skillType) =>
-        Combat.SumSkillSelectedStatAdjustment(
+        CombatRules.SumSkillSelectedStatAdjustment(
             sources,
             skillType,
             StatType.AbilityHitChancePercentAdjustmentSkillType,
@@ -212,7 +227,7 @@ public class SkillSelectorStackingTests
             unselectedSourcesApplyToEverySkill: true);
 
     private static int SumCritical(IReadOnlyList<StatAdjustmentSource> sources, SkillType skillType) =>
-        Combat.SumSkillSelectedStatAdjustment(
+        CombatRules.SumSkillSelectedStatAdjustment(
             sources,
             skillType,
             StatType.AbilityCriticalRatePercentAdjustmentSkillType,

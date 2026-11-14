@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Service.AbilityService;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -16,18 +15,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Despawned combat creatures release retained offensive activity", Category = "RifleIdleReadiness", TimeoutSeconds = 35f)]
         public static async Task DespawnedCreaturesReleaseActivity(EngineTestContext ctx)
         {
-            var attacks = (Dictionary<uint, DateTime>)typeof(Combat)
-                .GetField("_lastAttackActivity", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-            var abilities = (Dictionary<uint, DateTime>)typeof(Combat)
-                .GetField("_lastCombatAbilityUse", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var attacks = CombatMembers.FieldValue<Dictionary<uint, DateTime>>("_lastAttackActivity");
+            var abilities = CombatMembers.FieldValue<Dictionary<uint, DateTime>>("_lastCombatAbilityUse");
             for (var cycle = 1; cycle <= 2; cycle++)
             {
                 var creature = ctx.SpawnCreature("nw_bandit001");
                 await ctx.WaitFrameAsync();
                 await ctx.ExecuteInCreatureContextAsync(creature, () =>
                 {
-                    Combat.TrackAttackActivity(creature);
-                    Combat.TrackQueuedWeaponAbilityUse(creature, Ability.GetAbilityDetail(FeatType.Headshot1));
+                    GameServices.CombatActivity.TrackAttackActivity(creature);
+                    GameServices.CombatAbilityActivation.TrackQueuedWeaponAbilityUse(creature, Ability.GetAbilityDetail(FeatType.Headshot1));
                 });
                 ctx.Assert(attacks.ContainsKey(creature) && abilities.ContainsKey(creature),
                     "the live combat creature has both offensive activity records");
@@ -65,17 +62,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), enemy, 120f);
 
-            Combat.SetAutoAttackHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             try
             {
                 for (var cycle = 1; cycle <= 2; cycle++)
                 {
-                    var previous = Combat.GetLastCompletedOffensiveActivityAt(player);
+                    var previous = GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(player);
                     SetCommandable(true, player);
                     AssignCommand(player, () => ActionAttack(enemy));
                     try
                     {
-                        await ctx.WaitUntilAsync(() => Combat.GetLastCompletedOffensiveActivityAt(player) > previous,
+                        await ctx.WaitUntilAsync(() => GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(player) > previous,
                             10f, "the player's real attack roll");
                     }
                     catch (EngineTestAssertionException)
@@ -88,12 +85,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ClearAllActions(false);
                         SetCommandable(false, player);
                     });
-                    var stoppedAt = Combat.GetLastCompletedOffensiveActivityAt(player);
+                    var stoppedAt = GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(player);
                     var hp = GetCurrentHitPoints(player);
                     Enmity.ModifyEnmity(player, enemy, 10000);
                     AssignCommand(enemy, () => ActionAttack(player));
                     await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) == player &&
-                        Combat.GetLastCompletedOffensiveActivityAt(enemy) >= stoppedAt,
+                        GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(enemy) >= stoppedAt,
                         10f, "the enemy to swing at the player during the pause");
                     await ctx.DelaySecondsAsync(1f);
                     if ((DateTime.UtcNow - stoppedAt).TotalSeconds < 3f)
@@ -106,8 +103,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         5f, "three seconds without attacking during combat");
                     ctx.Log($"Cycle {cycle}: idle={(DateTime.UtcNow - stoppedAt).TotalSeconds:F3}s, " +
                         $"incoming damage={hp - GetCurrentHitPoints(player)}, ready={StatusEffect.HasStatusEffect<IdleSkillAbilityReadyStatusEffect>(player)}, " +
-                        $"last activity={Combat.GetLastCompletedOffensiveActivityAt(player):O}, stopped at={stoppedAt:O}, action={GetCurrentAction(player)}.");
-                    ctx.AssertEqual(stoppedAt, Combat.GetLastCompletedOffensiveActivityAt(player),
+                        $"last activity={GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(player):O}, stopped at={stoppedAt:O}, action={GetCurrentAction(player)}.");
+                    ctx.AssertEqual(stoppedAt, GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(player),
                         "incoming attacks do not count as the player's attacks");
                     AssertBonuses(ctx, player, true);
                     ctx.Assert(GetIsInCombat(player), "the idle rifleman remains in native combat");
@@ -120,7 +117,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 SetCommandable(true, player);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
 
@@ -135,35 +132,35 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(rifleman, PerkType.Patience, 3);
             ctx.SetNPCPerkLevel(rifleman, PerkType.DeadCenter, 1);
             await ctx.ExecuteInCreatureContextAsync(rifleman, () =>
-                Combat.TrackQueuedWeaponAbilityUse(rifleman, Ability.GetAbilityDetail(FeatType.Headshot1)));
-            var completedAt = Combat.GetLastCompletedOffensiveActivityAt(rifleman);
+                GameServices.CombatAbilityActivation.TrackQueuedWeaponAbilityUse(rifleman, Ability.GetAbilityDetail(FeatType.Headshot1)));
+            var completedAt = GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(rifleman);
             while ((DateTime.UtcNow - completedAt).TotalSeconds < 3.5)
             {
-                Combat.HasRecentCombatAbilityUse(rifleman, 2f);
+                GameServices.CombatActivity.HasRecentCombatAbilityUse(rifleman, 2f);
                 await ctx.DelaySecondsAsync(0.25f);
             }
             AssertBonuses(ctx, rifleman, true);
-            ctx.Log($"After recent-use polling: completed timestamp retained={Combat.GetLastCompletedOffensiveActivityAt(rifleman) == completedAt}, " +
+            ctx.Log($"After recent-use polling: completed timestamp retained={GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(rifleman) == completedAt}, " +
                 $"ready={StatusEffect.HasStatusEffect<IdleSkillAbilityReadyStatusEffect>(rifleman)}.");
             ctx.Assert(StatusEffect.HasStatusEffect<IdleSkillAbilityReadyStatusEffect>(rifleman),
                 "checking a short recent-use window must not cancel the three-second readiness callback");
-            await ctx.ExecuteInCreatureContextAsync(rifleman, () => Combat.TrackAttackActivity(rifleman));
-            completedAt = Combat.GetLastCompletedOffensiveActivityAt(rifleman);
+            await ctx.ExecuteInCreatureContextAsync(rifleman, () => GameServices.CombatActivity.TrackAttackActivity(rifleman));
+            completedAt = GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(rifleman);
             while ((DateTime.UtcNow - completedAt).TotalSeconds < 3.5)
             {
-                Combat.HasRecentAttackActivity(rifleman, 1f);
+                GameServices.CombatActivity.HasRecentAttackActivity(rifleman, 1f);
                 await ctx.DelaySecondsAsync(0.25f);
                 if ((DateTime.UtcNow - completedAt).TotalSeconds < 3f)
                     AssertBonuses(ctx, rifleman, false);
             }
-            ctx.AssertEqual(completedAt, Combat.GetLastCompletedOffensiveActivityAt(rifleman),
+            ctx.AssertEqual(completedAt, GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(rifleman),
                 "a short recent-attack check retains the timestamp needed by the longer idle window");
             AssertBonuses(ctx, rifleman, true);
             ctx.Assert(StatusEffect.HasStatusEffect<IdleSkillAbilityReadyStatusEffect>(rifleman),
                 "recent-attack polling also preserves the readiness callback");
             ctx.Assert(StatusEffect.HasStatusEffect<OpeningAttackReadyStatusEffect>(rifleman),
                 "the global auto-attack skill selector also receives readiness feedback");
-            Combat.RefreshStatDrivenTrackerEffects(rifleman);
+            GameServices.Combat.RefreshStatDrivenTrackerEffects(rifleman);
             ctx.Assert(StatusEffect.HasStatusEffect<OpeningAttackReadyStatusEffect>(rifleman),
                 "a stat refresh preserves global auto-attack readiness");
         }
@@ -190,11 +187,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.DeadCenter, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.SteadyAim, 1);
             ctx.SetNPCResources(caster, 1000, 1000);
-            Combat.SetAbilityHitResolutionOverride(true);
-            Combat.SetAutoAttackHitResolutionOverride(false);
+            GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
+            GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
-                await ctx.ExecuteInCreatureContextAsync(caster, () => Combat.TrackAttackActivity(caster));
+                await ctx.ExecuteInCreatureContextAsync(caster, () => GameServices.CombatActivity.TrackAttackActivity(caster));
                 AssertBonuses(ctx, caster, false);
                 var normal = await CastAimedShot(ctx, caster, target);
                 await ctx.DelaySecondsAsync(3.5f);
@@ -211,18 +208,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertBonuses(ctx, caster, true);
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
-                    Combat.PrepareOpeningAutoAttack(caster, SkillType.Rifle);
+                    GameServices.CombatAbilityBonus.PrepareOpeningAutoAttack(caster, SkillType.Rifle);
                     ctx.AssertEqual(12, TemporaryStatModifier.GetStatAdjustment(caster,
                         StatType.CurrentAutoAttackDamageBonus, StatType.CurrentAutoAttackDamageBonus),
                         "Steady Aim prepares its next swing's damage");
-                    ctx.AssertEqual(15, Combat.ConsumeOpeningAutoAttackCriticalDamageAdjustment(caster),
+                    ctx.AssertEqual(15, GameServices.CombatAbilityBonus.ConsumeOpeningAutoAttackCriticalDamageAdjustment(caster),
                         "Dead Center prepares its next swing's critical damage");
-                    Combat.ClearOpeningAutoAttackModifiers(caster);
+                    GameServices.CombatAbilityBonus.ClearOpeningAutoAttackModifiers(caster);
                 });
-                var before = Combat.GetLastCompletedOffensiveActivityAt(caster);
+                var before = GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(caster);
                 SetCommandable(true, caster);
                 AssignCommand(caster, () => ActionAttack(target));
-                await ctx.WaitUntilAsync(() => Combat.GetLastCompletedOffensiveActivityAt(caster) > before,
+                await ctx.WaitUntilAsync(() => GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(caster) > before,
                     10f, "a real missed rifle auto-attack to consume idle readiness");
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
@@ -238,8 +235,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 SetCommandable(true, caster);
-                Combat.SetAbilityHitResolutionOverride(null);
-                Combat.SetAutoAttackHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
+                GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(null);
             }
         }
 
@@ -264,7 +261,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static void AssertBonuses(EngineTestContext ctx, uint creature, bool ready)
         {
-            var bonuses = Combat.GetIdleSkillAbilityBonuses(creature, SkillType.Rifle);
+            var bonuses = GameServices.CombatActivity.GetIdleSkillAbilityBonuses(creature, SkillType.Rifle);
             ctx.AssertEqual(ready ? 14 : 0, bonuses.DamageBonus, "Patience III damage");
             ctx.AssertEqual(ready ? 8 : 0, bonuses.HitChancePercentAdjustment, "Patience III accuracy");
             ctx.AssertEqual(ready ? 15 : 0, bonuses.CriticalDamagePercentAdjustment, "Dead Center critical damage");

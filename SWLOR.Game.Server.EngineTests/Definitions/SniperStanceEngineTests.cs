@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
-using SWLOR.Game.Server.Service.CombatService;
-using SWLOR.Game.Server.Service.PerkService;
-using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -34,7 +33,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "Sniper Stance supplies +15% long-range ability damage");
 
             // The shared percent helper rounds up, so +15% of 100 is whatever it returns for 15.
-            var boosted = Combat.ApplyPercentDamageAdjustment(100, 15);
+            var boosted = CombatRules.ApplyPercentDamageAdjustment(100, 15);
             ctx.Assert(boosted > 100, "a +15% adjustment raises damage");
             ctx.Assert(GetDistanceBetween(sniper, boundaryTarget) >= 10f,
                 $"the boundary target sits at 10m (measured {GetDistanceBetween(sniper, boundaryTarget):0.000}m)");
@@ -50,10 +49,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     $"{skill} ability without Sniper Stance is unchanged");
             }
 
-            ctx.AssertEqual(100, Combat.ApplyDamageDealtModifiers(sniper, farTarget, 100, SkillType.Rifle,
+            ctx.AssertEqual(100, GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(sniper, farTarget, 100, SkillType.Rifle,
                     CombatDamageType.Physical, isAbilityDamage: false, canApplyRandomFlatBonuses: false),
                 "Rifle auto-attacks do not gain the ability bonus");
-            ctx.AssertEqual(100, Combat.ApplyDamageDealtModifiers(sniper, farTarget, 100, SkillType.Force,
+            ctx.AssertEqual(100, GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(sniper, farTarget, 100, SkillType.Force,
                     CombatDamageType.Force, isAbilityDamage: true, canApplyRandomFlatBonuses: false),
                 "Force abilities are not ranged weapon abilities");
 
@@ -67,7 +66,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static int AbilityDamage(uint attacker, uint target, SkillType skill)
         {
-            return Combat.ApplyDamageDealtModifiers(attacker, target, 100, skill,
+            return GameServices.CombatDamageModifiers.ApplyDamageDealtModifiers(attacker, target, 100, skill,
                 CombatDamageType.Physical, isAbilityDamage: true, canApplyRandomFlatBonuses: false);
         }
     }

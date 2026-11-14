@@ -6,10 +6,10 @@ using SWLOR.CraftSim.Rng;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Scenario.Fabricator;
 using SWLOR.CraftSim.Tests.Support;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Fabricator;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Tests.Scenario
 {
@@ -108,7 +108,7 @@ namespace SWLOR.CraftSim.Tests.Scenario
 
             var engine = (FabricatorEngine)new FabricatorScenario().CreateEngine(Request(entry, gear, 10));
 
-            engine.Setup.Parameters.Should().BeSameAs(FabricatorParameters.Fallback);
+            engine.Setup.Parameters.Should().BeEquivalentTo(FabricatorParameters.Fallback);
         }
 
         [TestCase(5, 0)]

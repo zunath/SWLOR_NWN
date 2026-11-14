@@ -1,13 +1,13 @@
 using System.Globalization;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.LogService;
-using SWLOR.Game.Server.Service.PropertyService;
-using SWLOR.Game.Server.Service.RoleplayXPService;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using Player = SWLOR.Game.Server.Entity.Player;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -17,11 +17,10 @@ namespace SWLOR.Game.Server.Feature
         private const string RPTimestampVariable = "RP_SYSTEM_LAST_MESSAGE_TIMESTAMP";
         private const int RPRequiredTicks = 300;
 
-        private static OOCDetectionModel _oocDetection;
-
         /// <summary>
         /// Loads the external OOC detection file at server start so a bad file is reported at boot.
         /// </summary>
+        [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadOOCDetection()
         {
@@ -35,7 +34,7 @@ namespace SWLOR.Game.Server.Feature
                 Log.Write(LogGroup.Server, $"RP XP OOC detection file not loaded ({error}). Using the built-in word list.", true);
             }
 
-            _oocDetection = detection;
+            RoleplayXPDetection.SetModel(detection);
         }
 
         /// <summary>
@@ -150,7 +149,7 @@ namespace SWLOR.Game.Server.Feature
 
             var messageType = RoleplayMessageClassifier.Classify(
                 message,
-                _oocDetection ?? OOCDetectionModel.Default,
+                RoleplayXPDetection.GetModel(),
                 dbPlayer.EmoteStyle);
             if (messageType == RoleplayMessageType.OutOfCharacter)
             {
@@ -266,7 +265,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsObjectValid(area))
                 return OOCMessageContext.Standard;
 
-            var context = GetLocalBool(area, Communication.EventCommsAreaVariable)
+            var context = GetLocalBool(area, CommunicationService.EventCommsAreaVariable)
                 ? OOCMessageContext.EventArea
                 : OOCMessageContext.Standard;
 

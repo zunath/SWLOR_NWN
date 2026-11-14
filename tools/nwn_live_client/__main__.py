@@ -28,6 +28,11 @@ def parser() -> argparse.ArgumentParser:
                                       '(default: %%TEMP%%\\swlor-live\\<project>).')
     up.add_argument('--dotnet', help='Server build output (default: SWLOR.Game.Server/bin/<configuration>/net10.0).')
     up.add_argument('--configuration', default='Release', help='Build configuration for the default --dotnet.')
+    up.add_argument('--entry', choices=('host', 'native'), default='host',
+                    help='NWNX .NET entry: host (SWLOR.Game.Host in dotnet/, the game in dotnet/game/) or native '
+                         '(the game\'s own ServerManager.Bootstrap, the game in dotnet/).')
+    up.add_argument('--host-dotnet', help='SWLOR.Game.Host build output for --entry host '
+                                          '(default: SWLOR.Game.Host/bin/<configuration>/net10.0).')
     up.add_argument('--module', help='.mod file (default: <deploy home>/modules/Star Wars LOR v2.mod).')
     up.add_argument('--hak-dir', help='Deployed hak folder (default: debugserver/hak of the main checkout).')
     up.add_argument('--tlk-dir', help='Deployed TLK folder (default: debugserver/tlk of the main checkout).')
@@ -64,8 +69,9 @@ def parser() -> argparse.ArgumentParser:
 
     ui = commands.add_parser('ui', parents=[run_dir],
                              help='Send input on the private display: move X Y, click X Y, rightclick X Y, '
-                                  'doubleclick X Y, drag X1 Y1 X2 Y2, key KEYSYM, type TEXT.')
-    ui.add_argument('action', choices=('move', 'click', 'rightclick', 'doubleclick', 'drag', 'key', 'type'))
+                                  'doubleclick X Y, drag X1 Y1 X2 Y2, drag-slow X1 Y1 X2 Y2, nui-click X Y, hostile-scan X Y [X Y ...], label-scan, key KEYSYM, type TEXT.')
+    ui.add_argument('action', choices=('move', 'click', 'rightclick', 'doubleclick', 'drag', 'drag-slow',
+                                       'nui-click', 'hostile-scan', 'label-scan', 'key', 'type'))
     ui.add_argument('arguments', nargs='*')
 
     shot = commands.add_parser('capture', parents=[run_dir], help='Save <run>/evidence/<label>.png.')

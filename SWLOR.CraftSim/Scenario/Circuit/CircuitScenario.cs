@@ -1,8 +1,8 @@
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.Minigame;
-using SWLOR.Game.Server.Service.CraftService.Minigame.Circuit;
-using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.CraftSim.Data;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.Minigame;
+using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CraftSim.Scenario.Circuit
 {
@@ -72,7 +72,7 @@ namespace SWLOR.CraftSim.Scenario.Circuit
         public ICraftMinigameEngine CreateEngine(CraftEngineRequest request)
         {
             var loadout = request.Style?.Configuration as CircuitLoadout ?? _defaultLoadout;
-            var level = Craft.GetRecipeLevelDetail(request.Recipe.Level);
+            var level = ServerRecipeLevels.For(request.Recipe.Level);
             var setup = new CircuitSetup(
                 request.Recipe.Detail?.MinigameParameters as CircuitParameters,
                 request.Recipe.Level,

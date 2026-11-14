@@ -13,35 +13,52 @@ namespace SWLOR.CLI
         private const string ModulesPath = DebugServerPath + "modules";
         private const string TlkPath = DebugServerPath + "tlk";
         private const string DebugServerEnvPath = DebugServerPath + "swlor.env";
+        private const string SourceEnvPath = "../SWLOR.Game.Server/Docker/swlor.env";
         private const string MaterialNameNullTweakVariable = "NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL";
         private const string MaterialNameNullTweakValue = "true";
 
         private readonly HakBuilder _hakBuilder = new();
 
-        public void Process(string serverOutputPath = null)
+        public void Process(string serverOutputPath = null, string hostOutputPath = null)
         {
             // RunCLI builds Release for standalone invocations. Post-build deployment
             // explicitly passes the initiating build's TargetDir (including Debug/custom output).
             var source = new DirectoryInfo(string.IsNullOrWhiteSpace(serverOutputPath)
                 ? "../SWLOR.Game.Server/bin/Release/net10.0/"
                 : serverOutputPath);
-            foreach (var filename in new[]
-                     {
-                         "SWLOR.Game.Server.dll", "SWLOR.Game.Server.deps.json",
-                         "SWLOR.Game.Server.runtimeconfig.json"
-                     })
+            RequireBuildOutput(source, "SWLOR.Game.Server", "Server");
+
+            // The entry the debug server's swlor.env names (the host when it names none); the repository's swlor.env
+            // seeds a server that has none yet.
+            var entry = DotnetEntry.Read(File.Exists(DebugServerEnvPath) ? DebugServerEnvPath : SourceEnvPath);
+            DirectoryInfo host = null;
+            if (entry == DotnetEntry.Host)
             {
-                if (!File.Exists(Path.Combine(source.FullName, filename)))
-                    throw new FileNotFoundException($"Server build output is incomplete: {Path.Combine(source.FullName, filename)}");
+                host = new DirectoryInfo(string.IsNullOrWhiteSpace(hostOutputPath)
+                    ? "../SWLOR.Game.Host/bin/Release/net10.0/"
+                    : hostOutputPath);
+                RequireBuildOutput(host, "SWLOR.Game.Host", "Host");
             }
 
-            CreateDebugServerDirectory();
-            CopyBinaries(source);
+            CreateDebugServerDirectory(entry);
+            CopyBinaries(entry, source, host);
             BuildHaks();
             BuildModule();
         }
 
-        private void CreateDebugServerDirectory()
+        private static void RequireBuildOutput(DirectoryInfo output, string assemblyName, string label)
+        {
+            foreach (var filename in new[]
+                     {
+                         assemblyName + ".dll", assemblyName + ".deps.json", assemblyName + ".runtimeconfig.json"
+                     })
+            {
+                if (!File.Exists(Path.Combine(output.FullName, filename)))
+                    throw new FileNotFoundException($"{label} build output is incomplete: {Path.Combine(output.FullName, filename)}");
+            }
+        }
+
+        private void CreateDebugServerDirectory(DotnetEntry entry)
         {
             Directory.CreateDirectory(DebugServerPath);
             Directory.CreateDirectory(DotnetPath);
@@ -57,12 +74,23 @@ namespace SWLOR.CLI
                 DebugServerEnvPath,
                 MaterialNameNullTweakVariable,
                 MaterialNameNullTweakValue);
+
+            // The NWNX entry lines follow SWLOR_DOTNET_ENTRY, so that one setting decides the entry.
+            foreach (var setting in entry.EnvironmentSettings)
+                EnsureEnvironmentSetting(DebugServerEnvPath, setting.Key, setting.Value);
         }
 
-        private void CopyBinaries(DirectoryInfo source)
+        private void CopyBinaries(DotnetEntry entry, DirectoryInfo source, DirectoryInfo host)
         {
-            var target = new DirectoryInfo(DotnetPath);
-            Console.WriteLine($"Deploying server binaries: {source.FullName} -> {target.FullName}");
+            var dotnet = new DirectoryInfo(DotnetPath);
+            if (host != null)
+            {
+                Console.WriteLine($"Deploying host binaries ({entry.Name} entry): {host.FullName} -> {dotnet.FullName}");
+                CopyAll(host, dotnet, string.Empty);
+            }
+
+            var target = new DirectoryInfo(Path.Combine(DotnetPath, entry.GameFolder));
+            Console.WriteLine($"Deploying server binaries ({entry.Name} entry): {source.FullName} -> {target.FullName}");
             CopyAll(source, target, string.Empty);
         }
 

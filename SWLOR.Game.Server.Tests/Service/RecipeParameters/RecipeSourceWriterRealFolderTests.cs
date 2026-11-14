@@ -1,16 +1,17 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Service.CraftService;
-using SWLOR.Game.Server.Service.CraftService.RecipeParameters;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Crafting.RecipeParameters;
 using SWLOR.RecipeParameters;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service.RecipeParameters;
 
 /// <summary>
 /// Runs the writer over a scratch copy of the real recipe definitions with the test-only profile.
 /// </summary>
-public class RecipeSourceWriterRealFolderTests
+public class RecipeSourceWriterRealFolderTests : SkillFacadeFixture
 {
     private static readonly string[] LoopBuiltFiles =
     {

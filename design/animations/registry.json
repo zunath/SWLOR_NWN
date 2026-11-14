@@ -3668,5 +3668,175 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/VocalsFlourish.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthLoop",
+    "AnimationName": "sw_vlm_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthLoop.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthLow",
+    "AnimationName": "sw_vlm_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthLow.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthMid",
+    "AnimationName": "sw_vlm_mid",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthMid.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthHigh",
+    "AnimationName": "sw_vlm_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthHigh.swlanim"
+  },
+  {
+    "Name": "VocalsLowMouthFlourish",
+    "AnimationName": "sw_vlm_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsLowMouthFlourish.swlanim"
+  },
+  {
+    "Name": "PipesWideLoop",
+    "AnimationName": "sw_pwd_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PipesWideLoop.swlanim"
+  },
+  {
+    "Name": "PipesWideLow",
+    "AnimationName": "sw_pwd_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PipesWideLow.swlanim"
+  },
+  {
+    "Name": "PipesWideHigh",
+    "AnimationName": "sw_pwd_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PipesWideHigh.swlanim"
+  },
+  {
+    "Name": "PipesWideFlourish",
+    "AnimationName": "sw_pwd_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/PipesWideFlourish.swlanim"
+  },
+  {
+    "Name": "VocalsMidMouthLoop",
+    "AnimationName": "sw_vmm_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsMidMouthLoop.swlanim"
+  },
+  {
+    "Name": "VocalsMidMouthLow",
+    "AnimationName": "sw_vmm_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsMidMouthLow.swlanim"
+  },
+  {
+    "Name": "VocalsMidMouthHigh",
+    "AnimationName": "sw_vmm_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsMidMouthHigh.swlanim"
+  },
+  {
+    "Name": "VocalsMidMouthFlourish",
+    "AnimationName": "sw_vmm_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/VocalsMidMouthFlourish.swlanim"
+  },
+  {
+    "Name": "TambourineWideLoop",
+    "AnimationName": "sw_twd_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineWideLoop.swlanim"
+  },
+  {
+    "Name": "TambourineWideLow",
+    "AnimationName": "sw_twd_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineWideLow.swlanim"
+  },
+  {
+    "Name": "TambourineWideHigh",
+    "AnimationName": "sw_twd_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineWideHigh.swlanim"
+  },
+  {
+    "Name": "TambourineWideFlourish",
+    "AnimationName": "sw_twd_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineWideFlourish.swlanim"
   }
 ]

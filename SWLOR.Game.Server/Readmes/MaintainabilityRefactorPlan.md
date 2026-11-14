@@ -143,6 +143,17 @@ indirectly (Roslyn recompiles, reflection resets) move to the seams service by s
 **Done:** many-reload unload test passes with the real SWLOR build; a connected client survives a reload on
 a development server.
 
+### Phase 5 - Structural debt (drafted 2026-11-14, awaiting owner approval)
+
+- Phases 0-4 met their measured goals but left the structural work the plan also asked for: about 45 logic types over
+  1,000 lines (only `Combat` and `Property` were split as they converted), a static service lookup (`GameServices`) in
+  801 files, 43 pairs of domains that depend on each other, 41 edges from game logic into content, and tests excluded
+  or failing. The owner counts this as part of the refactor (2026-11-14), so it runs on the branch before the cutover.
+- Debt inventory, targets, items P5-0 to P5-19 and order: [MaintainabilityRefactorPhase5.md](MaintainabilityRefactorPhase5.md).
+
+**Done:** the targets in that file are met and guarded by architecture tests; parity identical; coverage at or above
+the floors.
+
 ### Final cutover (single merge)
 
 1. Announce the freeze; let open `master` pull requests merge; final sync and parity run.

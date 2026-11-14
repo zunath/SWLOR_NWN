@@ -1042,6 +1042,103 @@ public class ShuttleServiceTests
     }
 
     [Test]
+    public void The_tick_sends_a_passenger_still_outside_the_shuttle_to_it_again_after_six_seconds()
+    {
+        BoardThePassenger();
+        var boardedAt = FirstDeparture.AddSeconds(1);
+        var sent = _bench.AssignedTo(_passenger.Id).Count;
+
+        Service.Now = boardedAt.AddSeconds(5);
+        Service.Tick!();
+        _bench.AssignedTo(_passenger.Id).Should().HaveCount(sent, "a retry waits six seconds");
+
+        Service.Now = boardedAt.AddSeconds(6);
+        Service.Tick!();
+        var assigned = _bench.AssignedTo(_passenger.Id);
+        assigned.Should().HaveCount(sent + 1);
+        assigned.Last()();
+        var jump = (Location)_bench.Engine.CallsTo("ActionJumpToLocation").Last().Arguments[0]!;
+        _bench.Describe(jump).Area.Should().Be(FlightArea());
+    }
+
+    [Test]
+    public void The_tick_stops_following_a_passenger_once_they_are_aboard()
+    {
+        BoardThePassenger();
+        var boardedAt = FirstDeparture.AddSeconds(1);
+        _passenger.Area = FlightArea();
+        Service.Now = boardedAt.AddSeconds(6);
+        Service.Tick!();
+        var sent = _bench.AssignedTo(_passenger.Id).Count;
+
+        _passenger.Area = _starport;
+        Service.Now = boardedAt.AddSeconds(12);
+        Service.Tick!();
+
+        _bench.AssignedTo(_passenger.Id).Should().HaveCount(sent, "a passenger seen aboard is no longer followed");
+    }
+
+    [Test]
+    public void The_tick_stops_following_a_passenger_who_logs_out_before_boarding()
+    {
+        BoardThePassenger();
+        var boardedAt = FirstDeparture.AddSeconds(1);
+        _bench.Remove(_passenger.Id);
+        Service.Now = boardedAt.AddSeconds(6);
+        Service.Tick!();
+
+        var back = _bench.AddPlayer(PassengerId, _starport, new Vector3(10f, 12f, 0f), 100000);
+        Service.Now = boardedAt.AddSeconds(12);
+        Service.Tick!();
+
+        _bench.AssignedTo(back.Id).Should().BeEmpty("logging back in places the passenger aboard, not the tick");
+    }
+
+    [Test]
+    public void The_tick_sends_a_stranded_passenger_to_the_landing_zone_again_until_they_stand_there_and_then_ends_the_ride()
+    {
+        var ride = BoardThePassenger();
+        _passenger.Area = _starport;
+        Service.Now = ride.ArrivalUtc;
+        Service.Tick!();
+        var sent = _bench.AssignedTo(_passenger.Id).Count;
+
+        Service.Now = ride.ArrivalUtc.AddSeconds(6);
+        Service.Tick!();
+        var assigned = _bench.AssignedTo(_passenger.Id);
+        assigned.Should().HaveCount(sent + 1, "the delivery jump is sent again");
+        assigned.Last()();
+        var jump = (Location)_bench.Engine.CallsTo("ActionJumpToLocation").Last().Arguments[0]!;
+        _bench.Describe(jump).Area.Should().Be(_landingArea);
+        _bench.Db.Store.Deleted.Should().NotContain(ride.Id);
+
+        _passenger.Area = _landingArea;
+        Service.Now = ride.ArrivalUtc.AddSeconds(8);
+        Service.Tick!();
+
+        _bench.Db.Store.Deleted.Should().Contain(ride.Id, "the ride ends once the passenger is at the destination");
+    }
+
+    [Test]
+    public void The_tick_stops_delivering_a_stranded_passenger_who_logs_out()
+    {
+        var ride = BoardThePassenger();
+        _passenger.Area = _starport;
+        Service.Now = ride.ArrivalUtc;
+        Service.Tick!();
+        _bench.Remove(_passenger.Id);
+        Service.Now = ride.ArrivalUtc.AddSeconds(6);
+        Service.Tick!();
+
+        var back = _bench.AddPlayer(PassengerId, _starport, new Vector3(10f, 12f, 0f), 100000);
+        Service.Now = ride.ArrivalUtc.AddSeconds(12);
+        Service.Tick!();
+
+        _bench.AssignedTo(back.Id).Should().BeEmpty("logging back in resolves the landed ride, not the tick");
+        _bench.Db.Store.Deleted.Should().NotContain(ride.Id);
+    }
+
+    [Test]
     public void The_tick_records_the_landing_of_a_passenger_who_is_offline_at_arrival_and_keeps_the_ride()
     {
         var ride = BoardThePassenger();

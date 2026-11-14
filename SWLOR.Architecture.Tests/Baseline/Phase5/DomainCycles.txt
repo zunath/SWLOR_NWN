@@ -1,0 +1,105 @@
+# Phase 5 debt (P5-0): pairs of domains that depend on each other (target 4), read from the compiled SWLOR.Game.Server.dll.
+# Line: <domain> <-> <domain> | <edges>: the unit edges between the two domains, both ways (the units and edges of
+# CrossDomainEdges.txt). A domain is its Domain/ code plus its content folders (DomainMap.json). Foundation and Platform
+# count as domains here, so edges into them (EdgesIntoCoreAndPlatform.txt) count too. Edges out of the composition root
+# are wiring and do not count. CrossDomainEdges.txt and EdgesIntoCoreAndPlatform.txt list the referencing members of each edge.
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+Abilities <-> Character | 10
+Abilities <-> Combat | 4
+Abilities <-> Companions | 2
+Abilities <-> Creatures | 4
+Abilities <-> Foundation | 4
+Abilities <-> Gameplay | 11
+Abilities <-> Items | 4
+Abilities <-> Platform | 12
+Abilities <-> Quests | 4
+Abilities <-> Social | 5
+Abilities <-> Space | 2
+Abilities <-> UI | 5
+Abilities <-> World | 4
+Administration <-> Character | 2
+Administration <-> Combat | 2
+Administration <-> Creatures | 2
+Administration <-> Foundation | 2
+Administration <-> Gameplay | 7
+Administration <-> Items | 3
+Administration <-> Platform | 3
+Administration <-> UI | 3
+Administration <-> World | 2
+Character <-> Combat | 7
+Character <-> Companions | 6
+Character <-> Crafting | 5
+Character <-> Creatures | 3
+Character <-> Economy | 2
+Character <-> Foundation | 9
+Character <-> Items | 5
+Character <-> Platform | 21
+Character <-> Quests | 4
+Character <-> Social | 8
+Character <-> UI | 7
+Combat <-> Companions | 2
+Combat <-> Creatures | 2
+Combat <-> Foundation | 6
+Combat <-> Gameplay | 21
+Combat <-> Items | 3
+Combat <-> Platform | 10
+Combat <-> Quests | 3
+Combat <-> Social | 3
+Combat <-> Space | 3
+Combat <-> UI | 4
+Combat <-> World | 2
+Companions <-> Creatures | 2
+Companions <-> Foundation | 2
+Companions <-> Gameplay | 3
+Companions <-> Items | 4
+Companions <-> Platform | 5
+Companions <-> Quests | 2
+Companions <-> UI | 3
+Crafting <-> Foundation | 2
+Crafting <-> Gameplay | 6
+Crafting <-> Items | 5
+Crafting <-> Platform | 6
+Crafting <-> UI | 4
+Crafting <-> World | 2
+Creatures <-> Foundation | 3
+Creatures <-> Gameplay | 5
+Creatures <-> Platform | 8
+Creatures <-> Social | 2
+Economy <-> Foundation | 3
+Economy <-> Items | 3
+Economy <-> Platform | 5
+Economy <-> Quests | 2
+Economy <-> UI | 3
+Economy <-> World | 2
+Foundation <-> Gameplay | 43
+Foundation <-> Items | 7
+Foundation <-> Platform | 21
+Foundation <-> Quests | 5
+Foundation <-> Social | 3
+Foundation <-> Space | 5
+Foundation <-> UI | 8
+Foundation <-> World | 7
+Gameplay <-> Items | 15
+Gameplay <-> Platform | 146
+Gameplay <-> Social | 7
+Gameplay <-> UI | 24
+Items <-> Platform | 11
+Items <-> Space | 2
+Items <-> UI | 6
+Items <-> World | 3
+Platform <-> Quests | 8
+Platform <-> Social | 12
+Platform <-> Space | 8
+Platform <-> UI | 13
+Platform <-> World | 13
+Quests <-> UI | 3
+Social <-> UI | 6
+Social <-> World | 3
+Space <-> UI | 2
+Space <-> World | 3
+UI <-> World | 3

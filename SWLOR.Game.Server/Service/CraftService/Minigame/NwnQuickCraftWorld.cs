@@ -36,13 +36,11 @@ public sealed class NwnQuickCraftWorld : IQuickCraftWorld
         if (!GetIsObjectValid(player))
             return;
 
-        // A batch's station fees are credited once the file holds their payments: write it, then credit.
+        // A batch's station fees are credited once the file holds their payments: write it, then credit. The last item's fee and
+        // components only leave the player when this script ends, so the file is written after it.
         var dbPlayer = DB.Get<Entity.Player>(GetObjectUUID(player));
         if (dbPlayer?.PendingStationFees is { Count: > 0 })
-        {
-            NwnCraftSessionWorld.Instance.FlushCharacter(player);
-            CraftSessionService.CreditStationFees(player);
-        }
+            NwnCraftSessionWorld.Instance.FlushCharacterAfterScript(player, () => CraftSessionService.CreditStationFees(player));
 
         AssignCommand(player, () => ClearAllActions());
         PlayerPlugin.StopGuiTimingBar(player);

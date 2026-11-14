@@ -96,6 +96,8 @@ namespace SWLOR.Game.Server.Service
             if (!StatusEffect.ApplyStatusEffect<CivicProvisionsStatusEffect>(player, player, CivicExchangeCatalog.BuffDurationSeconds))
                 return $"The {item.Name} could not take hold. You were not charged.";
 
+            // Applying the buff ends any food buff, which saves the character: build on that save.
+            dbPlayer = DB.Get<Player>(dbPlayer.Id) ?? dbPlayer;
             dbPlayer.UnallocatedXP -= item.PriceXp;
             DB.Set(dbPlayer);
 

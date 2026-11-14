@@ -134,10 +134,11 @@ namespace SWLOR.Game.Server.Service
         /// <param name="poster">The mayor or officer.</param>
         /// <param name="cityId">The city that pays.</param>
         /// <param name="target">The player picked from the Player List.</param>
+        /// <param name="expectedPlayerId">The character the poster picked. A list left open may hold an object another player now has.</param>
         /// <param name="expectedDisguiseId">The disguise the poster saw the target showing, or empty for their own character.</param>
         /// <param name="reward">The credits to pay whoever collects it.</param>
         /// <returns>The reason it was refused, or an empty string.</returns>
-        public static string Post(uint poster, string cityId, uint target, string expectedDisguiseId, long reward)
+        public static string Post(uint poster, string cityId, uint target, string expectedPlayerId, string expectedDisguiseId, long reward)
         {
             var city = string.IsNullOrWhiteSpace(cityId) ? null : DB.Get<WorldProperty>(cityId);
             if (city == null || city.PropertyType != PropertyType.City)
@@ -151,7 +152,7 @@ namespace SWLOR.Game.Server.Service
 
             var posterId = GetObjectUUID(poster);
             var dbTarget = DB.Get<Player>(GetObjectUUID(target));
-            if (dbTarget == null)
+            if (dbTarget == null || dbTarget.Id != expectedPlayerId)
                 return "That player is no longer online.";
 
             var disguise = Disguise.GetActiveDisguise(dbTarget);

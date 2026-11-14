@@ -462,8 +462,7 @@ public class ShipCraftSessionTests
 
         consume.IndexOf("TryTakeComponents(player, recipe, taken)", StringComparison.Ordinal)
             .Should().BeLessThan(consume.IndexOf("CraftSessionService.QueueStationFee(player, Craft.TakeStationFee(player, recipe))", StringComparison.Ordinal));
-        Section(source, "public void EndBatch", "public void PlayItemAnimation").Should().Contain("FlushCharacter(player)")
-            .And.Contain("CraftSessionService.CreditStationFees(player)");
+        Section(source, "public void EndBatch", "public void PlayItemAnimation").Should().Contain("FlushCharacterAfterScript(player, () => CraftSessionService.CreditStationFees(player))", "the last item's fee and components leave only when the script ends");
         consume.Should().Contain("ApplyComponentTraits(item, recipeType, recipe, taken)");
         Section(source, "public bool HasComponents", "private readonly Dictionary").Should().Contain("Craft.GetStationFee(player, recipe)");
         ReadServer("Service", "CraftService", "Minigame", "QuickCraftService.cs")

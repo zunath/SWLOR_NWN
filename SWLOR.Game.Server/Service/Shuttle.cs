@@ -328,6 +328,8 @@ namespace SWLOR.Game.Server.Service
             if (area == GetAreaFromLocation(landingLocation))
             {
                 _boardings.Clear(playerId);
+                // Arriving starts the Home Port departure pass, as on every other arrival path.
+                HomePorts.OnArrived(ride.PlayerId, GetRideRoute(ride));
                 DB.Delete<ShuttleRide>(ride.Id);
                 Log.Write(LogGroup.Server, $"Shuttle passenger {playerId} reached {ride.Destination} after flight {flightId} landed without them.");
                 return;

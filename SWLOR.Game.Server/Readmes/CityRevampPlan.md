@@ -76,7 +76,7 @@ A player can have characters in different cities. Each character gets only its o
 
 **Harvesting bonuses**
 
-The crafting revamp, which ships before this plan, replaces today's harvesting with Prospecting sessions and Quick Harvest, and drops the Might roll that used to give a second item. Prospectors' Charter and Home Ground each add their own chance of 1 more item when a Prospecting session or Quick Harvest on the city's planet finishes: 10% and 5%.
+The crafting revamp, which ships before this plan, replaces today's harvesting with Prospecting sessions and Quick Harvest, and drops the Might roll that used to give a second item. Prospectors' Charter and Home Ground each add their own chance of 1 more item when a Prospecting session or Quick Harvest on the city's planet finishes the harvest (the node is spent or collapses, or the harvester runs out): 10% and 5%. Leaving a node does not roll, since it can be reopened.
 
 The two rolls are independent, so a harvest can give up to 2 more items. On average they add 0.15 items to every harvest, whatever the gatherer's attributes.
 

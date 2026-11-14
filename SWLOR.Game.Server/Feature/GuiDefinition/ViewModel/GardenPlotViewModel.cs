@@ -132,8 +132,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 foreach (var (tier, count) in Farming.GetFertilizerCarried(Player))
                 {
+                    // The combo selects an entry's value: its 1-based place in the tiers carried, which may skip tiers.
                     _fertilizerTiers.Add(tier);
-                    options.Add(new GuiComboEntry(FertilizerRules.DescribeOption(tier, count), tier));
+                    options.Add(new GuiComboEntry(FertilizerRules.DescribeOption(tier, count), _fertilizerTiers.Count));
                 }
             }
 

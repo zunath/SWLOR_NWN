@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 $"or it runs out after {BountyRules.LengthDays} days. The bounty is public in the Gazette, and the player is told.",
                 () =>
                 {
-                    var error = CityBounties.Post(Player, _cityId, target.Player, target.DisguiseId, reward);
+                    var error = CityBounties.Post(Player, _cityId, target.Player, target.PlayerId, target.DisguiseId, reward);
                     if (string.IsNullOrEmpty(error))
                     {
                         RewardInput = string.Empty;

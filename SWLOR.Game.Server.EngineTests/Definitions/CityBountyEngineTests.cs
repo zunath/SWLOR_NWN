@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 OptIn(target);
                 var error = string.Empty;
                 await ctx.ExecuteInCreatureContextAsync(mayor.Creature, () =>
-                    error = CityBounties.Post(mayor.Creature, city.Id, target.Creature, string.Empty, Reward));
+                    error = CityBounties.Post(mayor.Creature, city.Id, target.Creature, GetObjectUUID(target.Creature), string.Empty, Reward));
                 ctx.AssertEqual(string.Empty, error, "the mayor can post a bounty on a flagged target who accepted the notice");
 
                 var bounty = CityBounties.GetOpenForCity(city.Id).Single();

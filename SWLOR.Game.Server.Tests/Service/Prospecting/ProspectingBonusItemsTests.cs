@@ -174,24 +174,45 @@ public class ProspectingBonusItemsTests
     // Prospecting board
 
     [Test]
-    public void ASessionThatEndsWithSomethingGatheredRollsOnItsLastAction()
+    public void AStrikeThatMinesOutTheNodeRolls_AndItsExtraItemsPayNoXp()
     {
-        var lifecycle = Lifecycle(StrikeOneUnit, 10, 5);
+        var lifecycle = Lifecycle(10, 5);
         _world.BonusChances = new HarvestBonusChances(10, 5);
-        var session = Open(lifecycle, Node(4, "r"));
+        var session = Open(lifecycle, Node(1, ""));
 
         var strike = Do(lifecycle, session, ProspectingActionIds.Strike);
-        strike.Delivered.Items.Should().Be(1);
-        _random.Calls.Should().Be(1, "a Strike does not finish the session, so only the Strike's own roll was made");
 
+        strike.Ended.Should().BeTrue();
+        session.Finished.Should().Be(ProspectingEnding.MinedOut);
+        strike.Delivered.Should().Be(new HarvestDelivery(3, 0, 0), "the unit and both extra items");
+        _random.Calls.Should().Be(2, "a Strike on the last unit needs no roll, then one roll for each chance");
+        _world.Messages.Should().Contain(ProspectingLifecycle.BonusItemsMessage);
+
+        var plain = new FakeProspectingWorld();
+        plain.Charges[Harvester] = 50;
+        plain.SaveNode(NodeId, Node(1, "").Serialize());
+        var plainLifecycle = new ProspectingLifecycle(plain, new ScriptedMinigameRandom());
+        var plainSession = plainLifecycle.Begin(new ProspectingRequest(Player, Harvester, NodeId, "HARVESTING_PLAGIONITE", 3, 25, new Vector3(10f, 20f, 0f))).Session;
+        ProspectingActionReport plainStrike = null;
+        plainLifecycle.StartAction(plainSession, ProspectingActionIds.Strike, r => plainStrike = r);
+        plain.RunNextWork((float)ProspectingRules.SecondsFor(ProspectingActionIds.Strike));
+        strike.Xp.Should().Be(plainStrike.Xp, "the extra items pay no XP");
+    }
+
+    [Test]
+    public void LeavingNeverRolls_SoReopeningTheNodeCannotFarmTheBonus()
+    {
+        var lifecycle = Lifecycle(StrikeOneUnit);
+        _world.BonusChances = new HarvestBonusChances(100, 100);
+        var session = Open(lifecycle, Node(4, "r"));
+
+        Do(lifecycle, session, ProspectingActionIds.Strike).Delivered.Items.Should().Be(1);
         var leave = Do(lifecycle, session, ProspectingActionIds.Leave);
 
         leave.Ended.Should().BeTrue();
-        leave.Delivered.Should().Be(new HarvestDelivery(2, 0, 0), "the Leave itself gathers nothing, so the two extra items are all it hands over");
-        leave.Xp.Should().Be(0, "the extra items pay no XP");
-        _world.Xp.Should().Equal(strike.Xp);
-        _world.Harvests.Select(harvest => harvest.Items).Should().Equal(1, 2);
-        _world.Messages.Should().Contain(ProspectingLifecycle.BonusItemsMessage);
+        leave.Delivered.IsEmpty.Should().BeTrue("the node stays to be reopened, so leaving does not finish the harvest");
+        _random.Calls.Should().Be(1, "only the Strike's own roll");
+        _world.Harvests.Select(harvest => harvest.Items).Should().Equal(1);
     }
 
     [Test]
@@ -221,20 +242,5 @@ public class ProspectingBonusItemsTests
         strike.Ended.Should().BeFalse();
         strike.Delivered.Should().Be(new HarvestDelivery(1, 0, 0));
         _random.Calls.Should().Be(1);
-    }
-
-    [Test]
-    public void AnActionThatGatheredNothingOfItsOwnPaysNoXp_WhateverExtraItemsItHandsOver()
-    {
-        var lifecycle = Lifecycle(StrikeOneUnit, 10);
-        _world.BonusChances = new HarvestBonusChances(10, 0);
-        var session = Open(lifecycle, Node(4, "r"));
-        Do(lifecycle, session, ProspectingActionIds.Strike);
-        _world.Order.Clear();
-
-        Do(lifecycle, session, ProspectingActionIds.Leave);
-
-        _world.Harvests.Last().Should().Be(new HarvestDelivery(1, 0, 0));
-        _world.Order.Should().Equal("reserve", "node", "harvest");
     }
 }

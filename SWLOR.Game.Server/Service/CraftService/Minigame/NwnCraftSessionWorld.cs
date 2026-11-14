@@ -473,6 +473,22 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
             ExportAndRecord(player);
     }
 
+    /// <summary>
+    /// Writes the character file once the current script ends, then runs <paramref name="afterFlush"/>. For changes made in this script
+    /// that only complete after it (destroyed items, gold taken on the player's queue), which an immediate export would miss.
+    /// </summary>
+    public void FlushCharacterAfterScript(uint player, Action afterFlush)
+    {
+        AssignCommand(player, () => DelayCommand(PersistDelaySeconds, () =>
+        {
+            if (!GetIsObjectValid(player))
+                return;
+
+            FlushCharacter(player);
+            afterFlush();
+        }));
+    }
+
     private static void ExportAndRecord(uint player)
     {
         // The sequence is read at the moment of the export: the file written carries the value the local has now.

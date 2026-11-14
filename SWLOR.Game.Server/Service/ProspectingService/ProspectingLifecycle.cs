@@ -342,9 +342,11 @@ namespace SWLOR.Game.Server.Service.ProspectingService
             var xp = delivery.Items * XpPerItem(session);
             var ending = engine.Ending;
 
-            // A session that ends with something gathered may roll for extra items (Prospectors' Charter, Home Ground). They join this
-            // action's delivery but not its XP, which is for the items the harvest itself gave.
-            var bonusItems = ending != ProspectingEnding.InProgress && session.Delivered.Items > 0 ? RollBonusItems(session) : 0;
+            // A session that finishes the harvest with something gathered may roll for extra items (Prospectors' Charter, Home Ground).
+            // They join this action's delivery but not its XP, which is for the items the harvest itself gave. Leaving does not finish
+            // it: the node stays to be reopened, so a roll on every Leave would be a roll for every unit taken.
+            var finishesHarvest = ending is ProspectingEnding.MinedOut or ProspectingEnding.Collapsed or ProspectingEnding.OutOfCharges;
+            var bonusItems = finishesHarvest && session.Delivered.Items > 0 ? RollBonusItems(session) : 0;
             if (bonusItems > 0)
                 delivery = delivery with { Rolls = delivery.Rolls + bonusItems };
 

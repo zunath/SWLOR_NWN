@@ -196,4 +196,41 @@ public class SpaceRevampReviewFixTests
         ReadSource("Service", "ElectionBallot.cs").Should().Contain("DB.Get<VoterRewardLedger>(VoterRewardLedger.KeyFor(cdKey))");
         ReadSource("Service", "SpaceShipItemMoves.cs").Should().Contain("new ShipRegistrationReceipt { Id = ShipRegistrationReceipt.KeyFor(shipId),");
     }
+
+    [Test]
+    public void BuyingTheCivicBuff_SavesOverTheFoodRemovalsSave_NotAStaleCopy()
+    {
+        var buy = Between(ReadSource("Service", "CivicExchange.cs"), "private static string BuyBuff(", "SendMessageToPC(player");
+        var apply = buy.IndexOf("StatusEffect.ApplyStatusEffect<CivicProvisionsStatusEffect>", StringComparison.Ordinal);
+        var reread = buy.IndexOf("dbPlayer = DB.Get<Player>(dbPlayer.Id) ?? dbPlayer;", StringComparison.Ordinal);
+        apply.Should().BeGreaterThanOrEqualTo(0);
+        reread.Should().BeGreaterThan(apply, "ending the food buff saves the character, so the XP is taken from that save");
+        buy.IndexOf("dbPlayer.UnallocatedXP -= item.PriceXp;", StringComparison.Ordinal).Should().BeGreaterThan(reread);
+    }
+
+    [Test]
+    public void TheFertilizerPicked_IsTheOnePlanted_WhateverTiersAreCarried()
+    {
+        var load = Between(ReadSource("Feature", "GuiDefinition", "ViewModel", "GardenPlotViewModel.cs"), "private void LoadFertilizers(", "private void RefreshPlantButton(");
+        load.Should().Contain("options.Add(new GuiComboEntry(FertilizerRules.DescribeOption(tier, count), _fertilizerTiers.Count));",
+                "the combo selects an entry's value, which GetSelectedFertilizer reads as a place in the tiers carried")
+            .And.Contain("var index = SelectedFertilizerIndex - 1;");
+    }
+
+    [Test]
+    public void ABounty_LandsOnlyOnTheCharacterPicked()
+    {
+        ReadSource("Service", "CityBounties.cs").Should().Contain("if (dbTarget == null || dbTarget.Id != expectedPlayerId)");
+        ReadSource("Feature", "GuiDefinition", "ViewModel", "CityAffairsViewModel.Bounties.cs")
+            .Should().Contain("CityBounties.Post(Player, _cityId, target.Player, target.PlayerId, target.DisguiseId, reward)");
+    }
+
+    [Test]
+    public void APassengerDeliveredAfterTheirFlightLanded_GetsTheHomePortPass()
+    {
+        var confirm = Between(ReadSource("Service", "Shuttle.cs"), "private static void ConfirmDelivery(", "private static bool ShouldLogRetry(");
+        var pass = confirm.IndexOf("HomePorts.OnArrived(ride.PlayerId, GetRideRoute(ride));", StringComparison.Ordinal);
+        pass.Should().BeGreaterThanOrEqualTo(0);
+        confirm.IndexOf("DB.Delete<ShuttleRide>(ride.Id);", StringComparison.Ordinal).Should().BeGreaterThan(pass);
+    }
 }

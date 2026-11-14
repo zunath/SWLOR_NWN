@@ -360,19 +360,20 @@ internal static class DebtMeasures
             [
                 "Phase 5 debt (P5-1b): references that point up the domain order (target 4), read from the server's source with the",
                 "compiler's binding, so the result does not depend on the build configuration.",
-                "Line: <file> -> <node> | <members>: the distinct source members of <file> (a method, property, field, constructor or",
-                "enum member, with its lambdas and local functions) that name a type of <node>, a domain higher in the order",
-                "(DomainMap.json order) in the file's own band. A node is a domain's logic (Character) or its content (Character",
-                "content); content is a band above all logic, Entity and Enumeration count as Foundation, references out of the wiring",
-                "areas (Composition, NativeSinks) do not count, and logic naming content is LogicToContent.txt. Every reference",
-                "counts, vocabulary (enums, constants, records) included: the type moves of P5-1e and P5-1f remove those. The domain",
-                "order and every direction's fix: SWLOR.Game.Server/Readmes/MaintainabilityRefactorDomainOrder.md (Appendix C).",
+                "Line: <file>: <node> -> <higher node> | <members>: the distinct source members of <file>'s code in <node> (a",
+                "method, property, field, constructor or enum member, with its lambdas and local functions) that name a type of",
+                "<higher node>, a domain higher in the order (DomainMap.json order) in the same band. A node is a domain's logic",
+                "(Character) or its content (Character content); content is a band above all logic, Entity and Enumeration count as",
+                "Foundation, references out of the wiring areas (Composition, NativeSinks) do not count, and logic naming content is",
+                "LogicToContent.txt. Every reference counts, vocabulary (enums, constants, records) included: the type moves of P5-1e",
+                "and P5-1f remove those. The domain order and every direction's fix:",
+                "SWLOR.Game.Server/Readmes/MaintainabilityRefactorDomainOrder.md (Appendix C).",
                 .. Footer
             ],
             upward.Select(reference => new DebtEntry(
                 reference.Key,
                 reference.Members.Count,
-                $"{reference.Direction}: {string.Join(", ", reference.Targets.Take(MaximumTargets))}{(reference.Targets.Count > MaximumTargets ? $" and {reference.Targets.Count - MaximumTargets} more" : string.Empty)}")).ToList(),
+                $"{string.Join(", ", reference.Targets.Take(MaximumTargets))}{(reference.Targets.Count > MaximumTargets ? $" and {reference.Targets.Count - MaximumTargets} more" : string.Empty)}")).ToList(),
             summary);
     }
 
@@ -394,8 +395,9 @@ internal static class DebtMeasures
                 "Line: <type> | <lines>: a type of SWLOR.Game.Server.NativeSinks (the sink factory, which only creates the sinks, is",
                 "not measured) and the lines of its members that do work, each from its first attribute or modifier to its last token.",
                 "A member does no work when it is a method whose body is one call to a name or a chain of member names that passes the",
-                "method's own parameters as written, a readonly instance field without an initializer, or a constructor that only",
-                "assigns its parameters to fields; everything else is work. The domain order counts NativeSinks as wiring on that",
+                "method's own parameters as written, a readonly instance field without an initializer, a constructor that only",
+                "assigns its own parameters to instance fields (never a property or a static field), or a primary constructor that",
+                "passes nothing to its base type; everything else is work. The domain order counts NativeSinks as wiring on that",
                 "condition. The hook logic moves into Combat services in P5-16b; the sinks stay under the no-content rule",
                 "(LogicToContent.txt).",
                 .. Footer

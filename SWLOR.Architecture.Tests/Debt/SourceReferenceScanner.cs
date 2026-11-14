@@ -89,18 +89,22 @@ internal static class SourceReferenceScanner
         {
             var info = Model.GetSymbolInfo(name);
             var symbol = info.Symbol ?? (info.CandidateSymbols.Length == 1 ? info.CandidateSymbols[0] : null);
+            if (name.IsVar && symbol is ITypeSymbol inferred)
+            {
+                // A var has no syntax for what it infers: an array's element type (var values = Values() for a StatKind[]) or
+                // type arguments (var kinds = Kinds() for a List<StatKind>), so they come from the inferred type. Written type
+                // arguments and element types are names of their own.
+                AddDeep(name, inferred);
+                return;
+            }
+
             switch (symbol)
             {
                 case INamedTypeSymbol type:
                     // A type that only qualifies a member is covered by the member; a using directive is not a reference.
                     if (IsQualifierOfMember(name) || name.Ancestors().Any(node => node is UsingDirectiveSyntax))
                         return;
-                    // A var has no syntax for the type arguments it infers (var kinds = Kinds() for a List<StatKind>), so they
-                    // are taken from the inferred type; written type arguments are names of their own.
-                    if (name.IsVar)
-                        AddDeep(name, type);
-                    else
-                        Add(name, type);
+                    Add(name, type);
                     break;
                 case IMethodSymbol method:
                     var declared = method.ReducedFrom ?? method;

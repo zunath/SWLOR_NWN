@@ -14,6 +14,7 @@ def band(x):
     d, b = x.split("."); return d + (" content" if b == "C" else "")
 lines = ["| Edge | Unit edges | Members | Main sources -> targets (members) | Fix | Item |", "|---|---:|---:|---|---|---|"]
 item_dirs = collections.defaultdict(set); item_mem = collections.defaultdict(set)
+unit_edges_total = 0
 for (k, a, b), os_ in sorted(by_dir.items(), key=lambda kv: (kv[0][0] != "up", -len({m for o in kv[1] for m in o["members"]}))):
     mem = {m for o in os_ for m in o["members"]}
     ue = {(unit(o["src"]), unit(o["tgt"])) for o in os_}
@@ -29,7 +30,8 @@ for (k, a, b), os_ in sorted(by_dir.items(), key=lambda kv: (kv[0][0] != "up", -
     it = ", ".join(i for i, _ in items.most_common(3))
     prefix = "hook: " if k == "native" else ""
     lines.append(f"| {prefix}{band(a)} -> {band(b)} | {len(ue)} | {len(mem)} | {top} | {fx} | {it} |")
+    unit_edges_total += len(ue)
 open(OUT + "/appendixC.md", "w").write("\n".join(lines))
 order = ["P5-1e", "P5-1g", "P5-1h", "P5-3", "P5-4", "P5-5", "P5-7", "P5-2", "P5-6", "P5-8", "P5-9", "P5-10", "P5-11", "P5-15a", "P5-16", "P5-15"]
 for i in order: print(i, len(item_dirs[i]), len(item_mem[i]))
-print(len(lines) - 2, "rows; unit edges total", sum(1 for _ in lines))
+print(len(lines) - 2, "rows; unit edges total", unit_edges_total)

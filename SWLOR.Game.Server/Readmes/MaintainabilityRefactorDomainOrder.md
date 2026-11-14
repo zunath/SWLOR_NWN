@@ -86,10 +86,13 @@ All four were approved as recommended, with the reviewer's conditions.
   are within 2%.
 - **Reproducing.** The tool (a C# extractor and Python analysis scripts) is in `tools/Refactor/DomainOrder` (P5-1b; its
   README names the commands), so the order can be re-measured after each split and in P5-15. Run on `369c318be` it
-  reproduces every figure here. On `bd12924d9`, P5-1b's base, only the hook figures differ: P5-16a split the native attack
-  code into more members, so the hook code holds 81 upward member references instead of 63 (P5-16 and P5-16b: 91 instead
-  of 73). The guard measures are in `SWLOR.Architecture.Tests` with the other debt measures (section 5, "Record the
-  order").
+  reproduces every figure here except the record count: the review taught it the types a `var` infers (type arguments
+  and array element types), which adds 356 records (323,878) and changes no pair or upward count. The other fixes made
+  to the tool in that review (references into a wiring area count, `Native/` is never a move destination, a move conflict
+  is checked where the target ends up) change none of the figures here. On `bd12924d9`, P5-1b's base, only the hook
+  figures differ: P5-16a split the native attack code into more members, so the hook code holds 81 upward member
+  references instead of 63 (P5-16 and P5-16b: 91 instead of 73). The guard measures are in `SWLOR.Architecture.Tests`
+  with the other debt measures (section 5, "Record the order").
 
 ## 1. What the two-way pairs are made of
 
@@ -259,9 +262,10 @@ records them as a shrinking baseline, `UpwardEdges.txt`, so every item shrinks i
 domains and the final guards.
 
 The baseline counts the tree as it is, before the moves, and counts every reference, vocabulary included, so the type
-moves of P5-1e and P5-1f shrink it too. At P5-1b it holds 1,319 member references in 76 directions (931 of them service,
-other or definition references, in 65 directions); 124 come from the hook code in `Native/`, which is Platform until it
-moves. The table below counts only what the moves leave. When P5-16b moves hook code into Combat, the references into it
+moves of P5-1e and P5-1f shrink it too. On `bd12924d9` it held 1,319 member references in 76 directions (931 of them
+service, other or definition references, in 65 directions); 124 come from the hook code in `Native/`, which is Platform
+until it moves. P5-1d (the AI settings off `AbilityDetail`) and P5-1c's `RecipeType` pilot, merged before P5-1b, took it
+to 1,311 in 75 directions. The table below counts only what the moves leave. When P5-16b moves hook code into Combat, the references into it
 from domains below Combat (the `Character -> Native` and `Foundation -> Native` rows of Appendix C) start to point up, so
 P5-16b fixes them in the same pull request.
 
@@ -429,10 +433,11 @@ with the rest.
   - `contentRuleExemptAreas` lets only `Composition` name content, so the sinks stay in `LogicToContent.txt`.
 
   The order measures bind the server's source the way the tool does (`SourceReferenceScanner`), so their counts do not
-  depend on the build configuration, and they match the tool's `guard_figures.py`. At P5-1b:
-  - `DomainCycles.txt` counts pairs by band: 69, 63 between logic and 6 between content (the recount of section 4).
-  - `UpwardEdges.txt` has one line per file and higher node, with its referencing members: 1,319 (see "Remaining upward
-    edges, by item").
+  depend on the build configuration, and they match the tool's `guard_figures.py`. On `bd12924d9`, P5-1b's base:
+  - `DomainCycles.txt` counts pairs by band: 69, 63 between logic and 6 between content (the recount of section 4). P5-1d
+    removed `Abilities <-> Creatures`, so the merged baseline holds 68.
+  - `UpwardEdges.txt` has one line per file, node of the file's code and higher node (`<file>: Character -> Combat`), with
+    its referencing members: 1,319, then 1,311 after P5-1c and P5-1d (see "Remaining upward edges, by item").
   - `DeferredResolution.txt` gives each `Lazy<>` its direction (`<file> -> Combat (up)`): 28 up, 53 down and 30 inside one
     domain. The direction went into the existing baseline rather than a second one, so deferred resolution keeps one source.
   - `SinkWork.txt` counts the lines of the sinks' members that do more than forward: 2,096 lines in 15 of the 17 sinks,

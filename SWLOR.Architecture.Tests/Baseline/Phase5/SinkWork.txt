@@ -2,8 +2,9 @@
 # Line: <type> | <lines>: a type of SWLOR.Game.Server.NativeSinks (the sink factory, which only creates the sinks, is
 # not measured) and the lines of its members that do work, each from its first attribute or modifier to its last token.
 # A member does no work when it is a method whose body is one call to a name or a chain of member names that passes the
-# method's own parameters as written, a readonly instance field without an initializer, or a constructor that only
-# assigns its parameters to fields; everything else is work. The domain order counts NativeSinks as wiring on that
+# method's own parameters as written, a readonly instance field without an initializer, a constructor that only
+# assigns its own parameters to instance fields (never a property or a static field), or a primary constructor that
+# passes nothing to its base type; everything else is work. The domain order counts NativeSinks as wiring on that
 # condition. The hook logic moves into Combat services in P5-16b; the sinks stay under the no-content rule
 # (LogicToContent.txt).
 #

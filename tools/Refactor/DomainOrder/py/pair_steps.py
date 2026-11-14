@@ -8,19 +8,34 @@ SHAPE = {k: type_shape_class(k) for k in TOP_UNIT}
 OV_V = {k: unit_for(v) for k, v in PLACE.items() if SHAPE[k] == "V" and k not in EXPLICIT}
 OV_VD = {k: unit_for(v) for k, v in PLACE.items()}
 
+WIRING_AREAS = {"Platform/Composition", "Platform/NativeSinks"}
+
 def node_a(u, entity_found=False):
-    if u is None or u == "Platform/Composition": return None
-    if entity_found and u in ("Platform/Entity", "Platform/Enumeration"): return "Foundation"
+    """The P5-0 domain of a unit. Edges out of the composition root are left out by the caller; edges into it count."""
+    if u is None:
+        return None
+    if entity_found and u in ("Platform/Entity", "Platform/Enumeration"):
+        return "Foundation"
     return domain_of(u)
+
+def target_node_c(u):
+    """node_c for the target of a reference: a wiring area is Platform code (DomainMap counts edges into it)."""
+    if u in WIRING_AREAS:
+        return ("Platform", "L")
+    return node_c(u)
 
 def pairs_a(override, skip_v=False, entity_found=False):
     dirs = set()
     for f in facts():
-        if skip_v and f[3] == "V": continue
-        fu = unit_key(f[0], override); tu = unit_key(f[2], override)
-        if fu is None or tu is None or fu == tu or fu == "Platform/Composition": continue
+        if skip_v and f[3] == "V":
+            continue
+        fu = unit_key(f[0], override)
+        tu = unit_key(f[2], override)
+        if fu is None or tu is None or fu == tu or fu == "Platform/Composition":
+            continue
         a, b = node_a(fu, entity_found), node_a(tu, entity_found)
-        if a and b and a != b: dirs.add((a, b))
+        if a and b and a != b:
+            dirs.add((a, b))
     return {tuple(sorted(k)) for k in dirs if (k[1], k[0]) in dirs}
 
 def edges_a(override, skip_v=False):
@@ -37,10 +52,13 @@ def pairs_c(override, skip_v=False, native=True, sinks_wiring=True):
     dirs = set()
     simc.WIRING = {"Platform/Composition", "Platform/NativeSinks"} if sinks_wiring else {"Platform/Composition"}
     for f in facts():
-        if skip_v and f[3] == "V": continue
-        fu = unit_key(f[0], override); tu = unit_key(f[2], override)
-        a, b = node_c(fu), node_c(tu)
-        if not a or not b or a == b or a[1] != b[1] or a[0] == b[0]: continue
+        if skip_v and f[3] == "V":
+            continue
+        fu = unit_key(f[0], override)
+        tu = unit_key(f[2], override)
+        a, b = node_c(fu), target_node_c(tu)
+        if not a or not b or a == b or a[1] != b[1] or a[0] == b[0]:
+            continue
         if a[0] == "Native" or b[0] == "Native":
             if not native: continue
             a = ("Platform", a[1]) if a[0] == "Native" else a; b = ("Platform", b[1]) if b[0] == "Native" else b

@@ -141,6 +141,14 @@ void HandleName(SemanticModel model, SimpleNameSyntax name, HashSet<string> seen
 {
     var info = model.GetSymbolInfo(name);
     var symbol = info.Symbol ?? (info.CandidateSymbols.Length == 1 ? info.CandidateSymbols[0] : null);
+    if (name.IsVar && symbol is ITypeSymbol inferred)
+    {
+        // A var has no syntax for what it infers (an array's element type, type arguments), so they come from the inferred
+        // type (same rule as the guard's SourceReferenceScanner).
+        AddTypeDeep(name, inferred, "type", seen);
+        return;
+    }
+
     var inNameof = IsInNameof(model, name);
     switch (symbol)
     {
@@ -148,10 +156,7 @@ void HandleName(SemanticModel model, SimpleNameSyntax name, HashSet<string> seen
             // A type that only qualifies a member access is covered by the member (so a constant stays a constant).
             if (IsQualifierOfMember(model, name)) return;
             if (name.Ancestors().Any(a => a is UsingDirectiveSyntax)) return;
-            // A var has no syntax for the type arguments it infers, so they come from the inferred type (same rule as the guard's
-            // SourceReferenceScanner).
-            if (name.IsVar) AddTypeDeep(name, type, inNameof ? "nameof" : "type", seen);
-            else Add(name, type, inNameof ? "nameof" : "type", "", seen);
+            Add(name, type, inNameof ? "nameof" : "type", "", seen);
             break;
         case IMethodSymbol method:
             var m = method.ReducedFrom ?? method;

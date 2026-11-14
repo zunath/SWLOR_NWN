@@ -249,21 +249,21 @@ Largest 15 of 356 (all in `UpwardEdges.txt`):
 
 | Entry | Members | Detail |
 |---|---:|---|
-| `SWLOR.Game.Server/Domain/Character/StatService.cs -> Combat` | 57 | Character -> Combat: CombatDamageType, CombatDamageTypeExtensions, CombatRecordAttributionScope, CombatRecordHealingReactionScope, CombatRecordResource and 20 more |
-| `SWLOR.Game.Server/Domain/Character/StatType.cs -> Combat` | 47 | Character -> Combat: DeflectionSource |
-| `SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Abilities` | 41 | Combat -> Abilities: AbilityDetail, AbilityImpactSummary, IAbilityService, MeleeTechniqueDetail, MeleeTechniqueLine and 2 more |
-| `SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Abilities` | 36 | Combat -> Abilities: AbilityDetail, AbilityImpactSequence, AbilityImpactSummary, IAbilityService |
-| `SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Abilities` | 33 | Combat -> Abilities: AbilityActivationType, AbilityDetail, AbilityImpactSummary, AbilityRequirementFP, IAbilityService and 1 more |
-| `SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Combat` | 28 | Character -> Combat: CombatDamageDeliveryType, CombatDamageType, CombatDamageTypeExtensions, ICombatAbilityImpactService, ICombatAttackTimingService and 6 more |
-| `SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs -> Abilities` | 22 | Combat -> Abilities: AbilityDetail, AbilityImpactSequence, AbilityImpactSummary, AbilityRequirementStamina, IAbilityService |
-| `SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Abilities` | 20 | Combat -> Abilities: AbilityDetail, AbilityImpactSummary, IAbilityService |
-| `SWLOR.Game.Server/Domain/Character/EquipmentPredicates.cs -> Items` | 17 | Character -> Items: IItemService |
-| `SWLOR.Game.Server/Domain/Character/PerkService.cs -> Abilities` | 15 | Character -> Abilities: AbilityDetail, IAbilityService, IQuickCastService, RecastGroup |
-| `SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Abilities` | 15 | Character -> Abilities: AbilityDetail, AbilityImpactSummary, IAbilityService, IQuickCastService |
-| `SWLOR.Game.Server/Domain/Combat/ICombatResourcesService.cs -> Abilities` | 14 | Combat -> Abilities: AbilityDetail |
-| `SWLOR.Game.Server/Domain/Combat/IMeleeTechniqueService.cs -> Abilities` | 14 | Combat -> Abilities: AbilityDetail, AbilityImpactSummary, MeleeTechniqueLine, MeleeTechniqueProfile, MeleeTechniqueStage |
-| `SWLOR.Game.Server/Domain/Combat/TwinPistolAbilityService.cs -> Abilities` | 14 | Combat -> Abilities: AbilityDetail, AbilityImpactSummary, IAbilityService |
-| `SWLOR.Game.Server/Domain/Combat/EnmityService.cs -> Creatures` | 13 | Combat -> Creatures: IAIService, ICompanionControlService |
+| `SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Combat` | 57 | CombatDamageType, CombatDamageTypeExtensions, CombatRecordAttributionScope, CombatRecordHealingReactionScope, CombatRecordResource and 20 more |
+| `SWLOR.Game.Server/Domain/Character/StatType.cs: Character -> Combat` | 47 | DeflectionSource |
+| `SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs: Combat -> Abilities` | 41 | AbilityDetail, AbilityImpactSummary, IAbilityService, MeleeTechniqueDetail, MeleeTechniqueLine and 2 more |
+| `SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs: Combat -> Abilities` | 36 | AbilityDetail, AbilityImpactSequence, AbilityImpactSummary, IAbilityService |
+| `SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs: Combat -> Abilities` | 33 | AbilityActivationType, AbilityDetail, AbilityImpactSummary, AbilityRequirementFP, IAbilityService and 1 more |
+| `SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Combat` | 28 | CombatDamageDeliveryType, CombatDamageType, CombatDamageTypeExtensions, ICombatAbilityImpactService, ICombatAttackTimingService and 6 more |
+| `SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs: Combat -> Abilities` | 22 | AbilityDetail, AbilityImpactSequence, AbilityImpactSummary, AbilityRequirementStamina, IAbilityService |
+| `SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs: Combat -> Abilities` | 20 | AbilityDetail, AbilityImpactSummary, IAbilityService |
+| `SWLOR.Game.Server/Domain/Character/EquipmentPredicates.cs: Character -> Items` | 17 | IItemService |
+| `SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Abilities` | 15 | AbilityDetail, IAbilityService, IQuickCastService, RecastGroup |
+| `SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Abilities` | 15 | AbilityDetail, AbilityImpactSummary, IAbilityService, IQuickCastService |
+| `SWLOR.Game.Server/Domain/Combat/ICombatResourcesService.cs: Combat -> Abilities` | 14 | AbilityDetail |
+| `SWLOR.Game.Server/Domain/Combat/IMeleeTechniqueService.cs: Combat -> Abilities` | 14 | AbilityDetail, AbilityImpactSummary, MeleeTechniqueLine, MeleeTechniqueProfile, MeleeTechniqueStage |
+| `SWLOR.Game.Server/Domain/Combat/TwinPistolAbilityService.cs: Combat -> Abilities` | 14 | AbilityDetail, AbilityImpactSummary, IAbilityService |
+| `SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> Creatures` | 13 | IAIService, ICompanionControlService |
 
 ## 10. Sink work
 

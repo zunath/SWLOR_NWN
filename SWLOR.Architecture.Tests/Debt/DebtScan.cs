@@ -48,7 +48,7 @@ internal sealed class DebtScan
         var references = Timed("references (bound in the server)", () => SourceReferenceScanner.Scan(snapshot));
         var cycles = Timed("domain cycles", () => DomainCycleScanner.Scan(references, dependencies.Map));
         var upward = Timed("upward references", () => DomainCycleScanner.Upward(references, dependencies.Map));
-        var sinks = Timed("sink work", () => SinkWorkScanner.Scan(snapshot.Server));
+        var sinks = Timed("sink work", () => SinkWorkScanner.Scan(snapshot));
         var holders = Timed("static state (IL)", () => StaticStateScanner.Scan(facts, graph));
         var written = Timed("static field writes", () => StaticFieldWriteScanner.Written(snapshot, holders.SelectMany(holder => holder.Fields).ToList()));
 

@@ -157,6 +157,14 @@ public class DomainOrderMeasureTests
 
                             private static System.Collections.Generic.List<StatKind> Kinds() => new();
 
+                            public int InferArray()
+                            {
+                                var values = Values();
+                                return values.Length;
+                            }
+
+                            private static StatKind[] Values() => new StatKind[0];
+
                             private sealed class Nested { public int Run() => StatRules.Clamp(2); }
                         }
                     }
@@ -181,9 +189,11 @@ public class DomainOrderMeasureTests
             (Type + "::Infer", "StatService"),
             (Type + "::InferList", "StatKind"),
             (Type + "::Kinds", "StatKind"),
+            (Type + "::InferArray", "StatKind"),
+            (Type + "::Values", "StatKind"),
             (Type + "::Make", "StatService"),
             (Type + "+Nested::Run", "StatRules")
-        }, "a constant, an enum member, nameof, the type a var infers, the type arguments a var infers, a target-typed new and a nested type's member all count");
+        }, "a constant, an enum member, nameof, the type a var infers with its type arguments or array element type, a target-typed new and a nested type's member all count");
     }
 
     [Test]
@@ -206,12 +216,26 @@ public class DomainOrderMeasureTests
 
         measure.Entries.Select(entry => (entry.Key, entry.Count)).Should().BeEquivalentTo(new[]
         {
-            ("Stat.cs -> Combat", 2),
-            ("Player.cs -> Character", 1),
-            ("Effect.cs -> Abilities content", 1)
+            ("Stat.cs: Character -> Combat", 2),
+            ("Player.cs: Foundation -> Character", 1),
+            ("Effect.cs: Character content -> Abilities content", 1)
         }, "down, inside, content-to-logic, logic-to-content and wiring references are not up");
-        measure.Entries.Single(entry => entry.Key == "Stat.cs -> Combat").Detail.Should().Be("Character -> Combat: Target");
+        measure.Entries.Single(entry => entry.Key == "Stat.cs: Character -> Combat").Detail.Should().Be("Target");
         measure.Summary[0].Should().Be("4 members in 3 files reference a domain above their own: 3 directions, 3 unit edges.");
+    }
+
+    [Test]
+    public void A_file_with_code_in_two_nodes_gets_a_line_for_each_and_the_baseline_reads_back()
+    {
+        var upward = DomainCycleScanner.Upward(
+        [
+            Reference("Mixed.cs", "Domain/Character", "Stat::A", "Domain/Combat"),
+            Reference("Mixed.cs", "Platform/Entity", "Player::B", "Domain/Combat")
+        ], DomainMap.Parse(OrderedMap));
+        var measure = DebtMeasures.UpwardEdges(upward);
+
+        measure.Entries.Select(entry => entry.Key).Should().BeEquivalentTo("Mixed.cs: Character -> Combat", "Mixed.cs: Foundation -> Combat");
+        DebtBaselineFile.Parse(DebtBaselineFile.Render(measure.Entries, measure.Header)).Should().HaveCount(2, "no key is listed twice");
     }
 
     [Test]
@@ -254,7 +278,7 @@ public class DomainOrderMeasureTests
             }
         });
 
-        var sinks = SinkWorkScanner.Scan(snapshot.Server);
+        var sinks = SinkWorkScanner.Scan(snapshot);
         var measure = DebtMeasures.SinkWork(sinks);
 
         sinks.Select(sink => (sink.Type, sink.Lines, sink.ForwardingMembers)).Should().BeEquivalentTo(new[]
@@ -269,5 +293,78 @@ public class DomainOrderMeasureTests
             new DebtEntry("SWLOR.Game.Server.NativeSinks.Rules", 1, "Resolve"),
             new DebtEntry("SWLOR.Game.Server.NativeSinks.WorkingSink", 8, "_state, Run, Shifted, Handle")
         });
+    }
+
+    [Test]
+    public void A_constructor_does_no_work_only_when_it_gives_instance_fields_its_parameters_and_a_primary_one_passes_nothing_up()
+    {
+        var snapshot = SourceSnapshot.FromText(new Dictionary<string, IReadOnlyDictionary<string, string>>
+        {
+            [Server] = new Dictionary<string, string>
+            {
+                ["SWLOR.Game.Server/NativeSinks/Constructors.cs"] = """
+                    namespace SWLOR.Game.Server.NativeSinks
+                    {
+                        public interface IHandler { int Handle(int a, int b); }
+
+                        public abstract class SinkBase
+                        {
+                            protected IHandler Inherited;
+                            protected static IHandler Shared;
+                            protected SinkBase() { }
+                            protected SinkBase(int value) { }
+                        }
+
+                        public sealed class FieldSink
+                        {
+                            private readonly IHandler _handler;
+                            public FieldSink(IHandler handler) { this._handler = handler; }
+                        }
+
+                        public sealed class InheritedFieldSink : SinkBase
+                        {
+                            public InheritedFieldSink(IHandler handler) { Inherited = handler; }
+                        }
+
+                        public sealed class PropertySink
+                        {
+                            public PropertySink(IHandler handler) { Handler = handler; }
+                            public IHandler Handler { get; }
+                        }
+
+                        public sealed class InheritedStaticSink : SinkBase
+                        {
+                            public InheritedStaticSink(IHandler handler) { Shared = handler; }
+                        }
+
+                        public sealed class CapturingSink(IHandler handler)
+                        {
+                            public int Run(int a, int b) => handler.Handle(a, b);
+                        }
+
+                        public sealed class AttackSink(IHandler handler) : SinkBase(Rules.Build(handler)) { }
+
+                        public static class Rules { public static int Build(IHandler handler) => handler.Handle(1, 2); }
+                    }
+                    """
+            }
+        });
+
+        var sinks = SinkWorkScanner.Scan(snapshot).ToDictionary(sink => sink.Type[(sink.Type.LastIndexOf('.') + 1)..]);
+
+        sinks.ToDictionary(pair => pair.Key, pair => (pair.Value.Lines, string.Join(", ", pair.Value.WorkingMembers), pair.Value.ForwardingMembers))
+            .Should().BeEquivalentTo(new Dictionary<string, (int, string, int)>
+            {
+                ["IHandler"] = (0, "", 1),
+                ["SinkBase"] = (2, "Inherited, Shared", 2),
+                ["FieldSink"] = (0, "", 2),
+                ["InheritedFieldSink"] = (0, "", 1),
+                ["PropertySink"] = (2, ".ctor, Handler", 0),
+                ["InheritedStaticSink"] = (1, ".ctor", 0),
+                ["CapturingSink"] = (0, "", 2),
+                ["AttackSink"] = (1, ".ctor", 0),
+                ["Rules"] = (1, "Build", 0)
+            }, "a property's setter or a static field as the target is work, an inherited instance field is not, and a primary constructor " +
+               "that passes arguments to its base type works like an ordinary constructor with a base initializer");
     }
 }

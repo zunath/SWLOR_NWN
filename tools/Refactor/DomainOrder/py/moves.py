@@ -74,37 +74,50 @@ def placement(order, movable_classes=("V", "D"), max_iter=20):
     def cur(k):
         if k in place: return place[k]
         return node_c(TOP_UNIT.get(k))
-    for it in range(max_iter):
+    for _ in range(max_iter):
         changed = False
         for k in sorted(movable - set(EXPLICIT)):
             home = cur(k)
-            if home is None: continue
+            if home is None:
+                continue
             logic_users = []
             for s in refs_in[k]:
                 n = cur(s)
-                if n is None: continue
-                if n[1] != "L" or n[0] == home[0]: continue
+                if n is None:
+                    continue
+                if n[1] != "L" or n[0] == home[0]:
+                    continue
+                # Native is moving into Combat (P5-16b): its references never pull a type down, and it is no destination.
+                if n[0] == "Native":
+                    continue
                 # a user that already depends on T's home domain through code (S/O) does not pull T down:
                 # that dependency has to be inverted or moved anyway.
-                if hard_dep_type(s, home[0]): continue
-                if s.split(".")[-1] in MISPLACED_USERS: continue
+                if hard_dep_type(s, home[0]):
+                    continue
+                if s.split(".")[-1] in MISPLACED_USERS:
+                    continue
                 logic_users.append(n[0])
-            if not logic_users and home[1] == "C": continue
+            if not logic_users and home[1] == "C":
+                continue
             cand = [home[0]] if home[1] == "L" else []
             cand += logic_users
             target = min(cand, key=lambda d: rank.get(d, 0))
             new = (target, "L")
             if new != home:
-                place[k] = new; changed = True
-        if not changed: break
-    # conflicts: moved type referencing non-movable code above its new place
+                place[k] = new
+                changed = True
+        if not changed:
+            break
+    else:
+        raise RuntimeError(f"The type moves did not settle in {max_iter} rounds; the placement would be unfinished.")
+    # conflicts: a moved type that, where it ends up, names content (its own domain's included) or code above it
     conflicts = []
     for k, (d, b) in place.items():
         for t, c in refs_out[k]:
-            if t in movable: continue
             n = cur(t)
-            if n is None or n[0] == d: continue
-            if n[1] == "C" or rank.get(n[0], 0) > rank.get(d, 0):
+            if n is None:
+                continue
+            if n[1] == "C" or (n[0] != d and rank.get(n[0], 0) > rank.get(d, 0)):
                 conflicts.append((k, d, t, n, c))
     return place, conflicts
 

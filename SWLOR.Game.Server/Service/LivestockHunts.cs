@@ -185,8 +185,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// At server start, a hunt that ended while the server was down ends with no outcome: its wave could not be fought. One
-        /// that is still on is picked up again when its corrals spawn, with a new wave and the time that is left.
+        /// At server start, a hunt whose time ran out while the server was down gets its full time again from now: its wave could
+        /// not be fought, and ending it with no outcome would let a hunt called before a restart dodge both the fight and the
+        /// penalty for ignoring the predators. One that is still on is picked up again when its corrals spawn, with a new wave and
+        /// the time that is left.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessAtServerStart()
@@ -201,9 +203,19 @@ namespace SWLOR.Game.Server.Service
                 if (hunt.EndsUtc > now)
                     continue;
 
-                DB.Delete<LivestockHunt>(hunt.Id);
-                CityGazette.Post(hunt.CityId, CityGazetteEntryType.Decision, "The predators moved on from the city's corrals.");
-                Log.Write(LogGroup.Property, $"The hunt at the corrals of city {hunt.CityId} ended while the server was down, with no outcome.");
+                var city = DB.Get<WorldProperty>(hunt.CityId);
+                if (city == null)
+                {
+                    Cancel(hunt);
+                    continue;
+                }
+
+                hunt.EndsUtc = LivestockRules.GetHuntEndUtc(now);
+                DB.Set(hunt);
+                Log.Write(LogGroup.Property, $"The hunt at the corrals of city {hunt.CityId} ran out while the server was down; it goes on until {hunt.EndsUtc:u}.");
+
+                // Corrals already in the world get their wave now; the rest get theirs when they spawn.
+                Begin(hunt, city);
             }
         }
     }

@@ -275,6 +275,12 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>The id of the latest planetary council summons this character has read. Older records load empty.</summary>
         public string SeenCouncilSummonsId { get; set; }
         public int PropertyOwedTaxes { get; set; }
+
+        /// <summary>
+        /// The city and week ("cityId|upkeep date") of the last citizenship fee added to <see cref="PropertyOwedTaxes"/>, so a
+        /// weekly check interrupted by a restart charges no citizen twice. Older records load empty.
+        /// </summary>
+        public string CitizenshipFeeChargedFor { get; set; }
         public int Attack { get; set; }
         public int Accuracy { get; set; }
         public int ForceAttack { get; set; }

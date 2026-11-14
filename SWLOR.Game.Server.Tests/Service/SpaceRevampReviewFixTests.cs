@@ -240,4 +240,52 @@ public class SpaceRevampReviewFixTests
         var flown = Between(ReadSource("Service", "SpaceDocking.cs"), "private static bool TryGetFlownShip(", "public static List<PlayerShip> GetDockedShips(");
         flown.Should().Contain("|| !IsShipInSpace(creature))", "a crew member keeps their own ship as active while it waits elsewhere");
     }
+
+    [Test]
+    public void AHuntThatRanOutWhileTheServerWasDown_GetsItsTimeAgain_InsteadOfEndingWithNoOutcome()
+    {
+        var hunts = ReadSource("Service", "LivestockHunts.cs");
+        var start = hunts[hunts.IndexOf("public static void ProcessAtServerStart()", StringComparison.Ordinal)..];
+        start.Should().Contain("hunt.EndsUtc = LivestockRules.GetHuntEndUtc(now);")
+            .And.Contain("Begin(hunt, city);")
+            .And.NotContain("The predators moved on", "calling a hunt before a restart must not dodge both the fight and the penalty");
+    }
+
+    [Test]
+    public void TheWeeklyCityCheck_BillsTheWeekInOneSave_AndChargesEachCitizenOnce()
+    {
+        var property = ReadSource("Service", "Property.cs");
+        var cities = Between(property, "private static void ProcessCities()", "private static void ProcessCityCitizenRequirement(");
+        var level = cities.IndexOf("var levelChanged = ProcessCityLevel(city);", StringComparison.Ordinal);
+        var upkeep = cities.IndexOf("ProcessUpkeep(now, city);", StringComparison.Ordinal);
+        var date = cities.IndexOf("city.Dates[PropertyDateType.Upkeep] = week.AddDays(7);", StringComparison.Ordinal);
+        var journal = cities.IndexOf("city.Dates[PropertyDateType.CitizenshipFeesDue] = week;", StringComparison.Ordinal);
+        var save = cities.IndexOf("DB.Set(city);", journal, StringComparison.Ordinal);
+        var fees = cities.LastIndexOf("ProcessCitizenshipFees(city);", StringComparison.Ordinal);
+        level.Should().BeGreaterThanOrEqualTo(0);
+        new[] { level, upkeep, date, journal, save, fees }.Should().BeInAscendingOrder("level, upkeep and next date are saved together, then the fees");
+        cities.IndexOf("ProcessCitizenshipFees(city);", StringComparison.Ordinal).Should().BeLessThan(level, "an interrupted week's fees are finished first");
+
+        Between(property, "private static bool ProcessCityLevel(", "private static void OnCityLevelSaved(").Should().NotContain("DB.Set(city)");
+        Between(property, "private static void ProcessUpkeep(", "private static void ProcessCitizenshipFees(").Should().NotContain("DB.Set(city)");
+        var feesBody = Between(property, "private static void ProcessCitizenshipFees(", "public static void DeleteProperty(");
+        feesBody.Should().Contain("if (citizen.CitizenshipFeeChargedFor == charge)")
+            .And.Contain("citizen.CitizenshipFeeChargedFor = charge;")
+            .And.Contain("city.Dates.Remove(PropertyDateType.CitizenshipFeesDue);");
+
+        var week = new DateTime(2026, 11, 14, 0, 0, 0, DateTimeKind.Utc);
+        SWLOR.Game.Server.Service.PropertyService.CityUpkeepRules.GetCitizenshipFeeMark("city-a", week)
+            .Should().NotBe(SWLOR.Game.Server.Service.PropertyService.CityUpkeepRules.GetCitizenshipFeeMark("city-a", week.AddDays(7)))
+            .And.NotBe(SWLOR.Game.Server.Service.PropertyService.CityUpkeepRules.GetCitizenshipFeeMark("city-b", week));
+    }
+
+    [Test]
+    public void TheCityChecks_SurviveAMissingMayorRecord_AndARepeatedPermissionTransfer()
+    {
+        var property = ReadSource("Service", "Property.cs");
+        Between(property, "private static bool ProcessCityLevel(", "private static void OnCityLevelSaved(").Should().Contain("mayor != null &&");
+        Between(property, "private static void ProcessUpkeep(", "private static void ProcessCitizenshipFees(").Should().Contain("dbMayor != null &&");
+        var transfer = Between(property, "void TransferPermissions(string winnerPlayerId)", "CityOfficers.EndAllOnNewMayor(city, winnerPlayerId);");
+        transfer.Should().NotContain(".Single();", "a restart after the delete finds the old mayor's permission already gone");
+    }
 }

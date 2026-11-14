@@ -65,8 +65,8 @@ public class LeadershipCivicPerkRegressionTests
         placeCityHall.Should().Contain("The City Management I perk is required to establish a city.");
 
         var property = ReadSource("Service", "Property.cs");
-        var processCityLevel = ExtractMethod(property, "private static void ProcessCityLevel(WorldProperty city)");
-        processCityLevel.Should().Contain("mayor.Perks[PerkType.CityManagement] + 1");
+        var processCityLevel = ExtractMethod(property, "private static bool ProcessCityLevel(WorldProperty city)");
+        processCityLevel.Should().Contain("mayor.Perks.TryGetValue(PerkType.CityManagement, out var managementLevel)").And.Contain("? managementLevel + 1");
         processCityLevel.Should().Contain("if (mayorLevel < currentLevel)");
         processCityLevel.Should().Contain("for (var level = 1; level <= 5; level++)");
         processCityLevel.Should().Contain("if (level > mayorLevel)");
@@ -106,7 +106,7 @@ public class LeadershipCivicPerkRegressionTests
 
         var property = ReadSource("Service", "Property.cs");
         var processUpkeep = ExtractMethod(property, "private static void ProcessUpkeep(DateTime now, WorldProperty city)");
-        processUpkeep.Should().Contain("dbMayor.Perks[PerkType.Upkeep]");
+        processUpkeep.Should().Contain("dbMayor.Perks.TryGetValue(PerkType.Upkeep, out var perkLevel)");
         processUpkeep.Should().Contain("CityUpkeepRules.GetWeeklyUpkeep(");
         processUpkeep.Should().Contain("city.Upkeep += weeklyUpkeep;");
 

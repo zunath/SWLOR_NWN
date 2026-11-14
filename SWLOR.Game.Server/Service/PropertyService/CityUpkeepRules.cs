@@ -29,6 +29,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
             return basePrice + upgradePrice;
         }
 
+        /// <summary>
+        /// The mark a citizen carries once charged a week's citizenship fee by a city: the city and that week's upkeep date, so a
+        /// restarted weekly check charges no one twice and a citizen who moved city is still charged by the new one.
+        /// </summary>
+        public static string GetCitizenshipFeeMark(string cityId, DateTime week) => $"{cityId}|{week:O}";
+
         /// <summary>The credits the Edicts add to the week's bill.</summary>
         public static int GetEdictUpkeep(IEnumerable<EdictBillLine> edictLines)
         {

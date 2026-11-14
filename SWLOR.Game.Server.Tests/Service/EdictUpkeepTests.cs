@@ -133,7 +133,7 @@ public class EdictUpkeepTests
     [Test]
     public void TheLevelCheck_AppliesLevelPausesAfterTheLevelIsSetWithoutBillingResumes()
     {
-        var processCityLevel = ExtractMethod(ReadServer("Service", "Property.cs"), "private static void ProcessCityLevel(WorldProperty city)");
+        var processCityLevel = ExtractMethod(ReadServer("Service", "Property.cs"), "private static bool ProcessCityLevel(WorldProperty city)");
 
         var setLevel = processCityLevel.IndexOf("city.Upgrades[PropertyUpgradeType.CityLevel] = currentLevel;", StringComparison.Ordinal);
         var pauses = processCityLevel.IndexOf("Edict.ApplyCityLevelPauses(city, DateTime.UtcNow, billResumes: false);", StringComparison.Ordinal);

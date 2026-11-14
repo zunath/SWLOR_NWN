@@ -349,7 +349,7 @@ Between elections, the mayor and officers handle situations at a City Affairs te
 | Medical supply shortage | Buy supplies: -10,000. Ration: the Medical Center bonus is halved for 72 hours. |
 | Visitor brawl (needs Open Gates) | Fine the visitors: +5,000, and a Visitors Complain follow-up. Close the gates: Open Gates is suspended for 72 hours. |
 | Pests in the gardens | Hire exterminators: -5,000. Ignore it: crops harvested in the city in the next 72 hours yield 1 less, never below 1. Crops keep growing. |
-| Predators at the corrals | Call a hunt: an NPC attack at the corrals for 30 minutes, which starts only when an official chooses it, and the animals cannot be harmed. Ignore it, or lose the hunt: the city's animals give no products for 72 hours. Animal owners get a login notice either way. |
+| Predators at the corrals | Call a hunt: an NPC attack at the corrals for 30 minutes, which starts only when an official chooses it, and the animals cannot be harmed. Ignore it, or lose the hunt: the city's animals give no products for 72 hours. A hunt whose time runs out while the server is down gets its full 30 minutes again after the restart. Animal owners get a login notice either way. |
 
 **City Gazette**
 

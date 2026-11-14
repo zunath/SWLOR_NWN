@@ -1633,6 +1633,9 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
+                // A week whose citizenship fees a restart interrupted is finished first, once per citizen.
+                ProcessCitizenshipFees(city);
+
                 // An Acting Mayor's term that ran out, and a step-down nobody accepted, end here.
                 CitySuccession.Process(now, city);
 
@@ -1643,17 +1646,22 @@ namespace SWLOR.Game.Server.Service
                     Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) upkeep isn't ready yet.");
                     continue;
                 }
-                else
-                {
-                    ProcessCityLevel(city);
-                    ProcessUpkeep(now, city);
-                    ProcessCitizenshipFees(city);
 
-                    // Next upkeep check should be 7 days from the previous one.
-                    city.Dates[PropertyDateType.Upkeep] = city.Dates[PropertyDateType.Upkeep].AddDays(7);
-                }
+                // The week's level, upkeep and next check date are saved together, and the citizenship fees are journaled in
+                // the same save, so a restart part way through neither bills the week twice nor levels the city up twice.
+                var week = city.Dates[PropertyDateType.Upkeep];
+                var levelChanged = ProcessCityLevel(city);
+                ProcessUpkeep(now, city);
 
+                // Next upkeep check should be 7 days from the previous one.
+                city.Dates[PropertyDateType.Upkeep] = week.AddDays(7);
+                city.Dates[PropertyDateType.CitizenshipFeesDue] = week;
                 DB.Set(city);
+
+                if (levelChanged)
+                    OnCityLevelSaved(city);
+
+                ProcessCitizenshipFees(city);
             }
         }
 
@@ -1738,12 +1746,14 @@ namespace SWLOR.Game.Server.Service
 
             void TransferPermissions(string winnerPlayerId)
             {
-                var mayorPermission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                // A restart after this delete and before the city was saved finds the old mayor's permission already gone.
+                var mayorPermissions = DB.Search(new DBQuery<WorldPropertyPermission>()
                         .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), incumbentMayorId, false)
                         .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
-                    .Single();
+                    .ToList();
 
-                DB.Delete<WorldPropertyPermission>(mayorPermission.Id);
+                foreach (var mayorPermission in mayorPermissions)
+                    DB.Delete<WorldPropertyPermission>(mayorPermission.Id);
 
                 var winnerPermission = DB.Search(new DBQuery<WorldPropertyPermission>()
                         .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), winnerPlayerId, false)
@@ -2112,7 +2122,11 @@ namespace SWLOR.Game.Server.Service
             BroadcastPropertyEvent(city, title, details);
         }
 
-        private static void ProcessCityLevel(WorldProperty city)
+        /// <summary>
+        /// Sets the city's level for the week in memory; the weekly check saves it with the week's upkeep. Returns whether the
+        /// level changed, so the street life follows once it is saved (<see cref="OnCityLevelSaved"/>).
+        /// </summary>
+        private static bool ProcessCityLevel(WorldProperty city)
         {
             Log.Write(LogGroup.Property, $"Processing city level for '{city.CustomName}' ({city.Id})...");
 
@@ -2120,9 +2134,12 @@ namespace SWLOR.Game.Server.Service
             var citizenCount = DB.SearchCount(new DBQuery<Player>()
                 .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
                 .AddFieldSearch(nameof(Player.IsDeleted), false));
-            var currentLevel = city.Upgrades[PropertyUpgradeType.CityLevel];
-            var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
-                ? mayor.Perks[PerkType.CityManagement] + 1
+            var previousLevel = city.Upgrades[PropertyUpgradeType.CityLevel];
+            var currentLevel = previousLevel;
+
+            // A mayor whose record is gone supports only the first level.
+            var mayorLevel = mayor != null && mayor.Perks.TryGetValue(PerkType.CityManagement, out var managementLevel)
+                ? managementLevel + 1
                 : 1;
 
             // Mayor's perk level has fallen below the city level.
@@ -2176,7 +2193,13 @@ namespace SWLOR.Game.Server.Service
             // A smaller city can have fewer officers: the newest appointments above the new limit end.
             CityOfficers.EndAppointmentsAboveLimit(city);
 
-            DB.Set(city);
+            Log.Write(LogGroup.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
+            return currentLevel != previousLevel;
+        }
+
+        /// <summary>Once a new city level is saved, the world follows it. Each step reads the saved city.</summary>
+        private static void OnCityLevelSaved(WorldProperty city)
+        {
             SpawnExclusion.InvalidateCity(city.Id);
 
             // The street life follows the current level: townsfolk, guards, and critters are added or removed to match.
@@ -2184,8 +2207,6 @@ namespace SWLOR.Game.Server.Service
 
             // A smaller city closes its newest market stalls above the new limit, and a larger one reopens them.
             MarketStalls.Refresh(city.Id);
-
-            Log.Write(LogGroup.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
         }
 
         private static void ProcessUpkeep(DateTime now, WorldProperty city)
@@ -2211,7 +2232,6 @@ namespace SWLOR.Game.Server.Service
                             $"**Upkeep Status**: Unpaid past deadline\n" +
                             $"**Disrepair Deadline**: {FormatUtcDate(city.Dates[PropertyDateType.DisrepairDestruction])}",
                             15158332);
-                        DB.Set(city);
                         return;
                     }
                     else
@@ -2249,10 +2269,10 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            // Calculate new upkeep price for this week.
+            // Calculate new upkeep price for this week. A mayor whose record is gone has no Upkeep perk.
             var dbMayor = DB.Get<Player>(city.OwnerPlayerId);
-            var upkeepPerkLevel = dbMayor.Perks.ContainsKey(PerkType.Upkeep)
-                ? dbMayor.Perks[PerkType.Upkeep]
+            var upkeepPerkLevel = dbMayor != null && dbMayor.Perks.TryGetValue(PerkType.Upkeep, out var perkLevel)
+                ? perkLevel
                 : 0;
             var layout = GetLayoutByType(city.Layout);
             var weeklyUpkeep = CityUpkeepRules.GetWeeklyUpkeep(
@@ -2270,7 +2290,6 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Weekly upkeep calcuated to be: {weeklyUpkeep} credits.");
             city.Upkeep += weeklyUpkeep;
             city.Upkeep += CityUpkeepRules.GetEdictUpkeep(edictBill);
-            DB.Set(city);
             Log.Write(LogGroup.Property, $"Total upkeep owed: {city.Upkeep} credits.");
             BroadcastPropertyEvent(
                 city,
@@ -2283,10 +2302,19 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.Property, $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
         }
 
+        /// <summary>
+        /// Charges the week's citizenship fee the weekly check journaled (<see cref="PropertyDateType.CitizenshipFeesDue"/>) to every
+        /// citizen once: each citizen is marked with the week as their fee is saved, so a restart part way through skips those
+        /// already charged. Does nothing when no week is due.
+        /// </summary>
         private static void ProcessCitizenshipFees(WorldProperty city)
         {
+            if (!city.Dates.TryGetValue(PropertyDateType.CitizenshipFeesDue, out var week))
+                return;
+
             Log.Write(LogGroup.Property, $"Processing citizenship fees for '{city.CustomName}' ({city.Id})");
 
+            var charge = CityUpkeepRules.GetCitizenshipFeeMark(city.Id, week);
             var citizenQuery = new DBQuery<Player>()
                 .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
                 .AddFieldSearch(nameof(Player.IsDeleted), false);
@@ -2296,11 +2324,17 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var citizen in citizens)
             {
+                if (citizen.CitizenshipFeeChargedFor == charge)
+                    continue;
+
                 citizen.PropertyOwedTaxes += city.Taxes[PropertyTaxType.Citizenship];
+                citizen.CitizenshipFeeChargedFor = charge;
                 Log.Write(LogGroup.Property, $"Citizen '{citizen.Name}' owes an additional {city.Taxes[PropertyTaxType.Citizenship]} credits for a total of {citizen.PropertyOwedTaxes} credits");
                 DB.Set(citizen);
             }
 
+            city.Dates.Remove(PropertyDateType.CitizenshipFeesDue);
+            DB.Set(city);
             Log.Write(LogGroup.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 

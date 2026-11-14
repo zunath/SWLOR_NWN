@@ -1,32 +1,31 @@
 #!/usr/bin/env python3
-"""Preview and check how held pistols sit in each playable hand.
+"""Derive, preview and check how held pistols and rifles sit in each playable hand.
 
-Pistols are fitted to the male human default hand (`pmh0_handr001`). Other bodies carry the
-weapon hook somewhere else in a hand of another size, so the same pistol sits too high, too
-low or beside the fist. `WeaponHandFitCatalog.cs` holds one weapon-space move per body and
-side, which every hand style of that body inherits because they share a wrist, plus moves for
-single hand models that need their own. The server applies the move to the held weapon
-(`WeaponHandFit`). Nothing is per weapon: weapons keep their fit to the reference hand.
+Weapons are fitted to the male human body (`pmh0`). Other bodies carry the weapon hook in a
+hand of another size and place, so the same weapon sits too high, too low or beside the
+hand. `WeaponHandFitCatalog.cs` holds one weapon-space move per body and side plus moves for
+single hand models, and the server applies the move to the held weapon (`WeaponHandFit`).
+Nothing is per weapon.
 
-This tool draws hand and weapon together from the compiled models, in weapon space, so a move
-can be judged in seconds without the client. Each tile shows the side view, the view from
-below, and two cuts across the handle (hand outline in brown, weapon in blue), once as the
-game shows it now and once with the catalog move. A good move puts the handle inside the
-fist's opening with the index finger under the trigger guard. Open-fingered gloves, mittens
-and claws cannot close around a handle; for them the handle only has to lie in the palm.
+The standard is the same hand style on the male human. Almost every hand model on another
+body is his model scaled and shifted, so `derive` finds that scale and shift and carries the
+point where the back of the handle rests against the hand across it. Hands with no model on
+the male human (Cathar, Wookiee and droid hands, a few remodelled gloves) are judged by eye
+on review sheets: each tile shows the side view, the view from below, and two cuts across
+the handle (hand outline in brown, weapon in blue), without and with the move.
 
-Rifles are not covered. Their combat clips turn the weapon hook about 54 degrees from the idle
-clip, so one fixed move cannot be right in both, and moving a rifle also pulls it off the
-support hand that `GenerateRifleHoldAnimations.py` placed. A rifle correction belongs in those
-per-body hold banks.
+A rifle takes the midpoint of what its idle and ready clips need (`rifle_move`), and the
+rifle hold banks in SWLOR_Haks place the support hand for that move; `check` compares the
+two tables.
 
 Commands (run from the repository root; needs numpy, scipy and Pillow, and the hak folders
 `sw_pt_rhand sw_pt_lhand sw_weapon sw_pt_root`):
 
+    python tools/WeaponGripFit.py derive --body pfd0                      # derived catalog lines
+    python tools/WeaponGripFit.py check                                   # names, limits, rifle banks
+    python tools/WeaponGripFit.py check --derived                         # also every derived move (minutes)
     python tools/WeaponGripFit.py sheet --output <folder>                 # default hand of every body
-    python tools/WeaponGripFit.py sheet --body pfh0 --all --output <folder>   # every hand style of a body
-    python tools/WeaponGripFit.py sheet --body pfh0 --move -2 -1.5 13.5 --output <folder>  # try a move (mm)
-    python tools/WeaponGripFit.py check                                   # catalog names and limits
+    python tools/WeaponGripFit.py sheet --hand pfd0_handr209 --move 15 0 0 --output <folder>  # try a move (mm)
 
 See SWLOR.Game.Server/Readmes/WeaponHandFit.md.
 """
@@ -58,7 +57,19 @@ HOLDS = {
 }
 
 GRIP_REACH = 0.012        # weapon surface this close to the reference hand is "held"
-MAX_MOVE = 0.06           # a larger move means the catalog entry is wrong, not that the hand is unusual
+MAX_MOVE = 0.07           # a larger move means the catalog entry is wrong, not that the hand is unusual
+# Where the back of a pistol handle rests against the heel of the reference hand, toward the palm. A hand
+# style on another body is the reference body's model scaled and shifted; the handle follows this point.
+GRIP_ANCHOR = (0.008, -0.010, 0.020)
+DERIVED_TOLERANCE = 0.005  # the catalog may differ from a derived move by this much
+DERIVED_ENTRY = 0.003      # a derived hand this far from its body's move gets its own entry
+REGISTERED_MISS = 0.002    # a looser surface match than this is not trusted; that hand is judged by eye
+# The rifle ready and attack clips turn the weapon hook against the hand (x y z w); the idle clip leaves it
+# at rest. The female dwarf and half-orc frames inherit clips that turn it less. `WeaponHandFit.cs` holds
+# the same numbers.
+RIFLE_READY_TURN = (0.4155, -0.1652, 0.0770, 0.8911)
+RIFLE_READY_TURN_SHORT_FRAMES = (0.3120, -0.1728, 0.0578, 0.9324)
+RIFLE_BANKS = HAKS / "tools/GenerateRifleHoldAnimations.py"
 
 
 # ---------------------------------------------------------------- compiled models
@@ -262,6 +273,7 @@ def handle_axis(hold: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarr
 ENTRY = re.compile(r'\["(\w+)"\] = new\(([-\d.]+)f, ([-\d.]+)f, ([-\d.]+)f\)')
 
 
+@lru_cache(maxsize=1)
 def read_catalog() -> tuple[dict[str, np.ndarray], dict[str, np.ndarray]]:
     """(moves per body and side keyed like `pfh0_handr`, moves per hand model), in metres."""
     text = CATALOG.read_text(encoding="utf-8")
@@ -281,6 +293,162 @@ def catalog_move(hand: str) -> np.ndarray:
 def geometry_key(hand: str) -> str:
     vertices, faces = load(hand).mesh()
     return hashlib.sha1(np.round(vertices, 5).tobytes() + faces.tobytes()).hexdigest()
+
+
+def rifle_move(move, hand: str) -> np.ndarray:
+    """The one move a rifle takes in a hand whose pistol move is `move`: halfway between what the idle
+    clip and the turned ready clip need (`WeaponHandFit.RifleMove`)."""
+    move = np.asarray(move, float)
+    turn = RIFLE_READY_TURN_SHORT_FRAMES if hand[:4].lower() in ("pfd0", "pfo0") else RIFLE_READY_TURN
+    return (move + quaternion_matrix(turn).T @ move) / 2
+
+
+def rifle_bank_moves() -> dict[str, np.ndarray] | None:
+    """The per-body rifle moves the rifle hold banks were solved for, or None when the generator is absent."""
+    if not RIFLE_BANKS.is_file():
+        return None
+    block = re.search(r"^WEAPON_MOVES = \{(.*?)^\}", RIFLE_BANKS.read_text(encoding="utf-8"), re.S | re.M)
+    if block is None:
+        return {}
+    return {body: np.array([float(x), float(y), float(z)])
+            for body, x, y, z in re.findall(r'"(\w{4})": \(([-\d.e]+), ([-\d.e]+), ([-\d.e]+)\)', block[1])}
+
+
+def check_rifle_banks() -> list[str]:
+    """The rifle hold banks place the support hand for one rifle move per body; it must be the catalog's."""
+    recorded = rifle_bank_moves()
+    if recorded is None:
+        return []
+    problems = []
+    bodies, _ = read_catalog()
+    for body in BODIES:
+        expected = rifle_move(bodies.get(f"{body}_handr", np.zeros(3)), body)
+        found = recorded.get(body, np.zeros(3))
+        if np.abs(expected - found).max() > 0.0006:
+            problems.append(f"{body}: the rifle hold bank is solved for {np.round(found * 1000, 1)} mm but the catalog "
+                            f"gives {np.round(expected * 1000, 1)} mm; update WEAPON_MOVES in {RIFLE_BANKS.name} "
+                            "and regenerate the banks")
+    return problems
+
+
+# ---------------------------------------------------------------- derived moves
+def anchor(side: str) -> np.ndarray:
+    point = np.array(GRIP_ANCHOR)
+    if side == "l":
+        point[0] = -point[0]
+    return point
+
+
+@lru_cache(maxsize=None)
+def exact_map(source: str, target: str):
+    """The affine map between two models that share their vertices, as a 4x3 matrix, or None."""
+    try:
+        a, b = hand_mesh(target, "pistol")[0], hand_mesh(source, "pistol")[0]
+    except (ValueError, FileNotFoundError):
+        return None
+    if len(a) != len(b):
+        return None
+    design = np.hstack([b, np.ones((len(b), 1))])
+    solution = np.linalg.lstsq(design, a, rcond=None)[0]
+    return solution if np.abs(design @ solution - a).max() < 0.001 else None
+
+
+@lru_cache(maxsize=None)
+def registered_map(source: str, target: str, keep: float = 0.85, rounds: int = 40):
+    """A scale and shift laying one model's surface over another's when their vertices differ, or None."""
+    from scipy.spatial import cKDTree
+    try:
+        a = surface_samples(*hand_mesh(target, "pistol"), 0.003)
+        b = surface_samples(*hand_mesh(source, "pistol"), 0.003)
+    except (ValueError, FileNotFoundError):
+        return None
+    low_a, high_a = np.percentile(a, 2, axis=0), np.percentile(a, 98, axis=0)
+    low_b, high_b = np.percentile(b, 2, axis=0), np.percentile(b, 98, axis=0)
+    if np.any(high_b - low_b < 1e-6) or np.any(high_a - low_a < 1e-6):
+        return None
+    scale = float(np.cbrt(np.prod((high_a - low_a) / (high_b - low_b))))
+    shift = (low_a + high_a) / 2 - scale * (low_b + high_b) / 2
+    tree, miss = cKDTree(a), math.inf
+    for _ in range(rounds):
+        moved = b * scale + shift
+        # Matched in both directions so neither surface can shrink into a corner of the other.
+        there, index_there = tree.query(moved)
+        back, index_back = cKDTree(moved).query(a)
+        keep_there, keep_back = there <= np.quantile(there, keep), back <= np.quantile(back, keep)
+        source_points = np.vstack([b[keep_there], b[index_back[keep_back]]])
+        target_points = np.vstack([a[index_there[keep_there]], a[keep_back]])
+        centered = source_points - source_points.mean(0)
+        previous = shift
+        scale = float((centered * (target_points - target_points.mean(0))).sum() / (centered ** 2).sum())
+        shift = target_points.mean(0) - scale * source_points.mean(0)
+        miss = (there[keep_there].mean() + back[keep_back].mean()) / 2
+        if np.abs(shift - previous).max() < 2e-5:
+            break
+    if miss > REGISTERED_MISS:
+        return None
+    return np.vstack([np.eye(3) * scale, shift])
+
+
+@lru_cache(maxsize=None)
+def derived_move(hand: str) -> tuple[np.ndarray | None, str]:
+    """(move in metres, how it was found). A hand that cannot be tied to the reference body gives (None, "by eye").
+
+    The same hand style on the reference body is the standard: wherever its handle rests, the handle rests on
+    this model. A female or non-human model is tied to the reference through its own human-frame model when it
+    cannot be tied directly; a human-frame model with its own catalog entry, or one judged by eye, passes its
+    catalog move along.
+    """
+    hand = hand.lower()
+    body, side, style = hand[:4], hand[9], hand[-3:]
+    point = anchor(side)
+    if body == REFERENCE_BODY:
+        return np.zeros(3), "reference"
+    reference = f"{REFERENCE_BODY}_hand{side}{style}"
+    human = f"{body[:2]}h0_hand{side}{style}"
+    for how, find in (("exact", exact_map), ("registered", registered_map)):
+        direct = find(reference, hand) if reference in model_index() else None
+        if direct is not None:
+            return np.append(point, 1) @ direct - point, how
+        if human != hand and human in model_index():
+            through = find(human, hand)
+            if through is not None:
+                start, _ = derived_move(human)
+                if start is None or human in read_catalog()[1]:
+                    start = catalog_move(human)
+                return np.append(point + start, 1) @ through - point, f"{how} through {human[:4]}"
+    return None, "by eye"
+
+
+def derive(bodies, sides) -> list[str]:
+    """Catalog lines for the derived moves: one per body and side, then the hands that differ from it."""
+    lines = []
+    for body in bodies:
+        for side in sides:
+            found, by_eye = {}, []
+            for hand in hands(body, side):
+                try:
+                    move, how = derived_move(hand)
+                except ValueError:
+                    continue
+                if move is None:
+                    by_eye.append(hand)
+                else:
+                    found[hand] = (move, how)
+            if not found:
+                lines.append(f"// {body} {side}: no hand can be derived; all {len(by_eye)} are judged by eye")
+                continue
+            family = np.round(np.median([move for move, _ in found.values()], axis=0), 3)
+            lines.append(f'["{body}_hand{side}"] = {entry(family)},  // {len(found)} derived hands')
+            for hand, (move, how) in found.items():
+                if np.linalg.norm(move - family) > DERIVED_ENTRY:
+                    lines.append(f'    ["{hand}"] = {entry(np.round(move, 3))},  // {how}')
+            lines.append(f"    // by eye: {' '.join(name[-3:] for name in by_eye) or 'none'}")
+    return lines
+
+
+def entry(move) -> str:
+    return "new(" + ", ".join(f"{0.0 if abs(value) < 5e-4 else value:.3f}".rstrip("0").rstrip(".") + "f"
+                              for value in move) + ")"
 
 
 # ---------------------------------------------------------------- review sheets
@@ -387,7 +555,7 @@ def sheet_weapon(hold: str) -> str:
 
 
 def write_sheets(bodies, sides, every_style: bool, trial, output: Path, weapon: str | None = None,
-                 size: int = 180, rows_per_sheet: int = 5) -> list[Path]:
+                 size: int = 180, rows_per_sheet: int = 5, only: set[str] | None = None) -> list[Path]:
     """Now-and-moved tiles. `trial` replaces the catalog move (metres) to try a value before saving it."""
     from PIL import Image
     hold = "pistol"
@@ -397,6 +565,8 @@ def write_sheets(bodies, sides, every_style: bool, trial, output: Path, weapon: 
     for body in bodies:
         for side in sides:
             names = hands(body, side) if every_style else [f"{body}_hand{side}001"]
+            if only is not None:
+                names = [name for name in names if name in only]
             seen, rows = set(), []
             for hand in names:
                 try:
@@ -450,12 +620,36 @@ def check() -> list[str]:
     return problems
 
 
+def check_derived(bodies=BODIES, sides=("r", "l")) -> list[str]:
+    """Hands whose catalog move is not the move derived from the reference body. Needs the hak models."""
+    problems = []
+    for body in bodies:
+        for side in sides:
+            for hand in hands(body, side):
+                try:
+                    move, how = derived_move(hand)
+                except ValueError:
+                    continue  # no rendered mesh, so no hand to fit
+                if move is None:
+                    continue
+                if how.startswith("registered") and hand in read_catalog()[1]:
+                    continue  # a surface match is an estimate; an entry reviewed in the client outranks it
+                gap = np.linalg.norm(catalog_move(hand) - move)
+                if gap > DERIVED_TOLERANCE:
+                    problems.append(f"{hand}: the catalog is {gap * 1000:.0f} mm from the derived move "
+                                    f"{entry(np.round(move, 3))} ({how})")
+    return problems
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=("sheet", "check"))
+    parser.add_argument("command", choices=("sheet", "derive", "check"))
     parser.add_argument("--body", action="append", choices=BODIES)
     parser.add_argument("--side", action="append", choices=("r", "l"))
     parser.add_argument("--all", action="store_true", help="every hand style, not only the default hand")
+    parser.add_argument("--hand", action="append", help="draw only this hand model, such as pfd0_handr209")
+    parser.add_argument("--derived", action="store_true",
+                        help="check: also compare every hand with its derived move (slow, needs the hak models)")
     parser.add_argument("--weapon", help="native pistol model to draw, such as wbwsh_m_013")
     parser.add_argument("--move", type=float, nargs=3, metavar=("X", "Y", "Z"),
                         help="draw this move in millimetres instead of the catalog's")
@@ -463,14 +657,24 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.command == "check":
-        problems = check()
+        problems = check() + check_rifle_banks()
+        if args.derived:
+            problems += check_derived(args.body or BODIES, args.side or ("r", "l"))
         print("\n".join(problems) if problems else "Weapon hand fit check passed.")
         return 1 if problems else 0
+
+    if args.command == "derive":
+        for line in derive(args.body or BODIES, args.side or ("r",)):
+            print(line)
+        return 0
 
     if not args.output:
         parser.error("sheet needs --output")
     trial = None if args.move is None else [value / 1000 for value in args.move]
-    for path in write_sheets(args.body or BODIES, args.side or ("r", "l"), args.all, trial, args.output, args.weapon):
+    only = {name.lower() for name in args.hand} if args.hand else None
+    bodies = args.body or (sorted({name[:4] for name in only}) if only else BODIES)
+    for path in write_sheets(bodies, args.side or ("r", "l"), args.all or bool(only), trial, args.output, args.weapon,
+                             only=only):
         print(path)
     return 0
 

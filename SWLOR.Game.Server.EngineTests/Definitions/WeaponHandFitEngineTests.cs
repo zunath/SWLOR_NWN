@@ -52,6 +52,29 @@ public static class WeaponHandFitEngineTests
         AssertMove(ctx, pistol, catharMove + new FitVector(.1f, 0f, 0f), "The former wearer's refresh leaves the new wearer's move in place");
     }
 
+    [EngineTest("A held rifle takes the rifle move for its wearer's hand and loses it when unequipped", Category = "WeaponHandFit", TimeoutSeconds = 60f)]
+    public static async Task HeldRifleTakesTheRifleMove(EngineTestContext ctx)
+    {
+        var droid = ctx.SpawnCreature("civilian");
+        await ctx.ExecuteInCreatureContextAsync(droid, () => SetBody(droid, AppearanceType.Droid, 1));
+
+        var rifle = await ctx.EquipItemAsync(droid, "b_rifle", InventorySlot.RightHand);
+        await ctx.ExecuteInCreatureContextAsync(droid, () => WeaponHandFit.Apply(droid));
+        var pistolMove = WeaponHandFitCatalog.Get("pmz0_handr001");
+        var rifleMove = WeaponHandFit.RifleMove(pistolMove, "pmz0_handr001");
+        ctx.Assert(rifleMove != FitVector.Zero && rifleMove != pistolMove, "The droid frame's rifle move differs from its pistol move");
+        AssertMove(ctx, rifle, rifleMove, "The droid's held rifle takes the rifle move");
+
+        await ctx.ExecuteInCreatureContextAsync(droid, () =>
+        {
+            ClearAllActions();
+            ActionUnequipItem(rifle);
+        });
+        await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, droid) != rifle, 10f, "the rifle to leave the hand");
+        await ctx.ExecuteInCreatureContextAsync(droid, () => WeaponHandFit.Apply(droid));
+        AssertMove(ctx, rifle, FitVector.Zero, "A rifle that left the hand carries no move");
+    }
+
     private static void SetBody(uint creature, AppearanceType appearance, int hand)
     {
         SetCreatureAppearanceType(creature, appearance);

@@ -17,12 +17,12 @@ class CatalogTests(unittest.TestCase):
     def test_reads_body_and_hand_moves_from_the_server_catalog(self):
         bodies, hands = fit.read_catalog()
         self.assertIn("pmz0_handr", bodies)
-        self.assertIn("pfh0_handr204", hands)
+        self.assertIn("pmo0_handr201", hands)
         self.assertEqual(3, len(bodies["pmz0_handr"]))
 
     def test_a_hand_takes_its_own_move_then_its_bodys_then_none(self):
         bodies, hands = fit.read_catalog()
-        np.testing.assert_allclose(fit.catalog_move("PFH0_HANDR204"), hands["pfh0_handr204"])
+        np.testing.assert_allclose(fit.catalog_move("PMO0_HANDR201"), hands["pmo0_handr201"])
         np.testing.assert_allclose(fit.catalog_move("pmz0_handr009"), bodies["pmz0_handr"])
         np.testing.assert_allclose(fit.catalog_move("pmh0_handr001"), np.zeros(3))
 
@@ -34,6 +34,63 @@ class CatalogTests(unittest.TestCase):
     @unittest.skipUnless(HAKS_READY, "needs the hand, weapon and body root hak folders")
     def test_committed_catalog_passes_the_check(self):
         self.assertEqual([], fit.check())
+
+    @unittest.skipUnless(fit.RIFLE_BANKS.is_file(), "needs the SWLOR_Haks tools folder")
+    def test_rifle_hold_banks_are_solved_for_the_catalog_moves(self):
+        self.assertEqual([], fit.check_rifle_banks())
+
+    def test_a_catalog_entry_is_written_in_millimetre_steps(self):
+        self.assertEqual("new(0.008f, 0f, -0.012f)", fit.entry([0.008, 0.0001, -0.0124]))
+        self.assertEqual("new(0f, 0f, 0.02f)", fit.entry([-0.0002, 0, 0.02]))
+
+
+class DerivedMoveTests(unittest.TestCase):
+    def test_the_reference_body_is_never_moved(self):
+        move, how = fit.derived_move("pmh0_handr009")
+        np.testing.assert_allclose(move, np.zeros(3))
+        self.assertEqual("reference", how)
+
+    def test_the_left_anchor_mirrors_the_right(self):
+        np.testing.assert_allclose(fit.anchor("l"), fit.anchor("r") * [-1, 1, 1])
+
+    @unittest.skipUnless(HAKS_READY, "needs the hand, weapon and body root hak folders")
+    def test_a_scaled_copy_of_a_reference_glove_is_derived_exactly_and_matches_the_catalog(self):
+        move, how = fit.derived_move("pmd0_handr003")
+        self.assertEqual("exact", how)
+        self.assertLessEqual(np.linalg.norm(move - fit.catalog_move("pmd0_handr003")), fit.DERIVED_TOLERANCE)
+
+    @unittest.skipUnless(HAKS_READY, "needs the hand, weapon and body root hak folders")
+    def test_laying_surfaces_over_each_other_agrees_with_shared_vertices(self):
+        exact = fit.exact_map("pmh0_handr063", "pfh0_handr063")
+        registered = fit.registered_map("pmh0_handr063", "pfh0_handr063")
+        self.assertIsNotNone(exact)
+        self.assertIsNotNone(registered)
+        point = np.append(fit.anchor("r"), 1)
+        self.assertLess(np.linalg.norm(point @ exact - point @ registered), 0.002)
+
+    @unittest.skipUnless(HAKS_READY, "needs the hand, weapon and body root hak folders")
+    def test_a_hand_with_no_model_on_the_reference_body_is_left_to_the_eye(self):
+        self.assertEqual((None, "by eye"), fit.derived_move("pmo0_handr201"))
+
+
+class RifleMoveTests(unittest.TestCase):
+    def test_a_move_along_the_turn_axis_is_the_same_in_every_clip(self):
+        axis = np.array(fit.RIFLE_READY_TURN[:3])
+        axis = axis / np.linalg.norm(axis) * 0.02
+        np.testing.assert_allclose(fit.rifle_move(axis, "pmo0_handr201"), axis, atol=1e-5)
+
+    def test_a_rifle_move_is_halfway_between_the_idle_and_ready_moves(self):
+        idle = np.array([0.022, -0.005, -0.015])
+        rifle = fit.rifle_move(idle, "pmo0_handr201")
+        ready = 2 * rifle - idle
+        self.assertAlmostEqual(np.linalg.norm(ready), np.linalg.norm(idle), places=5)
+        self.assertLess(np.linalg.norm(rifle - idle), np.linalg.norm(idle) / 2)
+
+    def test_the_female_dwarf_and_half_orc_frames_turn_less(self):
+        move = np.array([0.0, 0.02, 0.0])
+        tall = np.linalg.norm(fit.rifle_move(move, "pfh0_handr001") - move)
+        self.assertLess(np.linalg.norm(fit.rifle_move(move, "pfd0_handr001") - move), tall)
+        np.testing.assert_allclose(fit.rifle_move(move, "PFO0_handr201"), fit.rifle_move(move, "pfd0_handr001"))
 
 
 class GeometryTests(unittest.TestCase):

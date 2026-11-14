@@ -5,19 +5,26 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using FitVector = System.Numerics.Vector3;
+using Turn = System.Numerics.Quaternion;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 
 /// <summary>
-/// Seats a held pistol in the wearer's hand. Pistols are fitted to the male human default hand; other bodies
-/// and a few hand models hold the handle somewhere else, so the pistol is moved by the amount recorded in
-/// <see cref="WeaponHandFitCatalog"/>. The move depends only on the hand, never on the pistol or the player.
+/// Seats a held pistol or rifle in the wearer's hand. Both are fitted to the male human body; other bodies and
+/// hand models hold the handle somewhere else, so the weapon is moved by the amount recorded in
+/// <see cref="WeaponHandFitCatalog"/>. The move depends only on the hand, never on the weapon or the player.
 /// </summary>
 public static class WeaponHandFit
 {
     private const ObjectVisualTransformDataScopeType Scope = ObjectVisualTransformDataScopeType.Base;
     private const string HeldRightVariable = "WEAPON_HAND_FIT_HELD_RIGHT";
     private const string HeldLeftVariable = "WEAPON_HAND_FIT_HELD_LEFT";
+
+    // The rifle ready and attack clips turn the weapon hook against the hand by a fixed amount; the idle
+    // clip leaves it at rest. The female dwarf and half-orc frames inherit clips that turn it less.
+    // Measured from the compiled clips (hook orientation in the hand bone, as x y z w).
+    private static readonly Turn RifleReadyTurn = new(.4155f, -.1652f, .0770f, .8911f);
+    private static readonly Turn RifleReadyTurnShortFrames = new(.3120f, -.1728f, .0578f, .9324f);
 
     private static readonly (ObjectVisualTransform Transform, string Variable)[] Axes =
     {
@@ -38,7 +45,7 @@ public static class WeaponHandFit
     [NWNEventHandler(ScriptName.OnModuleUnacquire)]
     public static void OnModuleUnacquire() => Release(GetModuleItemLost());
 
-    /// <summary>Moves both held pistols to suit the hands the creature shows now.</summary>
+    /// <summary>Moves the held pistols or rifle to suit the hands the creature shows now.</summary>
     public static void Apply(uint creature)
     {
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
@@ -55,6 +62,25 @@ public static class WeaponHandFit
     public static bool IsPistol(BaseItem type) =>
         type is BaseItem.Pistol or BaseItem.Sling or BaseItem.LegacyPistol or BaseItem.CompanionPistol;
 
+    public static bool IsRifle(BaseItem type) => type is BaseItem.Rifle or BaseItem.Cannon;
+
+    /// <summary>
+    /// The move for a rifle held in a hand whose pistol move is <paramref name="move"/>. A held item takes one
+    /// fixed move, but the ready and attack clips turn the rifle against the hand, so the same hand needs a
+    /// different move there than in the idle clip. This is the midpoint: the part of the move along the turn's
+    /// axis is exact in every clip and the rest is half off in each, instead of right in one and wrong in the other.
+    /// </summary>
+    public static FitVector RifleMove(FitVector move, string handModel)
+    {
+        if (move == FitVector.Zero)
+            return move;
+        var shortFrame = handModel != null &&
+                         (handModel.StartsWith("pfd0", StringComparison.OrdinalIgnoreCase) ||
+                          handModel.StartsWith("pfo0", StringComparison.OrdinalIgnoreCase));
+        var ready = FitVector.Transform(move, Turn.Conjugate(shortFrame ? RifleReadyTurnShortFrames : RifleReadyTurn));
+        return (move + ready) / 2f;
+    }
+
     /// <summary>
     /// The transform value that replaces this fit's earlier share with its new one and keeps whatever else
     /// moved the item, such as a transform a DM set.
@@ -66,7 +92,7 @@ public static class WeaponHandFit
         var previous = GetLocalObject(creature, variable);
         if (!GetIsObjectValid(previous) || previous == right || previous == left)
             return;
-        // The pistol may already be in someone else's hand with their fit; Release leaves that alone.
+        // The weapon may already be in someone else's hand with their fit; Release leaves that alone.
         DeleteLocalObject(creature, variable);
         Release(previous);
     }
@@ -79,15 +105,17 @@ public static class WeaponHandFit
             return;
         }
         SetLocalObject(creature, variable, item);
-        SetMove(item, WeaponHandFitCatalog.Get(PowerGloveFit.GetHandModels(creature, part, side).Worn));
+        var hand = PowerGloveFit.GetHandModels(creature, part, side).Worn;
+        var move = WeaponHandFitCatalog.Get(hand);
+        SetMove(item, IsRifle(GetBaseItemType(item)) ? RifleMove(move, hand) : move);
     }
 
-    /// <summary>A pistol on the ground or in a pack carries no move.</summary>
+    /// <summary>A weapon on the ground or in a pack carries no move.</summary>
     private static void Release(uint item)
     {
         if (!IsFitted(item))
             return;
-        // An unequip notice can arrive after the pistol is already back in a hand; that fit must stay.
+        // An unequip notice can arrive after the weapon is already back in a hand; that fit must stay.
         var owner = GetItemPossessor(item);
         if (GetIsObjectValid(owner) && GetObjectType(owner) == ObjectType.Creature &&
             (GetItemInSlot(InventorySlot.RightHand, owner) == item || GetItemInSlot(InventorySlot.LeftHand, owner) == item))
@@ -95,8 +123,13 @@ public static class WeaponHandFit
         SetMove(item, FitVector.Zero);
     }
 
-    private static bool IsFitted(uint item) =>
-        GetIsObjectValid(item) && GetObjectType(item) == ObjectType.Item && IsPistol(GetBaseItemType(item));
+    private static bool IsFitted(uint item)
+    {
+        if (!GetIsObjectValid(item) || GetObjectType(item) != ObjectType.Item)
+            return false;
+        var type = GetBaseItemType(item);
+        return IsPistol(type) || IsRifle(type);
+    }
 
     private static void SetMove(uint item, FitVector move)
     {

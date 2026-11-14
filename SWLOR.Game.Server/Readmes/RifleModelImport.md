@@ -84,9 +84,11 @@ attacking). `SUPPORT_OFFSETS` in the generator moves the male human's palm, per 
 to the barrel axis at weapon-space x = -0.5 cm, seated slightly into the median fitted
 fore-end so the fingers wrap it. When fitting a rifle, seat its fore-end on that palm.
 The firing hand keeps its inherited weapon hook; keying the hook would split the
-shared robe `rhand` joint. Rerun the generator whenever those clips, body roots or
-default hands change, then follow the compile and robe refresh steps in its
-docstring.
+shared robe `rhand` joint. The server seats the rifle in each body's firing hand by
+moving the held item instead, and the generator's `WEAPON_MOVES` moves each body's
+support palm with it: see [WeaponHandFit.md](WeaponHandFit.md), "Rifles". Rerun the
+generator whenever those clips, body roots, default hands or rifle moves change, then
+follow the compile and robe refresh steps in its docstring.
 
 `tools/RenderRifleGrip.py` reads the rifle pose from an ASCII animation model.
 Supply `--source <review.blend>`, `--hand <ASCII pmh0_handr001.mdl>`,

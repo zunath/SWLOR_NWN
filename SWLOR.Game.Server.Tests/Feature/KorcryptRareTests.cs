@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.SpawnDefinition;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -21,6 +22,7 @@ public class KorcryptRareTests
         ("eclipseshade", "KORCRYPT_ECLIPSE_RARES"),
     };
     private const string RareSpawnTable = "KORRIBAN_SITH_CRYPT_DEPTHS_RARES";
+    private const int RightHandSlotStructId = 16;
     private static readonly (string Blueprint, RecipeType Recipe, string CraftedResref, string Component)[] RareRecipes =
     {
         ("bp_cryptwarden", RecipeType.SalvagedCryptGauntlets, "cryptwardencr", "cryptwardencm"),
@@ -72,6 +74,27 @@ public class KorcryptRareTests
             uti.RootElement.GetProperty("Tag").GetProperty("value").GetString().Should().Be("RECIPE");
             GetLocalString(uti.RootElement, "RECIPES").Should().Be(((int)recipe).ToString());
             uti.RootElement.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString().Should().StartWith("Blueprint: ");
+        }
+    }
+
+    [Test]
+    public void KorcryptRareTests_RaresHaveTheFeatTheirLongswordRequires()
+    {
+        // The engine moves a blueprint's equipped weapon into inventory when the creature
+        // lacks the feat baseitems.2da requires, leaving the elite to fight unarmed.
+        var root = FindRepositoryRoot();
+        foreach (var (resref, _) in RareElites)
+        {
+            using var utc = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "utc", $"{resref}.utc.json")));
+            var weapon = utc.RootElement.GetProperty("Equip_ItemList").GetProperty("value").EnumerateArray()
+                .Single(entry => entry.GetProperty("__struct_id").GetInt32() == RightHandSlotStructId)
+                .GetProperty("EquippedRes").GetProperty("value").GetString();
+            using var uti = JsonDocument.Parse(File.ReadAllText(Path.Combine(root.FullName, "Module", "uti", $"{weapon}.uti.json")));
+
+            uti.RootElement.GetProperty("BaseItem").GetProperty("value").GetInt32().Should().Be((int)BaseItem.Longsword, resref);
+            utc.RootElement.GetProperty("FeatList").GetProperty("value").EnumerateArray()
+                .Select(entry => entry.GetProperty("Feat").GetProperty("value").GetInt32())
+                .Should().Contain((int)FeatType.WeaponProficiencySimple, $"{resref} must keep its longsword in hand");
         }
     }
 

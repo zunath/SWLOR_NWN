@@ -177,6 +177,16 @@ from the existing native connectors, plus the complete assembly's
 joint sleeves, and preserves the source surface UVs and corner frames. Its
 output selects complete authored `source_nodes` for each part and shares maps
 across roles. Node selectors cannot overlap or be combined with clipping.
+Each envelope must stay within the part's own cut section (or, where the surfaces stop
+short of the cut, their end section); the tool rejects a wider or off-axis one. A sleeve
+outside the part reads as a metal bar: the fitted vibroblades sit 20 mm off the stock axis,
+and their stock-centred 48 x 72 mm sleeves stuck out of every part, as did most fitted
+greatsword, knife, polearm and twinblade sleeves, until
+`tools/FitBladeJointInterfaces.py` removed them from the compiled parts. The flat cut caps
+close each cut; four vibroblade bottoms that stop 3.5 mm short keep a collar of their own
+grip end. Quarterstaffs are left as they are: a few of their sleeves stick out 1-5 mm, too
+little to see, and the staff widening left some caps partly open behind them. Add a new family's measured joint planes to `FAMILIES` (or `PAIRED` for
+staff-style roles), which build both `JOINTS` and the model name filter. `tools/tests/test_fit_blade_joint_interfaces.py` audits every shipped part.
 Keep each part's own cross-section all the way to its cut. Never taper a source
 surface down to the connector envelope near a joint: two such parts meet tip to
 tip and the staff pinches at every boundary (the October 2026 staffs did this
@@ -531,6 +541,32 @@ Appearance), editing only those digits so CRLF and float formatting stay untouch
 decor, so a station gets its own row and the blueprint resref, tag, scripts and StructureType never change. Module changes
 need a module repack and the new resources need a hak rebuild. Player structures spawn from the blueprint, so they follow
 the new appearance after both.
+
+`--config` points the tool at another model list in the same format. `tools/TrophyStandModels.json` holds the ten furniture
+Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place.
+
+### Meshy placeables
+
+The Trophy Stands came from Meshy (opt-in and paid; see the weapon section above for the approval rule) with one owner-made
+concept image each, `model_type: smart-topology`, `ai_model: meshy-t2`, `target_polycount: 8000`, `texture_model: meshy-7`
+and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS output in three ways:
+
+- **Winding.** Meshy builds a model from separate open parts (a skull, a chain, a cloth). An open part has no meaningful
+  signed volume, so `near_closed` rejects good models, and `reorient: propagate` turned 18-23 percent of their area against
+  the normals. Use `double_sided_policy: "authored_winding"`, which keeps Meshy's winding (it agrees with Meshy's normals
+  on all but 0.01-3.2 percent of the area) and applies only `max_defect_fraction` (the stands needed 0.5-25 percent: the
+  cloth-draped Veilcarved stand is the high one) and `max_opposed_fraction`. Check open parts such as cloth and wings from
+  behind in the client.
+- **Normals.** Meshy ships a tangent-space normal map for its own mesh. Reprojection fails (faces with no texel-center
+  coverage), so use `normal_basis_policy: "authored_tangents"` (the stands used `authored_angle_limit_degrees: 2`).
+- **Tangents.** Meshy GLBs carry no `TANGENT` attribute. When the computed MikkTSpace tangents differ between corners of
+  one vertex, export stops with "Missing source tangent requires splitting a Mikk seam". Re-export that GLB from Blender 4.0
+  with `export_tangents=True` (it splits those vertices) and replace any zero-length tangent with a unit vector
+  perpendicular to its normal ("Degenerate/nonfinite tangent basis" names it; one per model on two stands), then record the
+  new file's `sha256` in the manifest.
+
+Meshy faces the front of the concept image toward -Y after import; `yaw_degrees: 180` turns it to +Y, which points along
+the placeable's `GetFacing`.
 
 ### Offline render of a station
 

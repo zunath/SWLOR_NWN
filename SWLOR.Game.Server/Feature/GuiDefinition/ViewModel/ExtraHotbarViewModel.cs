@@ -13,7 +13,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class ExtraHotbarViewModel : GuiViewModelBase<ExtraHotbarViewModel, GuiPayloadBase>,
         IGuiRefreshable<ExtraHotbarRefreshEvent>,
         IGuiRefreshable<ExtraHotbarStatusRefreshEvent>,
-        IGuiRefreshable<ExtraHotbarCooldownRefreshEvent>
+        IGuiRefreshable<ExtraHotbarCooldownRefreshEvent>,
+        IGuiRefreshable<PlayerStatusRefreshEvent>
     {
         public const string SlotsElement = "extra_hotbar_slots";
         public const int StackedRowLength = 6;
@@ -42,6 +43,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // Where the server last put the bar, so the client reporting it back is not taken for a drag.
         private float _placedX;
         private float _placedY;
+
+        // NUI windows sit at fixed screen pixels and the client only pushes a window back on screen when the game
+        // window shrinks. The bar remembers the spot it was given and the screen it was given on, so it can follow
+        // the screen edges it sits nearest when the screen changes, and return there when the screen grows back.
+        private GuiRectangle _anchor;
+        private (int Width, int Height, int Scale) _anchorScreen;
+        // The screen the bar's current spot was worked out for.
+        private (int Width, int Height, int Scale) _placedScreen;
+        // Where the bar last sat on that screen, including where the player dragged it.
+        private float _shownX;
+        private float _shownY;
 
         // One inventory scan shared by every equipment slot during a single refresh.
         private List<uint> _handItems;
@@ -319,6 +331,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _useDefaultSpot = dbPlayer == null || !dbPlayer.WindowGeometries.ContainsKey(WindowType);
             _slotsPartial = null;
             _hasTitleBar = false;
+            _anchor = null;
+            _anchorScreen = default;
+            _placedScreen = default;
             TitleBar = false;
             IsTransparent = true;
             for (var slot = 0; slot < ExtraHotbarsService.MaxSlots; slot++)
@@ -360,6 +375,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+        /// <summary>
+        /// The HP/STM/FP window re-reads the screen size whenever the player's vitals change, and the bars follow
+        /// the screen on the same updates. NUI raises no event when the game window is resized.
+        /// </summary>
+        void IGuiRefreshable<PlayerStatusRefreshEvent>.Refresh(PlayerStatusRefreshEvent payload)
+        {
+            if (HasScreenChanged())
+                ExtraHotbars.FollowScreen(Player);
+        }
+
         public void Refresh(ExtraHotbarCooldownRefreshEvent payload)
         {
             if (_bar == null)
@@ -394,13 +419,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             for (var slot = 0; slot < ExtraHotbarsService.MaxSlots; slot++)
                 RefreshSlot(slot, _bar.Slots[slot]);
 
+            // A bar is fitted from where it sits, so it first catches up with a screen change it has not seen yet.
+            if (HasScreenChanged())
+                ExtraHotbars.FollowScreen(Player);
+
             // A bar turned on or resized in setup must not land on another bar. Title bars that appear when setup
             // opens are cleared by ExtraHotbars once every bar has one.
-            ResizeToFit(isUnlocked, isUnlocked && isNewSize);
+            ResizeToFit(isUnlocked, isNewSize, isUnlocked && isNewSize);
         }
 
         // The title bar grows the bar upward so its slots stay put while it is unlocked.
-        private void ResizeToFit(bool hasTitleBar, bool keepClear)
+        private void ResizeToFit(bool hasTitleBar, bool isNewSize, bool keepClear)
         {
             var width = GetWidth(_bar.SlotCount, _bar.Layout);
             var height = GetHeight(_bar.SlotCount, _bar.Layout, hasTitleBar);
@@ -411,11 +440,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var screenWidth = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth);
             var screenHeight = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight);
             var scale = GetScale();
+            // Only a new spot or a new size is a new placement. A refresh that only redraws slots or adds or drops
+            // the title bar keeps the spot the bar follows the screen from.
+            var isNewPlacement = isNewSize || _useDefaultSpot || WasDragged();
 
             if (hasTitleBar != _hasTitleBar)
             {
-                y += (hasTitleBar ? -TitleBarHeight : TitleBarHeight) * scale;
+                var titleShift = hasTitleBar ? -TitleBarHeight : TitleBarHeight;
+                y += titleShift * scale;
                 _hasTitleBar = hasTitleBar;
+                if (!isNewPlacement)
+                    ShiftAnchor(titleShift);
             }
 
             if (screenWidth > 0 && screenHeight > 0)
@@ -442,7 +477,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (keepClear)
                 (x, y) = FindClearSpot(x, y, width * scale, height * scale, GetOtherBarBounds(scale), screenWidth, screenHeight);
 
-            Place(new GuiRectangle(x, y, width, height));
+            Place(new GuiRectangle(x, y, width, height), isNewPlacement);
+        }
+
+        // True when the player dragged the bar since the server last placed it.
+        private bool WasDragged() =>
+            System.Math.Abs(_shownX - _placedX) >= 0.5f || System.Math.Abs(_shownY - _placedY) >= 0.5f;
+
+        // Moves the remembered spot with a title bar that grows the bar upward or goes away.
+        private void ShiftAnchor(float titleShift)
+        {
+            if (_anchor != null)
+                _anchor.Y += titleShift * ToScale(_anchorScreen.Scale);
         }
 
         /// <summary>
@@ -516,7 +562,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return bounds;
         }
 
-        private void KeepClear(int barLimit)
+        private void KeepClear(int barLimit, bool isPlayerChoice = true)
         {
             if (_bar == null)
                 return;
@@ -528,7 +574,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var (x, y) = FindClearSpot(bar.X, bar.Y, bar.Width * scale, bar.Height * scale,
                 GetOtherBarBounds(scale, barLimit), screenWidth, screenHeight);
             if (x != bar.X || y != bar.Y)
-                Place(new GuiRectangle(x, y, bar.Width, bar.Height));
+                Place(new GuiRectangle(x, y, bar.Width, bar.Height), isPlayerChoice);
         }
 
         /// <summary>
@@ -536,11 +582,112 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// </summary>
         public void KeepClearOfLowerBars() => KeepClear(BarIndex);
 
-        private void Place(GuiRectangle geometry)
+        /// <summary>
+        /// Moves the bar off the bars numbered below it after a screen change. The spot the player chose is kept,
+        /// so the bar returns there when the screen grows back.
+        /// </summary>
+        public void KeepClearOfLowerBarsAfterScreenChange() => KeepClear(BarIndex, false);
+
+        /// <summary>
+        /// Puts the bar on screen. A spot the player or setup chose becomes the spot the bar follows the screen
+        /// from; a spot worked out for a screen change does not.
+        /// </summary>
+        private void Place(GuiRectangle geometry, bool isPlayerChoice = true)
         {
             _placedX = geometry.X;
             _placedY = geometry.Y;
+            _placedScreen = GetScreen();
+            _shownX = geometry.X;
+            _shownY = geometry.Y;
+            if (isPlayerChoice || _anchor == null)
+                SetAnchor(geometry, _placedScreen);
+
             Geometry = geometry;
+        }
+
+        private void SetAnchor(GuiRectangle geometry, (int Width, int Height, int Scale) screen)
+        {
+            _anchor = new GuiRectangle(geometry.X, geometry.Y, geometry.Width, geometry.Height);
+            _anchorScreen = screen;
+        }
+
+        private (int Width, int Height, int Scale) GetScreen() => (
+            GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiWidth),
+            GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiHeight),
+            GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale));
+
+        /// <summary>
+        /// True when the game window or UI scale changed since the bar's spot was worked out.
+        /// </summary>
+        public bool HasScreenChanged()
+        {
+            if (_bar == null || _anchor == null)
+                return false;
+
+            var screen = GetScreen();
+            return screen.Width > 0 && screen.Height > 0 && screen != _placedScreen;
+        }
+
+        /// <summary>
+        /// Moves the bar with the screen edges it sits nearest, measured from the spot the player chose, the way
+        /// the HP/STM/FP window and the native HUD keep to their corners. On its own the client only pushes a
+        /// window back on screen as the game window shrinks, which can drop a bar onto the quickbar or another bar.
+        /// </summary>
+        public void FollowScreen()
+        {
+            if (!HasScreenChanged())
+                return;
+
+            var screen = GetScreen();
+            if (_anchorScreen.Width <= 0 || _anchorScreen.Height <= 0)
+            {
+                // The bar was placed before the client reported its screen, so it has nothing to follow from yet.
+                _placedScreen = screen;
+                SetAnchor(Geometry, screen);
+                return;
+            }
+
+            // A bar the player dragged since the server last placed it follows from where they left it. The client
+            // reports some passing spots while a bar opens, so a drag only counts once the screen changes.
+            if (WasDragged())
+                SetAnchor(new GuiRectangle(_shownX, _shownY, Geometry.Width, Geometry.Height), _placedScreen);
+
+            // The bar's own size, since the client can report its window a few pixels off.
+            var width = GetWidth(_bar.SlotCount, _bar.Layout);
+            var height = GetHeight(_bar.SlotCount, _bar.Layout, _hasTitleBar);
+            var oldScale = ToScale(_anchorScreen.Scale);
+            var newScale = ToScale(screen.Scale);
+            var (x, y) = FollowScreen(_anchor.X, _anchor.Y,
+                width * oldScale, height * oldScale, width * newScale, height * newScale,
+                _anchorScreen.Width, _anchorScreen.Height, screen.Width, screen.Height);
+            Place(new GuiRectangle(x, y, width, height), false);
+        }
+
+        private static float ToScale(int guiScale) => guiScale > 0 ? guiScale / 100f : 1f;
+
+        /// <summary>
+        /// Where a bar goes when the screen changes size. On each axis, a bar centred in the first third of the old
+        /// screen keeps its gap to the near edge, one in the last third keeps its gap to the far edge, and one in
+        /// the middle keeps its offset from the centre. The result stays on screen. Sizes and positions are pixels.
+        /// </summary>
+        public static (float X, float Y) FollowScreen(float x, float y, float oldWidth, float oldHeight,
+            float newWidth, float newHeight, float oldScreenWidth, float oldScreenHeight,
+            float newScreenWidth, float newScreenHeight) => (
+            FollowAxis(x, oldWidth, newWidth, oldScreenWidth, newScreenWidth),
+            FollowAxis(y, oldHeight, newHeight, oldScreenHeight, newScreenHeight));
+
+        private static float FollowAxis(float position, float oldSize, float newSize, float oldScreen, float newScreen)
+        {
+            var center = position + oldSize / 2f;
+            float result;
+            if (center < oldScreen / 3f)
+                result = position;
+            else if (center > oldScreen * 2f / 3f)
+                result = newScreen - (oldScreen - position - oldSize) - newSize;
+            else
+                result = center + (newScreen - oldScreen) / 2f - newSize / 2f;
+
+            return System.Math.Clamp(result, 0f, System.Math.Max(0f, newScreen - newSize));
         }
 
         /// <summary>
@@ -549,9 +696,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// </summary>
         protected override void OnClientPropertyUpdated(string propertyName)
         {
-            if (propertyName != nameof(Geometry) || !ExtraHotbars.IsUnlocked(Player))
+            if (propertyName != nameof(Geometry))
                 return;
 
+            // The client moved the bar because the game window shrank, not because the player dragged it.
+            if (HasScreenChanged())
+            {
+                ExtraHotbars.FollowScreen(Player);
+                return;
+            }
+
+            // A locked bar has no title bar to drag, so the player did not move it.
+            if (!ExtraHotbars.IsUnlocked(Player))
+                return;
+
+            _shownX = Geometry.X;
+            _shownY = Geometry.Y;
             if (System.Math.Abs(Geometry.X - _placedX) < 0.5f && System.Math.Abs(Geometry.Y - _placedY) < 0.5f)
                 return;
 
@@ -566,12 +726,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!_hasTitleBar || _bar == null)
                 return;
 
+            // Locking is not a new placement unless the player dragged the bar while it was unlocked.
+            var wasDragged = WasDragged();
             _hasTitleBar = false;
+            if (!wasDragged)
+                ShiftAnchor(TitleBarHeight);
             Place(new GuiRectangle(
                 Geometry.X,
                 Geometry.Y + TitleBarHeight * GetScale(),
                 GetWidth(_bar.SlotCount, _bar.Layout),
-                GetHeight(_bar.SlotCount, _bar.Layout, false)));
+                GetHeight(_bar.SlotCount, _bar.Layout, false)), wasDragged);
         }
 
         private float GetScale()

@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-from .stack import LiveStackError, Stack, capture, create, destroy, log, play, project_resources, start
+from .stack import LiveStackError, Stack, capture, create, destroy, log, play, project_resources, record_video, start
 
 
 def parser() -> argparse.ArgumentParser:
@@ -42,6 +42,14 @@ def parser() -> argparse.ArgumentParser:
     up.add_argument('--server-env', action='append', metavar='KEY=VALUE',
                     help='Extra server environment, for example an environment-gated test driver switch.')
     up.add_argument('--player-name', default='SwlorLive', help='Client player (login) name.')
+    up.add_argument('--show-render-stats', action='store_true',
+                    help='Show the native renderer statistics in the isolated client for cadence checks.')
+    up.add_argument('--gpu-renderer', choices=('wsl-d3d12',),
+                    help='Use a WSL2 GPU through D3D12 while keeping the private Xvfb display.')
+    up.add_argument('--window-size', choices=('1280x720', '960x600', '800x600', '640x480'), default='1280x720',
+                    help='Native client size; smaller windows are available for motion-capture cadence.')
+    up.add_argument('--motion-capture', action='store_true',
+                    help='Reduce post-processing and disable shadows in this isolated profile for motion checks.')
     up.add_argument('--no-seed', action='store_true', help='Do not seed the Player record for --character.')
     up.add_argument('--play', action='store_true', help='Click Play at character select after the client starts.')
     up.add_argument('--settle', type=float, default=45,
@@ -68,6 +76,11 @@ def parser() -> argparse.ArgumentParser:
 
     shot = commands.add_parser('capture', parents=[run_dir], help='Save <run>/evidence/<label>.png.')
     shot.add_argument('label')
+
+    video = commands.add_parser('record', parents=[run_dir], help='Record the private client window to <label>.mp4.')
+    video.add_argument('label')
+    video.add_argument('--seconds', type=int, default=30, help='Recording duration, 1 to 120 seconds.')
+    video.add_argument('--fps', type=int, choices=(15, 30, 60), default=60, help='Capture frame rate (default: 60).')
 
     console = commands.add_parser('console', parents=[run_dir], help='Send one nwserver console command.')
     console.add_argument('text', nargs='+')
@@ -119,6 +132,8 @@ def main(argv: list[str] | None = None) -> int:
             stack.ui(options.action, *options.arguments)
         elif options.command == 'capture':
             capture(stack, options.label)
+        elif options.command == 'record':
+            record_video(stack, options.label, options.seconds, options.fps)
         elif options.command == 'console':
             stack.console(' '.join(options.text))
         elif options.command == 'status':

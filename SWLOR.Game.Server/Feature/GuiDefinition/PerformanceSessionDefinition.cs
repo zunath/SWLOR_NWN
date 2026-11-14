@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             var window = _builder.CreateWindow(GuiWindowType.PerformanceSession)
                 .SetInitialGeometry(20f, 20f, 600f, PerformanceSessionViewModel.MainWindowHeight)
-                .SetTitle("Session")
+                .BindTitle(model => model.SessionTitle)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .BindOnClosed(model => model.OnWindowClosed())
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             content.AddRow(row =>
             {
-                AddHeaderCell(row, "INSTRUMENT", NarrowHeaderCellWidth, model => model.InstrumentText);
+                AddHeaderCell(row, "INSTRUMENT", NarrowHeaderCellWidth, model => model.InstrumentText, model => model.InstrumentHeading);
                 AddHeaderCell(row, "SONG", SongCellWidth, model => model.SongText);
                 AddHeaderCell(row, "SET", SetCellWidth, model => model.SetText);
                 AddHeaderCell(row, "TEMPO", NarrowHeaderCellWidth, model => model.TempoText);
@@ -107,7 +107,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             GuiRow<PerformanceSessionViewModel> row,
             string caption,
             float width,
-            Expression<Func<PerformanceSessionViewModel, string>> value)
+            Expression<Func<PerformanceSessionViewModel, string>> value,
+            Expression<Func<PerformanceSessionViewModel, string>> heading = null)
         {
             row.AddGroup(cell =>
             {
@@ -115,11 +116,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 cell.SetScrollbars(NuiScrollbars.None);
                 cell.AddColumn(inner =>
                 {
-                    inner.AddRow(r => r.AddLabel()
-                        .SetText(caption)
+                    inner.AddRow(r =>
+                    {
+                        var label = r.AddLabel();
+                        if (heading == null)
+                            label.SetText(caption);
+                        else
+                            label.BindText(heading);
+                        label
                         .SetColor(PerformanceWindowColors.Dim)
                         .SetHeight(18f)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left));
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
                     inner.AddRow(r => r.AddLabel()
                         .BindText(value)
                         .SetHeight(22f)

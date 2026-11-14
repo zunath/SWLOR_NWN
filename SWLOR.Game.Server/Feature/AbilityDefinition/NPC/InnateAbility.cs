@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -468,7 +469,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                     if (targetVisualEffect != VisualEffect.None)
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), activator);
+                        VisualEffectPlayback.ApplyToObject(targetVisualEffect, activator);
                     }
                 });
 

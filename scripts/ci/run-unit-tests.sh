@@ -128,6 +128,7 @@ exclusions_for() {
         echo "SavedDataItemSweepTests.BuildingIcons_BlueprintsMatchDistinctNativeDdsResources"
         echo "SavedDataItemSweepTests.EnzymeShrink_MovesEveryEnzymeBlueprintToTheOneByOneBaseItemWithItsOwnIcon"
         echo "ShipItemIconTests.NativeAppearances_MatchBlueprintsAndOnlyNormalizeOriginalModels"
+        echo "ShipSoundTests.EveryShipSound_HasItsSoundFile"
         echo "ShoulderAppearanceTests.ShippedTableCoversAllExternalStylesOnBothSidesForEveryMaleHumanRobe"
         echo "SittablePlaceableWalkmeshTests.Bench_IsApproachedFromItsFront"
         echo "SittablePlaceableWalkmeshTests.ChancellorChair_SeatsSittersFacingTheSeatFront"

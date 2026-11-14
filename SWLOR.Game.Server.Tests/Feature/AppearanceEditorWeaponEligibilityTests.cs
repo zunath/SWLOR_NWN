@@ -89,6 +89,8 @@ public class AppearanceEditorWeaponEligibilityTests
         appearance.TopParts.Should().BeEquivalentTo(tops);
         appearance.MiddleParts.Should().Equal(101);
         appearance.BottomParts.Should().BeEquivalentTo(bottoms);
+        // Sabers never keep an unlisted part as their own, so the editor checks only these lists.
+        appearance.KeepsOwnParts.Should().BeFalse();
 
         foreach (var top in tops)
         foreach (var bottom in bottoms)
@@ -109,6 +111,5 @@ public class AppearanceEditorWeaponEligibilityTests
             .Invoke(null, new object[] { type, plot, cursed, resref })!;
 
     private static bool AllowsParts(WeaponAppearanceBaseDefinition appearance, int top, int middle, int bottom) =>
-        (bool)typeof(AppearanceEditorViewModel).GetMethod("AllowsWeaponParts", BindingFlags.Static | BindingFlags.NonPublic)!
-            .Invoke(null, new object[] { appearance, top, middle, bottom })!;
+        appearance.TopParts.Contains(top) && appearance.MiddleParts.Contains(middle) && appearance.BottomParts.Contains(bottom);
 }

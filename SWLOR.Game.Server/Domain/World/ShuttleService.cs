@@ -61,6 +61,8 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly Dictionary<(PlanetType Origin, PlanetType Destination), DateTime> _announcedBoardings = new();
         [ReloadState(ReloadStateKind.Carried)]
         private readonly ShuttleMissedBoardingTracker _missedBoardings = new();
+        [ReloadState(ReloadStateKind.Carried)]
+        private readonly ShuttleBoardingTracker _boardings = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private DateTime _lastTickUtc;
         // The in-transit rides LoadShuttleFlights found already landed; DeliverOfflinePassengers delivers them at boot.
@@ -273,6 +275,7 @@ namespace SWLOR.Game.Server.Domain.World
 
             RearmReturnedPassengers();
             ProcessDepartures(now);
+            ConfirmBoardings(now);
             ProcessBoardingCalls(now);
             ProcessArrivals(now);
             ProcessTransitBroadcasts(now);
@@ -350,12 +353,8 @@ namespace SWLOR.Game.Server.Domain.World
                 _missedBoardings.Clear(playerId);
                 boardedAnyone = true;
 
-                var entrance = flight.EntranceLocation;
-                AssignCommand(player, () =>
-                {
-                    ClearAllActions();
-                    ActionJumpToLocation(entrance);
-                });
+                SendBoardingJump(player, flight.EntranceLocation);
+                _boardings.Start(playerId, flightId, now);
 
                 var destinationName = _planet.GetPlanetByType(destination).Name;
                 var transit = Time.GetTimeLongIntervals(TimeSpan.FromSeconds(transitSeconds), false);
@@ -366,6 +365,134 @@ namespace SWLOR.Game.Server.Domain.World
             {
                 Log.Write(LogGroup.Server, $"Shuttle flight {flightId} departed {origin} for {destination}.");
             }
+        }
+
+        /// <summary>
+        /// Moves a passenger to the shuttle's boarding point.
+        /// </summary>
+        private static void SendBoardingJump(uint player, Location entrance)
+        {
+            AssignCommand(player, () =>
+            {
+                ClearAllActions();
+                ActionJumpToLocation(entrance);
+            });
+        }
+
+        /// <summary>
+        /// Checks that every passenger booked onto a departed flight is actually aboard. The boarding
+        /// jump is a queued action the engine can drop, which used to leave the passenger standing at
+        /// the terminal with an in-transit ride until they relogged. Such passengers are sent again.
+        /// </summary>
+        private void ConfirmBoardings(DateTime now)
+        {
+            foreach (var (playerId, flightId, delivering) in _boardings.GetPending())
+            {
+                if (delivering)
+                {
+                    ConfirmDelivery(playerId, flightId, now);
+                    continue;
+                }
+
+                if (!_activeFlights.TryGetValue(flightId, out var flight))
+                {
+                    _boardings.Clear(playerId);
+                    continue;
+                }
+
+                // Arrival resolves the ride from here, including a passenger who never made it aboard.
+                if (flight.ArrivalUtc <= now || !GetIsObjectValid(flight.Area))
+                    continue;
+
+                var player = GetOnlinePlayerById(playerId);
+                if (!GetIsObjectValid(player))
+                {
+                    // Logging back in places an in-transit passenger aboard.
+                    _boardings.Clear(playerId);
+                    continue;
+                }
+
+                var area = GetArea(player);
+                if (area == flight.Area)
+                {
+                    _boardings.Clear(playerId);
+                    continue;
+                }
+
+                // No area means the passenger is still loading into the shuttle.
+                if (!GetIsObjectValid(area) || GetIsDead(player))
+                    continue;
+
+                var ride = GetRide(playerId);
+                if (ride == null || ride.Status != ShuttleRideStatus.InTransit || ride.FlightId != flightId)
+                {
+                    _boardings.Clear(playerId);
+                    continue;
+                }
+
+                if (!_boardings.TryStartRetry(playerId, now, out var attempt))
+                    continue;
+
+                if (ShouldLogRetry(attempt))
+                    Log.Write(LogGroup.Server, $"Shuttle passenger {playerId} was not aboard flight {flightId}; boarding attempt {attempt}. " +
+                                               DescribePassenger(player, area));
+                SendBoardingJump(player, flight.EntranceLocation);
+            }
+        }
+
+        /// <summary>
+        /// Follows a passenger whose flight landed without them until they stand at the destination's
+        /// landing point. The ride is kept until then, so a dropped delivery jump is sent again and a
+        /// passenger who logs out is still placed at the destination when they log back in.
+        /// </summary>
+        private void ConfirmDelivery(string playerId, string flightId, DateTime now)
+        {
+            var player = GetOnlinePlayerById(playerId);
+            var ride = GetRide(playerId);
+            if (!GetIsObjectValid(player) || ride == null || ride.Status != ShuttleRideStatus.InTransit || ride.FlightId != flightId)
+            {
+                // Logging back in resolves the landed ride at the destination.
+                _boardings.Clear(playerId);
+                return;
+            }
+
+            var landingLocation = GetLandingLocation(ride.Destination);
+            var area = GetArea(player);
+            if (area == GetAreaFromLocation(landingLocation))
+            {
+                _boardings.Clear(playerId);
+                _db.Delete<ShuttleRide>(ride.Id);
+                Log.Write(LogGroup.Server, $"Shuttle passenger {playerId} reached {ride.Destination} after flight {flightId} landed without them.");
+                return;
+            }
+
+            // No area means the passenger is still loading into the destination.
+            if (!GetIsObjectValid(area) || !_boardings.TryStartRetry(playerId, now, out var attempt))
+                return;
+
+            if (ShouldLogRetry(attempt))
+                Log.Write(LogGroup.Server, $"Shuttle passenger {playerId} was not at {ride.Destination} after flight {flightId} landed; delivery attempt {attempt}. " +
+                                           DescribePassenger(player, area));
+            DeliverPassenger(player, landingLocation);
+        }
+
+        /// <summary>
+        /// Logs the first retry and every tenth after it, so a passenger stuck for a whole flight
+        /// does not write a line every few seconds.
+        /// </summary>
+        private static bool ShouldLogRetry(int attempt)
+        {
+            return attempt == 2 || attempt % 10 == 0;
+        }
+
+        /// <summary>
+        /// Describes a passenger's state for the boarding and delivery retry logs.
+        /// </summary>
+        private static string DescribePassenger(uint player, uint area)
+        {
+            var position = GetPosition(player);
+            return $"Area={GetResRef(area)} Position=({position.X:0.00}, {position.Y:0.00}) Action={GetCurrentAction(player)} " +
+                   $"Commandable={GetCommandable(player)} InCombat={GetIsInCombat(player)} Dead={GetIsDead(player)}.";
         }
 
         /// <summary>
@@ -480,14 +607,14 @@ namespace SWLOR.Game.Server.Domain.World
 
             foreach (var flight in arrived)
             {
-                ProcessArrival(flight);
+                ProcessArrival(flight, now);
             }
         }
 
         /// <summary>
         /// Delivers a flight's passengers to the destination and tears down the shuttle instance.
         /// </summary>
-        private void ProcessArrival(ActiveFlight flight)
+        private void ProcessArrival(ActiveFlight flight, DateTime now)
         {
             var landingLocation = GetLandingLocation(flight.Destination);
             var destinationName = _planet.GetPlanetByType(flight.Destination).Name;
@@ -504,6 +631,18 @@ namespace SWLOR.Game.Server.Domain.World
                     continue;
                 }
 
+                if (GetIsObjectValid(flight.Area) &&
+                    GetArea(player) != flight.Area &&
+                    _boardings.IsBoarding(ride.PlayerId, flight.FlightId))
+                {
+                    // The passenger never made it aboard despite their ticket. Deliver them, and keep
+                    // the ride until they are actually at the destination in case this jump is dropped too.
+                    DeliverPassenger(player, landingLocation);
+                    SendMessageToPC(player, $"The shuttle touches down at {destinationName}.");
+                    _boardings.StartDelivery(ride.PlayerId, flight.FlightId, now);
+                    continue;
+                }
+
                 if (!GetIsObjectValid(flight.Area) || GetArea(player) == flight.Area)
                 {
                     // Still aboard the shuttle (or the instance is gone after a restart) - deliver them.
@@ -517,6 +656,7 @@ namespace SWLOR.Game.Server.Domain.World
                     Log.Write(LogGroup.Server, $"Shuttle passenger {ride.PlayerId} abandoned flight {flight.FlightId} before arrival.");
                 }
 
+                _boardings.Clear(ride.PlayerId);
                 _db.Delete<ShuttleRide>(ride.Id);
             }
 
@@ -1024,7 +1164,9 @@ namespace SWLOR.Game.Server.Domain.World
         [NWNEventHandler(ScriptName.OnModuleExit)]
         public void ExitServer()
         {
-            _boardingNotBeforeUtc.Remove(GetObjectUUID(GetExitingObject()));
+            var playerId = GetObjectUUID(GetExitingObject());
+            _boardingNotBeforeUtc.Remove(playerId);
+            _boardings.Clear(playerId);
         }
 
         /// <summary>
@@ -1080,6 +1222,11 @@ namespace SWLOR.Game.Server.Domain.World
                 if (TryGetLoginRedirect(current, out var location))
                 {
                     var redirect = location;
+
+                    // Follow a passenger sent back to a flight still in the air, so a dropped jump is retried.
+                    if (ride.ArrivalUtc > UtcNow())
+                        _boardings.Start(playerId, ride.FlightId, UtcNow());
+
                     AssignCommand(current, () =>
                     {
                         ClearAllActions();
@@ -1117,6 +1264,7 @@ namespace SWLOR.Game.Server.Domain.World
             if (ride.ArrivalUtc <= UtcNow())
                 return;
 
+            _boardings.Clear(ride.PlayerId);
             _db.Delete<ShuttleRide>(ride.Id);
             Log.Write(LogGroup.Server, $"Shuttle passenger {ride.PlayerId} left flight {flightId} before arrival; ticket forfeited.");
         }

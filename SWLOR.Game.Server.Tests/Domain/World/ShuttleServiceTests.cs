@@ -323,6 +323,7 @@ public class ShuttleServiceTests
     {
         var ride = BoardThePassenger();
         var area = FlightArea();
+        _passenger.Area = area;
         Service.Now = ride.ArrivalUtc;
         Service.Tick!();
         Service.Scheduled.Should().ContainSingle("the old build scheduled the teardown, which goes with it");
@@ -1012,6 +1013,9 @@ public class ShuttleServiceTests
     public void The_tick_does_not_deliver_a_passenger_who_left_the_flight_before_it_landed()
     {
         var ride = BoardThePassenger();
+        _passenger.Area = FlightArea();
+        Service.Now = ride.ArrivalUtc.AddSeconds(-1);
+        Service.Tick!();
         _passenger.Area = _starport;
         _bench.Locals.ClearCalls();
 
@@ -1021,6 +1025,20 @@ public class ShuttleServiceTests
         _bench.MessagesTo(_passenger.Id).Should().BeEmpty();
         _bench.AssignedTo(_passenger.Id).Should().BeEmpty("a passenger who left forfeits the trip");
         _bench.Db.Store.Deleted.Should().Contain(ride.Id);
+    }
+
+    [Test]
+    public void The_tick_delivers_a_passenger_who_never_made_it_aboard_and_keeps_the_ride_until_they_land()
+    {
+        var ride = BoardThePassenger();
+        _passenger.Area = _starport;
+        _bench.Locals.ClearCalls();
+
+        Service.Now = ride.ArrivalUtc;
+        Service.Tick!();
+
+        _bench.MessagesTo(_passenger.Id).Should().Contain("The shuttle touches down at Tatooine.");
+        _bench.Db.Store.Deleted.Should().NotContain(ride.Id, "the ride stays until the passenger is at the destination");
     }
 
     [Test]

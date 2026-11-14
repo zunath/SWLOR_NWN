@@ -70,6 +70,7 @@ public class LongswordBlankSlotTests
 
     [TestCase("wswls_t_016")]
     [TestCase("wswls_m_016")]
+    [TestCase("wswls_b_091")] // the blank bottom under the full-sword middle 5.2
     public void BlankPartsAreEmptyModels(string resref)
     {
         var path = Path.Combine(WeaponRoot(), resref + ".mdl");

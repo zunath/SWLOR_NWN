@@ -139,6 +139,7 @@ SWLOR.Game.Server.Domain.World.HoloComService._nextCallToken
 SWLOR.Game.Server.Domain.World.MusicService._lastBattleThemeCombat
 SWLOR.Game.Server.Domain.World.ShuttleService._announcedBoardings
 SWLOR.Game.Server.Domain.World.ShuttleService._boardingNotBeforeUtc
+SWLOR.Game.Server.Domain.World.ShuttleService._boardings
 SWLOR.Game.Server.Domain.World.ShuttleService._missedBoardings
 SWLOR.Game.Server.Domain.World.WeatherService._exposures
 SWLOR.Game.Server.Feature.StatusEffectDefinition.InspiredStatusEffect._lastOvationByPlayer

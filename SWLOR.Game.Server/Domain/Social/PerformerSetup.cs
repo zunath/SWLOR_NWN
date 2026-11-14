@@ -8,5 +8,6 @@ namespace SWLOR.Game.Server.Domain.Social
         public string SongText { get; init; } = string.Empty;
         public string InstrumentText { get; init; } = string.Empty;
         public string TempoText { get; init; } = string.Empty;
+        public PerformanceInstrumentFamily InstrumentFamily { get; init; }
     }
 }

@@ -57,16 +57,18 @@ namespace SWLOR.Game.Server.Domain.Foundation
         {
             var duration = Validate(clip, durationSeconds);
             if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
-            var nativeHold = holdMode == NamedAnimationHold.Keep ? AnimationWeaponHold.None : AbilityAnimationEquipment.ReadHold(creature);
+            var nativeHold = holdMode is NamedAnimationHold.Auto or NamedAnimationHold.LiftInPlace
+                ? AbilityAnimationEquipment.ReadHold(creature) : AnimationWeaponHold.None;
             var liftInPlace = holdMode == NamedAnimationHold.LiftInPlace && nativeHold == AnimationWeaponHold.Shoulder;
-            var hold = holdMode == NamedAnimationHold.Auto ? nativeHold : AnimationWeaponHold.None;
+            var hold = holdMode == NamedAnimationHold.ClearTorch ? AnimationWeaponHold.Torch :
+                holdMode == NamedAnimationHold.Auto ? nativeHold : AnimationWeaponHold.None;
             var held = hold != AnimationWeaponHold.None;
             var speed = held || fitToDuration ? clip.PlaybackSpeed(duration) : 1f;
             // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
             // the caller can stop it even before that closure runs (for example on close).
             var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : _playback.ReserveEquipmentPlayback(creature);
             var token = _playback.Begin(creature, clip, duration, completeAtDuration: true, weaponHold: hold, equipmentRequest: request,
-                liftShoulderHoldInPlace: liftInPlace);
+                liftShoulderHoldInPlace: liftInPlace, liftTorchHoldInPlace: holdMode == NamedAnimationHold.LiftTorchInPlace);
             return PlayMapped(creature, token, duration,
                 held ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
         }

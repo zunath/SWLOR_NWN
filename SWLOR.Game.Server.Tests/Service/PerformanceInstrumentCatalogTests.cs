@@ -31,8 +31,33 @@ public class PerformanceInstrumentCatalogTests
     }
 
     [Test]
-    public void The_resrefs_are_the_five_instruments()
+    public void The_resrefs_are_the_ten_instruments()
     {
-        PerformanceInstrumentCatalog.Resrefs.Should().BeEquivalentTo("guitar", "lute", "harp", "kloo_horn", "slitherhorn");
+        PerformanceInstrumentCatalog.Resrefs.Should().BeEquivalentTo("guitar", "lute", "harp", "kloo_horn", "slitherhorn", "night_microplain", "night_microbrand", "panpipes",
+            "violin_m", "violin_f", "tambourine");
+    }
+
+    [TestCase("night_microplain", PerformanceInstrumentFamily.Vocals)]
+    [TestCase("NIGHT_MICROBRAND", PerformanceInstrumentFamily.Vocals)]
+    [TestCase("panpipes", PerformanceInstrumentFamily.Pipes)]
+    [TestCase("violin_m", PerformanceInstrumentFamily.BowedStrings)]
+    [TestCase("violin_f", PerformanceInstrumentFamily.BowedStrings)]
+    [TestCase("tambourine", PerformanceInstrumentFamily.Percussion)]
+    [TestCase("kloo_horn", PerformanceInstrumentFamily.Horns)]
+    [TestCase("slitherhorn", PerformanceInstrumentFamily.Horns)]
+    [TestCase("guitar", PerformanceInstrumentFamily.Strings)]
+    public void ExistingItemsAreRecognizedWithoutItemLocals(string resref, PerformanceInstrumentFamily expected)
+    {
+        PerformanceInstrumentCatalog.TryGetFamily(resref, out var family).Should().BeTrue();
+        family.Should().Be(expected);
+    }
+
+    [TestCase("violin_bow")]
+    [TestCase("unrelated_item")]
+    [TestCase("")]
+    public void PropsThatCannotPerformAloneAreNotInstruments(string resref)
+    {
+        PerformanceInstrumentCatalog.TryGetFamily(resref, out var family).Should().BeFalse();
+        family.Should().Be(PerformanceInstrumentFamily.None);
     }
 }

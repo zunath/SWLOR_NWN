@@ -18,17 +18,29 @@ namespace SWLOR.Game.Server.Domain.Social
                 ["harp"] = PerformanceInstrumentFamily.Strings,
                 ["kloo_horn"] = PerformanceInstrumentFamily.Horns,
                 ["slitherhorn"] = PerformanceInstrumentFamily.Horns,
+                ["night_microplain"] = PerformanceInstrumentFamily.Vocals,
+                ["night_microbrand"] = PerformanceInstrumentFamily.Vocals,
+                ["panpipes"] = PerformanceInstrumentFamily.Pipes,
+                ["violin_m"] = PerformanceInstrumentFamily.BowedStrings,
+                ["violin_f"] = PerformanceInstrumentFamily.BowedStrings,
+                ["tambourine"] = PerformanceInstrumentFamily.Percussion,
             }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>Every playable instrument's resref, for checks that the Player Guide's list stays complete.</summary>
         public static IReadOnlyCollection<string> Resrefs => _families.Keys;
 
+        public static bool RequiresBow(PerformanceInstrumentFamily family) => family == PerformanceInstrumentFamily.BowedStrings;
+
         /// <summary>
-        /// The kloo horn only reaches the lips once the polearm carry layer is gone. The slitherhorn's mouthpiece is
-        /// modelled to reach them from that layer, so it keeps the layer.
+        /// These props and the violin's bow are posed without the polearm carry layer. The slitherhorn's mouthpiece
+        /// is modelled to reach the lips from that layer, so it keeps the layer.
         /// </summary>
         public static bool PlaysWithoutCarryLayer(string resref) =>
-            string.Equals(resref, "kloo_horn", StringComparison.OrdinalIgnoreCase);
+            string.Equals(resref, "kloo_horn", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(resref, "panpipes", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(resref, "tambourine", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(resref, "violin_m", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(resref, "violin_f", StringComparison.OrdinalIgnoreCase);
 
         public static bool TryGetFamily(string resref, out PerformanceInstrumentFamily family)
         {

@@ -30,6 +30,12 @@ namespace SWLOR.Game.Server.Domain.UI
 
         void LockBarsOnExit();
 
+        /// <summary>
+        /// Moves every open bar with the screen edges it sits nearest after the game window or UI scale changes.
+        /// Bars go in order, each kept off the bars below it, so a smaller screen cannot stack them on each other.
+        /// </summary>
+        void FollowScreen(uint player);
+
         /// <summary>The work of <see cref="LockBarsOnExit"/> for one player (a hot reload's quiescence step).</summary>
         void LockBarsFor(uint player);
 

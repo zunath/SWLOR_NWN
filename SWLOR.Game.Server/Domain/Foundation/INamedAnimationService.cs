@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         /// <summary>
         /// Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.
-        /// holdMode chooses how the main-hand item's native holding layer is treated (see <see cref="NamedAnimationHold"/>).
+        /// holdMode chooses how native item holding layers are treated (see <see cref="NamedAnimationHold"/>).
         /// </summary>
         string Play(uint creature, AnimationClip clip, float? durationSeconds = null,
             AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted,

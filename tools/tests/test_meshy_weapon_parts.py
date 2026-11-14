@@ -25,7 +25,8 @@ except ImportError:
 
 
 class MeshyWeaponPartsTests(unittest.TestCase):
-    joint={'y':.1,'center_xz':[.01,-.02],'radii_xz':[.022,.027],'depth':.007}
+    # Fits inside the roundtrip test's prism section at every cut.
+    joint={'y':.1,'center_xz':[.01,.04],'radii_xz':[.02,.03],'depth':.007}
 
     def test_author_binds_parsed_bytes_to_the_validated_source_snapshot(self):
         for change_before_parse in (True,False):
@@ -55,7 +56,10 @@ class MeshyWeaponPartsTests(unittest.TestCase):
             with self.subTest(partial=partial,explicit=explicit),tempfile.TemporaryDirectory() as temporary:
                 root=Path(temporary);repo=root/'repo';table=repo/'SWLOR_Haks/sw_2da';table.mkdir(parents=True)
                 (table/'baseitems.2da').write_text('2DA V2.0\n\nItemClass ModelType InvSlotWidth InvSlotHeight\n12 wdbsw 2 2 5\n59 wthsh 0 1 1\n')
-                source=parts.flat_basis([[[-.2,-.8,0],[.2,0,.1],[0,.8,0]]])
+                section=[(-.1,-.05),(.15,-.05),(.02,.15)]
+                # A closed prism, so every cut has a real section around the joint envelope.
+                source=parts.flat_basis([tri for (ax,az),(bx,bz) in zip(section,section[1:]+section[:1])
+                                         for tri in ([[ax,-.8,az],[bx,-.8,bz],[ax,.8,az]],[[bx,-.8,bz],[bx,.8,bz],[ax,.8,az]])])
                 path=root/'source.glb';parts.write_source({'asset':{'version':'2.0'},'materials':[{'pbrMetallicRoughness':{}}]},b'',[(0,source)],path,exporter)
                 frame={'min':[-1,-1,-1],'max':[1,1,1]}
                 asset={'asset':'test_parts','source':'source.glb','sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
@@ -105,6 +109,33 @@ class MeshyWeaponPartsTests(unittest.TestCase):
         cross=np.cross(result['positions'][:,1]-result['positions'][:,0],result['positions'][:,2]-result['positions'][:,0])
         self.assertTrue(np.all(cross[:,2]>0))
 
+    def test_joint_sleeves_must_stay_within_the_part_section(self):
+        section=[[-.03,-.013],[-.01,-.013],[-.01,.013],[-.03,.013]]
+        inner={'y':.085,'center_xz':[-.02,0],'radii_xz':[.009,.012],'depth':.007}
+        self.assertTrue(parts.sleeve_fits(inner,section))
+        # The November 2026 vibroblade envelope: centred on the stock axis, 20 mm off the part.
+        stock={'y':.085,'center_xz':[0,0],'radii_xz':[.024,.036],'depth':.007}
+        self.assertFalse(parts.sleeve_fits(stock,section))
+        self.assertFalse(parts.sleeve_fits({**inner,'radii_xz':[.012,.012]},section))
+        self.assertFalse(parts.sleeve_fits(inner,[]))
+        # The outline, not its bounding box: a centred circle overhangs a diamond's edges.
+        diamond=[[.02,0],[0,.02],[-.02,0],[0,-.02]]
+        self.assertFalse(parts.sleeve_fits({**inner,'center_xz':[0,0],'radii_xz':[.019,.019]},diamond))
+        self.assertTrue(parts.sleeve_fits({**inner,'center_xz':[0,0],'radii_xz':[.013,.013]},diamond))
+
+    def test_a_short_end_section_comes_from_the_surfaces_nearest_the_cut(self):
+        grip=parts.flat_basis([[[-.01,-.1,0],[.01,.0815,-.012],[.01,.0815,.012]]])
+        points=np.asarray(parts.end_section([(0,grip)],.085,1,(float('-inf'),.085)))
+        np.testing.assert_allclose(points[:,1].min(),-.012);np.testing.assert_allclose(points[:,1].max(),.012)
+        self.assertFalse(np.any(np.isclose(points[:,0],-.01)))
+
+    def test_a_short_end_section_ignores_another_clip_interval(self):
+        # Paired roles own disjoint intervals; the upper one must not stand in for the lower end.
+        lower=parts.flat_basis([[[-.01,-.3,0],[.01,-.2035,-.01],[.01,-.2035,.01]]])
+        upper=parts.flat_basis([[[-.05,.1,-.05],[.05,.1,-.05],[0,.3,.05]]])
+        points=np.asarray(parts.end_section([(0,lower),(1,upper)],-.2,1,(float('-inf'),-.2)))
+        np.testing.assert_allclose(points[:,0],.01)
+
     def test_shared_plane_faces_belong_to_the_above_part(self):
         source=parts.flat_basis([[[0,.25,0],[0,.25,1],[1,.25,0]]])
         self.assertEqual(0,len(parts.clip_source_basis(source,[(float('-inf'),.25)])['positions']))
@@ -153,7 +184,7 @@ class MeshyWeaponPartsTests(unittest.TestCase):
                 for key in source:np.testing.assert_allclose(data['metal__'+key],source[key],atol=1e-7)
 
     def test_invalid_unmeasured_or_repeated_joint_data_is_rejected(self):
-        for update in ({'depth':0},{'radii_xz':[-1,.02]},{'center_xz':[0]}, {'y':float('nan')},{'unknown':1}):
+        for update in ({'depth':0},{'depth':parts.MAX_JOINT_DEPTH+.001},{'radii_xz':[-1,.02]},{'center_xz':[0]}, {'y':float('nan')},{'unknown':1}):
             joint={**self.joint,**update}
             with self.subTest(update=update),self.assertRaises(ValueError):parts.validate_joints([joint])
         with self.assertRaises(ValueError):parts.validate_joints([self.joint,self.joint])

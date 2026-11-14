@@ -217,6 +217,33 @@ namespace SWLOR.Game.Server.Domain.UI
         }
 
         /// <summary>
+        /// Moves every open bar with the screen edges it sits nearest after the game window or UI scale changes.
+        /// Bars go in order, each kept off the bars below it, so a smaller screen cannot stack them on each other.
+        /// </summary>
+        public void FollowScreen(uint player)
+        {
+            var viewModels = new List<ExtraHotbarViewModel>();
+            foreach (var windowType in _windowTypes)
+            {
+                if (_gui.IsWindowOpen(player, windowType))
+                    viewModels.Add((ExtraHotbarViewModel)_gui.GetPlayerWindow(player, windowType).ViewModel);
+            }
+
+            var moved = new List<ExtraHotbarViewModel>();
+            foreach (var viewModel in viewModels)
+            {
+                if (!viewModel.HasScreenChanged())
+                    continue;
+
+                viewModel.FollowScreen();
+                moved.Add(viewModel);
+            }
+
+            foreach (var viewModel in moved)
+                viewModel.KeepClearOfLowerBarsAfterScreenChange();
+        }
+
+        /// <summary>
         /// Saves where each open bar's slots sit, without the title bar shown while bars are unlocked.
         /// </summary>
         private void SaveLockedPositions(uint player)

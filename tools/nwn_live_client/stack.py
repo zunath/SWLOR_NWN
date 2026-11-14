@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import csv
 import datetime
+from fractions import Fraction
 import hashlib
 import io
 import json
@@ -297,15 +298,19 @@ def development_environment(extra_env: dict[str, str], server_env: Path) -> str:
     return value if value in ('dev', 'development', 'test', 'testing') else 'dev'
 
 
-def client_settings(player_name: str) -> str:
-    """Client settings.tml: silent, no movies, windowed 1280x720 at UI scale 1.0.
+def client_settings(player_name: str, show_render_stats: bool = False, motion_capture: bool = False,
+                    window_size: tuple[int, int] = WINDOW_SIZE) -> str:
+    """Client settings.tml: silent, no movies, native window dimensions at UI scale 1.0.
 
     The UDP window matches the server's 5 minutes: on a busy machine the software-rendered
     client can stall for minutes loading haks, and would otherwise drop its own connection.
+    All focus states use the same cap so Xvfb focus changes cannot throttle motion.
     """
     if not re.fullmatch(r'[A-Za-z0-9]{3,24}', player_name):
         raise LiveStackError('The player name must be 3-24 letters or digits.')
-    return f'''[client.identity]
+    if window_size not in (WINDOW_SIZE, (960, 600), (800, 600), (640, 480)):
+        raise LiveStackError('Unsupported native window size.')
+    text = f'''[client.identity]
 name = "{player_name}"
 [sound.effects]
 volume = 0.0
@@ -324,10 +329,20 @@ enabled = false
 [graphics.window]
 mode = "windowed"
 [graphics.window.windowed]
-width = {WINDOW_SIZE[0]}
-height = {WINDOW_SIZE[1]}
+width = {window_size[0]}
+height = {window_size[1]}
 [graphics.video.vsync]
 mode = "off"
+[graphics.framelimiter]
+enabled = true
+[graphics.framelimiter.foreground]
+target-fps = 120
+[graphics.framelimiter.background]
+target-fps = 120
+[graphics.framelimiter.non-interactive]
+target-fps = 120
+[graphics.stats]
+enabled = {str(show_render_stats).lower()}
 [game.auto-pause.on-focus-loss]
 enabled = false
 [ui]
@@ -335,6 +350,31 @@ scale = 1.0
 [net.udp.window]
 timeout = 300000
 '''
+    if motion_capture:
+        text += '''[graphics.general]
+shader-quality = "Performance"
+[graphics.fbo.dof]
+enabled = false
+[graphics.fbo.hdr-bloom]
+enabled = true
+[graphics.fbo.high-contrast]
+enabled = false
+[graphics.fbo.sharpen]
+enabled = false
+[graphics.fbo.ssao]
+enabled = false
+[graphics.fbo.toon]
+enabled = false
+[graphics.fbo.vibrance]
+enabled = false
+[graphics.fbo]
+run-shader-even-with-no-effects = true
+[graphics.shadows.creatures]
+mode = 0
+[graphics.shadows.environment]
+enabled = false
+'''
+    return text
 
 
 CLIENT_ALIASES = '''[Alias]
@@ -491,13 +531,22 @@ class Stack:
         # The run's own snapshot, so later commands use the definition that started it.
         return self.run_dir / 'compose.yml'
 
+    @property
+    def compose_files(self) -> list[Path]:
+        return [self.compose_file, *([self.run_dir / 'compose.gpu.yml'] if self.state.get('gpu_renderer') else [])]
+
+    @property
+    def window_size(self) -> tuple[int, int]:
+        return tuple(self.state.get('window_size', WINDOW_SIZE))
+
     def save(self) -> None:
         # Write then replace, so an interrupted save never leaves a half-written recovery record.
         write_json_atomic(self.state_path, self.state)
 
     def compose_command(self, *arguments: str) -> str:
         """The full Compose command line for this run, for recovery instructions."""
-        return (f'docker compose -p {self.project} -f "{self.compose_file}" --env-file "{self.run_dir / "compose.env"}" '
+        files = ' '.join(f'-f "{path}"' for path in self.compose_files)
+        return (f'docker compose -p {self.project} {files} --env-file "{self.run_dir / "compose.env"}" '
                 f'--profile client ' + ' '.join(arguments))
 
     def ensure_owner(self, require_reservation: bool = True) -> bool:
@@ -518,16 +567,48 @@ class Stack:
 
     def compose(self, *arguments: str, client: bool = False, check: bool = True, capture: bool = False,
                 timeout: float = 600) -> subprocess.CompletedProcess:
-        command = ['docker', 'compose', '-p', self.project, '-f', str(self.compose_file),
+        # Existing-container operations do not need Compose to re-evaluate mounts
+        # and GPU configuration. On a busy host that can consume the capture's
+        # entire startup deadline before ffmpeg runs.
+        if len(arguments) >= 3 and arguments[:2] == ('exec', '-T'):
+            self.ensure_owner()
+            service = self.service_info(arguments[2])
+            if service is None or not service['running']:
+                raise LiveStackError(f'The {arguments[2]} container is not running.')
+            return run(['docker', 'exec', service['id'], *arguments[3:]],
+                       check=check, capture=capture, timeout=timeout)
+        files = [value for path in self.compose_files for value in ('-f', str(path))]
+        command = ['docker', 'compose', '-p', self.project, *files,
                    '--env-file', str(self.run_dir / 'compose.env')]
         if client:
             command += ['--profile', 'client']
         return run(command + list(arguments), check=check, capture=capture, timeout=timeout)
 
+    def service_info(self, service: str) -> dict | None:
+        """Inspect one generated service and reject a foreign container with that name."""
+        if not re.fullmatch(r'[a-z0-9][a-z0-9-]*', service):
+            raise LiveStackError('Invalid live-stack service name.')
+        template = '{"id":"{{.Id}}","running":{{.State.Running}},"labels":{{json .Config.Labels}}}'
+        result = run(['docker', 'container', 'inspect', '--format', template,
+                      f'{self.project}-{service}-1'], check=False, capture=True, timeout=60)
+        if result.returncode != 0:
+            return None
+        try:
+            info = json.loads(result.stdout)
+            if not isinstance(info, dict):
+                raise ValueError('Invalid service metadata')
+            labels = info.get('labels') or {}
+            if (not isinstance(labels, dict) or not re.fullmatch(r'[0-9a-f]{64}', info['id']) or type(info['running']) is not bool
+                    or labels.get('com.docker.compose.project') != self.project
+                    or labels.get('com.docker.compose.service') != service):
+                raise ValueError('Service identity mismatch')
+        except (ValueError, KeyError, TypeError) as error:
+            raise LiveStackError(f'Cannot verify this run\'s {service} container identity.') from error
+        return info
+
     def running(self, service: str) -> bool:
-        result = self.compose('ps', '--status', 'running', '-q', service, client=service == 'client',
-                              check=False, capture=True, timeout=60)
-        return result.returncode == 0 and bool(result.stdout.strip())
+        info = self.service_info(service)
+        return info is not None and info['running']
 
     @property
     def server_log(self) -> Path:
@@ -650,10 +731,14 @@ def create(options) -> Stack:
         raise LiveStackError('--max-minutes must be between 5 and 720.')
     if not (math.isfinite(options.settle) and options.settle >= 0):
         raise LiveStackError('--settle must be a finite number of seconds, 0 or more.')
-    client_settings_text = client_settings(options.player_name)
+    window_size = tuple(int(value) for value in getattr(options, 'window_size', '1280x720').split('x'))
+    client_settings_text = client_settings(options.player_name, getattr(options, 'show_render_stats', False),
+                                           getattr(options, 'motion_capture', False), window_size)
     state = {
         'project': project, 'run_dir': str(run_dir), 'mode': mode, 'player_name': options.player_name,
         'public_cdkey': public_key, 'created_utc': utc_now(), 'repo': str(REPO_ROOT),
+        'gpu_renderer': getattr(options, 'gpu_renderer', None),
+        'window_size': window_size,
         'server_image': server_image(), 'server_image_id': resolve_image_id(server_image()),
         'client_image': client_image_tag(), 'max_seconds': max_seconds,
         'cdkey_source': str(cdkey),
@@ -738,6 +823,9 @@ def create(options) -> Stack:
         stack.state['inputs']['server_settings_sha256'] = sha256(stack.home / 'settings.tml')
         shutil.copyfile(COMPOSE_FILE, stack.compose_file)
         stack.state['inputs']['compose_sha256'] = sha256(stack.compose_file)
+        if state['gpu_renderer']:
+            shutil.copyfile(PACKAGE_DIR / 'compose.gpu.yml', run_dir / 'compose.gpu.yml')
+            stack.state['inputs']['gpu_compose_sha256'] = sha256(run_dir / 'compose.gpu.yml')
         if mode == 'player':
             vault = stack.home / 'servervault' / public_key
             vault.mkdir(parents=True)
@@ -771,6 +859,8 @@ def create(options) -> Stack:
             # The ID resolved once at preparation, so a retag by another session cannot change it.
             'SWLOR_LIVE_SERVER_IMAGE': state['server_image_id'],
             'SWLOR_LIVE_CLIENT_IMAGE': state['client_image'],
+            'SWLOR_LIVE_WINDOW_WIDTH': str(window_size[0]),
+            'SWLOR_LIVE_WINDOW_HEIGHT': str(window_size[1]),
             'SWLOR_LIVE_PREPARE_HOME': (run_dir / 'bin' / 'prepare-server-home.sh').as_posix(),
             'SWLOR_LIVE_SERVER_ENV_FILE': (run_dir / 'server.env').as_posix(),
             'SWLOR_LIVE_SERVER_NAME': f'SWLOR live check {project}',
@@ -1113,9 +1203,13 @@ def play(stack: Stack, settle: float, timeout: float = 600) -> None:
         if now >= next_click:
             attempt += 1
             log(f'Clicking Play (attempt {attempt})')
+            width, height = getattr(stack, 'window_size', WINDOW_SIZE)
+            def centered(point):
+                return (round(width / 2 + point[0] - WINDOW_SIZE[0] / 2),
+                        round(height / 2 + point[1] - WINDOW_SIZE[1] / 2))
             if stack.state['mode'] == 'dm':
-                stack.ui('click', str(FIRST_CHARACTER_ROW[0]), str(FIRST_CHARACTER_ROW[1]))
-            stack.ui('click', str(PLAY_BUTTON[0]), str(PLAY_BUTTON[1]))
+                stack.ui('click', *(str(value) for value in centered(FIRST_CHARACTER_ROW)))
+            stack.ui('click', *(str(value) for value in centered(PLAY_BUTTON)))
             next_click = time.monotonic() + 20
         time.sleep(1)
     log(f'Character entered; waiting until no area transition has started for {settle:.0f}s')
@@ -1157,7 +1251,9 @@ def is_loading_screen(samples: dict[str, tuple[int, int, int]]) -> bool:
 
 def showing_loading_screen(stack: Stack) -> bool:
     samples = {}
+    width, height = getattr(stack, 'window_size', WINDOW_SIZE)
     for name, (x, y) in LOADING_FRAME_POINTS.items():
+        x, y = round(x * width / WINDOW_SIZE[0]), round(y * height / WINDOW_SIZE[1])
         values = stack.ui('pixel', str(x), str(y)).split()[-3:]
         if len(values) != 3 or not all(value.isdigit() for value in values):
             raise LiveStackError(f'Could not read the client screen at ({x},{y}).')
@@ -1189,6 +1285,102 @@ def capture(stack: Stack, label: str) -> Path:
     with (stack.evidence / 'captures.jsonl').open('a', encoding='utf-8') as manifest:
         manifest.write(json.dumps({'label': label, 'file': path.name, 'utc': utc_now(), 'sha256': digest}) + '\n')
     log(f'{path} sha256={digest}')
+    return path
+
+
+def frame_cadence(path: Path) -> dict:
+    """Summarize acquisition timestamps and raw image changes, before lossy encoding or CFR repeats."""
+    time_base = None
+    samples = []
+    for line in path.read_text('utf-8').splitlines():
+        if line.startswith('#tb 0: '):
+            time_base = Fraction(line.split(':', 1)[1].strip())
+        elif line.strip() and not line.startswith('#'):
+            fields = [field.strip() for field in line.split(',')]
+            if len(fields) != 6 or fields[0] != '0' or not fields[5]:
+                raise ValueError('Malformed raw frame checksum record.')
+            samples.append((int(fields[2]), fields[5]))
+    if time_base is None or time_base <= 0 or len(samples) < 2:
+        raise ValueError('Raw capture cadence is missing timestamps or frames.')
+    intervals = [float((b[0] - a[0]) * time_base) for a, b in zip(samples, samples[1:])]
+    if any(interval <= 0 for interval in intervals):
+        raise ValueError('Raw capture timestamps must increase.')
+    span = float((samples[-1][0] - samples[0][0]) * time_base)
+    repeated = sum(a[1] == b[1] for a, b in zip(samples, samples[1:]))
+    return {'frames': len(samples), 'span_seconds': span, 'acquired_fps': (len(samples) - 1) / span,
+            'consecutive_identical_frames': repeated, 'unique_hashes': len({sample[1] for sample in samples}),
+            'longest_acquisition_gap_ms': max(intervals) * 1000,
+            'checksums_sha256': sha256(path),
+            'meaning': 'Raw X11 image acquisition and changes; static poses may legitimately repeat. Not a renderer FPS counter.'}
+
+
+def record_video(stack: Stack, label: str, seconds: int = 30, fps: int = 60) -> Path:
+    """Record a bounded, silent video of this run's private NWN client window."""
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]{0,79}', label):
+        raise LiveStackError('Video labels use letters, digits, dots, underscores and hyphens.')
+    if type(seconds) is not int or not 1 <= seconds <= 120 or type(fps) is not int or fps not in (15, 30, 60):
+        raise LiveStackError('Video duration must be 1..120 seconds and frame rate 15, 30 or 60.')
+    path = stack.evidence / f'{label}.mp4'
+    probe = stack.evidence / f'{label}.video.json'
+    raw_frames = stack.evidence / f'{label}.frames.md5'
+    recorder = stack.evidence / f'{label}.recorder.sh'
+    if any(p.exists() for p in (path, probe, raw_frames, recorder, stack.evidence / f'{label}.ffmpeg.log')):
+        raise LiveStackError('Video label already exists; use a new label.')
+    stack.ensure_owner()
+    require_running(stack, 'before the video')
+    started = utc_now()
+    try:
+        recorder.write_bytes((PACKAGE_DIR / 'record-video.sh').read_bytes().replace(b'\r\n', b'\n'))
+        result = stack.compose('exec', '-T', 'client', '/bin/bash', f'/verify/{recorder.name}',
+                               label, str(seconds), str(fps), client=True, check=False, capture=True,
+                               timeout=seconds + 60)
+        if result.returncode != 0:
+            raise LiveStackError((result.stdout + result.stderr).decode('utf-8', 'replace').strip())
+        stack.ensure_owner()
+        require_running(stack, 'during the video')
+        data = json.loads(probe.read_text('utf-8'))
+        stream, = data['streams']
+        duration = float(stream['duration'])
+        if (stream['codec_name'] != 'h264' or
+                (stream['width'], stream['height']) != getattr(stack, 'window_size', WINDOW_SIZE) or
+                Fraction(stream['avg_frame_rate']) != fps or Fraction(stream['r_frame_rate']) != fps or
+                not math.isfinite(duration) or abs(int(stream['nb_read_frames']) - round(duration * fps)) > 1 or
+                abs(duration - seconds) > 0.1 or not path.is_file()):
+            raise ValueError('The video did not meet its requested size, duration or frame rate.')
+        digest = sha256(path)
+        raw_capture = frame_cadence(raw_frames)
+        if raw_capture['span_seconds'] < seconds - .1:
+            raise ValueError('Raw frame acquisition ended before the requested duration.')
+    except (OSError, ValueError, KeyError, TypeError, ZeroDivisionError, LiveStackError) as error:
+        for source, failed in ((path, stack.evidence / f'{label}.failed.mp4'),
+                               (probe, stack.evidence / f'{label}.failed.video.json'),
+                               (raw_frames, stack.evidence / f'{label}.failed.frames.md5'),
+                               (stack.evidence / f'.{label}.recording.mp4',
+                                stack.evidence / f'{label}.failed.partial.mp4')):
+            if source.exists():
+                source.replace(failed)
+        raise LiveStackError(f'Video recording failed: {error}') from error
+    record = {'label': label, 'file': path.name, 'started_utc': started, 'finished_utc': utc_now(),
+              'sha256': digest, 'fps': fps, 'encoded_fps': fps, 'seconds': seconds, 'stream': stream,
+              'recorder_sha256': sha256(recorder), 'raw_capture': raw_capture,
+              'source': 'private NWN client window; no audio or frame interpolation'}
+    renderer = stack.evidence / 'renderer.txt'
+    if renderer.is_file():
+        record['renderer_sha256'] = sha256(renderer)
+    encoder_log = stack.evidence / f'{label}.ffmpeg.log'
+    if encoder_log.is_file():
+        final = [line for line in encoder_log.read_text('utf-8', errors='replace').replace('\r', '\n').splitlines()
+                 if 'Lsize=' in line]
+        if final:
+            duplicated = re.search(r'\bdup=\s*(\d+)', final[-1])
+            dropped = re.search(r'\bdrop=\s*(\d+)', final[-1])
+            record['duplicated_frames'] = int(duplicated[1]) if duplicated else 0
+            record['dropped_frames'] = int(dropped[1]) if dropped else 0
+    with (stack.evidence / 'videos.jsonl').open('a', encoding='utf-8') as manifest:
+        manifest.write(json.dumps(record) + '\n')
+    log(f'{path} encoded_fps={fps} raw_acquired_fps={raw_capture["acquired_fps"]:.2f} '
+        f'identical_source_frames={raw_capture["consecutive_identical_frames"]} '
+        f'frames={stream["nb_read_frames"]} sha256={digest}')
     return path
 
 
@@ -1431,7 +1623,7 @@ def destroy(stack: Stack) -> dict:
     report['reservation_removed'] = not owns_project
     if not any(resources.values()):
         # Kept while any project resource remains so down can be rerun.
-        for name in ('compose.env', 'compose.yml', 'server-extra.env', 'server.env'):
+        for name in ('compose.env', 'compose.yml', 'compose.gpu.yml', 'server-extra.env', 'server.env'):
             (stack.run_dir / name).unlink(missing_ok=True)
         # The reservation also keeps the recorded server image in use, which a Linux retry of the
         # home hand-back needs; release it only once the local cleanup has finished.

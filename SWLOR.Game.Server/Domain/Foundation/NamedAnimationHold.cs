@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.Domain.Foundation;
 
-/// <summary>How a named clip treats the native holding layer of the main-hand item.</summary>
+/// <summary>How a named clip treats native item holding layers.</summary>
 public enum NamedAnimationHold
 {
     /// <summary>Lift a rifle, two-handed or polearm hold by playing through the one-shot Dodge Side carrier.</summary>
@@ -11,5 +11,9 @@ public enum NamedAnimationHold
     /// Play on the looping carrier and hold off a two-handed or polearm hold, for long loops that pose the arm
     /// themselves. A rifle hold is kept.
     /// </summary>
-    LiftInPlace
+    LiftInPlace,
+    /// <summary>Clear the existing left-hand torch pose once through the one-shot carrier.</summary>
+    ClearTorch,
+    /// <summary>Keep the looping carrier and suppress the left-hand torch pose after clearing it.</summary>
+    LiftTorchInPlace
 }

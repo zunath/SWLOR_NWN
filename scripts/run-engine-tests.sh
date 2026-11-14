@@ -25,6 +25,9 @@
 # the host only: true or false; unset keeps the host's default (collectible outside
 # production).
 #
+# --compose-project names the docker compose project (default swlor-engine-tests-<worktree
+# folder name, so concurrent runs from different worktrees never tear each other down).
+#
 # --timeout-minutes is a hard wall-clock limit on the containerized run (default
 # 90; a full sweep takes roughly 45). It is the backstop against a server that
 # never finishes on its own - e.g. one that boots healthy but schedules no tests,
@@ -44,6 +47,7 @@ SERVER_HOME="${SWLOR_ENGINE_TEST_SERVER_HOME:-}"
 TIMEOUT_MINUTES=90
 ENTRY="host"
 COLLECTIBLE=""
+COMPOSE_PROJECT=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -73,6 +77,10 @@ while [ $# -gt 0 ]; do
             ;;
         --entry)
             ENTRY="$2"
+            shift 2
+            ;;
+        --compose-project)
+            COMPOSE_PROJECT="$2"
             shift 2
             ;;
         --collectible)
@@ -128,7 +136,15 @@ fi
 COMPOSE_FILE="$REPO_ROOT/SWLOR.Game.Server/Docker/docker-compose.enginetests.yml"
 # A dedicated project name keeps these containers isolated from the normal dev
 # stack even though both may use the same server home directory.
-COMPOSE_PROJECT="swlor-engine-tests"
+if [ -z "$COMPOSE_PROJECT" ]; then
+    # One project per worktree, so a run only ever tears down its own containers. Pass
+    # --compose-project swlor-engine-tests for the old shared name.
+    WORKTREE_NAME="$(basename "$REPO_ROOT" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_-]/-/g' | cut -c1-40 | sed 's/^-*//; s/-*$//')"
+    COMPOSE_PROJECT="swlor-engine-tests-$WORKTREE_NAME"
+fi
+case "$COMPOSE_PROJECT" in
+    *[!a-z0-9_-]*|-*|_*|"") echo "--compose-project '$COMPOSE_PROJECT' must be lowercase letters, digits, - and _." >&2; exit 2 ;;
+esac
 DOTNET_OUTPUT_DIR="$SERVER_HOME/dotnet"
 # The host entry stages the host in dotnet/ and the game build (with the test assembly) in
 # dotnet/game/; the native entry stages the game build in dotnet/ itself.

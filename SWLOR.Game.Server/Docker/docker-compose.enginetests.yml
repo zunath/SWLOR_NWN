@@ -16,7 +16,7 @@
 # invocations run FROM the server home. This file lives here because it's tracked
 # solution configuration; the directory it sits in is not inherently the runtime home.
 # Use the runner scripts, which resolve the home and pass a dedicated compose project
-# name (-p swlor-engine-tests) so these containers never collide with the dev stack:
+# name (-p swlor-engine-tests-<worktree folder>) so these containers never collide with the dev stack:
 #   scripts/run-engine-tests.ps1 / scripts/run-engine-tests.sh
 #
 # Expects <server home>/modules, hak, tlk, dotnet, and swlor.env to be populated.

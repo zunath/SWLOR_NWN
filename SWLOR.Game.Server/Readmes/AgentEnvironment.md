@@ -51,7 +51,7 @@ git -C <wt>/SWLOR_Haks checkout --detach $sha
 - Use bounded foreground commands. Start background jobs, watchers, servers, or GUI apps only when the task requires one, track the PID, and stop it before handoff.
 - Stop only processes you started, by PID; never kill `nwmain`, `nwserver`, `dotnet`, or `docker` by name. Background shells can leave child processes alive after the shell stops; check for and stop them.
 - Never start a search at `/` or a drive root; on Windows it can run for hours. Scope searches to the repository.
-- Engine-test runs and servers need unique ports and compose project names. `scripts/run-engine-tests.ps1` hard-codes the compose project `swlor-engine-tests` and runs `docker compose down --volumes`, so two concurrent runs tear each other down; check for a running `swlor-engine-tests` project first, and see `EngineTesting.md`.
+- Engine-test runs and servers need unique ports and compose project names. `scripts/run-engine-tests.ps1` and `.sh` default to the compose project `swlor-engine-tests-<worktree folder>` and run `docker compose down --volumes` on it only, so runs from different worktrees never touch each other; two runs from one worktree still do (pass `-ComposeProject` / `--compose-project` to separate them). See `EngineTesting.md`.
 - Run NWN clients only through the procedures in `InEngineVisualVerification.md`; they isolate the profile, port, and audio.
 
 ## Disk hygiene

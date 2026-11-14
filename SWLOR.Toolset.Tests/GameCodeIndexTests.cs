@@ -149,12 +149,12 @@ namespace SWLOR.Toolset.Tests
         {
             var index = CreateIndex();
 
-            index.PlanetLandingWaypoints.Should().HaveCount(10);
+            index.PlanetLandingWaypoints.Should().HaveCount(11);
             index.PlanetLandingWaypoints.Should().Contain(
                 destination => destination.Tag == "VISCARA_LANDING" &&
                                destination.DisplayName == "Viscara");
 
-            index.OrbitWaypoints.Should().HaveCount(10);
+            index.OrbitWaypoints.Should().HaveCount(11);
             index.OrbitWaypoints.Should().Contain(
                 destination => destination.Tag == "Viscara_Orbit" &&
                                destination.DisplayName == "Viscara");

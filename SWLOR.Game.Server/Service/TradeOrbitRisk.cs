@@ -46,7 +46,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>Whether the player still flies a ship in this area.</summary>
         private static bool IsFlyingIn(uint player, uint area)
         {
-            return GetIsObjectValid(player) && GetArea(player) == area && Space.IsPlayerInSpaceMode(player);
+            // Crew at a station or viewport keep their own active ship but fly aboard the pilot's: customs and pirates
+            // must not scan or ambush a ship of theirs docked far away.
+            return GetIsObjectValid(player) && GetArea(player) == area && Space.IsPlayerInSpaceMode(player) && Space.IsShipInSpace(player);
         }
 
         /// <summary>The module tags fitted to a ship, in every row.</summary>

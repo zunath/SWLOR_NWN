@@ -135,6 +135,27 @@ public class SpaceRevampReviewFixTests
     }
 
     [Test]
+    public void ACargoPod_IsScoopedOnlyByAPilotFlyingTheirOwnShip()
+    {
+        Between(ReadSource("Service", "TradeCargoSpill.cs"), "public static void ScoopPod(uint pod, uint user)", "Only a ship can scoop a cargo pod.")
+            .Should().Contain("if (!Space.IsPlayerInSpaceMode(user) || !Space.IsShipInSpace(user))",
+                "crew keep an active ship they are not flying, which would receive the goods remotely");
+    }
+
+    [Test]
+    public void CustomsAndPirates_RollOnlyForPilotsFlyingTheirOwnShips()
+    {
+        ReadSource("Service", "TradeOrbitRisk.cs").Should().Contain(
+            "GetArea(player) == area && Space.IsPlayerInSpaceMode(player) && Space.IsShipInSpace(player);");
+    }
+
+    [Test]
+    public void AShipAtADerelict_CannotChangeHands()
+    {
+        ReadSource("Service", "ShipTransfer.cs").Should().Contain("DockedAway = Space.IsDockedAboardHost(ship, out _) || Space.IsDockedAtDerelict(ship, out _),");
+    }
+
+    [Test]
     public void LivestockNotices_AreSentOnceTheClientShowsChat_AndDeletedOnlyWhenSent()
     {
         var notices = Between(ReadSource("Service", "Corrals.cs"), "public static void DeliverNotices()", "private const float NoticeDelaySeconds");

@@ -147,7 +147,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(user) || !GetIsObjectValid(pod))
                 return;
 
-            if (!Space.IsPlayerInSpaceMode(user))
+            // Crew at a station or viewport keep their own active ship but fly aboard the pilot's: only a pilot flying their
+            // own ship scoops, or the pod's goods would land in a ship docked far away.
+            if (!Space.IsPlayerInSpaceMode(user) || !Space.IsShipInSpace(user))
             {
                 SendMessageToPC(user, ColorToken.Red("Only a ship can scoop a cargo pod."));
                 return;

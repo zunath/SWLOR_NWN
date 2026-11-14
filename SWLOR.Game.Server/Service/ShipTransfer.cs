@@ -47,7 +47,9 @@ namespace SWLOR.Game.Server.Service
                 // A launch in flight has no pilot or space position yet, but the old owner's pilot is about to take it out.
                 InSpace = property == null || property.Positions.ContainsKey(PropertyLocationType.CurrentPosition) ||
                           GetIsObjectValid(Space.GetShipPilot(ship.Id)) || Space.IsShipLaunchPending(ship.Id),
-                DockedAway = Space.IsDockedAboardHost(ship, out _),
+                // Docked aboard a host or at a derelict (IsDockedAboardHost covers both; the derelict is named so the
+                // case stays visible): the ship is away from the starport it last docked at.
+                DockedAway = Space.IsDockedAboardHost(ship, out _) || Space.IsDockedAtDerelict(ship, out _),
                 PlayersAboard = CountPlayersAboard(ship.PropertyId),
                 ListedForSale = IsListedForSale(ship.Id),
                 CargoLots = ship.Cargo?.Count ?? 0,

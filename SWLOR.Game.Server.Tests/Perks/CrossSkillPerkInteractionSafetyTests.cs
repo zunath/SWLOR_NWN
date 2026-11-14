@@ -138,7 +138,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             "NextAbilityDamageBonus -= StatusAppliedNextAttackDamageBonus;",
             "the consumed Charged Blows value must be removed from the tracked aggregate before another hit or area target calculates damage");
 
-        var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
+        var nativeDamage = NativeCombatSource.DamageRoll();
         var nextAttackBonusIndex = nativeDamage.IndexOf(
             "GameServices.CombatAbilityBonus.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)",
             StringComparison.Ordinal);
@@ -464,7 +464,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         var root = FindRepositoryRoot();
         var combat = CombatSource.Read();
         var ability = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs");
-        var nativeDamage = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
+        var nativeDamage = NativeCombatSource.DamageRoll();
 
         var healing = ExtractMethod(combat, "public static int ApplyDamageDerivedHealing(");
         healing.Should().Contain("state.HealingApplied");
@@ -591,13 +591,13 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         delayedImpact.Should().NotContain("int statusAppliedNextAttackDamageBonus",
             "the delayed callback must not carry a stale Charged Blows reservation");
 
-        var nativeAttackSource = Read(root, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
+        var nativeAttackSource = NativeCombatSource.AttackRoll();
         nativeAttackSource.Should().Contain("ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf)",
             "the next landed non-queued auto attack must receive Redirecting Counter's critical chance");
         var autoAttackDamage = ExtractMethod(combat, "public static int ApplyAutoAttackDamageModifiers(");
         autoAttackDamage.Should().NotContain("NextAttackGuardedHitDMGBonus",
             "DMG must enter the attack-versus-defense formula rather than being added to resolved damage");
-        var nativeDamageRollSource = Read(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs");
+        var nativeDamageRollSource = NativeCombatSource.DamageRoll();
         var guardedDMGIndex = nativeDamageRollSource.IndexOf("guardedHitBonuses.DMGBonus", StringComparison.Ordinal);
         var calculateDamageIndex = nativeDamageRollSource.IndexOf("CalculateDamageWithCriticalMitigation", StringComparison.Ordinal);
         guardedDMGIndex.Should().BeGreaterThanOrEqualTo(0);

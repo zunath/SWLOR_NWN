@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -45,6 +46,26 @@ namespace SWLOR.Game.Server.Core
 
             using var symbolsStream = new MemoryStream(File.ReadAllBytes(symbolsPath), false);
             return context.LoadFromStream(assemblyStream, symbolsStream);
+        }
+
+        /// <summary>
+        /// The instances the instance handlers of <paramref name="assembly"/> run on: each class that declares a public instance
+        /// method with <see cref="NWNEventHandler"/> is made content, built once by <paramref name="content"/> with its services.
+        /// The bootstrapper hands them to the script registry after the container's own singletons.
+        /// </summary>
+        public static IReadOnlyDictionary<Type, object> CreateHandlerOwners(Assembly assembly, IContentFactory content)
+        {
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
+            if (content == null)
+                throw new ArgumentNullException(nameof(content));
+
+            return assembly.GetTypes()
+                .Where(type => type.IsClass && !type.IsAbstract &&
+                               type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                                   .Any(method => method.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0))
+                .OrderBy(type => type.FullName, StringComparer.Ordinal)
+                .ToDictionary(type => type, type => content.Create<object>(type));
         }
     }
 }

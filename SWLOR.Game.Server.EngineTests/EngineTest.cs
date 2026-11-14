@@ -24,7 +24,13 @@ namespace SWLOR.Game.Server.EngineTests
     /// NWN server after module load. Results are written to a JSON report and
     /// echoed to the console for CI log parsing, then the server shuts down.
     /// </summary>
-    public static class EngineTest
+    /// <remarks>
+    /// The runner is made content: the bootstrapper builds it with the container's content factory when it loads this assembly
+    /// (<c>EngineTestAssemblyLoader.CreateHandlerOwners</c>), and its handler runs on that instance. A test is a public static
+    /// method, or a public instance method of a class the runner builds with that factory for each run, so the class takes its
+    /// services through its constructor.
+    /// </remarks>
+    public sealed class EngineTest
     {
         private const string ConsolePrefix = "[ENGINE_TESTS]";
         private const string ReportFileName = "engine-test-results.json";
@@ -41,6 +47,13 @@ namespace SWLOR.Game.Server.EngineTests
 
         private static bool _hasRun;
         private static bool _suiteAborted;
+
+        public EngineTest(IContentFactory content)
+        {
+            Content = content;
+        }
+
+        private IContentFactory Content { get; }
 
         /// <summary>
         /// Aborts the remainder of the suite after the current test finishes. For test
@@ -66,7 +79,7 @@ namespace SWLOR.Game.Server.EngineTests
         /// </summary>
         [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
-        public static void ScheduleEngineTests()
+        public void ScheduleEngineTests()
         {
             var settings = ApplicationSettings.Get();
             if (!settings.EngineTestsEnabled)
@@ -100,7 +113,7 @@ namespace SWLOR.Game.Server.EngineTests
             DelayCommand(delay, () => _ = RunAllTestsAsync());
         }
 
-        private static async Task RunAllTestsAsync()
+        private async Task RunAllTestsAsync()
         {
             var settings = ApplicationSettings.Get();
             var report = new EngineTestReport
@@ -304,7 +317,7 @@ namespace SWLOR.Game.Server.EngineTests
             return (arena, spawnLocation, isInstanced);
         }
 
-        private static async Task<EngineTestResult> RunSingleTestAsync(
+        private async Task<EngineTestResult> RunSingleTestAsync(
             MethodInfo method,
             EngineTestAttribute attribute,
             uint arena,
@@ -335,7 +348,7 @@ namespace SWLOR.Game.Server.EngineTests
                 if (!IsValidTestMethod(method))
                 {
                     result.Outcome = EngineTestOutcome.Failed;
-                    result.Message = $"Invalid signature on {method.DeclaringType?.Name}.{method.Name}: engine tests must be public static, take a single EngineTestContext parameter, and return Task (synchronous void bodies run outside the cooperative timeout's reach; async void is not observable).";
+                    result.Message = $"Invalid signature on {method.DeclaringType?.Name}.{method.Name}: engine tests must be public (static, or an instance method of a class the content factory builds), take a single EngineTestContext parameter, and return Task (synchronous void bodies run outside the cooperative timeout's reach; async void is not observable).";
                     return result;
                 }
 
@@ -436,7 +449,11 @@ namespace SWLOR.Game.Server.EngineTests
 
         private static bool IsValidTestMethod(MethodInfo method)
         {
-            if (!method.IsStatic || !method.IsPublic)
+            if (!method.IsPublic)
+                return false;
+
+            // An instance test runs on a new instance of its class, which the content factory builds with its services.
+            if (!method.IsStatic && (method.DeclaringType == null || method.DeclaringType.IsAbstract || method.DeclaringType.ContainsGenericParameters))
                 return false;
 
             var parameters = method.GetParameters();
@@ -452,14 +469,16 @@ namespace SWLOR.Game.Server.EngineTests
             return method.ReturnType == typeof(Task);
         }
 
-        private static async Task InvokeTestAsync(MethodInfo method, EngineTestContext context)
+        private async Task InvokeTestAsync(MethodInfo method, EngineTestContext context)
         {
             // Yield BEFORE invoking so the caller can arm its timeout task first - without
             // this, the test body's synchronous prefix (everything up to its first incomplete
             // await) runs to completion before the timeout task is even created.
             await NwTask.NextFrame();
 
-            var returnValue = method.Invoke(null, new object[] { context });
+            // A static test runs as always; an instance test on a new instance of its class, built with its services.
+            var target = method.IsStatic ? null : Content.Create<object>(method.DeclaringType);
+            var returnValue = method.Invoke(target, new object[] { context });
             if (returnValue is not Task task)
             {
                 // A Task-signature method that returns null (e.g. a non-async body written as

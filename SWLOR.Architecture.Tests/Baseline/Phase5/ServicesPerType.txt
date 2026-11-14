@@ -32,5 +32,3 @@ SWLOR.Game.Server.Feature.ChatCommandDefinition.CharacterChatCommand | 16
 SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand | 16
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 19
 SWLOR.Game.Server.Feature.UsePerkFeat | 28
-SWLOR.Game.Server.Native.GetDamageRoll | 21
-SWLOR.Game.Server.Native.ResolveAttackRoll | 20

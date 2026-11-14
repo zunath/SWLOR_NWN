@@ -27,7 +27,7 @@ public class SingleWeaponDamageTests
     [Test]
     public void NativeFallback_IsNotAnItemDamageRating()
     {
-        var extractor = typeof(SWLOR.Game.Server.Native.GetDamageRoll).GetMethod("ExtractWeaponDamageProfile",
+        var extractor = typeof(SWLOR.Game.Server.Native.DamageRollWeapon).GetMethod("ExtractWeaponDamageProfile",
             System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!;
         var profile = extractor.Invoke(null, new object[] { null })!;
         var type = profile.GetType();

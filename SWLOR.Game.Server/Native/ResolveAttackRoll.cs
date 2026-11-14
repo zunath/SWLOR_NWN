@@ -2,17 +2,13 @@ using NWN.Native.API;
 using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
-using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
-using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
-using ImmunityType = NWN.Native.API.ImmunityType;
 using ObjectType = NWN.Native.API.ObjectType;
-using Player = SWLOR.Game.Server.Entity.Player;
 using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using static SWLOR.NWN.API.NWScript.NWScript;
 using SWLOR.Game.Server.Composition;
@@ -23,33 +19,11 @@ namespace SWLOR.Game.Server.Native
     public static unsafe class ResolveAttackRoll
     {
         // Attack result constants
-        private const int AttackResultAutomaticHit = 7;
-        private const int AttackResultRegularHit = 1;
-        private const int AttackResultDeflect = 2;
-        private const int AttackResultCriticalHit = 3;
-        private const int AttackResultMiss = 4;
-
-        // Combat mode constants
-        private const int PowerAttackMode = 2;
-        private const int ImprovedPowerAttackMode = 3;
-
-        // Modifier constants
-        private const int CircumstanceBonus = 5;
-        private const int PowerAttackPenalty = -5;
-        private const int ImprovedPowerAttackPenalty = -10;
-        private const int CloseRangePenalty = -20;
-        private const int LongRangePenalty = -20;
-        private const int MediumRangePenalty = -10;
-        private const int ShortRangePenalty = -5;
-
-        // Range constants
-        private const float CloseRange = 5.0f;
-        private const float ShortRange = 20.0f;
-        private const float MediumRange = 30.0f;
-        private const float LongRange = 40.0f;
-
-        // NPC object ID constant
-        private const uint NpcActionTargetId = 2130706432;
+        internal const int AttackResultAutomaticHit = 7;
+        internal const int AttackResultRegularHit = 1;
+        internal const int AttackResultDeflect = 2;
+        internal const int AttackResultCriticalHit = 3;
+        internal const int AttackResultMiss = 4;
 
         // Default values
         private const int DefaultMissedBy = 1;
@@ -157,358 +131,112 @@ namespace SWLOR.Game.Server.Native
                     return;
                 }
 
-                // If we get to this point, we are fighting a creature.  Pull the target's stats.
-                var defender = CNWSCreature.FromPointer(pTarget);
-
-                var attackType = (uint)AttackType.Melee;
-
-                // Check whether this is a ranged weapon.
-                if (weapon != null && pAttackData.m_bRangedAttack == 1 && attacker.GetRangeWeaponEquipped() == 1)
-                {
-                    attackType = (uint)AttackType.Ranged;
-                }
-
-                Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none" : weapon.GetFirstName().GetSimple(0)));
-
-                var accuracyAbility = queuedAbility == null
-                    ? AbilityType.Invalid
-                    : GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType);
-                var capturedOrdinaryAccuracy = queuedAbility == null
-                    ? RangedWeaponAttackContext.GetProfile(attacker.m_idSelf)?.NativeAccuracy : null;
-                var attackerAccuracy = capturedOrdinaryAccuracy ??
-                    Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
-                if (queuedAbility == null)
-                    attackerAccuracy += techniqueAccuracy - Stat.GetStatAdjustment(attacker.m_idSelf, StatType.OrdinaryWeaponAccuracyPenalty);
-                else
-                    attackerAccuracy += MeleeTechnique.GetAbilityAccuracy(attacker.m_idSelf, targetObject.m_idSelf, queuedAbility);
-                if (shot.Ordinary)
-                    attackerAccuracy += shot.Bonuses.AccuracyAdjustment;
-                else
-                    attackerAccuracy += UsePerkFeat.GetQueuedWeaponTraitAccuracy(attacker.m_idSelf);
-                attackerAccuracy = GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(
-                    attacker.m_idSelf,
-                    defender.m_idSelf,
-                    attackerAccuracy);
-                var defenderEvasion = Stat.GetEvasionNative(defender, abilitySkillType);
-                defenderEvasion = GameServices.CombatDamageModifiers.ApplySideAttackEvasionIgnore(
-                    attacker.m_idSelf,
-                    defender.m_idSelf,
-                    abilitySkillType,
-                    defenderEvasion);
-
-                //---------------------------------------------------------------------------------------------
-                //---------------------------------------------------------------------------------------------
-                //---------------------------------------------------------------------------------------------
-                // Modifiers - put in modifiers here based on the type of attack (and type of weapon etc.).
-                var accuracyModifiers = 0;
-                // Overwatch is a next ranged attack trigger. Resolve it in the native
-                // auto-attack path as well as the casted-ability path, and only when the
-                // selected defender is the suppressed target that armed the trigger.
-                // Defender not targeting the attacker.
-                // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
-                // Note: this always returns object invalid for NPCs (2130706432) as their actions aren't represented the same way.
-                var oidTarget = defender.m_pActionQueue.GetItem(0).oidTarget;
-
-                if (oidTarget == OBJECT_INVALID)
-                {
-                    oidTarget = (uint)defender.m_ScriptVars.GetInt(new CExoString("I_LAST_ATTACKED"));
-                }
-
-                // If this is an NPC attacking, Store the attack on the NPC.
-                if (attacker.m_pActionQueue.GetItem(0).oidTarget == NpcActionTargetId)
-                {
-                    Log.Write(LogGroup.Attack, "NPC attacking - storing target " + defender.m_idSelf);
-                    attacker.m_ScriptVars.SetInt(new CExoString("I_LAST_ATTACKED"), (int)defender.m_idSelf);
-                }
-
-                // oidTarget will be 0 for a newly spawned NPC who hasn't been attacked yet.  Don't let them get taken by surprise in round 1.
-                if (oidTarget != 0 && oidTarget != attacker.m_idSelf)
-                {
-                    Log.Write(LogGroup.Attack, "Defender current target (" + oidTarget + ") is not attacker (" + attacker.m_idSelf + "). Assign circumstance bonus");
-                    accuracyModifiers += CircumstanceBonus;
-                }
-
-                // Range bonuses and penalties
-                accuracyModifiers += CalculateRangeModifiers(attackType, attacker, defender, weapon);
-
-                // Combat Mode - Power Attack (-5 ACC)
-                if (attacker.m_nCombatMode == PowerAttackMode)
-                {
-                    accuracyModifiers += PowerAttackPenalty;
-                    Log.Write(LogGroup.Attack, $"Applying Power Attack penalty: {PowerAttackPenalty}");
-                }
-                // Combat Mode - Improved Power Attack (-10 ACC)
-                else if (attacker.m_nCombatMode == ImprovedPowerAttackMode)
-                {
-                    accuracyModifiers += ImprovedPowerAttackPenalty;
-                    Log.Write(LogGroup.Attack, $"Applying Imp. Power Attack penalty: {ImprovedPowerAttackPenalty}");
-                }
-
-                // End modifiers
-                //---------------------------------------------------------------------------------------------
-                //---------------------------------------------------------------------------------------------
-                //---------------------------------------------------------------------------------------------
-                var attackRoll = Random.D100(1);
-                var queuedWeaponAbilityLongRangeHitChanceAdjustment =
-                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)
-                        ? GameServices.CombatSuppression.GetRangedAbilityLongRangeHitChanceAdjustment(
-                            attacker.m_idSelf,
-                            defender.m_idSelf,
-                            abilitySkillType)
-                        : 0;
-                var hitChanceModifier =
-                    GameServices.CombatDamageModifiers.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType) +
-                    queuedWeaponAbilityLongRangeHitChanceAdjustment +
-                    GameServices.CombatAbilityHit.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
-                    (queuedAbility == null ? 0 : GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
-                        attacker.m_idSelf,
-                        abilitySkillType,
-                        queuedAbility)) +
-                    GameServices.CombatSuppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(
-                        attacker.m_idSelf,
-                        defender.m_idSelf,
-                        weaponSkillType);
-                var hitRate = CombatRules.CalculateHitRate(
-                    attackerAccuracy + accuracyModifiers,
-                    defenderEvasion,
-                    hitChanceModifier,
-                    GameServices.CombatQueries.GetMinimumHitRate(attacker.m_idSelf));
-                // Lucky Chamber advances on every ranged attack attempt, including misses and
-                // deflections. Its returned bonus is only consulted if this attempt lands.
-                var autoAttackCycleCriticalRate =
-                    GameServices.CombatDamageModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType);
-                var isHit = GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride() ?? attackRoll <= hitRate;
-                var accuracyEvasionMiss = !isHit;
-
-                Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
-                Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
-
-                // Each weapon roll gets its own deflection attempt, including later hands
-                // and accelerated attacks in the same native combat round.
-                var deflectionSource = CheckDeflection(
-                    isHit,
-                    attackType,
-                    weaponSkillType,
-                    attacker,
-                    defender);
-                var deflected = deflectionSource != DeflectionSource.None;
-                if (deflected)
-                {
-                    isHit = false;
-
-                    // Deflecting Return is a Ranged Deflection rider. Shield Deflection never triggers it.
-                    if (deflectionSource == DeflectionSource.Ranged)
-                        GameServices.CombatDamageTaken.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType);
-                }
-
-                // Hit
-                if (isHit)
-                {
-                    if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))
-                    {
-                        Log.Write(LogGroup.Attack, $"Queued weapon ability hit - attack result 1");
-                        pAttackData.m_nAttackResult = AttackResultRegularHit;
-                    }
-                    else
-                    {
-                        var criticalStat = attackerStats.GetDEXStat();
-                        var criticalRoll = Random.D100(1);
-                        var criticalModifier = CalculateCriticalRateModifier(attacker, defender, weaponSkillType);
-                        criticalModifier += GameServices.CombatAbilityBonus.ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf);
-                        criticalModifier += GameServices.CombatAttackTiming.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
-                        criticalModifier += GameServices.CombatAbilityBonus.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
-                        criticalModifier += GameServices.CombatDamageModifiers.GetAutoAttackCriticalRateAdjustment(
-                            attacker.m_idSelf,
-                            defender.m_idSelf,
-                            autoAttackCycleCriticalRate);
-                        criticalModifier += GameServices.CombatDamageModifiers.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
-                        criticalModifier += GameServices.CombatDamageModifiers.GetBackAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
-                        var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
-                        var criticalRate = CombatRules.CalculateCriticalRate(
-                            criticalStat,
-                            defender.m_pStats.GetCONStat(),
-                            criticalSkillRank,
-                            criticalModifier);
-
-                        // Critical
-                        if (criticalRoll <= criticalRate)
-                        {
-                            Log.Write(LogGroup.Attack, $"Critical hit");
-
-                            // Critical Hit - populate variables for feedback
-                            pAttackData.m_bCriticalThreat = 1;
-                            pAttackData.m_nThreatRoll = 1;
-
-                            if (GameServices.CombatDamageModifiers.TryUseIncomingCriticalHitDowngrade(defender.m_idSelf, 1))
-                            {
-                                Log.Write(LogGroup.Attack, $"Critical hit downgraded by defender stats");
-                                TemporaryStatModifier.Replace(
-                                    defender.m_idSelf,
-                                    StatType.CurrentIncomingAttackMinimumDamage,
-                                    1,
-                                    6,
-                                    StatType.CurrentIncomingAttackMinimumDamage);
-                                pAttackData.m_nAttackResult = AttackResultRegularHit;
-                            }
-                            else if (defender.m_pStats.GetEffectImmunity((byte)ImmunityType.CriticalHit, attacker) == 1)
-                            {
-                                Log.Write(LogGroup.Attack, $"Immune to critical hits");
-                                // Immune!
-                                var defenderName = PlayerName.GetDisplayName(attacker.m_idSelf, defender.m_idSelf);
-                                attacker.SendFeedbackString(new CExoString($"{defenderName} is immune to critical hits!"));
-                                pAttackData.m_nAttackResult = AttackResultRegularHit;
-                            }
-                            else
-                            {
-                                Log.Write(LogGroup.Attack, $"Not immune to critical hits - dealing crit damage");
-                                pAttackData.m_nAttackResult = AttackResultCriticalHit;
-                            }
-                        }
-                        // Regular Hit
-                        else
-                        {
-                            Log.Write(LogGroup.Attack, $"Regular hit - attack result 1");
-                            pAttackData.m_nAttackResult = AttackResultRegularHit;
-                        }
-                    }
-
-                    GameServices.CombatActivity.TrackAttackActivity(attacker.m_idSelf);
-                }
-                // Miss
-                else
-                {
-                    GameServices.CombatDamageTaken.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
-                    if (accuracyEvasionMiss && GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf))
-                        PairedRangedTraits.RecordAccuracyEvasionMiss(defender.m_idSelf);
-                    GameServices.CombatActivity.TrackAttackActivity(attacker.m_idSelf);
-
-                    if (deflected)
-                    {
-                        Log.Write(LogGroup.Attack, $"Deflected - setting attack result to 2");
-                        pAttackData.m_nAttackResult = AttackResultDeflect;
-                    }
-                    else
-                    {
-                        Log.Write(LogGroup.Attack, $"Miss - setting attack result to 4, missed by 0");
-                        pAttackData.m_nAttackResult = AttackResultMiss;
-                    }
-                    pAttackData.m_nMissedBy = DefaultMissedBy;
-                }
-
-                // Embattled ramps from every attempted hostile attack (hit, miss, or deflect), not only
-                // landed hits. Refresh no-ops unless the defender owns the trait.
-                if (GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf))
-                    EmbattledStatusEffect.Refresh(defender.m_idSelf, attacker.m_idSelf);
-
-                Log.Write(LogGroup.Attack, $"Resolving NWN defensive effects");
-                // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is
-                // accurate.
-                var wasSuccessfulBeforeDefensiveEffects = IsSuccessfulAttackResult(pAttackData.m_nAttackResult);
-                attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
-                if (wasSuccessfulBeforeDefensiveEffects &&
-                    !IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
-                {
-                    GameServices.CombatDamageTaken.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
-                }
-
-                using (CombatRecorder.BeginStatTriggerAttribution(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost))
-                    GetDamageRoll.SettleForceConversionStanceAttack(
-                        attacker, targetObject, IsSuccessfulAttackResult(pAttackData.m_nAttackResult));
-
-                if (!IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
-                    GameServices.CombatAbilityBonus.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);
-
-                // A landed queued weapon ability is finalized through Ability.EndAbilityImpact,
-                // which sends the single attempt notification for that originating swing. A miss
-                // or deflection never starts the queued ability, so notify it here instead.
-                var queuedWeaponAbilityWillResolve =
-                    IsSuccessfulAttackResult(pAttackData.m_nAttackResult) &&
-                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack);
-                if (!queuedWeaponAbilityWillResolve && !shot.Ordinary)
-                {
-                    // An avoided roll did not consume the readied ability. It still
-                    // consumes an ordinary attempted-shot charge, including Twin Suns.
-                    shot.Ordinary = true;
-                    shot.Bonuses = PairedRangedTraits.RecordOrdinaryAttempt(attacker.m_idSelf, targetObject.m_idSelf, shot.Id);
-                }
-                if (queuedWeaponAbilityWillResolve)
-                {
-                    UsePerkFeat.ReserveQueuedWeaponAbilityAttack(
-                        attacker.m_idSelf, pCombatRound.m_nCurrentAttack, weapon?.m_idSelf ?? OBJECT_INVALID);
-                    GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityCriticalRateBonus(
-                        attacker.m_idSelf,
-                        abilitySkillType,
-                        autoAttackCycleCriticalRate);
-                }
-                else
-                {
-                    StatusEffect.NotifyAttackAttemptStatusEffects(
-                        attacker.m_idSelf,
-                        weaponSkillType);
-                }
-
-                if (CombatRecorder.IsRecording)
-                    CombatRecorder.RecordAttack(attacker.m_idSelf, defender.m_idSelf, pAttackData.m_nAttackResult, hitRate,
-                        queuedAbility?.Name);
-
-                Log.Write(LogGroup.Attack, $"Building combat log message");
-                var attackerMessage = BuildAttackFeedbackMessage(
-                    attacker.m_idSelf,
-                    attacker,
-                    defender,
-                    pAttackData.m_nAttackResult,
-                    hitRate,
-                    weaponSkillType,
-                    deflectionSource);
-                var defenderMessage = BuildAttackFeedbackMessage(
-                    defender.m_idSelf,
-                    attacker,
-                    defender,
-                    pAttackData.m_nAttackResult,
-                    hitRate,
-                    weaponSkillType,
-                    deflectionSource);
-                attacker.SendFeedbackString(new CExoString(attackerMessage));
-                defender.SendFeedbackString(new CExoString(defenderMessage));
-
-                Log.Write(LogGroup.Attack, $"Setting pAttackData results");
-                pAttackData.m_nToHitMod = DefaultToHitMod;
-                pAttackData.m_nToHitRoll = DefaultToHitRoll;
-
-                Log.Write(LogGroup.Attack, $"Finished ResolveAttackRoll");
+                ResolveCreatureTargetRoll(pTarget, attacker, targetObject, attackerStats, pCombatRound, pAttackData,
+                    weapon, weaponSkillType, abilitySkillType, queuedAbility, techniqueAccuracy, shot);
 
                 ProfilerPlugin.PopPerfScope();
             });
         }
 
-        private static string BuildAttackFeedbackMessage(
-            uint observer,
-            CNWSCreature attacker,
-            CNWSCreature defender,
-            int attackResultType,
-            int hitRate,
-            SkillType weaponSkillType,
-            DeflectionSource deflectionSource)
+        private static void ResolveCreatureTargetRoll(void* pTarget, CNWSCreature attacker, CNWSObject targetObject,
+            CNWSCreatureStats attackerStats, CNWSCombatRound pCombatRound, CNWSCombatAttackData pAttackData,
+            CNWSItem weapon, SkillType weaponSkillType, SkillType abilitySkillType, AbilityDetail queuedAbility,
+            int techniqueAccuracy, RangedWeaponAttackContext.Roll shot)
         {
-            if (IsSuccessfulAttackResult(attackResultType) &&
-                UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility, attacker.m_pcCombatRound.m_nCurrentAttack))
+            // If we get to this point, we are fighting a creature.  Pull the target's stats.
+            var defender = CNWSCreature.FromPointer(pTarget);
+
+            var attackType = (uint)AttackType.Melee;
+
+            // Check whether this is a ranged weapon.
+            if (weapon != null && pAttackData.m_bRangedAttack == 1 && attacker.GetRangeWeaponEquipped() == 1)
             {
-                return GameServices.CombatFeedback.BuildAbilityCombatLogMessage(
-                    observer,
-                    attacker.m_idSelf,
-                    defender.m_idSelf,
-                    queuedAbility.Name,
-                    attackResultType,
-                    hitRate);
+                attackType = (uint)AttackType.Ranged;
             }
 
-            return GameServices.CombatFeedback.BuildCombatLogMessageNative(
-                observer,
+            Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none" : weapon.GetFirstName().GetSimple(0)));
+
+            var attackerAccuracy = AttackRollAccuracy.GetAttackerAccuracy(attacker, defender, targetObject, weapon,
+                queuedAbility, abilitySkillType, techniqueAccuracy, shot);
+            var defenderEvasion = AttackRollDefense.GetDefenderEvasion(attacker, defender, abilitySkillType);
+            var accuracyModifiers = AttackRollAccuracy.GetAccuracyModifiers(attackType, attacker, defender, weapon);
+
+            var attackRoll = Random.D100(1);
+            var hitChanceModifier = AttackRollAccuracy.GetHitChanceModifier(attacker, defender, weaponSkillType,
+                abilitySkillType, queuedAbility);
+            var hitRate = CombatRules.CalculateHitRate(
+                attackerAccuracy + accuracyModifiers,
+                defenderEvasion,
+                hitChanceModifier,
+                GameServices.CombatQueries.GetMinimumHitRate(attacker.m_idSelf));
+            // Lucky Chamber advances on every ranged attack attempt, including misses and
+            // deflections. Its returned bonus is only consulted if this attempt lands.
+            var autoAttackCycleCriticalRate =
+                GameServices.CombatDamageModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType);
+            var isHit = GameServices.CombatAbilityHit.GetAutoAttackHitResolutionOverride() ?? attackRoll <= hitRate;
+            var accuracyEvasionMiss = !isHit;
+
+            Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
+            Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
+
+            // Each weapon roll gets its own deflection attempt, including later hands
+            // and accelerated attacks in the same native combat round.
+            var deflectionSource = AttackRollDefense.CheckDeflection(
+                isHit,
+                attackType,
+                weaponSkillType,
                 attacker,
-                defender,
-                attackResultType,
-                hitRate,
+                defender);
+            var deflected = deflectionSource != DeflectionSource.None;
+            if (deflected)
+            {
+                isHit = false;
+
+                // Deflecting Return is a Ranged Deflection rider. Shield Deflection never triggers it.
+                if (deflectionSource == DeflectionSource.Ranged)
+                    GameServices.CombatDamageTaken.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType);
+            }
+
+            // Hit
+            if (isHit)
+            {
+                AttackRollCritical.ResolveHitResult(attacker, defender, attackerStats, pAttackData, weapon,
+                    weaponSkillType, autoAttackCycleCriticalRate);
+
+                GameServices.CombatActivity.TrackAttackActivity(attacker.m_idSelf);
+            }
+            // Miss
+            else
+            {
+                GameServices.CombatDamageTaken.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
+                if (accuracyEvasionMiss && GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf))
+                    PairedRangedTraits.RecordAccuracyEvasionMiss(defender.m_idSelf);
+                GameServices.CombatActivity.TrackAttackActivity(attacker.m_idSelf);
+
+                if (deflected)
+                {
+                    Log.Write(LogGroup.Attack, $"Deflected - setting attack result to 2");
+                    pAttackData.m_nAttackResult = AttackResultDeflect;
+                }
+                else
+                {
+                    Log.Write(LogGroup.Attack, $"Miss - setting attack result to 4, missed by 0");
+                    pAttackData.m_nAttackResult = AttackResultMiss;
+                }
+                pAttackData.m_nMissedBy = DefaultMissedBy;
+            }
+
+            AttackRollSettlement.SettleAttackRoll(attacker, defender, targetObject, pAttackData, pCombatRound, weapon,
+                weaponSkillType, abilitySkillType, queuedAbility, shot, isHit, hitRate, autoAttackCycleCriticalRate);
+
+            AttackRollFeedback.SendAttackFeedback(attacker, defender, pAttackData, hitRate, weaponSkillType,
                 deflectionSource);
+
+            Log.Write(LogGroup.Attack, $"Setting pAttackData results");
+            pAttackData.m_nToHitMod = DefaultToHitMod;
+            pAttackData.m_nToHitRoll = DefaultToHitRoll;
+
+            Log.Write(LogGroup.Attack, $"Finished ResolveAttackRoll");
         }
 
         /// <summary>
@@ -522,149 +250,5 @@ namespace SWLOR.Game.Server.Native
                    attackResultType == AttackResultRegularHit ||
                    attackResultType == AttackResultCriticalHit;
         }
-
-        private static int CalculateRangeModifiers(uint attackType, CNWSCreature attacker, CNWSCreature defender, CNWSItem weapon)
-        {
-            if (attackType != (uint)AttackType.Ranged)
-                return 0;
-
-            var attackerPos = attacker.m_vPosition;
-            var defenderPos = defender.m_vPosition;
-
-            // Calculate distance using X/Y coordinates only
-            var range = Math.Sqrt(Math.Pow(attackerPos.x - defenderPos.x, 2) + Math.Pow(attackerPos.y - defenderPos.y, 2));
-
-            Log.Write(LogGroup.Attack, $"Ranged attack at range {range}");
-
-            // Close range (under 5.0)
-            if (range < CloseRange)
-            {
-                if (weapon != null)
-                    return CloseRangePenalty;
-            }
-            // Long range (over 40.0)
-            else if (range > LongRange)
-            {
-                if (weapon != null && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
-                    return LongRangePenalty;
-                else
-                    return MediumRangePenalty;
-            }
-            // Medium range (30.0 - 40.0)
-            else if (range > MediumRange)
-            {
-                if (weapon != null && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
-                    return MediumRangePenalty;
-                else
-                    return ShortRangePenalty;
-            }
-            // Short range (20.0 - 30.0)
-            else if (weapon != null && range > ShortRange && !Item.RifleBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
-            {
-                return ShortRangePenalty;
-            }
-
-            return 0;
-        }
-
-        private static DeflectionSource CheckDeflection(
-            bool isHit,
-            uint attackType,
-            SkillType weaponSkillType,
-            CNWSCreature attacker,
-            CNWSCreature defender)
-        {
-            if (!isHit ||
-                weaponSkillType == SkillType.Invalid ||
-                !GameServices.CombatDamageTaken.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf) ||
-                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack))
-                return DeflectionSource.None;
-
-            var (source, deflectChance) = GetDeflectionChance(defender, attackType);
-            if (deflectChance <= 0)
-                return DeflectionSource.None;
-
-            var deflectRoll = Random.D100(1);
-            var deflected = deflectRoll <= deflectChance;
-            if (deflected)
-            {
-                Stat.ApplyDeflectionEffectsNative(defender, source);
-
-                var deflectionName = CombatRules.GetDeflectionResultName(source);
-                attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName)));
-                defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)));
-            }
-
-            Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Chance: {deflectChance}, Hit: {!deflected}");
-
-            return deflected ? source : DeflectionSource.None;
-        }
-
-        private static string BuildDeflectionFeedback(uint observer, CNWSCreature attacker, CNWSCreature defender, string deflectionName)
-        {
-            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker.m_idSelf);
-            var defenderName = PlayerName.GetColoredDisplayName(observer, defender.m_idSelf);
-
-            return ColorToken.Combat($"{defenderName}'s {deflectionName} negates {attackerName}'s attack.");
-        }
-
-        private static (DeflectionSource Source, int Chance) GetDeflectionChance(CNWSCreature defender, uint attackType)
-        {
-            var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);
-            if (shieldDeflection > 0)
-                return (DeflectionSource.Shield, shieldDeflection);
-
-            if (attackType == (uint)AttackType.Ranged)
-            {
-                var rangedDeflection = Stat.GetRangedDeflectionChanceNative(defender);
-                return rangedDeflection > 0
-                    ? (DeflectionSource.Ranged, rangedDeflection)
-                    : (DeflectionSource.None, 0);
-            }
-
-            var meleeDeflection = Stat.GetMeleeDeflectionChanceNative(defender);
-            if (meleeDeflection > 0)
-                return (DeflectionSource.Melee, meleeDeflection);
-
-            return (DeflectionSource.None, 0);
-        }
-
-        private static int CalculateCriticalRateModifier(CNWSCreature attacker, CNWSCreature defender, SkillType skillType)
-        {
-            var criticalModifier = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.CriticalRatePercentAdjustment);
-            criticalModifier += GameServices.CombatDamageModifiers.GetSkillCriticalRatePercentAdjustment(attacker.m_idSelf, skillType);
-            criticalModifier += GameServices.CombatAbilityHit.GetCriticalRateAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
-
-            Log.Write(LogGroup.Attack, $"SWLOR crit rate modifier: {criticalModifier}");
-
-            return criticalModifier;
-        }
-
-        private static int GetCriticalSkillRank(CNWSCreature attacker, CNWSItem weapon)
-        {
-            var skillType = weapon == null
-                ? SkillType.Invalid
-                : GameServices.Skill.GetWeaponSkill(attacker.m_idSelf, weapon.m_idSelf);
-
-            if (attacker.m_bPlayerCharacter == 1 && !GetIsDMPossessed(attacker.m_idSelf))
-            {
-                if (skillType == SkillType.Invalid)
-                    return 0;
-
-                var playerId = attacker.m_pUUID.GetOrAssignRandom().ToString();
-                var dbPlayer = DB.Get<Player>(playerId);
-
-                return dbPlayer?.Skills.TryGetValue(skillType, out var skill) == true
-                    ? skill.Rank
-                    : 0;
-            }
-
-            var npcStats = Stat.GetNPCStatsNative(attacker);
-
-            return skillType != SkillType.Invalid && npcStats.Skills.TryGetValue(skillType, out var skillRank)
-                ? skillRank
-                : npcStats.Level;
-        }
-
     }
 }

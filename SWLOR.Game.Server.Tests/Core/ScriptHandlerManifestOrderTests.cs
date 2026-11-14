@@ -80,7 +80,7 @@ public class ScriptHandlerManifestOrderTests
 
             // What the engine test handlers alone would give in this discovery order.
             var engineOnly = new ScriptRegistry();
-            engineOnly.LoadHandlers(methods.Where(m => m.DeclaringType!.Assembly == engineTests), ScriptHandlerManifest.Empty);
+            engineOnly.LoadHandlers(methods.Where(m => m.DeclaringType!.Assembly == engineTests), ScriptHandlerManifest.Empty, Owners);
 
             foreach (var script in AllScripts(registry))
             {

@@ -29,16 +29,28 @@ namespace SWLOR.Game.Server.Core
 
         private readonly Assembly _gameAssembly;
         private readonly IReadOnlyList<JsonConverter> _converters;
+        private readonly IContentFactory _content;
+        private readonly Func<Type, bool> _isService;
 
         /// <param name="gameAssembly">The build whose classes carry state.</param>
         /// <param name="converters">
         /// Converters for references to definitions the rerun boot handlers rebuild (an ability, say), written as their key and read
         /// back as the new build's definition.
         /// </param>
-        public ReloadStateCarrier(Assembly gameAssembly, IEnumerable<JsonConverter> converters = null)
+        /// <param name="content">
+        /// The build's content factory: a carried object whose fields hold services is built through its values-free constructor with
+        /// this build's services before its carried fields are read into it (<see cref="ReloadCarryContractResolver"/>).
+        /// </param>
+        /// <param name="isService">
+        /// True for a type the build's container registers (a service or content singleton): a field of such a type is never carried.
+        /// </param>
+        public ReloadStateCarrier(Assembly gameAssembly, IEnumerable<JsonConverter> converters = null, IContentFactory content = null,
+            Func<Type, bool> isService = null)
         {
             _gameAssembly = gameAssembly ?? throw new ArgumentNullException(nameof(gameAssembly));
             _converters = (converters ?? Enumerable.Empty<JsonConverter>()).ToArray();
+            _content = content;
+            _isService = isService;
         }
 
         /// <summary>
@@ -192,11 +204,12 @@ namespace SWLOR.Game.Server.Core
 
         /// <summary>
         /// Why <paramref name="type"/> cannot be carried, one line per problem (empty when it can): a delegate, a member typed
-        /// <see cref="object"/>, or a type that is neither of the game assembly nor a value, a <see cref="Type"/>, a standard collection,
-        /// a tuple or a vector; <paramref name="converted"/> names the types a converter writes (definitions). An interface or abstract
-        /// class of the game assembly is checked through every implementation.
+        /// <see cref="object"/>, a service, or a type that is neither of the game assembly nor a value, a <see cref="Type"/>, a standard
+        /// collection, a tuple or a vector; <paramref name="converted"/> names the types a converter writes (definitions). An interface or
+        /// abstract class of the game assembly is checked through every implementation. A field of an object that holds a service
+        /// (<paramref name="isService"/>, the container's registrations) is left out, as the carry leaves it out.
         /// </summary>
-        public static IReadOnlyList<string> Problems(Type type, Assembly gameAssembly, Func<Type, bool> converted = null)
+        public static IReadOnlyList<string> Problems(Type type, Assembly gameAssembly, Func<Type, bool> converted = null, Func<Type, bool> isService = null)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -204,13 +217,43 @@ namespace SWLOR.Game.Server.Core
                 throw new ArgumentNullException(nameof(gameAssembly));
 
             var problems = new List<string>();
-            CheckType(type, type.Name, gameAssembly, converted ?? (_ => false), new HashSet<Type>(), problems);
+            CheckType(type, type.Name, gameAssembly, converted ?? (_ => false), isService ?? (_ => false), new HashSet<Type>(), problems);
             return problems;
         }
 
-        private static void CheckType(Type type, string path, Assembly gameAssembly, Func<Type, bool> converted, HashSet<Type> visited, List<string> problems)
+        /// <summary>
+        /// The classes of <paramref name="gameAssembly"/> a value of <paramref name="type"/> can hold (as <see cref="Problems"/> walks
+        /// them: itself, its fields' types, the implementations of its interfaces and abstract classes) whose instance fields hold a
+        /// service: the carry builds those through their constructor.
+        /// </summary>
+        public static IReadOnlyList<Type> TypesWithServices(Type type, Assembly gameAssembly, Func<Type, bool> isService)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (gameAssembly == null)
+                throw new ArgumentNullException(nameof(gameAssembly));
+            if (isService == null)
+                throw new ArgumentNullException(nameof(isService));
+
+            var visited = new HashSet<Type>();
+            CheckType(type, type.Name, gameAssembly, _ => false, isService, visited, new List<string>());
+            return visited
+                .Where(candidate => !candidate.IsAbstract && !candidate.IsInterface &&
+                                    ReloadCarryContractResolver.InstanceFields(candidate).Any(field => isService(field.FieldType)))
+                .OrderBy(candidate => candidate.FullName, StringComparer.Ordinal)
+                .ToArray();
+        }
+
+        private static void CheckType(Type type, string path, Assembly gameAssembly, Func<Type, bool> converted, Func<Type, bool> isService,
+            HashSet<Type> visited, List<string> problems)
         {
             type = Nullable.GetUnderlyingType(type) ?? type;
+            if (isService(type))
+            {
+                problems.Add($"{path}: a service or content singleton ({type.Name}) is injected, never carried");
+                return;
+            }
+
             if (converted(type) || IsValue(type) || typeof(Type).IsAssignableFrom(type) ||
                 typeof(SWLOR.NWN.API.Engine.Location).IsAssignableFrom(type) || type == typeof(Vector3) || type == typeof(Vector2))
                 return;
@@ -229,14 +272,14 @@ namespace SWLOR.Game.Server.Core
 
             if (type.IsArray)
             {
-                CheckType(type.GetElementType()!, path + "[]", gameAssembly, converted, visited, problems);
+                CheckType(type.GetElementType()!, path + "[]", gameAssembly, converted, isService, visited, problems);
                 return;
             }
 
             if (type.IsGenericType && IsStandardGeneric(type.GetGenericTypeDefinition()))
             {
                 foreach (var argument in type.GetGenericArguments())
-                    CheckType(argument, $"{path}<{argument.Name}>", gameAssembly, converted, visited, problems);
+                    CheckType(argument, $"{path}<{argument.Name}>", gameAssembly, converted, isService, visited, problems);
                 return;
             }
 
@@ -253,13 +296,13 @@ namespace SWLOR.Game.Server.Core
             {
                 foreach (var implementation in gameAssembly.GetTypes().Where(candidate =>
                              !candidate.IsInterface && !candidate.IsAbstract && type.IsAssignableFrom(candidate)))
-                    CheckType(implementation, $"{path}({implementation.Name})", gameAssembly, converted, visited, problems);
+                    CheckType(implementation, $"{path}({implementation.Name})", gameAssembly, converted, isService, visited, problems);
                 if (!type.IsAbstract || type.IsInterface)
                     return;
             }
 
-            foreach (var field in ReloadCarryContractResolver.InstanceFields(type))
-                CheckType(field.FieldType, path + "." + field.Name, gameAssembly, converted, visited, problems);
+            foreach (var field in ReloadCarryContractResolver.InstanceFields(type).Where(field => !isService(field.FieldType)))
+                CheckType(field.FieldType, path + "." + field.Name, gameAssembly, converted, isService, visited, problems);
         }
 
         private static bool IsValue(Type type)
@@ -326,7 +369,7 @@ namespace SWLOR.Game.Server.Core
         {
             var settings = new JsonSerializerSettings
             {
-                ContractResolver = new ReloadCarryContractResolver(_gameAssembly),
+                ContractResolver = new ReloadCarryContractResolver(_gameAssembly, _isService, _content),
                 SerializationBinder = new ReloadCarryBinder(_gameAssembly),
                 TypeNameHandling = TypeNameHandling.Auto,
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,

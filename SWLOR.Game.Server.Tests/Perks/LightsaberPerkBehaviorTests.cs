@@ -233,7 +233,7 @@ public class LightsaberPerkBehaviorTests
             "conversion must not multiply outgoing bonuses a second time");
 
         // The native auto-attack path splits the physical hit before physical resistance.
-        var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        var native = NativeCombatSource.DamageRoll();
         var nativeConversion = native.IndexOf(
             "GameServices.CombatDamageTaken.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage, targetStatusDamageAdjustment, convertedDamageScheduler)",
             StringComparison.Ordinal);
@@ -287,8 +287,7 @@ public class LightsaberPerkBehaviorTests
     [Test]
     public void Embattled_RefreshesOnEveryAttemptedAttackNotJustLandedHits()
     {
-        var resolve = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var resolve = NativeCombatSource.AttackRoll();
 
         // Attack resolution refreshes Embattled regardless of hit/miss/deflect outcome.
         resolve.Should().Contain("EmbattledStatusEffect.Refresh(defender.m_idSelf, attacker.m_idSelf)");
@@ -326,8 +325,7 @@ public class LightsaberPerkBehaviorTests
     [Test]
     public void DeflectingReturn_WiredIntoRangedDeflectionResolution()
     {
-        var resolve = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var resolve = NativeCombatSource.AttackRoll();
 
         // Only Ranged Deflection reflects. A shield deflecting a ranged auto-attack cannot trigger it.
         resolve.Should().Contain("deflectionSource == DeflectionSource.Ranged");

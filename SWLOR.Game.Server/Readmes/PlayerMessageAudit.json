@@ -6545,51 +6545,51 @@
     "Call": "PlayerFeedback.SendDiagnosticToPlayer(target, $\"Your weapon ability {abilityDetail.Name} is no longer queued.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 358,
-    "Member": "ResolveWeaponRoll",
+    "File": "SWLOR.Game.Server/Native/AttackRollCritical.cs",
+    "Line": 77,
+    "Member": "ResolveHitResult",
     "Delivery": "Retained",
     "Call": "attacker.SendFeedbackString(new CExoString($\"{defenderName} is immune to critical hits!\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 471,
-    "Member": "ResolveWeaponRoll",
+    "File": "SWLOR.Game.Server/Native/AttackRollDefense.cs",
+    "Line": 54,
+    "Member": "CheckDeflection",
+    "Delivery": "Retained",
+    "Call": "attacker.SendFeedbackString(new CExoString(AttackRollFeedback.BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Native/AttackRollDefense.cs",
+    "Line": 55,
+    "Member": "CheckDeflection",
+    "Delivery": "Retained",
+    "Call": "defender.SendFeedbackString(new CExoString(AttackRollFeedback.BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Native/AttackRollFeedback.cs",
+    "Line": 37,
+    "Member": "SendAttackFeedback",
     "Delivery": "Retained",
     "Call": "attacker.SendFeedbackString(new CExoString(attackerMessage))"
   },
   {
-    "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 472,
-    "Member": "ResolveWeaponRoll",
+    "File": "SWLOR.Game.Server/Native/AttackRollFeedback.cs",
+    "Line": 38,
+    "Member": "SendAttackFeedback",
     "Delivery": "Retained",
     "Call": "defender.SendFeedbackString(new CExoString(defenderMessage))"
   },
   {
-    "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 594,
-    "Member": "CheckDeflection",
-    "Delivery": "Retained",
-    "Call": "attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName)))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Native/ResolveAttackRoll.cs",
-    "Line": 595,
-    "Member": "CheckDeflection",
-    "Delivery": "Retained",
-    "Call": "defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)))"
-  },
-  {
     "File": "SWLOR.Game.Server/NativeSinks/OnAIActionAttackObjectSink.cs",
-    "Line": 91,
+    "Line": 94,
     "Member": "AttackObject",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pCreature.m_idSelf, ColorToken.Red(equipmentError))"
   },
   {
     "File": "SWLOR.Game.Server/NativeSinks/OnAIActionAttackObjectSink.cs",
-    "Line": 260,
-    "Member": "AttackObject",
+    "Line": 300,
+    "Member": "MoveTowardAttackTarget",
     "Delivery": "Retained",
     "Call": "pCreature.SendFeedbackMessage(FEEDBACK_ACTION_CANT_REACH_TARGET)"
   }

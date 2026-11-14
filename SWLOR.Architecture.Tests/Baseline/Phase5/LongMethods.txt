@@ -44,6 +44,3 @@ SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideViewModel.BuildTopi
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel.LoadShip | 532
 SWLOR.Game.Server.Feature.ItemDefinition.ConsumableItemDefinition.Food | 152
 SWLOR.Game.Server.Feature.UsePerkFeat.ActivateAbility | 432
-SWLOR.Game.Server.Native.GetDamageRoll.ResolveWeaponDamage | 184
-SWLOR.Game.Server.Native.ResolveAttackRoll.ResolveWeaponRoll | 417
-SWLOR.Game.Server.NativeSinks.OnAIActionAttackObjectSink.AttackObject | 777

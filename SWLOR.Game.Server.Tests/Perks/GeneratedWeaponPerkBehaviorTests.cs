@@ -193,8 +193,7 @@ public class GeneratedWeaponPerkBehaviorTests
         criticalTracker.Should().Contain("Critical Rate stack tracker requires a configured status icon.");
         cycleTracker.Should().Contain("[StatConfiguredIcon]");
         cycleTracker.Should().Contain("Attack cycle tracker requires a configured status icon.");
-        var resolveAttackRoll = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var resolveAttackRoll = NativeCombatSource.AttackRoll();
         var luckyChamberPreparation = resolveAttackRoll.IndexOf(
             "GameServices.CombatDamageModifiers.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)",
             StringComparison.Ordinal);
@@ -423,8 +422,7 @@ public class GeneratedWeaponPerkBehaviorTests
     {
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var nativeSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var nativeSource = NativeCombatSource.AttackRoll();
 
         combatSource.Should().Contain("public static int GetRangedAbilityLongRangeHitChanceAdjustment(");
         combatSource.Should().Contain("RangedAbilityLongRangeHitChancePercentAdjustment");
@@ -464,8 +462,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("private static void StoreQueuedWeaponAbilityActivationOpeningBonuses(");
         combatSource.Should().Contain("criticalDamagePercentAdjustment = Math.Max(",
             "overlapping shared and opening Critical Damage riders must not double-count");
-        var nativeSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var nativeSource = NativeCombatSource.AttackRoll();
         nativeSource.Should().NotContain("PrepareQueuedWeaponAbilityOpeningAttack(",
             "opening riders are activation snapshots and must not consume later auto-attack modifiers");
     }
@@ -600,8 +597,7 @@ public class GeneratedWeaponPerkBehaviorTests
     public void AttackAttemptNotifications_CoverNativeMissesAndCompletedHostileAbilities()
     {
         var root = FindRepositoryRoot();
-        var nativeSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var nativeSource = NativeCombatSource.AttackRoll();
         nativeSource.Should().Contain("StatusEffect.NotifyAttackAttemptStatusEffects(");
         nativeSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
         nativeSource.Should().Contain("WeaponAttackCycle.GetAttackWeapon(attacker, pCombatRound.GetWeaponAttackType())");
@@ -1547,7 +1543,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var combatSource = CombatSource.Read();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
-        var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var nativeAttackSource = NativeCombatSource.AttackRoll();
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
         statusEffectSource += File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectRules.cs"));
         var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));

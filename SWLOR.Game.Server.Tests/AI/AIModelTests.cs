@@ -722,11 +722,22 @@ public class AIModelTests
             activeTargetIndex,
             source.IndexOf("pCreature.m_vLastAttackPosition = new Vector();", activeTargetIndex, StringComparison.Ordinal) -
             activeTargetIndex);
+        // The pending attack case hands the action to ResolvePendingAttack, which resolves the swing through ResolveSwing.
         var pendingAttackIndex = source.IndexOf("case CNWSCOMBATROUND_TYPE_ATTACK:", StringComparison.Ordinal);
+        source.Substring(
+                pendingAttackIndex,
+                source.IndexOf("case CNWSCOMBATROUND_TYPE_PARRY:", pendingAttackIndex, StringComparison.Ordinal) -
+                pendingAttackIndex)
+            .Should().Contain("ResolvePendingAttack(");
+        var pendingAttackMethodIndex = source.IndexOf("private static int ResolvePendingAttack(", StringComparison.Ordinal);
         var pendingAttackBody = source.Substring(
-            pendingAttackIndex,
-            source.IndexOf("case CNWSCOMBATROUND_TYPE_PARRY:", pendingAttackIndex, StringComparison.Ordinal) -
-            pendingAttackIndex);
+            pendingAttackMethodIndex,
+            source.IndexOf("private static void ResolveSwing(", pendingAttackMethodIndex, StringComparison.Ordinal) -
+            pendingAttackMethodIndex);
+        var swingIndex = source.IndexOf("private static void ResolveSwing(", StringComparison.Ordinal);
+        pendingAttackBody += source.Substring(
+            swingIndex,
+            source.IndexOf("namespace SWLOR.Game.Server.Native", swingIndex, StringComparison.Ordinal) - swingIndex);
         var combatRoundGuardIndex = source.IndexOf(
             "var pCombatRound = pCreature.m_pcCombatRound;",
             StringComparison.Ordinal);

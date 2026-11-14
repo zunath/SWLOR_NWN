@@ -324,6 +324,10 @@ public static class AuthoredAnimation
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TambourineLoop = new("sw_tam_loop", 5.19999981f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TambourineLow = new("sw_tam_low", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TambourineMid = new("sw_tam_mid", 0.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TambourineWideFlourish = new("sw_twd_flour", 1.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TambourineWideHigh = new("sw_twd_high", 0.5f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TambourineWideLoop = new("sw_twd_loop", 5.19999981f);
+    public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TambourineWideLow = new("sw_twd_low", 0.5f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip Tame = new("sw_tame", 4f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TempestBloom = new("sw_temp_bloo", 2.70000005f);
     public static readonly global::SWLOR.Game.Server.Service.AnimationService.AnimationClip TempestStance = new("sw_tempe_stn", 2.6500001f);

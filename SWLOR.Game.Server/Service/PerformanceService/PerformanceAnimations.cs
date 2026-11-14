@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             [AuthoredAnimation.VocalsFlourish] = AuthoredAnimation.VocalsLowMouthFlourish,
         };
 
-        // The same singing motion with the microphone hand lowered half as far. The body bank is full, so the two
-        // Wookiee sets have no middle accent of their own and play the low one for it.
+        // The same singing motion with the microphone hand lowered half as far. The Wookiee sets have no middle accent
+        // of their own and play the low one for it.
         private static readonly Dictionary<AnimationClip, AnimationClip> _midMouthVocals = new()
         {
             [AuthoredAnimation.VocalsLoop] = AuthoredAnimation.VocalsMidMouthLoop,
@@ -41,19 +41,30 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             [AuthoredAnimation.PipesFlourish] = AuthoredAnimation.PipesWideFlourish,
         };
 
+        // The same tambourine motion with the holding hand and the striking palm set apart.
+        private static readonly Dictionary<AnimationClip, AnimationClip> _wideTambourine = new()
+        {
+            [AuthoredAnimation.TambourineLoop] = AuthoredAnimation.TambourineWideLoop,
+            [AuthoredAnimation.TambourineLow] = AuthoredAnimation.TambourineWideLow,
+            [AuthoredAnimation.TambourineMid] = AuthoredAnimation.TambourineWideLow,
+            [AuthoredAnimation.TambourineHigh] = AuthoredAnimation.TambourineWideHigh,
+            [AuthoredAnimation.TambourineFlourish] = AuthoredAnimation.TambourineWideFlourish,
+        };
+
         /// <summary>
         /// One clip serves every body, and the singing clips hold the microphone at a Human-height mouth. An Ugnaught's
         /// mouth sits lower on its head, where that hand lands over the eyes, so Ugnaughts play the lowered copies; a
         /// female Wookiee's mouth sits between the two, so she plays the half-lowered ones. A Wookiee's large hands
-        /// overlap at the mouth and push the pipes aside, so Wookiees play the pipes with the hands apart. Held wind
-        /// instruments are otherwise fitted per species by moving the item (<c>HornFit</c>); a hand in the wrong place
-        /// needs its own clips.
+        /// overlap at the mouth and push the pipes aside, and their thick forearms cross over the tambourine's skin, so
+        /// Wookiees play both with the hands apart. Held instruments are otherwise fitted per species by moving the item
+        /// (<c>HornFit</c>); a hand in the wrong place needs its own clips.
         /// </summary>
         public static AnimationClip FitToBody(AnimationClip clip, AppearanceType appearance, Gender gender)
         {
             if (clip == null)
                 return null;
-            if (appearance == AppearanceType.Wookiee && _widePipes.TryGetValue(clip, out var wide))
+            if (appearance == AppearanceType.Wookiee &&
+                (_widePipes.TryGetValue(clip, out var wide) || _wideTambourine.TryGetValue(clip, out wide)))
                 return wide;
             if (appearance == AppearanceType.Wookiee && gender == Gender.Female &&
                 _midMouthVocals.TryGetValue(clip, out var halfLowered))

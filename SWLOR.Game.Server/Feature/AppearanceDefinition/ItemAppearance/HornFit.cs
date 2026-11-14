@@ -32,6 +32,7 @@ public static class HornFit
         const string kloo = "kloo_horn";
         const string slitherhorn = "slitherhorn";
         const string panpipes = "panpipes";
+        const string tambourine = "tambourine";
         var fits = new Dictionary<(string, AppearanceType, Gender), HornFitOffset>
         {
             // Native front/side checks against Human head 1: turn the row inward, then fit mouth contact.
@@ -44,6 +45,9 @@ public static class HornFit
             // Wookiees play the pipes with their hands apart (PerformanceAnimations.FitToBody); these fit that hold.
             [(panpipes, AppearanceType.Wookiee, Gender.Male)] = new(.05f, .03f, 0f, 0f, 180f),
             [(panpipes, AppearanceType.Wookiee, Gender.Female)] = new(.05f, 0f, 0f, 0f, 180f),
+            // The wide tambourine hold carries the drum out with the holding hand; this slides it back under the palm.
+            [(tambourine, AppearanceType.Wookiee, Gender.Male)] = new(.08f, .08f, 0f, 0f),
+            [(tambourine, AppearanceType.Wookiee, Gender.Female)] = new(.08f, .08f, 0f, 0f),
             [(kloo, AppearanceType.MonCalamari, Gender.Male)] = new(0f, 0f, 0f, -8f),
             [(kloo, AppearanceType.MonCalamari, Gender.Female)] = new(0f, 0f, 0f, -10f),
             [(kloo, AppearanceType.Wookiee, Gender.Male)] = new(0f, 0f, 0f, -8f),

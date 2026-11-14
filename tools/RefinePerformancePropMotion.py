@@ -327,6 +327,12 @@ DRUM_HOOK = (.01107, 0, -.09613)
 PALM_REST, PALM_BACK, PALM_CONTACT, PALM_BOUNCE = .150, .168, .045, .115
 # Where the tapping arm bends, and how far the fingers dip toward the skin, in degrees.
 PALM_ELBOW = (-.30, .22, 1.38)
+# A Wookiee's thick forearms cross over the skin and hide it, so Wookiees play a copy with the holding hand and
+# the striking palm each moved outward by this much on the authoring rig; an item fit then slides the drum back
+# under the palm.
+WIDE_DRUM = "TambourineWide"
+WIDE_DRUM_HOLD = .14
+WIDE_DRUM_PALM = .14
 PALM_DIP = 20
 # Six strikes and two shaken bars over the 5.2 second loop, at 60 Hz frame times.
 DRUM_SLOT = .65
@@ -437,17 +443,20 @@ def tambourine_pose(name, time, duration):
     hand = [DRUM_HAND[0] + sway_x + out, DRUM_HAND[1] + give, DRUM_HAND[2] + dip + lift]
     blade, facing, centre, normal = drum_frame(hand, roll, turn)
     palm = [centre[i] + normal[i]*distance + (-.055-away if i == 0 else .035 if i == 2 else 0) for i in range(3)]
+    hold_out, palm_out = (WIDE_DRUM_HOLD, WIDE_DRUM_PALM) if name.startswith(WIDE_DRUM) else (0, 0)
+    palm[0] -= palm_out
     # The palm faces the skin with the fingers dipping toward it, and the hand lies along the forearm
     # rather than bending back at the wrist.
-    elbow = (PALM_ELBOW[0] + sway_x, PALM_ELBOW[1], PALM_ELBOW[2] + dip + .4*lift)
+    elbow = (PALM_ELBOW[0] + sway_x - palm_out, PALM_ELBOW[1], PALM_ELBOW[2] + dip + .4*lift)
     toward = tuple(a-b for a, b in zip(elbow, palm))
     along = unit(tuple(a-b*dot(toward, normal) for a, b in zip(toward, normal)))
     tilt = math.radians(PALM_DIP)
     wrist = tuple(a*math.cos(tilt) + b*math.sin(tilt) for a, b in zip(along, normal))
     facing_palm = tuple(-b*math.cos(tilt) + a*math.sin(tilt) for a, b in zip(along, normal))
     controls.update({
-        "rightHand": hand, "blade": blade, "rightGripAxis": list(DRUM_UP), "rightGripNormal": list(DRUM_NORMAL),
-        "rightGripFacing": facing, "rightElbow": [.38 + .5*out, .02, 1.18 + dip + .6*lift],
+        "rightHand": [hand[0] + hold_out, hand[1], hand[2]], "blade": blade,
+        "rightGripAxis": list(DRUM_UP), "rightGripNormal": list(DRUM_NORMAL),
+        "rightGripFacing": facing, "rightElbow": [.38 + .5*out + hold_out, .02, 1.18 + dip + .6*lift],
         "leftHand": palm, "leftElbow": list(elbow), "shield": [0, 0, 0],
         "leftGrip": list(cross(wrist, facing_palm)), "leftPalmFacing": list(facing_palm)})
     return controls
@@ -457,17 +466,18 @@ def refine(source):
     result = copy.deepcopy(source)
     # The low-mouth singing clips are copies of the ordinary ones, authored again with the lowered hand.
     result["motions"] = [motion for motion in result["motions"]
-                         if not motion["id"].startswith((*MOUTH_DROPS, WIDE_PIPES))]
+                         if not motion["id"].startswith((*MOUTH_DROPS, WIDE_PIPES, WIDE_DRUM))]
     for prefix, (_, label, states) in MOUTH_DROPS.items():
         for state in states:
             variant = copy.deepcopy(next(motion for motion in result["motions"] if motion["id"] == "Vocals" + state))
             variant["id"], variant["name"] = prefix + state, label + state
             result["motions"].append(variant)
     # The wide pipes clips are copies of the ordinary ones, authored again with the hands apart.
-    for state in WOOKIEE_STATES:
-        variant = copy.deepcopy(next(motion for motion in result["motions"] if motion["id"] == "Pipes" + state))
-        variant["id"], variant["name"] = WIDE_PIPES + state, "Pipes Wide " + state
-        result["motions"].append(variant)
+    for family, prefix, label in (("Pipes", WIDE_PIPES, "Pipes Wide "), ("Tambourine", WIDE_DRUM, "Tambourine Wide ")):
+        for state in WOOKIEE_STATES:
+            variant = copy.deepcopy(next(motion for motion in result["motions"] if motion["id"] == family + state))
+            variant["id"], variant["name"] = prefix + state, label + state
+            result["motions"].append(variant)
     for motion in result["motions"]:
         name = motion["id"]
         duration = motion["beats"][-1]["time"]

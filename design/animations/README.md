@@ -344,9 +344,9 @@ playback. After installing, compile the banks and regenerate the clothing bridge
 `performance/` holds the Performance skill's motion. The two ability activation clips, `Dance`
 (`sw_pf_dance`) and `PlayInstrument` (`sw_pf_play`), are in the active inventory with native-sourced
 recipes in `performance/choreographies.json`: native `pause1` and `pausewalkl` with directed hands, so
-they end in native idle like every inventory clip. The other 55 clips are activity clips like
+they end in native idle like every inventory clip. The other 59 clips are activity clips like
 Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are authored in
-`performance/recipe.json`, thirty-three in `performance/props-recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
+`performance/recipe.json`, thirty-seven in `performance/props-recipe.json`; seven SWG loops are imported through `performance/swg-imports.json`.
 
 | Group | Clips (project Id = internal name) | Length |
 |---|---|---|
@@ -362,6 +362,7 @@ Fishing's (`activity: "Performing"`, empty `abilityDefinition`). Fifteen are aut
 | Pipes, wide hands | PipesWideLoop `sw_pwd_loop` (5.2 s), PipesWideLow/High `sw_pwd_low/high` (0.5 s), PipesWideFlourish `sw_pwd_flour` (1.5 s) | |
 | Violin | ViolinLoop `sw_vio_loop` (5.2 s), ViolinLow/Mid/High `sw_vio_low/mid/high` (0.5 s), ViolinFlourish `sw_vio_flour` (1.5 s) | |
 | Tambourine | TambourineLoop `sw_tam_loop` (5.2 s), TambourineLow/Mid/High `sw_tam_low/mid/high` (0.5 s), TambourineFlourish `sw_tam_flour` (1.5 s) | |
+| Tambourine, wide hands | TambourineWideLoop `sw_twd_loop` (5.2 s), TambourineWideLow/High `sw_twd_low/high` (0.5 s), TambourineWideFlourish `sw_twd_flour` (1.5 s) | |
 | Finale | PerformanceBow `sw_pf_bow` | 1.5 s |
 
 `props-recipe.json` owns the microphone, panpipes, violin and tambourine clips; their provenance
@@ -454,13 +455,26 @@ them only in the microphone arm. Install them like any other clip, then add them
 each variant copies an owned clip's garment tracks, events and part IDs and takes only the body rotations
 that differ, so no robe is regenerated.
 
-Wookiees have two more sets, selected the same way. A female Wookiee's mouth sits between a Human's and an
+Wookiees have three more sets, selected the same way. A female Wookiee's mouth sits between a Human's and an
 Ugnaught's, so she sings with `VocalsMidMouth` (`sw_vmm_*`, the hand 5 cm lower). A Wookiee's large hands
 overlap at the mouth and push the pipes aside, so both genders play `PipesWide` (`sw_pwd_*`, each hand 5 cm
-further out), and `HornFit` then centres the pipes on the mouth for that hold. `an_a_ba` and `an_a_fa` are
-now full at 128 clips, which left room for four clips in each set: there is no middle accent, and
-`FitToBody` plays the low accent for it. Keep a variant in the same bank as the clip it copies: clips that
-spill into another bank cannot be carried into the robe layers with `--variant`.
+further out), and `HornFit` then centres the pipes on the mouth for that hold. Their thick forearms cross
+over the tambourine and hide its skin, so both genders play `TambourineWide` (`sw_twd_*`, the holding hand
+and the striking palm each 14 cm further out), and `HornFit` slides the drum back under the palm. Each set
+has a loop, low and high accents and a flourish; there is no middle accent, and `FitToBody` plays the low
+accent for it.
+
+`an_a_ba` and `an_a_fa` are full at 128 clips, so the installer puts further clips into the next bank of the
+rig with room; the tambourine set went to `ab_a_ba_005` and `ab_a_fa_005`. Two things are needed the first
+time an overflow bank takes a clip:
+
+- Its editable source may still carry `orientation 0 0 1 0` on the root node, written by an older compiler.
+  The current compiler writes no controller for that zero rotation and then rejects the round trip, so delete
+  that one line from the root before compiling. The recompiled root also loses its zero translation;
+  `ExtendRobeAnimations.py` treats both as the same skeleton.
+- Name the bank when adding the robe variants: `--variant sw_tam_loop=sw_twd_loop ... --body-bank
+  sw_cr_creature/ab_a_ba_005.mdl --body-bank sw_cr_creature/ab_a_fa_005.mdl`. The banks of a rig must add
+  the clips together, every existing clip must be unchanged, and the bank is then recorded with the others.
 
 To publish a revision of these three families, generate the recipe into a staging directory, copy the
 fifteen changed projects and the manifest, `install-active` them into `a_ba` and `a_fa`, and compile

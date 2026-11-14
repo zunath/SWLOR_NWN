@@ -180,13 +180,16 @@ public class PerformanceAnimationsTests
 
     [TestCase(Gender.Male)]
     [TestCase(Gender.Female)]
-    public void WookieesPlayThePipesWithTheirHandsApart(Gender gender)
+    public void WookieesPlayThePipesAndTheTambourineWithTheirHandsApart(Gender gender)
     {
         var played = new[]
         {
             (AuthoredAnimation.PipesLoop, "sw_pwd_loop"), (AuthoredAnimation.PipesLow, "sw_pwd_low"),
             (AuthoredAnimation.PipesMid, "sw_pwd_low"), (AuthoredAnimation.PipesHigh, "sw_pwd_high"),
             (AuthoredAnimation.PipesFlourish, "sw_pwd_flour"),
+            (AuthoredAnimation.TambourineLoop, "sw_twd_loop"), (AuthoredAnimation.TambourineLow, "sw_twd_low"),
+            (AuthoredAnimation.TambourineMid, "sw_twd_low"), (AuthoredAnimation.TambourineHigh, "sw_twd_high"),
+            (AuthoredAnimation.TambourineFlourish, "sw_twd_flour"),
         };
         foreach (var (clip, wide) in played)
         {
@@ -195,8 +198,8 @@ public class PerformanceAnimationsTests
             fitted.Duration.Should().Be(clip.Duration, "the wide copy keeps the clip's timing");
             PerformanceAnimations.FitToBody(clip, AppearanceType.Bothan, gender).Should().BeSameAs(clip);
         }
-        PerformanceAnimations.FitToBody(AuthoredAnimation.TambourineLoop, AppearanceType.Wookiee, gender)
-            .Should().BeSameAs(AuthoredAnimation.TambourineLoop);
+        PerformanceAnimations.FitToBody(AuthoredAnimation.ViolinLoop, AppearanceType.Wookiee, gender)
+            .Should().BeSameAs(AuthoredAnimation.ViolinLoop);
     }
 
     [TestCase(AppearanceType.Human)]

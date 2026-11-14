@@ -107,10 +107,21 @@ public class PerformancePropMotionTests
         VariantMovesOnly("Pipes", "PipesWide", state, "lbicep_g", "lforearm_g", "lhand_g", "rbicep_g", "rforearm_g", "rhand_g");
 
     [TestCaseSource(nameof(WookieeStates))]
-    public void WidePipesHoldTheHandsFiveCentimetresFurtherOutOnEachSide(string state)
+    public void WideTambourineDiffersFromTheOrdinaryTambourineOnlyInTheArms(string state) =>
+        VariantMovesOnly("Tambourine", "TambourineWide", state, "lbicep_g", "lforearm_g", "lhand_g", "rbicep_g", "rforearm_g", "rhand_g");
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void WidePipesHoldTheHandsFiveCentimetresFurtherOutOnEachSide(string state) =>
+        HandsAreFurtherOut("Pipes", "PipesWide", state, .05f, .012f);
+
+    [TestCaseSource(nameof(WookieeStates))]
+    public void WideTambourineHoldsTheHandsFourteenCentimetresFurtherOutOnEachSide(string state) =>
+        HandsAreFurtherOut("Tambourine", "TambourineWide", state, .14f, .03f);
+
+    private static void HandsAreFurtherOut(string family, string variant, string state, float distance, float tolerance)
     {
-        var ordinary = Project("Pipes", state);
-        var wide = Project("PipesWide", state);
+        var ordinary = Project(family, state);
+        var wide = Project(variant, state);
         foreach (var (hand, direction) in new[] { ("rhand_g", 1f), ("lhand_g", -1f) })
         {
             var joint = ordinary.Joints.FindIndex(j => j.Name == hand);
@@ -118,8 +129,8 @@ public class PerformancePropMotionTests
             {
                 var from = AnimationRig.World(ordinary.Joints, ordinary.Keys[key].Pose)[joint].Translation;
                 var to = AnimationRig.World(wide.Joints, wide.Keys[key].Pose)[joint].Translation;
-                ((to.X - from.X) * direction).Should().BeApproximately(.05f, .012f, hand);
-                MathF.Abs(to.Z - from.Z).Should().BeLessThan(.012f, hand);
+                ((to.X - from.X) * direction).Should().BeApproximately(distance, tolerance, hand);
+                MathF.Abs(to.Z - from.Z).Should().BeLessThan(tolerance, hand);
             }
         }
     }
@@ -272,7 +283,8 @@ public class PerformancePropMotionTests
         recipe.Motions.Select(motion => motion.Id).Should().BeEquivalentTo(
             new[] { "Vocals", "Pipes", "Violin", "Tambourine", "VocalsLowMouth" }
                 .SelectMany(family => States.Select(state => family + state))
-                .Concat(new[] { "VocalsMidMouth", "PipesWide" }.SelectMany(family => WookieeStates.Select(state => family + state))));
+                .Concat(new[] { "VocalsMidMouth", "PipesWide", "TambourineWide" }
+                    .SelectMany(family => WookieeStates.Select(state => family + state))));
         foreach (var motion in recipe.Motions)
         {
             var committed = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(folder, motion.Id + ".swlanim")));
@@ -331,12 +343,13 @@ public class PerformancePropMotionTests
     [TestCase("VocalsMidMouth")]
     [TestCase("Pipes")]
     [TestCase("PipesWide")]
+    [TestCase("TambourineWide")]
     [TestCase("Violin")]
     [TestCase("Tambourine")]
     public void AccentsReturnToTheLoopHoldWithoutAnArmSnap(string family)
     {
         var loop = Project(family, "Loop");
-        foreach (var state in family is "VocalsMidMouth" or "PipesWide" ? WookieeStates : States)
+        foreach (var state in family is "VocalsMidMouth" or "PipesWide" or "TambourineWide" ? WookieeStates : States)
         {
             var project = Project(family, state);
             foreach (var time in new[] { 0f, project.Duration })

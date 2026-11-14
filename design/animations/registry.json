@@ -3798,5 +3798,45 @@
       "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
     ],
     "ProjectPath": "design/animations/performance/VocalsMidMouthFlourish.swlanim"
+  },
+  {
+    "Name": "TambourineWideLoop",
+    "AnimationName": "sw_twd_loop",
+    "Duration": 5.2,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineWideLoop.swlanim"
+  },
+  {
+    "Name": "TambourineWideLow",
+    "AnimationName": "sw_twd_low",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineWideLow.swlanim"
+  },
+  {
+    "Name": "TambourineWideHigh",
+    "AnimationName": "sw_twd_high",
+    "Duration": 0.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineWideHigh.swlanim"
+  },
+  {
+    "Name": "TambourineWideFlourish",
+    "AnimationName": "sw_twd_flour",
+    "Duration": 1.5,
+    "Targets": [
+      "SWLOR_Haks/sw_cr_creature/a_ba.mdl",
+      "SWLOR_Haks/sw_cr_creature/a_fa.mdl"
+    ],
+    "ProjectPath": "design/animations/performance/TambourineWideFlourish.swlanim"
   }
 ]

@@ -32,6 +32,8 @@ public class HornFitTests
     [TestCase("panpipes", AppearanceType.Cathar, Gender.Male)]
     [TestCase("panpipes", AppearanceType.Ugnaught, Gender.Male)]
     [TestCase("panpipes", AppearanceType.Ewok, Gender.Female)]
+    [TestCase("tambourine", AppearanceType.Wookiee, Gender.Male)]
+    [TestCase("TAMBOURINE", AppearanceType.Wookiee, Gender.Female)]
     public void BodiesTheClipMissesAreFittedOnlyWhilePlaying(string resref, AppearanceType appearance, Gender gender)
     {
         Fit(resref, appearance, 0, gender, true).Should().NotBe(default(HornFitOffset));
@@ -78,6 +80,11 @@ public class HornFitTests
     public void PanpipesMoveToTheMouthOnlyOnBodiesWhoseHandsMissIt(AppearanceType appearance, Gender gender,
         float x, float y, float z) =>
         Fit("panpipes", appearance, 0, gender, true).Should().Be(new HornFitOffset(x, y, z, 0f, 180f));
+
+    [TestCase(Gender.Male)]
+    [TestCase(Gender.Female)]
+    public void TheWookieeTambourineSlidesBackUnderTheStrikingPalm(Gender gender) =>
+        Fit("tambourine", AppearanceType.Wookiee, 0, gender, true).Should().Be(new HornFitOffset(.08f, .08f, 0f, 0f));
 
     [Test]
     public void PanpipeRowFacesInwardForEveryPlayableBodyOnlyWhilePlaying()

@@ -36,6 +36,8 @@ public class AnimationPlanningTests
         ["VocalsMidMouthHigh"] = "sw_vmm_high", ["VocalsMidMouthFlourish"] = "sw_vmm_flour",
         ["PipesWideLoop"] = "sw_pwd_loop", ["PipesWideLow"] = "sw_pwd_low",
         ["PipesWideHigh"] = "sw_pwd_high", ["PipesWideFlourish"] = "sw_pwd_flour",
+        ["TambourineWideLoop"] = "sw_twd_loop", ["TambourineWideLow"] = "sw_twd_low",
+        ["TambourineWideHigh"] = "sw_twd_high", ["TambourineWideFlourish"] = "sw_twd_flour",
         ["PipesLoop"] = "sw_pip_loop", ["PipesLow"] = "sw_pip_low", ["PipesMid"] = "sw_pip_mid",
         ["PipesHigh"] = "sw_pip_high", ["PipesFlourish"] = "sw_pip_flour",
         ["ViolinLoop"] = "sw_vio_loop", ["ViolinLow"] = "sw_vio_low", ["ViolinMid"] = "sw_vio_mid",

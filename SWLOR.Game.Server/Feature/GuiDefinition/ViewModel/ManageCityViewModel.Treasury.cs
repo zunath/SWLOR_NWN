@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var city = DB.Get<WorldProperty>(_cityId);
             if (city == null || !CanAccessTreasury)
             {
-                TreasuryHistoryHeader = "Only the mayor and those who may withdraw from the treasury can see its history.";
+                TreasuryHistoryHeader = "You need the right to withdraw from the treasury to see this.";
                 TreasuryHistoryHeaderColor = GuiColor.Red;
                 IsTreasuryHistoryVisible = false;
             }
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 TreasuryHistoryHeader = entries.Count == 0
                     ? $"No treasury changes in the last {CityTreasuryHistoryRules.KeepDays} days."
-                    : $"Treasury changes in the last {CityTreasuryHistoryRules.KeepDays} days (UTC), newest first. Hover a line for the balance after it.";
+                    : $"Last {CityTreasuryHistoryRules.KeepDays} days (UTC), newest first. Hover a line for the balance.";
                 TreasuryHistoryHeaderColor = GuiColor.White;
                 IsTreasuryHistoryVisible = entries.Count > 0;
             }

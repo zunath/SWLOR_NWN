@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public partial class ManageCityDefinition
     {
-        private const float TreasuryRowHeight = 30f;
+        private const float TreasuryRowHeight = 44f;
         private const float TreasuryTimeWidth = 96f;
         private const float TreasuryAmountWidth = 92f;
         private const float TreasuryListHeight = 380f;
@@ -54,13 +54,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHorizontalAlign(NuiHorizontalAlign.Right)
                                     .SetVerticalAlign(NuiVerticalAlign.Middle);
                             });
+                            // A long line (a bounty naming two people) wraps onto a second line rather than being cut off.
                             template.AddCell(cell =>
                             {
-                                cell.AddLabel()
+                                cell.AddText()
                                     .BindText(model => model.TreasuryHistoryTexts)
                                     .BindTooltip(model => model.TreasuryHistoryTooltips)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                    .SetShowBorder(false)
+                                    .SetScrollbars(NuiScrollbars.None)
+                                    .SetHeight(TreasuryRowHeight - 4f);
                             });
                         })
                         .BindRowCount(model => model.TreasuryHistoryTimes)

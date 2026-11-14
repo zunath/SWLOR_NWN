@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             var window = _builder.CreateWindow(GuiWindowType.ManageCity)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 610f, 560f)
+                .SetInitialGeometry(0, 0, 720f, 560f)
                 .SetTitle("Manage City")
                 .DefinePartialView(ManageCityViewModel.CityTabPartial, AddCityTab)
                 .DefinePartialView(ManageCityViewModel.EdictsTabPartial, AddEdictsTab)
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .AddOption("Succession")
                         .AddOption("Treasury")
                         .BindSelectedValue(model => model.TabToggleValue)
-                        .SetWidth(464f)
+                        .SetWidth(600f)
                         .SetHeight(TabRowHeight);
                 });
                 layout.SetContentPartialElement(ManageCityViewModel.TabContentElement);

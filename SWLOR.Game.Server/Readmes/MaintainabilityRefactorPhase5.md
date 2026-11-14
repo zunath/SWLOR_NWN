@@ -126,13 +126,13 @@ folders (`DomainMap.json`).
 - The smoke run's craft step is stale.
 - `SWLOR.Toolset.Tests` fails outside CI.
 
-## Targets (owner approval needed)
+## Targets (owner-approved 2026-11-14)
 
 Phase 5 is done when:
 
 1. **No code reaches a service through a static lookup.** `GameServices` and `FacadeAccessor` are deleted. Every type that uses
    a service is built by the container or by a factory the container provides, and gets the service through its
-   constructor. The static entry points that stay are named and guarded (proposal: `Log`, `Clock`, `Random`,
+   constructor. The static entry points that stay are named and guarded (owner decision 3: `Log`, `Clock`, `Random`,
    `FrameProfiler`). P5-0 classifies the rest (`Scheduler`, `NativeHookAccess` and any others it finds), each kept with a
    reason the owner approves or removed. Runtime state held in static content fields moves into services.
 2. **No logic type is over 1,000 lines** (all partial files of a type together), **and no type uses more than 10 services.**
@@ -155,7 +155,7 @@ Phase 5 is done when:
 6. **No behaviour change:** parity stays identical to master, the characterization snapshots stay unchanged, and coverage
    stays at or above 72% with every area floor.
 
-**Exempt from targets 2 and 3** (a new owner decision; decision 7 only keeps data-driven definitions out of this plan):
+**Exempt from targets 2 and 3** (owner decision 1, 2026-11-14; plan decision 7 only keeps data-driven definitions out):
 
 - generated code, including `Feature/BeastDefinition` (174 generated classes of about 1,540 lines, which decision 3 already
   treats as generated);
@@ -239,32 +239,33 @@ smaller.
 
 | ID | Item | Depends on | Model |
 |---|---|---|---|
-| P5-0 | Debt guards with shrinking baselines and a generated debt report: lookups per file, type and method size, services per type (constructor plus lookups), deferred-resolution parameters, logic-to-content references (same-domain included), two-way domain pairs (Foundation and Platform included), static entry points and static content state | owner approval | Opus |
+| P5-0 | Debt guards with shrinking baselines and a generated debt report: lookups per file, type and method size, services per type (constructor plus lookups), deferred-resolution parameters, logic-to-content references (same-domain included), two-way domain pairs (Foundation and Platform included), static entry points and static content state | - | Opus |
 | P5-1 | Edge classification, shared-vocabulary and interface moves, proposed domain order (owner review) | P5-0 | Opus |
 | P5-2 | Remove the logic-to-content references the splits leave | P5-7 | Sonnet build, Opus review |
 | P5-3 | Split `AbilityService` (master freeze) | P5-1 | Opus |
 | P5-4 | Split `StatService` (master freeze) | P5-3 | Opus |
 | P5-5 | Split `StatusEffectService` (master freeze) | P5-4 | Opus |
-| P5-6 | Split `SpaceService` | P5-1; owner decision on `feature/space-revamp` | Sonnet build, Opus review |
+| P5-6 | Split `SpaceService` | the other splits (owner decision 5) | Sonnet build, Opus review |
 | P5-7 | Combat services over the limits: `CombatHitEffects`, `CombatDamageTaken`, `CombatAbilityImpact`, `CombatRecorder` (and `CombatRecordSerializer.Write`), `CombatDamageModifiers`, `CombatAbilityActivation`, `CombatAbilityBonus`, `CombatAbilityHit`, `CombatService`, `Enmity` | P5-5 | Opus |
 | P5-8 | Creatures: `AIService`, `SpawnService`, `CompanionControlService` | P5-1 | Sonnet build, Opus review |
-| P5-9 | Items and World: `ItemService`, `PropertyService`, `PropertyLoaderService`, `PropertyCityGovernanceService`, `ShuttleService`, `CraftService`, `BlueprintBonuses` | P5-1; `ItemService` waits for the owner decision on `feature/space-revamp` | Sonnet build, Opus review |
-| P5-10 | Character and Companions: `PerkService`, `SkillService`, `PlayerNameService`, `MimicryService`, `DroidService`, `BeastMasteryService` | P5-5; `DroidService` as P5-9 | Sonnet build, Opus review |
+| P5-9 | Items and World: `ItemService`, `PropertyService`, `PropertyLoaderService`, `PropertyCityGovernanceService`, `ShuttleService`, `CraftService`, `BlueprintBonuses` | P5-1; `ItemService` after the other splits (owner decision 5) | Sonnet build, Opus review |
+| P5-10 | Character and Companions: `PerkService`, `SkillService`, `PlayerNameService`, `MimicryService`, `DroidService`, `BeastMasteryService` | P5-5; `DroidService` after the other splits (owner decision 5) | Sonnet build, Opus review |
 | P5-11 | Social, UI and Foundation: `CommunicationService`, `PerformanceAudienceService`, `PerformanceService`, `ExtraHotbarsService`, `GuiWindowBuilder`; `TintMapService` into `Domain` | P5-1 | Sonnet build, Opus review |
 | P5-12 | Static helpers and `new`-built logic types off the lookup (79 `Domain` files, `Native`, `NativeSinks`, `Core`), using the P5-13 design | P5-13, P5-16 | Opus design, Sonnet build |
 | P5-13 | Content without the lookup: design (above) and pilot family | P5-0 | Opus |
 | P5-14 | Content waves, tests and tools; delete `GameServices` and `FacadeAccessor` | P5-12, P5-13, P5-16 | Sonnet (scripted), Opus review |
 | P5-15 | Break the remaining domain cycles and the construction cycles; guards: no two-way pair, the domain order, no deferred resolution | P5-2, P5-14 | Opus |
 | P5-16 | Every type and method over the limits that no split covers. Named so far: `Native` (`ResolveAttackRoll`, `GetDamageRoll`), `NativeSinks.AttackObject`, `EventRegistration`, `ServiceRegistrations.Register`, `UsePerkFeat`, `WeaponActiveAbilityDefinitionBase`, the view models over the limit, `DMChatCommand`, `CharacterChatCommand`, `EmoteChatCommand`, `EquipmentStats`, the two layouts, the player guide topics, `RaceService.LoadRaces`; static content state into services | P5-0 | Sonnet build, Opus review |
-| P5-17 | Test debt: the six exclusion entries, the 39 known engine failures and the load-dependent ones, engine runs surviving the daily restart, a compose project name per run, the smoke craft step, `SWLOR.Toolset.Tests` outside CI | owner approval | Sonnet, Opus for triage |
-| P5-18 | Reload follow-ups (optional, owner call): the 1-2 minute reload pause, the host entry's non-collectible frame rate | owner approval | Opus |
+| P5-17 | Test debt: the six exclusion entries, the 39 known engine failures and the load-dependent ones, engine runs surviving the daily restart, a compose project name per run, the smoke craft step, `SWLOR.Toolset.Tests` outside CI | - | Sonnet, Opus for triage |
+| P5-18 | Dropped from Phase 5 (owner decision 7): the reload pause and the host entry's non-collectible frame rate stay in Reported defects | - | - |
 | P5-19 | End-of-phase verification (gate, engine sweeps on both entries, reload checks, smoke run, live reload) and an updated cutover handoff | all | Opus |
 
 **Order:**
 
 1. P5-0, then P5-1. The owner approves the domain order before any split starts.
 2. The serial chain, one item at a time: P5-3, P5-4, P5-5, P5-7, then P5-2.
-3. Alongside the chain, after P5-1: P5-6, P5-8, P5-9, P5-11, and P5-10 once P5-5 is merged. After P5-0: P5-13 and P5-16. At any
+3. Alongside the chain, after P5-1: P5-8, P5-9, P5-11, and P5-10 once P5-5 is merged. The `SpaceService`, `ItemService` and
+   `DroidService` splits come after every other split (owner decision 5). After P5-0: P5-13 and P5-16. At any
    time: P5-17.
 4. At most three agents run at once, and two items never work on the same files. Content types named in P5-16 stay
    untouched by other items until P5-16 merges.
@@ -279,14 +280,16 @@ Measured costs so far (status file): a conversion costs about 1-3 points of week
 Phase 5 needs roughly 120-400 points, which is two to four weeks of the weekly limit, and about five to eight weeks of
 calendar time with the serial chain and the 95% stop. P5-3 re-measures this.
 
-## Owner decisions needed
+## Owner decisions (2026-11-14)
+
+The owner approved all seven as recommended:
 
 1. The targets, and the exemption list as a new decision.
-2. Content built through the container with the call-text rule, and `GameServices` deleted (P5-13, P5-14).
-3. The static entry points that stay: `Log`, `Clock`, `Random` and `FrameProfiler`. P5-0 classifies the rest.
-4. Short `master` freezes for the `Ability`, `Stat` and `StatusEffect` splits.
-5. Whether the `SpaceService`, `ItemService` and `DroidService` splits wait until `feature/space-revamp` lands on master, or
-   go ahead with that branch ported onto the split services.
-6. Test fixes that change game behaviour land on `master`. An engine test is removed only when it checks behaviour that no
-   longer exists.
-7. Whether P5-18 (reload pause, host frame rate) is in Phase 5 or left for later.
+2. Content is built through the container with the call text kept, and `GameServices` is deleted (P5-13, P5-14).
+3. The static entry points that stay are `Log`, `Clock`, `Random` and `FrameProfiler`. P5-0 classifies the rest.
+4. Short announced `master` freezes cover the `Ability`, `Stat` and `StatusEffect` splits.
+5. The `SpaceService`, `ItemService` and `DroidService` splits come last. If `feature/space-revamp` has not landed on master
+   by then, they go ahead, and the pull request records where each piece of those services went, for the port.
+6. A test fix that changes game behaviour lands on `master` as a normal bug fix. An engine test is removed only when it
+   checks behaviour that no longer exists, with the reason in the pull request.
+7. P5-18 (reload pause, host frame rate) is not part of Phase 5. Both stay in Reported defects.

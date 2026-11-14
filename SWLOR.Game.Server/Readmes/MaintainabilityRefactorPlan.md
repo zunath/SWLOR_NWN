@@ -143,7 +143,7 @@ indirectly (Roslyn recompiles, reflection resets) move to the seams service by s
 **Done:** many-reload unload test passes with the real SWLOR build; a connected client survives a reload on
 a development server.
 
-### Phase 5 - Structural debt (drafted 2026-11-14, awaiting owner approval)
+### Phase 5 - Structural debt (owner-approved 2026-11-14)
 
 - Phases 0-4 met their measured goals but left the structural work the plan also asked for: about 46 logic types over
   1,000 lines (only `Combat` and `Property` were split as they converted), the static service lookup `GameServices` in

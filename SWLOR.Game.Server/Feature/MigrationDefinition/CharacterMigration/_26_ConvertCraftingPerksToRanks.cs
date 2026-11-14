@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;
 /// Retires the perks whose tiers now unlock with skill rank, and refunds the perks whose category and requirements
 /// changed, including Ghost Protocol's new Stealth I prerequisite. Every owned rank returns its SP, the perk leaves
 /// the record and the character's feats, and the record gains one optional rebuild token. The same release also
-/// moves carried incubation enzymes to the 1x1 enzyme item (<see cref="EnzymeBaseItemMigration"/>).
+/// moves carried incubation enzymes to the 1x1 enzyme item (<see cref="EnzymeBaseItemMigration"/>) and gives
+/// carried Sandstorm Gaderffii staffs their Gaderffii look back (<see cref="GaderffiiAppearanceMigration"/>).
 /// </summary>
 internal sealed class _26_ConvertCraftingPerksToRanks : ICharacterMigration
 {

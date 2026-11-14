@@ -29,6 +29,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string _shownSet;
         private string _shownBand;
         private string _shownHears;
+        private PerformanceInstrumentFamily? _shownFamily;
+
+        public string SessionTitle { get => Get<string>(); set => Set(value); }
+        public string InstrumentHeading { get => Get<string>(); set => Set(value); }
 
         public string InstrumentText { get => Get<string>(); set => Set(value); }
         public string SongText { get => Get<string>(); set => Set(value); }
@@ -62,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _shownSet = null;
             _shownBand = null;
             _shownHears = null;
+            _shownFamily = null;
             for (var lane = 0; lane < LaneCount; lane++)
             {
                 _shownLanes[lane] = null;
@@ -71,6 +76,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void ShowSetupCore(PerformerSetup setup)
         {
+            if (_shownFamily != setup.InstrumentFamily)
+            {
+                _shownFamily = setup.InstrumentFamily;
+                var vocals = setup.InstrumentFamily == PerformanceInstrumentFamily.Vocals;
+                SessionTitle = vocals ? "Singing" : "Session";
+                InstrumentHeading = vocals ? "VOCALS" : "INSTRUMENT";
+            }
+
             if (PerformanceBindCache.Changed(ref _shownInstrument, setup.InstrumentText))
                 InstrumentText = setup.InstrumentText;
             if (PerformanceBindCache.Changed(ref _shownSong, setup.SongText))

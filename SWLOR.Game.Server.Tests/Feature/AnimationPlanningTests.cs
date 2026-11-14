@@ -29,6 +29,22 @@ public class AnimationPlanningTests : SkillFacadeFixture
         ["HornLoop"] = "sw_hrn_loop", ["HornLow"] = "sw_hrn_low", ["HornMid"] = "sw_hrn_mid",
         ["HornHigh"] = "sw_hrn_high", ["HornFlourish"] = "sw_hrn_flour",
         ["PerformanceBow"] = "sw_pf_bow",
+        ["VocalsLoop"] = "sw_voc_loop", ["VocalsLow"] = "sw_voc_low", ["VocalsMid"] = "sw_voc_mid",
+        ["VocalsHigh"] = "sw_voc_high", ["VocalsFlourish"] = "sw_voc_flour",
+        ["VocalsLowMouthLoop"] = "sw_vlm_loop", ["VocalsLowMouthLow"] = "sw_vlm_low", ["VocalsLowMouthMid"] = "sw_vlm_mid",
+        ["VocalsLowMouthHigh"] = "sw_vlm_high", ["VocalsLowMouthFlourish"] = "sw_vlm_flour",
+        ["VocalsMidMouthLoop"] = "sw_vmm_loop", ["VocalsMidMouthLow"] = "sw_vmm_low",
+        ["VocalsMidMouthHigh"] = "sw_vmm_high", ["VocalsMidMouthFlourish"] = "sw_vmm_flour",
+        ["PipesWideLoop"] = "sw_pwd_loop", ["PipesWideLow"] = "sw_pwd_low",
+        ["PipesWideHigh"] = "sw_pwd_high", ["PipesWideFlourish"] = "sw_pwd_flour",
+        ["TambourineWideLoop"] = "sw_twd_loop", ["TambourineWideLow"] = "sw_twd_low",
+        ["TambourineWideHigh"] = "sw_twd_high", ["TambourineWideFlourish"] = "sw_twd_flour",
+        ["PipesLoop"] = "sw_pip_loop", ["PipesLow"] = "sw_pip_low", ["PipesMid"] = "sw_pip_mid",
+        ["PipesHigh"] = "sw_pip_high", ["PipesFlourish"] = "sw_pip_flour",
+        ["ViolinLoop"] = "sw_vio_loop", ["ViolinLow"] = "sw_vio_low", ["ViolinMid"] = "sw_vio_mid",
+        ["ViolinHigh"] = "sw_vio_high", ["ViolinFlourish"] = "sw_vio_flour",
+        ["TambourineLoop"] = "sw_tam_loop", ["TambourineLow"] = "sw_tam_low", ["TambourineMid"] = "sw_tam_mid",
+        ["TambourineHigh"] = "sw_tam_high", ["TambourineFlourish"] = "sw_tam_flour",
     };
 
     private static string Root

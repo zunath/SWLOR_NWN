@@ -1789,7 +1789,7 @@
     "Line": 577,
     "Member": "StartPerformance",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(player, GetStartMessage(kind, session.IsRoleplay))"
+    "Call": "SendMessageToPC(player, GetStartMessage(kind, session.IsRoleplay, family))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Social/PerformanceService.cs",
@@ -3854,7 +3854,7 @@
     "Line": 135,
     "Member": "PlayBeat",
     "Delivery": "Retained",
-    "Call": "SpeakString(Line(scene, beat))"
+    "Call": "SpeakString(Line(scene, speakerIndex))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/EquipmentRestrictions.cs",
@@ -6550,5 +6550,47 @@
     "Member": "CheckDeflection",
     "Delivery": "Retained",
     "Call": "defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
+    "Line": 1125,
+    "Member": "ApplyMeleeRepeatedTargetDamageModifier",
+    "Delivery": "Retained",
+    "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat(MeleeRepeatedTargetStack.GetStackText(statusEffectIcon, state.Stacks, maxStacks, stackBonus)),\n                    attacker,\n                    false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/World/ShuttleService.cs",
+    "Line": 650,
+    "Member": "ProcessArrival",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, $\"The shuttle touches down at {destinationName}.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/TestBlueprintChatCommand.cs",
+    "Line": 65,
+    "Member": "BuildCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, string.IsNullOrWhiteSpace(filter)\n                            ? $\"There are no level {level} recipes to research.\"\n                            : $\"No level {level} recipe matches '{filter}'. Use /{names[0]} to list them.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/TestBlueprintChatCommand.cs",
+    "Line": 75,
+    "Member": "BuildCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"{matches.Count} level {level} recipes match. Add more of the name, such as /{names[0]} {matches[0].Name}: {listed}{more}\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/TestBlueprintChatCommand.cs",
+    "Line": 83,
+    "Member": "BuildCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, \"The blueprint could not be created.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/TestBlueprintChatCommand.cs",
+    "Line": 89,
+    "Member": "BuildCommand",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, $\"Gave you a fully researched blueprint: {match.Name} (recipe level {Craft.GetRecipe(match.Recipe).Level}).\")"
   }
 ]

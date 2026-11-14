@@ -287,7 +287,12 @@ public static partial class MigrationEngineTests
     internal static void StampLegacyAppearance(EngineTestContext ctx, uint item)
     {
         var revision = ItemAppearanceCatalogMigration.Revisions[GetResRef(item)];
-        ctx.AssertEqual(string.Join(",", revision.Current), string.Join(",", AppearanceParts(item)),
+        // A later release's revision (GaderffiiAppearanceMigration) moves a blueprint on from where this one ended.
+        var blueprint = GaderffiiAppearanceMigration.Revisions.TryGetValue(GetResRef(item), out var later) &&
+                        later.Previous.SequenceEqual(revision.Current)
+            ? later.Current
+            : revision.Current;
+        ctx.AssertEqual(string.Join(",", blueprint), string.Join(",", AppearanceParts(item)),
             $"{GetResRef(item)} blueprint reads as its catalog appearance");
         for (var index = 0; index < revision.Previous.Length; index++)
             switch (revision.Previous.Length)

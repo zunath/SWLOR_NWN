@@ -56,6 +56,62 @@ public static partial class MigrationEngineTests
         ctx.SetResultDetail("All 18 building blueprints: native icon lookup, saved/native model parity, identity, quantity and locals across three reloads.");
     }
 
+    [EngineTest("Sandstorm Gaderffii looks loaded from the saved-data conversion through repeated save and reload",
+        Category = "Gaderffii", TimeoutSeconds = 120f)]
+    public static async Task GaderffiiAppearanceLoadsInTheEngine(EngineTestContext ctx)
+    {
+        var owner = ctx.SpawnCreature("civilian");
+        await ctx.WaitFrameAsync();
+        foreach (var (resref, (_, previous, current)) in GaderffiiAppearanceMigration.Revisions)
+        {
+            // An owned copy the shipped catalog migration moved, and one the player restyled afterwards.
+            foreach (var restyled in new[] { false, true })
+            {
+                var item = await CreateItemAsync(ctx, owner, resref, owner);
+                await ctx.ExecuteInCreatureContextAsync(owner, () =>
+                {
+                    ctx.AssertEqual(string.Join(",", current), string.Join(",", StaffParts(item)), $"{resref} blueprint is the Gaderffii");
+                    for (var index = 0; index < previous.Length; index++)
+                    {
+                        ItemPlugin.SetItemAppearance(item, ItemAppearanceType.WeaponModel, index, previous[index] / 10);
+                        ItemPlugin.SetItemAppearance(item, ItemAppearanceType.WeaponColor, index, previous[index] % 10);
+                    }
+                    if (restyled)
+                        ItemPlugin.SetItemAppearance(item, ItemAppearanceType.WeaponColor, (int)AppearanceWeapon.Top, 2);
+                    var saved = string.Join(",", StaffParts(item));
+                    var expected = restyled ? saved : string.Join(",", current);
+                    SetLocalString(item, "GADERFFII_OWNER", resref);
+                    var uuid = GetObjectUUID(item);
+                    var data = ObjectPlugin.Serialize(item);
+                    ctx.Assert(EnzymeBaseItemMigration.MigrateSavedObject(data, out var migrated) != restyled,
+                        $"{resref} restyled={restyled} saved conversion");
+                    if (!restyled)
+                        data = migrated;
+                    for (var pass = 0; pass < 3; pass++)
+                    {
+                        var restored = ObjectPlugin.Deserialize(data);
+                        ctx.Assert(GetIsObjectValid(restored), $"{resref} reload {pass}");
+                        ctx.AssertEqual(expected, string.Join(",", StaffParts(restored)), $"{resref} restyled={restyled} parts after reload {pass}");
+                        ctx.Assert(GetResRef(restored) == resref && GetBaseItemType(restored) == BaseItem.QuarterStaff &&
+                                   GetItemStackSize(restored) == 1, $"{resref} identity and quantity");
+                        ctx.Assert(GetLocalString(restored, "GADERFFII_OWNER") == resref, $"{resref} ownership marker");
+                        ctx.Assert(!EnzymeBaseItemMigration.MigrateSavedObject(data, out _), $"{resref} retry is idempotent");
+                        data = ObjectPlugin.Serialize(restored);
+                        DestroyObject(restored);
+                    }
+                    ctx.Assert(GetObjectUUID(item) == uuid, $"{resref} source copy keeps its identity");
+                    DestroyObject(item);
+                });
+            }
+        }
+        ctx.SetResultDetail("Sandstorm Gaderffii: a moved copy loads as the Gaderffii and a restyled copy keeps its parts, with identity, quantity and locals across three reloads.");
+    }
+
+    private static int[] StaffParts(uint item) => Enumerable.Range(0, 3)
+        .Select(index => GetItemAppearance(item, ItemAppearanceType.WeaponModel, index) * 10 +
+                         GetItemAppearance(item, ItemAppearanceType.WeaponColor, index))
+        .ToArray();
+
     /// <summary>
     /// The saved-data sweep must save what the engine sweep saves. Both converters run on the same legacy payloads,
     /// both results load into the engine, and everything the engine reads back is compared. The production-copy

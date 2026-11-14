@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     {
         private readonly Dictionary<uint, int> _autoAttackCycleCriticalCounts = new();
         private readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
-        private readonly Dictionary<uint, RepeatedTargetDamageState> _meleeRepeatedTargetDamageStates = new();
+        private readonly Dictionary<uint, MeleeRepeatedTargetStack> _meleeRepeatedTargetDamageStates = new();
         private readonly Dictionary<uint, RepeatedTargetDamageState> _rangedRepeatedTargetDamageStates = new();
         private readonly Dictionary<uint, SameTargetPressureState> _sameTargetPressureStates = new();
 
@@ -1107,19 +1107,28 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return damage;
             }
 
-            if (!_meleeRepeatedTargetDamageStates.TryGetValue(attacker, out var state) ||
-                state.Target != defender)
+            if (!_meleeRepeatedTargetDamageStates.TryGetValue(attacker, out var state))
             {
-                state = new RepeatedTargetDamageState(defender);
+                state = new MeleeRepeatedTargetStack(defender);
+                _meleeRepeatedTargetDamageStates[attacker] = state;
             }
 
             var maxStacks = Math.Max(1, (int)Math.Ceiling(maxBonus / (float)bonusPerHit));
-            state.Stacks = Math.Min(state.Stacks + 1, maxStacks);
-            state.LastHit = Clock.UtcNow;
-            _meleeRepeatedTargetDamageStates[attacker] = state;
+            var stackRaised = state.RegisterHit(defender, maxStacks);
+            var stackBonus = Math.Min(maxBonus, state.Stacks * bonusPerHit);
 
             MeleeRepeatedTargetDamageStatusEffect.Refresh(attacker, state.Stacks, statusEffectIcon);
-            return damage + Math.Min(maxBonus, state.Stacks * bonusPerHit);
+
+            // Announce the stack only while it builds; hits at the cap stay silent.
+            if (stackRaised && GetIsPC(attacker))
+            {
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat(MeleeRepeatedTargetStack.GetStackText(statusEffectIcon, state.Stacks, maxStacks, stackBonus)),
+                    attacker,
+                    false);
+            }
+
+            return damage + stackBonus;
         }
 
         /// <summary>

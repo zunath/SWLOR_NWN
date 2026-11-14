@@ -67,7 +67,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 var defense = Space.GetShipDefense(target, defenseBonus);
                 var defenderStat = GetAbilityScore(target, AbilityType.Vitality);
 
-                var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                 var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
 
                 for (var i = 0; i < totalAttacks; i++)
@@ -90,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             AssignCommand(activator, () =>
                             {
-                                ApplyEffectToObject(DurationType.Instant, sound, target);
+                                ShipSound.Play(target, ShipSound.Laser);
                                 ApplyEffectToObject(DurationType.Instant, missile, target);
 
                                 DelayCommand(0.3f, () =>
@@ -103,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         {
                             AssignCommand(activator, () =>
                             {
-                                ApplyEffectToObject(DurationType.Instant, sound, target);
+                                ShipSound.Play(target, ShipSound.Laser);
                                 ApplyEffectToObject(DurationType.Instant, missile, target);
                             });
                         }

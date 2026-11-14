@@ -257,7 +257,7 @@ public class PerformanceServiceTests
     {
         _performance.TogglePlayInstrument(Player, 1);
 
-        Messages().Should().Equal("You must equip an instrument to play music.");
+        Messages().Should().Equal("You must equip an instrument or microphone to perform music. A violin also requires a Violin Bow.");
     }
 
     [Test]

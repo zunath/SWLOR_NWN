@@ -93,6 +93,10 @@ exclusions_for() {
         # The EspionageWorkbench recipe is not in the repository's Design Bible workbook (the owner uploads Bible
         # changes).
         echo "CombatUpgradeBibleRecipeParityTests.LiveRecipes_AreDocumentedInBible"
+        # Roslyn harness compiles IsValidItem, AllowsItemFlags and AllowsWeaponParts out of
+        # AppearanceEditorViewModel.cs; since master #3351 they call GetWeaponPartOptions and GetWeaponPartId, which
+        # the harness does not extract (CS0103 on master too).
+        echo "AppearanceEditorItemValidityTests"
 
         # ---- Hak content tests that read SWLOR_Haks folders other than sw_2da, sw_tlk and sw_ability. The job
         # ---- fetches only those three (a full checkout is 11 GB and 160,000 files). These check models, textures,
@@ -128,6 +132,7 @@ exclusions_for() {
         echo "SavedDataItemSweepTests.BuildingIcons_BlueprintsMatchDistinctNativeDdsResources"
         echo "SavedDataItemSweepTests.EnzymeShrink_MovesEveryEnzymeBlueprintToTheOneByOneBaseItemWithItsOwnIcon"
         echo "ShipItemIconTests.NativeAppearances_MatchBlueprintsAndOnlyNormalizeOriginalModels"
+        echo "ShipSoundTests.EveryShipSound_HasItsSoundFile"
         echo "ShoulderAppearanceTests.ShippedTableCoversAllExternalStylesOnBothSidesForEveryMaleHumanRobe"
         echo "SittablePlaceableWalkmeshTests.Bench_IsApproachedFromItsFront"
         echo "SittablePlaceableWalkmeshTests.ChancellorChair_SeatsSittersFacingTheSeatFront"

@@ -584,7 +584,6 @@ namespace SWLOR.Game.Server.Domain.Space
         public void SelectTarget()
         {
             var player = OBJECT_SELF;
-            var position = GetPosition(player);
 
             if (!IsPlayerInSpaceMode(player)) return;
             EventsPlugin.SkipEvent();
@@ -600,7 +599,7 @@ namespace SWLOR.Game.Server.Domain.Space
             // Targeted the same object - remove it.
             if (currentTarget == target)
             {
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Cancel, 1f, position, Vector3.Zero, Vector3.Zero);
+                PlayerPlugin.PlaySound(player, ShipSound.TargetCancel, target);
                 ClearCurrentTarget(player);
             }
             // Targeted something new. Remove existing target and pick the new one.
@@ -608,7 +607,7 @@ namespace SWLOR.Game.Server.Domain.Space
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
-                PlayerPlugin.ShowVisualEffect(player, (int)VisualEffect.Vfx_UI_Select, 1f, position, Vector3.Zero, Vector3.Zero);
+                PlayerPlugin.PlaySound(player, ShipSound.TargetSelect, target);
             }
         }
 
@@ -2028,7 +2027,7 @@ namespace SWLOR.Game.Server.Domain.Space
                 targetShipStatus.Shield -= remainingDamage;
                 remainingDamage = 0;
                 ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), target, 1.0f);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Deflect), target);
+                ShipSound.Play(target, ShipSound.Deflect);
             }
             else
             {
@@ -2041,7 +2040,7 @@ namespace SWLOR.Game.Server.Domain.Space
             if (remainingDamage > 0)
             {
                 targetShipStatus.Hull -= remainingDamage;
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
+                ShipSound.Play(target, ShipSound.Explosion);
             }
 
             // Safety clamping
@@ -2075,8 +2074,7 @@ namespace SWLOR.Game.Server.Domain.Space
 
                     if (_property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                     {
-                        var location = Location(instance.Area, Vector3.Zero, 0.0f);
-                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                        ShipSound.PlayForCrew(instance.Players, ShipSound.InteriorImpact);
                     }
 
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
@@ -2124,7 +2122,7 @@ namespace SWLOR.Game.Server.Domain.Space
             if (targetShipStatus.Hull > 0)
             {
                 targetShipStatus.Hull -= amount;
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Explosion), target);
+                ShipSound.Play(target, ShipSound.Explosion);
             }
 
             // Safety clamping
@@ -2148,8 +2146,7 @@ namespace SWLOR.Game.Server.Domain.Space
 
                     if (_property.TryGetLoadedInstance(dbPlayerShip.PropertyId, out var instance))
                     {
-                        var location = Location(instance.Area, Vector3.Zero, 0.0f);
-                        ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
+                        ShipSound.PlayForCrew(instance.Players, ShipSound.InteriorImpact);
                     }
 
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;

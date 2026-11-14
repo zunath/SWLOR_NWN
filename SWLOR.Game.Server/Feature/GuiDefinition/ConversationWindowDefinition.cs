@@ -32,18 +32,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindOnClosed(model => model.OnWindowClosed())
                 .AddColumn(root =>
                 {
+                    // The speaker's name spans the whole window. A one-line label inside the portrait column clipped any
+                    // name wider than the portrait, such as "Nar Shaddaa Security".
+                    root.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .BindText(model => model.SpeakerName)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(28f);
+                    });
+
                     root.AddRow(header =>
                     {
                         header.AddColumn(portrait =>
                         {
-                            portrait.AddRow(row =>
-                            {
-                                row.AddLabel()
-                                    .BindText(model => model.SpeakerName)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                    .SetHeight(28f);
-                            });
                             portrait.AddRow(row =>
                             {
                                 row.AddImage()

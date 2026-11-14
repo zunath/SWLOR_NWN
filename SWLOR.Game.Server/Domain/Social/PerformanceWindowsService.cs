@@ -178,11 +178,17 @@ namespace SWLOR.Game.Server.Domain.Social
             var track = ChooseSong(session.PlayerId, preference.SongTrackId);
             return setup with
             {
+                InstrumentFamily = session.InstrumentFamily,
                 SetText = hasSecondSet ? $"{set} + {PerformanceRiderText.GetName(preference.SecondSet)}" : set,
                 SongText = track >= 0 ? _music.GetTrackName(track) : "No song",
-                InstrumentText = GetIsObjectValid(session.Instrument)
-                    ? GetName(session.Instrument)
-                    : DescribeFamily(session.InstrumentFamily)
+                InstrumentText = session.InstrumentFamily switch
+                {
+                    PerformanceInstrumentFamily.Vocals => "Microphone",
+                    PerformanceInstrumentFamily.Pipes => "Panpipes",
+                    _ => GetIsObjectValid(session.Instrument)
+                        ? GetName(session.Instrument)
+                        : DescribeFamily(session.InstrumentFamily)
+                }
             };
         }
 
@@ -280,7 +286,15 @@ namespace SWLOR.Game.Server.Domain.Social
 
         private static string DescribeFamily(PerformanceInstrumentFamily family)
         {
-            return family == PerformanceInstrumentFamily.Horns ? "Horn" : "Strings";
+            return family switch
+            {
+                PerformanceInstrumentFamily.Horns => "Horn",
+                PerformanceInstrumentFamily.Vocals => "Vocals",
+                PerformanceInstrumentFamily.Pipes => "Pipes",
+                PerformanceInstrumentFamily.BowedStrings => "Violin",
+                PerformanceInstrumentFamily.Percussion => "Percussion",
+                _ => "Strings"
+            };
         }
 
         // The calls into the unconverted Gui, Perk, Stat, PlayerName and Performance statics, one line each so a test can answer them.

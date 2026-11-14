@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

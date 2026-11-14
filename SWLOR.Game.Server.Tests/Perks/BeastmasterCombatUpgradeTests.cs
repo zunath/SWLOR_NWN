@@ -195,8 +195,8 @@ public class BeastmasterCombatUpgradeTests
 
         var anger = new AngerAbilityDefinition().BuildAbilities()[FeatType.Anger1];
         AssertStaminaAbility(anger, "Anger I", RecastGroup.Anger, 12f, 3, requiresTarget: true);
-        anger.AITargetSelector.Should().NotBeNull();
-        anger.AIScore.Should().NotBeNull();
+        anger.GetAITargetSelector().Should().NotBeNull();
+        anger.GetAIScore().Should().NotBeNull();
         var angerSource = File.ReadAllText((FindRepositoryRoot() / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "AngerAbilityDefinition.cs").FullName);
         angerSource.Should().Contain("ApplyTemporaryHP(activator, new HealAmount(68, 3.75f), 30f);",
             "Anger II's shield lasts the 30 seconds its description promises");
@@ -206,8 +206,8 @@ public class BeastmasterCombatUpgradeTests
         guardingRoar.IsHostileAbility.Should().BeTrue();
         guardingRoar.IsAreaAbility.Should().BeTrue();
         guardingRoar.MaxRange.Should().Be(5f);
-        guardingRoar.AITargetSelector.Should().NotBeNull();
-        guardingRoar.AIScore.Should().NotBeNull();
+        guardingRoar.GetAITargetSelector().Should().NotBeNull();
+        guardingRoar.GetAIScore().Should().NotBeNull();
 
         var ironHide = new IronHideAbilityDefinition().BuildAbilities()[FeatType.IronHide1];
         AssertStaminaAbility(ironHide, "Iron Hide I", RecastGroup.IronHide, 18f, 3, requiresTarget: false);
@@ -416,7 +416,7 @@ public class BeastmasterCombatUpgradeTests
         ability.IsHostileAbility.Should().BeTrue();
         ability.MaxRange.Should().Be(15f);
         ability.HasExplicitMaxRange.Should().BeTrue();
-        ability.AIScore.Should().NotBeNull();
+        ability.GetAIScore().Should().NotBeNull();
         ability.ActivationAction.Should().NotBeNull();
         ability.ImpactDelay.Should().Be(1f);
     }

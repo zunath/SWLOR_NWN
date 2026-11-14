@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Domain.Crafting
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     public enum RecipeType
     {

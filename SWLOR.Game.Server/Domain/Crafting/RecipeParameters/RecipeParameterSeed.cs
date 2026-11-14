@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Crafting.RecipeParameters
 {

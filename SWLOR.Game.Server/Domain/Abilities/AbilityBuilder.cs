@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -14,6 +13,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         private readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
         private AbilityDetail _activeAbility;
+
+        /// <summary>The ability currently being built; extensions declared by higher domains attach their own settings to it.</summary>
+        public AbilityDetail ActiveAbility => _activeAbility;
 
         /// <summary>
         /// The perk the ability currently being built belongs to. Used by shared configuration
@@ -502,26 +504,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         {
             _activeAbility.CustomValidation = action;
 
-            return this;
-        }
-
-        public AbilityBuilder HasAITarget(AITargetSelector selector)
-        {
-            _activeAbility.AITargetSelector = selector;
-
-            return this;
-        }
-
-        public AbilityBuilder HasAIScore(AIScoreCalculation score)
-        {
-            _activeAbility.AIScore = score;
-
-            return this;
-        }
-
-        public AbilityBuilder HasAIHitPointCostPercent(Func<uint, int> costPercent)
-        {
-            _activeAbility.AIHitPointCostPercent = costPercent;
             return this;
         }
 

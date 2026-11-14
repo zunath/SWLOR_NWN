@@ -62,7 +62,7 @@ public class KitchenEnhancementSlotsTests
         var slots = new KitchenEnhancementSlots(3);
         slots.Fill(2, 99u, "C", 0);
 
-        var request = new CraftSessionStartRequest(SWLOR.Game.Server.Domain.Crafting.RecipeType.MynockMeatBall, OBJECT_INVALID, slots.Items);
+        var request = new CraftSessionStartRequest(SWLOR.Game.Server.Domain.Foundation.RecipeType.MynockMeatBall, OBJECT_INVALID, slots.Items);
 
         request.EnhancementItems.Should().Equal(OBJECT_INVALID, OBJECT_INVALID, 99u);
     }

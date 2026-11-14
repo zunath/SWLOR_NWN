@@ -274,6 +274,7 @@ SWLOR.Game.Server.IntegrationTests/Chains/SkillRankUpTests.cs | 10
 SWLOR.Game.Server.IntegrationTests/Support/ServerCaches.cs | 3
 SWLOR.Game.Server.Tests/AI/AIModelTests.cs | 12
 SWLOR.Game.Server.Tests/AI/AIProfileValidationTests.cs | 12
+SWLOR.Game.Server.Tests/AI/AbilityAISettingsSnapshotTests.cs | 2
 SWLOR.Game.Server.Tests/AI/CompanionControlPolicyTests.cs | 2
 SWLOR.Game.Server.Tests/Composition/ConvertedServiceContainerTests.cs | 5
 SWLOR.Game.Server.Tests/Composition/FacadeCacheTests.cs | 3

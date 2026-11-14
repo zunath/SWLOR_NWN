@@ -4,6 +4,7 @@ using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
 

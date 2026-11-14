@@ -19,9 +19,13 @@
 # SWLOR.Game.Server/Core/IContentFactory.cs (master, the parity copy).
 # Move-SupportNamespaces.ps1 (P2-Z2) runs after Apply-FacadeRemoval.ps1: the removal finds master's calls to a removed
 # facade by master's namespaces (Service.<Name>Service), which the move then rewrites to Domain.<Domain>.
-# Move-ServiceTypes.ps1 (P2-Z3) runs last: master code still names the types left directly in Service (through a using of
+# Move-ServiceTypes.ps1 (P2-Z3) runs next: master code still names the types left directly in Service (through a using of
 # Service, the enclosing namespace or a qualified name), and the files Move-SupportNamespaces.ps1 moves out of a
 # Service.<Name>Service folder keep reaching them through Service, so it moves every such reference to the types' domains.
+# Move-DomainOrderTypes.ps1 (P5-1c) runs after it: master names the domain order's type moves
+# (tools/Refactor/DomainOrderTypeMoves.json) through Service.<Name>Service, which Move-SupportNamespaces.ps1 first turns into
+# Domain.<Domain>; only then can it send Domain.<Domain>.<Type> on to its lower domain. A P2-Z3 type that moves again
+# (Log, FrameProfiler) has its TypeMoves.json entry point at its last namespace, so Move-ServiceTypes.ps1 still finds it.
 #
 # "Owns" means the branch's only change to the file is the script's rewrite, so on a merge conflict in an owned file
 # the sync takes master's version and runs the script again instead of merging by hand.
@@ -31,3 +35,4 @@ tools/Refactor/Apply-FacadeRemoval.ps1
 tools/Refactor/Apply-ContentInjection.ps1
 tools/Refactor/Move-SupportNamespaces.ps1
 tools/Refactor/Move-ServiceTypes.ps1
+tools/Refactor/Move-DomainOrderTypes.ps1

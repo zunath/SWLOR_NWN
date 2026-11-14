@@ -519,8 +519,10 @@ def recover(pressure, hours):
     return pressure * 0.5 ** (hours / RECOVERY_HALF_LIFE_HOURS)
 
 
-def trade_xp(profit):
-    return 0 if profit <= 0 else min(XP_MAX_PER_SALE, int(profit * XP_PER_PROFIT_CREDIT))
+def trade_xp(profit, xp_earned_from_lot=0):
+    """Mirrors TradeRules.GetSaleXp: the cap is per cargo lot, less what earlier sales from the lot gave."""
+    left = XP_MAX_PER_SALE - max(0, xp_earned_from_lot)
+    return 0 if profit <= 0 or left <= 0 else min(left, int(profit * XP_PER_PROFIT_CREDIT))
 
 
 # ---------------------------------------------------------------------------------------------------------------

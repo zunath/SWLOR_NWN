@@ -87,13 +87,18 @@ namespace SWLOR.Game.Server.Service.TradeService
             return price - TradeTariffRules.GetTariff(price, tariffPercent);
         }
 
-        /// <summary>Piloting XP for a sale: 1 per credit of profit over what the units cost, at most two kills' worth.</summary>
-        public static int GetSaleXp(int profit)
+        /// <summary>
+        /// Piloting XP for a sale: 1 per credit of profit over what the units cost, at most two kills' worth per cargo lot.
+        /// <paramref name="xpEarnedFromLot"/> is what earlier sales from the same lot gave, so splitting a lot into many
+        /// orders cannot get past the cap.
+        /// </summary>
+        public static int GetSaleXp(int profit, int xpEarnedFromLot = 0)
         {
-            if (profit <= 0)
+            var left = TradeTuning.XpMaximumPerSale - Math.Max(0, xpEarnedFromLot);
+            if (profit <= 0 || left <= 0)
                 return 0;
 
-            return (int)Math.Min(TradeTuning.XpMaximumPerSale, Math.Floor(profit * TradeTuning.XpPerProfitCredit));
+            return (int)Math.Min(left, Math.Floor(profit * TradeTuning.XpPerProfitCredit));
         }
 
         /// <summary>The red text a refused order shows.</summary>

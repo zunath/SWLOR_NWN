@@ -211,6 +211,10 @@ namespace SWLOR.Game.Server.Service
             // in between leaves a mark the next login applies once (ApplyPendingTrade). The sale's cost basis is read
             // from a copy of the lot, so the bay changes only through the mark.
             var cost = CargoHoldRules.RemoveUnits(CopyLot(ship.Cargo, commodity), commodity, order.Units);
+            // The XP cap belongs to the lot: what earlier sales from it gave counts against it, and the rest of the lot
+            // keeps the total, saved with the bay.
+            var profit = order.Credits - cost;
+            var xp = TradeRules.GetSaleXp(profit, ship.Cargo.TryGetValue(commodity, out var soldLot) ? soldLot.XpEarned : 0);
             var trade = new PendingTrade { Id = Guid.NewGuid().ToString(), ShipId = ship.Id, Commodity = commodity, Units = -order.Units };
 
             // The sale is reserved on the ship first, so a restart before the bay is saved cannot let another pilot fly the
@@ -227,18 +231,18 @@ namespace SWLOR.Game.Server.Service
             }
 
             RecordTrade(ship, player, trade);
+            if (xp > 0 && ship.Cargo.TryGetValue(commodity, out var restOfLot))
+                restOfLot.XpEarned += xp;
             ship.PendingSaleTradeId = string.Empty;
             AddPressure(state, commodity, order.Units, now);
             DB.Set(ship);
             DB.Set(state);
             PayTariff(dock, order.Tariff, player);
 
-            var profit = order.Credits - cost;
             var profitText = profit >= 0 ? $"a profit of {profit}" : $"a loss of {-profit}";
             SendMessageToPC(player, ColorToken.Green($"Sold {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}, {profitText}."));
             Log.Write(LogGroup.Space, $"TRADE SELL - {PlayerName.GetAuditName(player)} - {order.Units} {commodity} for {order.Credits} (cost {cost}, tariff {order.Tariff}) at {exchangeType} - ship {ship.Id}");
 
-            var xp = TradeRules.GetSaleXp(profit);
             if (xp > 0)
                 Skill.GiveSkillXP(player, SkillType.Piloting, xp);
 
@@ -286,7 +290,7 @@ namespace SWLOR.Game.Server.Service
         {
             var copy = new Dictionary<CommodityType, CargoLot>();
             if (cargo.TryGetValue(commodity, out var lot))
-                copy[commodity] = new CargoLot { Units = lot.Units, CostBasis = lot.CostBasis };
+                copy[commodity] = new CargoLot { Units = lot.Units, CostBasis = lot.CostBasis, XpEarned = lot.XpEarned };
             return copy;
         }
 

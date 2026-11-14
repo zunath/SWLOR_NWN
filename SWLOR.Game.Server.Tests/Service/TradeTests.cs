@@ -344,6 +344,26 @@ public class TradeTests
         TradeRules.GetSaleXp(1_000_000).Should().Be(TradeTuning.XpMaximumPerSale);
     }
 
+    [Test]
+    public void TradeXp_CapsTheLot_SoSplittingASaleGivesNoMore()
+    {
+        // One order for a lot worth 20,000 profit, against the same lot sold in 17 orders.
+        var single = TradeRules.GetSaleXp(20_000);
+        var earned = 0;
+        for (var i = 0; i < 17; i++)
+            earned += TradeRules.GetSaleXp(20_000 / 17, earned);
+        earned.Should().Be(single).And.Be(TradeTuning.XpMaximumPerSale);
+
+        TradeRules.GetSaleXp(500, 1000).Should().Be(200, "only what the lot has left counts");
+        TradeRules.GetSaleXp(500, TradeTuning.XpMaximumPerSale).Should().Be(0);
+
+        var sell = ReadServerSource("Service", "Trade.cs").Replace("\r\n", "\n");
+        sell.Should().Contain("var xp = TradeRules.GetSaleXp(profit, ship.Cargo.TryGetValue(commodity, out var soldLot) ? soldLot.XpEarned : 0);")
+            .And.Contain("restOfLot.XpEarned += xp;");
+        sell.IndexOf("restOfLot.XpEarned += xp;", StringComparison.Ordinal)
+            .Should().BeLessThan(sell.IndexOf("DB.Set(ship);\n            DB.Set(state);", StringComparison.Ordinal), "the lot's total is saved with the bay");
+    }
+
     // Cargo spill
 
     [Test]

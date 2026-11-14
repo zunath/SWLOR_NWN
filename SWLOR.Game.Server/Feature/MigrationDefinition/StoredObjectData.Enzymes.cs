@@ -23,7 +23,7 @@ internal sealed partial class StoredObjectData
     internal static bool MigrateEnzymeNode(Node node, bool isItem, HashSet<Node> visited)
     {
         if (!visited.Add(node)) return false;
-        var changed = false;
+        var changed = MigrateRetiredAppearances(node, isItem);
         if (isItem)
         {
             var currentModel = ReadSimpleModel(node);
@@ -51,8 +51,8 @@ internal sealed partial class StoredObjectData
             if (droid != null)
             {
                 var original = ReadText(droid);
-                var migrated = HeadgearSlotMigration.MigrateDroid(original,
-                    data => MigrateEnzymeData(data, out var result) ? result : data, repairHeadgear: false);
+                var migrated = RetiredAppearanceMigration.MigrateDroidAppearance(HeadgearSlotMigration.MigrateDroid(original,
+                    data => MigrateEnzymeData(data, out var result) ? result : data, repairHeadgear: false));
                 if (original != migrated)
                 {
                     WriteText(droid, migrated);

@@ -35,7 +35,7 @@ internal static class StoredItemSweep
         var converter = EnzymeStoredItemConverter.Instance;
         var changed = Sweep(pass, converter);
         changed += pass.Process<OverflowItem>(item => MigrateData(converter, item.Data, value => item.Data = value));
-        Log.Write(LogGroup.Migration, $"Migration #{version}: Updated enzyme sizes, building icons and Gaderffii looks in {changed} stored records.", true);
+        Log.Write(LogGroup.Migration, $"Migration #{version}: Updated enzyme sizes, building icons, Gaderffii looks and retired appearances in {changed} stored records.", true);
     }
 
 
@@ -81,7 +81,8 @@ internal static class StoredItemSweep
         // Cosmetic chest templates retain Armor so ApplyOutfit can still load them.
         changed += pass.Process<PlayerOutfit>(outfit =>
             MigrateData(converter, outfit.Data, value => outfit.Data = value, repairHeadgear: false) |
-            MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value));
+            MigrateData(converter, outfit.HelmetData, value => outfit.HelmetData = value) |
+            (converter is EnzymeStoredItemConverter && RetiredAppearanceMigration.UpdateOutfitIds(outfit)));
         changed += pass.Process<DMCreature>(creature => MigrateData(converter, creature.Data, value => creature.Data = value));
         changed += pass.Process<PlayerShip>(ship =>
         {

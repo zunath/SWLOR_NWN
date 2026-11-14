@@ -5,18 +5,6 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service;
 
-/// <summary>The native operations required for a temporary per-creature animation replacement.</summary>
-public interface INamedAnimationRuntime
-{
-    bool IsValid(uint creature);
-    string GetToken(uint creature);
-    void SetToken(uint creature, string token);
-    void Replace(uint creature, string source, string replacement);
-    ActionType CurrentAction(uint creature);
-    void ClearActions(uint creature);
-    void Schedule(float seconds, Action callback);
-}
-
 /// <summary>Owns temporary replacements; callbacks from superseded playbacks cannot clear a newer one.</summary>
 public sealed class NamedAnimationPlayback
 {
@@ -34,7 +22,9 @@ public sealed class NamedAnimationPlayback
     private const string EndingPrefix = "ending:";
     private readonly INamedAnimationRuntime _runtime;
     private readonly Action<uint, Func<bool>> _releasePose;
+    private readonly Action<uint> _restoreEquipmentMappings;
     private readonly Dictionary<uint, EquipmentRequest> _equipmentRequests = new();
+    private readonly Dictionary<uint, string> _mappedPlaybackTokens = new();
     private readonly Dictionary<uint, string> _restrictedPlaybackTokens = new();
     // Hold mappings match the weapon equipped at start, so any equipment change releases them.
     private readonly Dictionary<uint, string> _heldPlaybackTokens = new();
@@ -75,10 +65,12 @@ public sealed class NamedAnimationPlayback
         return true;
     }
 
-    public NamedAnimationPlayback(INamedAnimationRuntime runtime, Action<uint, Func<bool>> releasePose = null)
+    public NamedAnimationPlayback(INamedAnimationRuntime runtime, Action<uint, Func<bool>> releasePose = null,
+        Action<uint> restoreEquipmentMappings = null)
     {
         _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
         _releasePose = releasePose;
+        _restoreEquipmentMappings = restoreEquipmentMappings;
     }
 
     /// <param name="liftShoulderHoldInPlace">
@@ -114,8 +106,10 @@ public sealed class NamedAnimationPlayback
     {
         if (!float.IsFinite(duration) || duration <= 0 || duration > 600) throw new ArgumentOutOfRangeException(nameof(duration));
         if (!_runtime.IsValid(creature)) throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
+        var physicalRifleHold = weaponHold == AnimationWeaponHold.Rifle ? ReadPhysicalRifleHold(creature) : RifleHoldSource;
         var token = Guid.NewGuid().ToString("N");
         _runtime.SetToken(creature, token);
+        _mappedPlaybackTokens[creature] = token;
         try
         {
             _runtime.Replace(creature, StartSource, start);
@@ -146,15 +140,15 @@ public sealed class NamedAnimationPlayback
                 _runtime.Replace(creature, TorchHoldSource, "");
             _runtime.Replace(creature, ShoulderHoldSource, weaponHold switch
             {
-                AnimationWeaponHold.Rifle => RifleHoldSource,
+                AnimationWeaponHold.Rifle => physicalRifleHold,
                 AnimationWeaponHold.Shoulder => NoHoldName,
                 _ => liftShoulderHoldInPlace ? NoHoldName : ""
             });
             // Native queue cleanup normally runs first. A module-owned timeout also restores the
             // map when combat, movement, death, or another script clears the queued cleanup action.
-            _runtime.Schedule(duration + 1f, () => Complete(creature, token));
+            _runtime.Schedule(duration + 1f, () => CompleteNaturally(creature, token, weaponHold));
             if (completeAtDuration)
-                _runtime.Schedule(duration, () => Complete(creature, token));
+                _runtime.Schedule(duration, () => CompleteNaturally(creature, token, weaponHold));
             return token;
         }
         catch
@@ -162,6 +156,17 @@ public sealed class NamedAnimationPlayback
             Complete(creature, token);
             throw;
         }
+    }
+
+    private string ReadPhysicalRifleHold(uint creature)
+    {
+        var rifle = _runtime.Replacement(creature, RifleHoldSource);
+        var shoulder = _runtime.Replacement(creature, ShoulderHoldSource);
+        var carrier = _runtime.Replacement(creature, HoldCarrierSource);
+        var fittedClear = rifle != null && rifle.StartsWith("rf", StringComparison.Ordinal) && carrier == rifle;
+        if ((rifle == NoHoldName || carrier == NoHoldName || fittedClear) &&
+            !string.IsNullOrEmpty(shoulder) && shoulder != NoHoldName) return shoulder;
+        return string.IsNullOrEmpty(rifle) || rifle == NoHoldName ? RifleHoldSource : rifle;
     }
 
     /// <summary>Reserves one-shot native preview ownership without installing authored mappings.</summary>
@@ -191,6 +196,23 @@ public sealed class NamedAnimationPlayback
         }
     }
 
+    /// <summary>Restores a finished rifle one-shot before the engine refreshes its idle hold.</summary>
+    public void CompleteNaturally(uint creature, string token, AnimationWeaponHold weaponHold)
+    {
+        if (weaponHold != AnimationWeaponHold.Rifle ||
+            !_heldPlaybackTokens.TryGetValue(creature, out var heldToken) || heldToken != token)
+        {
+            Complete(creature, token);
+            return;
+        }
+        if (!IsCurrent(creature, token)) return;
+        // The native one-shot leaves itself. A scripted idle while xbowr is still
+        // suppressed drops both arms until the deferred equipment restore runs.
+        var endingToken = EndingPrefix + token;
+        _runtime.SetToken(creature, endingToken);
+        Restore(creature, endingToken);
+    }
+
     public void Complete(uint creature, string token)
     {
         if (!IsCurrent(creature, token)) return;
@@ -214,6 +236,7 @@ public sealed class NamedAnimationPlayback
     private void Restore(uint creature, string endingToken)
     {
         if (!OwnsExit(creature, endingToken)) return;
+        _mappedPlaybackTokens.Remove(creature);
         if (_restrictedPlaybackTokens.TryGetValue(creature, out var activeToken) &&
             (activeToken == endingToken || EndingPrefix + activeToken == endingToken))
             _restrictedPlaybackTokens.Remove(creature);
@@ -232,6 +255,7 @@ public sealed class NamedAnimationPlayback
         if (_torchPlaybackTokens.Remove(creature))
             _runtime.Replace(creature, TorchHoldSource, "");
         _runtime.SetToken(creature, "");
+        _restoreEquipmentMappings?.Invoke(creature);
     }
 
     public void Stop(uint creature, bool cancelQueuedAnimation = false)
@@ -244,6 +268,17 @@ public sealed class NamedAnimationPlayback
         if (cancelQueuedAnimation && _runtime.CurrentAction(creature) == ActionType.Invalid)
             _runtime.ClearActions(creature);
         Complete(creature, token);
+    }
+
+    /// <summary>Discards session ownership before login clears persisted mappings and reapplies equipment.</summary>
+    public void ResetOnLogin(uint creature)
+    {
+        _equipmentRequests.Remove(creature);
+        _mappedPlaybackTokens.Remove(creature);
+        _restrictedPlaybackTokens.Remove(creature);
+        _heldPlaybackTokens.Remove(creature);
+        _torchPlaybackTokens.Remove(creature);
+        if (_runtime.IsValid(creature)) _runtime.SetToken(creature, "");
     }
 
     /// <summary>Death must clear ownership immediately, without playing a recovery on resurrection.</summary>
@@ -272,4 +307,8 @@ public sealed class NamedAnimationPlayback
     public bool IsCurrent(uint creature, string token) =>
         !string.IsNullOrEmpty(token) && !token.StartsWith(EndingPrefix, StringComparison.Ordinal) &&
         _runtime.IsValid(creature) && _runtime.GetToken(creature) == token;
+
+    public bool IsMappedPlaybackActive(uint creature) =>
+        _runtime.IsValid(creature) && _mappedPlaybackTokens.TryGetValue(creature, out var token) &&
+        (_runtime.GetToken(creature) == token || _runtime.GetToken(creature) == EndingPrefix + token);
 }

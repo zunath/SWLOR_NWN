@@ -1,6 +1,8 @@
 using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -10,7 +12,11 @@ namespace SWLOR.Game.Server.Service;
 public static class NamedAnimation
 {
     private const string PlaybackTokenVariable = "_NAMED_ANIMATION_PLAYBACK";
-    private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose);
+    public static bool IsPlaybackActive(uint creature) => !string.IsNullOrEmpty(GetLocalString(creature, PlaybackTokenVariable));
+    public static bool IsMappedPlaybackActive(uint creature) => Playback.IsMappedPlaybackActive(creature);
+    public static event Action<uint> EquipmentMappingsReleased;
+    private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose,
+        creature => EquipmentMappingsReleased?.Invoke(creature));
 
     /// <summary>
     /// Queues a clip without clearing existing actions. Native mappings are restored at
@@ -24,6 +30,7 @@ public static class NamedAnimation
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
         string token = null;
+        var startedHold = AnimationWeaponHold.None;
         AssignCommand(creature, () =>
         {
             if (!Playback.CanStartEquipmentPlayback(creature, request)) return;
@@ -34,14 +41,18 @@ public static class NamedAnimation
                 // Invalidated requests leave the carrier native.
                 var hold = AbilityAnimationEquipment.ReadHold(creature);
                 var held = hold != AnimationWeaponHold.None;
+                var playbackClip = RifleSupportAnimation.ResolveAuthored(creature, clip);
                 if (Playback.CanStartEquipmentPlayback(creature, request) && AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature))
-                    token = Playback.Begin(creature, clip, duration, weaponHold: hold, equipmentRequest: request);
+                {
+                    startedHold = hold;
+                    token = Playback.Begin(creature, playbackClip, duration, weaponHold: hold, equipmentRequest: request);
+                }
                 PlayAnimation(held ? Animation.FireForgetDodgeSide : Animation.PointForward,
-                    held ? clip.PlaybackSpeed(duration) : 1f, duration);
+                    held ? playbackClip.PlaybackSpeed(duration) : 1f, duration);
             });
             // Holds the queue for the clip, as the queued carrier action did.
             ActionWait(duration);
-            ActionDoCommand(() => Playback.Complete(creature, token));
+            ActionDoCommand(() => Playback.CompleteNaturally(creature, token, startedHold));
         });
     }
 
@@ -55,6 +66,7 @@ public static class NamedAnimation
     {
         var duration = Validate(clip, durationSeconds);
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
+        clip = RifleSupportAnimation.ResolveAuthored(creature, clip);
         var nativeHold = holdMode is NamedAnimationHold.Auto or NamedAnimationHold.LiftInPlace
             ? AbilityAnimationEquipment.ReadHold(creature) : AnimationWeaponHold.None;
         var liftInPlace = holdMode == NamedAnimationHold.LiftInPlace && nativeHold == AnimationWeaponHold.Shoulder;
@@ -129,6 +141,8 @@ public static class NamedAnimation
 
     public static void ClearOnDeath(uint creature) => Playback.ClearOnDeath(creature);
 
+    public static void ResetOnLogin(uint creature) => Playback.ResetOnLogin(creature);
+
     /// <summary>Stops restricted and weapon-held poses before equipment changes, preserving the ability's cast/channel and queued actions.</summary>
     [NWNEventHandler(ScriptName.OnSWLORItemEquipValidBefore)]
     [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
@@ -176,6 +190,12 @@ public static class NamedAnimation
         {
             if (string.IsNullOrEmpty(token)) DeleteLocalString(creature, PlaybackTokenVariable);
             else SetLocalString(creature, PlaybackTokenVariable, token);
+        }
+        public string Replacement(uint creature, string source)
+        {
+            var native = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(creature)?.AsNWSObject();
+            return native != null && WeaponAttackAnimation.ReadAnimationReplacements(native).TryGetValue(source, out var replacement)
+                ? replacement : "";
         }
         public void Replace(uint creature, string source, string replacement) => ReplaceObjectAnimation(creature, source, replacement);
         public ActionType CurrentAction(uint creature) => GetCurrentAction(creature);

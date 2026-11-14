@@ -83,10 +83,52 @@ left at idle, touching only with the fingertips, and 8 cm to the right when read
 attacking). `SUPPORT_OFFSETS` in the generator moves the male human's palm, per clip,
 to the barrel axis at weapon-space x = -0.5 cm, seated slightly into the median fitted
 fore-end so the fingers wrap it. When fitting a rifle, seat its fore-end on that palm.
-The firing hand keeps its inherited weapon hook; keying the hook would split the
-shared robe `rhand` joint. Rerun the generator whenever those clips, body roots or
+These generic banks keep the inherited firing-hand hook. Specialized profiles
+below use a controlled idle-basis normalization, with their dependent robe
+banks rebuilt through the owning generator. Rerun the generator whenever those clips, body roots or
 default hands change, then follow the compile and robe refresh steps in its
 docstring.
+
+Specialized rifle profiles are selected by the actual rendered right hand, left
+hand and rifle model. Their public motion source is
+`SWLOR_Haks/tools/RifleGripProfileMotions.json`; private contact measurements are
+not generation inputs. `GenerateRifleGripProfiles.py --game-dir <installed EE
+directory> --output <review folder>` reproduces the native banks and verifies
+their pinned hashes. After source and client verification, use `--apply` to
+install them and `--check` to check the installed payloads. The generic hold
+generator excludes these registered banks during generation and finalization.
+Large profile sets can use hash-pinned gzip `profileArchives` under
+`SWLOR_Haks/tools/rifle_profile_motions/`. Each bounded archive owns only its
+body, motion curves and ability curves; private scratch files remain excluded.
+The owner compiles these batches separately, joins their native programs
+losslessly, and pins both the complete bank and its ordered `bankParts`. Each
+installed part stays below 15 MiB and inherits the next part through the owned
+`a_rfl_<body>_bNN` chain. Check the complete chain with
+`TestRifleProfileArchives.py` and `TestRifleAnimationBanks.py`; the normal body
+root must inherit the final part's original parent when another owner is rebuilt.
+
+Each profile retains the original three stock clips, bone lengths and all other
+hook tracks. Its support-arm and right-wrist rotation keys are authored. Custom
+ready/shot `rhand` orientations use only the pinned idle basis, so a qualified
+profile can retain one item placement through native combat transitions. Arbitrary
+hook rotation keys are forbidden; the owning generator preserves controller timing
+and all hook position/scale tracks.
+Each qualified profile also supplies a complete equipped `pause1` alias (`_b`).
+It retains the pinned male or female base idle's body, leg and other controllers,
+with only the six fitted arm rotations copied and retimed to that idle. Equip and
+unequip own this mapping together with the three rifle roles.
+
+The profile's Aimed Shot (`_a`) retains the pinned authored body and leg motion,
+all translations, scales and timing. Only its six arm rotations and constant
+idle-basis weapon hook are fitted. Its `_in` and `_out` aliases retain the original
+authored phase controllers. Runtime selection uses the current rendered hand pair
+and rifle when playback begins, including queued playback. Natural rifle completion
+restores equipment mappings immediately; explicit cancellation retains its existing
+release behavior. Verify the full entry, cast and delayed exit in the client.
+
+Refresh the owning robe generator for every new `rf...` clip, preserving each
+robe's cloth motion and skeleton bindings. A bank hash or a source contact audit
+does not establish live hand contact or combat entry and exit behavior.
 
 `tools/RenderRifleGrip.py` reads the rifle pose from an ASCII animation model.
 Supply `--source <review.blend>`, `--hand <ASCII pmh0_handr001.mdl>`,

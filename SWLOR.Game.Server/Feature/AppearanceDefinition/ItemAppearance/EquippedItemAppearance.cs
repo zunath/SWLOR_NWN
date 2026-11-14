@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Native;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -64,6 +65,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                                   !HelmetModelRenderer.RendersThroughHead(
                                       creature, TintMapModelResolver.GetCurrentSelections(creature));
 
+            var heldBlaster = (GetItemInSlot(InventorySlot.RightHand, creature) == item ||
+                               GetItemInSlot(InventorySlot.LeftHand, creature) == item) &&
+                              WeaponAppearanceIdentity.Select(creature, item, GetBaseItemType(item));
             var message = server.GetNWSMessage();
             var players = server.GetPlayerList();
             var refreshedClient = false;
@@ -115,7 +119,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                     RefreshInventorySlot(player, player.m_pInventoryGUI, creature, item, cloakItem);
                     RefreshInventorySlot(player, player.m_pOtherInventoryGUI, creature, item, cloakItem);
                 }
-                message.SendServerPlayerItemUpdate_DestroyItem(player, item);
+                // A blaster's appearance identity already holds this exact immutable mesh. Deleting it
+                // can free the item still attached to the hand and hide every replacement until relog.
+                if (!heldBlaster) message.SendServerPlayerItemUpdate_DestroyItem(player, item);
                 refreshedClient = true;
             }
 

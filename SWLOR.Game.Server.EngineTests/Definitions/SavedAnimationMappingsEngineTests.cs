@@ -1,10 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Native;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -33,10 +40,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var saved = KatarAnimationRemapPlan.Pairs.Concat(Orphans).ToArray();
                 Install(player, saved);
+                SetLocalString(player, "_NAMED_ANIMATION_PLAYBACK", "saved-playback");
+                ctx.Assert(NamedAnimation.IsPlaybackActive(player), "The saved playback token is present");
                 ctx.AssertEqual(saved.Select(mapping => mapping.Source).Distinct().Count(), Read(player).Count, "The orphaned mappings are installed");
 
                 SavedAnimationMappings.RestoreOnLogin(player);
                 ctx.AssertEqual(0, Read(player).Count, "Empty hands keep no saved mapping");
+                ctx.Assert(!NamedAnimation.IsPlaybackActive(player), "Login releases the saved playback token");
             });
         }
 
@@ -70,6 +80,75 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(PistolAnimationRemap.FormerPistolAttackAnimation,
                     mappings.GetValueOrDefault(PistolAnimationRemap.SlingAttackAnimation), "The pistol attack remap is reapplied");
             });
+        }
+
+        [EngineTest("Login restores a selected rifle profile after saved named playback", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task LoginRestoresRifleAfterSavedPlayback(EngineTestContext ctx)
+        {
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            var player = fixture.Creature;
+            await ctx.ExecuteInCreatureContextAsync(player, () =>
+            {
+                SetCreatureAppearanceType(player, AppearanceType.Human);
+                SetGender(player, Gender.Male);
+                SetPhenoType(PhenoType.Normal, player);
+                var armor = GetItemInSlot(InventorySlot.Chest, player);
+                foreach (var part in new[] { CreaturePart.RightHand, CreaturePart.LeftHand })
+                {
+                    SetCreatureBodyPart(part, 1, player);
+                    if (GetIsObjectValid(armor))
+                        EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)part, 0);
+                }
+                if (GetIsObjectValid(armor))
+                {
+                    EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+                    EquippedItemAppearance.Refresh(player, armor);
+                }
+            });
+            var rifle = await ctx.EquipItemAsync(player, "b_rifle", InventorySlot.RightHand);
+            await ctx.WaitUntilAsync(() => Read(player).GetValueOrDefault(NamedAnimationPlayback.HoldCarrierSource, "") !=
+                NamedAnimationPlayback.NoHoldName, 5f, "the existing equipment hold clear");
+            var field = typeof(RifleSupportAnimation).GetField("_catalog", BindingFlags.Static | BindingFlags.NonPublic)!;
+            var previous = field.GetValue(null);
+            var poses = new RifleSupportPoses("rf_fixture_i", "rf_fixture_r", "rf_fixture_s");
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(player, () =>
+                {
+                    foreach (var part in new[] { AppearanceWeapon.Top, AppearanceWeapon.Bottom })
+                    {
+                        EquippedItemAppearance.Set(rifle, ItemAppearanceType.WeaponModel, (int)part, 1);
+                        EquippedItemAppearance.Set(rifle, ItemAppearanceType.WeaponColor, (int)part, 1);
+                    }
+                    var handModel = typeof(WeaponGripHandRenderer).GetMethod("GetHandModel", BindingFlags.Static | BindingFlags.NonPublic)!;
+                    var weaponPart = typeof(WeaponFit).GetMethod("GetPart", BindingFlags.Static | BindingFlags.NonPublic)!;
+                    var rows = new[]
+                    {
+                        ((string)handModel.Invoke(null, new object[] { player, CreaturePart.RightHand, "r" })!,
+                            (string)handModel.Invoke(null, new object[] { player, CreaturePart.LeftHand, "l" })!,
+                            (int)weaponPart.Invoke(null, new object[] { rifle, AppearanceWeapon.Middle })!, poses)
+                    };
+                    field.SetValue(null, Activator.CreateInstance(field.FieldType, BindingFlags.Instance | BindingFlags.NonPublic,
+                        null, new object[] { rows }, null));
+                    SetLocalString(player, "_NAMED_ANIMATION_PLAYBACK", "saved-rifle-playback");
+                    ReplaceObjectAnimation(player, "xbowr", NamedAnimationPlayback.NoHoldName);
+                    ReplaceObjectAnimation(player, "custom1lp", "sw_aimedshot");
+
+                    SavedAnimationMappings.RestoreOnLogin(player);
+
+                    ctx.Assert(!NamedAnimation.IsPlaybackActive(player), "Login discards persisted playback ownership");
+                    var mappings = Read(player);
+                    ctx.AssertEqual(poses.Idle, mappings.GetValueOrDefault("xbowr"), "The selected idle mapping is reapplied");
+                    ctx.AssertEqual(poses.Ready, mappings.GetValueOrDefault("xbowrdy"), "The selected ready mapping is reapplied");
+                    ctx.AssertEqual(poses.Shot, mappings.GetValueOrDefault("xbowshot"), "The selected firing mapping is reapplied");
+                    ctx.Assert(!mappings.ContainsKey("custom1lp"), "The saved ability mapping is removed");
+                });
+            }
+            finally
+            {
+                field.SetValue(null, previous);
+                await ctx.ExecuteInCreatureContextAsync(player, () => RifleSupportAnimation.Apply(player));
+            }
         }
 
         private static void Install(uint creature, IEnumerable<(string Source, string Replacement)> mappings)

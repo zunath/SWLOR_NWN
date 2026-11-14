@@ -52,6 +52,8 @@ namespace SWLOR.Game.Server.Native
                     for (var index = 0; index < parts.Length; index++)
                     {
                         var rendered = PartSkinModelRenderer.GetItemProjection(item, parts[index], authored[index]);
+                        var grip = WeaponGripHandRenderer.GetItemProjection(item, parts[index], authored[index]);
+                        if (grip != authored[index]) rendered = grip;
                         if (rendered != authored[index])
                             item.m_nArmorModelPart[(int)parts[index]] = rendered;
                     }

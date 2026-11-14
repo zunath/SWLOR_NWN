@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service.CityBountyService
         public static string CheckPost(BountyPostRequest request)
         {
             if (!request.PosterCanPost)
-                return "Posting a bounty needs the right to withdraw from the treasury.";
+                return "Only the mayor, or an official with Access Treasury, can post a bounty.";
 
             if (request.Reward < MinimumReward || request.Reward > MaximumReward)
                 return $"A bounty must pay between {FormatCredits(MinimumReward)} and {FormatCredits(MaximumReward)} credits.";

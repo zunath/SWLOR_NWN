@@ -114,7 +114,7 @@ public class BountyRulesTests
     [Test]
     public void OnlyThosePermittedToPost_CanPost()
     {
-        BountyRules.CheckPost(Post(canPost: false)).Should().Contain("right to withdraw from the treasury");
+        BountyRules.CheckPost(Post(canPost: false)).Should().Contain("Access Treasury");
     }
 
     [Test]

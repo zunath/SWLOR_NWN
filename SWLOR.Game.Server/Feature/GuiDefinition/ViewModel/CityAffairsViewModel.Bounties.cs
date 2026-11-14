@@ -44,6 +44,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string RewardInput { get => Get<string>(); set => Set(value); }
         public bool CanPostBounty { get => Get<bool>(); set => Set(value); }
 
+        // Whether this player may post (Access Treasury as well as an official's role), as of the last refresh.
+        private bool _canPostBounties;
+
         private void InitializeBounties()
         {
             BountyStatusText = string.Empty;
@@ -118,18 +121,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             if (!canPost)
-                options.Add(new GuiComboEntry("Posting needs the right to withdraw from the treasury", 0));
+                options.Add(new GuiComboEntry("Needs the Access Treasury permission", 0));
             else if (_bountyTargets.Count == 0)
                 options.Add(new GuiComboEntry("No one online shows the PvP flag", 0));
 
             TargetOptions = options;
             SelectedTargetIndex = Math.Max(0, _bountyTargets.FindIndex(x => x.PlayerId == selectedPlayerId));
             CanPostBounty = canPost && _bountyTargets.Count > 0;
+            _canPostBounties = canPost;
             ShowSelectedTargetStatus();
         }
 
         private void ShowSelectedTargetStatus()
         {
+            if (!_canPostBounties)
+            {
+                TargetStatusText = "Only the mayor, or an official with Access Treasury, can post a bounty.";
+                TargetStatusColor = GuiColor.White;
+                return;
+            }
+
             if (SelectedTargetIndex < 0 || SelectedTargetIndex >= _bountyTargets.Count)
             {
                 TargetStatusText = "A target must show the PvP flag and have accepted the bounty notice.";

@@ -150,6 +150,23 @@ public class SpaceRevampReviewFixTests
     }
 
     [Test]
+    public void TheLastShipInAnOpenRiftRun_CannotLeaveTheControls()
+    {
+        RiftRunRules.LeavingWouldAbandon(RiftRunPhase.Fighting, 0).Should().BeTrue("a solo exit would wreck the ship");
+        RiftRunRules.LeavingWouldAbandon(RiftRunPhase.Waiting, 0).Should().BeTrue();
+        RiftRunRules.LeavingWouldAbandon(RiftRunPhase.Advancing, 0).Should().BeTrue();
+        RiftRunRules.LeavingWouldAbandon(RiftRunPhase.Fighting, 1).Should().BeFalse("a group's ship waits for its pilot to rejoin");
+        RiftRunRules.LeavingWouldAbandon(RiftRunPhase.Returning, 0).Should().BeFalse("a cleared run is already going home");
+        RiftRunRules.LeavingWouldAbandon(RiftRunPhase.Closing, 0).Should().BeFalse();
+
+        var exit = Between(ReadSource("Feature", "ChatCommandDefinition", "SpaceChatCommand.cs"), "private void ExitSpaceCommand()", "private void DockCommand()");
+        exit.IndexOf("if (Space.RefuseLeavingLastRiftRunShip(user))", StringComparison.Ordinal)
+            .Should().BeGreaterThan(0).And.BeLessThan(exit.IndexOf("Space.WarpPlayerInsideShip(user);", StringComparison.Ordinal));
+        ReadSource("Service", "SpaceRiftRuns.cs").Should().Contain(
+            "RiftRunRules.LeavingWouldAbandon(run.Phase, run.Pilots.Count(x => x != pilot && GetIsObjectValid(x)))");
+    }
+
+    [Test]
     public void AShipAtADerelict_CannotChangeHands()
     {
         ReadSource("Service", "ShipTransfer.cs").Should().Contain("DockedAway = Space.IsDockedAboardHost(ship, out _) || Space.IsDockedAtDerelict(ship, out _),");

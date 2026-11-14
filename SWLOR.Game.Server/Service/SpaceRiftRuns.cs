@@ -170,6 +170,22 @@ namespace SWLOR.Game.Server.Service
                 RiftRunRules.MarkAway(run, pilot);
         }
 
+        /// <summary>
+        /// Refuses /exit for the last pilot flying an open Rift Run: leaving would abandon the run, and its collapse wrecks
+        /// the ship. A disconnect still forfeits (so logging out cannot escape a losing run); a group's pilot may leave,
+        /// since their ship waits for them to rejoin.
+        /// </summary>
+        public static bool RefuseLeavingLastRiftRunShip(uint pilot)
+        {
+            var run = _riftRuns.Values.FirstOrDefault(x => x.Pilots.Contains(pilot));
+            if (run == null || !RiftRunRules.LeavingWouldAbandon(run.Phase, run.Pilots.Count(x => x != pilot && GetIsObjectValid(x))))
+                return false;
+
+            SendMessageToPC(pilot, ColorToken.Red("You are the last ship in this Rift Run. Leaving the controls now would abandon the run, " +
+                                                  "and the collapsing pocket would wreck your ship."));
+            return true;
+        }
+
         /// <summary>A run's waiting ship that left the pocket aboard its host and undocked elsewhere is out of the run.</summary>
         private static void ForgetRiftRunShip(string shipId)
         {

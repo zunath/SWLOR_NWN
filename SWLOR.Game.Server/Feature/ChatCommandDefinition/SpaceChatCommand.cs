@@ -58,6 +58,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (Space.RefuseWhileInterdicted(user))
                         return;
 
+                    // The last ship in an open Rift Run would abandon it, and the collapse wrecks the ship.
+                    if (Space.RefuseLeavingLastRiftRunShip(user))
+                        return;
+
                     Space.WarpPlayerInsideShip(user);
                 });
         }

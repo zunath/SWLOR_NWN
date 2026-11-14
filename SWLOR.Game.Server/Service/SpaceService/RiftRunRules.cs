@@ -20,6 +20,13 @@ namespace SWLOR.Game.Server.Service.SpaceService
             !pilotValid || !inSpace || (!betweenAreas && !inPocket);
 
         /// <summary>
+        /// Whether a pilot leaving the controls would end the run: no other pilot flies in it and it is still open (not
+        /// returning home or closing). A run every pilot left closes at once as failed and wrecks the ships waiting in it.
+        /// </summary>
+        public static bool LeavingWouldAbandon(RiftRunPhase phase, int otherPilots) =>
+            phase != RiftRunPhase.Returning && phase != RiftRunPhase.Closing && otherPilots <= 0;
+
+        /// <summary>
         /// Whether a ship docked aboard a host may undock where the host is: anywhere outside a pocket, and in a pocket
         /// only when that pocket's run already counts the ship (it waits there for its pilot). Any other ship would fly
         /// the pocket without joining the run, so it stays aboard until the host leaves.

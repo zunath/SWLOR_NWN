@@ -911,7 +911,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/SpaceChatCommand.cs",
-    "Line": 118,
+    "Line": 122,
     "Member": "IncursionCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, Space.DescribeIncursion(user))"
@@ -7393,196 +7393,196 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 269,
+    "Line": 271,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Only another player can receive a ship.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 275,
+    "Line": 277,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You already own this ship.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 282,
+    "Line": 284,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You and the recipient must both be at the starport where the ship is docked.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 290,
+    "Line": 292,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ShipTransferRules.GetRefusalMessage(refusal), giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 297,
+    "Line": 299,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"A ship transfer costs {fee} credits.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 310,
+    "Line": 312,
     "Member": "Offer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(giver, $\"You offer {GetShipName(ship)} to {GetName(recipient)}. The transfer fee of {fee} credits is paid when they accept.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 338,
+    "Line": 340,
     "Member": "Decline",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(giver, $\"{GetName(recipient)} declined the ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 350,
+    "Line": 352,
     "Member": "Accept",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The offer has expired.\", recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 368,
+    "Line": 370,
     "Member": "CanCompleteGift",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The offer is no longer valid.\", recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 375,
+    "Line": 377,
     "Member": "CanCompleteGift",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You and the giver must both be at the starport where the ship is docked.\", recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 383,
+    "Line": 385,
     "Member": "CanCompleteGift",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(message, recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 384,
+    "Line": 386,
     "Member": "CanCompleteGift",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(message, giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 390,
+    "Line": 392,
     "Member": "CanCompleteGift",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"The giver cannot pay the {offer.Fee} credit transfer fee.\", recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 391,
+    "Line": 393,
     "Member": "CanCompleteGift",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"A ship transfer costs {offer.Fee} credits.\", giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 422,
+    "Line": 424,
     "Member": "CompleteGift",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"{shipName} is now yours!\"), recipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 423,
+    "Line": 425,
     "Member": "CompleteGift",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"{shipName} now belongs to {GetName(recipient)}.\"), giver, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 520,
+    "Line": 522,
     "Member": "List",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You no longer own this ship.\", seller, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 526,
+    "Line": 528,
     "Member": "List",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Enter an asking price above zero.\", seller, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 533,
+    "Line": 535,
     "Member": "List",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ShipTransferRules.GetRefusalMessage(refusal), seller, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 597,
+    "Line": 599,
     "Member": "CanBuy",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is no longer available.\", buyer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 604,
+    "Line": 606,
     "Member": "CanBuy",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is no longer for sale.\", buyer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 612,
+    "Line": 614,
     "Member": "CanBuy",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship can't be sold right now: \" + ShipTransferRules.GetRefusalMessage(refusal), buyer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 633,
+    "Line": 635,
     "Member": "CompletePurchase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"The price of this item has been changed by the seller. Please try again.\", buyer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 639,
+    "Line": 641,
     "Member": "CompletePurchase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have enough credits to purchase this item.\", buyer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 661,
+    "Line": 663,
     "Member": "CompletePurchase",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(seller, $\"{shipName} sold on the market for {listing.Price} credits. The proceeds are in your market till.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 663,
+    "Line": 665,
     "Member": "CompletePurchase",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"{shipName} is now yours! It is docked at {dockName}.\"), buyer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 741,
+    "Line": 743,
     "Member": "SavePayment",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Your character could not be saved, so nothing was paid.\"), payer, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ShipTransfer.cs",
-    "Line": 780,
+    "Line": 782,
     "Member": "SettleInterruptedPayment",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    $\"A restart stopped a ship from changing hands after you paid {credits} credits for it. The credits were returned.\"))"
@@ -8660,21 +8660,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 208,
+    "Line": 184,
+    "Member": "RefuseLeavingLastRiftRunShip",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(pilot, ColorToken.Red(\"You are the last ship in this Rift Run. Leaving the controls now would abandon the run, \" +\n                                                  \"and the collapsing pocket would wreck your ship.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
+    "Line": 224,
     "Member": "RejoinRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, ColorToken.Cyan(\n                $\"You rejoin the Rift Run in chamber {run.Room + 1} of {RiftRunTuning.Rooms.Count}, the {RiftRunTuning.Rooms[run.Room].Name}: {left} left.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 383,
+    "Line": 399,
     "Member": "PayRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\n                        $\"The pocket is cleared with {RiftRunRules.FormatTimer(secondsLeft)} to spare. The rift returns you in {RiftRunTuning.ReturnDelaySeconds:0} seconds.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceRiftRuns.cs",
-    "Line": 611,
+    "Line": 627,
     "Member": "MessageRiftRun",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
@@ -9192,21 +9199,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 926,
+    "Line": 929,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(StationBuildingRules.DescribeJumpRefusal(refusal, request)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 952,
+    "Line": 955,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 992,
+    "Line": 995,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{ship.CustomName} jumped to {destination.CustomName}, burning {fuel} Station Fuel.\"))"
@@ -9451,42 +9458,42 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 238,
+    "Line": 243,
     "Member": "Sell",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Sold {order.Units} {detail.Name} for {order.Credits} credits{DescribeTariff(order, dock)}, {profitText}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 271,
+    "Line": 275,
     "Member": "SaveTradeGold",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so the trade did not go through.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 372,
+    "Line": 376,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.ShipNotDocked)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 378,
+    "Line": 382,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoExchangeHere)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 385,
+    "Line": 389,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(closed))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Trade.cs",
-    "Line": 391,
+    "Line": 395,
     "Member": "TryGetTrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NotTradedHere)))"
@@ -9507,35 +9514,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 152,
+    "Line": 154,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Only a ship can scoop a cargo pod.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 160,
+    "Line": 162,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.NoCargoBay)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 168,
+    "Line": 170,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(TradeRules.GetRefusalMessage(TradeRefusal.CargoBayFull)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 181,
+    "Line": 183,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Scooped into the cargo bay: {text}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeCargoSpill.cs",
-    "Line": 190,
+    "Line": 192,
     "Member": "ScoopPod",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"The cargo bay is full. The rest stays in the pod.\"))"
@@ -9717,14 +9724,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeOrbitRisk.cs",
-    "Line": 93,
+    "Line": 95,
     "Member": "RollHostilePatrols",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\n                    $\"A {CustomsRules.GetAuthorityName(authority)} customs patrol recognizes your ship and moves to attack on sight!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/TradeOrbitRisk.cs",
-    "Line": 126,
+    "Line": 128,
     "Member": "RollPirateAmbush",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Pirate raiders drop out of hyperspace, hunting your cargo!\"))"

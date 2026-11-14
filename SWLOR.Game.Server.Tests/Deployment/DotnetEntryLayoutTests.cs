@@ -79,7 +79,8 @@ public class DotnetEntryLayoutTests
         powershell.Should().Contain("[ValidateSet(\"host\", \"native\")]").And.Contain("[string]$Entry = \"host\"");
         powershell.Should().Contain("[ValidateSet(\"\", \"true\", \"false\")]").And.Contain("[string]$Collectible = \"\"");
         bash.Should().Contain("ENTRY=\"host\"").And.Contain("--entry)").And.Contain("--collectible)");
-        powershell.Should().Contain("$ComposeProject = \"swlor-engine-tests\"", "the compose project name is the coordinator's to change");
+        powershell.Should().Contain("[string]$ComposeProject = \"\"").And.Contain("swlor-engine-tests-$($worktreeName.Trim('-'))", "one compose project per worktree, so a run never tears down another worktree's run");
+        bash.Should().Contain("--compose-project)");
     }
 
     [Test]

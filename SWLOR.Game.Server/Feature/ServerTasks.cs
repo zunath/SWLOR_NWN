@@ -27,23 +27,34 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnSwlorHeartbeat)]
         public static void ProcessAutoRestart()
         {
-            var now = DateTime.UtcNow.TimeOfDay;
-            var restartRange = RestartTime.Add(new TimeSpan(0, 0, 0, 30));
+            // Engine-test runs hold the server for the whole run, so the daily restart must not cut them off. Production
+            // never enables engine tests, so this changes nothing for players.
+            if (!ShouldAutoRestart(Clock.UtcNow, ApplicationSettings.Get().EngineTestsEnabled))
+                return;
 
-            // Current time is within 30 seconds of the specified restart time.
-            if ((now > RestartTime) && (now < restartRange))
+            SendServerLifecycleNotificationForShutdown("Automated restart has started. Server is shutting down now.");
+
+            ServerRestart.BootAllPlayers("The server is automatically restarting.");
+
+            Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
+
+            DelayCommand(0.1f, () =>
             {
-                SendServerLifecycleNotificationForShutdown("Automated restart has started. Server is shutting down now.");
+                AdministrationPlugin.ShutdownServer();
+            });
+        }
 
-                ServerRestart.BootAllPlayers("The server is automatically restarting.");
+        /// <summary>
+        /// True when <paramref name="utcNow"/> is within 30 seconds after the restart time and engine tests are not running.
+        /// </summary>
+        public static bool ShouldAutoRestart(DateTime utcNow, bool engineTestsEnabled)
+        {
+            if (engineTestsEnabled)
+                return false;
 
-                Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
-
-                DelayCommand(0.1f, () =>
-                {
-                    AdministrationPlugin.ShutdownServer();
-                });
-            }
+            var now = utcNow.TimeOfDay;
+            var restartRange = RestartTime.Add(new TimeSpan(0, 0, 0, 30));
+            return now > RestartTime && now < restartRange;
         }
 
         /// <summary>

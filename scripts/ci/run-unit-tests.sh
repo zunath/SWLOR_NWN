@@ -79,25 +79,6 @@ fi
 exclusions_for() {
     case "$1" in
     SWLOR.Game.Server.Tests)
-        # ---- Failing at the base commit on a full Windows checkout too, so not a runner problem. The
-        # ---- tests and the code drifted apart; fix them separately and delete the lines.
-        # Roslyn harness compiles Stat.RestoreStamina out of Stat.cs; the method now calls
-        # IsStaminaRestorationBlocked and GetActionMode, which the harness does not define (CS0103).
-        echo "ResourceRestorationTests"
-        # Same harness style; it does not define DeleteLocalInt (CS0103).
-        echo "StealthRestTests"
-        # Asserts the text of AbilityRequirementItem.cs, which no longer matches.
-        echo "FirstAidCombatUpgradeTests.FirstAidSupplyRequirements_MatchMerchantStackTemplates"
-        # PlayerMessageAudit.json is stale (refresh it with tools/ExportPlayerMessageAudit.ps1).
-        echo "PlayerMessageAuditTests.MessageInventory_CoversEveryRuntimeCallSite"
-        # The EspionageWorkbench recipe is not in the repository's Design Bible workbook (the owner uploads Bible
-        # changes).
-        echo "CombatUpgradeBibleRecipeParityTests.LiveRecipes_AreDocumentedInBible"
-        # Roslyn harness compiles IsValidItem, AllowsItemFlags and AllowsWeaponParts out of
-        # AppearanceEditorViewModel.cs; since master #3351 they call GetWeaponPartOptions and GetWeaponPartId, which
-        # the harness does not extract (CS0103 on master too).
-        echo "AppearanceEditorItemValidityTests"
-
         # ---- Hak content tests that read SWLOR_Haks folders other than sw_2da, sw_tlk and sw_ability. The job
         # ---- fetches only those three (a full checkout is 11 GB and 160,000 files). These check models, textures,
         # ---- shaders, tilesets, walkmeshes, icons and sounds, which a code refactor cannot change. Folders they

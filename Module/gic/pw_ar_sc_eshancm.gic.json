@@ -5693,7 +5693,140 @@
         "__struct_id": 5,
         "Comment": {
           "type": "cexostring",
-          "value": "Echani monk waypoint: es_monk_note_08"
+          "value": "Echani monk waypoint: es_monk_path_hc_01"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_02"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_03"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_04"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_05"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_06"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_07"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_08"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_09"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_10"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_11"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_12"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_13"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_14"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_15"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_16"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_17"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_18"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_19"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_hc_20"
         }
       }
     ]

@@ -6135,6 +6135,48 @@
           "type": "cexostring",
           "value": "Echani monk waypoint: es_monk_note_03"
         }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_silver_out_01"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_silver_out_02"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_silver_ret_01"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_silver_ret_02"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_silver_ret_03"
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Echani monk waypoint: es_monk_path_silver_ret_04"
+        }
       }
     ]
   }

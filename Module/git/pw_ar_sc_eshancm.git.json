@@ -194638,7 +194638,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "es_monk_path_033"
+                "value": "es_monk_path_hc_01"
               },
               "__struct_id": 0
             }
@@ -194749,7 +194749,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "es_monk_path_034"
+                "value": "es_monk_path_hc_07"
               },
               "__struct_id": 0
             }
@@ -194872,7 +194872,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 141.0
+          "value": 145.0
         },
         "YOrientation": {
           "type": "float",
@@ -194884,7 +194884,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": -0.050637
         },
         "__struct_id": 5
       },
@@ -194995,7 +194995,7 @@
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": -0.154043
         },
         "__struct_id": 5
       },
@@ -195052,7 +195052,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": ""
+                "value": "sentinel"
               },
               "__struct_id": 0
             },
@@ -195067,7 +195067,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": ""
+                "value": "hc_daren"
               },
               "__struct_id": 0
             },
@@ -195094,7 +195094,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 150.9482727050781
+          "value": 150.9
         },
         "YOrientation": {
           "type": "float",
@@ -195102,11 +195102,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 217.401123046875
+          "value": 215.5
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-06
+          "value": -0.058537
         },
         "__struct_id": 5
       },
@@ -195205,7 +195205,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 150.9060821533203
+          "value": 150.9
         },
         "YOrientation": {
           "type": "float",
@@ -195213,11 +195213,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 216.4972229003906
+          "value": 213.0
         },
         "ZPosition": {
           "type": "float",
-          "value": -5.7220458984375e-06
+          "value": -0.154043
         },
         "__struct_id": 5
       },
@@ -195316,7 +195316,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 150.9
+          "value": 145.0
         },
         "YOrientation": {
           "type": "float",
@@ -195324,11 +195324,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 214.5
+          "value": 211.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 0.0
+          "value": -0.050637
         },
         "__struct_id": 5
       },
@@ -195415,7 +195415,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "es_monk_path_047"
+                "value": "es_monk_path_hc_11"
               },
               "__struct_id": 0
             }
@@ -195427,7 +195427,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 141.0
+          "value": 145.0
         },
         "YOrientation": {
           "type": "float",
@@ -195435,7 +195435,7 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 209.5
+          "value": 146.5
         },
         "ZPosition": {
           "type": "float",
@@ -195656,13 +195656,13 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Varo Residence"
+            "0": "Sentinel Daren Or"
           }
         },
         "MapNote": {
           "type": "cexolocstring",
           "value": {
-            "0": "Varo Residence"
+            "0": "Sentinel Daren Or"
           }
         },
         "MapNoteEnabled": {
@@ -195687,7 +195687,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 84.0
+          "value": 150.9
         },
         "YOrientation": {
           "type": "float",
@@ -195695,11 +195695,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 215.0
+          "value": 215.5
         },
         "ZPosition": {
           "type": "float",
-          "value": 10.0
+          "value": -0.058537
         },
         "__struct_id": 5
       },
@@ -195714,7 +195714,7 @@
         },
         "HasMapNote": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "LinkedTo": {
           "type": "cexostring",
@@ -195723,22 +195723,20 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Vos Residence"
+            "0": "es_monk_path_hc_01"
           }
         },
         "MapNote": {
           "type": "cexolocstring",
-          "value": {
-            "0": "Vos Residence"
-          }
+          "value": {}
         },
         "MapNoteEnabled": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
-          "value": "es_monk_note_08"
+          "value": "es_monk_path_hc_01"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -195746,7 +195744,53 @@
         },
         "VarTable": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_02"
+              },
+              "__struct_id": 0
+            }
+          ]
         },
         "XOrientation": {
           "type": "float",
@@ -195754,7 +195798,7 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 31.0
+          "value": 98.7
         },
         "YOrientation": {
           "type": "float",
@@ -195762,11 +195806,2120 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 205.0
+          "value": 75.0
         },
         "ZPosition": {
           "type": "float",
-          "value": 10.0
+          "value": -0.5
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_02"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_02"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_03"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 91.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 75.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.5
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_03"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_03"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_04"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 91.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 92.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_04"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_04"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_05"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 61.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 92.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_05"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_05"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_06"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 61.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 121.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_06"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_06"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_033"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 56.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 121.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_07"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_07"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_08"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 56.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 143.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_08"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_08"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_09"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 110.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 143.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_09"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_09"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_10"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 110.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 146.5
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_10"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_10"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_034"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 145.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 146.5
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_11"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_11"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_12"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 110.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 146.5
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_12"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_12"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_13"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 110.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 143.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_13"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_13"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_14"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 56.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 143.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_14"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_14"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_15"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 56.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 129.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_15"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_15"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_16"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 56.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 121.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_16"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_16"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_17"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 61.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 121.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_17"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_17"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_18"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 61.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 92.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_18"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_18"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_19"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 91.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 92.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_19"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_19"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_hc_20"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 91.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 75.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.5
+        },
+        "__struct_id": 5
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "es_monk_path_hc_20"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "es_monk_path_hc_20"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": ""
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_SCENE"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_HOST"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "__struct_id": 0
+            },
+            {
+              "Name": {
+                "type": "cexostring",
+                "value": "ECHANI_NEXT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "es_monk_path_047"
+              },
+              "__struct_id": 0
+            }
+          ]
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 4.224568749218635e-39
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 98.7
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 75.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -0.5
         },
         "__struct_id": 5
       }

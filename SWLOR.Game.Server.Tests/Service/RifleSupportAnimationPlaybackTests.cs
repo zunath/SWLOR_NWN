@@ -21,7 +21,7 @@ public class RifleSupportAnimationPlaybackTests
         runtime.Maps["xbowshot"].Should().Be(poses.Shot);
         runtime.Maps["pause1"].Should().Be(poses.BaseIdle);
         runtime.Maps["plpause1"].Should().Be("xbowr");
-        runtime.Maps["dodges"].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Maps["dodges"].Should().Be(poses.Idle);
         playback.Apply(1, poses);
         runtime.ClearCalls.Should().Be(1);
         runtime.Callbacks[0]();
@@ -45,7 +45,7 @@ public class RifleSupportAnimationPlaybackTests
         runtime.Maps["plpause1"].Should().Be("rf_a_i");
         runtime.ClearCalls.Should().Be(2);
         runtime.Callbacks[0]();
-        runtime.Maps["dodges"].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Maps["dodges"].Should().Be("rf_c_i");
         runtime.Callbacks[1]();
         runtime.Maps["dodges"].Should().BeEmpty();
         runtime.Maps["xbowr"].Should().Be("rf_c_i");
@@ -172,6 +172,6 @@ public class RifleSupportAnimationPlaybackTests
         playback.Apply(1, Poses("rf_b_"));
         runtime.Callbacks[0]();
         runtime.Maps["xbowr"].Should().Be("rf_b_i");
-        runtime.Maps["dodges"].Should().Be(NamedAnimationPlayback.NoHoldName);
+        runtime.Maps["dodges"].Should().Be("rf_b_i");
     }
 }

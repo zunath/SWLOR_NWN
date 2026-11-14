@@ -162,7 +162,9 @@ public sealed class NamedAnimationPlayback
     {
         var rifle = _runtime.Replacement(creature, RifleHoldSource);
         var shoulder = _runtime.Replacement(creature, ShoulderHoldSource);
-        if ((rifle == NoHoldName || _runtime.Replacement(creature, HoldCarrierSource) == NoHoldName) &&
+        var carrier = _runtime.Replacement(creature, HoldCarrierSource);
+        var fittedClear = rifle != null && rifle.StartsWith("rf", StringComparison.Ordinal) && carrier == rifle;
+        if ((rifle == NoHoldName || carrier == NoHoldName || fittedClear) &&
             !string.IsNullOrEmpty(shoulder) && shoulder != NoHoldName) return shoulder;
         return string.IsNullOrEmpty(rifle) || rifle == NoHoldName ? RifleHoldSource : rifle;
     }

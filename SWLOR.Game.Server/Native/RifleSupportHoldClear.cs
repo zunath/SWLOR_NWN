@@ -88,7 +88,7 @@ internal static unsafe class RifleSupportHoldClear
                     () => NamedAnimation.IsMappedPlaybackActive(actor), actor);
                 if (mappedPlaybackActive ||
                     !mappings.GetValueOrDefault("xbowr", "").StartsWith("rf", StringComparison.Ordinal) ||
-                    !CarrierAvailable(mappings, NamedAnimationPlayback.HoldCarrierSource, NamedAnimationPlayback.NoHoldName) ||
+                    !CarrierAvailable(mappings, NamedAnimationPlayback.HoldCarrierSource, mappings.GetValueOrDefault("xbowr", "")) ||
                     !CarrierAvailable(mappings, NamedAnimationPlayback.ShoulderHoldSource, Projection.PhysicalIdle(actor)))
                 {
                     Projection.Cancel(actor);
@@ -102,7 +102,9 @@ internal static unsafe class RifleSupportHoldClear
                 try
                 {
                     Replace(native, NamedAnimationPlayback.ShoulderHoldSource, Projection.PhysicalIdle(actor));
-                    Replace(native, NamedAnimationPlayback.HoldCarrierSource, NamedAnimationPlayback.NoHoldName);
+                    // Clear the old layer and immediately pose the new fitted grip. An empty
+                    // carrier leaves an observable arm drop on a slow-rendering client.
+                    Replace(native, NamedAnimationPlayback.HoldCarrierSource, mappings["xbowr"]);
                     native.m_nAnimation = DodgeSide;
                     native.m_fAnimSpeed = 1f;
                     wrote = true;

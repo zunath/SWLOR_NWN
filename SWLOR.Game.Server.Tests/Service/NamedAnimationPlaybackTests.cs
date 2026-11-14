@@ -565,6 +565,7 @@ public class NamedAnimationPlaybackTests
 
     [TestCase("rf_fitted_i", "", "", "rf_fitted_i")]
     [TestCase("rf_next_i", NamedAnimationPlayback.NoHoldName, "rf_previous_i", "rf_previous_i")]
+    [TestCase("rf_next_i", "rf_next_i", "rf_previous_i", "rf_previous_i")]
     [TestCase(NamedAnimationPlayback.NoHoldName, "sw_previous", "rf_fitted_i", "rf_fitted_i")]
     public void RifleAbilitiesClearThePhysicalFittedHoldBeforeTakingItsMappingKeys(
         string rifle, string carrier, string shoulder, string physical)

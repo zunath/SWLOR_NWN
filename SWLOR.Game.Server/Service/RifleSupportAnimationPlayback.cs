@@ -15,7 +15,7 @@ public sealed class RifleSupportAnimationPlayback
 
     private readonly Dictionary<uint, RifleSupportPoses> _desired = new();
     private readonly Dictionary<uint, RifleSupportPoses> _applied = new();
-    private readonly Dictionary<uint, (long Token, string PreviousIdle)> _clearing = new();
+    private readonly Dictionary<uint, (long Token, string PreviousIdle, string CarrierIdle)> _clearing = new();
     private readonly Dictionary<uint, string> _uncleared = new();
     private long _token;
     private static readonly string[] Sources = { "xbowr", "xbowrdy", "xbowshot", "pause1" };
@@ -53,20 +53,20 @@ public sealed class RifleSupportAnimationPlayback
             !string.IsNullOrEmpty(_runtime.Replacement(creature, NamedAnimationPlayback.HoldCarrierSource)) ||
             !string.IsNullOrEmpty(_runtime.Replacement(creature, NamedAnimationPlayback.ShoulderHoldSource))) return;
         var token = ++_token;
-        _clearing[creature] = (token, physicalIdle);
+        _clearing[creature] = (token, physicalIdle, next.Idle);
         try
         {
             // Replacement lookup is single-pass. Borrow the shoulder key to clear the physical
-            // old rifle layer while dodges resolves to the existing empty animation.
+            // old rifle layer while dodges plays the new fitted idle without an empty pose.
             _runtime.Replace(creature, NamedAnimationPlayback.ShoulderHoldSource, physicalIdle);
-            _runtime.Replace(creature, NamedAnimationPlayback.HoldCarrierSource, NamedAnimationPlayback.NoHoldName);
+            _runtime.Replace(creature, NamedAnimationPlayback.HoldCarrierSource, next.Idle);
             _runtime.ClearHold(creature);
             // Leave the carrier maps through several network updates so the client sees the clear.
             _runtime.Schedule(.6f, () => FinishClear(creature, token));
         }
         catch
         {
-            RestoreCarriers(creature, physicalIdle);
+            RestoreCarriers(creature, physicalIdle, next.Idle);
             _clearing.Remove(creature);
             throw;
         }
@@ -75,16 +75,16 @@ public sealed class RifleSupportAnimationPlayback
     private void FinishClear(uint creature, long token)
     {
         if (!_clearing.TryGetValue(creature, out var pending) || pending.Token != token) return;
-        RestoreCarriers(creature, pending.PreviousIdle);
+        RestoreCarriers(creature, pending.PreviousIdle, pending.CarrierIdle);
         _clearing.Remove(creature);
         _uncleared.Remove(creature);
         Refresh(creature);
     }
 
-    private void RestoreCarriers(uint creature, string physicalIdle)
+    private void RestoreCarriers(uint creature, string physicalIdle, string carrierIdle)
     {
         if (!_runtime.IsValid(creature) || _runtime.IsTemporaryPlaybackActive(creature)) return;
-        if (_runtime.Replacement(creature, NamedAnimationPlayback.HoldCarrierSource) == NamedAnimationPlayback.NoHoldName)
+        if (_runtime.Replacement(creature, NamedAnimationPlayback.HoldCarrierSource) == carrierIdle)
             _runtime.Replace(creature, NamedAnimationPlayback.HoldCarrierSource, "");
         if (_runtime.Replacement(creature, NamedAnimationPlayback.ShoulderHoldSource) == physicalIdle)
             _runtime.Replace(creature, NamedAnimationPlayback.ShoulderHoldSource, "");

@@ -7,20 +7,20 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,098 | 13,528 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,076 | 13,376 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 44 | 73,985 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 30 | 7,284 lines | none over 150 lines (400 for layout) |
+| 3. Long methods | `LongMethods.txt` | 30 | 7,278 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 22 | 354 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 42 | 111 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 124 | 272 types | none |
-| 7. Domain cycles | `DomainCycles.txt` | 94 | 703 edges | none |
-| 8. Static entry points and static state | `StaticState.txt` | 140 | 267 members | each kept with an approved reason, or removed |
+| 7. Domain cycles | `DomainCycles.txt` | 94 | 700 edges | none |
+| 8. Static entry points and static state | `StaticState.txt` | 139 | 266 members | each kept with an approved reason, or removed |
 
 ## 1. Static service lookup
 
-- 1,098 files, 13,528 uses: 839 using directives and 12,689 uses in code (7,489 in a static context).
-- SWLOR.Game.Server: 656 file(s), 6,048 use(s) (Feature/ 553, Domain/ 79, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
-- SWLOR.Game.Server.EngineTests: 236 file(s), 5,259 use(s).
+- 1,076 files, 13,376 uses: 818 using directives and 12,558 uses in code (7,449 in a static context).
+- SWLOR.Game.Server: 635 file(s), 5,926 use(s) (Feature/ 532, Domain/ 79, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- SWLOR.Game.Server.EngineTests: 235 file(s), 5,229 use(s).
 - SWLOR.Game.Server.Tests: 177 file(s), 2,063 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
@@ -31,10 +31,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CLI: 1 file(s), 5 use(s).
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
-- Content (Feature/) uses in code: 4,765 (1,760 in a static context).
-- Content (Feature/) types that use it: 550. Static classes: 78. Instance classes that use it from a static member: 204 (156 only from static members).
+- Content (Feature/) uses in code: 4,664 (1,750 in a static context).
+- Content (Feature/) types that use it: 529. Static classes: 77. Instance classes that use it from a static member: 202 (156 only from static members).
 
-Largest 15 of 1,098 (all in `StaticLookups.txt`):
+Largest 15 of 1,076 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -102,8 +102,8 @@ Largest 15 of 30 (all in `LongMethods.txt`):
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CombatStyleGuideTopics.Create` | 224 | CombatStyleGuideTopics.cs |
 | `SWLOR.Game.Server.Domain.World.PropertyCityGovernanceService.ProcessCityElections` | 215 | PropertyCityGovernanceService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecordSerializer.Write` | 198 | CombatRecordSerializer.cs |
-| `SWLOR.Game.Server.Domain.UI.GuiWindowBuilder<T>.Build` | 198 | GuiWindowBuilder.cs |
 | `SWLOR.Game.Server.Domain.Abilities.AbilityService.ApplyTelegraphedCombatImpact` | 197 | AbilityService.cs |
+| `SWLOR.Game.Server.Domain.UI.GuiWindowBuilder<T>.Build` | 192 | GuiWindowBuilder.cs |
 
 ## 4. Services per type
 
@@ -190,12 +190,12 @@ Largest 15 of 94 (all in `DomainCycles.txt`):
 
 | Entry | Edges | Detail |
 |---|---:|---|
-| `Gameplay <-> Platform` | 146 | Gameplay -> Platform: 143 edge(s); Platform -> Gameplay: 3 edge(s) |
+| `Gameplay <-> Platform` | 145 | Gameplay -> Platform: 142 edge(s); Platform -> Gameplay: 3 edge(s) |
 | `Foundation <-> Gameplay` | 43 | Foundation -> Gameplay: 5 edge(s); Gameplay -> Foundation: 38 edge(s) |
 | `Gameplay <-> UI` | 24 | Gameplay -> UI: 18 edge(s); UI -> Gameplay: 6 edge(s) |
-| `Foundation <-> Platform` | 22 | Foundation -> Platform: 17 edge(s); Platform -> Foundation: 5 edge(s) |
 | `Character <-> Platform` | 21 | Character -> Platform: 14 edge(s); Platform -> Character: 7 edge(s) |
 | `Combat <-> Gameplay` | 21 | Combat -> Gameplay: 3 edge(s); Gameplay -> Combat: 18 edge(s) |
+| `Foundation <-> Platform` | 20 | Foundation -> Platform: 15 edge(s); Platform -> Foundation: 5 edge(s) |
 | `Gameplay <-> Items` | 15 | Gameplay -> Items: 14 edge(s); Items -> Gameplay: 1 edge(s) |
 | `Platform <-> UI` | 13 | Platform -> UI: 1 edge(s); UI -> Platform: 12 edge(s) |
 | `Platform <-> World` | 13 | Platform -> World: 1 edge(s); World -> Platform: 12 edge(s) |
@@ -208,12 +208,12 @@ Largest 15 of 94 (all in `DomainCycles.txt`):
 
 ## 8. Static entry points and static state
 
-- To classify: 140 types, 266 static fields, 1 static members that resolve from the container.
+- To classify: 139 types, 265 static fields, 1 static members that resolve from the container.
 - Logic (outside Feature/): 34 types, 65 fields; written after initialization (runtime state): 30 fields in 16 types.
-- Content (Feature/): 106 types, 201 fields; written after initialization (runtime state): 18 fields in 13 types. The other fields are tables built once but held in a mutable type (an array, List, Dictionary).
+- Content (Feature/): 105 types, 200 fields; written after initialization (runtime state): 17 fields in 12 types. The other fields are tables built once but held in a mutable type (an array, List, Dictionary).
 - Approved (owner decision 3, not listed): Log (2 fields), Clock (1 fields), Random (1 fields), FrameProfiler (20 fields).
 
-Largest 15 of 140 (all in `StaticState.txt`):
+Largest 15 of 139 (all in `StaticState.txt`):
 
 | Entry | Members | Detail |
 |---|---:|---|

@@ -56,9 +56,9 @@ A candidate id is tried once, also after a restart. Other log lines: `SWLOR_HOST
 
 **Kept:** the NWN process; every engine object and effect (HP, position, inventory, locals, journal, the native effects of status effects); Redis; NWNX event bindings; engine settings (feats, feedback, TLK overrides); installed hooks; the Redis connection; online players, connected and in place.
 
-**Rebuilt by the new build:** every cache and timer (the rerun boot handlers), script dispatch, the service container. Live spawns, properties, docks, shuttle flights, weather and stores are adopted from the world, not recreated.
+**Rebuilt by the new build:** every cache and timer (the rerun boot handlers), script dispatch, the service container. Live spawns, properties, docks, shuttle flights and weather are adopted from the world, not recreated. A cache built from the world at boot that the world can outgrow is carried instead (the area cache and the store list): area instances made since boot stay out of it, as on a server that never reloads.
 
-**Carried** from the old build as data (fields marked `[ReloadState(ReloadStateKind.Carried)]`): status effects of every creature, parties, auras, combat times and points, enmity, several cooldowns, AFK and PvP states, temporary stat modifiers, shuttle boarding, space state, quest encounter creatures and more. The exact list is the CARRIED STATE part of `SWLOR.Game.Server.Tests/Core/Snapshots/ReloadAdoption.txt`.
+**Carried** from the old build as data (fields marked `[ReloadState(ReloadStateKind.Carried)]`): status effects of every creature, parties, auras, combat times and points, enmity, several cooldowns, AFK and PvP states, temporary stat modifiers, shuttle boarding, space state, quest encounter creatures, the area cache, the store list and more. The exact list is the CARRIED STATE part of `SWLOR.Game.Server.Tests/Core/Snapshots/ReloadAdoption.txt`.
 
 **Lost, so expect it after a reload:**
 

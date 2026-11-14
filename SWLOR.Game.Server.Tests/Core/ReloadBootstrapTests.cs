@@ -231,8 +231,7 @@ public class ReloadBootstrapTests
             "SWLOR.Game.Server.Domain.Abilities.MimicryService.AdoptTechniqueDescriptions",
             "SWLOR.Game.Server.Domain.World.PropertyService.AdoptProperties",
             "SWLOR.Game.Server.Domain.World.ShuttleService.AdoptFlights",
-            "SWLOR.Game.Server.Domain.World.WeatherService.AdoptWeather",
-            "SWLOR.Game.Server.Feature.StoreManagement.AdoptStores");
+            "SWLOR.Game.Server.Domain.World.WeatherService.AdoptWeather");
         carry.Select(step => step.Name).Should().Equal(
             "SWLOR.Game.Server.Domain.Economy.GuildService.CarryGuildTasks",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService.CarrySpawns",

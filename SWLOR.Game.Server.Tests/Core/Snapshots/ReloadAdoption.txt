@@ -45,7 +45,7 @@ mod_load SWLOR.Game.Server.Feature.FeedbackMessageConfiguration.ConfigureFeedbac
 mod_load SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp
   nothing: The play options and bans stay set in the engine, and a reload sends no boot notification.
 mod_load SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
-  adopt AdoptStores
+  nothing: The marks and prices stay on the store items in the engine, and the store list is carried.
 mod_load SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
   nothing: The TLK overrides stay in the engine.
 
@@ -83,7 +83,6 @@ SWLOR.Game.Server.Domain.World.ShuttleService._ticketHolders
 SWLOR.Game.Server.Domain.World.WeatherService._areas
 SWLOR.Game.Server.Domain.World.WeatherService._pattern
 SWLOR.Game.Server.Domain.World.WeatherService._regions
-SWLOR.Game.Server.Feature.StoreManagement._stores
 
 == REROLLED STATE ==
 SWLOR.Game.Server.Domain.Creatures.SpawnService._spawnTables
@@ -134,6 +133,7 @@ SWLOR.Game.Server.Domain.Social.PartyService._partyLeaders
 SWLOR.Game.Server.Domain.Space.SpaceService._pendingShipLaunches
 SWLOR.Game.Server.Domain.Space.SpaceService._playersInSpace
 SWLOR.Game.Server.Domain.Space.SpaceService._shipClones
+SWLOR.Game.Server.Domain.World.AreaService.<AreasByResref>k__BackingField
 SWLOR.Game.Server.Domain.World.AreaService.<PlayersByArea>k__BackingField
 SWLOR.Game.Server.Domain.World.HoloComService._nextCallToken
 SWLOR.Game.Server.Domain.World.MusicService._lastBattleThemeCombat
@@ -142,4 +142,5 @@ SWLOR.Game.Server.Domain.World.ShuttleService._boardingNotBeforeUtc
 SWLOR.Game.Server.Domain.World.ShuttleService._missedBoardings
 SWLOR.Game.Server.Domain.World.WeatherService._exposures
 SWLOR.Game.Server.Feature.StatusEffectDefinition.InspiredStatusEffect._lastOvationByPlayer
+SWLOR.Game.Server.Feature.StoreManagement._stores
 SWLOR.Game.Server.Native.RangedWeaponAttackContext._nextRoll

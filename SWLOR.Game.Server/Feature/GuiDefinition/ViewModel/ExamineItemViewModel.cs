@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // A viewer-specific window avoids persisting personal stats on a shared item.
             Gui.ClosePlayerWindow(viewer, GuiWindowType.ExamineItem);
-            Gui.TogglePlayerWindow(viewer, GuiWindowType.ExamineItem, new ExamineItemPayload(item, trackLiveItem: true));
+            Gui.TogglePlayerWindow(viewer, GuiWindowType.ExamineItem, Content.Create<ExamineItemPayload, uint, bool>(item, true));
         }
 
         protected override void Initialize(ExamineItemPayload initialPayload)

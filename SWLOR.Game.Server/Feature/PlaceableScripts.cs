@@ -7,12 +7,35 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class PlaceableScripts
+    public class PlaceableScripts
     {
+        private IConversationService Conversation { get; }
+        private IConversationMenuService ConversationMenu { get; }
+        private ICurrencyService Currency { get; }
+        private IEnmityService Enmity { get; }
+        private IGuiService Gui { get; }
+        private IKeyItemService KeyItem { get; }
+        private IPartyService Party { get; }
+        private IPlayerNameService PlayerName { get; }
+
+        public PlaceableScripts(IConversationService conversation, IConversationMenuService conversationMenu, ICurrencyService currency, IEnmityService enmity, IGuiService gui, IKeyItemService keyItem, IPartyService party, IPlayerNameService playerName)
+        {
+            Conversation = conversation;
+            ConversationMenu = conversationMenu;
+            Currency = currency;
+            Enmity = enmity;
+            Gui = gui;
+            KeyItem = keyItem;
+            Party = party;
+            PlayerName = playerName;
+        }
+
         private const float TeleportPartyMemberRange = 8.0f;
 
         /// <summary>
@@ -20,7 +43,7 @@ namespace SWLOR.Game.Server.Feature
         /// Checks are made for required key items, if specified as local variables on the placeable.
         /// </summary>
         [NWNEventHandler(ScriptName.OnPlaceableTeleport)]
-        public static void UseTeleportDevice()
+        public void UseTeleportDevice()
         {
             var user = GetLastUsedBy();
 
@@ -98,7 +121,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        private static bool IsInCombatOrHasEnmity(uint creature)
+        private bool IsInCombatOrHasEnmity(uint creature)
         {
             return GetIsInCombat(creature) || Enmity.HasEnmity(creature);
         }
@@ -142,7 +165,7 @@ namespace SWLOR.Game.Server.Feature
         /// Handles starting a generic conversation when a placeable is clicked or used by a player or DM.
         /// </summary>
         [NWNEventHandler(ScriptName.OnPlaceableGenericConversation)]
-        public static void GenericConversation()
+        public void GenericConversation()
         {
             var placeable = OBJECT_SELF;
             var user = GetObjectType(placeable) == ObjectType.Placeable ? GetLastUsedBy() : GetClickingObject();
@@ -187,12 +210,12 @@ namespace SWLOR.Game.Server.Feature
         /// make them spend a rebuild token and send them to the rebuild area.
         /// </summary>
         [NWNEventHandler(ScriptName.OnPlaceableBuyRebuild)]
-        public static void PurchaseRebuild()
+        public void PurchaseRebuild()
         {
             PurchaseRebuild(GetPCSpeaker());
         }
 
-        public static bool PurchaseRebuild(uint player)
+        public bool PurchaseRebuild(uint player)
         {
 
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
@@ -222,7 +245,7 @@ namespace SWLOR.Game.Server.Feature
         /// Opens the quest contract board for the player who used the placeable.
         /// </summary>
         [NWNEventHandler(ScriptName.OnQuestContractBoard)]
-        public static void UseQuestContractBoard()
+        public void UseQuestContractBoard()
         {
             var player = GetLastUsedBy();
 

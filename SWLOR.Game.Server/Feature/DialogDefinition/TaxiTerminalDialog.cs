@@ -2,12 +2,22 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.World;
-using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class TaxiTerminalDialog: ConversationMenuDefinition
     {
+        private IDBService DB { get; }
+        private IKeyItemService KeyItem { get; }
+        private ITaxiService Taxi { get; }
+
+        public TaxiTerminalDialog(IDBService db, IKeyItemService keyItem, ITaxiService taxi)
+        {
+            DB = db;
+            KeyItem = keyItem;
+            Taxi = taxi;
+        }
+
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()

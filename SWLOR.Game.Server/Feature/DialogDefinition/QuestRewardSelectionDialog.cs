@@ -1,12 +1,18 @@
 using System.Linq;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Quests;
-using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class QuestRewardSelectionDialog: ConversationMenuDefinition
     {
+        private IQuestService Quest { get; }
+
+        public QuestRewardSelectionDialog(IQuestService quest)
+        {
+            Quest = quest;
+        }
+
         private class Model
         {
             public string QuestId { get; set; }

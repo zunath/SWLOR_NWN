@@ -13,11 +13,13 @@ namespace SWLOR.Game.Server.Composition
     {
         internal static void Register(IServiceCollection services)
         {
+            services.AddSingleton<SWLOR.Game.Server.Feature.PlaceableScripts>();
         }
 
         internal static IEnumerable<ContentSignature> Signatures()
         {
-            yield break;
+            yield return new ContentSignature(typeof(SWLOR.Game.Server.Feature.GuiDefinition.Payload.ExamineItemPayload), typeof(uint));
+            yield return new ContentSignature(typeof(SWLOR.Game.Server.Feature.GuiDefinition.Payload.ExamineItemPayload), typeof(uint), typeof(bool));
         }
     }
 }

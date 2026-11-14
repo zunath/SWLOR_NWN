@@ -519,7 +519,7 @@ public class SnippetServiceTests
     private sealed class TestableSnippetService : SnippetService
     {
         public TestableSnippetService(IConversationService conversation)
-            : base(conversation)
+            : base(conversation, TestContent.WithoutServices)
         {
         }
 

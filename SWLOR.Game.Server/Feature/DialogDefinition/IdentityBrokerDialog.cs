@@ -2,12 +2,20 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
-using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class IdentityBrokerDialog: ConversationMenuDefinition
     {
+        private IDBService DB { get; }
+        private IDisguiseService Disguise { get; }
+
+        public IdentityBrokerDialog(IDBService db, IDisguiseService disguise)
+        {
+            DB = db;
+            Disguise = disguise;
+        }
+
         private class Model
         {
             public string DisguiseId { get; set; }

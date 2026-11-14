@@ -1,12 +1,25 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Space;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class PropertyExitDialog: ConversationMenuDefinition
     {
+        private IAreaService Area { get; }
+        private IDBService DB { get; }
+        private IPropertyService Property { get; }
+        private ISpaceService Space { get; }
+
+        public PropertyExitDialog(IAreaService area, IDBService db, IPropertyService property, ISpaceService space)
+        {
+            Area = area;
+            DB = db;
+            Property = property;
+            Space = space;
+        }
+
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()

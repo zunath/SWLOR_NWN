@@ -1,11 +1,17 @@
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
-using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class XPTomeDialog: ConversationMenuDefinition
     {
+        private ISkillService Skill { get; }
+
+        public XPTomeDialog(ISkillService skill)
+        {
+            Skill = skill;
+        }
+
         private class Model
         {
             public uint Item { get; set; }

@@ -220,6 +220,7 @@ namespace SWLOR.Game.Server.Composition
 
             // World
             services.AddSingleton<IAreaService, AreaService>();
+            services.AddSingleton<ICoxxionBaseDoorsService, CoxxionBaseDoorsService>();
             services.AddSingleton<IFishingService, FishingService>();
             services.AddSingleton<IFishingFightsService, FishingFightsService>();
             services.AddSingleton<IHoloComService, HoloComService>();

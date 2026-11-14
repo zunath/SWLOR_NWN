@@ -52,7 +52,6 @@ SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapModelResolver | 1
 SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapPaletteColors | 6
 SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility | 1
 SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand | 2
-SWLOR.Game.Server.Feature.DialogDefinition.CoxxionTerminalDialog | 1
 SWLOR.Game.Server.Feature.EchaniTempleMonks | 1
 SWLOR.Game.Server.Feature.EventRegistration | 1
 SWLOR.Game.Server.Feature.GuiDefinition.AppearanceEditorDefinition | 1

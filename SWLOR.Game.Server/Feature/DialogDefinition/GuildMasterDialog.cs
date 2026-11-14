@@ -4,12 +4,23 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.NWScript;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Economy;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class GuildMasterDialog: ConversationMenuDefinition
     {
+        private IDBService DB { get; }
+        private IGuiService Gui { get; }
+        private IGuildService Guild { get; }
+
+        public GuildMasterDialog(IDBService db, IGuiService gui, IGuildService guild)
+        {
+            DB = db;
+            Gui = gui;
+            Guild = guild;
+        }
+
         private class Model
         {
             public GuildType Guild { get; set; }

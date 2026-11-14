@@ -27,6 +27,7 @@
     { "name": "CompanionControl", "domain": "Creatures" },
     { "name": "Conversation", "domain": "Foundation" },
     { "name": "ConversationMenu", "domain": "Foundation" },
+    { "name": "CoxxionBaseDoors", "domain": "World" },
     { "name": "Craft", "domain": "Crafting", "extras": [ { "class": "CraftMinigameRouting" }, { "class": "CraftQuickCraft" }, { "class": "CraftResearchExperiment" }, { "class": "CraftSessions" }, { "class": "CraftStyleEffects" } ] },
     { "name": "Currency", "domain": "Economy" },
     { "name": "DB", "domain": "Foundation" },

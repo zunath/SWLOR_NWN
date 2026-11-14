@@ -21,13 +21,15 @@ namespace SWLOR.Game.Server.Domain.Foundation
     public class SnippetService : ISnippetService
     {
         private readonly IConversationService _conversation;
+        private readonly IContentFactory _content;
         private readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new Dictionary<string, SnippetDetail>();
         private readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new Dictionary<string, SnippetDetail>();
         private readonly ThreadLocal<uint> _executionOwner = new ThreadLocal<uint>();
 
-        public SnippetService(IConversationService conversation)
+        public SnippetService(IConversationService conversation, IContentFactory content)
         {
             _conversation = conversation;
+            _content = content;
         }
 
         [BootPhase(BootReload.Rerun)]
@@ -36,7 +38,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         {
             foreach (var type in GetSnippetListDefinitionTypes())
             {
-                var instance = (ISnippetListDefinition)Activator.CreateInstance(type);
+                var instance = _content.Create<ISnippetListDefinition>(type);
                 var snippets = instance.BuildSnippets();
 
                 foreach (var (key, snippet) in snippets)

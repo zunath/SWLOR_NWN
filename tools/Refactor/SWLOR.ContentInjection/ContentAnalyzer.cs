@@ -265,6 +265,14 @@ internal static class ContentAnalyzer
         {
             foreach (var member in type.Members)
             {
+                if (member.IsStatic && member.Reaches && IsPrivateHelper(member))
+                {
+                    // Only the class calls it, and every caller in the class reaches a service too, so it is (or becomes) an instance member.
+                    type.StaticToInstance.Add(member.Name);
+                    AddReached(type, member, byName, names);
+                    continue;
+                }
+
                 if (member.IsStatic && member.Reaches)
                 {
                     type.Refusals.Add(type.File.Refuse(member.Node, $"The static member {type.Name}.{member.Name} of made content reaches a service: move it (and its state) to a singleton or service; a handler there is renamed in HandlerRenames.txt."));
@@ -281,6 +289,12 @@ internal static class ContentAnalyzer
                     AddReached(type, member, byName, names);
             }
 
+            foreach (var member in type.Members)
+            {
+                foreach (var reference in member.OwnReferences.Where(reference => !reference.Invoked && type.StaticToInstance.Contains(reference.Member)))
+                    type.Refusals.Add(type.File.Refuse(reference.Node, $"{type.Name}.{reference.Member} becomes an instance method and is used as a method group here: write a lambda (a method group of an instance method allocates a delegate on each use)."));
+            }
+
             foreach (var constructor in type.Syntax.Members.OfType<ConstructorDeclarationSyntax>().Where(constructor => constructor.ExpressionBody != null))
             {
                 if (type.Needed.Count > 0)
@@ -288,6 +302,13 @@ internal static class ContentAnalyzer
             }
         }
     }
+
+    /// <summary>A private static method that is no handler and no extension method: only its own class calls it.</summary>
+    private static bool IsPrivateHelper(ContentMember member) =>
+        member.Node is MethodDeclarationSyntax method &&
+        !method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword) || modifier.IsKind(SyntaxKind.InternalKeyword) || modifier.IsKind(SyntaxKind.ProtectedKeyword)) &&
+        method.AttributeLists.Count == 0 &&
+        method.ParameterList.Parameters.FirstOrDefault()?.Modifiers.Any(SyntaxKind.ThisKeyword) != true;
 
     private static void AddReached(ContentClass type, ContentMember member, IReadOnlyDictionary<string, ContentClass> byName, NameTable names)
     {

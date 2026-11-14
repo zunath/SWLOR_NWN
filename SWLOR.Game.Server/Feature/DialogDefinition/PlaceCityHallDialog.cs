@@ -2,12 +2,22 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.World;
-using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class PlaceCityHallDialog: ConversationMenuDefinition
     {
+        private IDBService DB { get; }
+        private IPerkService Perk { get; }
+        private IPropertyService Property { get; }
+
+        public PlaceCityHallDialog(IDBService db, IPerkService perk, IPropertyService property)
+        {
+            DB = db;
+            Perk = perk;
+            Property = property;
+        }
+
         private class Model
         {
             public bool IsConfirming { get; set; }

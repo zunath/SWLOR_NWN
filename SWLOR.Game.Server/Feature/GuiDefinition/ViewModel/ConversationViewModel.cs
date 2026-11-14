@@ -6,12 +6,21 @@ using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public sealed class ConversationViewModel : GuiViewModelBase<ConversationViewModel, ConversationPayload>
     {
+        private IConversationService Conversation { get; }
+        private IPlayerNameService PlayerName { get; }
+
+        public ConversationViewModel(IConversationService conversation, IPlayerNameService playerName)
+        {
+            Conversation = conversation;
+            PlayerName = playerName;
+        }
+
         private IConversationSession _session;
         private uint _controllerPlayer;
         private bool _hasImplicitCloseChoice;

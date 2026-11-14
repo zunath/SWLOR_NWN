@@ -87,7 +87,7 @@
     "World": {
       "services": [
         "Area", "Planet", "Weather", "Music", "Shuttle", "Taxi", "Property", "Fishing", "HoloCom",
-        "Traps", "Notes"
+        "Traps", "Notes", "CoxxionBaseDoors"
       ],
       "featureFolders": [
         "FishingLocationDefinition", "PropertyLayoutDefinition", "TrapDefinition"

@@ -78,11 +78,12 @@ public static class ConvertedServiceFixtures
         Load().Where(service => service.AccessorProperty is not null).Select(service => new TestCaseData(service).SetArgDisplayNames(service.Name));
 
     // The full name of the facade the branch removed for a service or a further class, from tools/Refactor/RemovedFacades.json
-    // (named relative to SWLOR.Game.Server.Service: Taxi, or QuestService.QuestEncounter for a further facade).
-    private static string FacadeOf(IReadOnlyList<RemovedFacade> removed, string typeName)
+    // (named relative to SWLOR.Game.Server.Service: Taxi, or QuestService.QuestEncounter for a further facade); null for a service
+    // master never had (CoxxionBaseDoors, P5-13), whose handlers HandlerRenames.txt names by their branch names alone.
+    private static string? FacadeOf(IReadOnlyList<RemovedFacade> removed, string typeName)
     {
-        var facade = removed.Single(entry => entry.Facade == typeName || entry.Facade.EndsWith("." + typeName, StringComparison.Ordinal));
-        return $"{ServerNamespace}.Service.{facade.Facade}";
+        var facade = removed.SingleOrDefault(entry => entry.Facade == typeName || entry.Facade.EndsWith("." + typeName, StringComparison.Ordinal));
+        return facade == null ? null : $"{ServerNamespace}.Service.{facade.Facade}";
     }
 
     /// <summary>

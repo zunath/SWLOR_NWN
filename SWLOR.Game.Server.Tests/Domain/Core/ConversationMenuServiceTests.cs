@@ -552,7 +552,7 @@ public class ConversationMenuServiceTests
     private sealed class TestableMenuService : ConversationMenuService
     {
         public TestableMenuService(IConversationService conversation)
-            : base(conversation)
+            : base(conversation, TestContent.WithoutServices)
         {
         }
 

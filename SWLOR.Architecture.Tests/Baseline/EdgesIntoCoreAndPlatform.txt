@@ -97,7 +97,7 @@ Domain/Economy -> Platform/Entity | 28
 Domain/Economy -> Platform/Enumeration | 28
 Domain/Economy -> Platform/Extension | 7
 
-# Foundation -> Platform (17 edges)
+# Foundation -> Platform (15 edges)
 Domain/Foundation -> Platform/Composition | 21
 Domain/Foundation -> Platform/Core | 36
 Domain/Foundation -> Platform/Entity | 93
@@ -105,8 +105,6 @@ Domain/Foundation -> Platform/Enumeration | 52
 Domain/Foundation -> Platform/Extension | 8
 Domain/Foundation -> Platform/Native | 1
 Domain/Foundation -> Platform/Root | 9
-Feature/DialogDefinition -> Platform/Composition | 29
-Feature/DialogDefinition -> Platform/Core | 1
 Feature/DialogDefinition -> Platform/Entity | 19
 Feature/DialogDefinition -> Platform/Enumeration | 22
 Feature/MigrationDefinition -> Platform/Composition | 61
@@ -156,7 +154,7 @@ Feature.TwinPistolEquipmentValidation -> Domain/Foundation | 2
 Feature.TwinPistolEquipmentValidation -> Feature/MigrationDefinition | 1
 Feature.UsePerkFeat -> Domain/Foundation | 6
 
-# Gameplay -> Platform (142 edges)
+# Gameplay -> Platform (141 edges)
 Domain/Gameplay -> Platform/Composition | 1
 Domain/Gameplay -> Platform/Root | 4
 Feature.AchievementProgression -> Platform/Composition | 7
@@ -242,7 +240,6 @@ Feature.PistolAnimationRemap -> Platform/Composition | 5
 Feature.PistolAnimationRemap -> Platform/Core | 5
 Feature.PistolAnimationRemap -> Platform/Native | 1
 Feature.PistolBaseItemCompatibility -> Platform/Core | 1
-Feature.PlaceableScripts -> Platform/Composition | 5
 Feature.PlaceableScripts -> Platform/Core | 6
 Feature.PlayerAccountRecord -> Platform/Composition | 1
 Feature.PlayerAccountRecord -> Platform/Core | 1

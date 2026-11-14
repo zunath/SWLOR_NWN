@@ -32,7 +32,7 @@ public static class SingleWeaponEngineTests
         }
         ctx.AssertEqual(24, Item.GetDMG(weapon), "The item's persistent DMG is unchanged");
         var description = GetDescription(weapon);
-        var preview = new ExamineItemPayload(weapon);
+        var preview = Content.Create<ExamineItemPayload, uint>(weapon);
         ctx.AssertEqual(24, preview.ItemDMG, "Examine snapshots base DMG for serialized market/storage items");
         ctx.AssertEqual(OBJECT_INVALID, preview.ItemObject, "A serialized preview must not follow a destroyed/reused engine object ID");
         ctx.AssertEqual(description, preview.Description, "Authored description is preserved");
@@ -86,7 +86,7 @@ public static class SingleWeaponEngineTests
                 ctx.AssertEqual(46, GameServices.CombatQueries.GetCombatImpactWeaponDamage(player.Creature, Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon))),
                     $"{resref} ability damage retains its base weapon rating at Doublehand rank {rank}");
             }
-            var preview = new ExamineItemPayload(weapon);
+            var preview = Content.Create<ExamineItemPayload, uint>(weapon);
             ctx.Assert(!WeaponDamage.IsSingleWeaponType(preview.ItemType), $"{resref} does not display a Single Weapon examine bonus");
             DestroyObject(weapon);
             await ctx.WaitFrameAsync();

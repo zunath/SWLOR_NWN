@@ -95,7 +95,7 @@ public sealed class TestGuiService : GuiService
     private readonly Type[] _definitions;
 
     public TestGuiService(IDBService db, IDMPresenceService dmPresence, params Type[] definitions)
-        : base(db, dmPresence)
+        : base(db, dmPresence, TestContent.WithoutServices)
     {
         _definitions = definitions;
     }

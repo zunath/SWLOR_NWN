@@ -494,6 +494,86 @@ public class ContentInjectionRewriterTests
     }
 
     [Test]
+    public void A_target_typed_new_the_syntax_types_is_converted_or_left_alone_and_only_a_name_in_code_makes_an_untyped_one_a_refusal()
+    {
+        Write("SWLOR.Game.Server/Feature/ExamineItemPayload.cs", Payload);
+        const string typed = "using System.Collections.Generic;\n\nnamespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel\n{\n    public class Typed\n    {\n" +
+                             "        private readonly Dictionary<int, List<int>> _lists = new();\n        public List<int> Numbers { get; } = new();\n\n" +
+                             "        public object Build(uint item)\n        {\n            ExamineItemPayload? payload = new(item);\n            _lists[1] = new() { 1 };\n" +
+                             "            Take(new() { [1] = 2 });\n            return payload;\n        }\n\n        private List<int> Make() => new();\n\n" +
+                             "        private List<int> Again()\n        {\n            return new();\n        }\n\n        private void Take(Dictionary<int, int> values)\n        {\n        }\n    }\n}\n";
+        const string inString = "namespace SWLOR.Game.Server.Feature\n{\n    public class Catalog\n    {\n        public const string Menu = \"ExamineItemPayload\";\n\n" +
+                                "        public void Fill() => Use(new());\n    }\n}\n";
+        const string untyped = "namespace SWLOR.Game.Server.Feature\n{\n    public class Untyped\n    {\n        public object Fill(ExamineItemPayload payload) => Use(new());\n    }\n}\n";
+        Write("SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/Typed.cs", typed);
+        Write("SWLOR.Game.Server/Feature/Catalog.cs", inString);
+        Write("SWLOR.Game.Server/Feature/Untyped.cs", untyped);
+        Converted("SWLOR.Game.Server/Feature/ExamineItemPayload.cs");
+
+        var log = new StringWriter();
+        Run(RunMode.Apply, log).Should().Be(ContentInjectionRunner.Refused);
+
+        log.ToString().Should().Contain("SWLOR.Game.Server/Feature/Untyped.cs:5: A target-typed new() whose type the tool cannot tell")
+            .And.NotContain("REFUSED SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/Typed.cs", "the syntax names the type of each new() there")
+            .And.NotContain("Catalog.cs", "a name in a string is no use of the type");
+        Text("SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/Typed.cs").Should().Be(
+            "using System.Collections.Generic;\nusing static SWLOR.Game.Server.Composition.GameServices;\n" +
+            typed["using System.Collections.Generic;\n".Length..].Replace("ExamineItemPayload? payload = new(item);", "ExamineItemPayload? payload = Content.Create<ExamineItemPayload, uint>(item);"));
+        Text("SWLOR.Game.Server/Feature/Catalog.cs").Should().Be(inString);
+        Text("SWLOR.Game.Server/Feature/Untyped.cs").Should().Be(untyped);
+    }
+
+    [Test]
+    public void A_private_static_helper_of_made_content_that_reaches_a_service_loses_static_and_a_method_group_of_one_is_refused()
+    {
+        const string helped = "namespace SWLOR.Game.Server.Feature\n{\n    public class Helped\n    {\n        public int Value { get; set; }\n\n" +
+                              "        public string Describe(uint item) => Helped.Name(item) + Count(item);\n\n" +
+                              "        private static string Name(uint item)\n        {\n            return Item.GetName(item);\n        }\n\n" +
+                              "        private static int Count(uint item) => Twice(Name(item).Length);\n\n        private static int Twice(int value) => value * 2;\n    }\n}\n";
+        const string grouped = "using System;\n\nnamespace SWLOR.Game.Server.Feature\n{\n    public class Grouped\n    {\n        public int Value { get; set; }\n\n" +
+                               "        public Func<uint, string> Namer() => Name;\n\n        private static string Name(uint item) => Item.GetName(item);\n    }\n}\n";
+        Write("SWLOR.Game.Server/Feature/Helped.cs", helped);
+        Write("SWLOR.Game.Server/Feature/Grouped.cs", grouped);
+        Converted("SWLOR.Game.Server/Feature/Grouped.cs", "SWLOR.Game.Server/Feature/Helped.cs");
+
+        var log = new StringWriter();
+        Run(RunMode.Apply, log).Should().Be(ContentInjectionRunner.Refused);
+
+        log.ToString().Should().Contain("SWLOR.Game.Server/Feature/Grouped.cs:9: Grouped.Name becomes an instance method and is used as a method group here");
+        Text("SWLOR.Game.Server/Feature/Grouped.cs").Should().Be(grouped);
+        Text("SWLOR.Game.Server/Feature/Helped.cs").Should().Be(Lf("""
+            using SWLOR.Game.Server.Domain.Items;
+
+            namespace SWLOR.Game.Server.Feature
+            {
+                public class Helped
+                {
+                    private IItemService Item { get; }
+
+                    public Helped(IItemService item)
+                    {
+                        Item = item;
+                    }
+
+                    public int Value { get; set; }
+
+                    public string Describe(uint item) => Name(item) + Count(item);
+
+                    private string Name(uint item)
+                    {
+                        return Item.GetName(item);
+                    }
+
+                    private int Count(uint item) => Twice(Name(item).Length);
+
+                    private static int Twice(int value) => value * 2;
+                }
+            }
+
+            """), "a private static method only its own class calls just loses static, and a self-qualified call loses its qualifier");
+    }
+
+    [Test]
     public void More_than_ten_services_are_refused()
     {
         var names = Enumerable.Range(1, 11).Select(index => $"S{index:00}").ToArray();

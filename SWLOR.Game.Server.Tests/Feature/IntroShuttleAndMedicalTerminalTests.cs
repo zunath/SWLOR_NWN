@@ -8,6 +8,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public sealed class IntroShuttleAndMedicalTerminalTests
 {
+    private SWLOR.Game.Server.Core.IContentFactory Content { get; } = SWLOR.Game.Server.Tests.Support.TestContent.WithoutServices;
+
     private const int FemaleRodianPortraitId = 4385;
     private const string MedicalPortraitResref = "p_256x128_medic1";
 
@@ -56,7 +58,7 @@ public sealed class IntroShuttleAndMedicalTerminalTests
             "cloning_reg.utp.json")));
         GetConversationMenu(blueprint).Should().Be(nameof(MedicalRegistrationDialog));
 
-        var menu = new MedicalRegistrationDialog().Build();
+        var menu = Content.Create<MedicalRegistrationDialog>().Build();
         menu.PortraitResref.Should().Be(MedicalPortraitResref);
     }
 

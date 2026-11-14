@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
-using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
@@ -13,6 +12,15 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
     /// </summary>
     public sealed class ConversationStateSnippetDefinition : ISnippetListDefinition
     {
+        private PlaceableScripts PlaceableScripts { get; }
+        private ISnippetService Snippet { get; }
+
+        public ConversationStateSnippetDefinition(PlaceableScripts placeableScripts, ISnippetService snippet)
+        {
+            PlaceableScripts = placeableScripts;
+            Snippet = snippet;
+        }
+
         private readonly SnippetBuilder _builder = new SnippetBuilder();
 
         public Dictionary<string, SnippetDetail> BuildSnippets()
@@ -235,7 +243,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                 .ActionsTakenAction((player, _) => PlaceableScripts.PurchaseRebuild(player));
         }
 
-        private static bool TryReadLocalArguments(
+        private bool TryReadLocalArguments(
             uint player,
             string[] args,
             out uint target,
@@ -260,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
             return true;
         }
 
-        private static bool TryWriteLocalArguments(
+        private bool TryWriteLocalArguments(
             uint player,
             string[] args,
             out uint target,
@@ -282,7 +290,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
             return true;
         }
 
-        private static bool TryResolveScope(uint player, string scope, out uint target)
+        private bool TryResolveScope(uint player, string scope, out uint target)
         {
             var owner = Snippet.GetExecutionOwner();
             target = scope?.Trim().ToLowerInvariant() switch

@@ -33,11 +33,13 @@ namespace SWLOR.Game.Server.Domain.UI
 
         private readonly IDBService _db;
         private readonly IDMPresenceService _dmPresence;
+        private readonly IContentFactory _content;
 
-        public GuiService(IDBService db, IDMPresenceService dmPresence)
+        public GuiService(IDBService db, IDMPresenceService dmPresence, IContentFactory content)
         {
             _db = db;
             _dmPresence = dmPresence;
+            _content = content;
         }
 
         /// <summary>
@@ -60,6 +62,9 @@ namespace SWLOR.Game.Server.Domain.UI
             {
                 var instance = (IGuiWindowDefinition)Activator.CreateInstance(type);
                 var constructedWindow = instance.BuildWindow();
+                var viewModelType = constructedWindow.ViewModelType;
+                if (viewModelType != null)
+                    constructedWindow.CreatePlayerWindowAction = () => new GuiPlayerWindow(_content.Create<IGuiViewModel>(viewModelType));
 
                 // Safety check to ensure we don't try to build the same type of window more than once.
                 if (_windowTemplates.ContainsKey(constructedWindow.Type))

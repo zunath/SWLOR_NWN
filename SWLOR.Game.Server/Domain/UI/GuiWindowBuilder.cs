@@ -202,13 +202,10 @@ namespace SWLOR.Game.Server.Domain.UI
                     new Dictionary<string, Json>(),
                     layoutFindings,
                     new Dictionary<string, string>(),
-                    () =>
-                    {
-                        var dataModelInstance = Activator.CreateInstance<T>();
-                        return new GuiPlayerWindow(dataModelInstance);
-                    })
+                    null)
                 {
-                    KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange
+                    KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange,
+                    ViewModelType = typeof(T)
                 };
             }
 
@@ -260,12 +257,9 @@ namespace SWLOR.Game.Server.Domain.UI
                 partialViews,
                 layoutFindings,
                 partialViewLayouts,
-                () =>
-            {
-                var dataModelInstance = Activator.CreateInstance<T>();
-                return new GuiPlayerWindow(dataModelInstance);
-            });
+                null);
             constructedWindow.KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange;
+            constructedWindow.ViewModelType = typeof(T);
 
             return constructedWindow;
         }

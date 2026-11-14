@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class StarportFlightsDialogTests
 {
+    private SWLOR.Game.Server.Core.IContentFactory Content => _facades.Content;
+
     // The ticket page names planets through the Planet facade, which resolves from the container the fixture installs.
     private FacadeContainer _facades = null!;
     private IDisposable _facadeScope = null!;
@@ -55,7 +57,7 @@ public class StarportFlightsDialogTests
         var page = new ConversationMenuPage(_ => { });
 
         typeof(StarportFlightsDialog).GetMethod("BuildTicketedPage", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .Invoke(new StarportFlightsDialog(), new object[] { page, 1u, terminalPlanet, ride });
+            .Invoke(Content.Create<StarportFlightsDialog>(), new object[] { page, 1u, terminalPlanet, ride });
 
         page.Responses.Should().ContainSingle();
         page.Responses[0].Text.Should().Be("Refund Ticket (500 cr)", "only the original fare is refundable");

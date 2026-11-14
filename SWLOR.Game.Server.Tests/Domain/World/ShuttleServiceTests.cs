@@ -267,6 +267,17 @@ public class ShuttleServiceTests
         return reloaded;
     }
 
+    /// <summary>A reload that also carries the old build's carried fields, which the bootstrap restores last.</summary>
+    private ClockedShuttleService ReloadCarryingState()
+    {
+        var carrier = new ReloadStateCarrier(typeof(ShuttleService).Assembly);
+        var fields = ReloadStateCarrier.CarriedClasses(typeof(ShuttleService).Assembly).Single(entry => entry.Type == typeof(ShuttleService)).Fields;
+        var carried = carrier.Write(fields, Service);
+        var reloaded = Reload();
+        carrier.Read(fields, reloaded, carried);
+        return reloaded;
+    }
+
     private static ReloadDigestLine AdoptedDigest(ShuttleService service)
     {
         return new ReloadDigestHasher(typeof(ShuttleService).Assembly).Describe(ReloadDigests.AdoptedKind, "flights", typeof(ShuttleService), service,
@@ -316,6 +327,30 @@ public class ShuttleServiceTests
 
         _bench.MessagesTo(_passenger.Id).Count(message => message == "The shuttle touches down at Tatooine.").Should().Be(1);
         reloaded.GetRide(PassengerId).Should().BeNull();
+    }
+
+    [Test]
+    public void A_reload_while_a_stranded_passenger_is_being_delivered_keeps_the_ride_until_they_reach_the_destination()
+    {
+        var ride = BoardThePassenger();
+        _passenger.Area = _starport;
+        Service.Now = ride.ArrivalUtc;
+        Service.Tick!();
+        _bench.Db.Store.Deleted.Should().NotContain(ride.Id, "the old build keeps the ride while it delivers the passenger");
+
+        var reloaded = ReloadCarryingState();
+        var sent = _bench.AssignedTo(_passenger.Id).Count;
+        reloaded.Now = ride.ArrivalUtc.AddSeconds(6);
+        reloaded.Tick!();
+
+        _bench.Db.Store.Deleted.Should().NotContain(ride.Id, "the rebuilt arrival leaves the ride to the delivery retries");
+        _bench.AssignedTo(_passenger.Id).Should().HaveCount(sent + 1, "the new build sends the delivery jump again");
+
+        _passenger.Area = _landingArea;
+        reloaded.Now = ride.ArrivalUtc.AddSeconds(8);
+        reloaded.Tick!();
+
+        _bench.Db.Store.Deleted.Should().Contain(ride.Id, "the ride ends once the passenger is at the destination");
     }
 
     [Test]

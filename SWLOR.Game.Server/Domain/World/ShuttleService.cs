@@ -631,6 +631,11 @@ namespace SWLOR.Game.Server.Domain.World
                     continue;
                 }
 
+                // A passenger already being delivered: this flight landed before, and a hot reload rebuilt it from the
+                // ride kept for them. The delivery retries own the ride until they stand at the destination.
+                if (_boardings.IsDelivering(ride.PlayerId))
+                    continue;
+
                 if (GetIsObjectValid(flight.Area) &&
                     GetArea(player) != flight.Area &&
                     _boardings.IsBoarding(ride.PlayerId, flight.FlightId))

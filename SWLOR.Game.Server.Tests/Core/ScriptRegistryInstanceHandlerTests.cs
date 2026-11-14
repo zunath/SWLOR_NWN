@@ -116,7 +116,8 @@ public class ScriptRegistryInstanceHandlerTests
         var load = () => registry.LoadHandlersFromAssemblies(new[] { GameAssembly }, _ => null!);
 
         load.Should().Throw<InvalidOperationException>()
-            .WithMessage("SWLOR.Game.Server.Domain.*.* is an event handler on an instance method of SWLOR.Game.Server.Domain.*, which the service container does not register*");
+            .WithMessage("SWLOR.Game.Server.*.* is an event handler on an instance method of SWLOR.Game.Server.*, which the service container does not register*",
+                "the first instance handler found may be on a service or on a content singleton (PlaceableScripts)");
         registry.GetActionScriptNames().Should().BeEmpty("a load that fails registers nothing, not even the static handlers found before it");
         registry.GetConditionalScriptNames().Should().BeEmpty();
     }
@@ -128,7 +129,7 @@ public class ScriptRegistryInstanceHandlerTests
 
         var load = () => registry.LoadHandlersFromAssemblies(new[] { GameAssembly });
 
-        load.Should().Throw<InvalidOperationException>().WithMessage("SWLOR.Game.Server.Domain.*.* is an event handler on an instance method, but the script registry was loaded without a resolver*");
+        load.Should().Throw<InvalidOperationException>().WithMessage("SWLOR.Game.Server.*.* is an event handler on an instance method, but the script registry was loaded without a resolver*");
     }
 
     [Test]

@@ -104,11 +104,12 @@ public class EngineRunnerParityTests
     {
         var script = Read("tools", "Refactor", "Update-EngineCharacterization.ps1");
 
-        script.Should().Contain("$ComposeProject = 'swlor-engine-tests'", "the runner's own project name, so the refusal sees its containers");
+        script.Should().Contain("$ComposeProject = 'swlor-engine-tests-' + $worktreeName.Trim('-')", "the runner's own per-worktree project name, so the refusal sees its containers");
+        script.Should().Contain("'-ComposeProject', $ComposeProject", "the runner is told the project the refusal checked");
         script.Should().Contain("$ExitComposeBusy = 5");
         script.Should().Contain("This script never stops it.");
-        Read("scripts", "run-engine-tests.ps1").Should().Contain("$ComposeProject = \"swlor-engine-tests\"");
-        Read("scripts", "run-engine-tests.sh").Should().Contain("COMPOSE_PROJECT=\"swlor-engine-tests\"");
+        Read("scripts", "run-engine-tests.ps1").Should().Contain("$ComposeProject = \"swlor-engine-tests-$($worktreeName.Trim('-'))\"");
+        Read("scripts", "run-engine-tests.sh").Should().Contain("COMPOSE_PROJECT=\"swlor-engine-tests-$WORKTREE_NAME\"");
     }
 
     private static string[] Variables(string text) =>

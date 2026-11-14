@@ -490,9 +490,10 @@ the normal `SWLOR.Runner` flow), and finally
    engine-test assembly from `SWLOR.Game.Server/bin/{Configuration}/net10.0` and
    `SWLOR.Game.Server.EngineTests/bin/{Configuration}/net10.0`.
 2. Delete any stale `engine-test-results.json` from a previous run.
-3. Run `docker compose -p swlor-engine-tests -f <repo>/SWLOR.Game.Server/Docker/docker-compose.enginetests.yml
-   up --abort-on-container-exit --exit-code-from swlor-server` from the server home (the dedicated
-   project name keeps these containers isolated from the normal dev stack), then tear down.
+3. Run `docker compose -p <project> -f <repo>/SWLOR.Game.Server/Docker/docker-compose.enginetests.yml
+   up --abort-on-container-exit --exit-code-from swlor-server` from the server home (the project
+   defaults to `swlor-engine-tests-<worktree folder>`, so a run only tears down its own containers and never another
+   worktree's; override it with `-ComposeProject` / `--compose-project`, `swlor-engine-tests` gives the old shared name), then tear down.
 4. Parse the resulting JSON report, print a table of every test (category, name, outcome, duration,
    message), print the summary line, and exit non-zero unless the server container exited cleanly,
    at least one test ran, and none failed.
@@ -719,8 +720,9 @@ both entries, so a refresh on either entry that changes them is a finding, not a
 It runs the procedure above without the manual preparation, in about 30 minutes (measured 28: module pack 3.5 minutes,
 hak build 10 seconds, each of the two engine runs 12 minutes including its build):
 
-1. Refuses to start (exit 5) while the `swlor-engine-tests` compose project has any container. `scripts/run-engine-tests.ps1`
-   tears that project down at the start and the end of a run, so a second run would destroy the first agent's run. The
+1. Refuses to start (exit 5) while this worktree's `swlor-engine-tests-<worktree folder>` compose project has any container.
+   `scripts/run-engine-tests.ps1` tears that project down at the start and the end of a run, so a second run from the same
+   worktree would destroy the first run; other worktrees have their own project and are not affected. The
    script never stops or removes those containers; wait and run it again, or pass `-WaitMinutes`.
 2. Packs the module from the worktree under the throwaway name `swlor_et_characterization` and rebuilds `sw_2da` and
    `sw_ability` and copies `sw_tlk.tlk` from the worktree's pinned `SWLOR_Haks`.
@@ -829,8 +831,8 @@ a long wait leaves no room for a 3 hour run). It plans for the worst case, setup
 minutes for a full run, so a full run started between about 05:00 and 09:45 UTC fails at once, and 155 minutes for the quick
 label. And
 `EngineTestSummary.py` names the restart when it cuts a run off anyway. The
-real fix is a guard in `ProcessAutoRestart` for `ApplicationSettings.EngineTestsEnabled`; after it lands, delete the check and
-this section.
+real fix is in: `ProcessAutoRestart` now skips the restart when `ApplicationSettings.EngineTestsEnabled` is on (production never
+enables it; `ServerTasksAutoRestartTests`). The waiting check can be deleted once every engine-test image carries that guard.
 
 Running the same steps on your machine: `scripts/ci/fetch-engine-test-haks.sh` (needs `SWLOR_Haks` empty or absent: it replaces
 it), then `scripts/prepare-engine-test-home.sh --server-home <dir>`, then `scripts/run-engine-tests.sh --server-home <dir>`.

@@ -53,6 +53,9 @@
     tests, which stays responsive and therefore never trips the NWNX thread
     watchdog. Defaults to 90 (a full sweep takes roughly 45).
 
+.PARAMETER ComposeProject
+    Docker compose project of this run. Default: swlor-engine-tests-<worktree folder name>, so concurrent runs from
+    different worktrees never tear each other down. Pass swlor-engine-tests for the old shared name.
 .EXAMPLE
     ./scripts/run-engine-tests.ps1
 .EXAMPLE
@@ -75,7 +78,8 @@ param(
     [string]$Entry = "host",
     [ValidateSet("", "true", "false")]
     [string]$Collectible = "",
-    [int]$TimeoutMinutes = 90
+    [int]$TimeoutMinutes = 90,
+    [string]$ComposeProject = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -121,7 +125,17 @@ if (-not (Test-Path (Join-Path $ServerHome "swlor.env"))) {
 $ComposeFile = Join-Path $RepoRoot "SWLOR.Game.Server\Docker\docker-compose.enginetests.yml"
 # A dedicated project name keeps these containers isolated from the normal dev
 # stack even though both may use the same server home directory.
-$ComposeProject = "swlor-engine-tests"
+if (-not $ComposeProject) {
+    # One project per worktree, so a run only ever tears down its own containers. Pass
+    # -ComposeProject swlor-engine-tests for the old shared name.
+    $worktreeName = (Split-Path -Leaf $RepoRoot).ToLowerInvariant() -replace "[^a-z0-9_-]", "-"
+    if ($worktreeName.Length -gt 40) { $worktreeName = $worktreeName.Substring(0, 40) }
+    $ComposeProject = "swlor-engine-tests-$($worktreeName.Trim('-'))"
+}
+if ($ComposeProject -cnotmatch "^[a-z0-9][a-z0-9_-]*$") {
+    Write-Host "-ComposeProject '$ComposeProject' must be lowercase letters, digits, - and _." -ForegroundColor Red
+    exit 1
+}
 $DotnetOutputDir = Join-Path $ServerHome "dotnet"
 # The host entry stages the host in dotnet/ and the game build (with the test assembly) in
 # dotnet/game/; the native entry stages the game build in dotnet/ itself.

@@ -8,7 +8,7 @@
     procedure of Readmes/EngineTesting.md ("Characterization scenarios") in the current worktree:
 
       1. Preflight: this worktree's sparse SWLOR_Haks is at the commit the branch pins and clean; the snapshot folder has
-         no local changes; Docker answers; no other `swlor-engine-tests` compose project exists (see below).
+         no local changes; Docker answers; this worktree's `swlor-engine-tests-<worktree folder>` compose project has no container (see below).
       2. Builds SWLOR.CLI and packs the module from this worktree's Module/ folder under a throwaway name.
       3. Rebuilds the haks sw_2da and sw_ability and copies sw_tlk.tlk from this worktree's SWLOR_Haks.
       4. Prepares a throwaway server home outside the repository (swlor.env and settings.tml from
@@ -32,12 +32,13 @@
     28: pack 3.5 minutes, hak build 10 seconds, each of the two engine runs 12 minutes including its build). It is also
     useful without a merge, for example after a SWLOR_Haks pointer change.
 
-    The shared compose project: scripts/run-engine-tests.ps1 always uses the project `swlor-engine-tests` and begins and ends
-    with `docker compose down --volumes`, so two runs destroy each other. This script therefore refuses to start while
-    that project has any container (exit 5) and never stops, removes or touches such a container. Wait and run it again,
+    The compose project: scripts/run-engine-tests.ps1 uses one project per worktree, `swlor-engine-tests-<worktree folder>`,
+    and begins and ends with `docker compose down --volumes` on it, so runs from other worktrees never touch it. This script
+    passes that name to the runner, refuses to start while the project has any container (exit 5, a second run from this
+    same worktree) and never stops, removes or touches such a container. Wait and run it again,
     or pass -WaitMinutes to poll every 30 seconds. If containers are left over from a crashed run and you are sure nobody
     is using them, remove them yourself:
-    docker compose -p swlor-engine-tests -f SWLOR.Game.Server/Docker/docker-compose.enginetests.yml down --volumes --remove-orphans
+    docker compose -p swlor-engine-tests-<worktree folder> -f SWLOR.Game.Server/Docker/docker-compose.enginetests.yml down --volumes --remove-orphans
 
     Exit code: 0 the confirm pass (or the update pass when nothing changed) passed; 1 an engine run failed (the snapshots
     written by a failed update pass are partial: do not commit them); 4 the script could not do its job (missing haks or
@@ -106,7 +107,10 @@ $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot 'RefactorCommon.ps1')
 
-$ComposeProject = 'swlor-engine-tests'
+# The same per-worktree project name scripts/run-engine-tests.ps1 derives, passed to it explicitly below.
+$worktreeName = ((Split-Path -Leaf (Get-RepositoryRootOfScript)).ToLowerInvariant() -replace '[^a-z0-9_-]', '-')
+if ($worktreeName.Length -gt 40) { $worktreeName = $worktreeName.Substring(0, 40) }
+$ComposeProject = 'swlor-engine-tests-' + $worktreeName.Trim('-')
 $SnapshotsRelative = 'SWLOR.Game.Server.EngineTests/Characterization/Snapshots'
 # The haks whose content the scenarios read and that this script rebuilds from SWLOR_Haks. sw_2da holds every 2DA (754
 # files) and sw_ability the ability resources; all other haks only carry models, textures, sounds and the like.
@@ -143,7 +147,7 @@ function Test-PathInside {
 
 # --- The shared compose project -------------------------------------------------------------------------------------
 
-# One line per container of the swlor-engine-tests project, running or not. Nothing here changes a container.
+# One line per container of this worktree's engine-test project, running or not. Nothing here changes a container.
 function Get-ComposeContainers {
     $docker = Resolve-Executable 'docker'
     $result = Invoke-Process -FilePath $docker -Arguments @('ps', '-a', '--filter', "label=com.docker.compose.project=$ComposeProject", '--format', '{{.Names}} ({{.Status}})')
@@ -324,7 +328,7 @@ function Invoke-EngineRun {
         DOTNET_NOLOGO                           = '1'
     }
     $arguments = @('-NoProfile', '-NonInteractive', '-File', (Join-Path $Root 'scripts/run-engine-tests.ps1'),
-        '-Filter', 'Characterization', '-ServerHome', $HomePath, '-TimeoutMinutes', [string]$TimeoutMinutes, '-Entry', $Entry)
+        '-Filter', 'Characterization', '-ServerHome', $HomePath, '-TimeoutMinutes', [string]$TimeoutMinutes, '-Entry', $Entry, '-ComposeProject', $ComposeProject)
     if ($Collectible) { $arguments += @('-Collectible', $Collectible) }
     $started = Get-Date
     $run = Invoke-Process -FilePath (Get-HostExecutable) -Arguments $arguments -WorkingDirectory $Root -Environment $environment -Stream

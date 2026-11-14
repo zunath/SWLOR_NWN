@@ -1,7 +1,6 @@
 using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Definitions;
 using SWLOR.Game.Server.CharacterizationTests.Support;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -122,9 +121,9 @@ public class AbilityDefinitionCharacterizationTests
     private static readonly (string Property, Func<AbilityDetail, bool> IsSet)[] Delegates =
     {
         (nameof(AbilityDetail.ActivationAction), a => a.ActivationAction != null),
-        ("AIHitPointCostPercent", a => a.GetAIHitPointCostPercent() != null),
-        ("AIScore", a => a.GetAIScore() != null),
-        ("AITargetSelector", a => a.GetAITargetSelector() != null),
+        ("AIHitPointCostPercent", AbilityAISettingsProbe.HasHitPointCostPercent),
+        ("AIScore", AbilityAISettingsProbe.HasScore),
+        ("AITargetSelector", AbilityAISettingsProbe.HasTargetSelector),
         (nameof(AbilityDetail.ChannelInterruptAction), a => a.ChannelInterruptAction != null),
         (nameof(AbilityDetail.CustomValidation), a => a.CustomValidation != null),
         (nameof(AbilityDetail.ImpactAction), a => a.ImpactAction != null),

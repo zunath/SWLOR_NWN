@@ -64,8 +64,11 @@ public static class WeaponHandFit
     private static void ReleaseDisplaced(uint creature, string variable, uint right, uint left)
     {
         var previous = GetLocalObject(creature, variable);
-        if (GetIsObjectValid(previous) && previous != right && previous != left)
-            SetMove(previous, FitVector.Zero);
+        if (!GetIsObjectValid(previous) || previous == right || previous == left)
+            return;
+        // The pistol may already be in someone else's hand with their fit; Release leaves that alone.
+        DeleteLocalObject(creature, variable);
+        Release(previous);
     }
 
     private static void ApplyHand(uint creature, uint item, CreaturePart part, string side, string variable)

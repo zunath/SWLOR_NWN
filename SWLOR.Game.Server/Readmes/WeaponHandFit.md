@@ -36,7 +36,7 @@ It needs numpy, scipy and Pillow, and the hak folders `sw_pt_rhand sw_pt_lhand s
 1. Render the hand with `sheet`. If the pistol already sits in the fist or the palm, change nothing.
 2. Try moves with `--move` until the cuts show the handle inside the fist's opening and the side view shows the fist under the trigger guard. Moves are small: a few millimetres to about three centimetres. The check rejects anything over six.
 3. Put the value in `Bodies` when the body's natural hand needs it, or in `Hands` for a single hand model. Add the mirrored left entry.
-4. Run `check` and `dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~WeaponHandFitTests"`.
+4. Run `check`, rebuild (`dotnet build SWLOR.Game.Server.Tests -p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`), then `dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~WeaponHandFitTests"`. The tests read the built catalog, so an edit is not tested until it is rebuilt. The engine test category `WeaponHandFit` covers applying and removing the move in the server.
 5. Confirm in the client for each body or hand you changed (see [InEngineVisualVerification.md](InEngineVisualVerification.md), "Server behavior"): the offline drawing shows the rest pose only.
 
 ## Not covered

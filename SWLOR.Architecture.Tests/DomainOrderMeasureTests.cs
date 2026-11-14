@@ -149,6 +149,14 @@ public class DomainOrderMeasureTests
 
                             private static StatService Make() => new();
 
+                            public int InferList()
+                            {
+                                var kinds = Kinds();
+                                return kinds.Count;
+                            }
+
+                            private static System.Collections.Generic.List<StatKind> Kinds() => new();
+
                             private sealed class Nested { public int Run() => StatRules.Clamp(2); }
                         }
                     }
@@ -171,9 +179,11 @@ public class DomainOrderMeasureTests
             (Type + "::Hit", "StatRules"),
             (Type + "::Name", "StatRules"),
             (Type + "::Infer", "StatService"),
+            (Type + "::InferList", "StatKind"),
+            (Type + "::Kinds", "StatKind"),
             (Type + "::Make", "StatService"),
             (Type + "+Nested::Run", "StatRules")
-        }, "a constant, an enum member, nameof, the type a var infers, a target-typed new and a nested type's member all count");
+        }, "a constant, an enum member, nameof, the type a var infers, the type arguments a var infers, a target-typed new and a nested type's member all count");
     }
 
     [Test]

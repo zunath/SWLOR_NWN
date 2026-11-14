@@ -95,7 +95,12 @@ internal static class SourceReferenceScanner
                     // A type that only qualifies a member is covered by the member; a using directive is not a reference.
                     if (IsQualifierOfMember(name) || name.Ancestors().Any(node => node is UsingDirectiveSyntax))
                         return;
-                    Add(name, type);
+                    // A var has no syntax for the type arguments it infers (var kinds = Kinds() for a List<StatKind>), so they
+                    // are taken from the inferred type; written type arguments are names of their own.
+                    if (name.IsVar)
+                        AddDeep(name, type);
+                    else
+                        Add(name, type);
                     break;
                 case IMethodSymbol method:
                     var declared = method.ReducedFrom ?? method;

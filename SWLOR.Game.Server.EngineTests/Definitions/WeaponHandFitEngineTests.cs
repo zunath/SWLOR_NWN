@@ -75,6 +75,28 @@ public static class WeaponHandFitEngineTests
         AssertMove(ctx, rifle, FitVector.Zero, "A rifle that left the hand carries no move");
     }
 
+    [EngineTest("A copy of a fitted pistol takes its own wearer's hand move", Category = "WeaponHandFit", TimeoutSeconds = 60f)]
+    public static async Task CopiedPistolTakesItsOwnWearersMove(EngineTestContext ctx)
+    {
+        var droid = ctx.SpawnCreature("civilian");
+        var cathar = ctx.SpawnCreature("civilian", 2f);
+        await ctx.ExecuteInCreatureContextAsync(droid, () => SetBody(droid, AppearanceType.Droid, 1));
+        await ctx.ExecuteInCreatureContextAsync(cathar, () => SetBody(cathar, AppearanceType.Cathar, 201));
+
+        var pistol = await ctx.EquipItemAsync(droid, "b_pistol", InventorySlot.RightHand);
+        await ctx.ExecuteInCreatureContextAsync(droid, () => WeaponHandFit.Apply(droid));
+        AssertMove(ctx, pistol, WeaponHandFitCatalog.Get("pmz0_handr001"), "The original takes the droid frame's move");
+
+        // Looting copies an equipped weapon with its locals; the copy starts with no transform of its own.
+        var copy = OBJECT_INVALID;
+        await ctx.ExecuteInCreatureContextAsync(cathar, () => copy = CopyItem(pistol, cathar, true));
+        ctx.Assert(GetIsObjectValid(copy), "The pistol was copied with its locals");
+        await ctx.ExecuteInCreatureContextAsync(cathar, () => ActionEquipItem(copy, InventorySlot.RightHand));
+        await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, cathar) == copy, 10f, "the new wearer to hold the copy");
+        await ctx.ExecuteInCreatureContextAsync(cathar, () => WeaponHandFit.Apply(cathar));
+        AssertMove(ctx, copy, WeaponHandFitCatalog.Get("pmo0_handr201"), "The copy takes the Cathar hand's move, not the difference from the original's");
+    }
+
     private static void SetBody(uint creature, AppearanceType appearance, int hand)
     {
         SetCreatureAppearanceType(creature, appearance);

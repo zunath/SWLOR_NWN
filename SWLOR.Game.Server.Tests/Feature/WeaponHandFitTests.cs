@@ -120,6 +120,16 @@ public class WeaponHandFitTests
         WeaponHandFit.RifleMove(move, "PFO0_handr201").Should().Be(WeaponHandFit.RifleMove(move, "pfd0_handr001"));
     }
 
+    [TestCase("a", "a", .025f, .025f)]
+    [TestCase("a", "b", .025f, 0f)]
+    [TestCase("", "b", .025f, 0f)]
+    [TestCase(null, "b", .025f, 0f)]
+    public void AShareRecordedForAnotherItemIsNotThisItemsShare(string fittedItem, string currentItem, float share, float expected)
+    {
+        // CopyItem copies the recorded share but resets the transform it describes.
+        WeaponHandFit.OwnedShare(fittedItem, currentItem, share).Should().Be(expected);
+    }
+
     [TestCase(0f, 0f, .025f, .025f)]
     [TestCase(.025f, .025f, 0f, 0f)]
     [TestCase(.025f, .025f, -.009f, -.009f)]

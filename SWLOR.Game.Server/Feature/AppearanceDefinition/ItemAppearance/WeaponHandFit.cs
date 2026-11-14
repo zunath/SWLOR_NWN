@@ -19,6 +19,7 @@ public static class WeaponHandFit
     private const ObjectVisualTransformDataScopeType Scope = ObjectVisualTransformDataScopeType.Base;
     private const string HeldRightVariable = "WEAPON_HAND_FIT_HELD_RIGHT";
     private const string HeldLeftVariable = "WEAPON_HAND_FIT_HELD_LEFT";
+    private const string FittedItemVariable = "WEAPON_HAND_FIT_ITEM";
 
     // The rifle ready and attack clips turn the weapon hook against the hand by a fixed amount; the idle
     // clip leaves it at rest. The female dwarf and half-orc frames inherit clips that turn it less.
@@ -87,6 +88,13 @@ public static class WeaponHandFit
     /// </summary>
     public static float Rebase(float current, float previous, float next) => current - previous + next;
 
+    /// <summary>
+    /// The share of an item's transform this fit set earlier. A copied item inherits the original's recorded
+    /// share but not its transform, so a share recorded for another item counts as none.
+    /// </summary>
+    public static float OwnedShare(string fittedItem, string currentItem, float share) =>
+        !string.IsNullOrEmpty(fittedItem) && fittedItem == currentItem ? share : 0f;
+
     private static void ReleaseDisplaced(uint creature, string variable, uint right, uint left)
     {
         var previous = GetLocalObject(creature, variable);
@@ -133,17 +141,25 @@ public static class WeaponHandFit
 
     private static void SetMove(uint item, FitVector move)
     {
+        var fittedItem = GetLocalString(item, FittedItemVariable);
+        if (move == FitVector.Zero && string.IsNullOrEmpty(fittedItem))
+            return;
+        // CopyItem copies locals but resets visual transforms; UUIDs survive ordinary reloads.
+        var identity = GetObjectUUID(item);
         Span<float> values = stackalloc float[] { move.X, move.Y, move.Z };
         for (var index = 0; index < Axes.Length; index++)
         {
             var (transform, variable) = Axes[index];
             var current = GetObjectVisualTransform(item, transform, nScope: Scope);
-            var next = Rebase(current, GetLocalFloat(item, variable), values[index]);
+            var previous = OwnedShare(fittedItem, identity, GetLocalFloat(item, variable));
+            var next = Rebase(current, previous, values[index]);
             if (Math.Abs(current - next) > .000001f)
                 SetObjectVisualTransform(item, transform, next, nScope: Scope);
             // The item saves both the transform and this share of it, so a reload stays consistent.
             if (values[index] == 0f) DeleteLocalFloat(item, variable);
             else SetLocalFloat(item, variable, values[index]);
         }
+        if (move == FitVector.Zero) DeleteLocalString(item, FittedItemVariable);
+        else SetLocalString(item, FittedItemVariable, identity);
     }
 }

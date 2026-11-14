@@ -126,7 +126,7 @@ public class DamageOverTimeStatusEffectTests
         burnSource.Should().Contain("System.Math.Max(1, Random.Next(2, 4) + might * 2 * _level)");
         burnSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Fire)");
         burnSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, amount, Source, CombatDamageType.Fire)");
-        burnSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Fire), creature))");
+        burnSource.Should().Contain("StatusEffect.ApplyDamageOverTime(source, creature, amount, DamageType.Fire)");
     }
 
     [Test]
@@ -138,7 +138,7 @@ public class DamageOverTimeStatusEffectTests
         poisonSource.Should().Contain("Math.Max(1, Random.Next(3, 7) + agility * level)");
         poisonSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, amount, CombatDamageType.Poison)");
         poisonSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Poison)");
-        poisonSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Acid), creature))");
+        poisonSource.Should().Contain("StatusEffect.ApplyDamageOverTime(source, creature, amount, DamageType.Acid)");
     }
 
     [Test]
@@ -149,7 +149,7 @@ public class DamageOverTimeStatusEffectTests
         forceDotSource.Should().Contain("var source = GetIsObjectValid(Source) ? Source : creature;");
         forceDotSource.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment)");
         forceDotSource.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime, targetStatusDamagePercentAdjustment: targetStatusDamageAdjustment)");
-        forceDotSource.Should().Contain("AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType()), creature))");
+        forceDotSource.Should().Contain("StatusEffect.ApplyDamageOverTime(source, creature, damage, CombatDamageType.Force.GetNWScriptDamageType())");
     }
 
     [Test]
@@ -195,7 +195,7 @@ public class DamageOverTimeStatusEffectTests
                          .Where(method => method.Identifier.Text == "Tick"))
             {
                 var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
-                if (!calls.Any(call => call.Expression.ToString() == "EffectDamage")) continue;
+                if (!calls.Any(call => call.Expression.ToString() == "StatusEffect.ApplyDamageOverTime")) continue;
                 examined++;
                 calls.Should().Contain(call => call.Expression.ToString() == "Combat.ApplyDamageTakenModifiers",
                     Path.GetFileName(file) + " must honor reduction, immunity, redirection and survival effects");
@@ -216,10 +216,10 @@ public class DamageOverTimeStatusEffectTests
                          .Where(method => method.Identifier.Text == "Tick"))
             {
                 foreach (var call in method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-                             .Where(call => call.Expression.ToString() == "EffectDamage"))
+                             .Where(call => call.Expression.ToString() == "StatusEffect.ApplyDamageOverTime"))
                 {
                     examined++;
-                    call.ArgumentList.Arguments.Count.Should().BeGreaterThanOrEqualTo(2,
+                    call.ArgumentList.Arguments.Count.Should().Be(4,
                         Path.GetFileName(file) + " must not silently turn periodic damage into Force damage");
                 }
             }
@@ -243,18 +243,18 @@ public class DamageOverTimeStatusEffectTests
                     "splash hits must not re-enter GetDamageRoll or overwrite the original attack's damage source");
     }
 
-    [TestCase("BleedStatusEffect.cs", "EffectDamage(damageAmount, CombatDamageType.Physical.GetNWScriptDamageType())")]
-    [TestCase("FragmentationStatusEffect.cs", "EffectDamage(amount, CombatDamageType.Physical.GetNWScriptDamageType())")]
-    [TestCase("DiseaseStatusEffect.cs", "EffectDamage(damage, CombatDamageType.Poison.GetNWScriptDamageType())")]
-    [TestCase("FreezingStatusEffect.cs", "EffectDamage(damage, CombatDamageType.Ice.GetNWScriptDamageType())")]
-    [TestCase("ShockStatusEffect.cs", "EffectDamage(amount, DamageType.Electrical)")]
-    [TestCase("ToxinStatusEffect.cs", "EffectDamage(damageAmount, DamageType.Acid)")]
-    public void DamageOverTimeStatusEffects_AttributeTickDamageToSource(string fileName, string effectDamageCall)
+    [TestCase("BleedStatusEffect.cs", "damageAmount, CombatDamageType.Physical.GetNWScriptDamageType()")]
+    [TestCase("FragmentationStatusEffect.cs", "amount, CombatDamageType.Physical.GetNWScriptDamageType()")]
+    [TestCase("DiseaseStatusEffect.cs", "damage, CombatDamageType.Poison.GetNWScriptDamageType()")]
+    [TestCase("FreezingStatusEffect.cs", "damage, CombatDamageType.Ice.GetNWScriptDamageType()")]
+    [TestCase("ShockStatusEffect.cs", "amount, DamageType.Electrical")]
+    [TestCase("ToxinStatusEffect.cs", "damageAmount, DamageType.Acid")]
+    public void DamageOverTimeStatusEffects_AttributeTickDamageToSource(string fileName, string damageArguments)
     {
         var source = ReadStatusEffectSource(fileName);
 
         source.Should().Contain("? Source : creature;");
-        source.Should().Contain($"AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, {effectDamageCall}, creature))");
+        source.Should().Contain($"StatusEffect.ApplyDamageOverTime(source, creature, {damageArguments})");
     }
 
     [TestCase("DiseaseStatusEffect.cs", "System.Math.Max(1, d2() + perception * _level)")]

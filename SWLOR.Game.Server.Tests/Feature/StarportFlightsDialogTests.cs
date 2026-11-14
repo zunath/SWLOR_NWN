@@ -35,7 +35,7 @@ public class StarportFlightsDialogTests
         var page = new ConversationMenuPage(_ => { });
 
         typeof(StarportFlightsDialog).GetMethod("BuildTicketedPage", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .Invoke(new StarportFlightsDialog(), new object[] { page, 1u, terminalPlanet, ride });
+            .Invoke(new StarportFlightsDialog(), new object[] { page, 1u, ShuttleStop.ForPlanet(terminalPlanet), ride });
 
         page.Responses.Should().ContainSingle();
         page.Responses[0].Text.Should().Be("Refund Ticket (500 cr)", "only the original fare is refundable");

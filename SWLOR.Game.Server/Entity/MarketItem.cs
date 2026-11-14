@@ -27,5 +27,12 @@ namespace SWLOR.Game.Server.Entity
         [Indexed]
         public MarketCategoryType Category { get; set; }
         public DateTime? DateListed { get; set; }
+
+        /// <summary>
+        /// A registered ship listed for sale (plan section 7): the listing points at the ship instead of holding an
+        /// item, so Data is empty. Empty for item listings and older records.
+        /// </summary>
+        [Indexed]
+        public string ShipId { get; set; } = string.Empty;
     }
 }

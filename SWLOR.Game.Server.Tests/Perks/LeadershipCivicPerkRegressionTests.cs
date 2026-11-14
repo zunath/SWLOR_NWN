@@ -72,13 +72,12 @@ public class LeadershipCivicPerkRegressionTests
         processCityLevel.Should().Contain("if (level > mayorLevel)");
         processCityLevel.Should().Contain("if (citizenCount >= _citizensRequired[level])");
 
-        var manageCity = ReadSource("Feature", "GuiDefinition", "ViewModel", "ManageCityViewModel.cs");
-        var validateUpgrade = ExtractMethod(
-            manageCity,
-            "private bool ValidateUpgrade(PropertyUpgradeType upgradeType, int price)");
-        validateUpgrade.Should().Contain("mayor.Perks[PerkType.CityManagement]");
-        validateUpgrade.Should().Contain("if (mayorPerkLevel + 1 <= currentLevel)");
-        validateUpgrade.Should().Contain("Mayor city management perk too low.");
+        // Facility upgrades are City Projects now; starting one still caps the facility at the mayor's City Management rank.
+        var projects = ReadSource("Service", "CityProjects.cs");
+        projects.Should().Contain("mayor.Perks.TryGetValue(PerkType.CityManagement, out var rank)");
+        var projectRules = ReadSource("Service", "CityProjectService", "CityProjectRules.cs");
+        projectRules.Should().Contain("if (mayorCityManagementRank + 1 <= currentLevel)");
+        projectRules.Should().Contain("Mayor city management perk too low.");
     }
 
     [Test]
@@ -107,14 +106,23 @@ public class LeadershipCivicPerkRegressionTests
 
         var property = ReadSource("Service", "Property.cs");
         var processUpkeep = ExtractMethod(property, "private static void ProcessUpkeep(DateTime now, WorldProperty city)");
-        processUpkeep.Should().Contain("dbMayor.Perks[PerkType.Upkeep] * 0.05f");
-        processUpkeep.Should().Contain("var basePrice = layout.PricePerDay * 7;");
-        processUpkeep.Should().Contain("basePrice -= (int)(basePrice * upkeepReductionPercent);");
-        processUpkeep.Should().Contain("const int UpgradeBasePrice = 10000;");
-        processUpkeep.Should().Contain("city.Upkeep += basePrice + upgradePrice;");
-        processUpkeep.IndexOf("basePrice -=", StringComparison.Ordinal)
+        processUpkeep.Should().Contain("dbMayor.Perks[PerkType.Upkeep]");
+        processUpkeep.Should().Contain("CityUpkeepRules.GetWeeklyUpkeep(");
+        processUpkeep.Should().Contain("city.Upkeep += weeklyUpkeep;");
+
+        // The formula lives in CityUpkeepRules, shared by planet cities and player stations.
+        var rules = ReadSource("Service", "PropertyService", "CityUpkeepRules.cs");
+        rules.Should().Contain("upkeepPerkLevel * UpkeepPerkReductionPerLevel");
+        rules.Should().Contain("public const float UpkeepPerkReductionPerLevel = 0.05f;");
+        rules.Should().Contain("var basePrice = pricePerDay * 7;");
+        rules.Should().Contain("basePrice -= (int)(basePrice * upkeepReductionPercent);");
+        rules.Should().Contain("public const int UpgradeBasePrice = 10000;");
+        rules.Should().Contain("return basePrice + upgradePrice;");
+        rules.IndexOf("basePrice -=", StringComparison.Ordinal)
             .Should()
-            .BeLessThan(processUpkeep.IndexOf("var upgradePrice", StringComparison.Ordinal));
+            .BeLessThan(rules.IndexOf("var upgradePrice", StringComparison.Ordinal));
+        SWLOR.Game.Server.Service.PropertyService.CityUpkeepRules.GetWeeklyUpkeep(dailyLayoutPrice, perkRank, 1, 1, 1)
+            .Should().Be(expectedWeeklyBasePrice);
     }
 
     [TestCase(0, 1000, 0)]

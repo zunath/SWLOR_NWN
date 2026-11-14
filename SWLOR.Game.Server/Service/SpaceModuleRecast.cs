@@ -8,20 +8,26 @@ namespace SWLOR.Game.Server.Service
 {
     public static partial class Space
     {
-        /// <summary>Pairs fitted high and low modules with their independent feat and recast slots.</summary>
-        private static IEnumerable<(ShipModuleFeat Feat, ShipStatus.ShipStatusModule Module)> ModuleRecastSlots(ShipStatus status)
+        /// <summary>Pairs fitted high, mid and low modules with their slot number and independent feat and recast slots.</summary>
+        private static IEnumerable<(int SlotNumber, ShipModuleFeat Feat, ShipStatus.ShipStatusModule Module)> ModuleRecastSlots(ShipStatus status)
         {
             foreach (var (slot, module) in status.HighPowerModules)
-                yield return (ShipModuleFeats[HighSlotToFeat(slot)], module);
+                yield return (GetFeatSlotNumber(HighSlotToFeat(slot)), ShipModuleFeats[HighSlotToFeat(slot)], module);
+            foreach (var (slot, module) in status.MidPowerModules)
+                yield return (GetFeatSlotNumber(MidSlotToFeat(slot)), ShipModuleFeats[MidSlotToFeat(slot)], module);
             foreach (var (slot, module) in status.LowPowerModules)
-                yield return (ShipModuleFeats[LowSlotToFeat(slot)], module);
+                yield return (GetFeatSlotNumber(LowSlotToFeat(slot)), ShipModuleFeats[LowSlotToFeat(slot)], module);
         }
 
-        /// <summary>Publishes a timed active module; older records retain their deadline and infer their original start.</summary>
-        private static void ApplyShipModuleRecast(uint player, ShipModuleFeat feat, ShipStatus.ShipStatusModule module, ShipStatus status)
+        /// <summary>
+        /// Publishes a timed active module; older records retain their deadline and infer their original start.
+        /// A toggle that is on sweeps over its lit icon when that art exists.
+        /// </summary>
+        private static void ApplyShipModuleRecast(uint player, int slotNumber, ShipModuleFeat feat, ShipStatus.ShipStatusModule module, ShipStatus status)
         {
             if (!GetIsObjectValid(player) || !GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player) ||
-                module.RecastTime <= DateTime.UtcNow || !_shipModules.TryGetValue(module.ItemTag, out var detail) ||
+                feat.RecastGroup == RecastGroup.Invalid || module.RecastTime <= DateTime.UtcNow ||
+                !_shipModules.TryGetValue(module.ItemTag, out var detail) ||
                 detail.CalculateRecastAction == null) return;
             var startedAt = module.RecastStartedAt;
             if (startedAt == default || startedAt >= module.RecastTime)
@@ -30,7 +36,8 @@ namespace SWLOR.Game.Server.Service
                 var seconds = detail.CalculateRecastAction(player, status, module.ModuleBonus);
                 startedAt = module.RecastTime.AddSeconds(-Math.Max(0.1, seconds));
             }
-            Recast.ApplyRecastDelay(player, feat.RecastGroup, startedAt, module.RecastTime, feat.TextureName, detail.Texture);
+            Recast.ApplyRecastDelay(player, feat.RecastGroup, startedAt, module.RecastTime, feat.TextureName,
+                GetShipModuleIconTexture(status, slotNumber, detail));
         }
 
         /// <summary>Replaces stale slot displays with fitted artwork and resumes unexpired hardware cooldowns.</summary>
@@ -40,10 +47,11 @@ namespace SWLOR.Game.Server.Service
             var status = GetShipStatus(player);
             ClearShipModuleRecasts(player);
             if (status == null) return;
-            foreach (var (feat, module) in ModuleRecastSlots(status))
+            foreach (var (slotNumber, feat, module) in ModuleRecastSlots(status))
             {
-                if (_shipModules.TryGetValue(module.ItemTag, out var detail)) SetTextureOverride(feat.TextureName, detail.Texture, player);
-                ApplyShipModuleRecast(player, feat, module, status);
+                if (_shipModules.TryGetValue(module.ItemTag, out var detail))
+                    SetTextureOverride(feat.TextureName, GetShipModuleIconTexture(status, slotNumber, detail), player);
+                ApplyShipModuleRecast(player, slotNumber, feat, module, status);
             }
         }
 

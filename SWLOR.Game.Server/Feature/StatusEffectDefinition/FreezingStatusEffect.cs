@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 amount => Combat.ApplyDamageTakenModifiers(creature, amount, source, CombatDamageType.Ice));
             if (damage > 0)
             {
-                AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Ice.GetNWScriptDamageType()), creature));
+                StatusEffect.ApplyDamageOverTime(source, creature, damage, CombatDamageType.Ice.GetNWScriptDamageType());
             }
 
             ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Pulse_Cyan_Blue), creature, 5.9f);

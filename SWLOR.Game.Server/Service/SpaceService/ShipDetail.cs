@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -16,6 +14,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int MaxCapacitor { get; set; }
         public int ShieldRechargeRate { get; set; }
         public int HighPowerNodes { get; set; }
+        public int MidPowerNodes { get; set; }
         public int LowPowerNodes { get; set; }
         public int ConfigurationNodes { get; set; }
         public int Accuracy { get; set; }
@@ -23,16 +22,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int ExplosiveDefense { get; set; }
         public int ThermalDefense { get; set; }
         public int EMDefense { get; set; }
-        public int IndustryBonus { get; set; }
         public bool HasDroidBay { get; set; }
         public bool CapitalShip { get; set; }
+        public ShipSize Size { get; set; }
+        public ShipRole Role { get; set; }
+        public ShipManufacturer Manufacturer { get; set; }
 
-        public Dictionary<PerkType, int> RequiredPerks { get; set; }
+        /// <summary>The revamp hull this ship comes from. Null for NPC ship items.</summary>
+        public ShipHullEntry Hull { get; set; }
 
         public ShipDetail()
         {
             Name = string.Empty;
-            RequiredPerks = new Dictionary<PerkType, int>();
         }
     }
 }

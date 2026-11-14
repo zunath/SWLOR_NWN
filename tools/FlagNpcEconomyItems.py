@@ -72,13 +72,18 @@ def collect():
         r'\.AddItemReward\(\s*"([^"]+)"',
         r'RefinedItemResref\s*=\s*"([^"]+)"', r'new\s+TerminalItem\([^,]+,\s*"([^"]+)"',
         r'(?:Named|Schematic|Note|Tool)\(\s*SlicingSourceType\.[^,]+,\s*\d+,\s*"([^"]+)"',
+        # The exclusive items city stores sell with a weekly allowance (CityStoreCatalog).
+        r'new\s+CityStoreLimitedItem\(\s*"([^"]+)"',
     ]
     # Files whose bare string literals are all item resrefs (attribute-decorated registries).
     literal_registries = (
         "FishType.cs", "FishingRodType.cs", "FishingBaitType.cs",
         "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
-        "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs",
+        "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs", "ShipSalvageItems.cs",
+        "RevampComponentCatalog.cs", "RevampRewardCatalog.cs", "SpaceSlicingItems.cs",
     )
+    # Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.
+    revamp_catalogs = ("RevampModuleCatalog.cs", "RevampShipCatalog.cs")
     for f in glob.glob(os.path.join(ROOT, "SWLOR.Game.Server", "**", "*.cs"), recursive=True):
         # Relative to ROOT so running from inside a worktree does not skip every file.
         if os.path.join(".claude", "worktrees") in os.path.relpath(f, ROOT):
@@ -93,10 +98,15 @@ def collect():
         if f.endswith(literal_registries):
             for m in re.findall(r'"([a-z0-9_]{2,16})"', s):
                 add(obtainable, m)
+        if f.endswith(revamp_catalogs):
+            for m in re.findall(r'\bTag = "([^"]+)"', s):
+                add(obtainable, m)
 
+    # The crate and the manure are created by the livestock code from constants, not literals at a call site.
     for r in ("beast_dna", "beast_egg", "blueprint", "survival_knife",
               "fresh_bread", "dlarproto", "traveler_m", "traveler_f",
-              "ls_custom", "ss_custom"):
+              "ls_custom", "ss_custom", "livestock_crate",
+              "manure_t1", "manure_t2", "manure_t3", "manure_t4", "manure_t5"):
         add(obtainable, r)
 
     return equipped, obtainable

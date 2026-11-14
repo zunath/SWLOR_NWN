@@ -22,13 +22,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var console = Owner;
 
-            if (!Shuttle.TryGetFlightInfo(console, out var destination, out var arrivalUtc))
+            if (!Shuttle.TryGetFlightDestinationName(console, out var destinationName, out var arrivalUtc))
             {
                 page.Header = "This console is offline.";
                 return;
             }
 
-            var destinationName = Planet.GetPlanetByType(destination).Name;
             var remaining = arrivalUtc - DateTime.UtcNow;
             var countdown = remaining <= TimeSpan.Zero
                 ? "momentarily"

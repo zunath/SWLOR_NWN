@@ -1,12 +1,13 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Gathering;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Prospecting;
 using SWLOR.Game.Server.Service.CraftService.Minigame.Search;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.ScavengeService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -42,6 +43,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             DeepScan();
             RichPickings();
             Jackpot();
+
+            Prospector();
+            DeepCore();
+            RapidExtraction();
+            GasSiphoning();
+            SalvageExpert();
+            TraitHunter();
 
             return _builder.Build();
         }
@@ -289,6 +297,143 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Gathering, 50)
                 .IncreasesStat(StatType.SearchJackpotRareWeight, SearchPerkRules.JackpotRareWeight);
+        }
+
+
+        private void Prospector()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.Prospector)
+                .Name("Asteroid Miner")
+                .Icon("ife_stars_minin")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.ProspectorTrait)
+                .Description("+5% ore from mining lasers and strip miners.")
+                .IncreasesStat(StatType.SpaceMiningYieldBonus, 5)
+                .Price(2)
+                .RequirementSkill(SkillType.Gathering, 10)
+
+                .AddPerkLevel()
+                .Description("+10% ore from mining lasers and strip miners.")
+                .IncreasesStat(StatType.SpaceMiningYieldBonus, 10)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 25)
+
+                .AddPerkLevel()
+                .Description("+15% ore from mining lasers and strip miners.")
+                .IncreasesStat(StatType.SpaceMiningYieldBonus, 15)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 40);
+        }
+
+
+        private void DeepCore()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.DeepCore)
+                .Name("Deep Core")
+                .Icon("ife_treas_hunt")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.DeepCoreTrait)
+                .Description("+10 to the rare-metal chance from asteroids.")
+                .IncreasesStat(StatType.SpaceRareMetalChance, 10)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 20)
+
+                .AddPerkLevel()
+                .Description("+20 to the rare-metal chance from asteroids.")
+                .IncreasesStat(StatType.SpaceRareMetalChance, 20)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 40);
+        }
+
+
+        private void RapidExtraction()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.RapidExtraction)
+                .Name("Rapid Extraction")
+                .Icon("ife_Miner")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.RapidExtractionTrait)
+                .Description("Mining, gas and salvage cycles are 10% faster.")
+                .IncreasesStat(StatType.SpaceMiningCycleSpeedPercent, 10)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 30)
+
+                .AddPerkLevel()
+                .Description("Mining, gas and salvage cycles are 20% faster.")
+                .IncreasesStat(StatType.SpaceMiningCycleSpeedPercent, 20)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 45);
+        }
+
+        private void GasSiphoning()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.GasSiphoning)
+                .Name("Gas Siphoning")
+                .Icon("ife_broil")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.GasSiphoningTrait)
+                .Description("+1 Tibanna Gas per cycle.")
+                .IncreasesStat(StatType.SpaceGasYieldBonus, 1)
+                .Price(2)
+                .RequirementSkill(SkillType.Gathering, 15)
+
+                .AddPerkLevel()
+                .Description("+2 Tibanna Gas per cycle.")
+                .IncreasesStat(StatType.SpaceGasYieldBonus, 2)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 35);
+        }
+
+
+        private void SalvageExpert()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.SalvageExpert)
+                .Name("Salvage Expert")
+                .Icon("ife_hasty_touch")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.SalvageExpertTrait)
+                .Description("+1 item per salvage cycle.")
+                .IncreasesStat(StatType.SpaceSalvageYieldBonus, 1)
+                .Price(2)
+                .RequirementSkill(SkillType.Gathering, 10)
+
+                .AddPerkLevel()
+                .Description("+2 items per salvage cycle.")
+                .IncreasesStat(StatType.SpaceSalvageYieldBonus, 2)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 25)
+
+                .AddPerkLevel()
+                .Description("+3 items per salvage cycle.")
+                .IncreasesStat(StatType.SpaceSalvageYieldBonus, 3)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 40);
+        }
+
+
+        private void TraitHunter()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.TraitHunter)
+                .Name("Trait Hunter")
+                .Icon("ife_cred_find")
+
+                .AddPerkLevel()
+                .GrantsFeat(FeatType.TraitHunterTrait)
+                .Description("+10 to the rare-trait chance of salvaged components.")
+                .IncreasesStat(StatType.SpaceRareTraitChance, 10)
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 20)
+
+                .AddPerkLevel()
+                .Description("+20 to the rare-trait chance of salvaged components.")
+                .IncreasesStat(StatType.SpaceRareTraitChance, 20)
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 40);
         }
     }
 }

@@ -53,6 +53,7 @@ public class DisguiseAuditTests
             {{ReadSource("Service/DisguiseService/ActivateDisguiseResult.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
             {{ReadSource("Service/DisguiseService/DeleteRetiredDisguiseResult.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
             {{ReadSource("Service/DisguiseService/DisguisePaymentMethod.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
+            {{ReadSource("Service/PvpCombatService/PvpCombatChangeOutcome.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
 
             public sealed class Player : EntityBase
             {
@@ -85,7 +86,18 @@ public class DisguiseAuditTests
                 public static void SetPortraitResRef(uint player, string portrait) { }
                 public static void SetSoundset(uint player, int sound) { }
                 public static void SetDescription(uint player, string description) { }
+                public static void SendMessageToPC(uint player, string message) { }
             }
+            public static class ColorToken { public static string Combat(string text) => text; }
+            // No PvP combat window is ever open in the harness, so identity changes go ahead and no notice is due.
+            public static class PvpCombatWindow
+            {
+                public static bool IsOpen(uint player) => false;
+                public static PvpCombatChangeOutcome RequestIdentity(uint player, Player dbPlayer, string wantedDisguiseId, out string message)
+                { message = ""; return dbPlayer.ActiveDisguiseId == (wantedDisguiseId ?? "") ? PvpCombatChangeOutcome.Unchanged : PvpCombatChangeOutcome.Applied; }
+                public static void CancelQueuedIdentity(uint player, Player dbPlayer) { }
+            }
+            public static class BountyConsent { public static void PromptIfNeeded(uint player) { } }
             public sealed class DBQuery<T>
             {
                 public string OwnerId;

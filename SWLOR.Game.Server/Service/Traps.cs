@@ -454,6 +454,7 @@ namespace SWLOR.Game.Server.Service
         {
             // This hit skips the damage modifiers, so a player's trap applies the PvP ramp and PvP combat here.
             var damage = PvpCombat.ApplyDamageIncrease(victim, record.Owner, KitTrapDamageByTier[record.Tier - 1], true);
+            Duels.RecordDamage(victim, record.Owner);
             Deactivate(record);
 
             AssignCommand(record.Owner, () =>

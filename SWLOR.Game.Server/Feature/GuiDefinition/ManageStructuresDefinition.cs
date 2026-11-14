@@ -68,6 +68,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddButton()
+                            .BindOnClicked(model => model.OnOpenHouseSpecialization())
+                            .SetText("House Specialization")
+                            .SetHeight(35f);
+
+                        row.BindIsVisible(model => model.IsHouseSpecializationVisible);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
                             .BindOnClicked(model => model.OnOpenAreaDescription())
                             .BindIsEnabled(model => model.IsAreaDescriptionEnabled)
                             .SetText("Area Description")

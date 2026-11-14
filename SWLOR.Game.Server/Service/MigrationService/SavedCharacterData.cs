@@ -97,6 +97,7 @@ internal static class SavedCharacterData
         _weaponIcons = LoadWeaponIcons(sizes.Keys);
         Feature.MigrationDefinition.CharacterMigration.SavedItemResistanceMigration.Load();
         Feature.MigrationDefinition.CharacterMigration.SavedDroidBoostItemMigration.Load();
+        Feature.MigrationDefinition.LegacySpaceItemBlueprints.Load();
     }
 
     /// <summary>

@@ -1,21 +1,33 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CityAffairsService;
+using SWLOR.Game.Server.Service.CityGazetteService;
+using SWLOR.Game.Server.Service.CityProjectService;
+using SWLOR.Game.Server.Service.CityStoreService;
+using SWLOR.Game.Server.Service.CityTreasuryService;
 using SWLOR.Game.Server.Service.DBService;
+using SWLOR.Game.Server.Service.EdictService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.StationService;
+using SWLOR.Game.Server.Service.TradeService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
+    public partial class ManageCityViewModel : GuiViewModelBase<ManageCityViewModel, GuiPayloadBase>, IGuiAcceptsPriceChange
     {
         private const int MaxUpgradeLevel = 5;
         private string _cityId;
+
+        // Whether the player has a permission record on the city. Only a record holder's save changes the city's name.
+        private bool _hasPermissionRecord;
 
         public string Instructions
         {
@@ -86,6 +98,57 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string TransportationTax
         {
             get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ExchangeTariff
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        /// <summary>The Sales tax percent added to every price in the city's stores.</summary>
+        public string SalesTax
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        /// <summary>The Shipyard fee per Capital hull (player stations only).</summary>
+        public string ShipyardFee
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        /// <summary>Whether the city is a player station, which shows the Jump Beacon upgrade and the Shipyard fee.</summary>
+        public bool IsStation
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string JumpBeaconLevel
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string JumpBeaconCurrentUpgrade
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string JumpBeaconNextUpgrade
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool CanUpgradeJumpBeacons
+        {
+            get => Get<bool>();
             set => Set(value);
         }
 
@@ -181,59 +244,101 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshPropertyDetails();
             RefreshTaxesAndFees();
             RefreshUpkeep();
+            InitializeTabs();
 
             WatchOnClient(model => model.CityName);
             WatchOnClient(model => model.TransportationTax);
             WatchOnClient(model => model.CitizenshipTax);
+            WatchOnClient(model => model.ExchangeTariff);
+            WatchOnClient(model => model.SalesTax);
+            WatchOnClient(model => model.ShipyardFee);
+            WatchOnClient(model => model.TabToggleValue);
+
+            SelectTab(CityTabId);
         }
 
+        /// <summary>
+        /// Reads what the player may do in this window: their role (mayor, Acting Mayor, or a departed mayor with no
+        /// powers) and the permissions on their record. Returns false when they have no standing here.
+        /// </summary>
         private bool RefreshPermissions()
         {
             var playerId = GetObjectUUID(Player);
             var dbCity = DB.Get<WorldProperty>(_cityId);
-            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), _cityId, false))
-                .SingleOrDefault();
+            var access = CityPowers.Resolve(dbCity, playerId);
+            IsStation = Station.IsStation(dbCity);
+            _hasPermissionRecord = access.HasRecord && access.HasAccess;
 
-            // The permission row is deleted when another manager revokes the player's last permission.
-            if (permission == null)
+            // The permission row is deleted when another manager revokes the player's last permission. A mayor who stepped
+            // down has none of the mayor's powers, and a stand-in has only the Acting Mayor's.
+            if (!access.HasAccess)
             {
                 CanAccessTreasury = false;
                 CanEditTaxes = false;
                 CanManageUpkeep = false;
+                CanManageEdicts = false;
+                CanRepealEdicts = false;
                 CanUpgradeMedicalCenters = false;
                 CanUpgradeStarports = false;
                 CanUpgradeCantinas = false;
+                CanUpgradeJumpBeacons = false;
+                CanStartHomeGround = false;
                 return false;
             }
 
-            // Permissions
-            CanAccessTreasury = permission.Permissions[PropertyPermissionType.AccessTreasury];
-            CanEditTaxes = permission.Permissions[PropertyPermissionType.EditTaxes];
-            CanManageUpkeep = permission.Permissions[PropertyPermissionType.ManageUpkeep];
+            // Permissions, by role and by what the player's record grants.
+            CanAccessTreasury = access.Can(CityPower.WithdrawTreasury);
+            CanEditTaxes = access.Can(CityPower.ChangeTaxes);
+            CanManageUpkeep = access.Can(CityPower.PayUpkeep);
+            CanManageEdicts = access.Can(CityPower.EnactEdicts);
+            CanRepealEdicts = access.Can(CityPower.RepealEdicts);
 
-            // Upgrades
-            CanUpgradeMedicalCenters = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
+            // Upgrades are City Projects, one of each kind at a time.
+            var canStartProjects = access.Can(CityPower.StartProjects);
+            var openProjects = GetOpenProjectTypes();
+            CanUpgradeMedicalCenters = canStartProjects &&
+                              !openProjects.Contains(CityProjectType.MedicalCenterUpgrade) &&
                               dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] + 1;
-            CanUpgradeStarports = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
+            CanUpgradeStarports = canStartProjects &&
+                              !openProjects.Contains(CityProjectType.StarportUpgrade) &&
                               dbCity.Upgrades[PropertyUpgradeType.StarportLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.StarportLevel] + 1;
-            CanUpgradeCantinas = permission.Permissions[PropertyPermissionType.ManageUpgrades] &&
+            CanUpgradeCantinas = canStartProjects &&
+                              !openProjects.Contains(CityProjectType.CantinaUpgrade) &&
                               dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] < MaxUpgradeLevel &&
                               dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] + 1;
 
+            // A player station's Jump Beacon level (1-3) caps the hulls it jumps.
+            var beaconLevel = GetJumpBeaconLevel(dbCity);
+            CanUpgradeJumpBeacons = IsStation &&
+                              canStartProjects &&
+                              !openProjects.Contains(CityProjectType.JumpBeaconUpgrade) &&
+                              beaconLevel < StationTuning.BeaconMaxLevel &&
+                              dbCity.Upgrades[PropertyUpgradeType.CityLevel] >= beaconLevel + 1;
+
+            CanStartHomeGround = canStartProjects &&
+                                 !openProjects.Contains(CityProjectType.HomeGround) &&
+                                 !CityProjects.HasHomeGround(dbCity);
             return true;
         }
+
+        /// <summary>A station's Jump Beacon upgrade level; stations founded before beacons existed start at 1.</summary>
+        private static int GetJumpBeaconLevel(WorldProperty dbCity) =>
+            dbCity.Upgrades.GetValueOrDefault(PropertyUpgradeType.JumpBeaconLevel, 1);
 
         private void RefreshUpgradeLevels()
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);
 
-            MedicalCenterLevel = $"Medical Center: Lvl {dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel]}";
-            StarportLevel = $"Starport: Lvl {dbCity.Upgrades[PropertyUpgradeType.StarportLevel]}";
-            CantinaLevel = $"Cantina: Lvl {dbCity.Upgrades[PropertyUpgradeType.CantinaLevel]}";
+            RefreshHomeGroundText(dbCity);
+            var projects = CityProjects.GetProjects(_cityId);
+            string Building(CityProjectType type) =>
+                projects.FirstOrDefault(project => project.ProjectType == type) is { } project ? $" (Lvl {project.TargetLevel} being built)" : string.Empty;
+
+            MedicalCenterLevel = $"Medical Center: Lvl {dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel]}{Building(CityProjectType.MedicalCenterUpgrade)}";
+            StarportLevel = $"Starport: Lvl {dbCity.Upgrades[PropertyUpgradeType.StarportLevel]}{Building(CityProjectType.StarportUpgrade)}";
+            CantinaLevel = $"Cantina: Lvl {dbCity.Upgrades[PropertyUpgradeType.CantinaLevel]}{Building(CityProjectType.CantinaUpgrade)}";
 
             MedicalCenterCurrentUpgrade = GetMedicalCenterUpgrade(dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel]);
             MedicalCenterNextUpgrade = GetMedicalCenterUpgrade(dbCity.Upgrades[PropertyUpgradeType.MedicalCenterLevel] + 1);
@@ -241,6 +346,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StarportNextUpgrade = GetStarportUpgrade(dbCity.Upgrades[PropertyUpgradeType.StarportLevel] + 1);
             CantinaCurrentUpgrade = GetCantinaUpgrade(dbCity.Upgrades[PropertyUpgradeType.CantinaLevel]);
             CantinaNextUpgrade = GetCantinaUpgrade(dbCity.Upgrades[PropertyUpgradeType.CantinaLevel] + 1);
+
+            var beaconLevel = GetJumpBeaconLevel(dbCity);
+            JumpBeaconLevel = $"Jump Beacon: Lvl {beaconLevel}{Building(CityProjectType.JumpBeaconUpgrade)}";
+            JumpBeaconCurrentUpgrade = GetJumpBeaconUpgrade(beaconLevel);
+            JumpBeaconNextUpgrade = GetJumpBeaconUpgrade(beaconLevel + 1);
         }
 
         private void RefreshCitizenList()
@@ -285,6 +395,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             CitizenshipTax = $"{dbCity.Taxes[PropertyTaxType.Citizenship]}";
             TransportationTax = $"{dbCity.Taxes[PropertyTaxType.Transportation]}";
+            ExchangeTariff = $"{GetStoredExchangeTariff(dbCity)}";
+            SalesTax = $"{CityStores.GetSalesTax(dbCity)}";
+            ShipyardFee = $"{StationBuildings.GetShipyardFee(dbCity)}";
+        }
+
+        /// <summary>The city's Trade Exchange tariff percent. Cities that never set one have none.</summary>
+        private static int GetStoredExchangeTariff(WorldProperty dbCity)
+        {
+            return dbCity.Taxes.TryGetValue(PropertyTaxType.Exchange, out var tariff) ? TradeTariffRules.ClampPercent(tariff) : 0;
+        }
+
+        /// <summary>
+        /// Parses and clamps the entered Sales tax. Without the Edit Taxes permission, or when the text is not a number,
+        /// the stored rate is kept.
+        /// </summary>
+        public static int ResolveSalesTax(bool canEditTaxes, string salesTaxText, int currentSalesTax)
+        {
+            if (!canEditTaxes || !int.TryParse(salesTaxText, out var salesTax))
+                return SalesTaxRules.ClampPercent(currentSalesTax);
+
+            return SalesTaxRules.ClampPercent(salesTax);
         }
 
         private string GetMedicalCenterUpgrade(int level)
@@ -323,6 +454,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return "UPGRADES MAXED";
             }
         }
+        private static string GetJumpBeaconUpgrade(int level)
+        {
+            if (level < 1 || level > StationTuning.BeaconMaxLevel)
+                return "UPGRADES MAXED";
+
+            return $"Jumps hulls up to {StationBuildingRules.GetMaxHull(level)}";
+        }
+
         private string GetCantinaUpgrade(int level)
         {
             switch (level)
@@ -354,126 +493,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload, TetherObject);
         };
 
-        private bool ValidateUpgrade(PropertyUpgradeType upgradeType, int price)
-        {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
-            var mayor = DB.Get<Player>(dbCity.OwnerPlayerId);
-            var currentLevel = dbCity.Upgrades[upgradeType];
-            var mayorPerkLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
-                ? mayor.Perks[PerkType.CityManagement]
-                : 0;
-
-            if (currentLevel >= MaxUpgradeLevel)
-            {
-                Instructions = "Cannot upgrade further.";
-                InstructionsColor = GuiColor.Red;
-                return false;
-            }
-
-            if (dbCity.Upgrades[PropertyUpgradeType.CityLevel] <= currentLevel)
-            {
-                Instructions = "Increase city level to upgrade.";
-                InstructionsColor = GuiColor.Red;
-                return false;
-            }
-
-            if (mayorPerkLevel + 1 <= currentLevel)
-            {
-                Instructions = "Mayor city management perk too low.";
-                InstructionsColor = GuiColor.Red;
-                return false;
-            }
-
-            if (dbCity.Treasury < price)
-            {
-                Instructions = $"Treasury needs at least {price} cr to upgrade.";
-                InstructionsColor = GuiColor.Red;
-                return false;
-            }
-
-            return true;
-        }
-
-        private void HandleUpgrade(PropertyUpgradeType upgradeType, PropertyType propertyType)
-        {
-            var dbCity = DB.Get<WorldProperty>(_cityId);
-            var currentLevel = dbCity.Upgrades[upgradeType];
-            var initialPrice = 50000 * (currentLevel + 1);
-
-            if (!ValidateUpgrade(upgradeType, initialPrice))
-                return;
-
-            ShowModal($"Upgrading this structure type will cost an upfront amount of {initialPrice} credits and increase your weekly maintenance bill by an additional 10000 credits. Upgrades cannot be undone. Are you sure you want to upgrade this structure type?",
-                () =>
-                {
-                    // Refresh entity in case another player is editing this city.
-                    dbCity = DB.Get<WorldProperty>(_cityId);
-                    currentLevel = dbCity.Upgrades[upgradeType];
-                    initialPrice = 50000 * (currentLevel + 1);
-
-                    if (!ValidateUpgrade(upgradeType, initialPrice))
-                        return;
-
-                    dbCity.Treasury -= initialPrice;
-                    dbCity.Upgrades[upgradeType]++;
-
-                    DB.Set(dbCity);
-
-                    RefreshPropertyDetails();
-                    RefreshPermissions();
-                    RefreshUpgradeLevels();
-
-                    Instructions = "Upgrade purchased successfully!";
-                    InstructionsColor = GuiColor.Green;
-
-                    Log.Write(LogGroup.Property, $"City upgrade '{upgradeType}' purchased by {GetName(Player)} for property '{dbCity.CustomName}' ({dbCity.Id}).");
-
-                    var structureTypes = Property.GetStructuresByInteriorPropertyType(propertyType);
-                    var structureTypeIds = structureTypes.Select(s => (int)s).ToList();
-
-                    if (structureTypeIds.Count > 0)
-                    {
-                        // Retrieve all interior property Ids in this city of the given type of property.
-                        // I.E: All banks, all medical centers, etc.
-                        var instancePropertyIds = DB.Search(new DBQuery<WorldProperty>()
-                            .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), _cityId, false)
-                            .AddFieldSearch(nameof(WorldProperty.StructureType), structureTypeIds))
-                            .SelectMany(s => s.ChildPropertyIds[PropertyChildType.Interior]);
-
-                        foreach (var propertyId in instancePropertyIds)
-                        {
-                            if (!Property.TryGetLoadedInstance(propertyId, out var instance))
-                                continue;
-
-                            var layout = Property.GetLayoutByType(instance.LayoutType);
-
-                            if (layout.OnCityUpgradeAction != null)
-                            {
-                                layout.OnCityUpgradeAction(instance.Area, upgradeType, dbCity.Upgrades[upgradeType]-1);
-                            }
-                        }
-                    }
-                });
-        }
-
-
+        // The upgrade buttons start City Projects: the treasury holds the credits and anyone donates the materials at City Hall.
         public Action UpgradeMedicalCenterLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.MedicalCenterLevel, PropertyType.MedicalCenter);
+            StartProject(CityProjectType.MedicalCenterUpgrade);
         };
 
         public Action UpgradeStarportLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.StarportLevel, PropertyType.Starport);
+            StartProject(CityProjectType.StarportUpgrade);
         };
 
         public Action UpgradeCantinaLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.CantinaLevel, PropertyType.Cantina);
+            StartProject(CityProjectType.CantinaUpgrade);
+        };
+
+        public Action UpgradeJumpBeaconLevel() => () =>
+        {
+            if (!Station.IsStation(DB.Get<WorldProperty>(_cityId)))
+                return;
+
+            StartProject(CityProjectType.JumpBeaconUpgrade);
+        };
+
+        public Action OpenCityAffairs() => () =>
+        {
+            var error = CityAffairs.TryOpenWindow(Player, _cityId, TetherObject);
+            if (string.IsNullOrEmpty(error))
+                return;
+
+            Instructions = error;
+            InstructionsColor = GuiColor.Red;
         };
 
         public Action PayUpkeep() => () =>
         {
+            // The window's buttons reflect when it loaded: the permission may have been revoked, or the mayor may have stepped down, since.
+            RefreshPermissions();
+            if (!CanManageUpkeep)
+            {
+                Instructions = "Insufficient permissions.";
+                InstructionsColor = GuiColor.Red;
+                return;
+            }
+
             var dbCity = DB.Get<WorldProperty>(_cityId);
             if (dbCity.Upkeep == 0)
             {
@@ -485,13 +549,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Your upkeep bill is {dbCity.Upkeep} cr. Note that credits must be deposited into your city's treasury. Will you pay this fee now?",
                 () =>
                 {
+                    RefreshPermissions();
                     dbCity = DB.Get<WorldProperty>(_cityId);
+                    if (!CanManageUpkeep)
+                    {
+                        Instructions = "Insufficient permissions.";
+                        InstructionsColor = GuiColor.Red;
+                        return;
+                    }
+
                     if (dbCity.Upkeep == 0)
                     {
                         return;
                     }
 
-                    if (dbCity.Upkeep > dbCity.Treasury)
+                    if (!CityTreasuryRules.CanSpend(dbCity, dbCity.Upkeep))
                     {
                         Instructions = "Insufficient treasury funds.";
                         InstructionsColor = GuiColor.Red;
@@ -500,10 +572,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     Log.Write(LogGroup.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) paid city upkeep of {dbCity.Upkeep} credits for property '{dbCity.CustomName}' ({dbCity.Id}).");
 
-                    dbCity.Treasury -= dbCity.Upkeep;
-                    dbCity.Upkeep = 0;
-
-                    DB.Set(dbCity);
+                    // Restricted funds pay first, and an Edict the payment lifts out of disrepair adds its part-week.
+                    CityTreasury.PayUpkeep(dbCity, DateTime.UtcNow);
                     Property.BroadcastCityUpkeepPaid(dbCity);
 
                     Instructions = "Upkeep paid successfully.";
@@ -562,6 +632,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var dbCity = DB.Get<WorldProperty>(_cityId);
+            var citizenshipTaxBefore = dbCity.Taxes[PropertyTaxType.Citizenship];
+            var transportationTaxBefore = dbCity.Taxes[PropertyTaxType.Transportation];
+            var exchangeTariffBefore = GetStoredExchangeTariff(dbCity);
+            var salesTaxBefore = CityStores.GetSalesTax(dbCity);
+            var shipyardFeeBefore = Station.IsStation(dbCity) ? StationBuildings.GetShipyardFee(dbCity) : 0;
 
             ResolveTaxes(
                 CanEditTaxes,
@@ -572,19 +647,102 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 out var citizenshipTax,
                 out var transportationTax);
 
-            dbCity.CustomName = CityName;
+            // A stand-in with no record, such as an Acting Mayor, has no say in the city's name.
+            if (_hasPermissionRecord)
+            {
+                dbCity.CustomName = CityName;
+                if (Station.IsStation(dbCity))
+                    Station.RenameExterior(dbCity);
+            }
+
             dbCity.Taxes[PropertyTaxType.Citizenship] = citizenshipTax;
             dbCity.Taxes[PropertyTaxType.Transportation] = transportationTax;
 
+            // The Trade Exchange tariff (0 to the cap) is the city leadership's to set: it needs the Edit Taxes permission.
+            var tariffRefused = false;
+            if (!int.TryParse(ExchangeTariff, out var exchangeTariff))
+                exchangeTariff = GetStoredExchangeTariff(dbCity);
+            exchangeTariff = TradeTariffRules.ClampPercent(exchangeTariff);
+            if (exchangeTariff != GetStoredExchangeTariff(dbCity))
+            {
+                if (CanEditTaxes)
+                    dbCity.Taxes[PropertyTaxType.Exchange] = exchangeTariff;
+                else
+                    tariffRefused = true;
+            }
+
+            // The Sales tax (0 to 10) is set the same way, with the Edit Taxes permission.
+            if (!int.TryParse(SalesTax, out var salesTax))
+                salesTax = salesTaxBefore;
+            salesTax = SalesTaxRules.ClampPercent(salesTax);
+            if (salesTax != salesTaxBefore)
+            {
+                if (CanEditTaxes)
+                    dbCity.Taxes[PropertyTaxType.Sales] = salesTax;
+                else
+                    tariffRefused = true;
+            }
+
+            // A station's Shipyard fee (0 to the cap) is set the same way, with the Edit Taxes permission.
+            if (Station.IsStation(dbCity))
+            {
+                if (!int.TryParse(ShipyardFee, out var shipyardFee))
+                    shipyardFee = StationBuildings.GetShipyardFee(dbCity);
+                shipyardFee = StationBuildingRules.ClampShipyardFee(shipyardFee);
+                if (shipyardFee != StationBuildings.GetShipyardFee(dbCity))
+                {
+                    if (CanEditTaxes)
+                        dbCity.Taxes[PropertyTaxType.Shipyard] = shipyardFee;
+                    else
+                        tariffRefused = true;
+                }
+            }
+
             DB.Set(dbCity);
+            PostTaxChangesToGazette(dbCity, citizenshipTaxBefore, transportationTaxBefore, exchangeTariffBefore, salesTaxBefore, shipyardFeeBefore);
 
             RefreshPropertyDetails();
             RefreshTaxesAndFees();
 
-            Instructions = "City details saved successfully.";
-            InstructionsColor = GuiColor.Green;
+            Instructions = tariffRefused
+                ? "City details saved. You need the Edit Taxes permission to change the exchange tariff, the Sales tax or the Shipyard fee."
+                : "City details saved successfully.";
+            InstructionsColor = tariffRefused ? GuiColor.Red : GuiColor.Green;
 
         };
+
+        /// <summary>Publishes the taxes and fees that changed in the Gazette, under the name and title of whoever saved them.</summary>
+        private void PostTaxChangesToGazette(
+            WorldProperty dbCity,
+            int citizenshipTaxBefore,
+            int transportationTaxBefore,
+            int exchangeTariffBefore,
+            int salesTaxBefore,
+            int shipyardFeeBefore)
+        {
+            var changes = new List<(string Name, string Before, string After)>
+            {
+                ("Citizenship tax", $"{citizenshipTaxBefore} cr per week", $"{dbCity.Taxes[PropertyTaxType.Citizenship]} cr per week"),
+                ("Transportation tax", $"{transportationTaxBefore}%", $"{dbCity.Taxes[PropertyTaxType.Transportation]}%"),
+                ("Trade Exchange tariff", $"{exchangeTariffBefore}%", $"{GetStoredExchangeTariff(dbCity)}%"),
+                ("Sales tax", $"{salesTaxBefore}%", $"{CityStores.GetSalesTax(dbCity)}%")
+            };
+
+            if (Station.IsStation(dbCity))
+                changes.Add(("Shipyard fee", $"{shipyardFeeBefore} cr", $"{StationBuildings.GetShipyardFee(dbCity)} cr"));
+
+            var text = CityGazetteRules.BuildTaxChangeText(changes);
+            if (text.Length == 0)
+                return;
+
+            var playerId = GetObjectUUID(Player);
+            CityGazette.Post(
+                dbCity.Id,
+                CityGazetteEntryType.Tax,
+                text,
+                playerId,
+                CityPowers.GetDelegateTitle(dbCity, playerId));
+        }
 
         public Action ResetChanges() => () =>
         {

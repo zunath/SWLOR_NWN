@@ -49,6 +49,12 @@ namespace SWLOR.Game.Server.Service.ProspectingService
         /// <summary>The player's Gathering rank now, which sets the XP of each unit.</summary>
         int GetGatheringRank(uint player);
 
+        /// <summary>
+        /// The chances that a harvest the player finishes now gains 1 more item from their city's Prospectors' Charter and Home Ground.
+        /// Both are 0 off the city's planet and for anyone who is not a citizen in good standing.
+        /// </summary>
+        HarvestBonusChances GetHarvestBonusChances(uint player);
+
         /// <summary>Gives the Gathering XP a reserved harvest saved as waiting, taking it off the record in the same save.</summary>
         void GiveGatheringXp(uint player, int xp);
 

@@ -44,13 +44,13 @@ namespace SWLOR.CraftSim.Progression
             "private const float RefiningDelaySeconds = 6f;");
 
         public static readonly SourceReference ResearchCost = new(
-            "Research job length and credits", Craft, 1145, 1192,
+            "Research job length and credits", Craft, 1267, 1314,
             "var perkLevel = recipeDetail.Level / 10 + 1;", "if (perkLevel > 5)",
             "var price = baseConstant * (Math.Pow(perkLevel, 2.2f) * Math.Pow(blueprintLevel, 2f));",
             "price += price * recipeDetail.ResearchCostModifier;", "return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);");
 
         public static readonly SourceReference ResearchBlueprint = new(
-            "A first research job creates the blueprint", ResearchViewModel, 452, 465,
+            "A first research job creates the blueprint", ResearchViewModel, 517, 530,
             "if (string.IsNullOrWhiteSpace(dbJob.SerializedItem))", "item = CreateItemOnObject(\"blueprint\", Player);", "isNewBlueprint = true;");
 
         public static readonly IReadOnlyList<SourceReference> All = new[]

@@ -23,6 +23,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = 20;
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 20;
             StatGroup.Stats[StatType.EnmityPercentAdjustment] = 30;
+
+            // A ship reads its own Defense stat; the Physical and Force ones above never reach it.
+            StatGroup.Stats[StatType.SpaceDefensePercentAdjustment] = 20;
         }
     }
 }

@@ -149,6 +149,12 @@ namespace SWLOR.Game.Server.Service.CraftService
 
         [RecipeCategory("Twin Pistols", true)]
         TwinPistol = 72,
+
+        [RecipeCategory("Ship Component", true)]
+        ShipComponent = 73,
+
+        [RecipeCategory("Fertilizer", true)]
+        Fertilizer = 74,
     }
 
     public class RecipeCategoryAttribute : Attribute

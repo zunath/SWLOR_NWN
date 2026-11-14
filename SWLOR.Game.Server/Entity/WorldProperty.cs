@@ -1,5 +1,10 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.CityAffairsService;
+using SWLOR.Game.Server.Service.CityStoreService;
+using SWLOR.Game.Server.Service.EdictService;
+using SWLOR.Game.Server.Service.HouseSpecializationService;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -10,11 +15,19 @@ namespace SWLOR.Game.Server.Entity
             CustomName = string.Empty;
             CustomDescription = string.Empty;
             ParentPropertyId = string.Empty;
+            StationAnchorId = string.Empty;
+            PendingPaymentId = string.Empty;
             ChildPropertyIds = new Dictionary<PropertyChildType, List<string>>();
             Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
             Taxes = new Dictionary<PropertyTaxType, int>();
             Upgrades = new Dictionary<PropertyUpgradeType, int>();
+            Edicts = new Dictionary<EdictType, CityEdict>();
+            MayorRecord = new MayorRecord();
+            Escrow = new Dictionary<string, CityEscrowEntry>();
+            Officers = new Dictionary<string, CityOfficer>();
+            Modifiers = new Dictionary<CityModifierType, CityModifier>();
+            ActingMayorPlayerId = string.Empty;
         }
 
         /// <summary>
@@ -122,9 +135,162 @@ namespace SWLOR.Game.Server.Entity
         public long Treasury { get; set; }
 
         /// <summary>
+        /// The ids of craft station fees already credited to <see cref="Treasury"/> (<see cref="PendingStationFee.Id"/>), saved with the credit, so
+        /// a retry after a crash never credits a fee twice. Records saved before this existed hold null, which means none.
+        /// </summary>
+        public HashSet<string> PaidCraftFees { get; set; }
+
+        /// <summary>
+        /// Credits earned from sources that cannot be withdrawn, such as City Affairs gains. Upkeep, Edicts and projects
+        /// spend them before <see cref="Treasury"/>; the treasury withdrawal never touches them. Only applicable to City
+        /// property types.
+        /// </summary>
+        public long RestrictedTreasury { get; set; }
+
+        /// <summary>
+        /// Credits held out of both balances for a bounty, tournament or project, keyed by that thing's id. Each entry
+        /// remembers which balance every portion came from, so a refund returns it there.
+        /// </summary>
+        public Dictionary<string, CityEscrowEntry> Escrow { get; set; }
+
+        /// <summary>
         /// Tracks the amount of credits required to pay off the upkeep for this property.
         /// Only applicable to City property types.
         /// </summary>
         public int Upkeep { get; set; }
+
+        /// <summary>
+        /// The Edicts this city holds, whatever their state (Pending or Active) and whether or not a pause covers them.
+        /// Each takes one of the city's Edict slots.
+        /// </summary>
+        public Dictionary<EdictType, CityEdict> Edicts { get; set; }
+
+        /// <summary>The sitting mayor's promised and broken Edict counts. Reset when the seat changes hands.</summary>
+        public MayorRecord MayorRecord { get; set; }
+
+        /// <summary>
+        /// The anchor site a player station stands at (plan section 25). Empty for every other property, including
+        /// planet cities; older records load empty.
+        /// </summary>
+        [Indexed]
+        public string StationAnchorId { get; set; }
+
+        /// <summary>
+        /// The founding payment (<c>CreditPaymentMark</c>) a player station still waits on, or empty. Saved with the new
+        /// station, so a login whose character file never paid it undoes the founding. Older records load empty.
+        /// </summary>
+        public string PendingPaymentId { get; set; }
+
+        /// <summary>The credits <see cref="PendingPaymentId"/> takes.</summary>
+        public int PendingPaymentCredits { get; set; }
+
+        /// <summary>
+        /// City-wide condition: when citizens voted No on the sitting mayor. Set when a confidence vote fails and cleared
+        /// by the next election that ends in an outright win. Null when clear. Edicts pause while it is set.
+        /// </summary>
+        public DateTime? NoConfidenceSinceUtc { get; set; }
+
+        /// <summary>
+        /// City-wide condition: when the city's politics were found neglected (an empty second recall). Cleared by the
+        /// next election that ends with at least one candidate and one vote. Null when clear. Set by the recall path.
+        /// </summary>
+        public DateTime? NeglectSinceUtc { get; set; }
+
+        /// <summary>
+        /// The result of the city's latest election, for the notice citizens read at their next login. Older records
+        /// load with none.
+        /// </summary>
+        public ElectionResultRecord LastElectionResult { get; set; }
+
+        /// <summary>
+        /// The officers the mayor appointed, by player id. The limit is 1 plus 1 per city level. Cities only; older
+        /// records load with none.
+        /// </summary>
+        public Dictionary<string, CityOfficer> Officers { get; set; }
+
+        /// <summary>
+        /// Effects City Affairs situations put on the city, until they expire. A repeat refreshes the expiry instead of
+        /// stacking. Cities only; older records load with none.
+        /// </summary>
+        public Dictionary<CityModifierType, CityModifier> Modifiers { get; set; }
+
+        /// <summary>
+        /// How many City Affairs situations in a row expired unhandled. Any decision resets it to 0, and at 5 a recall
+        /// election opens.
+        /// </summary>
+        public int NeglectCount { get; set; }
+
+        /// <summary>
+        /// 0 normally. 1 after a recall election ended empty: the city is marked Abandoned and the second recall is
+        /// open. Cleared when the second recall ends.
+        /// </summary>
+        public int RecallStage { get; set; }
+
+        /// <summary>
+        /// The citizen the mayor named Acting Mayor, or empty. The term ends at <see cref="ActingMayorEndsUtc"/>, and sooner
+        /// when the mayor ends it, the Acting Mayor leaves the city, or an election seats a mayor. Cities only; older
+        /// records load empty.
+        /// </summary>
+        public string ActingMayorPlayerId { get; set; }
+
+        /// <summary>When the Acting Mayor's term ends, or null when there is none. At most 30 days after it began.</summary>
+        public DateTime? ActingMayorEndsUtc { get; set; }
+
+        /// <summary>
+        /// The mayor's step-down in progress, or null. While it is pending the mayor keeps every power; once accepted the
+        /// mayor has none and the interim holder has the Acting Mayor's powers, until the snap election ends. Cities only.
+        /// </summary>
+        public CityStepDown StepDown { get; set; }
+
+        /// <summary>The city's one story request for the DMs, or null. Cities only.</summary>
+        public CityStoryRequest StoryRequest { get; set; }
+
+        /// <summary>The planetary council a DM last called for the city's planet, or null. Cities only.</summary>
+        public CityCouncilSummons CouncilSummons { get; set; }
+
+        /// <summary>
+        /// The job the owner gave this house (Player City Revamp, "House specializations"). Houses only; older records load as
+        /// <see cref="HouseSpecializationType.None"/>. It belongs to the house, so it survives a change of owner.
+        /// </summary>
+        public HouseSpecializationType HouseSpecialization { get; set; }
+
+        /// <summary>The crafting skill a <see cref="HouseSpecializationType.Workshop"/> boosts, or Invalid for any other type.</summary>
+        public SkillType WorkshopSkill { get; set; }
+
+        /// <summary>
+        /// When the specialization was last set, or null if it never was. The next change is allowed 30 days later. Like the
+        /// type, it stays with the house when the owner changes.
+        /// </summary>
+        public DateTime? HouseSpecializationChangedUtc { get; set; }
+
+        /// <summary>
+        /// The storage a <see cref="HouseSpecializationType.Storehouse"/> added to <see cref="ItemStorageCount"/>, or 0. Leaving the
+        /// type subtracts exactly this, so the storage furniture adds is never touched.
+        /// </summary>
+        public int StorehouseBonus { get; set; }
+
+        /// <summary>
+        /// When the city's Home Ground City Project completed, or null if it has not. Cities and stations only. Read by every
+        /// Home Ground bonus, so there is one source of truth.
+        /// </summary>
+        public DateTime? HomeGroundCompletedUtc { get; set; }
+
+        /// <summary>
+        /// True when the mayor switched the city's wandering townsfolk and guards off in Manage City. They leave at once and
+        /// stay away until switched back on. Cities only; older records load false, so no migration is needed.
+        /// </summary>
+        public bool TownsfolkHidden { get; set; }
+
+        /// <summary>
+        /// True when the mayor switched the city's street critters off in Manage City. Cities only; older records load false,
+        /// so no migration is needed.
+        /// </summary>
+        public bool CrittersHidden { get; set; }
+
+        /// <summary>
+        /// The stock theme the mayor picked for a Market Stall. Only used when the StructureType is a Market Stall;
+        /// older records load with none, which sells general goods.
+        /// </summary>
+        public MarketStallTheme MarketStallTheme { get; set; }
     }
 }

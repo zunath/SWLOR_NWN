@@ -518,17 +518,19 @@ public class PropertyOnDemandLoadingTests
             "ViewModel",
             "ShipManagementViewModel.cs")).Replace("\r\n", "\n");
         var loadBody = ExtractMethod(source, "private void LoadShip()");
-        var locationBody = ExtractMethod(source, "private uint GetShipLocation(WorldProperty property, out bool isDockInstanceLoading)");
+        var locationBody = ExtractMethod(source, "private uint GetShipLocation(PlayerShip ship, WorldProperty property, out bool isDockInstanceLoading)");
 
-        loadBody.Should().Contain("var currentLocation = GetShipLocation(property, out var isDockInstanceLoading);");
+        loadBody.Should().Contain("var currentLocation = GetShipLocation(ship, property, out var isDockInstanceLoading);");
         loadBody.Should().Contain("var isInSpace = property.Positions.ContainsKey(PropertyLocationType.CurrentPosition);");
-        loadBody.Should().Contain("ShipLocation = isInSpace");
+        loadBody.Should().Contain(": isInSpace\n                        ? \"In Space\"");
         loadBody.Should().Contain("\"Docked (loading...)\"");
         loadBody.Should().NotContain("ShipLocation = currentLocation == OBJECT_INVALID ? \"In Space\" : GetName(currentLocation);");
 
         locationBody.Should().Contain("isDockInstanceLoading = false;");
         locationBody.Should().Contain("Property.TryGetLoadedInstance(landingLocation.InstancePropertyId, out var instance)");
         locationBody.Should().Contain("isDockInstanceLoading = true;");
+        locationBody.Should().Contain("Space.IsDockedAtDerelict(ship, out _)",
+            "a ship docked at a derelict is not at the starport it last landed at, so it cannot be boarded or refit there");
     }
 
     [Test]

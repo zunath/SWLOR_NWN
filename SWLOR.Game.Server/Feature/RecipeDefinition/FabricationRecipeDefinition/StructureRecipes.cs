@@ -241,6 +241,50 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.FabricationRecipeDefinition
                 .Component("zinsiam", 8)
                 .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 28, frameQualityPercent: 20, shellQualityPercent: 20, wearRate: 7);
 
+            // Station Core: the City Hall's and the Starport's recipes together, since founding builds both (plan section 25).
+            // StationTests checks these against StationTuning (stations.py).
+            _builder.Create(RecipeType.StationCore, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Structure)
+                .Resref("structure_5018")
+                .Level(50)
+                .Quantity(1)
+                .Component("const_parts", 3)
+                .Component("pow_supp_unit", 2)
+                .Component("r_const_parts", 4)
+                .Component("r_pow_supp_unit", 2)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 27, frameQualityPercent: 30, shellQualityPercent: 26, wearRate: 7);
+
+            // The station-only buildings (plan section 25). StationBuildingTests checks these against StationTuning (stations.py).
+            // Shipyard: the top building, at the Lab's recipe.
+            _builder.Create(RecipeType.Shipyard, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Structure)
+                .Resref("structure_5019")
+                .Level(50)
+                .Quantity(1)
+                .Component("r_const_parts", 4)
+                .Component("r_pow_supp_unit", 3)
+                .Component("zinsiam", 8)
+                .FabricatorParameters(frameSizePercent: 32, shellSizePercent: 21, frameQualityPercent: 22, shellQualityPercent: 30, wearRate: 9);
+
+            // Asteroid Drill
+            _builder.Create(RecipeType.AsteroidDrill, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Structure)
+                .Resref("structure_5020")
+                .Level(45)
+                .Quantity(1)
+                .Component("r_const_parts", 4)
+                .Component("r_pow_supp_unit", 2)
+                .FabricatorParameters(frameSizePercent: 30, shellSizePercent: 29, frameQualityPercent: 27, shellQualityPercent: 20, wearRate: 6);
+
+            // Jump Beacon
+            _builder.Create(RecipeType.JumpBeacon, SkillType.Fabrication)
+                .Category(RecipeCategoryType.Structure)
+                .Resref("structure_5021")
+                .Level(48)
+                .Quantity(1)
+                .Component("r_const_parts", 4)
+                .Component("r_pow_supp_unit", 3)
+                .FabricatorParameters(frameSizePercent: 35, shellSizePercent: 26, frameQualityPercent: 21, shellQualityPercent: 24, wearRate: 8);
         }
     }
 }

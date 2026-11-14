@@ -27,7 +27,15 @@ namespace SWLOR.Game.Server.Service.SlicingService
     public enum SlicingSourceType
     {
         Lockbox = 1,
-        Terminal = 2
+        Terminal = 2,
+
+        // Space slicing (plan section 24): data cans at data sites, locked caches at cache sites, data cores in
+        // elite, ace and boss wrecks (all three through the Data Analyzer), customs scans and space lockboxes.
+        DataCan = 3,
+        LockedCache = 4,
+        WreckDataCore = 5,
+        CustomsScan = 6,
+        SpaceLockbox = 7
     }
 
     public enum SlicingToolType

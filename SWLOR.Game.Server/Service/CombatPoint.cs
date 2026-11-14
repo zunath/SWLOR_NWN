@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 
@@ -123,7 +124,7 @@ namespace SWLOR.Game.Server.Service
                         GetIsDM(player) ||
                         GetIsDead(player) ||
                         GetCurrentHitPoints(player) <= 0 ||
-                        GetDistanceBetween(player, npc) > 40.0f ||
+                        GetDistanceBetween(player, npc) > ShipKillXpRules.GetRange(Space.IsPlayerInSpaceMode(player)) ||
                         GetArea(player) != GetArea(npc))
                         continue;
 
@@ -137,6 +138,9 @@ namespace SWLOR.Game.Server.Service
                         .ToDictionary(x => x.Key, y => y.Value);
 
                     var areaBonus = GetLocalInt(GetArea(npc), "AREA_XP_BONUS_PERCENTAGE") * 0.01f;
+
+                    // Hunting Grounds adds points to the skill XP bonus of these awards, and no other XP.
+                    var huntingGroundsPoints = EdictEffects.GetHuntingGroundsPoints(dbPlayer, GetArea(player));
 
                     foreach (CombatPointCategoryType cpCategory in Enum.GetValues(typeof(CombatPointCategoryType)))
                     {
@@ -171,7 +175,8 @@ namespace SWLOR.Game.Server.Service
                                 var adjXP = baseXP * (cp / totalCatCP);
                                 adjXP += adjXP * areaBonus;
                                 Skill.GiveSkillXP(player, skillType, (int)adjXP,
-                                    xpMessageSource: skillType == SkillType.Mimicry ? npc : OBJECT_INVALID);
+                                    xpMessageSource: skillType == SkillType.Mimicry ? npc : OBJECT_INVALID,
+                                    extraBonusPoints: huntingGroundsPoints);
                             }
                         }
                         else
@@ -185,7 +190,7 @@ namespace SWLOR.Game.Server.Service
                             {
                                 float adjXP = Skill.GetDeltaXP(npcLevel - ps.Rank);
                                 adjXP += adjXP * areaBonus;
-                                Skill.GiveSkillXP(player, skillType, (int)adjXP);
+                                Skill.GiveSkillXP(player, skillType, (int)adjXP, extraBonusPoints: huntingGroundsPoints);
                             }
                         }
                     }

@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _abilityAccuracyPenalty = Math.Abs(abilityAccuracyPenalty);
             StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = -_abilityAccuracyPenalty;
+            StatGroup.Stats[StatType.SpaceAccuracyPercentAdjustment] = -_abilityAccuracyPenalty;
         }
 
         public override IStatusEffect Clone()

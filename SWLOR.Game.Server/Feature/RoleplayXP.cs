@@ -93,6 +93,8 @@ namespace SWLOR.Game.Server.Feature
             var xp = BaseXP + bonusXP + socialModifier * (BaseXP / 4);
             var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
             xp += (int)(BaseXP * (cantinaBonus * 0.05f));
+            var festivalBonusXP = EdictEffects.GetRoleplayBonusXp(dbPlayer, BaseXP, now);
+            xp += festivalBonusXP;
             var xpBeforePenalty = xp;
             var rpPoints = dbPlayer.RoleplayProgress.RPPoints;
             var oocMessages = dbPlayer.RoleplayProgress.OOCMessagesSinceLastDistribution;
@@ -110,7 +112,7 @@ namespace SWLOR.Game.Server.Feature
             DB.Set(dbPlayer);
 
             LogCompletedDistribution(player, dbPlayer, now, rpPoints, BaseXP, bonusXP, socialModifier,
-                cantinaBonus, xpBeforePenalty, oocMessages, penaltySteps, penaltyPercentPerMessage, xp);
+                cantinaBonus, festivalBonusXP, xpBeforePenalty, oocMessages, penaltySteps, penaltyPercentPerMessage, xp);
 
             if (xp > 0)
             {
@@ -219,14 +221,14 @@ namespace SWLOR.Game.Server.Feature
         }
 
         private static void LogCompletedDistribution(uint player, Player dbPlayer, DateTime now, int rpPoints,
-            int baseXP, int bonusXP, int socialModifier, int cantinaLevel, int xpBeforePenalty, ulong oocMessages,
+            int baseXP, int bonusXP, int socialModifier, int cantinaLevel, int festivalBonusXP, int xpBeforePenalty, ulong oocMessages,
             int penaltySteps, int penaltyPercentPerMessage, int awardedXP)
         {
             Log.WriteStructured(
                 LogGroup.RoleplayXP,
-                "RP XP distribution completed: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} RPPoints={RPPoints} BaseXP={BaseXP} BonusXP={BonusXP} SocialModifier={SocialModifier} CantinaLevel={CantinaLevel} XPBeforePenalty={XPBeforePenalty} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} OOCPenaltySteps={OOCPenaltySteps} OOCPenaltyPercentPerMessage={OOCPenaltyPercentPerMessage} OOCPenaltyPercent={OOCPenaltyPercent} XPLostToOOCPenalty={XPLostToOOCPenalty} AwardedXP={AwardedXP} UnallocatedXP={UnallocatedXP}",
+                "RP XP distribution completed: PlayerId={PlayerId} CharacterName={CharacterName} AccountName={AccountName} CDKey={CDKey} OccurredUtc={OccurredUtc:O} RPPoints={RPPoints} BaseXP={BaseXP} BonusXP={BonusXP} SocialModifier={SocialModifier} CantinaLevel={CantinaLevel} FestivalBonusXP={FestivalBonusXP} XPBeforePenalty={XPBeforePenalty} OOCMessagesSinceLastDistribution={OOCMessagesSinceLastDistribution} OOCPenaltySteps={OOCPenaltySteps} OOCPenaltyPercentPerMessage={OOCPenaltyPercentPerMessage} OOCPenaltyPercent={OOCPenaltyPercent} XPLostToOOCPenalty={XPLostToOOCPenalty} AwardedXP={AwardedXP} UnallocatedXP={UnallocatedXP}",
                 dbPlayer.Id, dbPlayer.Name, GetPCPlayerName(player), GetPCPublicCDKey(player), now,
-                rpPoints, baseXP, bonusXP, socialModifier, cantinaLevel,
+                rpPoints, baseXP, bonusXP, socialModifier, cantinaLevel, festivalBonusXP,
                 xpBeforePenalty, oocMessages, penaltySteps, penaltyPercentPerMessage,
                 Math.Clamp(penaltySteps * penaltyPercentPerMessage, 0, 100), xpBeforePenalty - awardedXP, awardedXP, dbPlayer.UnallocatedXP);
         }

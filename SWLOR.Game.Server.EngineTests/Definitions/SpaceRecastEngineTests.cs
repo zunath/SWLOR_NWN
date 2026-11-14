@@ -22,9 +22,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var actor=await PlayerAbilityFixture.CreateAsync(ctx);
             var shipId="engine-recast/"+actor.Id;
             var status=new ShipStatus { Hull=80,MaxHull=100,Capacitor=0,MaxCapacitor=100 };
-            status.HighPowerModules[1]=new ShipStatus.ShipStatusModule { ItemTag="hull_rep_b" };
-            status.HighPowerModules[2]=new ShipStatus.ShipStatusModule { ItemTag="hull_rep_b" };
-            status.LowPowerModules[1]=new ShipStatus.ShipStatusModule { ItemTag="shld_boost_b",RecastTime=DateTime.UtcNow.AddMinutes(1) };
+            status.HighPowerModules[1]=new ShipStatus.ShipStatusModule { ItemTag="sm_hrep_00" };
+            status.HighPowerModules[2]=new ShipStatus.ShipStatusModule { ItemTag="sm_hrep_00" };
+            status.LowPowerModules[1]=new ShipStatus.ShipStatusModule { ItemTag="sm_shbst_00",RecastTime=DateTime.UtcNow.AddMinutes(1) };
             actor.Update(p=>p.ActiveShipId=shipId);
             DB.Set(new PlayerShip { Id=shipId,OwnerPlayerId=actor.Id,Status=status });
             SetLocalObject(actor.Creature,"SPACE_TARGET",actor.Creature);
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(deadline,DB.Get<Player>(actor.Id).RecastTimes[RecastGroup.ShipModule1],"regular recast stores exact hardware deadline");
                 ctx.Assert(!DB.Get<Player>(actor.Id).RecastTimes.ContainsKey(RecastGroup.ShipModule2),"identical idle module has no timer");
                 var visual=Visual(actor.Id,RecastGroup.ShipModule1);
-                ctx.AssertEqual(new HullRepairerModuleDefinition().BuildShipModules()["hull_rep_b"].Texture,Value<string>(visual,"IconTexture"),"regular renderer preserves fitted repair artwork");
+                ctx.AssertEqual(RevampModuleCatalog.Steps.Single(step=>step.Tag=="sm_hrep_00").Texture,Value<string>(visual,"IconTexture"),"regular renderer preserves fitted repair artwork");
                 ctx.AssertEqual("ife_sm1",Value<IReadOnlyList<string>>(visual,"SourceTextures").Single(),"recharge overrides the first slot anchor");
                 ctx.AssertEqual(0,Value<int>(visual,"Stage"),"recharge begins empty");
                 var capacitor=DB.Get<PlayerShip>(shipId).Status.Capacitor;
@@ -61,13 +61,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Space.RestoreShipModuleRecasts(actor.Creature);
                 ctx.AssertEqual(start,Value<DateTime>(Visual(actor.Id,RecastGroup.ShipModule1),"StartedAt"),"old persisted records infer elapsed progress from their unchanged deadline");
                 await ctx.WaitUntilAsync(()=>Visual(actor.Id,RecastGroup.ShipModule1)==null,14,"regular scheduler expires first module");
+                // Repairers are toggles that refire each cycle; switch the second one off so its recharge can expire.
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature,()=>Space.ActivateShipModule(actor.Creature,FeatType.ShipModule2));
                 await ctx.WaitUntilAsync(()=>Visual(actor.Id,RecastGroup.ShipModule2)==null,4,"regular scheduler expires second module");
                 actor.Update(p=>{p.ActiveShipId=Guid.Empty.ToString();p.RecastTimes[RecastGroup.ShipModule1]=DateTime.UtcNow.AddMinutes(1);p.RecastTimes[RecastGroup.Flash]=DateTime.UtcNow.AddMinutes(1);});
                 Space.RestoreShipModuleRecasts(actor.Creature);
                 ctx.Assert(!DB.Get<Player>(actor.Id).RecastTimes.ContainsKey(RecastGroup.ShipModule1),"leaving a ship clears stale slot timers");
                 ctx.Assert(DB.Get<Player>(actor.Id).RecastTimes.ContainsKey(RecastGroup.Flash),"regular ability cooldown survives ship changes");
             }
-            finally { AbilityCooldownVisual.ClearAllRecastDelays(actor.Creature); DB.Delete<PlayerShip>(shipId); }
+            finally { Space.TurnOffShipToggles(actor.Creature); AbilityCooldownVisual.ClearAllRecastDelays(actor.Creature); DB.Delete<PlayerShip>(shipId); }
         }
 
         /// <summary>Checks the native mining cycle and its shared paid capacitor cost and recast deadline.</summary>
@@ -77,7 +79,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var actor=await PlayerAbilityFixture.CreateAsync(ctx);
             var shipId="engine-mining-recast/"+actor.Id;
             var status=new ShipStatus { Hull=100,MaxHull=100,Capacitor=100,MaxCapacitor=100 };
-            status.HighPowerModules[1]=new ShipStatus.ShipStatusModule { ItemTag="min_laser_b" };
+            status.HighPowerModules[1]=new ShipStatus.ShipStatusModule { ItemTag="sm_mine_00" };
             actor.Update(p=>p.ActiveShipId=shipId);
             DB.Set(new PlayerShip { Id=shipId,OwnerPlayerId=actor.Id,Status=status });
             var asteroid=CreateObject(ObjectType.Placeable,"spc_asteroid_til",ctx.GetArenaLocation(2f));ctx.Track(asteroid);
@@ -88,13 +90,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(actor.Creature,()=>Space.ActivateShipModule(actor.Creature,FeatType.ShipModule1));
                 var paid=DB.Get<PlayerShip>(shipId).Status;
-                ctx.AssertEqual(95,paid.Capacitor,"existing mining capacitor cost is unchanged");
+                ctx.AssertEqual(100-RevampModuleCatalog.Steps.Single(step=>step.Tag=="sm_mine_00").CapacitorCost,paid.Capacitor,"the mining laser pays its capacitor cost once");
                 ctx.AssertEqual(paid.HighPowerModules[1].RecastTime,DB.Get<Player>(actor.Id).RecastTimes[RecastGroup.ShipModule1],"mining and regular UI share the exact paid deadline");
-                ctx.AssertEqual(new MiningLaserModuleDefinition().BuildShipModules()["min_laser_b"].Texture,Value<string>(Visual(actor.Id,RecastGroup.ShipModule1),"IconTexture"),"mining recharge uses mining artwork");
+                ctx.AssertEqual(RevampModuleCatalog.Steps.Single(step=>step.Tag=="sm_mine_00").Texture,Value<string>(Visual(actor.Id,RecastGroup.ShipModule1),"IconTexture"),"mining recharge uses mining artwork");
+                // The mining laser is a toggle; switch it off so only the first cycle is measured.
+                await ctx.ExecuteInCreatureContextAsync(actor.Creature,()=>Space.ActivateShipModule(actor.Creature,FeatType.ShipModule1));
                 await ctx.WaitUntilAsync(()=>GetLocalInt(asteroid,"ASTEROID_REMAINING_UNITS")<10 && Visual(actor.Id,RecastGroup.ShipModule1)==null,9,"native extraction and regular recharge complete");
                 ctx.Assert(Visual(actor.Id,RecastGroup.ShipModule1)==null,"regular recharge finishes alongside the mining cycle");
             }
-            finally { AbilityCooldownVisual.ClearAllRecastDelays(actor.Creature); DB.Delete<PlayerShip>(shipId); }
+            finally { Space.TurnOffShipToggles(actor.Creature); AbilityCooldownVisual.ClearAllRecastDelays(actor.Creature); DB.Delete<PlayerShip>(shipId); }
         }
 
         /// <summary>Checks source-only rendering, refresh retention, expiry, and explicit artwork preference in the native scheduler.</summary>

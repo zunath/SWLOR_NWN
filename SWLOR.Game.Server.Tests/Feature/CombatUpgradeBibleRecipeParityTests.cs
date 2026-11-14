@@ -39,8 +39,6 @@ public class CombatUpgradeBibleRecipeParityTests
         RecipeType.CouchLeatherPanelsGrey,
         RecipeType.MetalWallSinglePanels,
         RecipeType.MunchFungusBread,
-        RecipeType.Missile25,
-        RecipeType.Missile35,
         RecipeType.CombatBoots,
         RecipeType.ForzaBoots,
         RecipeType.SupremeBoots,

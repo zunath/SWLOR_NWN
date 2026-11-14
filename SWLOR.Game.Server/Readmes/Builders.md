@@ -233,22 +233,33 @@ The ShipBuilder creates ship configurations for the space combat system.
 
 #### Basic Usage
 
+Player hulls are generated: `tools/SpaceRevampBalance/catalog.py` writes `RevampShipCatalog`, and
+`RevampPlayerShipDefinition` registers each entry. The Piloting gate is the deed's RequiresSkill property, not a perk.
+
 ```csharp
 var builder = new ShipBuilder();
-builder.Create("xwing_item")
-    .Name("X-Wing Fighter")
-    .Appearance(AppearanceType.XWing)
-    .CapitalShip()
-    .RequirePerk(PerkType.Pilot, 1);
+builder.Create(hull.Tag)
+    .ItemResref(hull.Tag)
+    .Name(hull.Name)
+    .Appearance(hull.Appearance)
+    .MaxShield(hull.Shield)
+    .MaxArmor(hull.Hull)
+    .MaxCapacitor(hull.Capacitor)
+    .HighPowerNodes(hull.High)
+    .MidPowerNodes(hull.Mid)
+    .LowPowerNodes(hull.Low)
+    .Size(hull.Size)
+    .Hull(hull);
 ```
 
 #### Key Methods
 
 - **Create(string)** - Initialize ship with item tag
-- **Name(string)** - Set ship name
-- **Appearance(AppearanceType)** - Set ship appearance
-- **CapitalShip()** - Mark as capital ship
-- **RequirePerk(PerkType, int)** - Set required pilot level
+- **Name(string)**, **ItemResref(string)**, **Appearance(AppearanceType)** - Name, deed blueprint and model
+- **MaxShield / MaxArmor / MaxCapacitor(int)**, **ShieldRechargeRate(int)** - Base pools (the hull's stats replace them through `Hull`)
+- **HighPowerNodes / MidPowerNodes / LowPowerNodes(int)** - Slot counts per row
+- **Size(ShipSize)**, **Role(ShipRole)**, **Manufacturer(ShipManufacturer)**, **Hull(ShipHullEntry)** - Revamp hull data
+- **CapitalShip()**, **DroidBay()**, **InteriorLayout(PropertyLayoutType)** - Capital flag, droid bay and interior
 
 ### 9. Status Effects
 
@@ -354,20 +365,33 @@ The ShipModuleBuilder creates ship module configurations.
 
 #### Basic Usage
 
+Revamp modules are generated: `catalog.py` writes `RevampModuleCatalog`, and `RevampModuleDefinition` registers each
+step with its family's behavior.
+
 ```csharp
 var builder = new ShipModuleBuilder();
-builder.Create("laser_cannon")
-    .Name("Laser Cannon")
-    .ShortName("Laser")
-    .ModuleType(ShipModuleType.Weapon);
+builder.Create(step.Tag)
+    .Name(step.Name)
+    .ShortName(step.ShortName)
+    .Texture(step.Texture)
+    .Type(ShipModuleType.CombatLaser)
+    .PowerType(ShipModulePowerType.High)
+    .Toggle(step.CycleSeconds)
+    .Capacitor(step.CapacitorCost)
+    .ValidTargetType(ObjectType.Creature)
+    .MaxDistance(step.Range)
+    .Step(step);
 ```
 
 #### Key Methods
 
 - **Create(string)** - Initialize module with item tag
-- **Name(string)** - Set module name
-- **ShortName(string)** - Set short name
-- **ModuleType(ShipModuleType)** - Set module type
+- **Name(string)**, **ShortName(string)**, **Texture(string)**, **Description(string)** - Display
+- **Type(ShipModuleType)**, **PowerType(ShipModulePowerType)** - Module type and slot row
+- **Toggle(float)**, **OnePress()**, **Recast(float)**, **Capacitor(int)** - Activation, cycle and cost
+- **ValidTargetType(ObjectType)**, **CanTargetSelf()**, **MaxDistance(float)** - Targeting
+- **ActivatedAction**, **ValidationAction**, **EquippedAction**, **UnequippedAction** - Behavior
+- **CapitalClassModule()**, **Step(ShipModuleStep)** - Capital-only flag and the catalog step
 
 ### 15. SpaceObjectBuilder
 
@@ -379,16 +403,14 @@ The SpaceObjectBuilder creates space object configurations for space combat.
 
 ```csharp
 var builder = new SpaceObjectBuilder();
-builder.Create("asteroid_01")
-    .ItemTag("asteroid_ship")
-    .Name("Asteroid");
+builder.Create("t1fighter")
+    .ItemTag("NPC_Fighter1");
 ```
 
 #### Key Methods
 
-- **Create(string)** - Initialize space object
-- **ItemTag(string)** - Set associated ship item
-- **Name(string)** - Set object name
+- **Create(string)** - Register a space object by its creature or placeable tag
+- **ItemTag(string)** - The registered ship (`ShipBuilder` tag) an NPC ship creature uses; placeables ignore it
 
 ### 16. LootTableBuilder
 

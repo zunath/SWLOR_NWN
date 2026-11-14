@@ -16,7 +16,12 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
             Tier4();
             Tier5();
 
-            return _builder.Build();
+            // The retired ship and module recipes (plan section 15): kept so saved unlocks and blueprints still find
+            // them, but no longer learned or crafted. RevampStarshipRecipes makes their replacements.
+            var recipes = _builder.Build();
+            foreach (var recipe in recipes.Values)
+                recipe.IsActive = false;
+            return recipes;
         }
 
         private void Tier1()
@@ -31,8 +36,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 2)
                 .Component("aluminum", 1)
                 .Component("fiberp_ruined", 1)
-                .Component("elec_ruined", 1)
-                .CircuitParameters(overloadLine: 4, loadBoostPercent: 10, assemblySharePercent: 69);
+                .Component("elec_ruined", 1);
 
             // Condor
             _builder.Create(RecipeType.Condor, SkillType.Engineering)
@@ -44,8 +48,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_tilarium", 5)
                 .Component("aluminum", 3)
                 .Component("fiberp_ruined", 3)
-                .Component("elec_ruined", 3)
-                .CircuitParameters(overloadLine: 3, loadBoostPercent: 10, assemblySharePercent: 70);
+                .Component("elec_ruined", 3);
         }
 
         private void Tier2()
@@ -60,8 +63,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 2)
                 .Component("steel", 1)
                 .Component("fiberp_flawed", 1)
-                .Component("elec_flawed", 1)
-                .CircuitParameters(overloadLine: 4, loadBoostPercent: 10, assemblySharePercent: 65);
+                .Component("elec_flawed", 1);
 
             // Panther
             _builder.Create(RecipeType.Panther, SkillType.Engineering)
@@ -73,8 +75,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_currian", 5)
                 .Component("steel", 3)
                 .Component("fiberp_flawed", 3)
-                .Component("elec_flawed", 3)
-                .CircuitParameters(overloadLine: 4, loadBoostPercent: 11, assemblySharePercent: 64);
+                .Component("elec_flawed", 3);
         }
 
         private void Tier3()
@@ -89,8 +90,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 2)
                 .Component("obsidian", 1)
                 .Component("fiberp_good", 1)
-                .Component("elec_good", 1)
-                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 61);
+                .Component("elec_good", 1);
 
             // Falchion
             _builder.Create(RecipeType.Falchion, SkillType.Engineering)
@@ -102,8 +102,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_idailia", 5)
                 .Component("obsidian", 3)
                 .Component("fiberp_good", 3)
-                .Component("elec_good", 3)
-                .CircuitParameters(overloadLine: 5, loadBoostPercent: 9, assemblySharePercent: 61);
+                .Component("elec_good", 3);
         }
 
         private void Tier4()
@@ -118,8 +117,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 2)
                 .Component("crystal", 1)
                 .Component("fiberp_imperfect", 1)
-                .Component("elec_imperfect", 1)
-                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 68);
+                .Component("elec_imperfect", 1);
 
             // Merchant
             _builder.Create(RecipeType.Merchant, SkillType.Engineering)
@@ -131,8 +129,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_barinium", 5)
                 .Component("crystal", 3)
                 .Component("fiberp_imperfect", 3)
-                .Component("elec_imperfect", 3)
-                .CircuitParameters(overloadLine: 7, loadBoostPercent: 11, assemblySharePercent: 64);
+                .Component("elec_imperfect", 3);
         }
 
         private void Tier5()
@@ -147,8 +144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 2)
                 .Component("diamond", 1)
                 .Component("fiberp_high", 1)
-                .Component("elec_high", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 63);
+                .Component("elec_high", 1);
 
             // Consular
             _builder.Create(RecipeType.Consular, SkillType.Engineering)
@@ -160,8 +156,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 5)
                 .Component("diamond", 3)
                 .Component("fiberp_high", 3)
-                .Component("elec_high", 3)
-                .CircuitParameters(overloadLine: 8, loadBoostPercent: 10, assemblySharePercent: 67);
+                .Component("elec_high", 3);
 
             // Cutlass
             _builder.Create(RecipeType.Cutlass, SkillType.Engineering)
@@ -173,8 +168,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 5)
                 .Component("diamond", 3)
                 .Component("fiberp_high", 3)
-                .Component("elec_high", 3)
-                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 67);
+                .Component("elec_high", 3);
 
             // Basilisk
             _builder.Create(RecipeType.BasiliskWarDroid, SkillType.Engineering)
@@ -187,8 +181,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 5)
                 .Component("diamond", 3)
                 .Component("fiberp_high", 3)
-                .Component("elec_high", 3)
-                .CircuitParameters(overloadLine: 8, loadBoostPercent: 9, assemblySharePercent: 62);
+                .Component("elec_high", 3);
 
             // Aurek Strikefighter
             _builder.Create(RecipeType.AurekStrikefighter, SkillType.Engineering)
@@ -201,8 +194,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 5)
                 .Component("diamond", 3)
                 .Component("fiberp_high", 3)
-                .Component("elec_high", 3)
-                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 60);
+                .Component("elec_high", 3);
 
             // Sith Fighter
             _builder.Create(RecipeType.SithFighter, SkillType.Engineering)
@@ -215,8 +207,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .Component("ref_gostian", 5)
                 .Component("diamond", 3)
                 .Component("fiberp_high", 3)
-                .Component("elec_high", 3)
-                .CircuitParameters(overloadLine: 7, loadBoostPercent: 9, assemblySharePercent: 66);
+                .Component("elec_high", 3);
 
             // Republic Thranta
             _builder.Create(RecipeType.CorvetteRepThranta, SkillType.Engineering)
@@ -228,8 +219,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 68);
+                .Component("capc_eng", 1);
 
             // Sith Thranta
             _builder.Create(RecipeType.CorvetteSithThranta, SkillType.Engineering)
@@ -241,8 +231,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 60);
+                .Component("capc_eng", 1);
 
             // Neutral Thranta
             _builder.Create(RecipeType.CorvetteNeutThranta, SkillType.Engineering)
@@ -254,8 +243,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 70);
+                .Component("capc_eng", 1);
 
             // Terminus Corsair
             _builder.Create(RecipeType.CorvetteTerminus, SkillType.Engineering)
@@ -267,8 +255,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 60);
+                .Component("capc_eng", 1);
 
             // Hutt Corvette
             _builder.Create(RecipeType.CorvetteHutt, SkillType.Engineering)
@@ -280,8 +267,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 11, assemblySharePercent: 65);
+                .Component("capc_eng", 1);
 
             // CZC Armored Transport
             _builder.Create(RecipeType.CorvetteArmoredTransport, SkillType.Engineering)
@@ -293,8 +279,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 64);
+                .Component("capc_eng", 1);
 
             // Chiss Trireme
             _builder.Create(RecipeType.CorvetteChissTrireme, SkillType.Engineering)
@@ -306,8 +291,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 8, loadBoostPercent: 11, assemblySharePercent: 63);
+                .Component("capc_eng", 1);
 
             // Corellian Gunboat
             _builder.Create(RecipeType.CorvetteCorellian, SkillType.Engineering)
@@ -319,8 +303,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 9, assemblySharePercent: 61);
+                .Component("capc_eng", 1);
 
             // JehaveyFrigate
             _builder.Create(RecipeType.CorvetteJehaveyFrigate, SkillType.Engineering)
@@ -332,8 +315,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 61);
+                .Component("capc_eng", 1);
 
             // Crusader Corvette
             _builder.Create(RecipeType.CorvetteCrusader, SkillType.Engineering)
@@ -345,8 +327,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition
                 .EnhancementSlots(RecipeEnhancementType.Starship, 2)
                 .Component("capc_corhull", 1)
                 .Component("capc_powsys", 1)
-                .Component("capc_eng", 1)
-                .CircuitParameters(overloadLine: 9, loadBoostPercent: 10, assemblySharePercent: 63);
+                .Component("capc_eng", 1);
         }
     }
 }

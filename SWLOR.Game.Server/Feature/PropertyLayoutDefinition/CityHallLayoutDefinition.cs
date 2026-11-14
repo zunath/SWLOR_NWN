@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CityStaffService;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
@@ -25,7 +27,8 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .ResearchDeviceLimit(0)
                 .InitialPrice(0)
                 .PricePerDay(0)
-                .AreaInstance("city_hall");
+                .AreaInstance("city_hall")
+                .OnSpawn(area => CityStaff.Spawn(area, CityStaffRole.Clerk));
         }
     }
 }

@@ -51,7 +51,8 @@ public class GatheringXpTests
     {
         var ores = RefineryOres();
 
-        ores.Where(ore => ore.Tier < 99).Should().HaveCount(12);
+        // 12 ores and the space revamp's 5 Ship Scrap tiers, which refine into electronics at the same tier XP.
+        ores.Where(ore => ore.Tier < 99).Should().HaveCount(17);
         foreach (var (resref, tier, flat) in ores.Where(ore => ore.Tier < 99))
         {
             // A rank equal to the ore's level makes the rank difference 0, which is the divisor of the curve: the flat XP, whole.
@@ -196,7 +197,8 @@ public class GatheringXpTests
             ProspectingGems.HasGems(table).Should().BeTrue(name);
             ProspectingGems.GemEntries(table).Select(entry => entry.Resref).Should().Equal(new[] { gem }, name);
             ProspectingGems.OreEntries(table).Should().NotBeEmpty(name);
-            ProspectingGems.OreEntries(table).Concat(ProspectingGems.GemEntries(table)).Should().HaveCount(table.Count, name);
+            ProspectingGems.OreEntries(table).Concat(ProspectingGems.GemEntries(table)).Concat(ProspectingGems.SaplingEntries(table))
+                .Should().HaveCount(table.Count, name);
         }
 
         ProspectingGems.HasGems(tables["HARVESTING_ARKOXIT"]).Should().BeFalse("arkoxit nodes have no gem entries, so no gem pockets");

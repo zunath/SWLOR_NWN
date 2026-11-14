@@ -15,7 +15,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         private const int MaxDisabledLegacyRequirementLevel = 10;
         private const int MaxSkillRequirementRank = 50;
         private const int DisabledSkillRequirementRank = 100;
-        private const int SpaceEquipmentLegacyRequirement = 116;
+        /// <summary>
+        /// The retired Piloting perks (Starships, Defensive, Offensive and Mining Modules, Energy Management, Starship
+        /// Mining, Intuitive Piloting). Items that carry them are retired ship deeds and modules, which
+        /// <see cref="LegacySpaceItemMigration"/> replaces whole, so these stamps never become skill requirements.
+        /// </summary>
+        private static readonly HashSet<int> SpaceEquipmentLegacyRequirements = new() { 116, 117, 118, 119, 120, 121, 255 };
         private const int LegacyWeaponSkillId1 = 1;
         private const int LegacyWeaponSkillId2 = 2;
         private const int LegacyWeaponSkillId3 = 3;
@@ -252,7 +257,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             if (!_legacyRequirementMap.TryGetValue(legacyRequirement, out var skillId))
             {
-                if (legacyRequirement == SpaceEquipmentLegacyRequirement)
+                if (SpaceEquipmentLegacyRequirements.Contains(legacyRequirement))
                     return false;
 
                 skillType = SkillType.Invalid;

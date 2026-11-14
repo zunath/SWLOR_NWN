@@ -168,6 +168,9 @@ public sealed partial class QuestConversationTests
             .SelectMany(path => Regex.Matches(File.ReadAllText(path),
                     "\\.Resref\\(\\s*\"([^\"]+)\"|\\(RecipeType\\.\\w+, RecipeType\\.\\w+, \"([^\"]+)\"\\)")
                 .Select(match => match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value)).ToHashSet();
+        // RevampStarshipRecipes registers a recipe for every catalog module step and hull.
+        craftable.UnionWith(SWLOR.Game.Server.Feature.ShipModuleDefinition.RevampModuleCatalog.Steps.Select(step => step.Tag));
+        craftable.UnionWith(SWLOR.Game.Server.Feature.ShipDefinition.RevampShipCatalog.Hulls.Select(hull => hull.Tag));
         var objectives = 0;
         foreach (var quest in BuildQuests().Values)
         foreach (var state in quest.States.Values)

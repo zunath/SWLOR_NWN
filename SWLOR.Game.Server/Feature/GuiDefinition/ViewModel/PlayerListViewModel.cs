@@ -191,7 +191,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var flags = PlayerList.GetFlags(Player);
             IsGeneralRPFlagged = flags.Contains(PlayerListFlagType.GeneralRP);
-            IsPvPFlagged = flags.Contains(PlayerListFlagType.PvP);
+            // The requested state: a PvP flag turned off during PvP combat shows off while it waits to take effect.
+            IsPvPFlagged = flags.Contains(PlayerListFlagType.PvP) && !PlayerList.IsFlagOffQueued(Player, PlayerListFlagType.PvP);
             IsDMFlagged = flags.Contains(PlayerListFlagType.DM);
             IsCraftingFlagged = flags.Contains(PlayerListFlagType.Crafting);
             CanSetFlags = !DMPresence.IsControlledByDM(Player);
@@ -357,7 +358,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ToggleFlag(PlayerListFlagType flag)
         {
-            var isFlagged = PlayerList.GetFlags(Player).Contains(flag);
+            // A PvP flag waiting to turn off counts as off, so a second click undoes the request.
+            var isFlagged = PlayerList.GetFlags(Player).Contains(flag) && !PlayerList.IsFlagOffQueued(Player, flag);
             PlayerList.SetFlag(Player, flag, !isFlagged);
             LoadOwnFlags();
         }

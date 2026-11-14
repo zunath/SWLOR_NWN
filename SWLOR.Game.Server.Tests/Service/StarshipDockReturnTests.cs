@@ -14,6 +14,7 @@ public class StarshipDockReturnTests
     private const string Veles = "velesinterior";
     private const string Tatooine = "tat_anc_astropor";
     private const string TatooineOrbit = "tatooineorbit";
+    private const string Cz220 = "czs220_hangar";
     private const string PlayerStarportId = "player-starport";
 
     private static readonly string[] StationAreas = { "zomb_abanstation", "zomb_abanstatio2", "zomb_abanstatio3" };
@@ -21,10 +22,63 @@ public class StarshipDockReturnTests
 
     private static bool IsShipOnly(string areaResref) => ShipOnlyAreas.Contains(areaResref);
 
+    // The Abandoned Station, Veles and Viscara's orbit all belong to Viscara, as Property.GetPlanetStarport resolves
+    // them (an orbit through its planet's orbit waypoint, ModuleOrbits_ResolveToTheirPlanets).
     private static (PropertyLocation Landing, PropertyLocation Orbit)? ViscaraStarport(string areaResref) =>
-        areaResref.StartsWith("zomb_abanstati", StringComparison.Ordinal)
+        areaResref.StartsWith("zomb_abanstati", StringComparison.Ordinal) || areaResref is Veles or StationOrbit
             ? (At(Veles, 1f), At(StationOrbit, 2f))
             : null;
+
+    private static (PropertyLocation Landing, PropertyLocation Orbit)? ViscaraOrTatooineStarport(string areaResref) =>
+        areaResref is Tatooine or TatooineOrbit
+            ? (At(Tatooine, 7f), At(TatooineOrbit, 8f))
+            : ViscaraStarport(areaResref);
+
+    // Viscara and CZ-220 share one orbit area, as in the module (viscaraorbit holds both orbit waypoints).
+    private static (PropertyLocation Landing, PropertyLocation Orbit)? SystemStarport(PlanetType planet) => planet switch
+    {
+        PlanetType.Viscara => (At(Veles, 1f), OrbitAt(StationOrbit, 86f, 54f)),
+        PlanetType.CZ220 => (At(Cz220, 11f), OrbitAt(StationOrbit, 103f, 33f)),
+        PlanetType.Tatooine => (At(Tatooine, 7f), OrbitAt(TatooineOrbit, 80f, 52f)),
+        _ => null
+    };
+
+    private static (PropertyLocation Landing, PropertyLocation Orbit)? SystemAreaStarport(string areaResref) => SystemStarport(
+        IsShipOnly(areaResref) || areaResref == Veles ? PlanetType.Viscara
+        : areaResref == Cz220 ? PlanetType.CZ220
+        : areaResref == Tatooine ? PlanetType.Tatooine
+        : PlanetType.Invalid);
+
+    private static (PropertyLocation Landing, PropertyLocation Orbit)? SystemOrbitStarport(PropertyLocation orbit) =>
+        SystemStarport(StarshipDockReturn.FindOrbitPlanet(orbit, new[] { PlanetType.Viscara, PlanetType.CZ220, PlanetType.Tatooine }
+            .Select(planet => (planet, SystemStarport(planet)!.Value.Orbit))));
+
+    private static StarshipDockReturnResult RestartInSystems(
+        Dictionary<PropertyLocationType, PropertyLocation> positions,
+        Func<string, bool> starportExists = null) =>
+        StarshipDockReturn.ReturnToSafeDock(positions, IsShipOnly, starportExists ?? (_ => true), SystemAreaStarport,
+            getOrbitStarport: SystemOrbitStarport);
+
+    private static PropertyLocation OrbitAt(string areaResref, float x, float y) =>
+        new() { AreaResref = areaResref, X = x, Y = y, Z = 3f };
+
+    private static void ShouldBeAtStarport(Dictionary<PropertyLocationType, PropertyLocation> positions, PlanetType planet)
+    {
+        var (landing, orbit) = SystemStarport(planet)!.Value;
+        positions[PropertyLocationType.DockPosition].Should().BeEquivalentTo(landing);
+        positions[PropertyLocationType.SpacePosition].Should().BeEquivalentTo(orbit);
+        positions[PropertyLocationType.LastNPCDockPosition].Should().BeEquivalentTo(landing);
+        positions[PropertyLocationType.LastNPCSpacePosition].Should().BeEquivalentTo(orbit);
+    }
+
+    private static void ShouldBeAtVeles(Dictionary<PropertyLocationType, PropertyLocation> positions)
+    {
+        positions[PropertyLocationType.DockPosition].Should().BeEquivalentTo(At(Veles, 1f));
+        positions[PropertyLocationType.SpacePosition].Should().BeEquivalentTo(At(StationOrbit, 2f));
+        positions[PropertyLocationType.LastNPCDockPosition].Should().BeEquivalentTo(At(Veles, 1f));
+        positions[PropertyLocationType.LastNPCSpacePosition].Should().BeEquivalentTo(At(StationOrbit, 2f));
+        positions[PropertyLocationType.DockPosition].InstancePropertyId.Should().BeNullOrEmpty();
+    }
 
     private static PropertyLocation At(string areaResref, float x) =>
         new() { AreaResref = areaResref, X = x, Y = x + 1f, Z = x + 2f, Orientation = x * 10f };
@@ -56,9 +110,23 @@ public class StarshipDockReturnTests
     };
 
     [Test]
-    public void ShipLeftAtShipOnlyLocation_ReturnsToLastSafeDockAndOrbit()
+    public void ShipLeftAtShipOnlyLocation_ReturnsToItsOwnPlanetsStarport_NotItsSafeDockInAnotherSystem()
+    {
+        // A restart must never carry a ship (and what it holds) from Viscara to the Tatooine dock it last used.
+        var positions = DockedAtStationAfterTatooine();
+
+        StarshipDockReturn.ReturnToSafeDock(positions, IsShipOnly, _ => true, ViscaraOrTatooineStarport)
+            .Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
+
+        ShouldBeAtVeles(positions);
+    }
+
+    [Test]
+    public void ShipLeftAtShipOnlyLocation_KeepsASafeDockOnThatPlanet()
     {
         var positions = DockedAtStationAfterTatooine();
+        positions[PropertyLocationType.LastNPCDockPosition] = At(Veles, 7f);
+        positions[PropertyLocationType.LastNPCSpacePosition] = At(StationOrbit, 8f);
         var safeDock = positions[PropertyLocationType.LastNPCDockPosition];
         var safeOrbit = positions[PropertyLocationType.LastNPCSpacePosition];
 
@@ -71,7 +139,7 @@ public class StarshipDockReturnTests
     }
 
     [Test]
-    public void ShipInSpaceFromShipOnlyLocation_ReturnsToLastSafeDock()
+    public void ShipInSpaceFromShipOnlyLocation_ReturnsToItsPlanetsStarport()
     {
         var positions = DockedAtStationAfterTatooine();
         positions[PropertyLocationType.CurrentPosition] = At(StationOrbit, 9f);
@@ -79,8 +147,7 @@ public class StarshipDockReturnTests
         Restart(positions).Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
 
         positions.Should().NotContainKey(PropertyLocationType.CurrentPosition);
-        positions[PropertyLocationType.DockPosition].AreaResref.Should().Be(Tatooine);
-        positions[PropertyLocationType.SpacePosition].AreaResref.Should().Be(TatooineOrbit);
+        ShouldBeAtVeles(positions);
     }
 
     [Test]
@@ -118,7 +185,7 @@ public class StarshipDockReturnTests
     }
 
     [Test]
-    public void ShipAtDeletedPlayerStarport_ReturnsToLastSafeDock()
+    public void ShipAtDeletedPlayerStarport_ReturnsToTheStarportOfThePlanetItDockedAt()
     {
         var positions = new Dictionary<PropertyLocationType, PropertyLocation>
         {
@@ -128,11 +195,10 @@ public class StarshipDockReturnTests
             [PropertyLocationType.LastNPCSpacePosition] = At(TatooineOrbit, 8f),
         };
 
+        // The player starport was in Viscara's orbit; its owner removing it must not send the ship to Tatooine.
         Restart(positions, _ => false).Should().Be(StarshipDockReturnResult.ReturnedFromMissingStarport);
 
-        ShouldBeAt(positions[PropertyLocationType.DockPosition], positions[PropertyLocationType.LastNPCDockPosition]);
-        positions[PropertyLocationType.DockPosition].InstancePropertyId.Should().BeEmpty();
-        ShouldBeAt(positions[PropertyLocationType.SpacePosition], positions[PropertyLocationType.LastNPCSpacePosition]);
+        ShouldBeAtVeles(positions);
     }
 
     [Test]
@@ -160,8 +226,7 @@ public class StarshipDockReturnTests
         StarshipDockReturn.ReturnToSafeDock(other, IsShipOnly, starportExists, ViscaraStarport)
             .Should().Be(StarshipDockReturnResult.Unchanged);
 
-        ShouldBeAt(retrieved[PropertyLocationType.DockPosition], retrieved[PropertyLocationType.LastNPCDockPosition]);
-        ShouldBeAt(retrieved[PropertyLocationType.SpacePosition], retrieved[PropertyLocationType.LastNPCSpacePosition]);
+        ShouldBeAtVeles(retrieved);
         other[PropertyLocationType.DockPosition].Should().BeSameAs(otherDock);
     }
 
@@ -192,27 +257,29 @@ public class StarshipDockReturnTests
     {
         // Ships that have not docked at a regular starport since safe orbits were recorded.
         var positions = DockedAtStationAfterTatooine();
+        positions[PropertyLocationType.LastNPCDockPosition] = At(Veles, 7f);
         positions.Remove(PropertyLocationType.LastNPCSpacePosition);
-        var tatooineOrbit = At(TatooineOrbit, 9f);
-        (PropertyLocation Landing, PropertyLocation Orbit)? PlanetStarport(string areaResref) =>
-            areaResref == Tatooine ? (At(Tatooine, 7f), tatooineOrbit) : ViscaraStarport(areaResref);
 
-        StarshipDockReturn.ReturnToSafeDock(positions, IsShipOnly, _ => true, PlanetStarport)
-            .Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
+        Restart(positions).Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
 
-        positions[PropertyLocationType.DockPosition].AreaResref.Should().Be(Tatooine);
-        ShouldBeAt(positions[PropertyLocationType.SpacePosition], tatooineOrbit);
-        ShouldBeAt(positions[PropertyLocationType.LastNPCSpacePosition], tatooineOrbit);
+        positions[PropertyLocationType.DockPosition].Should().BeEquivalentTo(At(Veles, 7f));
+        positions[PropertyLocationType.SpacePosition].Should().BeEquivalentTo(At(StationOrbit, 2f));
+        positions[PropertyLocationType.LastNPCSpacePosition].Should().BeEquivalentTo(At(StationOrbit, 2f));
     }
 
     [Test]
-    public void ShipWithoutSafeOrbitOnAnUnknownPlanet_ReturnsToSafeDockAndKeepsItsOrbit()
+    public void ShipAtAnUnknownPlanet_ReturnsToSafeDockAndKeepsItsOrbit()
     {
-        var positions = DockedAtStationAfterTatooine();
-        positions.Remove(PropertyLocationType.LastNPCSpacePosition);
-        var orbit = positions[PropertyLocationType.SpacePosition];
+        // Where the ship is cannot be resolved, so its safe dock is the only place known to be safe.
+        var orbit = At("unknown_orbit", 6f);
+        var positions = new Dictionary<PropertyLocationType, PropertyLocation>
+        {
+            [PropertyLocationType.DockPosition] = AtStarport(PlayerStarportId),
+            [PropertyLocationType.SpacePosition] = orbit,
+            [PropertyLocationType.LastNPCDockPosition] = At(Tatooine, 7f),
+        };
 
-        Restart(positions).Should().Be(StarshipDockReturnResult.ReturnedFromShipOnlyLocation);
+        Restart(positions, _ => false).Should().Be(StarshipDockReturnResult.ReturnedFromMissingStarport);
 
         positions[PropertyLocationType.DockPosition].AreaResref.Should().Be(Tatooine);
         positions[PropertyLocationType.SpacePosition].Should().BeSameAs(orbit);
@@ -337,6 +404,108 @@ public class StarshipDockReturnTests
     }
 
     [Test]
+    public void FindOrbitPlanet_PicksTheNearestOrbitWaypointInTheOrbitsArea()
+    {
+        var planetOrbits = new[]
+        {
+            (PlanetType.Viscara, OrbitAt(StationOrbit, 86f, 54f)),
+            (PlanetType.CZ220, OrbitAt(StationOrbit, 103f, 33f)),
+            (PlanetType.Tatooine, OrbitAt(TatooineOrbit, 80f, 52f)),
+        };
+
+        StarshipDockReturn.FindOrbitPlanet(OrbitAt(StationOrbit, 100f, 36f), planetOrbits).Should().Be(PlanetType.CZ220);
+        StarshipDockReturn.FindOrbitPlanet(OrbitAt(StationOrbit, 90f, 50f), planetOrbits).Should().Be(PlanetType.Viscara);
+        StarshipDockReturn.FindOrbitPlanet(OrbitAt(StationOrbit, 224f, 155f), planetOrbits)
+            .Should().Be(PlanetType.Viscara, "any position in a shared orbit area resolves to the nearest planet there");
+        StarshipDockReturn.FindOrbitPlanet(OrbitAt("VISCARAORBIT", 86f, 54f), planetOrbits).Should().Be(PlanetType.Viscara);
+        StarshipDockReturn.FindOrbitPlanet(OrbitAt(TatooineOrbit, 103f, 33f), planetOrbits)
+            .Should().Be(PlanetType.Tatooine, "a waypoint in another area never matches, however near its coordinates");
+        StarshipDockReturn.FindOrbitPlanet(OrbitAt("unknown_orbit", 86f, 54f), planetOrbits).Should().Be(PlanetType.Invalid);
+        StarshipDockReturn.FindOrbitPlanet(null, planetOrbits).Should().Be(PlanetType.Invalid);
+    }
+
+    [Test]
+    public void ShipWithoutDockInCz220Orbit_KeepsItsCz220SafeDock()
+    {
+        // CZ-220's orbit is in the Viscara orbit area. Resolving the area alone sent such a ship to Veles.
+        var safeDock = At(Cz220, 11f);
+        var safeOrbit = OrbitAt(StationOrbit, 103f, 33f);
+        var positions = new Dictionary<PropertyLocationType, PropertyLocation>
+        {
+            [PropertyLocationType.SpacePosition] = OrbitAt(StationOrbit, 102f, 34f),
+            [PropertyLocationType.LastNPCDockPosition] = safeDock,
+            [PropertyLocationType.LastNPCSpacePosition] = safeOrbit,
+        };
+
+        RestartInSystems(positions).Should().Be(StarshipDockReturnResult.RestoredMissingDock);
+
+        ShouldBeAt(positions[PropertyLocationType.DockPosition], safeDock);
+        ShouldBeAt(positions[PropertyLocationType.SpacePosition], safeOrbit);
+        positions[PropertyLocationType.LastNPCDockPosition].Should().BeSameAs(safeDock);
+        positions[PropertyLocationType.LastNPCSpacePosition].Should().BeSameAs(safeOrbit);
+    }
+
+    [TestCase(102f, 34f, PlanetType.CZ220)]
+    [TestCase(87f, 53f, PlanetType.Viscara)]
+    public void ShipInASharedOrbitWithATatooineSafeDock_GoesToTheNearestStarportInThatOrbit(float x, float y, PlanetType expected)
+    {
+        var positions = new Dictionary<PropertyLocationType, PropertyLocation>
+        {
+            [PropertyLocationType.DockPosition] = AtStarport(PlayerStarportId),
+            [PropertyLocationType.SpacePosition] = OrbitAt(StationOrbit, x, y),
+            [PropertyLocationType.LastNPCDockPosition] = At(Tatooine, 7f),
+            [PropertyLocationType.LastNPCSpacePosition] = OrbitAt(TatooineOrbit, 80f, 52f),
+        };
+
+        RestartInSystems(positions, _ => false).Should().Be(StarshipDockReturnResult.ReturnedFromMissingStarport);
+
+        ShouldBeAtStarport(positions, expected);
+    }
+
+    [Test]
+    public void SafeDockInTheSameSystem_IsKept()
+    {
+        // Viscara and CZ-220 are reached from one orbit area without a jump, so either is a safe dock for the other.
+        (Dictionary<PropertyLocationType, PropertyLocation> Positions, StarshipDockReturnResult Result, string Case)[] ships =
+        {
+            (new()
+            {
+                [PropertyLocationType.DockPosition] = AtStarport(PlayerStarportId),
+                [PropertyLocationType.SpacePosition] = OrbitAt(StationOrbit, 87f, 53f),
+                [PropertyLocationType.LastNPCDockPosition] = At(Cz220, 11f),
+                [PropertyLocationType.LastNPCSpacePosition] = OrbitAt(StationOrbit, 103f, 33f),
+            }, StarshipDockReturnResult.ReturnedFromMissingStarport, "a removed starport by Viscara with a CZ-220 safe dock"),
+            (new()
+            {
+                [PropertyLocationType.DockPosition] = At(Station, 5f),
+                [PropertyLocationType.SpacePosition] = OrbitAt(StationOrbit, 224f, 155f),
+                [PropertyLocationType.LastNPCDockPosition] = At(Cz220, 11f),
+                [PropertyLocationType.LastNPCSpacePosition] = OrbitAt(StationOrbit, 103f, 33f),
+            }, StarshipDockReturnResult.ReturnedFromShipOnlyLocation, "the Abandoned Station with a CZ-220 safe dock"),
+            (new()
+            {
+                [PropertyLocationType.DockPosition] = AtStarport(PlayerStarportId),
+                [PropertyLocationType.SpacePosition] = OrbitAt(StationOrbit, 102f, 34f),
+                [PropertyLocationType.LastNPCDockPosition] = At(Veles, 1f),
+                [PropertyLocationType.LastNPCSpacePosition] = OrbitAt(StationOrbit, 86f, 54f),
+            }, StarshipDockReturnResult.ReturnedFromMissingStarport, "a removed starport by CZ-220 with a Veles safe dock"),
+        };
+
+        foreach (var (positions, result, description) in ships)
+        {
+            var safeDock = positions[PropertyLocationType.LastNPCDockPosition];
+            var safeOrbit = positions[PropertyLocationType.LastNPCSpacePosition];
+
+            RestartInSystems(positions, _ => false).Should().Be(result, description);
+
+            positions[PropertyLocationType.DockPosition].Should().BeEquivalentTo(safeDock, description);
+            positions[PropertyLocationType.SpacePosition].Should().BeEquivalentTo(safeOrbit, description);
+            positions[PropertyLocationType.LastNPCDockPosition].Should().BeSameAs(safeDock, description);
+            positions[PropertyLocationType.LastNPCSpacePosition].Should().BeSameAs(safeOrbit, description);
+        }
+    }
+
+    [Test]
     public void ShipOnlyMarker_CoversEveryStationAreaAndNoRegularStarport()
     {
         var root = FindRepositoryRoot();
@@ -363,8 +532,34 @@ public class StarshipDockReturnTests
         regularStarports.Should().NotIntersectWith(shipOnly, "docking at a regular starport must record it as the safe dock");
     }
 
-    private static (Dictionary<string, int> Variables, HashSet<string> WaypointTags) ReadArea(string path)
+    [Test]
+    public void ModuleOrbits_ResolveToTheirPlanets()
     {
+        // A ship's saved orbit is a position in the space area it docked from. Planet.GetPlanetType leaves space areas
+        // unresolved, and one orbit area can hold several planets' orbits, so the dock return picks the planet whose
+        // orbit waypoint is nearest.
+        var root = FindRepositoryRoot();
+        var areas = Directory.EnumerateFiles(Path.Combine(root, "Module", "git"), "*.git.json")
+            .ToDictionary(path => Path.GetFileName(path)[..^".git.json".Length], ReadArea);
+        var planetOrbits = Enum.GetValues<PlanetType>()
+            .Where(planet => planet != PlanetType.Invalid && planet.GetAttribute<PlanetType, PlanetAttribute>().IsActive)
+            .Select(planet => (planet, areas.Values.SelectMany(area => area.Waypoints)
+                .Single(waypoint => waypoint.Tag == planet.GetAttribute<PlanetType, PlanetAttribute>().SpaceOrbitWaypointTag).Location))
+            .ToList();
+        var orbitAreas = planetOrbits.ToDictionary(orbit => orbit.Item1, orbit => orbit.Location.AreaResref);
+
+        orbitAreas[PlanetType.CZ220].Should().Be(orbitAreas[PlanetType.Viscara], "CZ-220's orbit is in the Viscara orbit area");
+        orbitAreas[PlanetType.SmugglersMoonStation].Should().Be(orbitAreas[PlanetType.SmugglersMoon], "both Smuggler's Moon orbits share an area");
+        foreach (var (planet, orbit) in planetOrbits)
+            StarshipDockReturn.FindOrbitPlanet(orbit, planetOrbits).Should().Be(planet, $"{planet}'s own orbit waypoint resolves to it");
+
+        StarshipDockReturn.FindOrbitPlanet(At(Veles, 1f), planetOrbits).Should().Be(PlanetType.Invalid, "a landing area is no orbit");
+        StarshipDockReturn.FindOrbitPlanet(new PropertyLocation(), planetOrbits).Should().Be(PlanetType.Invalid);
+    }
+
+    private static (Dictionary<string, int> Variables, HashSet<string> WaypointTags, List<(string Tag, PropertyLocation Location)> Waypoints) ReadArea(string path)
+    {
+        var areaResref = Path.GetFileName(path)[..^".git.json".Length];
         using var document = JsonDocument.Parse(File.ReadAllText(path));
         var root = document.RootElement;
         var variables = new Dictionary<string, int>();
@@ -378,14 +573,23 @@ public class StarshipDockReturnTests
             }
         }
 
-        var waypointTags = new HashSet<string>();
+        var waypointList = new List<(string Tag, PropertyLocation Location)>();
         if (root.TryGetProperty("WaypointList", out var waypoints))
         {
             foreach (var waypoint in waypoints.GetProperty("value").EnumerateArray())
-                waypointTags.Add(waypoint.GetProperty("Tag").GetProperty("value").GetString()!);
+            {
+                float Coordinate(string name) => waypoint.GetProperty(name).GetProperty("value").GetSingle();
+                waypointList.Add((waypoint.GetProperty("Tag").GetProperty("value").GetString()!, new PropertyLocation
+                {
+                    AreaResref = areaResref,
+                    X = Coordinate("XPosition"),
+                    Y = Coordinate("YPosition"),
+                    Z = Coordinate("ZPosition")
+                }));
+            }
         }
 
-        return (variables, waypointTags);
+        return (variables, waypointList.Select(waypoint => waypoint.Tag).ToHashSet(), waypointList);
     }
 
     private static string FindRepositoryRoot()

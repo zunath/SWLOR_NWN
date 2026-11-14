@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.CraftService.Minigame;
 using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Service.FactionAgentService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
@@ -16,8 +17,10 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.NPCService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerListService;
+using SWLOR.Game.Server.Service.PvpCombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.TaxiService;
+using SWLOR.Game.Server.Service.TradeService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Entity
@@ -96,6 +99,8 @@ namespace SWLOR.Game.Server.Entity
             PendingHarvestReturns = new List<PendingHarvestReturn>();
             HarvestAwaitingRoom = new Dictionary<string, int>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
+            StarportDeparturePasses = new Dictionary<string, DateTime>();
+            CityDepartures = new Dictionary<string, DateTime>();
             EquippedTechniques = new List<FeatType>();
             MimicryLoadouts = new List<MimicryLoadout>();
             CharacterType = CharacterType.Invalid;
@@ -121,6 +126,9 @@ namespace SWLOR.Game.Server.Entity
             UndisguisedDescription = string.Empty;
             HasUndisguisedDescriptionSnapshot = false;
             PlayerListFlags = new List<PlayerListFlagType>();
+            PvpCombatRequests = new PvpCombatRequests();
+            PaidShipSaleIds = new List<string>();
+            LastAgentPurchaseId = string.Empty;
         }
 
 
@@ -133,6 +141,11 @@ namespace SWLOR.Game.Server.Entity
         public int CharacterFileVersion { get; set; }
         /// <summary>Messages from a character upgrade, shown to the player at their next login.</summary>
         public List<string> UpgradeNotices { get; set; } = new();
+        /// <summary>
+        /// The journal entries whose change to this record (an XP price paid at the Civic Exchange) it holds, saved in the same write as
+        /// the change (<see cref="Service.TransferService.TransferReceipts"/>). Older records load without any.
+        /// </summary>
+        public List<string> TransferReceipts { get; set; } = new();
         public bool CharacterInitializationPending { get; set; }
         [Indexed]
         public string Name { get; set; }
@@ -157,6 +170,12 @@ namespace SWLOR.Game.Server.Entity
         public float RespawnLocationOrientation { get; set; }
         [Indexed]
         public string RespawnAreaResref { get; set; }
+
+        /// <summary>
+        /// A player city's Medical Center the player registered at. Its instance takes priority over
+        /// <see cref="RespawnAreaResref"/>, which stays as the fallback when the building is gone or not loaded.
+        /// </summary>
+        public string RespawnPropertyId { get; set; }
         public int UnallocatedXP { get; set; }
         public int UnallocatedSP { get; set; }
         public int UnallocatedAP { get; set; }
@@ -180,6 +199,18 @@ namespace SWLOR.Game.Server.Entity
         public string PerformanceSavedHotBar { get; set; }
         public int PerformanceHotBarRestoreSequence { get; set; }
         public string ActiveShipId { get; set; }
+
+        /// <summary>
+        /// Why a ship this player flew was lost while they were logged out (a failed Rift Run, or leaving a Wild Space
+        /// fight), or empty: the XP debt a pilot destroyed online takes is applied, with this message, at the next login.
+        /// </summary>
+        public string PendingShipLossMessage { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The ship whose crew station or viewport the character is at, or empty. Saved so a character who
+        /// disconnects at a station is put back on their feet at the next login. Older records read as empty.
+        /// </summary>
+        public string ActiveCrewShipId { get; set; } = string.Empty;
         [Indexed]
         public string UnknownDisplayName { get; set; }
         // Account details recorded at each login so staff tools can show them for offline characters.
@@ -192,11 +223,57 @@ namespace SWLOR.Game.Server.Entity
         public float MovementRate { get; set; }
         public int CombatReadiness { get; set; }
         public int MarketTill { get; set; }
+
+        /// <summary>
+        /// Ship sales whose proceeds are already in <see cref="MarketTill"/>, saved with the till so a sale that a
+        /// restart left owed is paid once. An entry goes once the ship record no longer owes it. Older records load
+        /// with none.
+        /// </summary>
+        public List<string> PaidShipSaleIds { get; set; }
+
+        /// <summary>
+        /// The last faction agent store purchase whose tokens were taken, saved with the tokens, so a purchase whose item
+        /// the character file holds is charged once, at the next login if a restart came first. Older records load empty.
+        /// </summary>
+        public string LastAgentPurchaseId { get; set; }
+
+        /// <summary>
+        /// The space lockbox grants whose agent intel was kept last, saved with the intel, so a grant kept again after a
+        /// restart adds none. Older records load empty.
+        /// </summary>
+        public List<string> KeptLockboxGrantIds { get; set; } = new();
         public int OutfitSlotLimit { get; set; }
         public int DisguiseSlotLimit { get; set; }
         public int MarketListingLimit { get; set; }
         [Indexed]
         public string CitizenPropertyId { get; set; }
+
+        /// <summary>
+        /// When the character became a citizen of <see cref="CitizenPropertyId"/>, reset each time it joins a city. A
+        /// character may vote in an election only if this is at or before the time registration opened. Null when the
+        /// character is not a citizen.
+        /// </summary>
+        public DateTime? CitizenSinceUtc { get; set; }
+
+        /// <summary>
+        /// The 7-day departure passes (Player City Revamp, "Who may use the Bank and Starport") by city id: when the character last had a
+        /// ship docked at that city's Starport while allowed to use it. Until 7 days after that time the character may still use the
+        /// Starport's flights terminal to leave, whatever happened to their access since.
+        /// </summary>
+        public Dictionary<string, DateTime> StarportDeparturePasses { get; set; }
+
+        /// <summary>
+        /// When the character stopped being a citizen of a city, by city id (Player City Revamp, "Livestock"): the 7 days after which the
+        /// mayor can send the animals they left in that city's corrals away start here. An entry ends when the character rejoins the
+        /// city. Older records load empty.
+        /// </summary>
+        public Dictionary<string, DateTime> CityDepartures { get; set; }
+
+        /// <summary>The id of the latest city election result this character has read at login.</summary>
+        public string SeenElectionResultId { get; set; }
+
+        /// <summary>The id of the latest planetary council summons this character has read. Older records load empty.</summary>
+        public string SeenCouncilSummonsId { get; set; }
         public int PropertyOwedTaxes { get; set; }
         public int Attack { get; set; }
         public int Accuracy { get; set; }
@@ -219,6 +296,38 @@ namespace SWLOR.Game.Server.Entity
         // Player list flags for the undisguised identity; each disguise keeps its own.
         public List<PlayerListFlagType> PlayerListFlags { get; set; }
 
+        /// <summary>
+        /// When the character accepted the one-time notice that cities can post bounties on the character's own identity
+        /// (Player City Revamp, "Conflict and PvP"); each disguise keeps its own. Unset for everyone at launch, so nobody can
+        /// be targeted before accepting.
+        /// </summary>
+        public DateTime? BountyNoticeAcceptedUtc { get; set; }
+
+        /// <summary>When a city bounty on the character's own identity was last claimed. Each disguise keeps its own.</summary>
+        public DateTime? LastBountyClaimedUtc { get; set; }
+
+        /// <summary>
+        /// Flag and identity changes the player asked for while their PvP combat window was open, applied when it ends.
+        /// Older records load empty.
+        /// </summary>
+        public PvpCombatRequests PvpCombatRequests { get; set; }
+
+        /// <summary>The freight contracts the player holds (plan section 13). Older records load with none.</summary>
+        public List<FreightContract> FreightContracts { get; set; } = new();
+
+        /// <summary>The freight offers the player took this hour and the last, so one offer cannot be taken twice.</summary>
+        public List<string> FreightOffersTaken { get; set; } = new();
+
+        /// <summary>The faction agent missions the player holds (plan section 29), with their terms. Older records load with none.</summary>
+        public List<AgentMission> AgentMissions { get; set; } = new();
+
+        /// <summary>The agent offers the player took today and yesterday, so one offer cannot be taken twice.</summary>
+        public List<string> AgentOffersTaken { get; set; } = new();
+
+        /// <summary>Agent intel from sliced data cans: each opens one intel lead on a faction agent's board.</summary>
+        public int AgentIntel { get; set; }
+
+
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }
         public Dictionary<SkillType, int> Craftsmanship { get; set; }
@@ -237,6 +346,19 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
+
+        /// <summary>
+        /// The Hull Designs this character unlocked with Design Schematics (plan section 7), keyed
+        /// "ship deed tag:appearance" (<c>HullDesignRules.Key</c>). Older records load empty.
+        /// </summary>
+        public Dictionary<string, DateTime> UnlockedHullDesigns { get; set; } = new();
+
+        /// <summary>
+        /// Keys of the retired space item records already refunded to this character's market till by server migration
+        /// #30 (<c>LegacySpaceItemSweep.Pay</c>). A refund is written here with the credits in one save, before the
+        /// record it came from is converted, so a migration that stops partway never pays a record twice or loses it.
+        /// </summary>
+        public List<string> RetiredSpaceRefunds { get; set; } = new();
         // The craft in progress, with the materials it took. Null when the player is not crafting.
         public CraftSessionRecord ActiveCraftSession { get; set; }
         // Serialized items a settled craft could not return because the inventory was full.
@@ -244,6 +366,8 @@ namespace SWLOR.Game.Server.Entity
         // Items a craft put in the inventory that the character file may not hold yet, each with the file sequence it needs.
         // See CraftSessionLifecycle for how a login settles them.
         public List<PendingCraftReturn> PendingCraftReturns { get; set; }
+        // Station fees (a Shipyard's, space revamp) the player paid whose station treasury is not credited yet. See CraftSessionLifecycle.
+        public List<PendingStationFee> PendingStationFees { get; set; }
         // Skill XP a settled craft earned while its player was dead, by skill. It is given once the player is alive again, at a
         // respawn, a login or the next crafting window.
         public Dictionary<SkillType, int> PendingCraftXp { get; set; }

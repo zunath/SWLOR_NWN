@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.RecipeParameters;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Feature;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service.RecipeParameters;
 

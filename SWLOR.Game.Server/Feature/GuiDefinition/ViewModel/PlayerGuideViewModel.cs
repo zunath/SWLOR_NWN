@@ -284,7 +284,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static IReadOnlyList<PlayerGuideTopic> BuildTopics()
         {
-            var topics = new List<PlayerGuideTopic>
+            var topics = new List<PlayerGuideTopic>();
+
+            topics.AddRange(BuildBasicsTopics());
+            topics.AddRange(BuildProgressionTopics());
+            topics.AddRange(BuildPerkAndRebuildTopics());
+            topics.AddRange(BuildCombatTopics());
+            topics.AddRange(BuildEspionageAndCraftingTopics());
+            topics.AddRange(BuildGatheringAndCompanionTopics());
+            topics.AddRange(BuildQuestAndSocialTopics());
+            topics.AddRange(BuildTravelAndWindowTopics());
+
+            topics.Add(StatusEffectGuideTopics.Create());
+            topics.AddRange(CombatStyleGuideTopics.Create());
+            return topics;
+        }
+
+        private static PlayerGuideTopic[] BuildBasicsTopics()
+        {
+            return new PlayerGuideTopic[]
             {
                 new(
                     "Common Questions",
@@ -408,7 +426,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Why did XP go to debt?", "XP debt is paid down before skill XP is applied.")
                     },
                     new[] { "Attributes", "XP Debt", "Skill Decay", "Perks", "Training Store", "Crafting", "Communication", "Useful Windows" }),
+            };
+        }
 
+        private static PlayerGuideTopic[] BuildProgressionTopics()
+        {
+            return new PlayerGuideTopic[]
+            {
                 new(
                     "Skill Decay",
                     "Core",
@@ -533,7 +557,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Does decay use a token?", "No. Decay refunds are automatic and do not use a manual refund token.")
                     },
                     new[] { "Perks", "Skill Decay", "Skills", "XP Debt", "Training Store", "Common Questions" }),
+            };
+        }
 
+        private static PlayerGuideTopic[] BuildPerkAndRebuildTopics()
+        {
+            return new PlayerGuideTopic[]
+            {
                 new(
                     "XP Debt",
                     "Core",
@@ -665,7 +695,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("What happens to partial skill XP?", "Partial XP toward the next skill rank is lost during a full rebuild reset.")
                     },
                     new[] { "Attributes", "Skills", "Perks", "Perk Refunds", "Training Store", "Useful Windows" }),
+            };
+        }
 
+        private static PlayerGuideTopic[] BuildCombatTopics()
+        {
+            return new PlayerGuideTopic[]
+            {
                 new(
                     "Death & Recovery",
                     "Core",
@@ -792,7 +828,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("How high can attributes go?", "AP upgrades stop at 26. A racial bonus can raise one attribute to 27.")
                     },
                     new[] { "Combat Basics", "Attributes", "Skills", "Force Affinity", StatusEffectGuideTopics.TopicName, "PvP Combat" }),
+            };
+        }
 
+        private static PlayerGuideTopic[] BuildEspionageAndCraftingTopics()
+        {
+            return new PlayerGuideTopic[]
+            {
                 new(
                     "Espionage",
                     "Activities",
@@ -908,7 +950,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("What does research do?", "Research spends credits and time to create or improve weapon, armor, and food blueprints up to level 10. Each level starts with a short Experiment.")
                     },
                     new[] { "Skills", "Perks", "Gathering & Fishing", "Training Store", "Housing & Markets", "Useful Windows" }),
+            };
+        }
 
+        private static PlayerGuideTopic[] BuildGatheringAndCompanionTopics()
+        {
+            return new PlayerGuideTopic[]
+            {
                 new(
                     "Gathering & Fishing",
                     "Activities",
@@ -1028,7 +1076,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Can I use a beast and droid together?", "No. They share one active henchman-companion slot.")
                     },
                     new[] { "Beasts & Stables", "Crafting", "Skills", "Perks", "Ships & Space" }),
+            };
+        }
 
+        private static PlayerGuideTopic[] BuildQuestAndSocialTopics()
+        {
+            return new PlayerGuideTopic[]
+            {
                 new(
                     "Quests & Key Items",
                     "Activities",
@@ -1155,7 +1209,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Why was my listing unlisted?", "Listings older than two weeks are automatically unlisted.")
                     },
                     new[] { "Crafting", "Training Store", "Quest Contracts", "Guilds & Citizenship", "Ships & Space", "Useful Windows" }),
+            };
+        }
 
+        private static PlayerGuideTopic[] BuildTravelAndWindowTopics()
+        {
+            return new PlayerGuideTopic[]
+            {
                 new(
                     "Travel & Navigation",
                     "Activities",
@@ -1249,10 +1309,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[] { "Common Questions", "Skills", "Perks", "Mimicry & Techniques", "Training Store", "Quests & Key Items", "Communication", "Disguises" })
             };
-
-            topics.Add(StatusEffectGuideTopics.Create());
-            topics.AddRange(CombatStyleGuideTopics.Create());
-            return topics;
         }
 
         internal sealed class PlayerGuideTopic

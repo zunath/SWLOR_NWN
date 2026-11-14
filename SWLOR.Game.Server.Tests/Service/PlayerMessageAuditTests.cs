@@ -226,8 +226,9 @@ public class PlayerMessageAuditTests
     [Test]
     public void NativeAttackFeedback_RemainsVisibleInProduction()
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
-        var calls = ReadCalls(file).Where(call => MethodName(call) == "SendFeedbackString").ToArray();
+        var calls = NativeCombatSource.AttackRollFiles
+            .SelectMany(file => ReadCalls(NativeCombatSource.PathOf(file)))
+            .Where(call => MethodName(call) == "SendFeedbackString").ToArray();
         calls.Should().HaveCount(5);
         foreach (var call in calls)
         {

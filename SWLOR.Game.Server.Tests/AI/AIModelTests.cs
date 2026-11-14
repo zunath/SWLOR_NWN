@@ -198,10 +198,10 @@ public class AIModelTests
         foreach (var (feat, ability) in abilities)
         {
             var context = CreateContext(self: 100);
-            ability.AIScore.Should().NotBeNull($"{feat} must not inherit crowd-count scoring");
-            ability.AIScore!(context).Should().Be(0, "an absent/out-of-range enemy must not waste stamina");
+            ability.GetAIScore().Should().NotBeNull($"{feat} must not inherit crowd-count scoring");
+            ability.GetAIScore()!(context).Should().Be(0, "an absent/out-of-range enemy must not waste stamina");
             context.SetEvaluatedTarget(context.Self);
-            ability.AIScore(context).Should().BeGreaterThan(AIScoreBand.BasicAttack,
+            ability.GetAIScore()(context).Should().BeGreaterThan(AIScoreBand.BasicAttack,
                 "one eligible enemy must be enough to use the self-centered ability");
         }
     }
@@ -243,14 +243,14 @@ public class AIModelTests
         var ability = new AbilityDetail
         {
             IsHostileAbility = true,
-            AbilityLevel = 1,
-            AIHitPointCostPercent = _ => costPercent
+            AbilityLevel = 1
         };
+        ability.SetAIHitPointCostPercent(_ => costPercent);
         var context = CreateContext(selfHealthPercent: healthPercent);
 
         AIScore.Ability(ability)(context).Should().Be(allowed ? AIScoreBand.SingleTargetDamage + 1 : 0);
 
-        ability.AIScore = AIScore.Fixed(123);
+        ability.SetAIScore(AIScore.Fixed(123));
         AIScore.Ability(ability)(context).Should().Be(allowed ? 123 : 0,
             "custom scores must also respect the declared HP cost");
     }
@@ -305,7 +305,7 @@ public class AIModelTests
         const uint self = 100;
         const uint target = 200;
         var ability = new SteelShoulderAbilityDefinition().BuildAbilities()[FeatType.TwinGuardStance1];
-        ability.AIScore.Should().NotBeNull();
+        ability.GetAIScore().Should().NotBeNull();
         var score = AIScore.Ability(ability);
         var creatureEffects = StatusEffectInternals.CreatureEffects;
         creatureEffects.TryGetValue(self, out var previousEffects);
@@ -349,9 +349,9 @@ public class AIModelTests
         StatusEffect.CacheData();
         Ability.CacheData();
         var ability = Ability.GetAbilityDetail(feat);
-        var score = ability.AIScore ?? AIScore.Ability(ability);
+        var score = ability.GetAIScore() ?? AIScore.Ability(ability);
         var buff = Ability.GetAbilityDetail(FeatType.Invincible1);
-        var buffScore = buff.AIScore ?? AIScore.Ability(buff);
+        var buffScore = buff.GetAIScore() ?? AIScore.Ability(buff);
         var creatureEffects = StatusEffectInternals.CreatureEffects;
         var tracker = new CreatureStatusEffect();
         var effectType = Ability.GetAbilityDetail(activeStance)
@@ -461,7 +461,7 @@ public class AIModelTests
 
             foreach (var (feat, statusEffect, abilityLevel) in ranks)
             {
-                var score = abilities[feat].AIScore;
+                var score = abilities[feat].GetAIScore();
                 score.Should().NotBeNull();
                 score!(context).Should().Be(AIScoreBand.Defensive + abilityLevel);
 
@@ -471,14 +471,14 @@ public class AIModelTests
             }
 
             tracker.Add(ranks[0].StatusEffect);
-            abilities[ranks[2].Feat].AIScore!(context).Should().Be(AIScoreBand.Defensive + 3,
+            abilities[ranks[2].Feat].GetAIScore()!(context).Should().Be(AIScoreBand.Defensive + 3,
                 "a weaker active rank must still allow an upgrade");
             tracker.Remove(ranks[0].StatusEffect);
 
             // A stronger active rank also makes every weaker rank redundant.
             tracker.Add(ranks[2].StatusEffect);
             foreach (var (feat, _, _) in ranks)
-                abilities[feat].AIScore!(context).Should().Be(0);
+                abilities[feat].GetAIScore()!(context).Should().Be(0);
         }
         finally
         {
@@ -722,11 +722,22 @@ public class AIModelTests
             activeTargetIndex,
             source.IndexOf("pCreature.m_vLastAttackPosition = new Vector();", activeTargetIndex, StringComparison.Ordinal) -
             activeTargetIndex);
+        // The pending attack case hands the action to ResolvePendingAttack, which resolves the swing through ResolveSwing.
         var pendingAttackIndex = source.IndexOf("case CNWSCOMBATROUND_TYPE_ATTACK:", StringComparison.Ordinal);
+        source.Substring(
+                pendingAttackIndex,
+                source.IndexOf("case CNWSCOMBATROUND_TYPE_PARRY:", pendingAttackIndex, StringComparison.Ordinal) -
+                pendingAttackIndex)
+            .Should().Contain("ResolvePendingAttack(");
+        var pendingAttackMethodIndex = source.IndexOf("private static int ResolvePendingAttack(", StringComparison.Ordinal);
         var pendingAttackBody = source.Substring(
-            pendingAttackIndex,
-            source.IndexOf("case CNWSCOMBATROUND_TYPE_PARRY:", pendingAttackIndex, StringComparison.Ordinal) -
-            pendingAttackIndex);
+            pendingAttackMethodIndex,
+            source.IndexOf("private static void ResolveSwing(", pendingAttackMethodIndex, StringComparison.Ordinal) -
+            pendingAttackMethodIndex);
+        var swingIndex = source.IndexOf("private static void ResolveSwing(", StringComparison.Ordinal);
+        pendingAttackBody += source.Substring(
+            swingIndex,
+            source.IndexOf("namespace SWLOR.Game.Server.Native", swingIndex, StringComparison.Ordinal) - swingIndex);
         var combatRoundGuardIndex = source.IndexOf(
             "var pCombatRound = pCreature.m_pcCombatRound;",
             StringComparison.Ordinal);

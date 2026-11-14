@@ -85,11 +85,11 @@ public class AIProfileValidationTests
                 registeredAbilities.Should().ContainKey(action.Feat);
                 var ability = registeredAbilities[action.Feat];
 
-                (ability.AITargetSelector ?? AITarget.InferDefault(action.Feat, ability))
+                (ability.GetAITargetSelector() ?? AITarget.InferDefault(action.Feat, ability))
                     .Should()
                     .NotBeNull($"{action.Feat} must have an AI target selector");
 
-                (ability.AIScore ?? AIScore.Ability(ability))
+                (ability.GetAIScore() ?? AIScore.Ability(ability))
                     .Should()
                     .NotBeNull($"{action.Feat} must have an AI score calculation");
             }
@@ -118,8 +118,8 @@ public class AIProfileValidationTests
             var ability = abilities[feat];
             var action = beastActions[feat];
 
-            action.TargetSelector.Should().BeSameAs(ability.AITargetSelector);
-            action.Score.Should().BeSameAs(ability.AIScore);
+            action.TargetSelector.Should().BeSameAs(ability.GetAITargetSelector());
+            action.Score.Should().BeSameAs(ability.GetAIScore());
         }
     }
 
@@ -131,10 +131,10 @@ public class AIProfileValidationTests
         var profile = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion];
         var action = profile.Actions.Single(action => action.Feat == FeatType.TwinGuardStance1);
 
-        ability.AITargetSelector.Should().NotBeNull();
-        action.TargetSelector.Should().BeSameAs(ability.AITargetSelector);
-        ability.AIScore.Should().NotBeNull();
-        action.Score.Should().BeSameAs(ability.AIScore);
+        ability.GetAITargetSelector().Should().NotBeNull();
+        action.TargetSelector.Should().BeSameAs(ability.GetAITargetSelector());
+        ability.GetAIScore().Should().NotBeNull();
+        action.Score.Should().BeSameAs(ability.GetAIScore());
     }
 
     [TestCase(FeatType.SacrificialBlade1)]
@@ -144,11 +144,11 @@ public class AIProfileValidationTests
     {
         AbilityCache.Load();
         var ability = Ability.GetAbilityDetail(feat);
-        ability.AIHitPointCostPercent.Should().NotBeNull();
+        ability.GetAIHitPointCostPercent().Should().NotBeNull();
         // Isolate profile composition from the NWN engine's live Might and hostile-cluster reads.
         // The production cost calculation and score boundaries are exercised in AIModelTests.
-        ability.AIHitPointCostPercent = _ => 10;
-        ability.AIScore = AIScore.Fixed(123);
+        ability.SetAIHitPointCostPercent(_ => 10);
+        ability.SetAIScore(AIScore.Fixed(123));
         try
         {
             var profile = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion];

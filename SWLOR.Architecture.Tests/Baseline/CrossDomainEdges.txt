@@ -24,9 +24,8 @@ Feature/AbilityDefinition -> Domain/Combat | 146
 # Abilities -> Companions (1 edge)
 Feature/AbilityDefinition -> Domain/Companions | 11
 
-# Abilities -> Creatures (2 edges)
-Domain/Abilities -> Domain/Creatures | 8
-Feature/AbilityDefinition -> Domain/Creatures | 32
+# Abilities -> Creatures (1 edge)
+Feature/AbilityDefinition -> Domain/Creatures | 36
 
 # Abilities -> Gameplay (5 edges)
 Domain/Abilities -> Feature.PistolAnimationRemap | 1
@@ -230,7 +229,7 @@ Domain/Crafting -> Feature/GuiDefinition | 4
 Domain/Crafting -> Domain/World | 8
 
 # Creatures -> Abilities (2 edges)
-Domain/Creatures -> Domain/Abilities | 31
+Domain/Creatures -> Domain/Abilities | 40
 Feature/AIDefinition -> Domain/Abilities | 5
 
 # Creatures -> Administration (1 edge)
@@ -544,7 +543,7 @@ Feature/ItemDefinition -> Domain/World | 3
 
 # Platform -> Abilities (4 edges)
 Platform/Entity -> Domain/Abilities | 4
-Platform/Native -> Domain/Abilities | 4
+Platform/Native -> Domain/Abilities | 8
 Platform/Native -> Feature/AbilityDefinition | 1
 Platform/NativeSinks -> Domain/Abilities | 1
 
@@ -554,17 +553,17 @@ Platform/Entity -> Domain/Administration | 8
 # Platform -> Character (7 edges)
 Platform/Entity -> Domain/Character | 40
 Platform/Enumeration -> Domain/Character | 7
-Platform/Native -> Domain/Character | 26
+Platform/Native -> Domain/Character | 49
 Platform/Native -> Feature/StatusEffectDefinition | 1
-Platform/NativeSinks -> Domain/Character | 2
+Platform/NativeSinks -> Domain/Character | 6
 Platform/NativeSinks -> Feature/AppearanceDefinition | 1
 Platform/Root -> Domain/Character | 1
 
 # Platform -> Combat (4 edges)
 Platform/Core -> Domain/Combat | 4
 Platform/Entity -> Domain/Combat | 21
-Platform/Native -> Domain/Combat | 63
-Platform/NativeSinks -> Domain/Combat | 4
+Platform/Native -> Domain/Combat | 74
+Platform/NativeSinks -> Domain/Combat | 10
 
 # Platform -> Companions (1 edge)
 Platform/Entity -> Domain/Companions | 22
@@ -580,7 +579,7 @@ Platform/Native -> Domain/Creatures | 1
 Platform/Entity -> Domain/Economy | 10
 
 # Platform -> Gameplay (3 edges)
-Platform/Native -> Feature.UsePerkFeat | 7
+Platform/Native -> Feature.UsePerkFeat | 11
 Platform/NativeSinks -> Feature.TwinPistolEquipmentValidation | 1
 Platform/NativeSinks -> Feature.UsePerkFeat | 1
 

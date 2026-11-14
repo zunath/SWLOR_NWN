@@ -21,6 +21,9 @@ namespace SWLOR.Game.Server.NativeSinks;
 /// </summary>
 public sealed unsafe class OnAIActionAttackObjectSink : IOnAIActionAttackObjectSink
 {
+    // Returned by a step of the attack action to go on to the next step; never returned to the engine.
+    private const int ContinueAttackAction = 0;
+
     public int AttackObject(void* creature, void* node)
     {
         return ServerManager.Executor.ExecuteInScriptContext(() =>
@@ -103,699 +106,810 @@ public sealed unsafe class OnAIActionAttackObjectSink : IOnAIActionAttackObjectS
 
             var pGameObject = (CGameObject)NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(oidAttackTarget);
 
-            var bTargetActive = false;
-            if (pGameObject != null)
-            {
-                if (pGameObject.AsNWSObject() != null)
-                {
-                    if (pGameObject.AsNWSObject().GetDead() == 0)
-                    {
-                        bTargetActive = true;
-                    }
-
-                    if (pGameObject.AsNWSCreature() != null &&
-                        pGameObject.AsNWSCreature().GetDead() == 0 &&
-                        pGameObject.AsNWSCreature().m_bPlayerCharacter == 1 &&
-                        pGameObject.AsNWSCreature().GetIsPCDying() == 1)
-                    {
-                        bTargetActive = true;
-                    }
-
-                    // If the target is invisible and we can't see or hear them,
-                    // then they aren't an acceptable target.
-                    var pVisNode = pCreature.GetVisibleListElement(oidAttackTarget);
-                    if (pVisNode != null)
-                    {
-                        if (pVisNode.m_nSanctuary == SANCTUARY_SAVE_FAILED ||
-                            (pVisNode.m_bInvisible == 1 &&
-                             pVisNode.m_bHeard == 0 &&
-                             pVisNode.m_bSeen == 0))
-                        {
-                            bTargetActive = false;
-                        }
-                    }
-                    else
-                    {
-                        if (pGameObject.AsNWSCreature() != null &&
-                            pCreature.m_bPlayerCharacter == 1)
-                        {
-                            bTargetActive = false;
-                        }
-                    }
-                }
-            }
+            var bTargetActive = IsActiveAttackTarget(pCreature, pGameObject, oidAttackTarget);
 
             if (bTargetActive)
             {
-                var pTarget = pGameObject.AsNWSObject();
-                if (TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget))
+                var approachResult = ApproachAttackTarget(pCreature, pNode, pArea, pGameObject, oidAttackTarget,
+                    attackSkillType, isPlayerCreature, usesRangedWeapon);
+                if (approachResult != ContinueAttackAction)
                 {
-                    return ACTION_FAILED;
-                }
-
-                var vTargetPosition = pTarget.m_vPosition;
-                var pTargetArea = pTarget.GetArea();
-
-                var fMaxAttackRange = pCreature.MaxAttackRange(oidAttackTarget);
-                var fDesiredAttackRange = isPlayerCreature
-                    ? ResolveEngineDesiredAttackRange(
-                        pCreature.DesiredAttackRange(oidAttackTarget),
-                        fMaxAttackRange,
-                        usesRangedWeapon)
-                    : ResolveWeaponEngagementRange(
-                        CombatRules.GetWeaponEngagementRange(attackSkillType),
-                        fMaxAttackRange,
-                        usesRangedWeapon);
-                fMaxAttackRange = ResolveMaximumAttackRange(
-                    fDesiredAttackRange,
-                    fMaxAttackRange,
-                    usesRangedWeapon);
-                if (pCreature.m_oidAttemptedAttackTarget == OBJECT_INVALID)
-                {
-                    pCreature.m_oidAttemptedAttackTarget = oidAttackTarget;
-                }
-
-                const float fUseRange = 0;
-
-                if (pGameObject.AsNWSCreature() != null)
-                {
-                    var pFUseRange = Marshal.AllocHGlobal(sizeof(float));
-
-                    try
-                    {
-                        Marshal.StructureToPtr(fUseRange, pFUseRange, false);
-                        pCreature.GetUseRange(oidAttackTarget, vTargetPosition, (float*)pFUseRange);
-                    }
-                    finally
-                    {
-                        Marshal.FreeHGlobal(pFUseRange);
-                    }
-                }
-
-                var bClearLineOfAttack = 0;
-
-                if (pArea != null && pArea == pTargetArea)
-                {
-                    bClearLineOfAttack = pCreature.CheckAttackClearLineToTarget(oidAttackTarget, vTargetPosition, pArea);
-                }
-
-                var vDelta = new Vector(
-                        pCreature.m_vPosition.x - vTargetPosition.x,
-                        pCreature.m_vPosition.y - vTargetPosition.y,
-                        pCreature.m_vPosition.z - vTargetPosition.z
-                    );
-                var bOutsideAttackRange = (pTargetArea != pArea ||
-                                           MagnitudeSquared(vDelta) > Sqr(fMaxAttackRange + CNW_PATHFIND_TOLERANCE));
-
-                if (bOutsideAttackRange || bClearLineOfAttack == 0)
-                {
-                    if (pCreature.m_bPassiveAttackBehaviour == 1)
-                    {
-                        var newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
-                        oidAttackTarget = OBJECT_INVALID;
-
-                        if (newTarget != null)
-                        {
-                            oidAttackTarget = newTarget.m_idSelf;
-                            pCreature.m_bPassiveAttackBehaviour = 1;
-                        }
-
-                        pCreature.ChangeAttackTarget(pNode, oidAttackTarget);
-                        return (oidAttackTarget != OBJECT_INVALID ? ACTION_IN_PROGRESS : ACTION_FAILED);
-                    }
-
-                    uint oidArea;
-                    if (pTargetArea != null)
-                    {
-                        oidArea = pTargetArea.m_idSelf;
-                    }
-                    else
-                    {
-                        if (pTarget.AsNWSCreature() != null && pCreature.m_oidEncounter == OBJECT_INVALID)
-                        {
-                            oidArea = pTarget.AsNWSCreature().m_oidDesiredArea;
-                            vTargetPosition = pTarget.AsNWSCreature().m_vDesiredAreaLocation;
-                        }
-                        else
-                        {
-                            var newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
-                            oidAttackTarget = OBJECT_INVALID;
-
-                            if (newTarget != null)
-                            {
-                                oidAttackTarget = newTarget.m_idSelf;
-                                pCreature.m_bPassiveAttackBehaviour = 1;
-                            }
-
-                            pCreature.ChangeAttackTarget(pNode, oidAttackTarget);
-                            return (oidAttackTarget != OBJECT_INVALID ? ACTION_IN_PROGRESS : ACTION_FAILED);
-                        }
-                    }
-
-                    if (pCreature.m_vLastAttackPosition != new Vector() &&
-                        pCreature.m_vLastAttackPosition == pCreature.m_vPosition)
-                    {
-                        if (pCreature.m_bPlayerCharacter == 1)
-                        {
-                            pCreature.SendFeedbackMessage(FEEDBACK_ACTION_CANT_REACH_TARGET);
-                        }
-
-                        CNWSCreature newTarget = null;
-
-                        if (!usesRangedWeapon)
-                        {
-                            newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
-                        }
-                        else
-                        {
-                            AlternateRangedRepositionDirection(pCreature.m_idSelf);
-                        }
-
-                        var bUpdateTarget = false;
-                        if (newTarget != null)
-                        {
-                            oidAttackTarget = newTarget.m_idSelf;
-                            pCreature.m_bPassiveAttackBehaviour = 1;
-                            bUpdateTarget = true;
-                        }
-                        else if (pCreature.m_bPlayerCharacter == 1)
-                        {
-                            oidAttackTarget = OBJECT_INVALID;
-                            bUpdateTarget = true;
-                        }
-
-                        if (bUpdateTarget)
-                        {
-                            pCreature.ChangeAttackTarget(pNode, oidAttackTarget);
-                            return (oidAttackTarget != OBJECT_INVALID ? ACTION_IN_PROGRESS : ACTION_FAILED);
-                        }
-                    }
-                    else
-                    {
-                        pCreature.m_vLastAttackPosition = pCreature.m_vPosition;
-                    }
-
-                    var fMoveToTargetRange = fDesiredAttackRange;
-                    var fMoveToTargetMaxRange = fMaxAttackRange;
-                    var fPathMoveRange = fMoveToTargetRange;
-                    var vMoveTargetPosition = vTargetPosition;
-                    var bTrackAttackTargetWhileMoving = true;
-
-                    if (bClearLineOfAttack == 0)
-                    {
-                        float fPersonalSpaceRange;
-                        if (pTarget.AsNWSCreature() != null)
-                        {
-                            fPersonalSpaceRange = pCreature.m_pcPathfindInformation.m_fCreaturePersonalSpace;
-                            fPersonalSpaceRange += pTarget.AsNWSCreature().m_pcPathfindInformation.m_fCreaturePersonalSpace;
-                        }
-                        else
-                        {
-                            fPersonalSpaceRange = pCreature.m_pcPathfindInformation.m_fPersonalSpace;
-                        }
-
-                        var movementPlan = CreateBlockedLineMovementPlan(
-                            pCreature.m_vPosition.x,
-                            pCreature.m_vPosition.y,
-                            pCreature.m_vPosition.z,
-                            vTargetPosition.x,
-                            vTargetPosition.y,
-                            vTargetPosition.z,
-                            pCreature.m_idSelf,
-                            fDesiredAttackRange,
-                            fPersonalSpaceRange,
-                            bOutsideAttackRange,
-                            usesRangedWeapon);
-                        fMoveToTargetRange = movementPlan.AttackCheckRange;
-                        fPathMoveRange = movementPlan.PathCompletionRange;
-                        vMoveTargetPosition = new Vector(
-                            movementPlan.DestinationX,
-                            movementPlan.DestinationY,
-                            movementPlan.DestinationZ);
-                        bTrackAttackTargetWhileMoving = movementPlan.TrackAttackTarget;
-
-                        pCreature.m_pcPathfindInformation.m_bUsePlotGridPath = 1;
-                    }
-
-                    var bRunToTarget = true;
-                    var bLineOfSightRequired = true;
-
-                    void* pOidAttackTarget = &oidAttackTarget;
-                    pCreature.AddActionToFront(
-                        CSERVERAIMASTER_AIACTION_ATTACKOBJECT,
-                        pNode.m_nGroupActionId,
-                        CNWSOBJECTACTION_PARAMETER_OBJECT,
-                        pOidAttackTarget);
-
-                    pCreature.AddActionToFront(
-                        CSERVERAIMASTER_AIACTION_CHECKMOVETOOBJECTRADIUS,
-                        pNode.m_nGroupActionId,
-                        CNWSOBJECTACTION_PARAMETER_OBJECT, pOidAttackTarget,
-                        CNWSOBJECTACTION_PARAMETER_INTEGER, &bRunToTarget,
-                        CNWSOBJECTACTION_PARAMETER_FLOAT, &fMoveToTargetRange,
-                        CNWSOBJECTACTION_PARAMETER_FLOAT, &fMoveToTargetMaxRange,
-                        CNWSOBJECTACTION_PARAMETER_INTEGER, &bLineOfSightRequired);
-
-                    pCreature.AddActionToFront(
-                        CSERVERAIMASTER_AIACTION_CHANGEFACINGOBJECT,
-                        pNode.m_nGroupActionId,
-                        CNWSOBJECTACTION_PARAMETER_OBJECT, pOidAttackTarget);
-
-
-                    if (pGameObject.AsNWSDoor() != null)
-                    {
-                        pCreature.AddMoveToPointActionToFront(
-                            pNode.m_nGroupActionId,
-                            vMoveTargetPosition,
-                            oidArea,
-                            OBJECT_INVALID,
-                            bRunToTarget ? 1 : 0,
-                            fPathMoveRange);
-                    }
-                    else
-                    {
-                        pCreature.AddMoveToPointActionToFront(
-                            pNode.m_nGroupActionId,
-                            vMoveTargetPosition,
-                            oidArea,
-                            bTrackAttackTargetWhileMoving ? oidAttackTarget : OBJECT_INVALID,
-                            bRunToTarget ? 1 : 0,
-                            fPathMoveRange);
-                    }
-
-
-                    return ACTION_COMPLETE;
+                    return approachResult;
                 }
             }
 
-            _rangedRepositionDirections.Remove(pCreature.m_idSelf);
+            return ResolveReadyAttack(pCreature, pNode, oidAttackTarget, bTargetActive, attackSkillType,
+                usesRangedWeapon);
+        });
+    }
 
-            // Preserve the engine action's cleanup, target validation, leash, and pathing
-            // behavior before requiring a combat round. The active round is only needed once
-            // this action is ready to resolve a swing.
-            var pCombatRound = pCreature.m_pcCombatRound;
-            if (pCombatRound == null)
+    private static bool IsActiveAttackTarget(CNWSCreature pCreature, CGameObject pGameObject, uint oidAttackTarget)
+    {
+        var bTargetActive = false;
+        if (pGameObject != null)
+        {
+            if (pGameObject.AsNWSObject() != null)
             {
-                pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+                if (pGameObject.AsNWSObject().GetDead() == 0)
+                {
+                    bTargetActive = true;
+                }
+
+                if (pGameObject.AsNWSCreature() != null &&
+                    pGameObject.AsNWSCreature().GetDead() == 0 &&
+                    pGameObject.AsNWSCreature().m_bPlayerCharacter == 1 &&
+                    pGameObject.AsNWSCreature().GetIsPCDying() == 1)
+                {
+                    bTargetActive = true;
+                }
+
+                // If the target is invisible and we can't see or hear them,
+                // then they aren't an acceptable target.
+                var pVisNode = pCreature.GetVisibleListElement(oidAttackTarget);
+                if (pVisNode != null)
+                {
+                    if (pVisNode.m_nSanctuary == SANCTUARY_SAVE_FAILED ||
+                        (pVisNode.m_bInvisible == 1 &&
+                         pVisNode.m_bHeard == 0 &&
+                         pVisNode.m_bSeen == 0))
+                    {
+                        bTargetActive = false;
+                    }
+                }
+                else
+                {
+                    if (pGameObject.AsNWSCreature() != null &&
+                        pCreature.m_bPlayerCharacter == 1)
+                    {
+                        bTargetActive = false;
+                    }
+                }
+            }
+        }
+
+        return bTargetActive;
+    }
+
+    private static int ApproachAttackTarget(CNWSCreature pCreature, CNWSObjectActionNode pNode, CNWSArea pArea,
+        CGameObject pGameObject, uint oidAttackTarget, SkillType attackSkillType, bool isPlayerCreature,
+        bool usesRangedWeapon)
+    {
+        var pTarget = pGameObject.AsNWSObject();
+        if (TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget))
+        {
+            return ACTION_FAILED;
+        }
+
+        var vTargetPosition = pTarget.m_vPosition;
+        var pTargetArea = pTarget.GetArea();
+
+        var fMaxAttackRange = pCreature.MaxAttackRange(oidAttackTarget);
+        var fDesiredAttackRange = isPlayerCreature
+            ? ResolveEngineDesiredAttackRange(
+                pCreature.DesiredAttackRange(oidAttackTarget),
+                fMaxAttackRange,
+                usesRangedWeapon)
+            : ResolveWeaponEngagementRange(
+                CombatRules.GetWeaponEngagementRange(attackSkillType),
+                fMaxAttackRange,
+                usesRangedWeapon);
+        fMaxAttackRange = ResolveMaximumAttackRange(
+            fDesiredAttackRange,
+            fMaxAttackRange,
+            usesRangedWeapon);
+        if (pCreature.m_oidAttemptedAttackTarget == OBJECT_INVALID)
+        {
+            pCreature.m_oidAttemptedAttackTarget = oidAttackTarget;
+        }
+
+        const float fUseRange = 0;
+
+        if (pGameObject.AsNWSCreature() != null)
+        {
+            var pFUseRange = Marshal.AllocHGlobal(sizeof(float));
+
+            try
+            {
+                Marshal.StructureToPtr(fUseRange, pFUseRange, false);
+                pCreature.GetUseRange(oidAttackTarget, vTargetPosition, (float*)pFUseRange);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(pFUseRange);
+            }
+        }
+
+        var bClearLineOfAttack = 0;
+
+        if (pArea != null && pArea == pTargetArea)
+        {
+            bClearLineOfAttack = pCreature.CheckAttackClearLineToTarget(oidAttackTarget, vTargetPosition, pArea);
+        }
+
+        var vDelta = new Vector(
+                pCreature.m_vPosition.x - vTargetPosition.x,
+                pCreature.m_vPosition.y - vTargetPosition.y,
+                pCreature.m_vPosition.z - vTargetPosition.z
+            );
+        var bOutsideAttackRange = (pTargetArea != pArea ||
+                                   MagnitudeSquared(vDelta) > Sqr(fMaxAttackRange + CNW_PATHFIND_TOLERANCE));
+
+        if (bOutsideAttackRange || bClearLineOfAttack == 0)
+        {
+            return MoveTowardAttackTarget(pCreature, pNode, pGameObject, pTarget, pTargetArea, oidAttackTarget,
+                vTargetPosition, fDesiredAttackRange, fMaxAttackRange, bClearLineOfAttack, bOutsideAttackRange,
+                usesRangedWeapon);
+        }
+
+        return ContinueAttackAction;
+    }
+
+    private static int MoveTowardAttackTarget(CNWSCreature pCreature, CNWSObjectActionNode pNode,
+        CGameObject pGameObject, CNWSObject pTarget, CNWSArea pTargetArea, uint oidAttackTarget, Vector vTargetPosition,
+        float fDesiredAttackRange, float fMaxAttackRange, int bClearLineOfAttack, bool bOutsideAttackRange,
+        bool usesRangedWeapon)
+    {
+        if (pCreature.m_bPassiveAttackBehaviour == 1)
+        {
+            var newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
+            oidAttackTarget = OBJECT_INVALID;
+
+            if (newTarget != null)
+            {
+                oidAttackTarget = newTarget.m_idSelf;
+                pCreature.m_bPassiveAttackBehaviour = 1;
+            }
+
+            pCreature.ChangeAttackTarget(pNode, oidAttackTarget);
+            return (oidAttackTarget != OBJECT_INVALID ? ACTION_IN_PROGRESS : ACTION_FAILED);
+        }
+
+        uint oidArea;
+        if (pTargetArea != null)
+        {
+            oidArea = pTargetArea.m_idSelf;
+        }
+        else
+        {
+            if (pTarget.AsNWSCreature() != null && pCreature.m_oidEncounter == OBJECT_INVALID)
+            {
+                oidArea = pTarget.AsNWSCreature().m_oidDesiredArea;
+                vTargetPosition = pTarget.AsNWSCreature().m_vDesiredAreaLocation;
+            }
+            else
+            {
+                var newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
+                oidAttackTarget = OBJECT_INVALID;
+
+                if (newTarget != null)
+                {
+                    oidAttackTarget = newTarget.m_idSelf;
+                    pCreature.m_bPassiveAttackBehaviour = 1;
+                }
+
+                pCreature.ChangeAttackTarget(pNode, oidAttackTarget);
+                return (oidAttackTarget != OBJECT_INVALID ? ACTION_IN_PROGRESS : ACTION_FAILED);
+            }
+        }
+
+        if (pCreature.m_vLastAttackPosition != new Vector() &&
+            pCreature.m_vLastAttackPosition == pCreature.m_vPosition)
+        {
+            if (pCreature.m_bPlayerCharacter == 1)
+            {
+                pCreature.SendFeedbackMessage(FEEDBACK_ACTION_CANT_REACH_TARGET);
+            }
+
+            CNWSCreature newTarget = null;
+
+            if (!usesRangedWeapon)
+            {
+                newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
+            }
+            else
+            {
+                AlternateRangedRepositionDirection(pCreature.m_idSelf);
+            }
+
+            var bUpdateTarget = false;
+            if (newTarget != null)
+            {
+                oidAttackTarget = newTarget.m_idSelf;
+                pCreature.m_bPassiveAttackBehaviour = 1;
+                bUpdateTarget = true;
+            }
+            else if (pCreature.m_bPlayerCharacter == 1)
+            {
+                oidAttackTarget = OBJECT_INVALID;
+                bUpdateTarget = true;
+            }
+
+            if (bUpdateTarget)
+            {
+                pCreature.ChangeAttackTarget(pNode, oidAttackTarget);
+                return (oidAttackTarget != OBJECT_INVALID ? ACTION_IN_PROGRESS : ACTION_FAILED);
+            }
+        }
+        else
+        {
+            pCreature.m_vLastAttackPosition = pCreature.m_vPosition;
+        }
+
+        return QueueMoveToAttackTarget(pCreature, pNode, pGameObject, pTarget, oidAttackTarget, oidArea,
+            vTargetPosition, fDesiredAttackRange, fMaxAttackRange, bClearLineOfAttack, bOutsideAttackRange,
+            usesRangedWeapon);
+    }
+
+    private static int QueueMoveToAttackTarget(CNWSCreature pCreature, CNWSObjectActionNode pNode,
+        CGameObject pGameObject, CNWSObject pTarget, uint oidAttackTarget, uint oidArea, Vector vTargetPosition,
+        float fDesiredAttackRange, float fMaxAttackRange, int bClearLineOfAttack, bool bOutsideAttackRange,
+        bool usesRangedWeapon)
+    {
+        var fMoveToTargetRange = fDesiredAttackRange;
+        var fMoveToTargetMaxRange = fMaxAttackRange;
+        var fPathMoveRange = fMoveToTargetRange;
+        var vMoveTargetPosition = vTargetPosition;
+        var bTrackAttackTargetWhileMoving = true;
+
+        if (bClearLineOfAttack == 0)
+        {
+            float fPersonalSpaceRange;
+            if (pTarget.AsNWSCreature() != null)
+            {
+                fPersonalSpaceRange = pCreature.m_pcPathfindInformation.m_fCreaturePersonalSpace;
+                fPersonalSpaceRange += pTarget.AsNWSCreature().m_pcPathfindInformation.m_fCreaturePersonalSpace;
+            }
+            else
+            {
+                fPersonalSpaceRange = pCreature.m_pcPathfindInformation.m_fPersonalSpace;
+            }
+
+            var movementPlan = CreateBlockedLineMovementPlan(
+                pCreature.m_vPosition.x,
+                pCreature.m_vPosition.y,
+                pCreature.m_vPosition.z,
+                vTargetPosition.x,
+                vTargetPosition.y,
+                vTargetPosition.z,
+                pCreature.m_idSelf,
+                fDesiredAttackRange,
+                fPersonalSpaceRange,
+                bOutsideAttackRange,
+                usesRangedWeapon);
+            fMoveToTargetRange = movementPlan.AttackCheckRange;
+            fPathMoveRange = movementPlan.PathCompletionRange;
+            vMoveTargetPosition = new Vector(
+                movementPlan.DestinationX,
+                movementPlan.DestinationY,
+                movementPlan.DestinationZ);
+            bTrackAttackTargetWhileMoving = movementPlan.TrackAttackTarget;
+
+            pCreature.m_pcPathfindInformation.m_bUsePlotGridPath = 1;
+        }
+
+        var bRunToTarget = true;
+        var bLineOfSightRequired = true;
+
+        void* pOidAttackTarget = &oidAttackTarget;
+        pCreature.AddActionToFront(
+            CSERVERAIMASTER_AIACTION_ATTACKOBJECT,
+            pNode.m_nGroupActionId,
+            CNWSOBJECTACTION_PARAMETER_OBJECT,
+            pOidAttackTarget);
+
+        pCreature.AddActionToFront(
+            CSERVERAIMASTER_AIACTION_CHECKMOVETOOBJECTRADIUS,
+            pNode.m_nGroupActionId,
+            CNWSOBJECTACTION_PARAMETER_OBJECT, pOidAttackTarget,
+            CNWSOBJECTACTION_PARAMETER_INTEGER, &bRunToTarget,
+            CNWSOBJECTACTION_PARAMETER_FLOAT, &fMoveToTargetRange,
+            CNWSOBJECTACTION_PARAMETER_FLOAT, &fMoveToTargetMaxRange,
+            CNWSOBJECTACTION_PARAMETER_INTEGER, &bLineOfSightRequired);
+
+        pCreature.AddActionToFront(
+            CSERVERAIMASTER_AIACTION_CHANGEFACINGOBJECT,
+            pNode.m_nGroupActionId,
+            CNWSOBJECTACTION_PARAMETER_OBJECT, pOidAttackTarget);
+
+
+        if (pGameObject.AsNWSDoor() != null)
+        {
+            pCreature.AddMoveToPointActionToFront(
+                pNode.m_nGroupActionId,
+                vMoveTargetPosition,
+                oidArea,
+                OBJECT_INVALID,
+                bRunToTarget ? 1 : 0,
+                fPathMoveRange);
+        }
+        else
+        {
+            pCreature.AddMoveToPointActionToFront(
+                pNode.m_nGroupActionId,
+                vMoveTargetPosition,
+                oidArea,
+                bTrackAttackTargetWhileMoving ? oidAttackTarget : OBJECT_INVALID,
+                bRunToTarget ? 1 : 0,
+                fPathMoveRange);
+        }
+
+
+        return ACTION_COMPLETE;
+    }
+
+    private static int ResolveReadyAttack(CNWSCreature pCreature, CNWSObjectActionNode pNode, uint oidAttackTarget,
+        bool bTargetActive, SkillType attackSkillType, bool usesRangedWeapon)
+    {
+        _rangedRepositionDirections.Remove(pCreature.m_idSelf);
+
+        // Preserve the engine action's cleanup, target validation, leash, and pathing
+        // behavior before requiring a combat round. The active round is only needed once
+        // this action is ready to resolve a swing.
+        var pCombatRound = pCreature.m_pcCombatRound;
+        if (pCombatRound == null)
+        {
+            pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+            return ACTION_FAILED;
+        }
+
+        // The equipped-weapon skill above is the safe pre-round fallback used for range
+        // and pathing. At resolution time, prefer the weapon for the actual main-hand or
+        // off-hand swing so skill-scoped limited effects consume the correct charge.
+        var isDualWieldCycle = !usesRangedWeapon && EquipmentPredicates.HasDualWield(pCreature.m_idSelf);
+        var isTwinPistolCycle = TwinPistolEquipment.IsActivePair(pCreature.m_idSelf);
+        PairedRangedTraits.RecordTargetChange(pCreature.m_idSelf, oidAttackTarget);
+        OrdinaryAttackTraits.RecordTargetChange(pCreature.m_idSelf, oidAttackTarget);
+        var currentWeaponAttackType = isDualWieldCycle
+            ? WEAPON_ATTACK_TYPE_MAINHAND
+            : pCombatRound.GetWeaponAttackType();
+        var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(
+            currentWeaponAttackType);
+        if (currentAttackWeapon != null)
+        {
+            attackSkillType = GameServices.Skill.GetWeaponSkill(pCreature.m_idSelf, currentAttackWeapon.m_idSelf);
+        }
+        var mainSkill = attackSkillType;
+        var offSkill = SkillType.Invalid;
+        if (isTwinPistolCycle) offSkill = SkillType.TwinPistol;
+        if (isDualWieldCycle)
+        {
+            var offWeapon = WeaponAttackCycle.GetAttackWeapon(pCreature, WEAPON_ATTACK_TYPE_OFFHAND);
+            if (offWeapon != null)
+            {
+                offSkill = GameServices.Skill.GetSkillTypeByBaseItem(
+                    (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)offWeapon.m_nBaseItem);
+                // Either hand's scoped timing effect can drive the shared gate. Actual
+                // attack notifications still consume charges using each roll's own skill.
+                attackSkillType = WeaponAttackTiming.GetTimingSkill(pCreature.m_idSelf);
+            }
+        }
+
+        pCreature.m_vLastAttackPosition = new Vector();
+
+        // Check if target is dead - if so, skip delay and handle immediately
+        var pTargetObject = (CGameObject)NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(oidAttackTarget);
+        var bTargetDead = false;
+        if (pTargetObject != null)
+        {
+            if (pTargetObject.AsNWSObject() != null && pTargetObject.AsNWSObject().GetDead() == 1)
+            {
+                bTargetDead = true;
+            }
+            else if (pTargetObject.AsNWSCreature() != null &&
+                     pTargetObject.AsNWSCreature().m_bPlayerCharacter == 1 &&
+                     pTargetObject.AsNWSCreature().GetIsPCDying() == 1)
+            {
+                bTargetDead = true;
+            }
+        }
+
+        var swing = CalculateAttackSwing(pCreature, oidAttackTarget, attackSkillType, mainSkill, offSkill,
+            isDualWieldCycle, isTwinPistolCycle);
+
+        // Check attack delay before starting or processing combat
+        // First attack is always instant, subsequent attacks respect delay
+        // Skip delay check if target is dead
+        if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) &&
+            !bTargetDead)
+        {
+            // Swings cannot animate faster than the engine's base delay. Effective delays
+            // below it are honored by resolving multiple attacks within a single swing.
+            var swingDelay = CombatRules.CalculateAttackSwingDelay(swing.EffectiveAttackDelay);
+            var timeSinceLastAttack = (Clock.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
+
+            if (timeSinceLastAttack < swingDelay)
+            {
+                // Return to the ready pose after the native damage phase. Client burst
+                // refresh and consecutive melee playback are handled independently by
+                // WeaponAttackAnimation, including cycles at the animation floor.
+                if (pCreature.m_pcCombatRound.m_bRoundPaused == 0 &&
+                    pCreature.m_nAnimation == NWANIMBASE_ANIM_ATTACK &&
+                    !WeaponAttackAnimation.IsPlaying(pCreature))
+                {
+                    pCreature.SetAnimation(NWANIMBASE_ANIM_READY);
+                }
+
+                // Still in delay period, return in progress
+                return ACTION_IN_PROGRESS;
+            }
+        }
+
+        if (pCreature.m_pcCombatRound.m_bRoundStarted == 0)
+        {
+            pCreature.m_pcCombatRound.StartCombatRound(oidAttackTarget);
+            pCreature.m_pcCombatRound.m_nRoundLength = 1000;
+        }
+
+        if (pCreature.m_pcCombatRound.m_bRoundPaused == 0)
+        {
+            return ProcessUnpausedCombatRound(pCreature, pNode, oidAttackTarget, bTargetActive, in swing);
+        }
+
+        return ACTION_IN_PROGRESS;
+    }
+
+    private static AttackSwing CalculateAttackSwing(CNWSCreature pCreature, uint oidAttackTarget,
+        SkillType attackSkillType, SkillType mainSkill, SkillType offSkill, bool isDualWieldCycle,
+        bool isTwinPistolCycle)
+    {
+        var hasLimitedAttackDelayReduction = StatusEffect.TryGetLimitedAttackDelayReduction(
+            pCreature.m_idSelf,
+            attackSkillType,
+            out var limitedAttackDelayReductionPercent,
+            out var limitedAttackDelayReductionRemainingAttacks);
+        var hasLimitedAttackNoDelay = StatusEffect.TryGetLimitedAttackNoDelay(
+            pCreature.m_idSelf,
+            attackSkillType,
+            out var limitedAttackNoDelayRemainingAttacks);
+        var hasArmedNoDelay = GameServices.CombatAttackTiming.HasTemporaryNextAutoAttackNoDelay(
+            pCreature.m_idSelf,
+            attackSkillType);
+        var useDefaultMinimumDelay = hasArmedNoDelay || hasLimitedAttackNoDelay;
+
+        // Limited Haste is skill-scoped. Supply it to this swing's delay calculation
+        // instead of contributing a creature-wide AttackDelayReductionPercent stat.
+        // Target-conditional Haste (Flurry Stance against bleeding targets) is part of this
+        // swing's base delay, so it applies with and without limited Haste.
+        var targetAttackDelayReduction = GameServices.CombatAttackTiming.GetTargetAttackDelayReduction(
+            pCreature.m_idSelf, oidAttackTarget, attackSkillType);
+        var calculatedDelayWithoutLimitedReduction =
+            GameServices.CombatAttackTiming.CalculateAttackDelay(pCreature.m_idSelf, targetAttackDelayReduction);
+        var calculatedDelay = hasLimitedAttackDelayReduction
+            ? GameServices.CombatAttackTiming.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent + targetAttackDelayReduction)
+            : calculatedDelayWithoutLimitedReduction;
+        var effectiveAttackDelay = CombatRules.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
+        var effectiveDelayWithoutLimitedReduction = CombatRules.CalculateEffectiveAttackDelay(
+            calculatedDelayWithoutLimitedReduction,
+            hasArmedNoDelay);
+
+        var limitedDelayReductionRemainingAttacks = hasLimitedAttackDelayReduction
+            ? limitedAttackDelayReductionRemainingAttacks
+            : 0;
+        var limitedNoDelayRemainingAttacks = hasLimitedAttackNoDelay
+            ? limitedAttackNoDelayRemainingAttacks
+            : 0;
+
+        // The delay the attacker would have without a no-delay buff. Lowering the delay to
+        // the floor is meaningless for a build already at the floor, so this is passed to
+        // ConsumeAttacksPerSwing alongside useDefaultMinimumDelay to guarantee the buff is
+        // worth an extra attack either way. Both values are equal for a build already at the
+        // floor, so the buff state has to travel separately from the delays.
+        var unbuffedAttackDelay = CombatRules.CalculateEffectiveAttackDelay(
+            calculatedDelayWithoutLimitedReduction,
+            false);
+
+        return new AttackSwing(attackSkillType, mainSkill, offSkill, isDualWieldCycle, isTwinPistolCycle,
+            useDefaultMinimumDelay, effectiveAttackDelay, unbuffedAttackDelay, effectiveDelayWithoutLimitedReduction,
+            limitedDelayReductionRemainingAttacks, limitedNoDelayRemainingAttacks);
+    }
+
+    private static int ProcessUnpausedCombatRound(CNWSCreature pCreature, CNWSObjectActionNode pNode,
+        uint oidAttackTarget, bool bTargetActive, in AttackSwing swing)
+    {
+        if (pCreature.m_pcCombatRound.GetActionPending() == 1)
+        {
+            var pPendingAction = pCreature.m_pcCombatRound.GetAction();
+
+            if (pPendingAction != null)
+            {
+                var pendingResult = ProcessPendingAction(pCreature, pNode, pPendingAction, oidAttackTarget,
+                    ref bTargetActive, in swing);
+                if (pendingResult != ContinueAttackAction)
+                {
+                    return pendingResult;
+                }
+
+                pPendingAction.Dispose();
+                pPendingAction = null;
+            }
+        }
+        else if (bTargetActive)
+        {
+            // Build the next combat action only after the current attack has finished its damage phase.
+            pCreature.m_pcCombatRound.RecomputeRound();
+        }
+
+        if (bTargetActive == false)
+        {
+            _rangedRepositionDirections.Remove(pCreature.m_idSelf);
+            var newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
+            oidAttackTarget = OBJECT_INVALID;
+
+            if (newTarget != null)
+            {
+                oidAttackTarget = newTarget.m_idSelf;
+                pCreature.m_bPassiveAttackBehaviour = 1;
+            }
+
+            pCreature.ChangeAttackTarget(pNode, oidAttackTarget);
+
+            return (oidAttackTarget != OBJECT_INVALID
+                ? ACTION_IN_PROGRESS
+                : ACTION_FAILED);
+        }
+
+        return ACTION_IN_PROGRESS;
+    }
+
+    private static int ProcessPendingAction(CNWSCreature pCreature, CNWSObjectActionNode pNode,
+        CNWSCombatRoundAction pPendingAction, uint oidAttackTarget, ref bool bTargetActive, in AttackSwing swing)
+    {
+        var nActionType = pPendingAction.m_nActionType;
+        var oidTarget = pPendingAction.m_oidTarget;
+        var nTimeAnimation = pPendingAction.m_nAnimationTime;
+
+        if (!bTargetActive &&
+            pCreature.m_pcCombatRound.m_oidNewAttackTarget == OBJECT_INVALID)
+        {
+            nActionType = CNWSCOMBATROUND_TYPE_INVALID;
+        }
+
+        switch (nActionType)
+        {
+            case CNWSCOMBATROUND_TYPE_ATTACK:
+                {
+                    var attackResult = ResolvePendingAttack(pCreature, pNode, pPendingAction, nActionType, oidTarget,
+                        oidAttackTarget, nTimeAnimation, ref bTargetActive, in swing);
+                    if (attackResult != ContinueAttackAction)
+                    {
+                        return attackResult;
+                    }
+                }
+                break;
+
+            case CNWSCOMBATROUND_TYPE_PARRY:
+                {
+                    var nWeaponAttackType = pCreature.m_pcCombatRound.GetWeaponAttackType();
+                    if (nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
+                    {
+                        var nAttackValueToUse = pCreature.m_pcCombatRound.m_nOffHandAttacksTaken;
+
+                        pCreature.m_pcCombatRound.m_nOffHandAttacksTaken = nAttackValueToUse + 1;
+                    }
+
+                    pCreature.m_pcCombatRound.SetCurrentAttack((byte)(pCreature.m_pcCombatRound.m_nCurrentAttack + 1));
+                }
+                break;
+
+            case CNWSCOMBATROUND_TYPE_COMSTEP:
+            case CNWSCOMBATROUND_TYPE_COMSTEPFB:
+                {
+                    // Combat stepping disabled - just pause the round
+                    pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
+                    pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
+                }
+                break;
+
+            case CNWSCOMBATROUND_TYPE_REACTION:
+                {
+                    pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
+                    pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
+                }
+                break;
+
+            case CNWSCOMBATROUND_TYPE_EQUIP:
+                {
+                    pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
+                    pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
+                    if (pCreature.RunEquip(oidTarget, pPendingAction.m_nInventorySlot) == 1)
+                    {
+                        pCreature.m_pcCombatRound.RecomputeRound();
+                        _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
+                        GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
+                    }
+                }
+                break;
+
+            case CNWSCOMBATROUND_TYPE_UNEQUIP:
+                {
+                    pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
+                    pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
+                    if (pCreature.RunUnequip(oidTarget, pPendingAction.m_oidTargetRepository, pPendingAction.m_nRepositoryX, pPendingAction.m_nRepositoryY, 0) == 1)
+                    {
+                        pCreature.m_pcCombatRound.RecomputeRound();
+                        _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
+                        GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
+                    }
+                }
+                break;
+
+            default:
+                {
+                    // Handle any other action types that might not be explicitly handled
+                    // This should rarely be hit with the proper action types above
+                }
+                break;
+        }
+
+        return ContinueAttackAction;
+    }
+
+    private static int ResolvePendingAttack(CNWSCreature pCreature, CNWSObjectActionNode pNode,
+        CNWSCombatRoundAction pPendingAction, byte nActionType, uint oidTarget, uint oidAttackTarget,
+        int nTimeAnimation, ref bool bTargetActive, in AttackSwing swing)
+    {
+        var nAnimation = pPendingAction.m_nAnimation;
+        var bOverrideAction = false;
+
+        // Our current target is dead or not active, meaning we should not process the action
+        // Since attacking a dead body would be kind of silly...
+        if (!bTargetActive &&
+            pCreature.m_pcCombatRound.m_oidNewAttackTarget == OBJECT_INVALID)
+        {
+            nActionType = CNWSCOMBATROUND_TYPE_INVALID;
+            bOverrideAction = true;
+        }
+
+        if (!bOverrideAction)
+        {
+            pCreature.SetAnimation(nAnimation);
+
+            if (oidAttackTarget != oidTarget)
+            {
+                if (pPendingAction.m_bActionRetargettable == 1)
+                {
+                    oidTarget = oidAttackTarget;
+                }
+                else
+                {
+                    pCreature.m_oidAttemptedAttackTarget = oidTarget;
+                }
+            }
+
+            pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
+
+            // Set pause timer for single attack
+            pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
+
+            // If the attack was switched somewhere in the combat code ie: Cleave
+            // we grab the new target and stick with it
+            if (pCreature.m_pcCombatRound.m_oidNewAttackTarget != OBJECT_INVALID)
+            {
+                var oidNewTarget = pCreature.m_pcCombatRound.m_oidNewAttackTarget;
+                pCreature.m_bPassiveAttackBehaviour = 1;
+                pCreature.ChangeAttackTarget(pNode, oidNewTarget);
+                pCreature.m_pcCombatRound.m_oidNewAttackTarget = OBJECT_INVALID;
+                oidTarget = oidNewTarget;
+                bTargetActive = true;
+            }
+
+            // This is just in case we've changed targets in mid round... we want to be sure
+            // that we're still locked on to the proper target
+            if (TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget))
+            {
                 return ACTION_FAILED;
             }
 
-            // The equipped-weapon skill above is the safe pre-round fallback used for range
-            // and pathing. At resolution time, prefer the weapon for the actual main-hand or
-            // off-hand swing so skill-scoped limited effects consume the correct charge.
-            var isDualWieldCycle = !usesRangedWeapon && EquipmentPredicates.HasDualWield(pCreature.m_idSelf);
-            var isTwinPistolCycle = TwinPistolEquipment.IsActivePair(pCreature.m_idSelf);
-            PairedRangedTraits.RecordTargetChange(pCreature.m_idSelf, oidAttackTarget);
-            OrdinaryAttackTraits.RecordTargetChange(pCreature.m_idSelf, oidAttackTarget);
-            var currentWeaponAttackType = isDualWieldCycle
-                ? WEAPON_ATTACK_TYPE_MAINHAND
-                : pCombatRound.GetWeaponAttackType();
-            var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(
-                currentWeaponAttackType);
-            if (currentAttackWeapon != null)
+            pCreature.SetLockOrientationToObject(oidTarget);
+
+            // Process the attack (delay already checked at function start)
+            var isParalyzed = GameServices.CombatAttackTiming.HandleParalyze(pCreature.m_idSelf);
+
+            if (isParalyzed)
             {
-                attackSkillType = GameServices.Skill.GetWeaponSkill(pCreature.m_idSelf, currentAttackWeapon.m_idSelf);
+                Log.Write(LogGroup.Attack, $"Creature {pCreature.m_idSelf:X8} is paralyzed, recomputing round");
+                pCreature.m_pcCombatRound.RecomputeRound();
             }
-            var mainSkill = attackSkillType;
-            var offSkill = SkillType.Invalid;
-            if (isTwinPistolCycle) offSkill = SkillType.TwinPistol;
+            else
+            {
+                ResolveSwing(pCreature, oidTarget, nTimeAnimation, in swing);
+                bTargetActive = true;
+
+                // Set the delay timestamp after the attack resolves
+                // This ensures the first attack is instant, subsequent attacks respect delay
+                _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
+            }
+        }
+
+        return ContinueAttackAction;
+    }
+
+    private static void ResolveSwing(CNWSCreature pCreature, uint oidTarget, int nTimeAnimation, in AttackSwing swing)
+    {
+        var attackSkillType = swing.AttackSkillType;
+        var mainSkill = swing.MainSkill;
+        var offSkill = swing.OffSkill;
+        var isDualWieldCycle = swing.IsDualWieldCycle;
+        var isTwinPistolCycle = swing.IsTwinPistolCycle;
+        var useDefaultMinimumDelay = swing.UseDefaultMinimumDelay;
+        var effectiveAttackDelay = swing.EffectiveAttackDelay;
+        var unbuffedAttackDelay = swing.UnbuffedAttackDelay;
+        var effectiveDelayWithoutLimitedReduction = swing.EffectiveDelayWithoutLimitedReduction;
+        var limitedDelayReductionRemainingAttacks = swing.LimitedDelayReductionRemainingAttacks;
+        var limitedNoDelayRemainingAttacks = swing.LimitedNoDelayRemainingAttacks;
+        // One swing per delay cycle; the swing resolves one or more attacks
+        // depending on how far the effective delay sits below the swing floor.
+        var nAttacks = 1;
+        // Capture the proc's matching hands before consuming its stat source.
+        var temporaryNoDelayBudget = WeaponAttackTiming.GetTemporaryNoDelayBudget(
+            pCreature.m_idSelf, attackSkillType, mainSkill, offSkill);
+        if (useDefaultMinimumDelay)
+        {
+            GameServices.CombatAttackTiming.ConsumeNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
+        }
+
+        // Haste batches timed cycles within the animation floor. A melee
+        // dual-wield cycle includes both hands; charge limits still count
+        // individual rolls. Natural weapons retain their native selection.
+        var nWeaponAttackType = pCreature.m_pcCombatRound.GetWeaponAttackType();
+        if (nWeaponAttackType == WEAPON_ATTACK_TYPE_MAINHAND ||
+            nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
+        {
+            nAttacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
+                pCreature.m_idSelf,
+                effectiveAttackDelay,
+                unbuffedAttackDelay,
+                useDefaultMinimumDelay,
+                effectiveDelayWithoutLimitedReduction,
+                limitedDelayReductionRemainingAttacks,
+                limitedNoDelayRemainingAttacks,
+                isDualWieldCycle || isTwinPistolCycle ? 2 : 1,
+                WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, false),
+                WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, true),
+                temporaryNoDelayBudget);
+
             if (isDualWieldCycle)
             {
-                var offWeapon = WeaponAttackCycle.GetAttackWeapon(pCreature, WEAPON_ATTACK_TYPE_OFFHAND);
-                if (offWeapon != null)
-                {
-                    offSkill = GameServices.Skill.GetSkillTypeByBaseItem(
-                        (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)offWeapon.m_nBaseItem);
-                    // Either hand's scoped timing effect can drive the shared gate. Actual
-                    // attack notifications still consume charges using each roll's own skill.
-                    attackSkillType = WeaponAttackTiming.GetTimingSkill(pCreature.m_idSelf);
-                }
+                nAttacks = WeaponAttackCycle.PrepareDualWieldAttacks(
+                    pCreature.m_pcCombatRound, nAttacks);
             }
-
-            pCreature.m_vLastAttackPosition = new Vector();
-
-            // Check if target is dead - if so, skip delay and handle immediately
-            var pTargetObject = (CGameObject)NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(oidAttackTarget);
-            var bTargetDead = false;
-            if (pTargetObject != null)
+            else if (!isTwinPistolCycle && nAttacks > 1)
             {
-                if (pTargetObject.AsNWSObject() != null && pTargetObject.AsNWSObject().GetDead() == 1)
+                if (nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
                 {
-                    bTargetDead = true;
+                    pCreature.m_pcCombatRound.m_nOffHandAttacks += nAttacks - 1;
                 }
-                else if (pTargetObject.AsNWSCreature() != null &&
-                         pTargetObject.AsNWSCreature().m_bPlayerCharacter == 1 &&
-                         pTargetObject.AsNWSCreature().GetIsPCDying() == 1)
+                else
                 {
-                    bTargetDead = true;
+                    pCreature.m_pcCombatRound.m_nOnHandAttacks += nAttacks - 1;
                 }
             }
+        }
 
-            var hasLimitedAttackDelayReduction = StatusEffect.TryGetLimitedAttackDelayReduction(
-                pCreature.m_idSelf,
-                attackSkillType,
-                out var limitedAttackDelayReductionPercent,
-                out var limitedAttackDelayReductionRemainingAttacks);
-            var hasLimitedAttackNoDelay = StatusEffect.TryGetLimitedAttackNoDelay(
-                pCreature.m_idSelf,
-                attackSkillType,
-                out var limitedAttackNoDelayRemainingAttacks);
-            var hasArmedNoDelay = GameServices.CombatAttackTiming.HasTemporaryNextAutoAttackNoDelay(
-                pCreature.m_idSelf,
-                attackSkillType);
-            var useDefaultMinimumDelay = hasArmedNoDelay || hasLimitedAttackNoDelay;
-
-            // Limited Haste is skill-scoped. Supply it to this swing's delay calculation
-            // instead of contributing a creature-wide AttackDelayReductionPercent stat.
-            // Target-conditional Haste (Flurry Stance against bleeding targets) is part of this
-            // swing's base delay, so it applies with and without limited Haste.
-            var targetAttackDelayReduction = GameServices.CombatAttackTiming.GetTargetAttackDelayReduction(
-                pCreature.m_idSelf, oidAttackTarget, attackSkillType);
-            var calculatedDelayWithoutLimitedReduction =
-                GameServices.CombatAttackTiming.CalculateAttackDelay(pCreature.m_idSelf, targetAttackDelayReduction);
-            var calculatedDelay = hasLimitedAttackDelayReduction
-                ? GameServices.CombatAttackTiming.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent + targetAttackDelayReduction)
-                : calculatedDelayWithoutLimitedReduction;
-            var effectiveAttackDelay = CombatRules.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
-            var effectiveDelayWithoutLimitedReduction = CombatRules.CalculateEffectiveAttackDelay(
-                calculatedDelayWithoutLimitedReduction,
-                hasArmedNoDelay);
-
-            var limitedDelayReductionRemainingAttacks = hasLimitedAttackDelayReduction
-                ? limitedAttackDelayReductionRemainingAttacks
-                : 0;
-            var limitedNoDelayRemainingAttacks = hasLimitedAttackNoDelay
-                ? limitedAttackNoDelayRemainingAttacks
-                : 0;
-
-            // The delay the attacker would have without a no-delay buff. Lowering the delay to
-            // the floor is meaningless for a build already at the floor, so this is passed to
-            // ConsumeAttacksPerSwing alongside useDefaultMinimumDelay to guarantee the buff is
-            // worth an extra attack either way. Both values are equal for a build already at the
-            // floor, so the buff state has to travel separately from the delays.
-            var unbuffedAttackDelay = CombatRules.CalculateEffectiveAttackDelay(
-                calculatedDelayWithoutLimitedReduction,
-                false);
-
-            // Check attack delay before starting or processing combat
-            // First attack is always instant, subsequent attacks respect delay
-            // Skip delay check if target is dead
-            if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) &&
-                !bTargetDead)
+        if (isTwinPistolCycle)
+        {
+            PairedRangedAttackCycle.Resolve(pCreature, oidTarget, nAttacks,
+                CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay));
+        }
+        else if (isDualWieldCycle && nAttacks >= 2)
+        {
+            WeaponAttackCycle.ResolveDualWield(pCreature, oidTarget, nAttacks,
+                CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay));
+        }
+        else
+        {
+            StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);
+            try
             {
-                // Swings cannot animate faster than the engine's base delay. Effective delays
-                // below it are honored by resolving multiple attacks within a single swing.
-                var swingDelay = CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay);
-                var timeSinceLastAttack = (Clock.UtcNow - _creatureAttackDelays[pCreature.m_idSelf]).TotalMilliseconds;
-
-                if (timeSinceLastAttack < swingDelay)
-                {
-                    // Return to the ready pose after the native damage phase. Client burst
-                    // refresh and consecutive melee playback are handled independently by
-                    // WeaponAttackAnimation, including cycles at the animation floor.
-                    if (pCreature.m_pcCombatRound.m_bRoundPaused == 0 &&
-                        pCreature.m_nAnimation == NWANIMBASE_ANIM_ATTACK &&
-                        !WeaponAttackAnimation.IsPlaying(pCreature))
-                    {
-                        pCreature.SetAnimation(NWANIMBASE_ANIM_READY);
-                    }
-
-                    // Still in delay period, return in progress
-                    return ACTION_IN_PROGRESS;
-                }
+                var firstAttack = pCreature.m_pcCombatRound.m_nCurrentAttack;
+                pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                WeaponAttackAnimation.Capture(pCreature, firstAttack,
+                    CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay));
             }
-
-            if (pCreature.m_pcCombatRound.m_bRoundStarted == 0)
+            finally
             {
-                pCreature.m_pcCombatRound.StartCombatRound(oidAttackTarget);
-                pCreature.m_pcCombatRound.m_nRoundLength = 1000;
+                StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);
             }
-
-            if (pCreature.m_pcCombatRound.m_bRoundPaused == 0)
-            {
-                if (pCreature.m_pcCombatRound.GetActionPending() == 1)
-                {
-                    var pPendingAction = pCreature.m_pcCombatRound.GetAction();
-
-                    if (pPendingAction != null)
-                    {
-                        var nActionType = pPendingAction.m_nActionType;
-                        var oidTarget = pPendingAction.m_oidTarget;
-                        var nTimeAnimation = pPendingAction.m_nAnimationTime;
-
-                        if (!bTargetActive &&
-                            pCreature.m_pcCombatRound.m_oidNewAttackTarget == OBJECT_INVALID)
-                        {
-                            nActionType = CNWSCOMBATROUND_TYPE_INVALID;
-                        }
-
-                        switch (nActionType)
-                        {
-                            case CNWSCOMBATROUND_TYPE_ATTACK:
-                                {
-                                    var nAnimation = pPendingAction.m_nAnimation;
-                                    // One swing per delay cycle; the swing resolves one or more attacks
-                                    // depending on how far the effective delay sits below the swing floor.
-                                    var nAttacks = 1;
-                                    var bOverrideAction = false;
-
-                                    // Our current target is dead or not active, meaning we should not process the action
-                                    // Since attacking a dead body would be kind of silly...
-                                    if (!bTargetActive &&
-                                        pCreature.m_pcCombatRound.m_oidNewAttackTarget == OBJECT_INVALID)
-                                    {
-                                        nActionType = CNWSCOMBATROUND_TYPE_INVALID;
-                                        bOverrideAction = true;
-                                    }
-
-                                    if (!bOverrideAction)
-                                    {
-                                        pCreature.SetAnimation(nAnimation);
-
-                                        if (oidAttackTarget != oidTarget)
-                                        {
-                                            if (pPendingAction.m_bActionRetargettable == 1)
-                                            {
-                                                oidTarget = oidAttackTarget;
-                                            }
-                                            else
-                                            {
-                                                pCreature.m_oidAttemptedAttackTarget = oidTarget;
-                                            }
-                                        }
-
-                                        pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
-
-                                        // Set pause timer for single attack
-                                        pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
-
-                                        // If the attack was switched somewhere in the combat code ie: Cleave
-                                        // we grab the new target and stick with it
-                                        if (pCreature.m_pcCombatRound.m_oidNewAttackTarget != OBJECT_INVALID)
-                                        {
-                                            var oidNewTarget = pCreature.m_pcCombatRound.m_oidNewAttackTarget;
-                                            pCreature.m_bPassiveAttackBehaviour = 1;
-                                            pCreature.ChangeAttackTarget(pNode, oidNewTarget);
-                                            pCreature.m_pcCombatRound.m_oidNewAttackTarget = OBJECT_INVALID;
-                                            oidTarget = oidNewTarget;
-                                            bTargetActive = true;
-                                        }
-
-                                        // This is just in case we've changed targets in mid round... we want to be sure
-                                        // that we're still locked on to the proper target
-                                        if (TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget))
-                                        {
-                                            return ACTION_FAILED;
-                                        }
-
-                                        pCreature.SetLockOrientationToObject(oidTarget);
-
-                                        // Process the attack (delay already checked at function start)
-                                        var isParalyzed = GameServices.CombatAttackTiming.HandleParalyze(pCreature.m_idSelf);
-
-                                        if (isParalyzed)
-                                        {
-                                            Log.Write(LogGroup.Attack, $"Creature {pCreature.m_idSelf:X8} is paralyzed, recomputing round");
-                                            pCreature.m_pcCombatRound.RecomputeRound();
-                                        }
-                                        else
-                                        {
-                                            // Capture the proc's matching hands before consuming its stat source.
-                                            var temporaryNoDelayBudget = WeaponAttackTiming.GetTemporaryNoDelayBudget(
-                                                pCreature.m_idSelf, attackSkillType, mainSkill, offSkill);
-                                            if (useDefaultMinimumDelay)
-                                            {
-                                                GameServices.CombatAttackTiming.ConsumeNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
-                                            }
-
-                                            // Haste batches timed cycles within the animation floor. A melee
-                                            // dual-wield cycle includes both hands; charge limits still count
-                                            // individual rolls. Natural weapons retain their native selection.
-                                            var nWeaponAttackType = pCreature.m_pcCombatRound.GetWeaponAttackType();
-                                            if (nWeaponAttackType == WEAPON_ATTACK_TYPE_MAINHAND ||
-                                                nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
-                                            {
-                                                nAttacks = GameServices.CombatAttackTiming.ConsumeAttacksPerSwing(
-                                                    pCreature.m_idSelf,
-                                                    effectiveAttackDelay,
-                                                    unbuffedAttackDelay,
-                                                    useDefaultMinimumDelay,
-                                                    effectiveDelayWithoutLimitedReduction,
-                                                    limitedDelayReductionRemainingAttacks,
-                                                    limitedNoDelayRemainingAttacks,
-                                                    isDualWieldCycle || isTwinPistolCycle ? 2 : 1,
-                                                    WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, false),
-                                                    WeaponAttackTiming.GetLimitedBudget(pCreature.m_idSelf, attackSkillType, mainSkill, offSkill, true),
-                                                    temporaryNoDelayBudget);
-
-                                                if (isDualWieldCycle)
-                                                {
-                                                    nAttacks = WeaponAttackCycle.PrepareDualWieldAttacks(
-                                                        pCreature.m_pcCombatRound, nAttacks);
-                                                }
-                                                else if (!isTwinPistolCycle && nAttacks > 1)
-                                                {
-                                                    if (nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
-                                                    {
-                                                        pCreature.m_pcCombatRound.m_nOffHandAttacks += nAttacks - 1;
-                                                    }
-                                                    else
-                                                    {
-                                                        pCreature.m_pcCombatRound.m_nOnHandAttacks += nAttacks - 1;
-                                                    }
-                                                }
-                                            }
-
-                                            if (isTwinPistolCycle)
-                                            {
-                                                PairedRangedAttackCycle.Resolve(pCreature, oidTarget, nAttacks,
-                                                    CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay));
-                                            }
-                                            else if (isDualWieldCycle && nAttacks >= 2)
-                                            {
-                                                WeaponAttackCycle.ResolveDualWield(pCreature, oidTarget, nAttacks,
-                                                    CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay));
-                                            }
-                                            else
-                                            {
-                                                StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);
-                                                try
-                                                {
-                                                    var firstAttack = pCreature.m_pcCombatRound.m_nCurrentAttack;
-                                                    pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
-                                                    WeaponAttackAnimation.Capture(pCreature, firstAttack,
-                                                        CombatRules.CalculateAttackSwingDelay(effectiveAttackDelay));
-                                                }
-                                                finally
-                                                {
-                                                    StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);
-                                                }
-                                            }
-                                            bTargetActive = true;
-
-                                            // Set the delay timestamp after the attack resolves
-                                            // This ensures the first attack is instant, subsequent attacks respect delay
-                                            _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
-                                        }
-                                    }
-                                }
-                                break;
-
-                            case CNWSCOMBATROUND_TYPE_PARRY:
-                                {
-                                    var nWeaponAttackType = pCreature.m_pcCombatRound.GetWeaponAttackType();
-                                    if (nWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND)
-                                    {
-                                        var nAttackValueToUse = pCreature.m_pcCombatRound.m_nOffHandAttacksTaken;
-
-                                        pCreature.m_pcCombatRound.m_nOffHandAttacksTaken = nAttackValueToUse + 1;
-                                    }
-
-                                    pCreature.m_pcCombatRound.SetCurrentAttack((byte)(pCreature.m_pcCombatRound.m_nCurrentAttack + 1));
-                                }
-                                break;
-
-                            case CNWSCOMBATROUND_TYPE_COMSTEP:
-                            case CNWSCOMBATROUND_TYPE_COMSTEPFB:
-                                {
-                                    // Combat stepping disabled - just pause the round
-                                    pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
-                                    pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
-                                }
-                                break;
-
-                            case CNWSCOMBATROUND_TYPE_REACTION:
-                                {
-                                    pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
-                                    pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
-                                }
-                                break;
-
-                            case CNWSCOMBATROUND_TYPE_EQUIP:
-                                {
-                                    pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
-                                    pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
-                                    if (pCreature.RunEquip(oidTarget, pPendingAction.m_nInventorySlot) == 1)
-                                    {
-                                        pCreature.m_pcCombatRound.RecomputeRound();
-                                        _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
-                                        GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
-                                    }
-                                }
-                                break;
-
-                            case CNWSCOMBATROUND_TYPE_UNEQUIP:
-                                {
-                                    pCreature.m_pcCombatRound.SetRoundPaused(1, pCreature.m_idSelf);
-                                    pCreature.m_pcCombatRound.SetPauseTimer(nTimeAnimation);
-                                    if (pCreature.RunUnequip(oidTarget, pPendingAction.m_oidTargetRepository, pPendingAction.m_nRepositoryX, pPendingAction.m_nRepositoryY, 0) == 1)
-                                    {
-                                        pCreature.m_pcCombatRound.RecomputeRound();
-                                        _creatureAttackDelays[pCreature.m_idSelf] = Clock.UtcNow;
-                                        GameServices.CombatAttackTiming.ClearAttackSwingDebt(pCreature.m_idSelf);
-                                    }
-                                }
-                                break;
-
-                            default:
-                                {
-                                    // Handle any other action types that might not be explicitly handled
-                                    // This should rarely be hit with the proper action types above
-                                }
-                                break;
-                        }
-
-                        pPendingAction.Dispose();
-                        pPendingAction = null;
-                    }
-                }
-                else if (bTargetActive)
-                {
-                    // Build the next combat action only after the current attack has finished its damage phase.
-                    pCreature.m_pcCombatRound.RecomputeRound();
-                }
-
-                if (bTargetActive == false)
-                {
-                    _rangedRepositionDirections.Remove(pCreature.m_idSelf);
-                    var newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
-                    oidAttackTarget = OBJECT_INVALID;
-
-                    if (newTarget != null)
-                    {
-                        oidAttackTarget = newTarget.m_idSelf;
-                        pCreature.m_bPassiveAttackBehaviour = 1;
-                    }
-
-                    pCreature.ChangeAttackTarget(pNode, oidAttackTarget);
-
-                    return (oidAttackTarget != OBJECT_INVALID
-                        ? ACTION_IN_PROGRESS
-                        : ACTION_FAILED);
-                }
-            }
-
-            return ACTION_IN_PROGRESS;
-        });
+        }
     }
 }

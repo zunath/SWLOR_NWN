@@ -193,7 +193,7 @@ public class ForceLightGuardianTests
         temporaryHPKeyConsumers.Should().NotContain("\"GUARDIAN_WARD\"",
             "shared temporary-HP identifiers must be referenced through named constants");
 
-        var weaponDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
+        var weaponDamage = NativeCombatSource.DamageRoll();
         var weaponProcessDamageStart = weaponDamage.IndexOf(
             "private static int ProcessDamage(",
             StringComparison.Ordinal);

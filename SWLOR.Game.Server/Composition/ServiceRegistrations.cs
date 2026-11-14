@@ -30,6 +30,15 @@ namespace SWLOR.Game.Server.Composition
     {
         internal static void Register(IServiceCollection services)
         {
+            RegisterProcessAndCore(services);
+            RegisterAbilitiesToCharacter(services);
+            RegisterCombat(services);
+            RegisterCompanionsToItems(services);
+            RegisterQuestsToWorld(services);
+        }
+
+        private static void RegisterProcessAndCore(IServiceCollection services)
+        {
             // Lazy<IXService> for a constructor parameter that would otherwise make a cycle (LazyDependencyCycleTests).
             services.AddSingleton(typeof(Lazy<>), typeof(ContainerLazy<>));
 
@@ -64,7 +73,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ISnippetService, SnippetService>();
             services.AddSingleton<ITileMagicService, TileMagicService>();
             services.AddSingleton<IWalkmeshService, WalkmeshService>();
+        }
 
+        private static void RegisterAbilitiesToCharacter(IServiceCollection services)
+        {
             // Abilities
             services.AddSingleton<IAbilityService, AbilityService>();
             services.AddSingleton<IAbilityCooldownVisualService, AbilityCooldownVisualService>();
@@ -102,7 +114,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IStatService, StatService>();
             services.AddSingleton<IStatusEffectService, StatusEffectService>();
             services.AddSingleton<ITintMapStateService, TintMapStateService>();
+        }
 
+        private static void RegisterCombat(IServiceCollection services)
+        {
             // Combat
             services.AddSingleton<IBattleGridService, BattleGridService>();
             services.AddSingleton<ICombatAbilityActivationService, CombatAbilityActivationService>();
@@ -142,7 +157,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ITwinPistolMasteryService, TwinPistolMasteryService>();
             services.AddSingleton<IWeaponAttackEligibilityService, WeaponAttackEligibilityService>();
             services.AddSingleton<IWeaponDelayService, WeaponDelayService>();
+        }
 
+        private static void RegisterCompanionsToItems(IServiceCollection services)
+        {
             // Companions
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
             services.AddSingleton<IDroidService, DroidService>();
@@ -189,7 +207,10 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ILootService, LootService>();
             services.AddSingleton<IOverflowStorageService, OverflowStorageService>();
             services.AddSingleton<IWardrobeService, WardrobeService>();
+        }
 
+        private static void RegisterQuestsToWorld(IServiceCollection services)
+        {
             // Quests
             services.AddSingleton<ICapstoneProofService, CapstoneProofService>();
             services.AddSingleton<IFactionService, FactionService>();

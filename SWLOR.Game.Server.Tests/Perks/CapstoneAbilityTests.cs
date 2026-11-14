@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer;
 using SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade;
@@ -77,7 +78,7 @@ public class CapstoneAbilityTests
         perk.GrantedFeats.Should().Equal(FeatType.SoulAscensionBurst);
         perk.StatBonuses.Should().BeEmpty("purchasing the perk must not grant the old HP-spend kill trigger");
         var ability = new SoulAscensionAbilityDefinition().BuildAbilities()[FeatType.SoulAscensionBurst];
-        ability.AIHitPointCostPercent(0).Should().Be(10);
+        ability.GetAIHitPointCostPercent()(0).Should().Be(10);
         ability.Requirements.Should().BeEmpty("Soul Ascension spends HP instead of STM");
         ability.SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Should().Contain(typeof(SoulAscensionBurstStatusEffect));
     }

@@ -1038,17 +1038,25 @@ public class CombatAttackDelayTests
         limitedHasteTrigger.Should().BeLessThan(positiveDamageGuard,
             "a fully mitigated critical still earns Reload Tempo's next-two-attacks Haste");
 
-        var damageRoll = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
-        var landedDamageHandlingStart = damageRoll.IndexOf(
+        // The landed branch of the damage roll hands every landed hit to its hit effects, whatever its damage.
+        var damageRoll = NativeCombatSource.Read("GetDamageRoll.cs");
+        var landedBranchStart = damageRoll.IndexOf(
             "if (isLandedAttack)",
             StringComparison.Ordinal);
-        var landedDamageHandlingEnd = damageRoll.IndexOf(
+        var landedBranchEnd = damageRoll.IndexOf(
             "ProfilerPlugin.PopPerfScope();",
+            landedBranchStart,
+            StringComparison.Ordinal);
+        damageRoll[landedBranchStart..landedBranchEnd].Should().Contain("DamageRollHitEffects.ApplyLandedHitEffects(");
+        var hitEffects = NativeCombatSource.Read("DamageRollHitEffects.cs");
+        var landedDamageHandlingStart = hitEffects.IndexOf(
+            "internal static void ApplyLandedHitEffects(",
+            StringComparison.Ordinal);
+        var landedDamageHandlingEnd = hitEffects.IndexOf(
+            "private static void PublishDamageDealtEvent(",
             landedDamageHandlingStart,
             StringComparison.Ordinal);
-        var landedDamageHandling = damageRoll[landedDamageHandlingStart..landedDamageHandlingEnd];
+        var landedDamageHandling = hitEffects[landedDamageHandlingStart..landedDamageHandlingEnd];
         landedDamageHandling.Should().Contain("GameServices.CombatHitEffects.ApplyCriticalHitEffects(");
         landedDamageHandling.Should().NotContain("if (isLandedAttack && totalDamage > 0)",
             "a fully mitigated landed native critical must still notify critical-hit effects");

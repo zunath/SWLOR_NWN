@@ -12,7 +12,7 @@
 Abilities <-> Character | 10
 Abilities <-> Combat | 4
 Abilities <-> Companions | 2
-Abilities <-> Creatures | 4
+Abilities <-> Creatures | 3
 Abilities <-> Foundation | 4
 Abilities <-> Gameplay | 11
 Abilities <-> Items | 4
@@ -60,7 +60,7 @@ Companions <-> Items | 4
 Companions <-> Platform | 5
 Companions <-> Quests | 2
 Companions <-> UI | 3
-Crafting <-> Foundation | 2
+Crafting <-> Foundation | 3
 Crafting <-> Gameplay | 6
 Crafting <-> Items | 5
 Crafting <-> Platform | 6
@@ -78,14 +78,14 @@ Economy <-> UI | 3
 Economy <-> World | 2
 Foundation <-> Gameplay | 43
 Foundation <-> Items | 7
-Foundation <-> Platform | 19
+Foundation <-> Platform | 22
 Foundation <-> Quests | 5
 Foundation <-> Social | 3
 Foundation <-> Space | 5
 Foundation <-> UI | 8
 Foundation <-> World | 7
 Gameplay <-> Items | 15
-Gameplay <-> Platform | 145
+Gameplay <-> Platform | 146
 Gameplay <-> Social | 7
 Gameplay <-> UI | 24
 Items <-> Platform | 11

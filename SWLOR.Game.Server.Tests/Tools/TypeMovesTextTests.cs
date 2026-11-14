@@ -38,6 +38,34 @@ public class TypeMovesTextTests
     }
 
     [Test]
+    public void Other_text_follows_moves_from_several_namespaces()
+    {
+        var data = TypeMoveData.Parse("""
+            {
+              "types": [
+                { "type": "Recipe", "from": "SWLOR.Game.Server.Domain.Crafting", "to": "SWLOR.Game.Server.Domain.Foundation" },
+                { "type": "HealAmount", "from": "SWLOR.Game.Server.Feature.AbilityDefinition", "to": "SWLOR.Game.Server.Domain.Combat" },
+                { "type": "Log", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Core" }
+              ]
+            }
+            """, "data.json");
+        var count = 0;
+
+        var text = new TextRewriter(data).RewriteText(
+            "SWLOR.Game.Server.Domain.Crafting.Recipe, Domain.Crafting.Recipe, Crafting.Recipe, Feature.AbilityDefinition.HealAmount, Domain.Foundation.Log, " +
+            "Domain/Crafting/Recipe.cs, Feature\\AbilityDefinition\\HealAmount.cs, Domain/Foundation/Log.cs, Domain/Foundation/Recipe.cs, Domain/Combat/Log.cs, " +
+            "\"Domain\", \"Crafting\", \"Recipe.cs\", \"Domain\", \"Foundation\", \"Recipe.cs\"", ref count);
+
+        text.Should().Be(
+            "SWLOR.Game.Server.Domain.Foundation.Recipe, Domain.Foundation.Recipe, Crafting.Recipe, Domain.Combat.HealAmount, Core.Log, " +
+            "Domain/Foundation/Recipe.cs, Domain\\Combat\\HealAmount.cs, Core/Log.cs, Domain/Foundation/Recipe.cs, Domain/Combat/Log.cs, " +
+            "\"Domain\", \"Foundation\", \"Recipe.cs\", \"Domain\", \"Foundation\", \"Recipe.cs\"",
+            "a name is rewritten below the server's root, and a path or literals only in the type's own source folder");
+        count.Should().Be(8);
+        new TextRewriter(data).RewriteText(text, ref count).Should().Be(text, "a second pass changes nothing");
+    }
+
+    [Test]
     public void In_csharp_only_comments_and_literals_change_and_a_literal_keeps_relative_names()
     {
         const string source = "// Service.Gauge and SWLOR.Game.Server.Service.Gauge\nclass C\n{\n    string A = \"Service.Gauge\";\n"
@@ -70,6 +98,12 @@ public class TypeMovesTextTests
     [TestCase("using SWLOR.Game.Server.Core;\r\nusing SWLOR.Game.Server.Service;\r\nusing System;\r\n\r\nclass C { }\r\n",
         "using SWLOR.Game.Server.Core;\r\nusing SWLOR.Game.Server.Domain.Gadgets;\r\nusing System;\r\n\r\nclass C { }\r\n",
         TestName = "Ordinal sort and CRLF")]
+    [TestCase("using System;\nusing System.Linq;\n\nclass C { }\n",
+        "using System;\nusing System.Linq;\nusing SWLOR.Game.Server.Domain.Gadgets;\n\nclass C { }\n",
+        TestName = "Only System usings: System stays first")]
+    [TestCase("using SWLOR.Game.Server.Entity;\n\nclass C { }\n",
+        "using SWLOR.Game.Server.Domain.Gadgets;\nusing SWLOR.Game.Server.Entity;\n\nclass C { }\n",
+        TestName = "A single using counts as sorted")]
     public void Using_lines_go_where_the_file_sorts_them(string before, string after)
     {
         var root = (CompilationUnitSyntax)CSharpSyntaxTree.ParseText(before).GetRoot();

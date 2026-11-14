@@ -31,7 +31,7 @@ internal static class BindingCheck
         MoveContext context)
     {
         var changes = new List<Change>();
-        foreach (var token in rootBefore.DescendantTokens())
+        foreach (var token in rootBefore.DescendantTokens(descendIntoTrivia: true))
         {
             if (!token.IsKind(SyntaxKind.IdentifierToken) || token.Parent is not SimpleNameSyntax name ||
                 (names != null && !names.Contains(token.ValueText)) || SyntaxQueries.InNamespaceName(name))
@@ -47,7 +47,7 @@ internal static class BindingCheck
                 continue; // bound to nothing before: nothing to keep
 
             var keysBefore = Keys(bindingBefore, context, meant);
-            var tokenAfter = rootAfter.FindToken(position);
+            var tokenAfter = rootAfter.FindToken(position, findInsideTrivia: true);
             if (tokenAfter.SpanStart != position || tokenAfter.ValueText != token.ValueText || tokenAfter.Parent is not SimpleNameSyntax nameAfter)
             {
                 changes.Add(new Change(token.SpanStart, token.ValueText, meant, keysBefore, "(the name moved)", false));
@@ -73,7 +73,7 @@ internal static class BindingCheck
         {
             if (global)
                 return "global::" + move.To + ".";
-            return SyntaxQueries.IsWithin(fileNamespace, TypeMove.Parent(move.From)) ? move.RelativeTarget + "." : move.To + ".";
+            return SyntaxQueries.IsWithin(fileNamespace, move.CommonParent) ? move.RelativeTarget + "." : move.To + ".";
         }
 
         var owner = meant switch

@@ -65,6 +65,84 @@ public class TypeMovesDataTests
             .Should().BeEmpty("no manifest line keeps a moved type's old name");
     }
 
+    [Test]
+    public void The_domain_order_moves_are_in_the_shape_the_tool_leaves()
+    {
+        using var map = JsonDocument.Parse(File.ReadAllText(Path.Combine(Root, "SWLOR.Architecture.Tests", "DomainMap.json")));
+        var targets = map.RootElement.GetProperty("domains").EnumerateObject().Select(domain => "SWLOR.Game.Server.Domain." + domain.Name)
+            .Append("SWLOR.Game.Server.Core")
+            .ToHashSet(StringComparer.Ordinal);
+        var data = TypeMoveData.Load(Path.Combine(Root, "tools", "Refactor", "DomainOrderTypeMoves.json"));
+
+        data.From.Should().BeNull("each entry names the namespace its type leaves");
+        data.RemoveUnusedSourceUsings.Should().BeFalse("a file keeps its using of the old namespace (the smallest edit)");
+        data.ByName["RecipeType"].Should().Be(new TypeMove("RecipeType", "SWLOR.Game.Server.Domain.Crafting", "SWLOR.Game.Server.Domain.Foundation", "RecipeType.cs"),
+            "the pilot of P5-1c (MaintainabilityRefactorDomainOrder.md, Appendix B)");
+        data.Moves.Should().OnlyContain(move => targets.Contains(move.To), "each type joins the root namespace of a domain, or Core (Platform)");
+        foreach (var move in data.Moves)
+        {
+            File.Exists(Path.Combine(Root, move.TargetPath)).Should().BeTrue($"{move.Name} lives at {move.TargetPath}");
+            File.Exists(Path.Combine(Root, move.SourcePath)).Should().BeFalse($"{move.SourcePath} moved");
+        }
+
+        File.ReadAllLines(Path.Combine(Root, "tools", "Refactor", "MechanicalScripts.txt")).Where(line => line.StartsWith("tools/", StringComparison.Ordinal))
+            .Should().EndWith(new[] { "tools/Refactor/Move-ServiceTypes.ps1", "tools/Refactor/Move-DomainOrderTypes.ps1" },
+                "the domain order's moves run after the namespace moves and the P2-Z3 type moves turned master's names into the branch's");
+    }
+
+    [Test]
+    public void A_data_file_names_a_source_per_entry_and_moves_across_roots()
+    {
+        var data = TypeMoveData.Parse("""
+            {
+              "from": "SWLOR.Game.Server.Service",
+              "removeUnusedSourceUsings": false,
+              "types": [
+                { "type": "Gauge", "to": "SWLOR.Game.Server.Domain.Gadgets" },
+                { "type": "Recipe", "from": "SWLOR.Game.Server.Domain.Crafting", "to": "SWLOR.Game.Server.Domain.Foundation" },
+                { "type": "HealAmount", "from": "SWLOR.Game.Server.Feature.AbilityDefinition", "to": "SWLOR.Game.Server.Domain.Combat" },
+                { "type": "Log", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Core" },
+                { "type": "Lure", "from": "SWLOR.Game.Server.Domain.World.Fishing", "to": "SWLOR.Game.Server.Domain.World" }
+              ]
+            }
+            """, "data.json");
+
+        data.RemoveUnusedSourceUsings.Should().BeFalse();
+        data.Sources.Should().BeEquivalentTo(new[] { "SWLOR.Game.Server.Service", "SWLOR.Game.Server.Domain.Crafting", "SWLOR.Game.Server.Feature.AbilityDefinition",
+            "SWLOR.Game.Server.Domain.Foundation", "SWLOR.Game.Server.Domain.World.Fishing" });
+        data.Moves.Select(move => (move.Name, move.CommonParent, move.RelativeSource, move.RelativeTarget)).Should().Equal(
+            ("Gauge", "SWLOR.Game.Server", "Service", "Domain.Gadgets"),
+            ("Recipe", "SWLOR.Game.Server.Domain", "Crafting", "Foundation"),
+            ("HealAmount", "SWLOR.Game.Server", "Feature.AbilityDefinition", "Domain.Combat"),
+            ("Log", "SWLOR.Game.Server", "Domain.Foundation", "Core"),
+            ("Lure", "SWLOR.Game.Server.Domain", "World.Fishing", "World"));
+        data.ByName["HealAmount"].SourcePath.Should().Be("SWLOR.Game.Server/Feature/AbilityDefinition/HealAmount.cs");
+        data.ByName["HealAmount"].TargetPath.Should().Be("SWLOR.Game.Server/Domain/Combat/HealAmount.cs");
+        data.ByName["Log"].TargetPath.Should().Be("SWLOR.Game.Server/Core/Log.cs");
+        data.ByOldFullName["SWLOR.Game.Server.Domain.Crafting.Recipe"].NewFullName.Should().Be("SWLOR.Game.Server.Domain.Foundation.Recipe");
+        data.Files.Select(file => file.Key).Should().Contain("SWLOR.Game.Server/Domain/Crafting/Recipe.cs");
+    }
+
+    [TestCase("{ \"types\": [ { \"type\": \"A\", \"to\": \"SWLOR.Game.Server.Domain.X\" } ] }", "\"from\" is missing or empty",
+        TestName = "An entry without a from and no default is refused")]
+    [TestCase("{ \"types\": [ { \"type\": \"A\", \"from\": \"Elsewhere.Crafting\", \"to\": \"SWLOR.Game.Server.Domain.X\" } ] }", "\"from\" must be a namespace below SWLOR.Game.Server",
+        TestName = "An entry's from outside the server is refused")]
+    [TestCase("{ \"types\": [ { \"type\": \"A\", \"from\": \"SWLOR.Game.Server.Domain.Crafting\", \"to\": \"SWLOR.Game.Server\" } ] }", "A must move to a namespace below SWLOR.Game.Server outside SWLOR.Game.Server.Domain.Crafting",
+        TestName = "The server's root namespace is no target")]
+    [TestCase("{ \"types\": [ { \"type\": \"A\", \"from\": \"SWLOR.Game.Server.Domain.Crafting\", \"to\": \"SWLOR.Game.Server.Domain.Crafting.Inner\" } ] }", "A must move to a namespace below SWLOR.Game.Server outside SWLOR.Game.Server.Domain.Crafting",
+        TestName = "A target inside the source is refused")]
+    [TestCase("{ \"removeUnusedSourceUsings\": \"no\", \"types\": [ { \"type\": \"A\", \"from\": \"SWLOR.Game.Server.Domain.Crafting\", \"to\": \"SWLOR.Game.Server.Core\" } ] }", "\"removeUnusedSourceUsings\" must be true or false",
+        TestName = "The using rule is true or false")]
+    [TestCase("{ \"types\": [ { \"type\": \"A\", \"from\": \"SWLOR.Game.Server.Domain.Crafting\", \"to\": \"SWLOR.Game.Server.Core\" }, "
+              + "{ \"type\": \"B\", \"from\": \"SWLOR.Game.Server.Domain.World\", \"to\": \"SWLOR.Game.Server.Core\", \"file\": \"A.cs\" } ] }", "two files would move to SWLOR.Game.Server/Core/A.cs",
+        TestName = "Two files that would land on one path are refused")]
+    public void A_malformed_entry_with_its_own_source_is_refused(string json, string expected)
+    {
+        var parse = () => TypeMoveData.Parse(json, "data.json");
+
+        parse.Should().Throw<TypeMoveException>().Which.Message.Should().Contain(expected);
+    }
+
     [TestCase("{ \"types\": [] }", "\"from\" is missing or empty")]
     [TestCase("{ \"from\": \"SWLOR.Game.Server.Service\", \"types\": [ { \"type\": \"A\" } ] }", "\"to\" is missing or empty")]
     [TestCase("{ \"from\": \"Elsewhere.Service\", \"types\": [] }", "\"from\" must be a namespace below SWLOR.Game.Server")]

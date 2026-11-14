@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.Engine;
@@ -107,10 +106,23 @@ namespace SWLOR.Game.Server.Domain.Abilities
         public List<AbilityTargetingDetail> AdditionalActivationTargeting { get; set; }
         public List<Type> StatusEffectTypesRemovedOnPerkRefund { get; set; }
         public List<Type> SourceOwnedStatusEffectTypesRemovedOnPerkRefund { get; set; }
-        public AITargetSelector AITargetSelector { get; set; }
-        public AIScoreCalculation AIScore { get; set; }
-        /// <summary>Maximum-HP percentage spent on activation, used to preserve an AI health reserve.</summary>
-        public Func<uint, int> AIHitPointCostPercent { get; set; }
+        /// <summary>
+        /// Settings that a higher domain attaches to the ability, one object per settings type (the AI settings of
+        /// Creatures, say). The ability does not know the types, so it names none of those domains.
+        /// </summary>
+        private readonly Dictionary<Type, object> _extensions = new();
+
+        public T GetExtension<T>() where T : class, new()
+        {
+            if (!_extensions.TryGetValue(typeof(T), out var extension))
+            {
+                extension = new T();
+                _extensions[typeof(T)] = extension;
+            }
+
+            return (T)extension;
+        }
+
         public bool IsMimicryTechnique { get; set; }
         public FeatType MimicrySourceFeat { get; set; }
         public int MimicrySkillRequirement { get; set; }

@@ -1,6 +1,7 @@
 using System.Reflection;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 

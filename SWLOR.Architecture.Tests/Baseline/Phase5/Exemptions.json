@@ -26,7 +26,7 @@
       "reason": "Each member carries its row of data in attributes."
     },
     {
-      "match": "type", "value": "SWLOR.Game.Server.Domain.Crafting.RecipeType",
+      "match": "type", "value": "SWLOR.Game.Server.Domain.Foundation.RecipeType",
       "measures": ["typeSize"],
       "category": "attribute-row enum",
       "reason": "Each member carries its row of data in attributes."
@@ -132,6 +132,18 @@
       "measures": ["typeSize", "methodSize"],
       "category": "data catalog member",
       "reason": "Lists the ability animations and nothing else."
+    },
+    {
+      "match": "member", "value": "SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces",
+      "measures": ["typeSize", "methodSize"],
+      "category": "data catalog member",
+      "reason": "Fills the default appearance table per race and gender and nothing else; cutting it into numbered pieces only to meet the line limit would make it harder to read (P5-16c)."
+    },
+    {
+      "match": "member", "value": "SWLOR.Game.Server.Feature.ChatCommandDefinition.EmoteChatCommand.BuildChatCommands",
+      "measures": ["typeSize", "methodSize"],
+      "category": "data catalog member",
+      "reason": "Lists the emote chat commands (name, description, animation) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16c)."
     },
     {
       "match": "type", "value": "SWLOR.Game.Server.Domain.Abilities.AbilityBuilder",

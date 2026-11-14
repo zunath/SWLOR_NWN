@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static int ClaimVoterReward(string cdKey, string playerId, DateTime nowUtc)
         {
-            var ledger = VoterRewardRules.Claim(DB.Get<VoterRewardLedger>(cdKey), cdKey, nowUtc);
+            var ledger = VoterRewardRules.Claim(DB.Get<VoterRewardLedger>(VoterRewardLedger.KeyFor(cdKey)), cdKey, nowUtc);
             if (ledger == null)
                 return 0;
 

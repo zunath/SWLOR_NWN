@@ -218,7 +218,7 @@ public class CivicExchangeTests
         CivicExchangeRules.GetAllowanceKey(" ", "player-b").Should().Be("player:player-b");
         CivicExchangeRules.GetAllowanceKey("  cd-key ", "p").Should().Be("cd-key", "stray spaces do not make a second key");
 
-        new CivicExchangeAllowance("cd-key").Id.Should().Be("cd-key");
+        new CivicExchangeAllowance("cd-key").Id.Should().Be("civic-exchange:cd-key", "the bare CD key is also the account's id in the DB cache");
         typeof(CivicExchangeAllowance).GetProperties().Select(x => x.Name).Should().NotContain(new[] { "CityId", "PlayerId" });
     }
 

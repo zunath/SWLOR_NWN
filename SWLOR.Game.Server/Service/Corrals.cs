@@ -758,12 +758,25 @@ namespace SWLOR.Game.Server.Service
             var notices = Search(new DBQuery<LivestockNotice>().AddFieldSearch(nameof(LivestockNotice.PlayerId), GetObjectUUID(player), false))
                 .OrderBy(notice => notice.DateCreated)
                 .ToList();
-            foreach (var notice in notices)
+            if (notices.Count == 0)
+                return;
+
+            // The client shows no chat for a moment after entering. Each notice is deleted only once it was sent, so a
+            // character who drops while loading reads it at the next login.
+            DelayCommand(NoticeDelaySeconds, () =>
             {
-                SendMessageToPC(player, ColorToken.Green(notice.Text));
-                DB.Delete<LivestockNotice>(notice.Id);
-            }
+                if (!GetIsObjectValid(player))
+                    return;
+
+                foreach (var notice in notices)
+                {
+                    SendMessageToPC(player, ColorToken.Green(notice.Text));
+                    DB.Delete<LivestockNotice>(notice.Id);
+                }
+            });
         }
+
+        private const float NoticeDelaySeconds = 6f;
 
         // The creatures
 

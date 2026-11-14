@@ -10,11 +10,17 @@ namespace SWLOR.Game.Server.Entity
         {
         }
 
-        /// <param name="cdKey">The CD key, which is also the record id.</param>
+        /// <param name="cdKey">The CD key the record is for.</param>
         public VoterRewardLedger(string cdKey)
         {
-            Id = cdKey;
+            Id = KeyFor(cdKey);
         }
+
+        /// <summary>
+        /// The DB cache holds one entity per id for the frame, whatever its type, so the id is prefixed: the bare CD key
+        /// is also the id of the account.
+        /// </summary>
+        public static string KeyFor(string cdKey) => "voter-reward:" + cdKey;
 
         public DateTime LastRewardUtc { get; set; }
     }

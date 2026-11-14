@@ -293,6 +293,19 @@ public class PlanetaryHoldingTests
     }
 
     [Test]
+    public void Collection_IsHeldWhileACustomsFineOrRaidIsPending()
+    {
+        var holding = New(HoldingType.ScrapYard);
+        HoldingRules.GetCollectionHold(holding).Should().Be(HoldingRefusal.None);
+        holding.CustomsFine = 100;
+        HoldingRules.GetCollectionHold(holding).Should().Be(HoldingRefusal.CustomsHold, "the banned stock cannot be hauled away before the deadline");
+        holding.CustomsFine = 0;
+        holding.RaidPending = true;
+        HoldingRules.GetCollectionHold(holding).Should().Be(HoldingRefusal.RaidHold, "the raid is fought or lost, not dodged");
+        HoldingRules.GetRefusalMessage(HoldingRefusal.RaidHold).Should().Contain("Drive them off");
+    }
+
+    [Test]
     public void Collection_GoesIntoTheCargoBayAsCommodityUnits()
     {
         var holding = New(HoldingType.ScrapYard);

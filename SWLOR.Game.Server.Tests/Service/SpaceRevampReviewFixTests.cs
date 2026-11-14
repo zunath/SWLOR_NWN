@@ -1,0 +1,161 @@
+#nullable enable
+using FluentAssertions;
+using NUnit.Framework;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.SpaceService;
+using static SWLOR.Game.Server.Tests.Feature.SpaceItemFixtures;
+
+namespace SWLOR.Game.Server.Tests.Service;
+
+/// <summary>
+/// Fixes from the 2026-11-14 full review of the space and city revamp: targets in another system, extraction holds,
+/// agent leads, downed mission holders, DM signatures, the sensor sweep, docking saves, ship management on stale
+/// windows, login notices and the DB cache's shared ids.
+/// </summary>
+public class SpaceRevampReviewFixTests
+{
+    private static string ReadSource(params string[] relativePath) =>
+        File.ReadAllText(relativePath.Aggregate(Path.Combine(RepositoryRoot(), "SWLOR.Game.Server"), Path.Combine)).Replace("\r\n", "\n");
+
+    private static string Between(string source, string start, string end)
+    {
+        var from = source.IndexOf(start, StringComparison.Ordinal);
+        from.Should().BeGreaterThanOrEqualTo(0, $"'{start}' is in the source");
+        return source[from..source.IndexOf(end, from + start.Length, StringComparison.Ordinal)];
+    }
+
+    [Test]
+    public void AModule_TreatsATargetInAnotherSystemAsNoTarget()
+    {
+        var activate = Between(ReadSource("Service", "Space.cs"), "private static void ActivateShipModuleCore(", "// Check to ensure activator is within maximum distance.");
+        var pick = activate.IndexOf("var (target, targetShipStatus) = GetCurrentTarget(isDroid ? activator : user);", StringComparison.Ordinal);
+        var guard = activate.IndexOf("if (GetIsObjectValid(target) && GetArea(target) != GetArea(activator))", StringComparison.Ordinal);
+        pick.Should().BeGreaterThanOrEqualTo(0);
+        guard.Should().BeGreaterThan(pick, "distance across areas reads 0, so a ship that jumped away must not stay a target");
+    }
+
+    [Test]
+    public void AShipDeath_RemovesTheShipWideFeatsAndSensorState()
+    {
+        var death = ReadSource("Service", "SpaceDeath.cs");
+        death.Should().Contain("CreaturePlugin.RemoveFeat(creature, FeatType.ShipAllWeapons);")
+            .And.Contain("CreaturePlugin.RemoveFeat(creature, FeatType.ShipJumpToSignature);")
+            .And.Contain("ClearScanningState(creature);");
+    }
+
+    [Test]
+    public void AnExtractionCycle_EndsOnTheShip_SoACrewLogoutCannotLeaveTheTargetHeld()
+    {
+        foreach (var file in new[] { "ShipModuleActions.cs", "ShipSalvageActions.cs" })
+        {
+            var source = ReadSource("Feature", "ShipModuleDefinition", file);
+            source.Should().NotMatchRegex(@"\n            DelayCommand\((cycleSeconds \+ 0\.1f|seconds), \(\) =>\n            \{\n                ReleaseExtraction",
+                $"{file}: a bare delay dies with the crew member who started it");
+            source.Should().Contain("AssignCommand(activator, () => DelayCommand(");
+        }
+    }
+
+    [Test]
+    public void AnAgentLead_OpensOnlyWithItsHolderInTheParty()
+    {
+        ReadSource("Service", "FactionAgentEvents.cs").Should().Contain("public static string GetLeadOpenRefusal(ScanSignature signature, uint opener)");
+
+        var cache = Between(ReadSource("Service", "SpaceScanSites.cs"), "public static void OpenSiteCache(", "FactionAgents.OnSiteCompleted(signature, user, cache);");
+        cache.IndexOf("FactionAgents.GetLeadOpenRefusal(signature, user);", StringComparison.Ordinal)
+            .Should().BeLessThan(cache.LastIndexOf("signature.Completed = true;", StringComparison.Ordinal),
+                "the cache pays only when the mission is credited, or one mission could be looted over and over");
+
+        ReadSource("Service", "SpaceSlicing.cs").Should().Contain("return FactionAgents.GetLeadOpenRefusal(signature, slicer);");
+    }
+
+    [Test]
+    public void AMissionCreditedWhileItsHolderIsDown_FinishesOnceTheyStand()
+    {
+        var agents = ReadSource("Service", "FactionAgents.cs");
+        var credit = Between(agents, "private static void Credit(uint player, string missionId, uint source)", "// Agent intel");
+        credit.Should().Contain("if (GetIsDead(player) || GetCurrentHitPoints(player) <= 0)\n                RetryMissionAdvance(player, missionId);");
+        credit.Should().Contain("AssignCommand(GetModule(), () => DelayCommand(MissionAdvanceRetrySeconds,",
+            "the credit's source (a cache or a target can) is destroyed, which would end a delay scheduled on it");
+        credit.Should().Contain("Quest.GetQuestByIdOrDefault(missionId)?.Advance(player, OBJECT_INVALID);");
+
+        Between(agents, "public static void RegisterHeldMissions()", "// The board").Should().Contain("RetryMissionAdvance(player, mission.Id);");
+    }
+
+    [Test]
+    public void ADmSignature_IsAnExtra_AndIsNeverRespawned()
+    {
+        ReadSource("Service", "SpaceDmTools.cs").Should().Contain("signature.DmPlaced = true;");
+        var scanning = ReadSource("Service", "SpaceScanning.cs");
+        scanning.Should().Contain("if (!signature.IsAgentLead && !signature.DmPlaced)");
+        scanning.Should().Contain("signatures.Count(x => x.Type != SignatureType.Rift && !x.IsAgentLead && !x.DmPlaced)");
+        new ScanSignature().DmPlaced.Should().BeFalse();
+    }
+
+    [Test]
+    public void TheSensorSweepCooldown_SurvivesLeavingTheControls_AndEndsAtLogout()
+    {
+        var jump = ReadSource("Service", "SpaceSignatureJump.cs");
+        Between(jump, "private static void ClearScanningState(uint player)", "private static void ForgetSensorSweep(")
+            .Should().NotContain("_lastSensorSweep.Remove(player);", "retaking the controls must not reset a sweep that reveals cloaked ships");
+        jump.Should().Contain("private static void ForgetSensorSweep(uint player) => _lastSensorSweep.Remove(player);");
+        Between(ReadSource("Service", "Space.cs"), "public static void ExitServer()", "MarkRiftRunPilotAway(player);")
+            .Should().Contain("ForgetSensorSweep(player);");
+    }
+
+    [Test]
+    public void Docking_BuildsOnTheCrewsSave_AndADetachNeverPicksASecondPilot()
+    {
+        var docking = ReadSource("Service", "SpaceDocking.cs");
+        docking.IndexOf("LeaveCrewStation(watcher, returnToConsole: false);", StringComparison.Ordinal)
+            .Should().BeLessThan(docking.IndexOf("visitor = DB.Get<PlayerShip>(visitor.Id) ?? visitor;", StringComparison.Ordinal));
+        docking.IndexOf("visitor = DB.Get<PlayerShip>(visitor.Id) ?? visitor;", StringComparison.Ordinal)
+            .Should().BeLessThan(docking.IndexOf("visitor.DockedToShipId = host.Id;", StringComparison.Ordinal),
+                "releasing the crew saves their station hotbars to the ship first");
+
+        docking.Should().Contain("var launchPending = IsShipLaunchPending(visitor.Id);")
+            .And.Contain("ShipDockingRules.ChooseDetachPilot(entries[index], playerId =>\n                    !launchPending &&");
+    }
+
+    [Test]
+    public void ShipManagement_ActsOnTheShipAsSavedNow()
+    {
+        var window = ReadSource("Feature", "GuiDefinition", "ViewModel", "ShipManagementViewModel.cs");
+        window.Should().Contain("private PlayerShip GetSelectedShip()");
+        window.Should().Contain("FloatingTextStringOnCreature(\"That ship is no longer registered.\", Player, false);");
+        window.Should().Contain("DB.Get<WorldProperty>(ship.PropertyId)?.CustomName ?? \"(Unregistered)\"");
+
+        var rename = Between(window, "public Action OnClickSaveShipName()", "private bool ValidateModuleEquip(");
+        rename.IndexOf("permission.Permissions.GetValueOrDefault(PropertyPermissionType.RenameProperty)", StringComparison.Ordinal)
+            .Should().BeLessThan(rename.IndexOf("dbProperty.CustomName = ShipName;", StringComparison.Ordinal),
+                "a window opened before a transfer must not rename the new owner's ship");
+        rename.Should().Contain("ShipTransfer.IsListedForSale(dbShip.Id)");
+
+        foreach (var handler in new[] { "public Action OnClickPermissions()", "public Action OnClickRepair()", "private void ProcessConfiguration(int slot)" })
+            Between(window, handler, "\n        }").Should().Contain("var dbShip = GetSelectedShip();");
+    }
+
+    [Test]
+    public void LivestockNotices_AreSentOnceTheClientShowsChat_AndDeletedOnlyWhenSent()
+    {
+        var notices = Between(ReadSource("Service", "Corrals.cs"), "public static void DeliverNotices()", "private const float NoticeDelaySeconds");
+        var delay = notices.IndexOf("DelayCommand(NoticeDelaySeconds, () =>", StringComparison.Ordinal);
+        delay.Should().BeGreaterThanOrEqualTo(0);
+        notices.IndexOf("DB.Delete<LivestockNotice>(notice.Id);", StringComparison.Ordinal).Should().BeGreaterThan(delay);
+    }
+
+    [Test]
+    public void RecordsKeyedByACdKeyOrShipId_HaveTheirOwnIds()
+    {
+        // The DB cache holds one entity per id for the frame, whatever the type: a bare CD key is the account's id and a
+        // bare ship id the ship's, so a second type under it throws an InvalidCastException on the next Get.
+        new VoterRewardLedger("cd").Id.Should().NotBe("cd");
+        new CivicExchangeAllowance("cd").Id.Should().NotBe("cd");
+        ShipRegistrationReceipt.KeyFor("ship").Should().NotBe("ship");
+
+        ReadSource("Service", "CivicExchange.cs").Should().NotContain("DB.Get<CivicExchangeAllowance>(GetAllowanceKey(player))")
+            .And.NotContain("DB.Get<CivicExchangeAllowance>(allowanceKey)")
+            .And.NotContain("DB.Get<CivicExchangeAllowance>(parts[1])");
+        ReadSource("Service", "ElectionBallot.cs").Should().Contain("DB.Get<VoterRewardLedger>(VoterRewardLedger.KeyFor(cdKey))");
+        ReadSource("Service", "SpaceShipItemMoves.cs").Should().Contain("new ShipRegistrationReceipt { Id = ShipRegistrationReceipt.KeyFor(shipId),");
+    }
+}

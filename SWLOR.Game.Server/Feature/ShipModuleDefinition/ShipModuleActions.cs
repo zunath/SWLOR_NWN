@@ -622,7 +622,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
             // At the end of the process, deliver the ore to the ship and reduce remaining units. The asteroid stays held
             // until then (plan section 16, bug 1: the hold was cleared as soon as the cycle was scheduled).
-            DelayCommand(cycleSeconds + 0.1f, () =>
+            // Scheduled on the ship, not the crew member who switched the module on: a delay dies with its object, and a
+            // crew member who logs out mid-cycle would otherwise leave the target held by this ship for good.
+            AssignCommand(activator, () => DelayCommand(cycleSeconds + 0.1f, () =>
             {
                 ReleaseExtraction(target, activator);
 
@@ -682,7 +684,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 ShipHold.DeliverYield(activator, ore);
                 GiveMiningExperience(creditedPlayer, target);
-            });
+            }));
         }
 
         /// <summary>Strips a whole asteroid over <paramref name="seconds"/> while the ship is rooted.</summary>
@@ -706,7 +708,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ApplyEffectToObject(DurationType.Temporary, beam, target, seconds);
             });
 
-            DelayCommand(seconds, () =>
+            // Scheduled on the ship, not the crew member who switched the module on: a delay dies with its object, and a
+            // crew member who logs out mid-cycle would otherwise leave the target held by this ship for good.
+            AssignCommand(activator, () => DelayCommand(seconds, () =>
             {
                 ReleaseExtraction(target, activator);
 
@@ -743,7 +747,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 ShipHold.DeliverYield(activator, ore);
                 GiveMiningExperience(creditedPlayer, target);
-            });
+            }));
         }
 
         /// <summary>

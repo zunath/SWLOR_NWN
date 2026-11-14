@@ -120,7 +120,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             foreach (var mission in dbPlayer.AgentMissions.Where(x => !unpaid.Contains(x.Id)))
+            {
                 Quest.RegisterRuntimeQuest(AgentMissionQuest.Build(mission));
+                // A mission whose objective was counted while its holder was down finishes now.
+                RetryMissionAdvance(player, mission.Id);
+            }
         }
 
         // The board
@@ -383,6 +387,38 @@ namespace SWLOR.Game.Server.Service
         private static void Credit(uint player, string missionId, uint source)
         {
             Quest.RecordCombatObjective(player, FactionAgentRules.ObjectiveKey(missionId), source);
+            if (GetIsDead(player) || GetCurrentHitPoints(player) <= 0)
+                RetryMissionAdvance(player, missionId);
+        }
+
+        private const float MissionAdvanceRetrySeconds = 6f;
+
+        /// <summary>
+        /// Quest.Advance refuses a dead or downed player, and the objective is already counted, so no later credit would
+        /// finish the mission. It finishes once the holder stands again (checked on the module, since the credit's source,
+        /// a cache or a target can, is destroyed), or at their next login. Advance does nothing while objectives remain.
+        /// </summary>
+        private static void RetryMissionAdvance(uint player, string missionId)
+        {
+            AssignCommand(GetModule(), () => DelayCommand(MissionAdvanceRetrySeconds, () =>
+            {
+                if (!GetIsObjectValid(player))
+                    return;
+
+                if (GetIsDead(player) || GetCurrentHitPoints(player) <= 0)
+                {
+                    RetryMissionAdvance(player, missionId);
+                    return;
+                }
+
+                // Only a mission still held and open: an abandoned or finished one is left alone.
+                var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+                if (dbPlayer == null || !dbPlayer.Quests.TryGetValue(missionId, out var progress) ||
+                    progress.CurrentState <= 0 || progress.DateLastCompleted != null)
+                    return;
+
+                Quest.GetQuestByIdOrDefault(missionId)?.Advance(player, OBJECT_INVALID);
+            }));
         }
 
         // Agent intel

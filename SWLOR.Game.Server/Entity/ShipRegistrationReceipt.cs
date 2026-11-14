@@ -15,5 +15,11 @@ namespace SWLOR.Game.Server.Entity
 
         [Indexed]
         public string OwnerPlayerId { get; set; }
+
+        /// <summary>
+        /// The DB cache holds one entity per id for the frame, whatever its type, so the id is prefixed: the bare ship id
+        /// is also the id of the ship.
+        /// </summary>
+        public static string KeyFor(string shipId) => "ship-registration:" + shipId;
     }
 }

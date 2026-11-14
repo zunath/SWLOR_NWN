@@ -146,6 +146,11 @@ namespace SWLOR.Game.Server.Service
                 CreaturePlugin.RemoveFeat(creature, feat);
             }
 
+            // The ship-wide feats and the sensor state go too, as when a pilot leaves space normally (ExitSpaceMode).
+            CreaturePlugin.RemoveFeat(creature, FeatType.ShipAllWeapons);
+            CreaturePlugin.RemoveFeat(creature, FeatType.ShipJumpToSignature);
+            ClearScanningState(creature);
+
             // Load the player hot bar.
             if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
                 !CreaturePlugin.DeserializeQuickbar(creature, dbPlayer.SerializedHotBar))

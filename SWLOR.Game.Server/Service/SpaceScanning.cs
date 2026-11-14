@@ -102,12 +102,13 @@ namespace SWLOR.Game.Server.Service
                 EndSite(signature);
                 signatures.Remove(signature);
                 // A faction agent's lead is placed again when its pilot next enters the system, if the mission is still open.
-                if (!signature.IsAgentLead)
+                // A DM's extra site is not one of the area's own, so it leaves no gap to fill.
+                if (!signature.IsAgentLead && !signature.DmPlaced)
                     respawns.Add(now.AddSeconds(ScanningTuning.RespawnSeconds));
             }
 
             // A fresh area (after a restart) fills at once; later gaps wait for their respawn time.
-            while (signatures.Count(x => x.Type != SignatureType.Rift && !x.IsAgentLead) + respawns.Count < detail.Signatures)
+            while (signatures.Count(x => x.Type != SignatureType.Rift && !x.IsAgentLead && !x.DmPlaced) + respawns.Count < detail.Signatures)
                 respawns.Add(now);
 
             var due = respawns.Where(x => now >= x).ToList();

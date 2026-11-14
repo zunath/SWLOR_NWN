@@ -309,6 +309,8 @@ namespace SWLOR.Game.Server.Service
             foreach (var watcher in watchers)
                 LeaveCrewStation(watcher, returnToConsole: false);
 
+            // Releasing the crew saves their station hotbars and the crewed stats to the ship: build on that save.
+            visitor = DB.Get<PlayerShip>(visitor.Id) ?? visitor;
             visitor.DockedToShipId = host.Id;
             visitor.DockedCrewPlayerIds = passengers.Prepend(player).Select(GetObjectUUID).Distinct().ToList();
             DB.Set(visitor);
@@ -701,7 +703,10 @@ namespace SWLOR.Game.Server.Service
                 PlaceShipInSpace(visitor, visitorProperty, location);
 
                 var entrance = GetShipEntrance(visitor, visitorInstance);
+                // A pilot already on their way to its controls (an undock in flight) flies it: no second pilot is chosen.
+                var launchPending = IsShipLaunchPending(visitor.Id);
                 var pilotId = ShipDockingRules.ChooseDetachPilot(entries[index], playerId =>
+                    !launchPending &&
                     aboardById.TryGetValue(playerId, out var candidate) &&
                     returning.Contains(candidate) &&
                     !GetIsDead(candidate) &&

@@ -503,6 +503,15 @@ namespace SWLOR.Game.Server.Service.HoldingService
         /// The warehouse goods that fit in a cargo bay with this much free volume, the most valuable per unit of volume
         /// first.
         /// </summary>
+        /// <summary>
+        /// Why the warehouse cannot be emptied now, or None. An open customs fine or a pending raid holds it, so the stock
+        /// at risk cannot simply be hauled away before the deadline.
+        /// </summary>
+        public static HoldingRefusal GetCollectionHold(PlanetaryHolding holding) =>
+            holding.CustomsFine > 0 ? HoldingRefusal.CustomsHold
+            : holding.RaidPending ? HoldingRefusal.RaidHold
+            : HoldingRefusal.None;
+
         public static Dictionary<CommodityType, int> PlanCollection(IReadOnlyDictionary<CommodityType, int> warehouse, int freeVolume)
         {
             var plan = new Dictionary<CommodityType, int>();
@@ -580,6 +589,8 @@ namespace SWLOR.Game.Server.Service.HoldingService
                 HoldingRefusal.NoDroid => "No droid works this holding.",
                 HoldingRefusal.NoFine => "There is no fine to pay.",
                 HoldingRefusal.NotOwner => "That holding is not yours.",
+                HoldingRefusal.CustomsHold => "Customs inspectors hold the warehouse until the fine is paid.",
+                HoldingRefusal.RaidHold => "Raiders hold the warehouse. Drive them off at the site first.",
                 _ => string.Empty,
             };
         }

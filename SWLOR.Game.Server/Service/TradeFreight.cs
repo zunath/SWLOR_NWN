@@ -144,6 +144,8 @@ namespace SWLOR.Game.Server.Service
             if (ship != null && ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id) > 0)
                 DB.Set(ship);
             dbPlayer.FreightContracts.Remove(contract);
+            // The deposit never went through, so the offer was never really taken: the player may accept it again.
+            dbPlayer.FreightOffersTaken.Remove(contract.Id);
         }
 
         /// <summary>

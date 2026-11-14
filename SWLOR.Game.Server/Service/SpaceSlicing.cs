@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service
                         return "This site has closed.";
                     if (ScanningRules.PartyPercent(signature, GetScanPartyIds(ship)) < ScanningTuning.InfoLocatedPercent)
                         return "This site is keyed to the ships that scanned it. Scan it yourself to slice it.";
-                    return string.Empty;
+                    return FactionAgents.GetLeadOpenRefusal(signature, slicer);
                 }
                 case SlicingSourceType.WreckDataCore:
                 {

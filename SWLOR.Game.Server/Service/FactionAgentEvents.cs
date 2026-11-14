@@ -270,6 +270,21 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>A site's cache was opened: a scan-down lead completes the mission for its holder in the opener's party.</summary>
+        /// <summary>
+        /// Why an agent lead's cache or target cannot be opened by this player, or empty. A lead only opens with its mission's
+        /// holder online and in the opener's party: otherwise the site would pay without crediting the mission, and the
+        /// holder's next arrival places a fresh lead, so one mission could be looted over and over.
+        /// </summary>
+        public static string GetLeadOpenRefusal(ScanSignature signature, uint opener)
+        {
+            if (signature == null || !signature.IsAgentLead)
+                return string.Empty;
+
+            return GetIsObjectValid(FindOnlinePlayer(signature.AgentPlayerId)) && Space.GetScanPartyIds(opener).Contains(signature.AgentPlayerId)
+                ? string.Empty
+                : "This site is an agent's lead. It opens only with the agent who holds the mission in your party.";
+        }
+
         public static void OnSiteCompleted(ScanSignature signature, uint opener, uint cache)
         {
             if (signature == null || !signature.IsAgentLead || signature.Type == SignatureType.DataSite)

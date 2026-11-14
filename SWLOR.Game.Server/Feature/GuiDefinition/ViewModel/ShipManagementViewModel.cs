@@ -888,7 +888,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LoadShips(_myShips
                     .Skip(SelectedPageIndex * ShipsPerPage)
                     .Take(ShipsPerPage)
-                    .Select(ship => (ship.Id, DB.Get<WorldProperty>(ship.PropertyId).CustomName)));
+                    .Select(ship => (ship.Id, DB.Get<WorldProperty>(ship.PropertyId)?.CustomName ?? "(Unregistered)")));
             }
 
             ToggleRegisterButtons();
@@ -993,8 +993,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skipPageLoad = false;
         }
 
+        /// <summary>
+        /// The selected ship as saved now, or null when nothing is selected or the ship was unregistered since the list
+        /// was built (its record and property are deleted).
+        /// </summary>
+        private PlayerShip GetSelectedShip()
+        {
+            if (SelectedShipIndex < 0 || SelectedShipIndex >= _shipIds.Count)
+                return null;
+
+            var ship = DB.Get<PlayerShip>(_shipIds[SelectedShipIndex]);
+            return ship != null && DB.Get<WorldProperty>(ship.PropertyId) != null ? ship : null;
+        }
+
         private void LoadShip()
         {
+            if (SelectedShipIndex > -1 && GetSelectedShip() == null)
+            {
+                if (SelectedShipIndex < ShipToggles.Count)
+                    ShipToggles[SelectedShipIndex] = false;
+                SelectedShipIndex = -1;
+                FloatingTextStringOnCreature("That ship is no longer registered.", Player, false);
+            }
+
             if (SelectedShipIndex <= -1)
             {
                 ShipName = "[Select a Ship]";
@@ -1598,7 +1619,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedShipIndex <= -1 || SelectedHullDesignIndex < 0 || SelectedHullDesignIndex >= _hullDesignAppearances.Count)
                 return;
 
-            var dbShip = DB.Get<PlayerShip>(_shipIds[SelectedShipIndex]);
+            var dbShip = GetSelectedShip();
+            if (dbShip == null)
+            {
+                LoadShip();
+                return;
+            }
+
             var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
             var appearance = _hullDesignAppearances[SelectedHullDesignIndex];
             if (appearance == Space.GetShipAppearance(dbShip, shipDetail))
@@ -1763,11 +1790,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             IsRegisterEnabled = _shipIds.Count < Space.MaxRegisteredShips && IsMyShipsToggled;
 
-            if (SelectedShipIndex > -1)
+            var dbShip = GetSelectedShip();
+            if (dbShip != null)
             {
                 var playerId = GetObjectUUID(Player);
-                var shipId = _shipIds[SelectedShipIndex];
-                var dbShip = DB.Get<PlayerShip>(shipId);
+                var shipId = dbShip.Id;
                 var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
                 var shipLocation = GetShipLocation(dbShip, dbProperty, out _);
                 var isOwner = playerId == dbProperty.OwnerPlayerId;
@@ -2077,10 +2104,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
-            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+            // The window may predate a transfer, a sale or a permission change: rename only with the permission now.
+            var dbShip = GetSelectedShip();
+            if (dbShip == null)
+            {
+                LoadShip();
+                return;
+            }
 
+            var permission = GetShipPermission(dbShip.PropertyId);
+            if (permission == null || !permission.Permissions.GetValueOrDefault(PropertyPermissionType.RenameProperty))
+            {
+                FloatingTextStringOnCreature("You no longer have permission to rename this ship.", Player, false);
+                LoadShip();
+                return;
+            }
+
+            // A listing shows buyers the ship's name; it is locked like the rest of the ship while listed.
+            if (ShipTransfer.IsListedForSale(dbShip.Id))
+            {
+                FloatingTextStringOnCreature("Please cancel the sale of this ship before renaming it.", Player, false);
+                return;
+            }
+
+            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
             dbProperty.CustomName = ShipName;
             DB.Set(dbProperty);
 
@@ -2197,8 +2244,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ProcessPower(ShipModulePowerType row, int slot)
         {
             var rowName = GetPowerRowName(row);
-            var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = GetSelectedShip();
+            if (dbShip == null)
+            {
+                LoadShip();
+                return;
+            }
+
+            var shipId = dbShip.Id;
             var modules = GetPowerModules(dbShip.Status, row);
             var module = modules.ContainsKey(slot)
                 ? modules[slot]
@@ -2323,8 +2376,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ProcessConfiguration(int slot)
         {
-            var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = GetSelectedShip();
+            if (dbShip == null)
+            {
+                LoadShip();
+                return;
+            }
+
+            var shipId = dbShip.Id;
             var module = dbShip.Status.ConfigurationModules.ContainsKey(slot)
                 ? dbShip.Status.ConfigurationModules[slot]
                 : null;
@@ -2642,8 +2701,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickPermissions() => () =>
         {
-            var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = GetSelectedShip();
+            if (dbShip == null)
+            {
+                LoadShip();
+                return;
+            }
 
             var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, string.Empty, false);
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
@@ -2707,8 +2770,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRepair() => () =>
         {
-            var shipId = _shipIds[SelectedShipIndex];
-            var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbShip = GetSelectedShip();
+            if (dbShip == null)
+            {
+                LoadShip();
+                return;
+            }
+
+            var shipId = dbShip.Id;
             var price = CalculateRepairBill(dbShip);
 
             ShowModal($"Repairs will cost you {price} credits. Will you pay for repairs?", () =>

@@ -119,7 +119,8 @@ public class SpaceTransferCrashSafetyTests
             "return;",
             "contract.DepositPending = false;");
         InOrder(Method(freight, "private static void CancelUnpaidContract("),
-            "ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id)", "DB.Set(ship);", "dbPlayer.FreightContracts.Remove(contract);");
+            "ship.SealedFreight.RemoveAll(x => x.ContractId == contract.Id)", "DB.Set(ship);", "dbPlayer.FreightContracts.Remove(contract);",
+            "dbPlayer.FreightOffersTaken.Remove(contract.Id);");
         Method(freight, "public static void ReconcileFreightDeposits(").Should().Contain("CancelUnpaidContract(dbPlayer, contract);");
     }
 
@@ -443,7 +444,7 @@ public class SpaceTransferCrashSafetyTests
         // A ship sold and unregistered by its buyer before the registering player's login leaves the receipt, so the marked
         // deed still goes and the hull is not duplicated.
         InOrder(settle, "GetLocalString(item, DeedRegisteringVariable)",
-            "if (DB.Get<ShipRegistrationReceipt>(registering) != null || DB.Get<PlayerShip>(registering) != null)", "DestroyObject(item);");
+            "if (DB.Get<ShipRegistrationReceipt>(ShipRegistrationReceipt.KeyFor(registering)) != null || DB.Get<PlayerShip>(registering) != null)", "DestroyObject(item);");
         InOrder(settle, "DelayCommand(1f, () =>", "if (!CharacterCheckpoint.Save(player))", "return;", "DB.Delete<ShipRegistrationReceipt>(registrationId);");
         new ShipRegistrationReceipt().OwnerPlayerId.Should().BeEmpty();
         typeof(ShipRegistrationReceipt).GetProperty(nameof(ShipRegistrationReceipt.OwnerPlayerId))!

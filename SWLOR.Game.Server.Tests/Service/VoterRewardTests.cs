@@ -24,7 +24,7 @@ public class VoterRewardTests
     [Test]
     public void Ledger_IsKeyedByTheCdKey()
     {
-        new VoterRewardLedger("ABCD1234").Id.Should().Be("ABCD1234");
+        new VoterRewardLedger("ABCD1234").Id.Should().Be("voter-reward:ABCD1234", "the bare CD key is also the account's id in the DB cache");
     }
 
     [Test]
@@ -33,7 +33,7 @@ public class VoterRewardTests
         var entry = VoterRewardRules.Claim(null, "KEY", Now);
 
         entry.Should().NotBeNull();
-        entry.Id.Should().Be("KEY");
+        entry.Id.Should().Be(VoterRewardLedger.KeyFor("KEY"));
         entry.LastRewardUtc.Should().Be(Now);
     }
 
@@ -75,8 +75,8 @@ public class VoterRewardTests
         var first = VoterRewardRules.Claim(null, "ONE", Now);
         var second = VoterRewardRules.Claim(null, "TWO", Now);
 
-        first.Id.Should().Be("ONE");
-        second.Id.Should().Be("TWO");
+        first.Id.Should().Be(VoterRewardLedger.KeyFor("ONE"));
+        second.Id.Should().Be(VoterRewardLedger.KeyFor("TWO"));
     }
 
     [Test]

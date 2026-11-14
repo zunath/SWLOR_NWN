@@ -35,6 +35,9 @@ namespace SWLOR.Game.Server.Service.CityBountyService
         SameParty = 9,
 
         /// <summary>A bounty on the identity was already claimed in the last 7 days.</summary>
-        ClaimedThisWeek = 10
+        ClaimedThisWeek = 10,
+
+        /// <summary>The claimant posted the bounty or shares the poster's CD key: an official cannot pay the treasury to themselves.</summary>
+        Poster = 11
     }
 }

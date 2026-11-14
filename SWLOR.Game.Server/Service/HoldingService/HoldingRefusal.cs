@@ -21,5 +21,7 @@ namespace SWLOR.Game.Server.Service.HoldingService
         NoDroid = 15,
         NoFine = 16,
         NotOwner = 17,
+        CustomsHold = 18,
+        RaidHold = 19,
     }
 }

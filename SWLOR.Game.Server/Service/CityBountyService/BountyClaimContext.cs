@@ -36,6 +36,12 @@ namespace SWLOR.Game.Server.Service.CityBountyService
 
         public string ClaimantCdKey { get; init; } = string.Empty;
 
+        /// <summary>The player who posted the bounty.</summary>
+        public string PosterPlayerId { get; init; } = string.Empty;
+
+        /// <summary>The poster's CD key when they posted it.</summary>
+        public string PosterCdKey { get; init; } = string.Empty;
+
         /// <summary>Whether the claimant is in a party with the target.</summary>
         public bool SharesParty { get; init; }
 

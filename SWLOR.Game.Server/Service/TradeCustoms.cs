@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.GuiService;
@@ -281,6 +282,22 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Space, $"CUSTOMS FINE - {PlayerName.GetAuditName(player)} - paid {fine} to {scan.Authority}, confiscated {CustomsRules.Describe(taken)}");
                 DismissLawfulGroup(scan.PatrolGroup, 5f);
             });
+        }
+
+        /// <summary>
+        /// A pilot who leaves the server with a scan unanswered ran from it, while their character can still take the
+        /// standing loss: the 30 s timeout would find them gone and change nothing. A spoof in progress ends with them.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnModuleExit)]
+        public static void RunFromCustomsOnExit()
+        {
+            var player = GetExitingObject();
+            var scan = GetCustomsScan(player);
+            if (scan == null)
+                return;
+
+            scan.Slicer = OBJECT_INVALID;
+            RunFromCustoms(player, true);
         }
 
         /// <summary>The pilot runs (or did not answer in time): the patrol turns hostile.</summary>

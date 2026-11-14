@@ -179,6 +179,11 @@ namespace SWLOR.Game.Server.Service.CityBountyService
             if (claim.SharesParty)
                 return BountyClaimRefusal.SameParty;
 
+            // An official could otherwise post the whole ordinary treasury on an accomplice and collect it themselves.
+            if (claim.ClaimantPlayerId == claim.PosterPlayerId ||
+                claim.PosterCdKey.Length > 0 && claim.PosterCdKey == claim.ClaimantCdKey)
+                return BountyClaimRefusal.Poster;
+
             if (IsInClaimInterval(claim.LastClaimedUtc, claim.NowUtc))
                 return BountyClaimRefusal.ClaimedThisWeek;
 

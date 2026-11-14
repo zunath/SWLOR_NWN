@@ -224,7 +224,9 @@ public class BountyRulesTests
         bool sharesParty = false,
         DateTime? lastClaimed = null,
         BountyState state = BountyState.Active,
-        DateTime? expires = null)
+        DateTime? expires = null,
+        string poster = "poster",
+        string posterCd = "cd-poster")
     {
         var identity = bounty ?? Character;
         return new BountyClaimContext
@@ -242,7 +244,9 @@ public class BountyRulesTests
             TargetCdKey = targetCd,
             ClaimantCdKey = claimantCd,
             SharesParty = sharesParty,
-            LastClaimedUtc = lastClaimed
+            LastClaimedUtc = lastClaimed,
+            PosterPlayerId = poster,
+            PosterCdKey = posterCd
         };
     }
 
@@ -309,6 +313,15 @@ public class BountyRulesTests
     public void AClaimantSharingTheTargetsCdKey_IsRejected()
     {
         BountyRules.EvaluateClaim(Claim(targetCd: "cd-shared", claimantCd: "cd-shared")).Should().Be(BountyClaimRefusal.SharedCdKey);
+    }
+
+    [Test]
+    public void ThePoster_OrAnyoneOnTheirCdKey_CannotCollectTheBounty()
+    {
+        BountyRules.EvaluateClaim(Claim(claimant: HunterId, poster: HunterId)).Should().Be(BountyClaimRefusal.Poster);
+        BountyRules.EvaluateClaim(Claim(claimantCd: "cd-shared", posterCd: "cd-shared"))
+            .Should().Be(BountyClaimRefusal.Poster, "an official could otherwise post the treasury on an accomplice and collect it");
+        BountyRules.EvaluateClaim(Claim(claimantCd: string.Empty, posterCd: string.Empty)).Should().Be(BountyClaimRefusal.None);
     }
 
     [Test]

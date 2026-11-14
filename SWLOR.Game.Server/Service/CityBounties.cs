@@ -173,6 +173,7 @@ namespace SWLOR.Game.Server.Service
                 TargetLabel = Disguise.GetDisplayDescriptor(target),
                 Reward = reward,
                 PostedByPlayerId = posterId,
+                PostedByCdKey = GetPCPublicCDKey(poster),
                 PostedUtc = now,
                 ExpiresUtc = BountyRules.GetExpiry(now)
             };
@@ -267,6 +268,8 @@ namespace SWLOR.Game.Server.Service
                     ClaimantPlayerId = GetObjectUUID(claimant),
                     TargetCdKey = GetPCPublicCDKey(target),
                     ClaimantCdKey = GetPCPublicCDKey(claimant),
+                    PosterPlayerId = bounty.PostedByPlayerId,
+                    PosterCdKey = bounty.PostedByCdKey,
                     SharesParty = SharesParty(target, claimant),
                     LastClaimedUtc = GetLastClaimedUtc(dbTarget, disguise)
                 };

@@ -261,7 +261,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Ships that died (and left in pods), logged out or were moved out of the pocket are out of the run. A pilot
-            // who logged out can rejoin while the run is open (W11k): their ship waits in the pocket.
+            // who logged out can rejoin while the run is open (W11k): their ship waits in the pocket. The wait needs another
+            // ship still in the run; a run every pilot left closes at once as failed (W15b), so a solo logout ends it.
             if ((now - run.StartedAt).TotalSeconds >= RiftRunRules.ArrivalGraceSeconds)
             {
                 foreach (var pilot in run.Pilots.Where(x => !GetIsObjectValid(x)).ToList())

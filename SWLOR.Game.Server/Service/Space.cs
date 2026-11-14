@@ -91,6 +91,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetExitingObject();
             _pendingShipLaunches.Remove(player);
+            ForgetSensorSweep(player);
             _shipCombatAt.Remove(player);
             CrewMemberDisconnected(player);
             if (!IsPlayerInSpaceMode(player))
@@ -1088,7 +1089,8 @@ namespace SWLOR.Game.Server.Service
         public static void WarpPlayerInsideShip(uint player)
         {
             // A pilot leaving the controls of a ship flown in a Rift Run leaves it waiting in the run, as logging out and
-            // docking aboard do, so taking the controls again launches back into the run's chamber.
+            // docking aboard do, so taking the controls again launches back into the run's chamber while another ship keeps
+            // the run open. A run every pilot left closes at once as failed, and its waiting ships take the collapse's losses.
             MarkRiftRunPilotAway(player);
             ExitSpaceMode(player);
             Ability.ReapplyPlayerAuraAOE(player);
@@ -1623,6 +1625,15 @@ namespace SWLOR.Game.Server.Service
 
             // A crew member fires at the target they picked; a droid at the pilot's.
             var (target, targetShipStatus) = GetCurrentTarget(isDroid ? activator : user);
+
+            // A target that jumped to another system is no target: distance across areas reads 0, so the range check alone
+            // would let a module fire at (or hold) a ship that escaped through a starlane. Compared against the ship, not
+            // the crew member who pressed the module.
+            if (GetIsObjectValid(target) && GetArea(target) != GetArea(activator))
+            {
+                target = OBJECT_INVALID;
+                targetShipStatus = null;
+            }
 
             // Modules that act on their user's own ship treat a target they cannot act on (an asteroid, a creature
             // without a ship) as no target.

@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>How many crates the player's CD key may still buy this week.</summary>
         public static int GetCratesRemaining(uint player, DateTime? nowUtc = null)
         {
-            var record = DB.Get<CivicExchangeAllowance>(GetAllowanceKey(player));
+            var record = DB.Get<CivicExchangeAllowance>(CivicExchangeAllowance.KeyFor(GetAllowanceKey(player)));
             return CivicExchangeRules.GetCratesRemaining(record, nowUtc ?? DateTime.UtcNow);
         }
 
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Service
 
             var item = CivicExchangeCatalog.Get(itemKey);
             var allowanceKey = GetAllowanceKey(player);
-            var allowance = DB.Get<CivicExchangeAllowance>(allowanceKey) ?? new CivicExchangeAllowance(allowanceKey);
+            var allowance = DB.Get<CivicExchangeAllowance>(CivicExchangeAllowance.KeyFor(allowanceKey)) ?? new CivicExchangeAllowance(allowanceKey);
             var refusal = CivicExchangeRules.GetRefusal(
                 item,
                 GetCantinaLevel(cityId),
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.TransferReceipts = TransferReceipts.Add(dbPlayer.TransferReceipts, entry.Id);
             DB.Set(dbPlayer);
 
-            var allowance = DB.Get<CivicExchangeAllowance>(parts[1]) ?? new CivicExchangeAllowance(parts[1]);
+            var allowance = DB.Get<CivicExchangeAllowance>(CivicExchangeAllowance.KeyFor(parts[1])) ?? new CivicExchangeAllowance(parts[1]);
             CivicExchangeRules.RecordCrate(allowance, entry.CreatedUtc);
             DB.Set(allowance);
         }

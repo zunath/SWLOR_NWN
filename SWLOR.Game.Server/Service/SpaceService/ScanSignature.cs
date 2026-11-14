@@ -85,5 +85,8 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         /// <summary>Whether a faction agent placed it for one player's mission; it is not part of its area's signature count.</summary>
         public bool IsAgentLead => !string.IsNullOrEmpty(AgentMissionId);
+
+        /// <summary>Placed by a DM: an extra on top of the area's own signatures, never respawned when it ends.</summary>
+        public bool DmPlaced { get; set; }
     }
 }

@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Service
                 boardable: type == SignatureType.Derelict, contested: false);
             // An opened site needs no scan: its derelict can be boarded at once (W11r).
             signature.OpenToAll = reveal;
+            signature.DmPlaced = true;
             PlaceSignature(signature);
             if (reveal)
                 RevealSite(signature, controlled, openToAll: true);

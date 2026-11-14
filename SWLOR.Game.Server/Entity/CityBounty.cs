@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Entity
             TargetDisguiseId = string.Empty;
             TargetLabel = string.Empty;
             PostedByPlayerId = string.Empty;
+            PostedByCdKey = string.Empty;
             ClaimantPlayerId = string.Empty;
             ClaimantLabel = string.Empty;
         }
@@ -42,6 +43,9 @@ namespace SWLOR.Game.Server.Entity
         public long Reward { get; set; }
 
         public string PostedByPlayerId { get; set; }
+
+        /// <summary>The poster's CD key, kept so a claim is judged against it while the poster is offline.</summary>
+        public string PostedByCdKey { get; set; }
 
         public DateTime PostedUtc { get; set; }
 

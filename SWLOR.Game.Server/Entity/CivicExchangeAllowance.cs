@@ -16,11 +16,17 @@ namespace SWLOR.Game.Server.Entity
 
         public CivicExchangeAllowance(string key)
         {
-            Id = key;
+            Id = KeyFor(key);
             Key = key;
         }
 
-        /// <summary>The CD key (or, for a character with none, <c>player:{id}</c>) the allowance belongs to; also the record id.</summary>
+        /// <summary>
+        /// The DB cache holds one entity per id for the frame, whatever its type, so the id is prefixed: the bare CD key
+        /// is also the id of the account.
+        /// </summary>
+        public static string KeyFor(string key) => "civic-exchange:" + key;
+
+        /// <summary>The CD key (or, for a character with none, <c>player:{id}</c>) the allowance belongs to. The record id is <see cref="KeyFor"/> of it.</summary>
         public string Key { get; set; }
 
         /// <inheritdoc />

@@ -128,6 +128,14 @@ public class CreditPaymentTests
     }
 
     [Test]
+    public void ACustomsScanLeftUnanswered_AtLogout_CountsAsRunning()
+    {
+        var exit = Method(Source("Service", "TradeCustoms.cs"), "public static void RunFromCustomsOnExit(");
+        exit.Should().Contain("scan.Slicer = OBJECT_INVALID;").And.Contain("RunFromCustoms(player, true);",
+            "the timeout finds a logged-out pilot gone, so the standing loss is taken while the character still exists");
+    }
+
+    [Test]
     public void CustomsFines_SaveTheConfiscationWithThePaymentsId()
     {
         var customs = Source("Service", "TradeCustoms.cs");

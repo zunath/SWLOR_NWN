@@ -89,7 +89,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ApplyEffectToObject(DurationType.Temporary, beam, target, cycleSeconds + 0.1f);
             });
 
-            DelayCommand(cycleSeconds + 0.1f, () =>
+            // Scheduled on the ship, not the crew member who switched the module on: a delay dies with its object, and a
+            // crew member who logs out mid-cycle would otherwise leave the target held by this ship for good.
+            AssignCommand(activator, () => DelayCommand(cycleSeconds + 0.1f, () =>
             {
                 ShipModuleActions.ReleaseExtraction(target, activator);
 
@@ -133,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 ShipHold.DeliverYield(activator, gas);
                 GiveGatheringExperience(creditedPlayer, GetLocalInt(target, GasCloudTierVariable));
-            });
+            }));
         }
 
         // Salvage
@@ -181,7 +183,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 ApplyEffectToObject(DurationType.Temporary, beam, target, cycleSeconds + 0.1f);
             });
 
-            DelayCommand(cycleSeconds + 0.1f, () =>
+            // Scheduled on the ship, not the crew member who switched the module on: a delay dies with its object, and a
+            // crew member who logs out mid-cycle would otherwise leave the target held by this ship for good.
+            AssignCommand(activator, () => DelayCommand(cycleSeconds + 0.1f, () =>
             {
                 ShipModuleActions.ReleaseExtraction(target, activator);
 
@@ -234,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                 ShipHold.DeliverYield(activator, yield, components);
                 GiveGatheringExperience(creditedPlayer, tier);
-            });
+            }));
         }
 
         /// <summary>

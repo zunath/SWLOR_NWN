@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void SaveRegistrationReceipt(uint player, string shipId)
         {
-            DB.Set(new ShipRegistrationReceipt { Id = shipId, OwnerPlayerId = GetObjectUUID(player) });
+            DB.Set(new ShipRegistrationReceipt { Id = ShipRegistrationReceipt.KeyFor(shipId), OwnerPlayerId = GetObjectUUID(player) });
         }
 
         /// <summary>Whether the ship saved this module as fitted at some point: it still has it, or it acknowledged the fitting.</summary>
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     settled = true;
                     DeleteLocalString(item, DeedRegisteringVariable);
-                    if (DB.Get<ShipRegistrationReceipt>(registering) != null || DB.Get<PlayerShip>(registering) != null)
+                    if (DB.Get<ShipRegistrationReceipt>(ShipRegistrationReceipt.KeyFor(registering)) != null || DB.Get<PlayerShip>(registering) != null)
                     {
                         DestroyObject(item);
                         Log.Write(LogGroup.Space, $"{PlayerName.GetAuditName(player)} - removed deed already registered as ship {registering} after a restart.");

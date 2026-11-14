@@ -423,7 +423,10 @@ namespace SWLOR.Game.Server.Service
 
             var ship = GetDockedShip(player, holding, shipId);
             var plan = ship == null ? new Dictionary<CommodityType, int>() : HoldingRules.PlanCollection(holding.Warehouse, Trade.GetFreeVolume(ship));
-            var refusal = ship == null
+            var hold = HoldingRules.GetCollectionHold(holding);
+            var refusal = hold != HoldingRefusal.None
+                ? hold
+                : ship == null
                 ? HoldingRefusal.ShipNotDocked
                 : holding.Warehouse.Values.Sum() <= 0
                     ? HoldingRefusal.NothingToCollect

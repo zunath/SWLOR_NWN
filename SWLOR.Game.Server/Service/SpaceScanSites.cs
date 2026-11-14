@@ -226,6 +226,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var leadRefusal = FactionAgents.GetLeadOpenRefusal(signature, user);
+            if (!string.IsNullOrEmpty(leadRefusal))
+            {
+                SendMessageToPC(user, ColorToken.Red(leadRefusal));
+                return;
+            }
+
             signature.Completed = true;
             FactionAgents.OnSiteCompleted(signature, user, cache);
             var credits = SignatureSiteRules.SiteCredits(signature.Type, signature.Tier);

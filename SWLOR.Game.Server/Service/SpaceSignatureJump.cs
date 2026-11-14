@@ -331,7 +331,10 @@ namespace SWLOR.Game.Server.Service
         {
             _signatureJumps.Remove(player);
             _sensorSweeps.Remove(player);
-            _lastSensorSweep.Remove(player);
+            // The sweep's cooldown stays: leaving and retaking the controls must not reset it (it reveals cloaked ships).
+            // It is forgotten at logout (ForgetSensorSweep).
         }
+
+        private static void ForgetSensorSweep(uint player) => _lastSensorSweep.Remove(player);
     }
 }

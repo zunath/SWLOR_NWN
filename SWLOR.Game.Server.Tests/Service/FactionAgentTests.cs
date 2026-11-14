@@ -314,8 +314,8 @@ public class FactionAgentTests
         SignatureSiteRules.CanScan(normal, new HashSet<string> { "stranger" }).Should().BeTrue();
 
         var scanning = ServerSource("Service", "SpaceScanning.cs");
-        scanning.Should().Contain("if (!signature.IsAgentLead)\n                    respawns.Add(");
-        scanning.Should().Contain("signatures.Count(x => x.Type != SignatureType.Rift && !x.IsAgentLead)");
+        scanning.Should().Contain("if (!signature.IsAgentLead && !signature.DmPlaced)\n                    respawns.Add(");
+        scanning.Should().Contain("signatures.Count(x => x.Type != SignatureType.Rift && !x.IsAgentLead && !x.DmPlaced)");
         scanning.Should().Contain("signatures.Where(x => SignatureSiteRules.CanScan(x, partyIds))");
     }
 

@@ -43,8 +43,13 @@ public sealed class RifleSupportHoldProjection
     {
         if (!_requests.TryGetValue(creature, out var request) || request.Restored.Contains(observer)) return RifleSupportHoldStage.None;
         if (request.Attacking)
+        {
+            // Renew both retry and cleanup deadlines until this deferred clear can
+            // run after the native attack sequence, including gaps between shots.
+            request.Started = now;
             return request.Cleared.ContainsKey(observer) || request.PendingRestore.Contains(observer)
                 ? RifleSupportHoldStage.Restore : RifleSupportHoldStage.None;
+        }
         if (!request.Cleared.TryGetValue(observer, out var sent))
             return !request.Cancelled && now - request.Started < 10000 ? RifleSupportHoldStage.Clear :
                 request.PendingRestore.Contains(observer) ? RifleSupportHoldStage.Restore : RifleSupportHoldStage.None;

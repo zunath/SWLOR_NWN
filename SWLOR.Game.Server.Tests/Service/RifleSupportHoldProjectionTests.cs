@@ -125,6 +125,24 @@ public class RifleSupportHoldProjectionTests
         state.Current(1, 10, 250).Should().Be(Stage.Clear);
     }
 
+    [TestCase(11000)]
+    [TestCase(35000)]
+    public void DeferredClearsSurviveLongAttacksAndPruningUntilTheAttackStops(long attackMilliseconds)
+    {
+        var state = new RifleSupportHoldProjection();
+        state.Begin(1, "rf_old_i", 0);
+        state.ObserveAnimation(1, 1, attackAction: true);
+        state.Current(1, 10, 1).Should().Be(Stage.None);
+        state.Current(1, 10, attackMilliseconds).Should().Be(Stage.None);
+        state.Prune(_ => true, attackMilliseconds + 1);
+
+        state.ObserveAnimation(1, 1, attackAction: false);
+        state.Current(1, 10, attackMilliseconds + 2).Should().Be(Stage.Clear);
+        state.Sent(1, 10, Stage.Clear, attackMilliseconds + 2);
+        state.Current(1, 10, attackMilliseconds + 201).Should().Be(Stage.Hold);
+        state.Current(1, 10, attackMilliseconds + 600).Should().Be(Stage.Restore);
+    }
+
     [Test]
     public void ResumingAnAttackActionRestoresAlreadyClearedObserversDuringNativeIdle()
     {

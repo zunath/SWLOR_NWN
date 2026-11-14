@@ -251,6 +251,17 @@ function Invoke-CharacterizationReference {
         $stub = "namespace SWLOR.Game.Server.CharacterizationTests.Support;`n`npublic sealed class FacadeServices : IDisposable`n{`n    public IDisposable Install() => this;`n`n    public void Dispose()`n    {`n    }`n}`n"
         [System.IO.File]::WriteAllText($facadeServices, $stub, (New-Object System.Text.UTF8Encoding($false)))
     }
+    # Master overlay: master-compatible versions of characterization files that use branch-only APIs (tools/Refactor/MasterOverlay,
+    # one file per path under the copied project). Today: SkillCacheScope, which reads the branch's ISkillService instance cache.
+    $overlay = Join-Path $PSScriptRoot 'MasterOverlay\CharacterizationTests'
+    if (Test-Path -LiteralPath $overlay -PathType Container) {
+        foreach ($file in Get-ChildItem -LiteralPath $overlay -Recurse -File) {
+            $relative = $file.FullName.Substring($overlay.TrimEnd('\', '/').Length).TrimStart('\', '/')
+            $target = Join-Path (Join-Path $Copy.Path $name) $relative
+            New-Item -ItemType Directory -Force -Path (Split-Path -Parent $target) | Out-Null
+            Copy-Item -LiteralPath $file.FullName -Destination $target -Force
+        }
+    }
     # Facade removal (P2-Z): the branch's tests reach a removed facade through GameServices and read its moved constants
     # from their owners. Master still has the facades, so the copy is respelled back (the tool's -Reverse mode).
     Invoke-FacadeRemovalReverse -Copy $Copy -Folder (Join-Path $Copy.Path $name)

@@ -13,7 +13,8 @@
     "tools/Refactor/NamespaceMoves.json",
     "SWLOR.Game.Server.Tests/Core/MoveSupportNamespacesScriptTests.cs",
     "tools/Refactor/RemovedFacades.json",
-    "SWLOR.Game.Server.Tests/Tools/FacadeRemovalRewriterTests.cs"
+    "SWLOR.Game.Server.Tests/Tools/FacadeRemovalRewriterTests.cs",
+    "SWLOR.Architecture.Tests/Baseline/Phase5/*"
   ],
   "retiredServiceFolders": [
     { "service": "DMTool", "domain": "Administration" },

@@ -31,7 +31,9 @@ public class ForceConversionStanceTests
         var fields = syntax.DescendantNodes().OfType<FieldDeclarationSyntax>()
             .Where(node => node.Declaration.Variables.Any(variable =>
                 variable.Identifier.ValueText is "ForceConversionAttackIndex" or "ForceConversionAttackTarget"));
-        var profile = syntax.DescendantNodes().OfType<StructDeclarationSyntax>()
+        var profile = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
+                "SWLOR.Game.Server", "Native", "WeaponDamageProfile.cs"))).GetRoot()
+            .DescendantNodes().OfType<StructDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "WeaponDamageProfile");
 
         // Execute the production conversion and damage profile with only native actors,
@@ -160,12 +162,23 @@ public class ForceConversionStanceTests
             .Single(node => node.Expression.ToString() == "GetDamageRoll.PrepareForceConversionStanceAttack");
         preparation.SpanStart.Should().BeLessThan(sharedRoll.DescendantNodes().OfType<IfStatementSyntax>()
             .Single(node => node.Condition.ToString() == "targetObject.m_nObjectType != (int)ObjectType.Creature").SpanStart);
-        // The upkeep is settled from the final attack result, after defensive effects such as concealment.
-        var settlement = sharedRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()
+        // The upkeep is settled from the final attack result, after defensive effects such as concealment. The creature
+        // roll hands its result to the settlement once it is final.
+        var creatureRoll = attackSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "ResolveCreatureTargetRoll");
+        sharedRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Should().ContainSingle(node => node.Expression.ToString() == "ResolveCreatureTargetRoll");
+        creatureRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Should().ContainSingle(node => node.Expression.ToString() == "AttackRollSettlement.SettleAttackRoll");
+        var settlementSource = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
+            "SWLOR.Game.Server", "Native", "AttackRollSettlement.cs"))).GetRoot();
+        var settleRoll = settlementSource.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "SettleAttackRoll");
+        var settlement = settleRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Single(node => node.Expression.ToString() == "GetDamageRoll.SettleForceConversionStanceAttack");
         settlement.ArgumentList.Arguments.Last().ToString()
             .Should().Be("IsSuccessfulAttackResult(pAttackData.m_nAttackResult)");
-        settlement.SpanStart.Should().BeGreaterThan(sharedRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()
+        settlement.SpanStart.Should().BeGreaterThan(settleRoll.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Single(node => node.Expression.ToString() == "attacker.ResolveDefensiveEffects").SpanStart);
     }
 

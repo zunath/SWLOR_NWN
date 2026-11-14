@@ -425,7 +425,7 @@ public class LeadershipCombatUpgradeTests
         typedLeadershipIndex.Should().BeGreaterThan(conversionIndex,
             "the unscaled direct ability damage path must apply typed Leadership after conversion");
 
-        var nativeDamageRoll = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
+        var nativeDamageRoll = NativeCombatSource.DamageRoll();
         nativeDamageRoll.Should().Contain("typedLeadershipReductionAlreadyApplied: true",
             "the direct weapon pipeline applies typed Leadership in the explicit post-conversion stage");
         nativeDamageRoll.Should().Contain(

@@ -388,7 +388,7 @@ public class CombatDamageTests
     public void QueuedWeaponHitRoll_UsesAbilitySkillForAccuracyAndStoredBonuses()
     {
         var root = FindRepositoryRoot();
-        var attackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var attackSource = NativeCombatSource.AttackRoll();
         var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
         attackSource.Should().Contain("GameServices.CombatQueries.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
         attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility)");
@@ -489,8 +489,8 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
-        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
-        var attackRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var damageRollSource = NativeCombatSource.DamageRoll();
+        var attackRollSource = NativeCombatSource.AttackRoll();
 
         combatSource.Should().Contain("SkillType.Staff => _stat.GetStatAdjustment(attacker, StatType.StaffCriticalDamagePercentAdjustment)");
         combatSource.Should().Contain("IsRangedWeaponSkill(skillType)");
@@ -591,24 +591,36 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var nativeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var nativeSource = NativeCombatSource.AttackRoll();
 
         combatSource.Should().Contain("public static int ConsumeSuppressionRangedAttackAccuracyAdjustment(");
         combatSource.Should().NotContain("GetSuppressionRangedAttackAccuracyAdjustment");
         nativeSource.Should().Contain("GameServices.CombatSuppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(");
         nativeSource.Should().NotContain("GameServices.CombatSuppression.GetSuppressionRangedAttackAccuracyAdjustment(");
-        var overwatchIndex = nativeSource.IndexOf(
+        // The hit-chance modifier the attack roll passes to the hit rate is built by AttackRollAccuracy.
+        var accuracySource = NativeCombatSource.Read("AttackRollAccuracy.cs");
+        var overwatchIndex = accuracySource.IndexOf(
             "GameServices.CombatSuppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
             StringComparison.Ordinal);
-        var hitChanceIndex = nativeSource.IndexOf(
+        var hitChanceIndex = accuracySource.IndexOf(
             "var hitChanceModifier =",
             StringComparison.Ordinal);
-        var hitRateIndex = nativeSource.IndexOf(
-            "var hitRate = CombatRules.CalculateHitRate(",
+        var hitChanceReturnIndex = accuracySource.IndexOf(
+            "return hitChanceModifier;",
             StringComparison.Ordinal);
         overwatchIndex.Should().BeGreaterThan(hitChanceIndex,
             "Overwatch's percentage bonus must enter the hit-chance modifier path");
-        overwatchIndex.Should().BeLessThan(hitRateIndex);
+        overwatchIndex.Should().BeLessThan(hitChanceReturnIndex);
+        var rollSource = NativeCombatSource.Read("ResolveAttackRoll.cs");
+        var hitChanceCallIndex = rollSource.IndexOf(
+            "var hitChanceModifier = AttackRollAccuracy.GetHitChanceModifier(",
+            StringComparison.Ordinal);
+        var hitRateIndex = rollSource.IndexOf(
+            "var hitRate = CombatRules.CalculateHitRate(",
+            StringComparison.Ordinal);
+        hitChanceCallIndex.Should().BeGreaterThanOrEqualTo(0);
+        hitChanceCallIndex.Should().BeLessThan(hitRateIndex);
+        rollSource[hitRateIndex..].Should().Contain("hitChanceModifier,");
         nativeSource.Should().NotContain(
             "accuracyModifiers += GameServices.CombatSuppression.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
             "native Overwatch accuracy is a percentage modifier, not raw attack accuracy");
@@ -619,7 +631,7 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var nativeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var nativeSource = NativeCombatSource.AttackRoll();
         var prepare = ExtractMethod(combatSource, "public static int PrepareOpeningAutoAttack(uint attacker, SkillType skillType)");
 
         prepare.Should().Contain("GetLastCompletedOffensiveActivityAt(attacker)",
@@ -689,8 +701,8 @@ public class CombatDamageTests
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         var combatSource = CombatSource.Read();
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
-        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
-        var attackRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var damageRollSource = NativeCombatSource.DamageRoll();
+        var attackRollSource = NativeCombatSource.AttackRoll();
 
         usePerkFeatSource.Should().Contain("Weapon abilities are queued for the next time the activator's attack lands on an enemy.");
         usePerkFeatSource.Should().Contain("ProcessQueuedWeaponAbility()");
@@ -804,13 +816,21 @@ public class CombatDamageTests
         combatSource.Should().NotContain(
             "criticalDamage += _temporaryStatModifier.Consume(",
             "the same Dead Center rider must not stack through both opening-attack channels");
-        var queuedAccuracyIndex = attackRollSource.IndexOf(
+        // AttackRollAccuracy builds the hit-chance modifier that the attack roll passes to CalculateHitRate.
+        var accuracySource = NativeCombatSource.Read("AttackRollAccuracy.cs");
+        var queuedAccuracyIndex = accuracySource.IndexOf(
             "GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(",
             StringComparison.Ordinal);
-        var hitRateIndex = attackRollSource.IndexOf("CombatRules.CalculateHitRate(", StringComparison.Ordinal);
-        queuedAccuracyIndex.Should().BeGreaterThanOrEqualTo(0);
-        queuedAccuracyIndex.Should().BeLessThan(hitRateIndex,
+        var hitChanceIndex = accuracySource.IndexOf("var hitChanceModifier =", StringComparison.Ordinal);
+        var hitChanceReturnIndex = accuracySource.IndexOf("return hitChanceModifier;", StringComparison.Ordinal);
+        queuedAccuracyIndex.Should().BeGreaterThan(hitChanceIndex);
+        queuedAccuracyIndex.Should().BeLessThan(hitChanceReturnIndex,
             "Patience Accuracy must affect the native roll that lands a queued Headshot");
+        var rollSource = NativeCombatSource.Read("ResolveAttackRoll.cs");
+        var hitChanceCallIndex = rollSource.IndexOf(
+            "var hitChanceModifier = AttackRollAccuracy.GetHitChanceModifier(", StringComparison.Ordinal);
+        hitChanceCallIndex.Should().BeGreaterThanOrEqualTo(0);
+        hitChanceCallIndex.Should().BeLessThan(rollSource.IndexOf("CombatRules.CalculateHitRate(", StringComparison.Ordinal));
     }
 
     [Test]
@@ -1055,7 +1075,7 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        var damageRollSource = NativeCombatSource.DamageRoll();
 
         combatSource.Should().Contain("bool isLandedAttack)");
         var guard = ExtractMethod(combatSource, "public static int ApplyGuardedHitModifiers(");
@@ -1118,7 +1138,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
-        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        var damageRollSource = NativeCombatSource.DamageRoll();
 
         combatSource.Should().Contain("public static void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage)");
         combatSource.Should().Contain("GetEffectType(effect) == EffectTypeScript.TemporaryHitpoints");
@@ -1132,8 +1152,8 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
-        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
-        var resolveAttackRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var damageRollSource = NativeCombatSource.DamageRoll();
+        var resolveAttackRollSource = NativeCombatSource.AttackRoll();
 
         combatSource.Should().Contain("bool WasCriticalDowngraded");
         combatSource.Should().Contain("StatType.IncomingCriticalHitDowngradeToMinimumDamage");
@@ -1276,7 +1296,7 @@ public class CombatDamageTests
     public void DamageRoll_FallsBackToCreatureNaturalWeapons()
     {
         var root = FindRepositoryRoot();
-        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        var damageRollSource = NativeCombatSource.DamageRoll();
 
         damageRollSource.Should().Contain("weapon = GetFallbackAttackWeapon(attacker);");
         damageRollSource.Should().Contain("private static CNWSItem GetCreatureNaturalWeapon(CNWSCreature attacker)");
@@ -1289,15 +1309,15 @@ public class CombatDamageTests
     public void DamageRoll_DualWieldKeepsDamageProfileOnCurrentAttackWeapon()
     {
         var root = FindRepositoryRoot();
-        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        var damageRollSource = NativeCombatSource.DamageRoll();
 
         damageRollSource.Should().Contain("var weapon = WeaponAttackCycle.GetAttackWeapon(attacker, bOffHand != 0 ? 2 : 0);");
         damageRollSource.Should().NotContain("var weapon = pCombatRound.GetCurrentAttackWeapon();");
-        damageRollSource.Should().Contain("var damageProfile = ExtractWeaponDamageProfile(weapon);");
+        damageRollSource.Should().Contain("var damageProfile = DamageRollWeapon.ExtractWeaponDamageProfile(weapon);");
         damageRollSource.Should().NotContain("ExtractAttackDamageProfile");
         damageRollSource.Should().NotContain("ExtractWeaponDamageProfile(rightHand, leftHand)");
 
-        var extractor = ExtractMethod(damageRollSource, "private static WeaponDamageProfile ExtractWeaponDamageProfile(");
+        var extractor = ExtractMethod(damageRollSource, "internal static WeaponDamageProfile ExtractWeaponDamageProfile(");
         extractor.Should().Contain("var hasDamageProperty = false;");
         extractor.Should().Contain("if (!hasDamageProperty)");
         extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage, false);");
@@ -1821,7 +1841,7 @@ public class CombatDamageTests
     [TestCase(CombatDamageType.Ice, CombatDamageType.Ice)]
     public void WeaponDamageTypeProperty_OnlyElementsRetypeWeaponDamage(CombatDamageType subtype, CombatDamageType expected)
     {
-        var resolve = typeof(SWLOR.Game.Server.Native.GetDamageRoll).GetMethod("ResolveWeaponDamageType",
+        var resolve = typeof(SWLOR.Game.Server.Native.DamageRollWeapon).GetMethod("ResolveWeaponDamageType",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
 
         resolve.Invoke(null, new object[] { CombatDamageType.Physical, (int)subtype }).Should().Be(expected);

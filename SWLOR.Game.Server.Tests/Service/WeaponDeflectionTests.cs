@@ -72,7 +72,7 @@ public class WeaponDeflectionTests
     [Test]
     public void AttackRoll_RoutesOneAutoAttackDeflectionBySourceAndShieldPriority()
     {
-        var source = ReadSource("SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
+        var source = NativeCombatSource.AttackRoll();
 
         source.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
         source.Should().Contain("weaponSkillType == SkillType.Invalid");
@@ -94,7 +94,7 @@ public class WeaponDeflectionTests
         combatSource.Should().Contain("public static bool IsHostileAttackSource(uint defender, uint attacker)");
         typeof(SWLOR.Game.Server.Domain.Combat.ICombatDamageTakenService)
             .GetMethod("IsHostileAttackSource", new[] { typeof(uint), typeof(uint) })
-            .Should().NotBeNull("Native/ResolveAttackRoll.cs calls GameServices.CombatDamageTaken.IsHostileAttackSource");
+            .Should().NotBeNull("Native/AttackRollDefense.cs calls GameServices.CombatDamageTaken.IsHostileAttackSource");
         combatSource.Should().Contain("GetIsPC(attacker) || GetIsDM(attacker) || GetIsDMPossessed(attacker)");
         combatSource.Should().Contain("var requiredSource = _stat.GetStatTypeDeflectionSource(");
         combatSource.Should().Contain("StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment);");

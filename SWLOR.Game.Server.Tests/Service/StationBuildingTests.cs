@@ -673,6 +673,8 @@ public class StationBuildingTests
         var docked = service.Substring(service.IndexOf("private static bool IsDockedAt(", StringComparison.Ordinal));
         docked = docked.Substring(0, docked.IndexOf("public static List<(WorldProperty Ship, PlayerShip Record)> GetJumpableShips(", StringComparison.Ordinal));
         docked.Should().Contain("!Space.IsShipLaunchPending(record.Id)", "a ship leaving its dock is no longer at it");
+        docked.Should().Contain("string.IsNullOrWhiteSpace(record.PendingSaleTradeId)",
+            "a ship with an interrupted cargo sale waits for its owner, or a jump would spend fuel already sold");
         ReadServer("Service", "Space.cs").Should().Contain("_pendingShipLaunches.Values.Any(x => x.ShipId == shipId)");
         docked.Should().Contain("!Space.IsDockedAtDerelict(record, out _)", "a ship at a derelict is away from its dock");
         docked.Should().Contain("!Space.IsDockedAboardHost(record, out _)", "IsDockedAboardHost covers a host and a derelict")

@@ -511,7 +511,9 @@ that copy. The 7 `Activator` sites and the 1 `new` site of the definition source
   In code not converted yet, `Content` is the temporary `GameServices.Content`, so the text is the same before and after.
 - The tool maps a name to its interface from `SWLOR.Architecture.Tests/ConvertedServices.json` plus
   `ContentRegistrations.cs`. After `GameServices` is deleted, the facade tool recognizes the branch by `Core/IContentFactory.cs`.
-  Both tools do nothing on a tree without it.
+  The forward runs of both tools do nothing on a tree without it. `-Reverse` never checks for it: `MasterCopy.ps1` runs it on
+  the characterization project copied into master's tree, which has no `Core/IContentFactory.cs`, and it must still turn
+  the converted text back into master's form there.
 - Mixed files (a master edit merged into a converted file) are converted in place; rewriter tests cover a new static method
   that reaches a service, a new service use, a new call to a converted singleton, a new creation of a converted type, a new
   handler and a new file.
@@ -558,7 +560,8 @@ guard lists those entries.
   - no two content singletons depend on each other, directly or through others;
   - no static field initializer reads a service;
   - nothing outside the entry points references a static `ContainerHost`;
-  - `ContentRegistrations.cs` equals the classes whose constructor takes registered types.
+  - `ContentRegistrations.cs` equals the content singletons (one instance per build) whose constructor takes registered
+    types. Made content is never registered: the factory creates it, and it rejects any registered type.
 - `ConvertedServicesTests.No_class_the_container_builds_uses_GameServices` covers content singletons too.
 - P5-0's debt report counts lookups per file and services per type; each wave shrinks the baseline.
 

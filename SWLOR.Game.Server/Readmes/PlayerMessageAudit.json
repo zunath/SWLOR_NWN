@@ -1225,6 +1225,20 @@
     "Call": "SendMessageToPC(player, ColorToken.Cyan(message))"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/Grip.cs",
+    "Line": 40,
+    "Member": "Toggle",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, \"Grip requires a supported one-handed blade and an empty offhand. Katars and daggers are not supported.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/Grip.cs",
+    "Line": 49,
+    "Member": "Toggle",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, enabled ? \"Alternate grip enabled: one-handed blades use two-handed combat animations. Keep the offhand empty.\" : \"Alternate grip disabled.\")"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
     "Line": 1846,
     "Member": "CloseForUnsupportedAppearance",

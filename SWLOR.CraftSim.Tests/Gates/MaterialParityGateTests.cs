@@ -6,6 +6,7 @@ using SWLOR.CraftSim.Scenario;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.CraftSim.Tests.Support.BenchHarness;
 
 namespace SWLOR.CraftSim.Tests.Gates

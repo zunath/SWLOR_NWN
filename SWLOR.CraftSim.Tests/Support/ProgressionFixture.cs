@@ -3,6 +3,7 @@ using SWLOR.CraftSim.Legacy.Crafting;
 using SWLOR.CraftSim.Progression;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Tests.Support
 {

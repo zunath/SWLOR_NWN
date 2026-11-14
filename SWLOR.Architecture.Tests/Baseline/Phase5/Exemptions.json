@@ -26,7 +26,7 @@
       "reason": "Each member carries its row of data in attributes."
     },
     {
-      "match": "type", "value": "SWLOR.Game.Server.Domain.Crafting.RecipeType",
+      "match": "type", "value": "SWLOR.Game.Server.Domain.Foundation.RecipeType",
       "measures": ["typeSize"],
       "category": "attribute-row enum",
       "reason": "Each member carries its row of data in attributes."

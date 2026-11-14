@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
 using SWLOR.Game.Server.Domain.Character;
 using static SWLOR.Game.Server.Tests.Service.Fabricator.FabricatorTestData;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Fabricator;

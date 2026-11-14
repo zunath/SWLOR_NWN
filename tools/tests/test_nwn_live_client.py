@@ -309,10 +309,25 @@ class LiveClientHelperTests(unittest.TestCase):
 
     def test_up_defaults_to_the_gpu_and_software_is_an_explicit_choice(self):
         from nwn_live_client.__main__ import parser
-        self.assertEqual('wsl-d3d12', parser().parse_args(['up']).gpu_renderer)
+        option = parser().parse_args(['up']).gpu_renderer
+        self.assertIsNone(option)
         self.assertEqual('software', parser().parse_args(['up', '--gpu-renderer', 'software']).gpu_renderer)
         with patch('sys.stderr'), self.assertRaises(SystemExit):
             parser().parse_args(['up', '--gpu-renderer', 'llvmpipe'])
+        with patch.dict('os.environ', {}, clear=True), patch.object(stack, 'log') as log:
+            self.assertEqual('wsl-d3d12', stack.choose_renderer(option))
+        log.assert_called_once_with('Renderer: wsl-d3d12 (default)')
+
+    def test_machine_renderer_variable_sets_the_default_and_the_option_overrides_it(self):
+        with patch.dict('os.environ', {'SWLOR_LIVE_RENDERER': ' software '}), patch.object(stack, 'log') as log:
+            self.assertEqual('software', stack.choose_renderer(None))
+            log.assert_called_once_with('Renderer: software (SWLOR_LIVE_RENDERER)')
+            self.assertEqual('wsl-d3d12', stack.choose_renderer('wsl-d3d12'))
+        with patch.dict('os.environ', {'SWLOR_LIVE_RENDERER': ''}), patch.object(stack, 'log'):
+            self.assertEqual('wsl-d3d12', stack.choose_renderer(None))
+        with patch.dict('os.environ', {'SWLOR_LIVE_RENDERER': 'llvmpipe'}), patch.object(stack, 'log'):
+            with self.assertRaisesRegex(LiveStackError, 'SWLOR_LIVE_RENDERER is "llvmpipe"; it must be one of'):
+                stack.choose_renderer(None)
 
     def renderer_stack(self, renderer):
         directory = self.root / f'renderer-{renderer}'
@@ -375,6 +390,7 @@ class LiveClientHelperTests(unittest.TestCase):
                     stack.check_gpu_renderer(owned)
                 self.assertIn(reason, str(raised.exception))
                 self.assertIn('--gpu-renderer software', str(raised.exception))
+                self.assertIn('SWLOR_LIVE_RENDERER=software', str(raised.exception))
 
     def test_client_script_refuses_software_rendering_when_the_gpu_was_requested(self):
         script = (stack.PACKAGE_DIR / 'run-client.sh').read_text()

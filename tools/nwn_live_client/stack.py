@@ -35,6 +35,8 @@ GPU_RENDERER = 'wsl-d3d12'
 SOFTWARE_RENDERER = 'software'
 RENDERERS = (GPU_RENDERER, SOFTWARE_RENDERER)
 DEFAULT_RENDERER = GPU_RENDERER
+# Per-machine default for --gpu-renderer, for machines that never have the WSL2 GPU.
+RENDERER_ENV = 'SWLOR_LIVE_RENDERER'
 
 PROJECT_PREFIX = 'swlor-live-'
 SERVER_PORT = 5121
@@ -722,9 +724,7 @@ def create(options) -> Stack:
         raise LiveStackError('--max-minutes must be between 5 and 720.')
     if not (math.isfinite(options.settle) and options.settle >= 0):
         raise LiveStackError('--settle must be a finite number of seconds, 0 or more.')
-    renderer = getattr(options, 'gpu_renderer', None) or DEFAULT_RENDERER
-    if renderer not in RENDERERS:
-        raise LiveStackError(f'--gpu-renderer must be one of: {", ".join(RENDERERS)}.')
+    renderer = choose_renderer(getattr(options, 'gpu_renderer', None))
     window_size = tuple(int(value) for value in getattr(options, 'window_size', '1280x720').split('x'))
     client_settings_text = client_settings(options.player_name, getattr(options, 'show_render_stats', False),
                                            getattr(options, 'motion_capture', False), window_size)
@@ -1030,10 +1030,25 @@ def start(stack: Stack, server_timeout: float) -> None:
     require_running(stack, 'after start-up')
 
 
-GPU_UNAVAILABLE = ('The WSL2 GPU renderer (--gpu-renderer wsl-d3d12, the default) is unavailable: {reason} '
-                   'It needs Docker Desktop with the WSL2 backend and a GPU driver that exposes /usr/lib/wsl. '
-                   'On a machine without one, run up again with --gpu-renderer software (Mesa llvmpipe, about '
-                   '2 fps: fine for screenshots and UI checks, not for animation or frame-rate evidence).')
+def choose_renderer(option: str | None) -> str:
+    """--gpu-renderer when given, else SWLOR_LIVE_RENDERER, else the WSL2 GPU."""
+    if option:
+        source, renderer = '--gpu-renderer', option
+    elif os.environ.get(RENDERER_ENV, '').strip():
+        source, renderer = RENDERER_ENV, os.environ[RENDERER_ENV].strip()
+    else:
+        source, renderer = 'default', DEFAULT_RENDERER
+    if renderer not in RENDERERS:
+        raise LiveStackError(f'{source} is "{renderer}"; it must be one of: {", ".join(RENDERERS)}.')
+    log(f'Renderer: {renderer} ({source})')
+    return renderer
+
+
+GPU_UNAVAILABLE = ('The WSL2 GPU renderer (wsl-d3d12, the default) is unavailable: {reason} '
+                   'It needs Docker Desktop with the WSL2 backend and an NVIDIA GPU driver that exposes '
+                   '/usr/lib/wsl. On a machine without one, run up again with --gpu-renderer software, or set '
+                   f'{RENDERER_ENV}=software for every run on this machine (Mesa llvmpipe, about 2 fps: fine '
+                   'for screenshots and UI checks, not for animation or frame-rate evidence).')
 
 
 def check_gpu_renderer(stack: Stack) -> None:

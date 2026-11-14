@@ -1,3 +1,4 @@
+using SWLOR.Architecture.Tests.Debt;
 using SWLOR.Architecture.Tests.Domains;
 using SWLOR.Architecture.Tests.Scanning;
 
@@ -20,6 +21,11 @@ internal static class ArchitectureProject
     private static readonly Lazy<AssemblyFacts> ServerAssemblyFacts = new(() => AssemblyFactScanner.Scan(ServerAssemblyPath));
     private static readonly Lazy<NativeHookFacts> ServerNativeHooks = new(() => NativeHookScanner.Scan(ServerAssemblyPath, ContractsNamespace));
     private static readonly Lazy<NativeHookFacts> HooksAssemblyNativeHooks = new(() => NativeHookScanner.Scan(HooksAssemblyPath, ContractsNamespace));
+    private static readonly Lazy<SourceSnapshot> SolutionSource = new(() => SourceSnapshot.Load(RepositoryRoot, SolutionFileName));
+    private static readonly Lazy<DebtScan> SolutionDebt = new(() => DebtScan.Run(Source, Exemptions, Graph, Server, Facts));
+
+    /// <summary>The solution whose projects the Phase 5 debt measures read.</summary>
+    public const string SolutionFileName = "SWLOR.Game.Server.sln";
 
     public static bool IsUpdating => Environment.GetEnvironmentVariable(UpdateVariable) == "1";
 
@@ -37,6 +43,21 @@ internal static class ArchitectureProject
             throw new InvalidOperationException($"Could not find {ProjectFileName} above {AppContext.BaseDirectory}.");
         }
     }
+
+    /// <summary>The repository root: the folder of the solution, one above this project.</summary>
+    public static string RepositoryRoot => Path.GetFullPath(Path.Combine(Directory, ".."));
+
+    /// <summary>The folder of the Phase 5 debt baselines, their exemptions and the generated report.</summary>
+    public static string DebtBaselineDirectory => Path.Combine(Directory, "Baseline", "Phase5");
+
+    /// <summary>The reviewed exemptions and approved static entry points of the Phase 5 debt measures.</summary>
+    public static ExemptionList Exemptions => ExemptionList.Load(Path.Combine(DebtBaselineDirectory, "Exemptions.json"));
+
+    /// <summary>Every project of the solution, parsed once for all debt tests.</summary>
+    public static SourceSnapshot Source => SolutionSource.Value;
+
+    /// <summary>The Phase 5 debt measures of the solution as it is now, computed once for all debt tests.</summary>
+    public static DebtScan Debt => SolutionDebt.Value;
 
     public static string DomainMapPath => Path.Combine(Directory, "DomainMap.json");
 

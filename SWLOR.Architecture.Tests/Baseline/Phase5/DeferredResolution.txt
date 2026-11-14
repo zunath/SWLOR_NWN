@@ -1,0 +1,53 @@
+# Phase 5 debt (P5-0): deferred resolution in SWLOR.Game.Server (target 4).
+# Line: <file> | <parameters>: constructor parameters of type Lazy<T> or Func<T> where T is a service (a type
+# Composition/ServiceRegistrations.Register registers).
+# Line: <file> (IServiceProvider) | <uses>: names outside Composition/ that bind to System.IServiceProvider (a hard rule
+# as well: ConvertedServicesTests.Nothing_locates_a_service_outside_composition).
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server/Domain/Abilities/AbilityCooldownVisualService.cs | 1
+SWLOR.Game.Server/Domain/Abilities/AbilityService.cs | 9
+SWLOR.Game.Server/Domain/Abilities/MimicryService.cs | 5
+SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs | 1
+SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs | 3
+SWLOR.Game.Server/Domain/Character/PerkService.cs | 4
+SWLOR.Game.Server/Domain/Character/PlayerDescriptorService.cs | 1
+SWLOR.Game.Server/Domain/Character/PlayerNameService.cs | 2
+SWLOR.Game.Server/Domain/Character/SkillService.cs | 2
+SWLOR.Game.Server/Domain/Character/StatService.cs | 6
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs | 4
+SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs | 1
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs | 1
+SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs | 1
+SWLOR.Game.Server/Domain/Combat/CombatPointService.cs | 1
+SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs | 3
+SWLOR.Game.Server/Domain/Combat/EnmityService.cs | 5
+SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs | 5
+SWLOR.Game.Server/Domain/Combat/PairedRangedTraitsService.cs | 2
+SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs | 1
+SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs | 1
+SWLOR.Game.Server/Domain/Combat/ResistanceService.cs | 2
+SWLOR.Game.Server/Domain/Combat/StealthService.cs | 5
+SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs | 2
+SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs | 8
+SWLOR.Game.Server/Domain/Companions/DroidEquipmentDiagnosticsService.cs | 1
+SWLOR.Game.Server/Domain/Companions/IncubationFieldNoteService.cs | 1
+SWLOR.Game.Server/Domain/Crafting/CraftService.cs | 1
+SWLOR.Game.Server/Domain/Creatures/AIService.cs | 9
+SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs | 4
+SWLOR.Game.Server/Domain/Items/ItemService.cs | 4
+SWLOR.Game.Server/Domain/Quests/CapstoneProofService.cs | 1
+SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs | 1
+SWLOR.Game.Server/Domain/Social/ChatPortraitTellsService.cs | 1
+SWLOR.Game.Server/Domain/Social/PartyService.cs | 2
+SWLOR.Game.Server/Domain/Social/PerformanceAudienceService.cs | 1
+SWLOR.Game.Server/Domain/Social/PerformanceSnapshotService.cs | 1
+SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs | 1
+SWLOR.Game.Server/Domain/Social/PlayerListService.cs | 4
+SWLOR.Game.Server/Domain/World/AreaService.cs | 1
+SWLOR.Game.Server/Domain/World/HoloComService.cs | 1
+SWLOR.Game.Server/Domain/World/MusicService.cs | 1

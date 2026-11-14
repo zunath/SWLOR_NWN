@@ -1,0 +1,56 @@
+# Phase 5 debt (P5-0): logic types of SWLOR.Game.Server over 1,000 lines (target 2).
+# Line: <type> | <lines>. A type is measured by its files, every partial file together: a file that declares only that
+# top-level type counts all its lines (usings and comments included, a final line break not), a file that declares
+# several top-level types counts the lines each declaration spans. Nested types count toward their top-level type.
+# Not measured: GUI window definitions (layout; see LongMethods.txt) and the exemptions in Exemptions.json. The lines
+# of an exempt member are taken out of its type.
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server.Domain.Abilities.AbilityService | 4572
+SWLOR.Game.Server.Domain.Abilities.MimicryService | 1434
+SWLOR.Game.Server.Domain.Character.PerkService | 1501
+SWLOR.Game.Server.Domain.Character.PlayerNameService | 1039
+SWLOR.Game.Server.Domain.Character.SkillService | 1148
+SWLOR.Game.Server.Domain.Character.StatService | 3363
+SWLOR.Game.Server.Domain.Character.StatusEffectService | 2801
+SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 1200
+SWLOR.Game.Server.Domain.Combat.CombatAbilityBonusService | 1061
+SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1686
+SWLOR.Game.Server.Domain.Combat.CombatDamageModifiersService | 1433
+SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService | 1640
+SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 1707
+SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1689
+SWLOR.Game.Server.Domain.Combat.EnmityService | 1249
+SWLOR.Game.Server.Domain.Companions.BeastMasteryService | 1232
+SWLOR.Game.Server.Domain.Companions.DroidService | 1365
+SWLOR.Game.Server.Domain.Crafting.BlueprintBonuses | 1001
+SWLOR.Game.Server.Domain.Crafting.CraftService | 1319
+SWLOR.Game.Server.Domain.Creatures.AIService | 1876
+SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1092
+SWLOR.Game.Server.Domain.Creatures.SpawnService | 1208
+SWLOR.Game.Server.Domain.Foundation.CommunicationService | 1096
+SWLOR.Game.Server.Domain.Items.ItemService | 1610
+SWLOR.Game.Server.Domain.Social.PerformanceAudienceService | 1054
+SWLOR.Game.Server.Domain.Social.PerformanceService | 1001
+SWLOR.Game.Server.Domain.Space.SpaceService | 2762
+SWLOR.Game.Server.Domain.UI.ExtraHotbarsService | 1020
+SWLOR.Game.Server.Domain.World.PropertyLoaderService | 1435
+SWLOR.Game.Server.Domain.World.PropertyService | 1637
+SWLOR.Game.Server.Domain.World.ShuttleService | 1314
+SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase | 2332
+SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService | 1926
+SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand | 1441
+SWLOR.Game.Server.Feature.EquipmentStats | 1129
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel | 6180
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 1514
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DisguiseViewModel | 1029
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DroidAssemblyViewModel | 1022
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.IncubatorViewModel | 1189
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerksViewModel | 1543
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideViewModel | 1311
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel | 2081
+SWLOR.Game.Server.Feature.UsePerkFeat | 1687

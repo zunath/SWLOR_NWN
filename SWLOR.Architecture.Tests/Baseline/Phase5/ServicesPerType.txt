@@ -1,0 +1,36 @@
+# Phase 5 debt (P5-0): types of SWLOR.Game.Server that use more than 10 services (target 2).
+# Line: <type> | <services>. The services a type uses are the distinct services its constructors take (directly or as
+# Lazy<> or Func<>) together with the distinct services it reaches through GameServices or FacadeAccessor; a nested type
+# counts toward its top-level type. A service is a type Composition/ServiceRegistrations.Register registers (both sides of
+# AddSingleton<IService, Service>()). Records, settings and other values a constructor takes are not services.
+# Not measured: the exemptions in Exemptions.json.
+#
+# The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
+# shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:
+# SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
+# SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
+
+SWLOR.Game.Server.Domain.Abilities.AbilityService | 31
+SWLOR.Game.Server.Domain.Abilities.MimicryService | 11
+SWLOR.Game.Server.Domain.Character.StatService | 23
+SWLOR.Game.Server.Domain.Character.StatusEffectService | 15
+SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 13
+SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService | 11
+SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 13
+SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService | 17
+SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 17
+SWLOR.Game.Server.Domain.Combat.CombatService | 12
+SWLOR.Game.Server.Domain.Combat.EnmityService | 13
+SWLOR.Game.Server.Domain.Companions.BeastMasteryService | 13
+SWLOR.Game.Server.Domain.Companions.DroidService | 14
+SWLOR.Game.Server.Domain.Creatures.AIService | 15
+SWLOR.Game.Server.Domain.Foundation.CommunicationService | 12
+SWLOR.Game.Server.Domain.Social.PerformanceAudienceService | 13
+SWLOR.Game.Server.Domain.Space.SpaceService | 16
+SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase | 16
+SWLOR.Game.Server.Feature.ChatCommandDefinition.CharacterChatCommand | 16
+SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand | 16
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 19
+SWLOR.Game.Server.Feature.UsePerkFeat | 28
+SWLOR.Game.Server.Native.GetDamageRoll | 21
+SWLOR.Game.Server.Native.ResolveAttackRoll | 20

@@ -8,8 +8,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,098 | 13,528 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 44 | 73,929 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 35 | 9,785 lines | none over 150 lines (400 for layout) |
+| 2. Large types | `LargeTypes.txt` | 44 | 73,985 lines | none over 1,000 lines |
+| 3. Long methods | `LongMethods.txt` | 30 | 7,284 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 22 | 354 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 42 | 111 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 124 | 272 types | none |
@@ -56,7 +56,7 @@ Largest 15 of 1,098 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 44 types over 1,000 lines, 73,929 lines in all.
+- 44 types over 1,000 lines, 73,985 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -82,21 +82,17 @@ Largest 15 of 44 (all in `LargeTypes.txt`):
 
 ## 3. Long methods
 
-- 33 methods over 150 lines and 2 GUI layout methods over 400.
-- Exempt and over the limit: 78 (content data 76, data catalog member 2).
+- 28 methods over 150 lines and 2 GUI layout methods over 400.
+- Exempt and over the limit: 80 (content data 76, data catalog member 4).
 
-Largest 15 of 35 (all in `LongMethods.txt`):
+Largest 15 of 30 (all in `LongMethods.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
-| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideViewModel.BuildTopics` | 972 | PlayerGuideViewModel.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.StablesDefinition.BuildWindow` | 741 | layout, StablesDefinition.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel.LoadShip` | 532 | ShipManagementViewModel.cs |
-| `SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces` | 477 | RaceService.cs |
-| `SWLOR.Game.Server.Feature.EventRegistration.HookNWNXEvents` | 433 | EventRegistration.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat.ActivateAbility` | 432 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ShipManagementDefinition.BuildWindow` | 414 | layout, ShipManagementDefinition.cs |
-| `SWLOR.Game.Server.Feature.ChatCommandDefinition.EmoteChatCommand.BuildChatCommands` | 412 | EmoteChatCommand.cs |
 | `SWLOR.Game.Server.Domain.Foundation.CommunicationService.ProcessChatMessage` | 327 | CommunicationService.cs |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase.ConfigureWeaponAbility` | 291 | WeaponActiveAbilityDefinitionBase.cs |
 | `SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid` | 272 | DroidService.cs |
@@ -104,6 +100,10 @@ Largest 15 of 35 (all in `LongMethods.txt`):
 | `SWLOR.Game.Server.Domain.Character.SkillService.GiveSkillXP` | 237 | SkillService.cs |
 | `SWLOR.Game.Server.Domain.Character.StatusEffectService.ApplyStatusEffectInternal` | 234 | StatusEffectService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CombatStyleGuideTopics.Create` | 224 | CombatStyleGuideTopics.cs |
+| `SWLOR.Game.Server.Domain.World.PropertyCityGovernanceService.ProcessCityElections` | 215 | PropertyCityGovernanceService.cs |
+| `SWLOR.Game.Server.Domain.Combat.CombatRecordSerializer.Write` | 198 | CombatRecordSerializer.cs |
+| `SWLOR.Game.Server.Domain.UI.GuiWindowBuilder<T>.Build` | 198 | GuiWindowBuilder.cs |
+| `SWLOR.Game.Server.Domain.Abilities.AbilityService.ApplyTelegraphedCombatImpact` | 197 | AbilityService.cs |
 
 ## 4. Services per type
 
@@ -261,6 +261,8 @@ Owner decision 1 (2026-11-14) exempts these from the size and services measures 
 | content data | member `SWLOR.Game.Server.Feature.QuestDefinition.CapstoneProofDefinitions.All` | typeSize, methodSize | Quest data: the table of capstone proofs, one record per capstone. |
 | data catalog member | member `SWLOR.Game.Server.Domain.World.MusicSongCatalog.Songs` | typeSize, methodSize | Lists the songs and nothing else. |
 | data catalog member | member `SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog.Entries` | typeSize, methodSize | Lists the ability animations and nothing else. |
+| data catalog member | member `SWLOR.Game.Server.Domain.Character.RaceService.LoadRaces` | typeSize, methodSize | Fills the default appearance table per race and gender and nothing else; cutting it into numbered pieces only to meet the line limit would make it harder to read (P5-16c). |
+| data catalog member | member `SWLOR.Game.Server.Feature.ChatCommandDefinition.EmoteChatCommand.BuildChatCommands` | typeSize, methodSize | Lists the emote chat commands (name, description, animation) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16c). |
 | fluent builder | type `SWLOR.Game.Server.Domain.Abilities.AbilityBuilder` | typeSize | Many short builder methods; its methods are still measured. |
 
 Owner decision 3 (2026-11-14) keeps these static entry points static:

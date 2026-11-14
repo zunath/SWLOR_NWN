@@ -9,17 +9,22 @@ namespace SWLOR.TypeMoves;
 /// JSON, and the comments and string literals of C# files (their code is the semantic rewrite's).
 /// <list type="bullet">
 /// <item>a full name, <c>SWLOR.Game.Server.Service.Log</c> (also after <c>global::</c>), becomes <c>SWLOR.Game.Server.Domain.Foundation.Log</c>;</item>
-/// <item>a name relative to the server, <c>Service.Log</c>, becomes <c>Domain.Foundation.Log</c> (not in string literals, which
-/// the code compares or prints);</item>
+/// <item>a name relative to the server, <c>Service.Log</c> or <c>Domain.Crafting.RecipeType</c>, becomes <c>Domain.Foundation.Log</c> or
+/// <c>Domain.Foundation.RecipeType</c> (not in string literals, which the code compares or prints);</item>
 /// <item>a file path, <c>Service/Log.cs</c> (or with <c>\</c>), becomes <c>Domain/Foundation/Log.cs</c>;</item>
 /// <item>a path built from literals, <c>"Service", "Log.cs"</c>, becomes <c>"Domain", "Foundation", "Log.cs"</c>.</item>
 /// </list>
+/// Each type has its own source namespace; a path or literals name a moved file only with that file's own source folder.
 /// </summary>
 internal sealed class TextRewriter
 {
     private static readonly CSharpParseOptions ParseOptions = new(LanguageVersion.Preview, DocumentationMode.None);
+    private static readonly Regex Quoted = new("\"(?<text>[^\"]*)\"", RegexOptions.CultureInvariant);
+    private static readonly Regex Separators = new(@"[/\\]+", RegexOptions.CultureInvariant);
 
-    private readonly TypeMoveData _data;
+    private readonly Dictionary<string, TypeMove> _byOldFullName;
+    private readonly Dictionary<string, TypeMove> _byRelativeName;
+    private readonly Dictionary<string, TypeMove> _byFile;
     private readonly Regex _full;
     private readonly Regex _relative;
     private readonly Regex _path;
@@ -27,20 +32,21 @@ internal sealed class TextRewriter
 
     public TextRewriter(TypeMoveData data)
     {
-        _data = data;
-        var names = "(?<name>" + string.Join("|", data.Moves.Select(move => move.Name).OrderByDescending(name => name.Length).Select(Regex.Escape)) + ")";
-        _byFile = data.Moves.GroupBy(move => Path.GetFileNameWithoutExtension(move.File), StringComparer.Ordinal).ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
-        var files = "(?<file>" + string.Join("|", _byFile.Keys.OrderByDescending(name => name.Length).Select(Regex.Escape)) + ")";
-        var leaf = Regex.Escape(TypeMove.Leaf(data.From));
-        var folder = TypeMove.FolderOf(data.From)[(TypeMove.ServerRoot.Length + 1)..];
-        var folderPattern = string.Join(@"[/\\]{1,2}", folder.Split('/').Select(Regex.Escape));
-        _full = new Regex(@"(?<![A-Za-z0-9_.])(?<global>global::)?" + Regex.Escape(data.From) + @"\." + names + "(?![A-Za-z0-9_])", RegexOptions.CultureInvariant);
-        _relative = new Regex(@"(?<![A-Za-z0-9_.:])" + leaf + @"\." + names + "(?![A-Za-z0-9_])", RegexOptions.CultureInvariant);
-        _path = new Regex(@"(?<![A-Za-z0-9_.])" + folderPattern + @"(?<last>[/\\]{1,2})" + files + @"\.cs(?![A-Za-z0-9_])", RegexOptions.CultureInvariant);
-        _literals = new Regex("\"" + leaf + "\"(?<gap>\\s*,\\s*)\"" + files + "\\.cs\"", RegexOptions.CultureInvariant);
-    }
+        _byOldFullName = data.Moves.ToDictionary(move => move.OldFullName, StringComparer.Ordinal);
+        _byRelativeName = data.Moves.ToDictionary(move => TypeMove.BelowRoot(move.From) + "." + move.Name, StringComparer.Ordinal);
+        _byFile = data.Moves.GroupBy(FileKey, StringComparer.Ordinal).ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
 
-    private readonly Dictionary<string, TypeMove> _byFile;
+        var folders = data.Sources.Select(source => TypeMove.BelowRoot(source).Split('.')).ToList();
+        var files = "(?<file>" + Alternation(data.Moves.Select(move => Path.GetFileNameWithoutExtension(move.File))) + ")";
+        var folderPattern = "(?<folder>" + string.Join("|", folders.OrderByDescending(segments => segments.Length)
+            .Select(segments => string.Join(@"[/\\]{1,2}", segments.Select(Regex.Escape)))) + ")";
+        var literalPattern = "(?<folder>" + string.Join("|", folders.OrderByDescending(segments => segments.Length)
+            .Select(segments => string.Join(@"\s*,\s*", segments.Select(segment => "\"" + Regex.Escape(segment) + "\"")))) + ")";
+        _full = new Regex(@"(?<![A-Za-z0-9_.])(?<global>global::)?(?<old>" + Alternation(_byOldFullName.Keys) + ")(?![A-Za-z0-9_])", RegexOptions.CultureInvariant);
+        _relative = new Regex(@"(?<![A-Za-z0-9_.:])(?<old>" + Alternation(_byRelativeName.Keys) + ")(?![A-Za-z0-9_])", RegexOptions.CultureInvariant);
+        _path = new Regex(@"(?<![A-Za-z0-9_.])" + folderPattern + @"(?<last>[/\\]{1,2})" + files + @"\.cs(?![A-Za-z0-9_])", RegexOptions.CultureInvariant);
+        _literals = new Regex(literalPattern + "(?<gap>\\s*,\\s*)\"" + files + "\\.cs\"", RegexOptions.CultureInvariant);
+    }
 
     /// <summary>Rewrites a file that is not C#.</summary>
     public string RewriteText(string text, ref int count)
@@ -78,9 +84,9 @@ internal sealed class TextRewriter
             var first = root.FindToken(match.Index);
             var second = root.FindToken(match.Index + match.Length - 1);
             if (IsStringToken(first) && first.SpanStart == match.Index && IsStringToken(second) && second.Span.End == match.Index + match.Length &&
-                !edits.Any(edit => edit.Start < match.Index + match.Length && match.Index < edit.End))
+                !edits.Any(edit => edit.Start < match.Index + match.Length && match.Index < edit.End) && Literals(match) is { } replacement)
             {
-                edits.Add(new TextEdit(match.Index, match.Length, Literals(match)));
+                edits.Add(new TextEdit(match.Index, match.Length, replacement));
                 local++;
             }
         }
@@ -107,38 +113,60 @@ internal sealed class TextRewriter
         count += local;
     }
 
-    private static string Replace(Regex regex, string text, Func<Match, string> evaluator, ref int count)
+    /// <summary>Replaces each match the evaluator rewrites (null leaves a match as it is) and counts the rewrites.</summary>
+    private static string Replace(Regex regex, string text, Func<Match, string?> evaluator, ref int count)
     {
         var local = 0;
         var result = regex.Replace(text, match =>
         {
+            var replacement = evaluator(match);
+            if (replacement == null)
+                return match.Value;
+
             local++;
-            return evaluator(match);
+            return replacement;
         });
         count += local;
         return result;
     }
 
-    private string Full(Match match) => match.Groups["global"].Value + Move(match).NewFullName;
+    private string Full(Match match) => match.Groups["global"].Value + _byOldFullName[match.Groups["old"].Value].NewFullName;
 
-    private string Relative(Match match) => Move(match).RelativeTarget + "." + match.Groups["name"].Value;
-
-    private string PathPiece(Match match)
+    private string Relative(Match match)
     {
-        var move = _byFile[match.Groups["file"].Value];
-        var separator = match.Groups["last"].Value;
-        return TypeMove.FolderOf(move.To)[(TypeMove.ServerRoot.Length + 1)..].Replace("/", separator) + separator + move.File;
+        var move = _byRelativeName[match.Groups["old"].Value];
+        return TypeMove.BelowRoot(move.To) + "." + move.Name;
     }
 
-    private string Literals(Match match)
+    /// <summary>The path in the target folder, with the separators of the match; null when the folder is not the file's own source.</summary>
+    private string? PathPiece(Match match)
     {
-        var move = _byFile[match.Groups["file"].Value];
+        var folder = string.Join("/", Separators.Split(match.Groups["folder"].Value));
+        if (!_byFile.TryGetValue(folder + "/" + match.Groups["file"].Value, out var move))
+            return null;
+
+        var separator = match.Groups["last"].Value;
+        return TypeMove.BelowRoot(move.To).Replace(".", separator) + separator + move.File;
+    }
+
+    /// <summary>The literals of the target folder, with the gap of the match; null when the folder is not the file's own source.</summary>
+    private string? Literals(Match match)
+    {
+        var folder = string.Join("/", Quoted.Matches(match.Groups["folder"].Value).Select(segment => segment.Groups["text"].Value));
+        if (!_byFile.TryGetValue(folder + "/" + match.Groups["file"].Value, out var move))
+            return null;
+
         var gap = match.Groups["gap"].Value;
-        var segments = move.RelativeTarget.Split('.');
+        var segments = TypeMove.BelowRoot(move.To).Split('.');
         return string.Join(gap, segments.Select(segment => "\"" + segment + "\"")) + gap + "\"" + move.File + "\"";
     }
 
-    private TypeMove Move(Match match) => _data.ByName[match.Groups["name"].Value];
+    /// <summary>A moved file by its source folder below the server and its name without the extension (<c>Domain/Crafting/RecipeType</c>).</summary>
+    private static string FileKey(TypeMove move) =>
+        TypeMove.BelowRoot(move.From).Replace('.', '/') + "/" + Path.GetFileNameWithoutExtension(move.File);
+
+    private static string Alternation(IEnumerable<string> words) =>
+        string.Join("|", words.Distinct(StringComparer.Ordinal).OrderByDescending(word => word.Length).ThenBy(word => word, StringComparer.Ordinal).Select(Regex.Escape));
 
     private static bool IsStringToken(SyntaxToken token) => token.Kind() is
         SyntaxKind.StringLiteralToken or SyntaxKind.InterpolatedStringTextToken or SyntaxKind.SingleLineRawStringLiteralToken or

@@ -6,9 +6,9 @@ namespace SWLOR.TypeMoves;
 /// <summary>
 /// Adds and removes using directives the way the file already writes them. A new namespace goes into the block of plain
 /// usings (at the top of the file, or in its first namespace declaration when only that one has usings): at its sorted place
-/// when the block is sorted (ordinally, or with <c>System</c> first), else where the removed using of the old namespace was,
-/// else after the last <c>SWLOR.Game.Server</c> using, else after the last using. A removed directive takes its line with it,
-/// and the blank line after the block when the block becomes empty.
+/// when the block is sorted (with <c>System</c> first, else ordinally; a single using counts as sorted), else where the removed
+/// using of the old namespace was, else after the last <c>SWLOR.Game.Server</c> using, else after the last using. A removed
+/// directive takes its line with it, and the blank line after the block when the block becomes empty.
 /// </summary>
 internal static class UsingEditor
 {
@@ -24,8 +24,9 @@ internal static class UsingEditor
         var plain = block.Where(directive => SyntaxQueries.IsPlain(directive) && !SyntaxQueries.IsGlobal(directive)).ToList();
         var kept = plain.Where(directive => !removed.Contains(directive)).ToList();
         var names = plain.Select(directive => SyntaxQueries.Dotted(directive.Name!)).ToList();
-        IComparer<string>? order = IsSorted(names, StringComparer.Ordinal) ? StringComparer.Ordinal
-            : IsSorted(names, SystemFirst.Instance) ? SystemFirst.Instance : null;
+        // A block that both orders accept (only System usings, or none) follows the editors' default: System first.
+        IComparer<string>? order = IsSorted(names, SystemFirst.Instance) ? SystemFirst.Instance
+            : IsSorted(names, StringComparer.Ordinal) ? StringComparer.Ordinal : null;
 
         // Where each new line goes: before a kept directive, after an anchor directive, or in place of a removed one.
         var before = new Dictionary<UsingDirectiveSyntax, List<string>>();
@@ -121,7 +122,7 @@ internal static class UsingEditor
                 return false;
         }
 
-        return names.Count > 1;
+        return names.Count > 0;
     }
 
     /// <summary>Removes a directive with its line when it stands alone on it (putting <paramref name="replacement"/> there), else just the directive.</summary>

@@ -27,5 +27,6 @@ internal sealed record ProjectInfo(
 {
     public string Folder => Path.GetDirectoryName(ProjectFile)!;
 
-    public CSharpParseOptions ParseOptions => new(LanguageVersion, DocumentationMode.None);
+    /// <summary>The parse options; documentation comments are parsed, so a <c>cref</c> binds like a name in code.</summary>
+    public CSharpParseOptions ParseOptions => new(LanguageVersion, DocumentationMode.Parse);
 }

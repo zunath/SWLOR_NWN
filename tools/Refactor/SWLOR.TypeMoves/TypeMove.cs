@@ -21,14 +21,29 @@ internal sealed record TypeMove(string Name, string From, string To, string File
     public string TargetPath => FolderOf(To) + "/" + File;
 
     /// <summary>
-    /// <see cref="To"/> relative to the namespace that encloses <see cref="From"/> (<c>Domain.Foundation</c>): what replaces the
-    /// last segment of a qualifier that named <see cref="From"/> (<c>Service.Log</c> becomes <c>Domain.Foundation.Log</c>).
+    /// The deepest namespace that encloses both <see cref="From"/> and <see cref="To"/> and is neither of them
+    /// (<c>SWLOR.Game.Server</c> for <c>Service</c> to <c>Domain.Foundation</c>, <c>SWLOR.Game.Server.Domain</c> for
+    /// <c>Domain.Crafting</c> to <c>Domain.Foundation</c>): where a qualifier that spells <see cref="From"/> and one that spells
+    /// <see cref="To"/> start to differ.
     /// </summary>
-    public string RelativeTarget => To[(Parent(From).Length + 1)..];
+    public string CommonParent => CommonParentOf(From, To);
+
+    /// <summary><see cref="From"/> below <see cref="CommonParent"/> (<c>Service</c>, <c>Crafting</c>, <c>Feature.AbilityDefinition</c>).</summary>
+    public string RelativeSource => From[(CommonParent.Length + 1)..];
+
+    /// <summary>
+    /// <see cref="To"/> below <see cref="CommonParent"/> (<c>Domain.Foundation</c>, <c>Foundation</c>, <c>Domain.Combat</c>): what
+    /// replaces the segments of a qualifier that spell <see cref="RelativeSource"/> (<c>Service.Log</c> becomes
+    /// <c>Domain.Foundation.Log</c>, <c>Crafting.RecipeType</c> becomes <c>Foundation.RecipeType</c>).
+    /// </summary>
+    public string RelativeTarget => To[(CommonParent.Length + 1)..];
 
     /// <summary>The repository folder of a namespace of the server (<c>SWLOR.Game.Server/Domain/Foundation</c>).</summary>
     public static string FolderOf(string @namespace) =>
-        @namespace == ServerRoot ? ServerRoot : ServerRoot + "/" + @namespace[(ServerRoot.Length + 1)..].Replace('.', '/');
+        @namespace == ServerRoot ? ServerRoot : ServerRoot + "/" + BelowRoot(@namespace).Replace('.', '/');
+
+    /// <summary>A namespace of the server without the root (<c>Domain.Foundation</c>): how guides and scripts write it.</summary>
+    public static string BelowRoot(string @namespace) => @namespace[(ServerRoot.Length + 1)..];
 
     public static string Parent(string @namespace)
     {
@@ -38,4 +53,16 @@ internal sealed record TypeMove(string Name, string From, string To, string File
 
     /// <summary>The last segment of a namespace (<c>Service</c>).</summary>
     public static string Leaf(string @namespace) => @namespace[(@namespace.LastIndexOf('.') + 1)..];
+
+    /// <summary>The deepest common enclosing namespace of two namespaces, above both (see <see cref="CommonParent"/>).</summary>
+    public static string CommonParentOf(string from, string to)
+    {
+        var a = from.Split('.');
+        var b = to.Split('.');
+        var common = 0;
+        while (common < a.Length && common < b.Length && a[common] == b[common])
+            common++;
+        common = Math.Min(common, Math.Min(a.Length, b.Length) - 1);
+        return string.Join(".", a.Take(common));
+    }
 }

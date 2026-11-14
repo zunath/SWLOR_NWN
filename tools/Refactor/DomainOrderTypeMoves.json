@@ -1,0 +1,23 @@
+{
+  "comment": "Data for tools/Refactor/SWLOR.TypeMoves (P5-1c, wrapper Move-DomainOrderTypes.ps1): the type moves of the domain order (Readmes/MaintainabilityRefactorDomainOrder.md, section 3 and Appendix B). Each entry names the namespace its type leaves (from), the namespace it joins (to, any namespace of the server: Domain.Foundation, Domain.Character, Core) and, when another type's file declares it, its file; a file moves whole, so every type its file declares is listed with the same from and to. A Platform target is SWLOR.Game.Server.Core. The moves run after Move-ServiceTypes.ps1 (tools/Refactor/MechanicalScripts.txt): master names these types through Service.<Name>Service, which Move-SupportNamespaces.ps1 first turns into Domain.<Domain>. removeUnusedSourceUsings false: a file keeps its using of the namespace a type left (the smallest edit, so master's using lines conflict less); only a namespace left without types loses it. textExcludes: paths whose text the tool never rewrites (files that hold the old names on purpose, the tool itself and its tests).",
+  "removeUnusedSourceUsings": false,
+  "types": [
+    { "type": "RecipeType", "from": "SWLOR.Game.Server.Domain.Crafting", "to": "SWLOR.Game.Server.Domain.Foundation" }
+  ],
+  "textExcludes": [
+    "SWLOR.Game.Server/Readmes/Maintainability*",
+    "SWLOR.Toolset/WORKLOG.md",
+    "tools/Refactor/HandlerRenames.txt",
+    "tools/Refactor/TypeMoves.json",
+    "tools/Refactor/DomainOrderTypeMoves.json",
+    "tools/Refactor/SWLOR.TypeMoves/**",
+    "tools/Refactor/Move-ServiceTypes.ps1",
+    "tools/Refactor/Move-DomainOrderTypes.ps1",
+    "SWLOR.Game.Server.Tests/Tools/TypeMoves*",
+    "tools/Refactor/RemovedFacades.json",
+    "tools/Refactor/NamespaceMoves.json",
+    "tools/Refactor/Move-SupportNamespaces.ps1",
+    "SWLOR.Game.Server.Tests/Core/MoveSupportNamespacesScriptTests.cs",
+    "SWLOR.Game.Server.Tests/Tools/FacadeRemovalRewriterTests.cs"
+  ]
+}

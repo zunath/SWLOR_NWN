@@ -233,4 +233,11 @@ public class SpaceRevampReviewFixTests
         pass.Should().BeGreaterThanOrEqualTo(0);
         confirm.IndexOf("DB.Delete<ShuttleRide>(ride.Id);", StringComparison.Ordinal).Should().BeGreaterThan(pass);
     }
+
+    [Test]
+    public void OnlyAPilotWhoseShipIsInSpace_FliesAShip_ForDockingBoardingAndSalvage()
+    {
+        var flown = Between(ReadSource("Service", "SpaceDocking.cs"), "private static bool TryGetFlownShip(", "public static List<PlayerShip> GetDockedShips(");
+        flown.Should().Contain("|| !IsShipInSpace(creature))", "a crew member keeps their own ship as active while it waits elsewhere");
+    }
 }

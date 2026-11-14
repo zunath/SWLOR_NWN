@@ -69,14 +69,20 @@ namespace SWLOR.Game.Server.Service
             return permission != null && permission.Permissions.TryGetValue(type, out var allowed) && allowed;
         }
 
-        /// <summary>The ship a player flies right now: their creature is the ship.</summary>
+        /// <summary>
+        /// The ship a player flies right now: their creature is the ship. A crew member at a station keeps their own ship as active
+        /// while it waits elsewhere, so only a pilot whose ship is in space counts.
+        /// </summary>
         private static bool TryGetFlownShip(uint creature, out PlayerShip ship)
         {
             ship = null;
-            if (!GetIsObjectValid(creature) || !IsPlayerInSpaceMode(creature))
+            if (!GetIsObjectValid(creature) || !IsPlayerInSpaceMode(creature) || !IsShipInSpace(creature))
                 return false;
 
             var dbPlayer = DB.Get<Player>(GetObjectUUID(creature));
+            if (dbPlayer == null)
+                return false;
+
             ship = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
             return ship != null;
         }

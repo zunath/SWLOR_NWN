@@ -111,4 +111,33 @@ public class RifleSupportHoldProjectionTests
         state.Prune(_ => true, 30011);
         state.Current(1, 10, 30011).Should().Be(Stage.None);
     }
+
+    [TestCase(0)]
+    [TestCase(1)]
+    public void AttackActionsDeferClearsAcrossTheGapsBetweenShots(int animation)
+    {
+        var state = new RifleSupportHoldProjection();
+        state.Begin(1, "rf_old_i", 0);
+        state.ObserveAnimation(1, animation, attackAction: true);
+        state.Current(1, 10, 100).Should().Be(Stage.None);
+        state.Current(1, 11, 100).Should().Be(Stage.None);
+        state.ObserveAnimation(1, animation, attackAction: false);
+        state.Current(1, 10, 250).Should().Be(Stage.Clear);
+    }
+
+    [Test]
+    public void ResumingAnAttackActionRestoresAlreadyClearedObserversDuringNativeIdle()
+    {
+        var state = new RifleSupportHoldProjection();
+        state.Begin(1, "rf_old_i", 0);
+        state.Sent(1, 10, Stage.Clear, 0);
+        state.ObserveAnimation(1, 1, attackAction: true);
+        state.Current(1, 10, 100).Should().Be(Stage.Restore);
+        state.Current(1, 11, 100).Should().Be(Stage.None);
+        state.Sent(1, 10, Stage.Restore, 100);
+        state.ObserveAnimation(1, 1, attackAction: false);
+        state.Current(1, 10, 250).Should().Be(Stage.None);
+        state.Current(1, 11, 250).Should().Be(Stage.Clear);
+    }
+
 }

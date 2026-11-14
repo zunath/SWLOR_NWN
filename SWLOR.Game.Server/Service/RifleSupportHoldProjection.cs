@@ -28,11 +28,16 @@ public sealed class RifleSupportHoldProjection
         _requests[creature] = next;
     }
 
-    // Forward native attack 9 immediately; observers not yet cleared can wait for its return.
-    public void ObserveAnimation(uint creature, int animation)
+    // A native attack sequence remains active between individual shot animations.
+    public void ObserveAnimation(uint creature, int animation) => ObserveAnimation(creature, animation, false);
+
+    public void ObserveAnimation(uint creature, int animation, bool attackAction)
     {
-        if (_requests.TryGetValue(creature, out var request)) request.Attacking = animation == 9;
+        if (_requests.TryGetValue(creature, out var request)) request.Attacking = animation == 9 || attackAction;
     }
+
+    internal bool IsPending(uint creature, uint observer) =>
+        _requests.TryGetValue(creature, out var request) && !request.Restored.Contains(observer);
 
     public RifleSupportHoldStage Current(uint creature, uint observer, long now)
     {

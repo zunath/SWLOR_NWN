@@ -6,6 +6,7 @@ using NWNX.NET;
 using NWNX.NET.Native;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using ActionType = SWLOR.NWN.API.NWScript.Enum.ActionType;
 
 namespace SWLOR.Game.Server.Native;
 
@@ -19,9 +20,13 @@ internal static unsafe class RifleSupportHoldClear
     private static FunctionHook* _computeHook;
     private static FunctionHook* _writeHook;
     private static readonly RifleSupportHoldProjection Projection = new();
+    private static readonly Dictionary<uint, (long Tick, bool Active)> AttackActions = new();
 
-    internal static void Begin(uint creature, string physicalIdle) =>
+    internal static void Begin(uint creature, string physicalIdle)
+    {
+        AttackActions.Remove(creature);
         Projection.Begin(creature, physicalIdle, Environment.TickCount64);
+    }
 
     [NWNEventHandler(ScriptName.OnModuleLoad)]
     public static void RegisterHooks()
@@ -47,8 +52,11 @@ internal static unsafe class RifleSupportHoldClear
         {
             var native = CNWSObject.FromPointer(obj);
             var actor = native.m_idSelf;
-            Projection.ObserveAnimation(actor, native.m_nAnimation);
-            var stage = Projection.Current(actor, CNWSPlayer.FromPointer(player).m_nPlayerID, Environment.TickCount64);
+            var observer = CNWSPlayer.FromPointer(player).m_nPlayerID;
+            var now = Environment.TickCount64;
+            var attackAction = Projection.IsPending(actor, observer) && HasAttackAction(actor, now);
+            Projection.ObserveAnimation(actor, native.m_nAnimation, attackAction);
+            var stage = Projection.Current(actor, observer, now);
             if (stage is RifleSupportHoldStage.Clear or RifleSupportHoldStage.Restore)
                 updates |= AnimationUpdate | ReplacementUpdate;
         }
@@ -67,7 +75,8 @@ internal static unsafe class RifleSupportHoldClear
             var actor = native.m_idSelf;
             var observer = CNWSPlayer.FromPointer(player).m_nPlayerID;
             var now = Environment.TickCount64;
-            Projection.ObserveAnimation(actor, native.m_nAnimation);
+            var attackAction = Projection.IsPending(actor, observer) && HasAttackAction(actor, now);
+            Projection.ObserveAnimation(actor, native.m_nAnimation, attackAction);
             var stage = Projection.Current(actor, observer, now);
             Dictionary<string, string> mappings = null;
             if (stage != RifleSupportHoldStage.None)
@@ -124,6 +133,17 @@ internal static unsafe class RifleSupportHoldClear
         }
     }
 
+    private static bool HasAttackAction(uint creature, long now)
+    {
+        // Share the action read across observers in the same network frame.
+        if (AttackActions.TryGetValue(creature, out var cached) && now - cached.Tick < 50)
+            return cached.Active;
+        var active = ServerManager.Executor.ExecuteInScriptContext(
+            () => GetCurrentAction(creature) == ActionType.AttackObject, creature);
+        AttackActions[creature] = (now, active);
+        return active;
+    }
+
     private static bool CarrierAvailable(Dictionary<string, string> mappings, string source, string owned) =>
         string.IsNullOrEmpty(mappings.GetValueOrDefault(source, "")) || mappings[source] == owned;
 
@@ -135,5 +155,12 @@ internal static unsafe class RifleSupportHoldClear
     }
 
     [NWNEventHandler(ScriptName.OnModuleHeartbeat)]
-    public static void Prune() => Projection.Prune(GetIsObjectValid, Environment.TickCount64);
+    public static void Prune()
+    {
+        var now = Environment.TickCount64;
+        Projection.Prune(GetIsObjectValid, now);
+        foreach (var creature in new List<uint>(AttackActions.Keys))
+            if (!GetIsObjectValid(creature) || now - AttackActions[creature].Tick > 1000)
+                AttackActions.Remove(creature);
+    }
 }

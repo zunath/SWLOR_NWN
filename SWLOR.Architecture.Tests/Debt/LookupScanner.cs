@@ -58,7 +58,7 @@ internal static class LookupScanner
         var sites = new List<LookupSite>();
         foreach (var tree in candidates)
         {
-            var model = compilation.GetSemanticModel(tree, ignoreAccessibility: true);
+            var model = SourceSnapshot.Bind(compilation, tree);
             foreach (var directive in tree.GetRoot().DescendantNodes().OfType<UsingDirectiveSyntax>())
             {
                 // using static X.GameServices; and using Alias = X.GameServices; name the type. A namespace import does not.

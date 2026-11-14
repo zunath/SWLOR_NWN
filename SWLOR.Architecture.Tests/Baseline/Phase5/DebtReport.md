@@ -7,20 +7,22 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,098 | 13,528 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,098 | 13,560 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 44 | 73,985 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 30 | 7,284 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 22 | 354 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 42 | 111 parameters | none |
+| 5. Deferred resolution | `DeferredResolution.txt` | 77 | 111 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 124 | 272 types | none |
-| 7. Domain cycles | `DomainCycles.txt` | 94 | 703 edges | none |
+| 7. Domain cycles | `DomainCycles.txt` | 68 | 213 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 140 | 267 members | each kept with an approved reason, or removed |
+| 9. References up the domain order | `UpwardEdges.txt` | 356 | 1,311 members | none: every reference follows the domain order |
+| 10. Sink work | `SinkWork.txt` | 15 | 2,096 lines | none: a sink only forwards |
 
 ## 1. Static service lookup
 
-- 1,098 files, 13,528 uses: 839 using directives and 12,689 uses in code (7,489 in a static context).
-- SWLOR.Game.Server: 656 file(s), 6,048 use(s) (Feature/ 553, Domain/ 79, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
-- SWLOR.Game.Server.EngineTests: 236 file(s), 5,259 use(s).
+- 1,098 files, 13,560 uses: 839 using directives and 12,721 uses in code (7,499 in a static context).
+- SWLOR.Game.Server: 656 file(s), 6,074 use(s) (Feature/ 553, Domain/ 79, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- SWLOR.Game.Server.EngineTests: 236 file(s), 5,265 use(s).
 - SWLOR.Game.Server.Tests: 177 file(s), 2,063 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
@@ -31,7 +33,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CLI: 1 file(s), 5 use(s).
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
-- Content (Feature/) uses in code: 4,765 (1,760 in a static context).
+- Content (Feature/) uses in code: 4,791 (1,764 in a static context).
 - Content (Feature/) types that use it: 550. Static classes: 78. Instance classes that use it from a static member: 204 (156 only from static members).
 
 Largest 15 of 1,098 (all in `StaticLookups.txt`):
@@ -133,27 +135,29 @@ Largest 15 of 22 (all in `ServicesPerType.txt`):
 ## 5. Deferred resolution
 
 - 111 deferred constructor parameters in 42 files (Lazy 111, Func 0), taken by 42 types, deferring 41 distinct services.
+- By direction in the domain order: up 28, down 53, inside one domain 30.
+- Up: Character -> Combat 8, Character -> Companions 3, Combat -> Abilities 3, Combat -> Companions 3, Character -> Abilities 2, Creatures -> Companions 2, Abilities -> Space 1, Administration -> Space 1, Combat -> Space 1, Items -> Combat 1, Items -> Companions 1, World -> Social 1, World -> Space 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 42 (all in `DeferredResolution.txt`):
+Largest 15 of 77 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|
-| `SWLOR.Game.Server/Domain/Abilities/AbilityService.cs` | 9 | Lazy 9 |
-| `SWLOR.Game.Server/Domain/Creatures/AIService.cs` | 9 | Lazy 9 |
-| `SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs` | 8 | Lazy 8 |
-| `SWLOR.Game.Server/Domain/Character/StatService.cs` | 6 | Lazy 6 |
-| `SWLOR.Game.Server/Domain/Abilities/MimicryService.cs` | 5 | Lazy 5 |
-| `SWLOR.Game.Server/Domain/Combat/EnmityService.cs` | 5 | Lazy 5 |
-| `SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs` | 5 | Lazy 5 |
-| `SWLOR.Game.Server/Domain/Combat/StealthService.cs` | 5 | Lazy 5 |
-| `SWLOR.Game.Server/Domain/Character/PerkService.cs` | 4 | Lazy 4 |
-| `SWLOR.Game.Server/Domain/Character/StatusEffectService.cs` | 4 | Lazy 4 |
-| `SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs` | 4 | Lazy 4 |
-| `SWLOR.Game.Server/Domain/Items/ItemService.cs` | 4 | Lazy 4 |
-| `SWLOR.Game.Server/Domain/Social/PlayerListService.cs` | 4 | Lazy 4 |
-| `SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs` | 3 | Lazy 3 |
-| `SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs` | 3 | Lazy 3 |
+| `SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Combat (down)` | 8 | Abilities -> Combat: Lazy 8 (ICombatAbilityBonusService, ICombatAbilityHitService, ICombatAbilityImpactService, ICombatActivityService, ICombatDamageModifiersService, ICombatDamageTakenService, ICombatHitEffectsService, ICombatResourcesService) |
+| `SWLOR.Game.Server/Domain/Character/StatService.cs -> Combat (up)` | 5 | Character -> Combat: Lazy 5 (ICombatAttackTimingService, ICombatDamageModifiersService, ICombatDamageTakenService, ICombatQueriesService, ICombatResourcesService) |
+| `SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Character (down)` | 4 | Combat -> Character: Lazy 4 (IEspionageInfiltrationService, IPerkService, IStatService, IStatusEffectService) |
+| `SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Character (down)` | 4 | Creatures -> Character: Lazy 4 (IEspionageInfiltrationService, IPerkService, IStatService, IStatusEffectService) |
+| `SWLOR.Game.Server/Domain/Abilities/MimicryService.cs -> Character (down)` | 3 | Abilities -> Character: Lazy 3 (IPerkService, IStatService, IStatusEffectService) |
+| `SWLOR.Game.Server/Domain/Combat/EnmityService.cs -> Combat (inside)` | 3 | Combat -> Combat: Lazy 3 (ICombatActivityService, ICombatAttackTimingService, ICombatQueriesService) |
+| `SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Character (down)` | 3 | Companions -> Character: Lazy 3 (IPerkService, IStatService, IStatusEffectService) |
+| `SWLOR.Game.Server/Domain/Character/PlayerNameService.cs -> Character (inside)` | 2 | Character -> Character: Lazy 2 (IDisguiseService, IPlayerDescriptorService) |
+| `SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Combat (up)` | 2 | Character -> Combat: Lazy 2 (ICombatAbilityImpactService, ICombatAttackTimingService) |
+| `SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Character (down)` | 2 | Combat -> Character: Lazy 2 (IStatService, IStatusEffectService) |
+| `SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Combat (inside)` | 2 | Combat -> Combat: Lazy 2 (ICombatActivityService, ICombatResourcesService) |
+| `SWLOR.Game.Server/Domain/Combat/ResistanceService.cs -> Character (down)` | 2 | Combat -> Character: Lazy 2 (IStatService, IStatusEffectService) |
+| `SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Combat (down)` | 2 | Companions -> Combat: Lazy 2 (ICombatDamageCatalogService, IResistanceService) |
+| `SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Creatures (down)` | 2 | Companions -> Creatures: Lazy 2 (IAIService, ICompanionControlService) |
+| `SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Combat (down)` | 2 | Creatures -> Combat: Lazy 2 (IEnmityService, IStealthService) |
 
 ## 6. Logic referencing content
 
@@ -183,28 +187,29 @@ Largest 15 of 124 (all in `LogicToContent.txt`):
 
 ## 7. Domain cycles
 
-- 94 pairs of domains depend on each other (63 between game domains, 31 with Foundation or Platform).
-- Foundation is in a pair with 16 domains, Platform with 16.
+- 68 pairs of domains depend on each other: 62 between logic (20 of them with Foundation or Platform), 6 between content.
+- Foundation's logic is in a pair with 15 domains, Platform with 6.
+- Members both ways: 5,788.
 
-Largest 15 of 94 (all in `DomainCycles.txt`):
+Largest 15 of 68 (all in `DomainCycles.txt`):
 
 | Entry | Edges | Detail |
 |---|---:|---|
-| `Gameplay <-> Platform` | 146 | Gameplay -> Platform: 143 edge(s); Platform -> Gameplay: 3 edge(s) |
-| `Foundation <-> Gameplay` | 43 | Foundation -> Gameplay: 5 edge(s); Gameplay -> Foundation: 38 edge(s) |
-| `Gameplay <-> UI` | 24 | Gameplay -> UI: 18 edge(s); UI -> Gameplay: 6 edge(s) |
-| `Foundation <-> Platform` | 22 | Foundation -> Platform: 17 edge(s); Platform -> Foundation: 5 edge(s) |
-| `Character <-> Platform` | 21 | Character -> Platform: 14 edge(s); Platform -> Character: 7 edge(s) |
-| `Combat <-> Gameplay` | 21 | Combat -> Gameplay: 3 edge(s); Gameplay -> Combat: 18 edge(s) |
-| `Gameplay <-> Items` | 15 | Gameplay -> Items: 14 edge(s); Items -> Gameplay: 1 edge(s) |
-| `Platform <-> UI` | 13 | Platform -> UI: 1 edge(s); UI -> Platform: 12 edge(s) |
-| `Platform <-> World` | 13 | Platform -> World: 1 edge(s); World -> Platform: 12 edge(s) |
-| `Abilities <-> Platform` | 12 | Abilities -> Platform: 8 edge(s); Platform -> Abilities: 4 edge(s) |
-| `Platform <-> Social` | 12 | Platform -> Social: 2 edge(s); Social -> Platform: 10 edge(s) |
-| `Abilities <-> Gameplay` | 11 | Abilities -> Gameplay: 5 edge(s); Gameplay -> Abilities: 6 edge(s) |
-| `Items <-> Platform` | 11 | Items -> Platform: 9 edge(s); Platform -> Items: 2 edge(s) |
-| `Abilities <-> Character` | 10 | Abilities -> Character: 4 edge(s); Character -> Abilities: 6 edge(s) |
-| `Combat <-> Platform` | 10 | Combat -> Platform: 6 edge(s); Platform -> Combat: 4 edge(s) |
+| `Gameplay content <-> UI content` | 13 | Gameplay content -> UI content: 7 edge(s), 19 member(s); UI content -> Gameplay content: 6 edge(s), 9 member(s) |
+| `Foundation <-> Platform` | 11 | Foundation -> Platform: 6 edge(s), 98 member(s); Platform -> Foundation: 5 edge(s), 45 member(s) |
+| `Combat <-> Platform` | 7 | Combat -> Platform: 5 edge(s), 215 member(s); Platform -> Combat: 2 edge(s), 63 member(s) |
+| `Foundation content <-> Gameplay content` | 7 | Foundation content -> Gameplay content: 4 edge(s), 10 member(s); Gameplay content -> Foundation content: 3 edge(s), 3 member(s) |
+| `Character <-> Foundation` | 6 | Character -> Foundation: 3 edge(s), 249 member(s); Foundation -> Character: 3 edge(s), 51 member(s) |
+| `Character <-> Platform` | 6 | Character -> Platform: 4 edge(s), 113 member(s); Platform -> Character: 2 edge(s), 36 member(s) |
+| `Creatures <-> Platform` | 5 | Creatures -> Platform: 4 edge(s), 66 member(s); Platform -> Creatures: 1 edge(s), 1 member(s) |
+| `Foundation <-> Items` | 5 | Foundation -> Items: 2 edge(s), 10 member(s); Items -> Foundation: 3 edge(s), 50 member(s) |
+| `Foundation <-> Social` | 5 | Foundation -> Social: 2 edge(s), 7 member(s); Social -> Foundation: 3 edge(s), 56 member(s) |
+| `Foundation <-> Space` | 5 | Foundation -> Space: 2 edge(s), 4 member(s); Space -> Foundation: 3 edge(s), 47 member(s) |
+| `Foundation <-> UI` | 5 | Foundation -> UI: 2 edge(s), 10 member(s); UI -> Foundation: 3 edge(s), 45 member(s) |
+| `Foundation <-> World` | 5 | Foundation -> World: 2 edge(s), 27 member(s); World -> Foundation: 3 edge(s), 235 member(s) |
+| `Abilities <-> Foundation` | 4 | Abilities -> Foundation: 2 edge(s), 77 member(s); Foundation -> Abilities: 2 edge(s), 13 member(s) |
+| `Abilities <-> Platform` | 4 | Abilities -> Platform: 3 edge(s), 61 member(s); Platform -> Abilities: 1 edge(s), 8 member(s) |
+| `Abilities content <-> Gameplay content` | 4 | Abilities content -> Gameplay content: 2 edge(s), 5 member(s); Gameplay content -> Abilities content: 2 edge(s), 2 member(s) |
 
 ## 8. Static entry points and static state
 
@@ -232,6 +237,58 @@ Largest 15 of 140 (all in `StaticState.txt`):
 | `SWLOR.Game.Server.Feature.MigrationDefinition.DoubleWeaponRecalibration` | 5 | fields: CurrentTierDamage, DamageByResref, PreviousTierDamage, PreviousUpgradeDamage, UpgradableSaberstaffBaseTiers |
 | `SWLOR.Game.Server.Native.PairedRangedPresentation` | 5 | fields: Anchors*, CompanionMuzzleOffset, LastPoses*, LaunchCounts*, MainMuzzleOffset |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerformanceOptionsViewModel` | 4 | fields: AllRoutines, AllSets, TabToggles, Tabs |
+
+## 9. References up the domain order
+
+- 1,311 members in 249 files reference a domain above their own: 75 directions, 106 unit edges.
+- Logic: 1,193 members in 64 directions; content: 118 members in 11 directions.
+- From the hook logic in Platform/Native (P5-16b): 124 members in 53 lines.
+- By direction: Combat -> Abilities 313, Character -> Combat 201, Platform -> Combat 63, Foundation -> Character 51, Character -> Abilities 46, Platform -> Foundation 45, Character content -> Quests content 44, Platform -> Character 36, Foundation -> World 27, Character -> Companions 26, Character -> Items 22, Character content -> Abilities content 20, Combat -> Social 18, Character -> UI 17, Combat -> Creatures 17, Foundation -> Combat 17, Combat -> Companions 15, Foundation content -> Character content 15, Foundation -> Abilities 13, Items -> Companions 12, UI -> Abilities 12, Foundation -> Administration 11, World -> Social 11, Abilities -> Social 10, Foundation -> Items 10, Foundation -> UI 10, Foundation content -> Gameplay content 10, Items -> Combat 10, Creatures -> Companions 9, UI content -> Gameplay content 9, Character -> Social 8, Combat -> World 8, Foundation -> Companions 8, Foundation -> Quests 8, Platform -> Abilities 8, Administration -> World 7, Crafting -> World 7, Foundation -> Social 7, Foundation content -> UI content 7, Administration -> Creatures 6, Combat -> Quests 6, Foundation -> Crafting 6, UI -> Combat 6, World -> Space 6, Character -> Quests 5, UI -> Administration 5, Character -> Creatures 4, Foundation -> Economy 4, Foundation -> Space 4, Platform -> Items 4, Quests -> Economy 4, UI -> Items 4, UI content -> Abilities content 4, Abilities -> Quests 3, Abilities -> Space 3, Abilities -> World 3, Administration -> Space 3, Character -> Administration 3, Combat -> Space 3, Creatures -> Social 3, Foundation -> Creatures 3, Items -> Abilities 3, Items -> Administration 3, Items -> Crafting 3, Items -> Economy 3, Items content -> Abilities content 3, UI -> Crafting 3, UI -> Social 3, Character content -> UI content 2, Gameplay content -> Abilities content 2, Gameplay content -> Quests content 2, Administration -> Combat 1, Character -> Economy 1, Items -> World 1, Platform -> Creatures 1.
+
+Largest 15 of 356 (all in `UpwardEdges.txt`):
+
+| Entry | Members | Detail |
+|---|---:|---|
+| `SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Combat` | 57 | CombatDamageType, CombatDamageTypeExtensions, CombatRecordAttributionScope, CombatRecordHealingReactionScope, CombatRecordResource and 20 more |
+| `SWLOR.Game.Server/Domain/Character/StatType.cs: Character -> Combat` | 47 | DeflectionSource |
+| `SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs: Combat -> Abilities` | 41 | AbilityDetail, AbilityImpactSummary, IAbilityService, MeleeTechniqueDetail, MeleeTechniqueLine and 2 more |
+| `SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs: Combat -> Abilities` | 36 | AbilityDetail, AbilityImpactSequence, AbilityImpactSummary, IAbilityService |
+| `SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs: Combat -> Abilities` | 33 | AbilityActivationType, AbilityDetail, AbilityImpactSummary, AbilityRequirementFP, IAbilityService and 1 more |
+| `SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Combat` | 28 | CombatDamageDeliveryType, CombatDamageType, CombatDamageTypeExtensions, ICombatAbilityImpactService, ICombatAttackTimingService and 6 more |
+| `SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs: Combat -> Abilities` | 22 | AbilityDetail, AbilityImpactSequence, AbilityImpactSummary, AbilityRequirementStamina, IAbilityService |
+| `SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs: Combat -> Abilities` | 20 | AbilityDetail, AbilityImpactSummary, IAbilityService |
+| `SWLOR.Game.Server/Domain/Character/EquipmentPredicates.cs: Character -> Items` | 17 | IItemService |
+| `SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Abilities` | 15 | AbilityDetail, IAbilityService, IQuickCastService, RecastGroup |
+| `SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Abilities` | 15 | AbilityDetail, AbilityImpactSummary, IAbilityService, IQuickCastService |
+| `SWLOR.Game.Server/Domain/Combat/ICombatResourcesService.cs: Combat -> Abilities` | 14 | AbilityDetail |
+| `SWLOR.Game.Server/Domain/Combat/IMeleeTechniqueService.cs: Combat -> Abilities` | 14 | AbilityDetail, AbilityImpactSummary, MeleeTechniqueLine, MeleeTechniqueProfile, MeleeTechniqueStage |
+| `SWLOR.Game.Server/Domain/Combat/TwinPistolAbilityService.cs: Combat -> Abilities` | 14 | AbilityDetail, AbilityImpactSummary, IAbilityService |
+| `SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> Creatures` | 13 | IAIService, ICompanionControlService |
+
+## 10. Sink work
+
+- 15 of 17 sink types do work: 2,096 lines in 105 members. 2 members only forward or hold what was injected.
+- Forwarding only: GetDamageRollSink, ResolveAttackRollSink.
+
+Largest 15 of 15 (all in `SinkWork.txt`):
+
+| Entry | Lines | Detail |
+|---|---:|---|
+| `SWLOR.Game.Server.NativeSinks.OnAIActionAttackObjectSink` | 879 | ContinueAttackAction, AttackObject, IsActiveAttackTarget, ApproachAttackTarget, MoveTowardAttackTarget, QueueMoveToAttackTarget, ResolveReadyAttack, CalculateAttackSwing, ProcessUnpausedCombatRound, ProcessPendingAction, ResolvePendingAttack, ResolveSwing |
+| `SWLOR.Game.Server.NativeSinks.ClientJsonUtf8GuardSink` | 202 | ReadBufferOffset, ReadBufferSizeOffset, ReadBufferPositionOffset, UnreadableMarker, JsonObject, JsonArray, JsonString, JsonSize, JsonValueOffset, VectorEndOffset, StringLengthOffset, MapRootOffset, NodeLeftOffset, NodeRightOffset, NodeValueOffset, ReportDelay, _pendingReports, _reportScheduled, ReadJson, RepairPendingUbjson, MakePendingUbjsonUnreadable, TryGetPendingUbjson, ReplaceInvalidStringValues, ReplaceInvalidBytes, Record, WriteReports |
+| `SWLOR.Game.Server.NativeSinks.VitalityHitPointsSink` | 190 | _playerStates, _creaturePointersByStats, _destroyingStats, GetMaximum, SetBase, ApplyEffect, RemoveEffect, RemoveEffectById, GetVitalityEffectStats, BeginRecalculation, EndRecalculation, GetPlayerState, ForgetCreature, ForgetStats, DestroyStats, CalculateModifier |
+| `SWLOR.Game.Server.NativeSinks.LegacyItemPropertiesSink` | 146 | AccuracyCostTable, DamageCostTable, MaximumAccuracy, LightsaberBaseItem, SaberstaffBaseItem, PropertiesListLabel, BaseItemLabel, PropertyNameLabel, CostTableLabel, CostValueLabel, SubtypeLabel, LoadItem, ConvertLegacyProperties, ReadBaseItem, TryReadWord, TryReadByte, RewriteProperty, IsLegacyAccuracyProperty, EnsureWritten |
+| `SWLOR.Game.Server.NativeSinks.CombatRecorderEffectHooksSink` | 144 | ApplyDamage, ApplyHeal, LogFailure |
+| `SWLOR.Game.Server.NativeSinks.PlayerSlotAssignmentSink` | 109 | _rotation, _checkedNetLayer, SetSlidingWindow, HoldBackSlotsBefore, Release, Disable |
+| `SWLOR.Game.Server.NativeSinks.PlayerFileCheckpointSink` | 106 | FieldLabel, CraftSequenceLabel, Save, Load, ReadStats, RestoreCheckpoint |
+| `SWLOR.Game.Server.NativeSinks.WeaponAttackAnimationSink` | 100 | ComputeUpdate, WriteUpdate, WriteObjectUpdate |
+| `SWLOR.Game.Server.NativeSinks.StaleDriveAfterJumpSink` | 75 | _states, JumpToPoint, AddDriveAction |
+| `SWLOR.Game.Server.NativeSinks.NeckAppearanceSerializationSink` | 44 | Write |
+| `SWLOR.Game.Server.NativeSinks.PlayerCreationSink` | 35 | Validate, RecordValidatedCreation |
+| `SWLOR.Game.Server.NativeSinks.PlayerListNamePrivacySink` | 35 | AllGameMasters, AllPlayers, AllClients, SendPlayerListAdd, Dispatch |
+| `SWLOR.Game.Server.NativeSinks.ChatPortraitSpeakersSink` | 13 | Send |
+| `SWLOR.Game.Server.NativeSinks.QuickbarFeatLoadingSink` | 10 | LoadQuickButtons |
+| `SWLOR.Game.Server.NativeSinks.SavedPlayerInventorySink` | 8 | CompareItem |
 
 ## Exemptions
 

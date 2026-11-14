@@ -9,8 +9,8 @@ namespace SWLOR.Architecture.Tests.Debt;
 /// Game logic that names content (Phase 5 target 4): code outside <c>Feature</c> (a domain's code, <c>Native</c>,
 /// <c>NativeSinks</c>, <c>Core</c>, ...) that names a type declared in <c>Feature</c>, its own domain's content included. Read
 /// from source with the compiler's binding, so the result does not depend on the build configuration and a constant (a
-/// <c>Feature</c> enum member) counts. The composition root (<c>wiringPlatformAreas</c> of the domain map) is wiring and is
-/// left out.
+/// <c>Feature</c> enum member) counts. The composition root (<c>contentRuleExemptAreas</c> of the domain map) registers content
+/// and is left out; the native sinks are wiring for the order but stay under this rule (owner decision 12).
 /// </summary>
 /// <remarks>
 /// Only names of <c>Feature</c> types are bound (in code, attributes and <c>using static</c> directives): a member of a
@@ -43,11 +43,11 @@ internal static class LogicToContentScanner
             if (names.Count == 0)
                 continue;
 
-            var model = compilation.GetSemanticModel(tree, ignoreAccessibility: true);
+            var model = SourceSnapshot.Bind(compilation, tree);
             var referenced = new Dictionary<(DependencyUnit From, DependencyUnit To), SortedSet<string>>();
             foreach (var name in names)
             {
-                if (UnitOf(name) is not { } from || IsContent(from) || map.IsWiringSource(from))
+                if (UnitOf(name) is not { } from || IsContent(from) || map.IsContentRuleExempt(from))
                     continue;
 
                 var symbol = model.GetSymbolInfo(name).Symbol;

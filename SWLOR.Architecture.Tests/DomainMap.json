@@ -1,9 +1,16 @@
 {
-  "description": "Domain map for the cross-domain dependency guard (SWLOR.Architecture.Tests). Every type in Domain.<Domain> or a topic namespace below it belongs to that domain (each key below must be a declared domain); types directly in Feature belong to featureTypeDomain; code outside Domain, Service and Feature belongs to platformDomain. services: the services of each domain, which ConvertedServices.json must agree with (a converted service is Domain.<Domain>.<Name>Service behind I<Name>Service); tools/Refactor/Move-SupportNamespaces.ps1 also reads it to move a Service.<Name>Service folder into its domain. featureFolders: the first folders below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain, and every listed one must still exist. Edges into an unrestrictedTargetDomains domain are recorded but never fail. Edges out of a wiringPlatformAreas area (the composition root, which has to name every service it registers) are not dependencies and are left out.",
+  "description": "Domain map for the cross-domain dependency guard and the domain order (SWLOR.Architecture.Tests). Every type in Domain.<Domain> or a topic namespace below it belongs to that domain (each key below must be a declared domain); types directly in Feature belong to featureTypeDomain; code outside Domain, Service and Feature belongs to platformDomain, except the areas platformAreaDomains gives a domain. services: the services of each domain, which ConvertedServices.json must agree with (a converted service is Domain.<Domain>.<Name>Service behind I<Name>Service); tools/Refactor/Move-SupportNamespaces.ps1 also reads it to move a Service.<Name>Service folder into its domain. featureFolders: the first folders below Feature. Every service and Feature folder of SWLOR.Game.Server must be listed in exactly one domain, and every listed one must still exist. Edges into an unrestrictedTargetDomains domain are recorded but never fail. Edges out of a wiringPlatformAreas area are not dependencies and are left out: the composition root names every service it registers, and a native sink only forwards a hook (SinkWork.txt measures what the sinks still do). contentRuleExemptAreas: the wiring that may name content (the composition root registers it); the native sinks stay under the no-content rule (LogicToContent.txt). The domain order (P5-1, SWLOR.Game.Server/Readmes/MaintainabilityRefactorDomainOrder.md, owner decisions 10 to 13): order lists every domain bottom to top; contentBand aboveAllLogic makes content (Feature) a band above all logic, so content may use any logic, logic never names content, and content that uses other content follows the order. A reference that stays in its band and goes to a domain higher in the order points up (UpwardEdges.txt); two domains of one band that reference each other are a pair (DomainCycles.txt).",
   "platformDomain": "Platform",
   "featureTypeDomain": "Gameplay",
   "unrestrictedTargetDomains": ["Foundation", "Platform"],
-  "wiringPlatformAreas": ["Composition"],
+  "platformAreaDomains": { "Entity": "Foundation", "Enumeration": "Foundation" },
+  "wiringPlatformAreas": ["Composition", "NativeSinks"],
+  "contentRuleExemptAreas": ["Composition"],
+  "order": [
+    "Platform", "Foundation", "Character", "UI", "Gameplay", "Items", "Administration", "Combat", "Abilities",
+    "Creatures", "Crafting", "World", "Companions", "Quests", "Space", "Economy", "Social"
+  ],
+  "contentBand": "aboveAllLogic",
   "domains": {
     "Foundation": {
       "services": [

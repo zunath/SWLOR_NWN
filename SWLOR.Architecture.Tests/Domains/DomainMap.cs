@@ -3,12 +3,21 @@ using System.Text.Json;
 namespace SWLOR.Architecture.Tests.Domains;
 
 /// <summary>
-/// Which domain each service and Feature folder belongs to, read from <c>DomainMap.json</c>.
+/// Which domain each service and Feature folder belongs to, read from <c>DomainMap.json</c>, and the domain order.
 /// Code in <c>Domain.&lt;Domain&gt;</c> belongs to that domain, types directly in <c>Feature</c> to
 /// <see cref="FeatureTypeDomain"/> and code outside <c>Domain</c>, <c>Service</c> and <c>Feature</c> to
-/// <see cref="PlatformDomain"/>, so only services and Feature folders are listed. The services of a domain name its
-/// converted services (<c>ConvertedServices.json</c> must agree) and the types still directly in <c>Service</c>.
+/// <see cref="PlatformDomain"/> unless <c>platformAreaDomains</c> gives the area a domain (<c>Entity</c> and
+/// <c>Enumeration</c> count as Foundation), so only services, Feature folders and those areas are listed. The services of a
+/// domain name its converted services (<c>ConvertedServices.json</c> must agree) and the types still directly in
+/// <c>Service</c>.
 /// </summary>
+/// <remarks>
+/// The order (P5-1, owner decisions 10 to 13): <c>order</c> lists the domains bottom to top, and content (<c>Feature/</c>) is a
+/// band above all logic (<c>contentBand</c>), so each domain is two <see cref="OrderNode"/>s. A reference points up when it
+/// stays in its band and goes to a domain higher in the order. Edges out of a <c>wiringPlatformAreas</c> area (the
+/// composition root and the native sinks) are wiring and never count; <c>contentRuleExemptAreas</c> names the wiring that may
+/// also name content (the composition root registers it), so the native sinks stay under the no-content rule.
+/// </remarks>
 internal sealed class DomainMap
 {
     private readonly Dictionary<DependencyUnit, string> _domainByUnit = new();
@@ -17,6 +26,13 @@ internal sealed class DomainMap
     private readonly List<string> _domains = new();
     private readonly HashSet<string> _unrestrictedTargets = new(StringComparer.Ordinal);
     private readonly HashSet<string> _wiringUnits = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _contentRuleExemptUnits = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, string> _platformAreaDomains = new(StringComparer.Ordinal);
+    private readonly List<string> _order = new();
+    private readonly Dictionary<string, int> _rank = new(StringComparer.Ordinal);
+
+    /// <summary>The only value of <c>contentBand</c> the order measures implement (owner decision 10).</summary>
+    public const string ContentBandAboveAllLogic = "aboveAllLogic";
 
     private DomainMap(string platformDomain, string featureTypeDomain)
     {
@@ -36,18 +52,48 @@ internal sealed class DomainMap
     /// <summary>Mistakes in the file itself: a unit listed twice, a name that is not a plain identifier.</summary>
     public IReadOnlyList<string> Problems => _problems;
 
-    /// <summary>Every service and Feature folder the file lists.</summary>
-    public IEnumerable<DependencyUnit> ListedUnits => _domainByUnit.Keys;
+    /// <summary>Every service and Feature folder the file lists, and the Platform areas it names (areas with a domain, wiring).</summary>
+    public IEnumerable<DependencyUnit> ListedUnits => _domainByUnit.Keys
+        .Concat(_platformAreaDomains.Keys.Concat(_wiringUnits).Concat(_contentRuleExemptUnits).Distinct().Select(area => new DependencyUnit(UnitKind.Platform, area)));
 
     /// <summary>The names of the services the map puts in <paramref name="domain"/>, in file order; empty for an unknown domain.</summary>
     public IReadOnlyList<string> ServicesOf(string domain) =>
         _servicesByDomain.TryGetValue(domain, out var services) ? services : Array.Empty<string>();
 
+    /// <summary>The domains bottom to top (<c>order</c>); empty when the file records no order.</summary>
+    public IReadOnlyList<string> Order => _order;
+
     /// <summary>
     /// True for a Platform area whose outgoing edges are wiring, not dependencies: the composition root has to name every
-    /// service it registers, so its edges are left out of the guard.
+    /// service it registers, and a native sink only forwards a hook (owner decision 12), so their edges are left out of the
+    /// guards. Edges into them count.
     /// </summary>
     public bool IsWiringSource(DependencyUnit unit) => unit.Kind == UnitKind.Platform && _wiringUnits.Contains(unit.Name);
+
+    /// <summary>
+    /// True for a wiring area that may name content (<c>contentRuleExemptAreas</c>: the composition root registers it). All
+    /// other logic, the native sinks included, is under the no-content rule.
+    /// </summary>
+    public bool IsContentRuleExempt(DependencyUnit unit) => unit.Kind == UnitKind.Platform && _contentRuleExemptUnits.Contains(unit.Name);
+
+    /// <summary>The node of the order the unit is in, or null when the unit is in no domain (<see cref="DomainOf"/>).</summary>
+    public OrderNode? NodeOf(DependencyUnit unit) =>
+        DomainOf(unit) is { } domain ? new OrderNode(domain, unit.Kind is UnitKind.FeatureFolder or UnitKind.FeatureType) : null;
+
+    /// <summary>The place of a domain in the order, 0 at the bottom.</summary>
+    public int RankOf(string domain) =>
+        _rank.TryGetValue(domain, out var rank) ? rank : throw new InvalidOperationException($"'{domain}' is not in the domain order of the map.");
+
+    /// <summary>Which way a reference from <paramref name="from"/> to <paramref name="to"/> goes in the order.</summary>
+    public OrderDirection DirectionOf(OrderNode from, OrderNode to)
+    {
+        if (from == to)
+            return OrderDirection.Inside;
+        if (from.IsContent != to.IsContent)
+            return from.IsContent ? OrderDirection.ContentUsesLogic : OrderDirection.LogicNamesContent;
+
+        return RankOf(to.Domain) > RankOf(from.Domain) ? OrderDirection.Up : OrderDirection.Down;
+    }
 
     /// <summary>True when edges into the domain are recorded but never fail the guard.</summary>
     public bool IsUnrestrictedTarget(string domain) => _unrestrictedTargets.Contains(domain);
@@ -63,7 +109,7 @@ internal sealed class DomainMap
             case UnitKind.Domain:
                 return _domains.Contains(unit.Name) && unit.Name != PlatformDomain ? unit.Name : null;
             case UnitKind.Platform:
-                return PlatformDomain;
+                return _platformAreaDomains.TryGetValue(unit.Name, out var areaDomain) ? areaDomain : PlatformDomain;
             case UnitKind.FeatureType:
                 return FeatureTypeDomain;
             default:
@@ -88,6 +134,23 @@ internal sealed class DomainMap
                 map._wiringUnits.Add(area.GetString()!);
         }
 
+        if (root.TryGetProperty("contentRuleExemptAreas", out var exempt))
+        {
+            foreach (var area in exempt.EnumerateArray())
+            {
+                var name = area.GetString()!;
+                map._contentRuleExemptUnits.Add(name);
+                if (!map._wiringUnits.Contains(name))
+                    map._problems.Add($"contentRuleExemptAreas names '{name}', which is not in wiringPlatformAreas: only wiring may name content.");
+            }
+        }
+
+        if (root.TryGetProperty("platformAreaDomains", out var areaDomains))
+        {
+            foreach (var area in areaDomains.EnumerateObject())
+                map._platformAreaDomains[area.Name] = area.Value.GetString()!;
+        }
+
         foreach (var domain in root.GetProperty("domains").EnumerateObject())
         {
             map._domains.Add(domain.Name);
@@ -104,7 +167,41 @@ internal sealed class DomainMap
         if (!map._domains.Contains(map.FeatureTypeDomain))
             map._problems.Add($"featureTypeDomain '{map.FeatureTypeDomain}' is not a domain.");
 
+        foreach (var (area, domain) in map._platformAreaDomains)
+        {
+            if (area.Length == 0 || area.Any(c => !char.IsLetterOrDigit(c) && c != '_'))
+                map._problems.Add($"platformAreaDomains names '{area}', which is not a plain folder name.");
+            if (!map._domains.Contains(domain) || domain == map.PlatformDomain)
+                map._problems.Add($"platformAreaDomains puts '{area}' in '{domain}', which is not a domain.");
+        }
+
+        if (root.TryGetProperty("order", out var order))
+            map.ReadOrder(order, root.TryGetProperty("contentBand", out var band) ? band.GetString() : null);
+
         return map;
+    }
+
+    private void ReadOrder(JsonElement order, string? contentBand)
+    {
+        foreach (var element in order.EnumerateArray())
+        {
+            var domain = element.GetString() ?? string.Empty;
+            if (_rank.ContainsKey(domain))
+                _problems.Add($"order lists '{domain}' twice.");
+            else if (domain != PlatformDomain && !_domains.Contains(domain))
+                _problems.Add($"order names '{domain}', which is not a domain.");
+            else
+            {
+                _rank[domain] = _order.Count;
+                _order.Add(domain);
+            }
+        }
+
+        foreach (var domain in _domains.Prepend(PlatformDomain).Distinct().Where(domain => !_rank.ContainsKey(domain)))
+            _problems.Add($"order does not list '{domain}': every domain has a place in the order.");
+
+        if (contentBand != ContentBandAboveAllLogic)
+            _problems.Add($"contentBand is '{contentBand}': the order measures implement only '{ContentBandAboveAllLogic}' (owner decision 10).");
     }
 
     private void AddUnits(string domain, UnitKind kind, JsonElement names)

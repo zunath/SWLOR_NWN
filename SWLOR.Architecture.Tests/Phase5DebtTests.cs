@@ -5,12 +5,12 @@ using SWLOR.Architecture.Tests.Debt;
 namespace SWLOR.Architecture.Tests;
 
 /// <summary>
-/// The Phase 5 debt guards (P5-0): eight measures of structural debt, each with a shrinking baseline under
+/// The Phase 5 debt guards (P5-0, P5-1b): ten measures of structural debt, each with a shrinking baseline under
 /// <c>Baseline/Phase5</c>, and the generated <c>DebtReport.md</c>. The measures read the source of every project of the
-/// solution (Roslyn: syntax for sizes, the compiler's binding for the static lookup, constructor services and content
-/// names) and the compiled server (IL: domain cycles, static state). See <c>Debt/DebtMeasures.cs</c> for each measure's
-/// definition, which every baseline file repeats in its header. Every compared count is the same in a Debug and a
-/// Release build.
+/// solution (Roslyn: syntax for sizes and sink work, the compiler's binding for the static lookup, constructor services,
+/// content names and the references the domain order measures count) and the compiled server (IL: static state). See
+/// <c>Debt/DebtMeasures.cs</c> for each measure's definition, which every baseline file repeats in its header. Every
+/// compared count is the same in a Debug and a Release build.
 /// </summary>
 /// <remarks>
 /// <para><b>What fails.</b> A line that is not in the baseline, a count above the baseline (new debt), and a count below it
@@ -32,7 +32,9 @@ public class Phase5DebtTests
         DebtMeasures.DeferredResolutionFile,
         DebtMeasures.LogicToContentFile,
         DebtMeasures.DomainCyclesFile,
-        DebtMeasures.StaticStateFile
+        DebtMeasures.StaticStateFile,
+        DebtMeasures.UpwardEdgesFile,
+        DebtMeasures.SinkWorkFile
     ];
 
     [Test]

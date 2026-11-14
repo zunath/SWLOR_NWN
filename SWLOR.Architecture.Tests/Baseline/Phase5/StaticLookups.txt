@@ -124,7 +124,7 @@ SWLOR.Game.Server.EngineTests/Definitions/ItemIconEngineTests.cs | 34
 SWLOR.Game.Server.EngineTests/Definitions/ItemReturnInventorySpaceEngineTests.cs | 59
 SWLOR.Game.Server.EngineTests/Definitions/KatarAnimationRemapEngineTests.cs | 3
 SWLOR.Game.Server.EngineTests/Definitions/LanguageTokenEngineTests.cs | 8
-SWLOR.Game.Server.EngineTests/Definitions/LightsaberWorkbenchEngineTests.cs | 11
+SWLOR.Game.Server.EngineTests/Definitions/LightsaberWorkbenchEngineTests.cs | 13
 SWLOR.Game.Server.EngineTests/Definitions/LoneTargetAreaAbilityEngineTests.cs | 4
 SWLOR.Game.Server.EngineTests/Definitions/LootStatRevisionMigrationEngineTests.cs | 24
 SWLOR.Game.Server.EngineTests/Definitions/ManageStructuresSelectionEngineTests.cs | 10
@@ -201,7 +201,7 @@ SWLOR.Game.Server.EngineTests/Definitions/SavedCreatureVisorMigrationEngineTests
 SWLOR.Game.Server.EngineTests/Definitions/SavedDataItemSweepEngineTests.cs | 2
 SWLOR.Game.Server.EngineTests/Definitions/ScavengeLeftoverDespawnEngineTests.cs | 31
 SWLOR.Game.Server.EngineTests/Definitions/SerratedArcEngineTests.cs | 14
-SWLOR.Game.Server.EngineTests/Definitions/ServiceContainerEngineTests.cs | 31
+SWLOR.Game.Server.EngineTests/Definitions/ServiceContainerEngineTests.cs | 35
 SWLOR.Game.Server.EngineTests/Definitions/SettingsTargetingEngineTests.cs | 16
 SWLOR.Game.Server.EngineTests/Definitions/ShadowStepEngineTests.cs | 18
 SWLOR.Game.Server.EngineTests/Definitions/ShipLaunchEngineTests.cs | 62
@@ -782,12 +782,12 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CasinoSlotViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ChangeDescriptionViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs | 38
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs | 146
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterStatRebuildViewModel.cs | 10
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterStatRebuildViewModel.cs | 13
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CircuitCraftViewModel.cs | 26
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ConversationViewModel.cs | 3
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CraftMinigameViewModel.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CreatureManagerViewModel.cs | 19
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CurrenciesViewModel.cs | 4
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CurrenciesViewModel.cs | 6
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CustomizeCharacterViewModel.cs | 34
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMAdminToolsViewModel.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMBattleGridViewModel.cs | 20
@@ -819,8 +819,8 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs | 47
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/IntroductionsViewModel.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/KeyItemsViewModel.cs | 6
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/KitchenViewModel.cs | 26
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/LanguageTokenViewModel.cs | 11
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/LightsaberWorkbenchViewModel.cs | 17
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/LanguageTokenViewModel.cs | 12
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/LightsaberWorkbenchViewModel.cs | 20
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/LineViewModel.cs | 12
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageApartmentViewModel.cs | 21
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ManageBansViewModel.cs | 9
@@ -835,7 +835,7 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/NotesViewModel.cs | 21
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceCueViewModelBase.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceOptionsViewModel.cs | 41
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceWatchingViewModel.cs | 8
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs | 58
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs | 62
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs | 42
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerStatusPortraitSpaceViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerStatusPortraitViewModel.cs | 6
@@ -868,7 +868,7 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/TechniquesViewModel.cs | 21
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/TrainingStoreViewModel.cs | 8
 SWLOR.Game.Server/Feature/HoloNetTerminal.cs | 2
 SWLOR.Game.Server/Feature/ItemDefinition/BeastEggItemDefinition.cs | 10
-SWLOR.Game.Server/Feature/ItemDefinition/ConsumableItemDefinition.cs | 14
+SWLOR.Game.Server/Feature/ItemDefinition/ConsumableItemDefinition.cs | 18
 SWLOR.Game.Server/Feature/ItemDefinition/DNAExtractorItemDefinition.cs | 3
 SWLOR.Game.Server/Feature/ItemDefinition/DestroyItemDefinition.cs | 2
 SWLOR.Game.Server/Feature/ItemDefinition/DroidControlItemDefinition.cs | 11
@@ -887,7 +887,7 @@ SWLOR.Game.Server/Feature/ItemDefinition/SaberUpgradeItemDefinition.cs | 2
 SWLOR.Game.Server/Feature/ItemDefinition/StonewakeRelayItemDefinition.cs | 2
 SWLOR.Game.Server/Feature/ItemDefinition/StormcoreMatrixItemDefinition.cs | 6
 SWLOR.Game.Server/Feature/ItemDefinition/TidecallBeaconItemDefinition.cs | 4
-SWLOR.Game.Server/Feature/ItemDefinition/TomeItemDefinition.cs | 3
+SWLOR.Game.Server/Feature/ItemDefinition/TomeItemDefinition.cs | 9
 SWLOR.Game.Server/Feature/ItemDefinition/TrapKitItemDefinition.cs | 6
 SWLOR.Game.Server/Feature/ItemDefinition/VenomCoatingItemDefinition.cs | 5
 SWLOR.Game.Server/Feature/ItemDefinition/WayfinderSensorItemDefinition.cs | 2
@@ -930,7 +930,7 @@ SWLOR.Game.Server/Feature/PersistentLocation.cs | 7
 SWLOR.Game.Server/Feature/PersistentMapPin.cs | 10
 SWLOR.Game.Server/Feature/PersistentMapProgression.cs | 6
 SWLOR.Game.Server/Feature/PistolAnimationRemap.cs | 6
-SWLOR.Game.Server/Feature/PlaceableScripts.cs | 10
+SWLOR.Game.Server/Feature/PlaceableScripts.cs | 13
 SWLOR.Game.Server/Feature/PlayerAccountRecord.cs | 3
 SWLOR.Game.Server/Feature/PlayerInitialization.cs | 19
 SWLOR.Game.Server/Feature/PlayerRest.cs | 4

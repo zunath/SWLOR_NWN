@@ -30,6 +30,11 @@ REPO_ROOT = PACKAGE_DIR.parents[1]
 COMPOSE_FILE = PACKAGE_DIR / 'compose.yml'
 SERVER_DOCKER_DIR = REPO_ROOT / 'SWLOR.Game.Server' / 'Docker'
 SCRIPTS = ('run-client.sh', 'server-entry.sh', 'ui.sh')
+# The WSL2 GPU through D3D12 is the default; software (Mesa llvmpipe) must be chosen explicitly.
+GPU_RENDERER = 'wsl-d3d12'
+SOFTWARE_RENDERER = 'software'
+RENDERERS = (GPU_RENDERER, SOFTWARE_RENDERER)
+DEFAULT_RENDERER = GPU_RENDERER
 
 PROJECT_PREFIX = 'swlor-live-'
 SERVER_PORT = 5121
@@ -524,7 +529,12 @@ class Stack:
 
     @property
     def compose_files(self) -> list[Path]:
-        return [self.compose_file, *([self.run_dir / 'compose.gpu.yml'] if self.state.get('gpu_renderer') else [])]
+        return [self.compose_file, *([self.run_dir / 'compose.gpu.yml'] if self.uses_gpu else [])]
+
+    @property
+    def uses_gpu(self) -> bool:
+        # Runs created before the GPU default stored None for software rendering.
+        return self.state.get('gpu_renderer') == GPU_RENDERER
 
     @property
     def window_size(self) -> tuple[int, int]:
@@ -712,13 +722,16 @@ def create(options) -> Stack:
         raise LiveStackError('--max-minutes must be between 5 and 720.')
     if not (math.isfinite(options.settle) and options.settle >= 0):
         raise LiveStackError('--settle must be a finite number of seconds, 0 or more.')
+    renderer = getattr(options, 'gpu_renderer', None) or DEFAULT_RENDERER
+    if renderer not in RENDERERS:
+        raise LiveStackError(f'--gpu-renderer must be one of: {", ".join(RENDERERS)}.')
     window_size = tuple(int(value) for value in getattr(options, 'window_size', '1280x720').split('x'))
     client_settings_text = client_settings(options.player_name, getattr(options, 'show_render_stats', False),
                                            getattr(options, 'motion_capture', False), window_size)
     state = {
         'project': project, 'run_dir': str(run_dir), 'mode': mode, 'player_name': options.player_name,
         'public_cdkey': public_key, 'created_utc': utc_now(), 'repo': str(REPO_ROOT),
-        'gpu_renderer': getattr(options, 'gpu_renderer', None),
+        'gpu_renderer': renderer,
         'window_size': window_size,
         'server_image': server_image(), 'server_image_id': resolve_image_id(server_image()),
         'client_image': client_image_tag(), 'max_seconds': max_seconds,
@@ -801,7 +814,7 @@ def create(options) -> Stack:
         stack.state['inputs']['server_settings_sha256'] = sha256(stack.home / 'settings.tml')
         shutil.copyfile(COMPOSE_FILE, stack.compose_file)
         stack.state['inputs']['compose_sha256'] = sha256(stack.compose_file)
-        if state['gpu_renderer']:
+        if stack.uses_gpu:
             shutil.copyfile(PACKAGE_DIR / 'compose.gpu.yml', run_dir / 'compose.gpu.yml')
             stack.state['inputs']['gpu_compose_sha256'] = sha256(run_dir / 'compose.gpu.yml')
         if mode == 'player':
@@ -1000,6 +1013,9 @@ def start(stack: Stack, server_timeout: float) -> None:
     # The reservation is a stopped container, so a prune during preparation could free the
     # name for another run: confirm it is still this run's before touching the project.
     stack.ensure_owner()
+    if stack.uses_gpu:
+        # Minutes before the module would load: find a missing GPU before starting the server.
+        check_gpu_renderer(stack)
     log('Starting Redis and the server')
     stack.compose('up', '-d', '--no-build', timeout=900)
     record_image_ids(stack, ('redis', 'swlor-server'))
@@ -1012,6 +1028,40 @@ def start(stack: Stack, server_timeout: float) -> None:
     record_image_ids(stack, ('client',))
     # The module-load marker comes before the rest of start-up, so confirm the stack survived it.
     require_running(stack, 'after start-up')
+
+
+GPU_UNAVAILABLE = ('The WSL2 GPU renderer (--gpu-renderer wsl-d3d12, the default) is unavailable: {reason} '
+                   'It needs Docker Desktop with the WSL2 backend and a GPU driver that exposes /usr/lib/wsl. '
+                   'On a machine without one, run up again with --gpu-renderer software (Mesa llvmpipe, about '
+                   '2 fps: fine for screenshots and UI checks, not for animation or frame-rate evidence).')
+
+
+def check_gpu_renderer(stack: Stack) -> None:
+    """Fail unless a throwaway client container renders through hardware D3D12.
+
+    A software fallback is never taken silently: its recordings run at about 2 fps and
+    would pass as animation evidence, so the caller must choose software explicitly.
+    """
+    log('Checking the GPU renderer')
+    renderer = stack.evidence / 'renderer.txt'
+    renderer.unlink(missing_ok=True)
+    result = stack.compose('run', '--rm', '--no-deps', 'client', '--renderer-check', client=True, check=False,
+                           capture=True, timeout=300)
+    found = renderer.read_text('utf-8', 'replace') if renderer.is_file() else ''
+    if result.returncode == 0:
+        line = next((text for text in found.splitlines() if 'OpenGL renderer string' in text), found.strip())
+        log(f'GPU renderer: {line.split(":", 1)[-1].strip()}')
+        return
+    detail = '\n'.join(part for part in (result.stderr.decode('utf-8', 'replace').strip(), found.strip()) if part)
+    if 'llvmpipe' in found or 'Basic Render Driver' in found:
+        reason = 'the client fell back to software rendering.'
+    elif '/usr/lib/wsl' in detail:
+        reason = 'Docker cannot mount /usr/lib/wsl.'
+    elif 'gpu' in detail.lower() or 'device driver' in detail:
+        reason = 'Docker has no GPU to give the client container.'
+    else:
+        reason = f'the renderer check exited with {result.returncode}.'
+    raise LiveStackError(GPU_UNAVAILABLE.format(reason=reason) + (f'\n{detail[-2000:]}' if detail else ''))
 
 
 def record_image_ids(stack: Stack, services: tuple[str, ...]) -> None:

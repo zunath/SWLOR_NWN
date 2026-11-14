@@ -291,21 +291,98 @@ class LiveClientHelperTests(unittest.TestCase):
         self.assertFalse(capture['graphics']['shadows']['environment']['enabled'])
         self.assertNotIn('fbo', regular['graphics'])
 
-    def test_gpu_composition_is_optional_and_keeps_the_run_snapshot(self):
+    def test_gpu_composition_follows_the_run_renderer_and_keeps_the_run_snapshot(self):
         directory = self.root / 'gpu-run'
         directory.mkdir()
         state = directory / 'state.json'
-        import json
-        for gpu in (None, 'wsl-d3d12'):
-            state.write_text(json.dumps({'project': 'swlor-live-gpu-test', 'gpu_renderer': gpu}))
+        # None is how runs created before the GPU default recorded software rendering.
+        for renderer, gpu in ((None, False), ('software', False), ('wsl-d3d12', True)):
+            state.write_text(json.dumps({'project': 'swlor-live-gpu-test', 'gpu_renderer': renderer}))
             owned = stack.Stack(directory)
             with patch.object(stack, 'run') as run:
                 owned.compose('ps', client=True)
             command = run.call_args.args[0]
             self.assertEqual(2 if gpu else 1, command.count('-f'))
             self.assertIn(str(owned.run_dir / 'compose.yml'), command)
-            self.assertEqual(bool(gpu), str(owned.run_dir / 'compose.gpu.yml') in command)
-            self.assertEqual(bool(gpu), 'compose.gpu.yml' in owned.compose_command('ps'))
+            self.assertEqual(gpu, str(owned.run_dir / 'compose.gpu.yml') in command)
+            self.assertEqual(gpu, 'compose.gpu.yml' in owned.compose_command('ps'))
+
+    def test_up_defaults_to_the_gpu_and_software_is_an_explicit_choice(self):
+        from nwn_live_client.__main__ import parser
+        self.assertEqual('wsl-d3d12', parser().parse_args(['up']).gpu_renderer)
+        self.assertEqual('software', parser().parse_args(['up', '--gpu-renderer', 'software']).gpu_renderer)
+        with patch('sys.stderr'), self.assertRaises(SystemExit):
+            parser().parse_args(['up', '--gpu-renderer', 'llvmpipe'])
+
+    def renderer_stack(self, renderer):
+        directory = self.root / f'renderer-{renderer}'
+        (directory / 'evidence').mkdir(parents=True, exist_ok=True)
+        (directory / 'state.json').write_text(json.dumps(
+            {'project': 'swlor-live-renderer', 'gpu_renderer': renderer, 'client_image': 'image'}))
+        return stack.Stack(directory)
+
+    def test_start_checks_the_gpu_before_the_server_and_never_for_software(self):
+        for renderer, checked in (('wsl-d3d12', True), ('software', False), (None, False)):
+            owned = self.renderer_stack(renderer)
+            calls = []
+            with self.subTest(renderer=renderer), \
+                    patch.object(stack, 'ensure_client_image'), patch.object(owned, 'ensure_owner'), \
+                    patch.object(stack, 'check_gpu_renderer', side_effect=lambda _: calls.append('gpu')), \
+                    patch.object(owned, 'compose', side_effect=lambda *a, **k: calls.append(a[0])), \
+                    patch.object(stack, 'record_image_ids'), \
+                    patch.object(stack, 'wait_for_server', side_effect=LiveStackError('stop')):
+                with self.assertRaisesRegex(LiveStackError, 'stop'):
+                    stack.start(owned, 60)
+                self.assertEqual(['gpu', 'up'] if checked else ['up'], calls)
+
+    def test_gpu_check_runs_a_throwaway_client_and_reports_the_renderer(self):
+        owned = self.renderer_stack('wsl-d3d12')
+        # A renderer.txt left from an earlier attempt must not decide this check.
+        (owned.evidence / 'renderer.txt').write_text('stale')
+        with patch.object(owned, 'compose', side_effect=self.client_check(
+                0, b'', 'OpenGL renderer string: D3D12 (NVIDIA GeForce RTX 3080 Ti)\n', owned)) as compose, \
+                patch.object(stack, 'log') as log:
+            stack.check_gpu_renderer(owned)
+        self.assertEqual(('run', '--rm', '--no-deps', 'client', '--renderer-check'), compose.call_args.args)
+        self.assertTrue(compose.call_args.kwargs['client'])
+        self.assertFalse(compose.call_args.kwargs['check'])
+        log.assert_called_with('GPU renderer: D3D12 (NVIDIA GeForce RTX 3080 Ti)')
+
+    @staticmethod
+    def client_check(returncode, stderr, renderer_text, owned):
+        def compose(*arguments, **options):
+            if renderer_text:
+                (owned.evidence / 'renderer.txt').write_text(renderer_text)
+            return subprocess.CompletedProcess([], returncode, b'', stderr)
+        return compose
+
+    def test_an_unavailable_gpu_fails_and_names_the_software_option(self):
+        cases = (
+            (b'Error response from daemon: invalid mount config: bind source path does not exist: '
+             b'/usr/lib/wsl/drivers', '', 'cannot mount /usr/lib/wsl'),
+            (b'could not select device driver "" with capabilities: [[gpu]]', '', 'no GPU'),
+            (b'The requested GPU backend fell back to software',
+             'OpenGL renderer string: llvmpipe (LLVM 15.0.7, 256 bits)\n', 'fell back to software'),
+            (b'The requested GPU backend fell back to software',
+             'OpenGL renderer string: D3D12 (Microsoft Basic Render Driver)\n', 'fell back to software'),
+        )
+        for stderr, renderer_text, reason in cases:
+            owned = self.renderer_stack('wsl-d3d12')
+            (owned.evidence / 'renderer.txt').write_text('OpenGL renderer string: D3D12 (stale)\n')
+            with self.subTest(reason=reason, renderer=renderer_text), patch.object(
+                    owned, 'compose', side_effect=self.client_check(1, stderr, renderer_text, owned)):
+                with self.assertRaises(LiveStackError) as raised:
+                    stack.check_gpu_renderer(owned)
+                self.assertIn(reason, str(raised.exception))
+                self.assertIn('--gpu-renderer software', str(raised.exception))
+
+    def test_client_script_refuses_software_rendering_when_the_gpu_was_requested(self):
+        script = (stack.PACKAGE_DIR / 'run-client.sh').read_text()
+        check = script.index('SWLOR_LIVE_GPU_RENDERER')
+        self.assertIn("grep -q 'Basic Render Driver'", script[check:])
+        # The pre-flight check exits only after the renderer test has passed, before connecting.
+        self.assertLess(check, script.index('--renderer-check'))
+        self.assertLess(script.index('--renderer-check'), script.index('nwmain-linux'))
 
     def owned_stack(self):
         directory = self.root / 'direct-run'

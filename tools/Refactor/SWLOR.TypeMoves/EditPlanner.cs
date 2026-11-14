@@ -50,14 +50,14 @@ internal static class EditPlanner
         foreach (var directive in SyntaxQueries.AllUsings(root).Where(SyntaxQueries.IsPlain))
         {
             var name = SyntaxQueries.Dotted(directive.Name!);
-            if (context.Data.Sources.Contains(name))
+            if (movedFile != null && name == movedFile.To && !SyntaxQueries.IsGlobal(directive))
+            {
+                removals.Add(directive); // a moved file's using of its own new namespace (which may also be a source)
+            }
+            else if (context.Data.Sources.Contains(name))
             {
                 if (context.MayDropImport(name) && (SyntaxQueries.IsGlobal(directive) ? droppedGlobalImports.Contains(name) : !findings.KeptImports.Contains(name)))
                     removals.Add(directive);
-            }
-            else if (movedFile != null && name == movedFile.To && !SyntaxQueries.IsGlobal(directive))
-            {
-                removals.Add(directive);
             }
         }
 

@@ -90,7 +90,7 @@ public class TypeMovesDomainOrderRunnerTests
         _root = Path.Combine(Path.GetTempPath(), "swlor-type-moves-order-" + Guid.NewGuid().ToString("N")[..8]);
         Write("SWLOR.Game.Server.sln", string.Empty);
         Write("SWLOR.Game.Server/SWLOR.Game.Server.csproj", Project);
-        Write("SWLOR.Game.Server/Domain/Crafting/Recipe.cs", RecipeSource);
+        Write("SWLOR.Game.Server/Domain/Crafting/Recipe.cs", "using SWLOR.Game.Server.Domain.Foundation;\n\n" + RecipeSource);
         Write("SWLOR.Game.Server/Domain/Crafting/TierAttribute.cs", TierSource);
         Write("SWLOR.Game.Server/Domain/Crafting/GradeAttribute.cs", GradeSource);
         Write("SWLOR.Game.Server/Domain/Crafting/Bench.cs", BenchSource);
@@ -128,7 +128,8 @@ public class TypeMovesDomainOrderRunnerTests
         File.Exists(Full("SWLOR.Game.Server/Domain/Crafting/Recipe.cs")).Should().BeFalse();
         Text("SWLOR.Game.Server/Domain/Foundation/Recipe.cs").Should().Be("using SWLOR.Game.Server.Domain.Crafting;\n\n"
             + RecipeSource.Replace("namespace SWLOR.Game.Server.Domain.Crafting", "namespace SWLOR.Game.Server.Domain.Foundation"),
-            "a moved file imports what it saw from inside its old namespace (an attribute by its short name)");
+            "a moved file imports what it saw from inside its old namespace (an attribute by its short name), and its using of the "
+            + "namespace it joins goes although types also leave that namespace");
         Text("SWLOR.Game.Server/Domain/Foundation/GradeAttribute.cs").Should().Be(GradeSource.Replace("Domain.Crafting;", "Domain.Foundation;"));
         Text("SWLOR.Game.Server/Domain/Combat/HealAmount.cs").Should().Be(HealSource.Replace("Feature.AbilityDefinition", "Domain.Combat"), "Feature to Domain");
         Text("SWLOR.Game.Server/Core/Log.cs").Should().Be("using SWLOR.Game.Server.Domain.Foundation;\n\n" + LogSource.Replace("namespace SWLOR.Game.Server.Domain.Foundation", "namespace SWLOR.Game.Server.Core"),

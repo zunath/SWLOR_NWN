@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature
 
             KatarAnimationRemap.SynchronizeOnLogin(player);
             PistolAnimationRemap.SynchronizeOnLogin(player);
+            MeleeWeaponCarry.Synchronize(player);
         }
     }
 }

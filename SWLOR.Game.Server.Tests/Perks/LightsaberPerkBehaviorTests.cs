@@ -206,8 +206,6 @@ public class LightsaberPerkBehaviorTests
     [Test]
     public void SaberWardConversion_RetypesPhysicalShareToRealForceDamage()
     {
-        var root = FindRepositoryRoot().FullName;
-
         // The converted share is dealt as a real Force damage instance (Force resistance + combat-log
         // visibility) via ApplyTriggeredDamage, not merely approximated by blending defense.
         var combat = CombatSource.Read();
@@ -250,7 +248,7 @@ public class LightsaberPerkBehaviorTests
             "the explicit typed stage must preserve the existing pre-resistance ordering");
 
         // Both ability damage paths do the same before their physical resistance stage.
-        var ability = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var ability = Support.AbilitySource.Read();
         const string abilityConversionCall =
             "ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage, targetStatusDamageAdjustment)";
         const string abilityLeadershipCall =

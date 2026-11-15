@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -89,7 +90,7 @@ public class ReworkedAbilityAnimationTests
         var root = directory!.FullName;
         var activation = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server/Feature/UsePerkFeat.cs"));
         activation.Should().MatchRegex(@"if \(ability\.UsesImmediateAuthoredAnimation\)\s*\{[^}]*NamedAnimation\.Play\(activator, authoredClip, duration,\s*equipmentRequirement: ability\.AnimationEquipmentRequirement,\s*fitToDuration: ability\.FitsAuthoredAnimationToCastWindow\);\s*\}\s*else\s*NamedAnimation\.Queue");
-        var impact = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs"));
+        var impact = AbilitySource.Read();
         var authoredBranch = impact[impact.IndexOf("if (authoredImpact != null)")..impact.IndexOf("if (trackedAbility?.ImmediateNativeImpactAnimationDuration")];
         authoredBranch.Should().Contain("_namedAnimation.Play(activator, authoredImpact, equipmentRequirement: trackedAbility.AnimationEquipmentRequirement)");
         authoredBranch.Should().NotContain("ActionPlayAnimation");

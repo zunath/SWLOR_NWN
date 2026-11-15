@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -19,9 +20,7 @@ public class AbilityDamageBudgetOrderTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
             root = root.Parent;
         root.Should().NotBeNull();
-        var method = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
-                "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"))).GetRoot()
-            .DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var method = AbilitySource.Nodes<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "CalculateUnscaledCombatImpactDamage");
         // Execute the actual orchestration method. Only engine-dependent inputs/stages are
         // replaced; the outgoing and combined incoming budget arithmetic stays production code.

@@ -203,7 +203,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "Lucky Chamber must advance before hit, miss, or deflection resolution");
         resolveAttackRoll.Should().Contain("autoAttackCycleCriticalRate);");
         resolveAttackRoll.Should().Contain("GameServices.CombatAbilityBonus.StoreQueuedWeaponAbilityCriticalRateBonus(");
-        var ability = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var ability = AbilitySource.Read();
         ability.Should().Contain("ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
         combat.Should().Contain("new DamageDealtAdjustmentStatusEffect(");
         combat.Should().NotContain("new DuelistsDistanceStatusEffect(",
@@ -619,8 +619,7 @@ public class GeneratedWeaponPerkBehaviorTests
         placeableNotificationIndex.Should().BeLessThan(placeableReturnIndex,
             "automatic hits against destructible placeables must spend attack charges");
 
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         abilitySource.Should().Contain(
             "if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)");
         abilitySource.Should().Contain("impact.Summary.SkillType");
@@ -1541,7 +1540,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         var nativeAttackSource = NativeCombatSource.AttackRoll();
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));

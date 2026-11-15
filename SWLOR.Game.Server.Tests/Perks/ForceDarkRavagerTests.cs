@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -128,7 +129,7 @@ public class ForceDarkRavagerTests
     {
         var root = FindRepositoryRoot();
 
-        var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
+        var ability = AbilitySource.Read();
         ability.Should().Contain("ApplyDarkForceCastConversion(activator, target)");
         ability.Should().Contain("ApplyDarkForceDamageRestoration(activator, damage)");
 

@@ -206,7 +206,7 @@ public class ForceLightGuardianTests
         var weaponProcessDamage = weaponDamage.Substring(
             weaponProcessDamageStart,
             weaponAddDamageStart - weaponProcessDamageStart);
-        var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
+        var abilityDamage = AbilitySource.Read();
         var abilityPreDamageNotification = abilityDamage.IndexOf(
             "_statusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);

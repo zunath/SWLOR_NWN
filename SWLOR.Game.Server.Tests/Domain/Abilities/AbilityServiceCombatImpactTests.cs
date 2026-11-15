@@ -62,7 +62,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
         CombatDamageType damageType = CombatDamageType.Physical)
     {
         if (ability != null)
-            Service.BeginAbilityImpact(Caster, ability);
+            Lifecycle.BeginAbilityImpact(Caster, ability);
         return Service.ApplyCombatImpact(
             Caster, target, Bench.At(AbilityBench.TheArea, Vector3.Zero), SkillType.Force, baseDamage, duration, statusEffect!, isArea,
             additional!, factory!, damageType, resistance, targetVisual, areaVisual, percent!, baseAdjustment!, impactAnimation, enmityBonus,
@@ -77,11 +77,11 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.DamageImpactVisualEffect = VisualEffect.Vfx_Fnf_Sound_Burst;
-        Service.BeginAbilityImpact(Caster, ability);
-        Service.StatusAppliedBonus = 0;
+        Lifecycle.BeginAbilityImpact(Caster, ability);
+        Bench.StatusAppliedBonus = 0;
         Bench.Log.Clear();
 
-        var dealt = Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force, typeof(ControlEffect), 6);
+        var dealt = HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force, typeof(ControlEffect), 6);
 
         dealt.Should().Be(25);
         Bench.Log.Should().Equal(
@@ -99,17 +99,17 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
             $"Effect:Vfx:{VisualEffect.Vfx_Fnf_Sound_Burst}:{Target}",
             "HealingScopeEnd");
         LogOf("TempHpFeedback", "DamageReflection", "AssignCommand").Should().BeEmpty("a tracked hit queues its damage");
-        Service.GetActiveAbilityImpactSummary(Caster).ImpactedTargetCount.Should().Be(1);
-        Service.GetActiveAbilityImpactSummary(Caster).AttributedDamage.Should().Be(25);
+        ImpactState.GetActiveAbilityImpactSummary(Caster).ImpactedTargetCount.Should().Be(1);
+        ImpactState.GetActiveAbilityImpactSummary(Caster).AttributedDamage.Should().Be(25);
     }
 
     [Test]
     public void The_queued_direct_damage_of_a_tracked_hit_resolves_its_lifecycle_before_each_effect()
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force);
-        Service.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 5, CombatDamageType.Force);
-        Service.EndAbilityImpact(Caster);
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 5, CombatDamageType.Force);
+        Lifecycle.EndAbilityImpact(Caster);
         Bench.Log.Clear();
 
         Bench.RunDeferred();
@@ -129,7 +129,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void An_untracked_hit_lands_its_damage_at_once_and_applies_its_reflection_after_the_notifications()
     {
-        var dealt = Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force, effectDamageType: DamageType.Fire);
+        var dealt = HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force, effectDamageType: DamageType.Fire);
 
         dealt.Should().Be(25);
         Bench.Log.Should().ContainInOrder(
@@ -150,7 +150,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void A_hit_can_withhold_its_combat_points_and_a_zero_damage_hit_skips_every_damage_step()
     {
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, awardsCombatPoints: false);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, awardsCombatPoints: false);
 
         LogOf("AddCombatPoint", "NotifyPreDamage", "NotifyDamage", "DamageDealtEffects", "ConsumeSameTargetPressure").Should().BeEmpty();
         Bench.Log.Should().Contain($"ModifyEnmity:{Caster}:{Target}:100");
@@ -161,10 +161,10 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     {
         var ability = Hostile(skill: SkillType.Vibroblade);
         ability.MeleeTechnique = new MeleeTechniqueDetail();
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
 
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Vibroblade, 5, CombatDamageType.Physical);
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Vibroblade, 5, CombatDamageType.Physical);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Vibroblade, 5, CombatDamageType.Physical);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Vibroblade, 5, CombatDamageType.Physical);
 
         LogOf("DamageDealtEffects").Should().Equal("DamageDealtEffects:5:True:True", "DamageDealtEffects:5:True:False");
     }
@@ -173,22 +173,22 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     public void The_first_damaging_hit_consumes_a_status_applied_bonus_once()
     {
         var ability = Hostile();
-        Service.StatusAppliedBonus = 9;
+        Bench.StatusAppliedBonus = 9;
         ability.DealsDeferredDamage = true;
-        Service.BeginAbilityImpact(Caster, ability);
-        Service.ApplyCapturedAbilityDamageBonus(Caster, 10).Should().Be(19);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
+        HostileImpact.ApplyCapturedAbilityDamageBonus(Caster, 10).Should().Be(19);
 
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 5, CombatDamageType.Force);
-        Service.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 5, CombatDamageType.Force);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 5, CombatDamageType.Force);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 5, CombatDamageType.Force);
 
         LogOf("ConsumeStatusAppliedBonus").Should().ContainSingle();
-        Service.ApplyCapturedAbilityDamageBonus(Caster, 10).Should().Be(10);
+        HostileImpact.ApplyCapturedAbilityDamageBonus(Caster, 10).Should().Be(10);
     }
 
     [Test]
     public void A_status_rider_of_the_hit_counts_as_applied_status()
     {
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force,
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force,
             beforeSuccessfulImpactRiders: _ => StatusEffectCategory.Control);
 
         LogOf("ImpactRiders").Should().Equal($"ImpactRiders:{Target}:0:True:False:True:Control:True:False");
@@ -197,17 +197,17 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void The_authored_visual_wins_over_the_hit_visual_and_needs_damage_or_a_status()
     {
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
         LogOf("Effect:").Should().BeEmpty("the hit neither damaged nor applied anything");
 
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 5, CombatDamageType.Force, targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 5, CombatDamageType.Force, targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
         Bench.Log.Should().Contain($"Effect:Vfx:{VisualEffect.Vfx_Fnf_Sound_Burst}:{Target}");
         Bench.Log.Clear();
 
         var ability = Hostile();
         ability.SuccessfulImpactVisualEffect = VisualEffect.Vfx_Fnf_Sound_Burst;
-        Service.BeginAbilityImpact(Caster, ability);
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 5, CombatDamageType.Force, targetVisualEffect: VisualEffect.Vfx_Dur_Aura_Blue);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 5, CombatDamageType.Force, targetVisualEffect: VisualEffect.Vfx_Dur_Aura_Blue);
         LogOf("Effect:").Should().Equal($"Effect:Vfx:{VisualEffect.Vfx_Fnf_Sound_Burst}:{Target}");
     }
 
@@ -216,12 +216,12 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void A_miss_reports_the_miss_awards_one_point_and_applies_the_miss_enmity()
     {
-        Service.HitResolves = false;
-        Service.HitRate = 40;
+        Bench.HitResolves = false;
+        Bench.HitRate = 40;
         Bench.TechniqueAccuracy = 3;
         Bench.Recording = true;
         var ability = Hostile();
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
         Bench.Log.Clear();
 
         var dealt = Service.ApplyCombatImpact(Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, false, hitChancePercentAdjustment: 5);
@@ -249,7 +249,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     public void A_hit_reports_the_hit_before_it_calculates_damage()
     {
         var ability = Hostile();
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
         Bench.Log.Clear();
 
         Service.ApplyCombatImpact(Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, false);
@@ -295,14 +295,14 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void The_player_damage_path_runs_in_order_and_adds_every_bonus()
     {
-        Service.CriticalRating = 2;
-        Service.WeaponDamage = 7;
-        Service.NextAbilityDamageBonus = 4;
-        Service.IdleBonuses = (3, 0, 11);
+        Bench.CriticalRating = 2;
+        Bench.WeaponDamage = 7;
+        Bench.NextAbilityDamageBonus = 4;
+        Bench.IdleBonuses = (3, 0, 11);
         var ability = Hostile();
         ability.DealsDeferredDamage = true;
         ability.MeleeTechnique = null!;
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
         Bench.Log.Clear();
 
         var dealt = Service.ApplyCombatImpact(Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, false, criticalRatePercentAdjustment: 6);
@@ -322,14 +322,14 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
             "TakenModifiers:26:True",
             "CriticalFeedback:Blast",
             "CriticalEffects:26:2:True");
-        Service.GetActiveAbilityImpactSummary(Caster).CriticalHitCount.Should().Be(1);
+        ImpactState.GetActiveAbilityImpactSummary(Caster).CriticalHitCount.Should().Be(1);
     }
 
     [Test]
     public void A_downgraded_critical_sends_its_feedback_and_counts_as_no_critical()
     {
-        Service.CriticalRating = 0;
-        Service.CriticalDowngraded = true;
+        Bench.CriticalRating = 0;
+        Bench.CriticalDowngraded = true;
 
         Impact(Hostile());
 
@@ -340,7 +340,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void An_impact_that_cannot_critical_skips_the_rating()
     {
-        Service.CriticalRating = 5;
+        Bench.CriticalRating = 5;
 
         Impact(Hostile(), canCritical: false);
 
@@ -350,7 +350,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void A_control_only_impact_deals_no_damage_and_leaves_its_bonuses_armed()
     {
-        Service.NextAbilityDamageBonus = 4;
+        Bench.NextAbilityDamageBonus = 4;
 
         Impact(Hostile(), baseDamage: 0).Should().Be(0);
 
@@ -364,7 +364,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
         var percentCalls = 0;
         Impact(Hostile(), baseDamage: 0, percent: _ => { percentCalls++; return 50; });
         percentCalls.Should().Be(0);
-        Service.EndAbilityImpact(Caster);
+        Lifecycle.EndAbilityImpact(Caster);
         Bench.Log.Clear();
 
         Impact(Hostile(), baseDamage: 10, percent: _ => 50, baseAdjustment: _ => 5, unscaled: true);
@@ -377,15 +377,15 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.TriggersDarkForceConversion = true;
-        Service.Stats[(Caster, StatType.DarkForceTargetLowHPDamageThresholdPercent)] = 50;
-        Service.Stats[(Caster, StatType.DarkForceTargetLowHPDamagePercentAdjustment)] = 30;
+        Bench.Stats[(Caster, StatType.DarkForceTargetLowHPDamageThresholdPercent)] = 50;
+        Bench.Stats[(Caster, StatType.DarkForceTargetLowHPDamagePercentAdjustment)] = 30;
         Bench.Hp[Target] = 40;
 
         Impact(ability, unscaled: true);
 
         Bench.Log.Should().Contain("DealtModifiers:10:0:30");
         Bench.Log.Clear();
-        Service.EndAbilityImpact(Caster);
+        Lifecycle.EndAbilityImpact(Caster);
 
         Bench.Hp[Target] = 90;
         Impact(ability, unscaled: true);
@@ -395,8 +395,8 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void The_unscaled_path_uses_only_the_base_and_captured_damage()
     {
-        Service.CombatReadiness = 50;
-        Service.WeaponDamage = 99;
+        Bench.CombatReadiness = 50;
+        Bench.WeaponDamage = 99;
 
         Impact(Hostile(), baseDamage: 10, unscaled: true).Should().Be(15);
 
@@ -407,13 +407,13 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void Unscaled_damage_keeps_its_authored_type()
     {
-        Service.IncludesWeaponDamage = true;
-        Service.WeaponDamageType = CombatDamageType.Electrical;
+        Bench.IncludesWeaponDamage = true;
+        Bench.WeaponDamageType = CombatDamageType.Electrical;
 
         Impact(Hostile(), unscaled: true);
         Bench.Log.Should().Contain($"Resistance:{Target}:{CombatDamageType.Physical}:10");
         Bench.Log.Clear();
-        Service.EndAbilityImpact(Caster);
+        Lifecycle.EndAbilityImpact(Caster);
 
         Impact(Hostile());
         Bench.Log.Should().Contain($"Resistance:{Target}:{CombatDamageType.Electrical}:12", "the bench's force affinity adds 2");
@@ -431,10 +431,10 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void A_critical_of_a_volley_notifies_once_for_the_activation()
     {
-        Service.CriticalRating = 1;
+        Bench.CriticalRating = 1;
         var shot = new WeaponShotProfile(900, SkillType.Pistol, 8, CombatDamageType.Fire, 0, 0, AbilityType.Perception, string.Empty);
         var activation = new WeaponImpactActivation();
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         using (new WeaponImpactProfile(Caster, shot, activation))
         {
             Service.ApplyCombatImpact(Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, false);
@@ -448,10 +448,10 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void A_technique_critical_notifies_once_for_the_cast()
     {
-        Service.CriticalRating = 1;
+        Bench.CriticalRating = 1;
         var ability = Hostile();
         ability.MeleeTechnique = new MeleeTechniqueDetail();
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
 
         Service.ApplyCombatImpact(Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, false);
         Service.ApplyCombatImpact(Caster, Other, Bench.Nowhere(), SkillType.Force, 10, 0, null!, false);
@@ -467,7 +467,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
             IsCommitted = true,
             PrimaryWeapon = 900
         };
-        Service.BeginAbilityImpact(Caster, Hostile(skill: SkillType.Pistol), weaponTraits: traits);
+        Lifecycle.BeginAbilityImpact(Caster, Hostile(skill: SkillType.Pistol), weaponTraits: traits);
 
         Service.ApplyCombatImpact(Caster, Target, Bench.Nowhere(), SkillType.Pistol, 10, 0, null!, false).Should().Be(15);
         Service.ApplyCombatImpact(Caster, Other, Bench.Nowhere(), SkillType.Pistol, 10, 0, null!, false).Should().Be(10);
@@ -476,9 +476,9 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void The_npc_path_scales_the_damage_from_its_rank_and_attacks_from_its_own_level()
     {
-        Service.NpcStats = new NPCStats { Level = 40, Attack = 8 };
-        Service.NpcStats.Skills[SkillType.Force] = 20;
-        Service.Stats[(Caster, StatType.Attack)] = 2;
+        Bench.NpcStats = new NPCStats { Level = 40, Attack = 8 };
+        Bench.NpcStats.Skills[SkillType.Force] = 20;
+        Bench.Stats[(Caster, StatType.Attack)] = 2;
 
         var dealt = Impact(Hostile(), baseDamage: 10, useNpcScaling: true);
 
@@ -492,10 +492,10 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void An_npc_critical_runs_the_same_feedback_as_a_player_critical()
     {
-        Service.NpcStats = new NPCStats { Level = 40 };
-        Service.NpcStats.Skills[SkillType.Force] = 20;
-        Service.CriticalRating = 2;
-        Service.CriticalDowngraded = true;
+        Bench.NpcStats = new NPCStats { Level = 40 };
+        Bench.NpcStats.Skills[SkillType.Force] = 20;
+        Bench.CriticalRating = 2;
+        Bench.CriticalDowngraded = true;
 
         Impact(Hostile(), useNpcScaling: true);
 
@@ -504,14 +504,14 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
             "CriticalDamage:13:2:0",
             "CriticalFeedback:Blast",
             "CriticalEffects:15:2:True");
-        Service.GetActiveAbilityImpactSummary(Caster).CriticalHitCount.Should().Be(1);
+        ImpactState.GetActiveAbilityImpactSummary(Caster).CriticalHitCount.Should().Be(1);
     }
 
     [Test]
     public void An_npc_volley_partitions_the_damage_after_the_modifiers()
     {
-        Service.NpcStats = new NPCStats { Level = 40 };
-        Service.NpcStats.Skills[SkillType.Force] = 20;
+        Bench.NpcStats = new NPCStats { Level = 40 };
+        Bench.NpcStats.Skills[SkillType.Force] = 20;
         var shot = new WeaponShotProfile(900, SkillType.Pistol, 8, CombatDamageType.Fire, 0, 0, AbilityType.Perception, string.Empty);
         using var profile = new WeaponImpactProfile(Caster, shot, new WeaponImpactActivation(), volleyIndex: 0, volleyCount: 2);
 
@@ -532,22 +532,22 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void An_npc_with_no_skill_rank_derives_it_from_its_highest_relevant_stat()
     {
-        Service.NpcStats = new NPCStats { ForceAttack = 40 };
-        Service.NpcStats.Defenses[CombatDamageType.Physical] = 30;
-        Service.NpcStats.Resistances[ResistanceType.Fire] = 10;
+        Bench.NpcStats = new NPCStats { ForceAttack = 40 };
+        Bench.NpcStats.Defenses[CombatDamageType.Physical] = 30;
+        Bench.NpcStats.Resistances[ResistanceType.Fire] = 10;
 
         // The offense bonus of a force ability is 40, so the rank is 20 and ceil(20 * 0.15) is 3 (the bench's force affinity adds 2).
         Impact(Hostile(), baseDamage: 10, useNpcScaling: true).Should().Be(15);
-        Service.EndAbilityImpact(Caster);
+        Lifecycle.EndAbilityImpact(Caster);
 
-        Service.NpcStats = new NPCStats { Attack = 40 };
-        Service.NpcStats.Defenses[CombatDamageType.Force] = 100;
+        Bench.NpcStats = new NPCStats { Attack = 40 };
+        Bench.NpcStats.Defenses[CombatDamageType.Force] = 100;
         // No physical defense: the highest listed defense gives rank 50 and ceil(50 * 0.15) is 8.
         Impact(Hostile(), baseDamage: 10, useNpcScaling: true).Should().Be(20);
-        Service.EndAbilityImpact(Caster);
+        Lifecycle.EndAbilityImpact(Caster);
 
-        Service.NpcStats = new NPCStats();
-        Service.NpcStats.Resistances[ResistanceType.Fire] = 200;
+        Bench.NpcStats = new NPCStats();
+        Bench.NpcStats.Resistances[ResistanceType.Fire] = 200;
         // Fire resistance answers for a fire hit: rank 100 caps there, and ceil(100 * 0.15f) is 16 in single precision.
         Impact(Hostile(), baseDamage: 10, useNpcScaling: true, damageType: CombatDamageType.Fire).Should().Be(28);
     }
@@ -555,12 +555,12 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void The_npc_attack_modifiers_scale_the_attack_up()
     {
-        Service.NpcStats = new NPCStats { Level = 10 };
-        Service.NpcStats.Skills[SkillType.Force] = 20;
-        Service.Stats[(Caster, StatType.AttackPercentAdjustment)] = 10;
-        Service.Stats[(Caster, StatType.ForceAttackPercentAdjustment)] = 15;
-        Service.Stats[(Caster, StatType.HighFPAndStaminaAttackThresholdPercent)] = 50;
-        Service.Stats[(Caster, StatType.HighFPAndStaminaAttackPercentAdjustment)] = 25;
+        Bench.NpcStats = new NPCStats { Level = 10 };
+        Bench.NpcStats.Skills[SkillType.Force] = 20;
+        Bench.Stats[(Caster, StatType.AttackPercentAdjustment)] = 10;
+        Bench.Stats[(Caster, StatType.ForceAttackPercentAdjustment)] = 15;
+        Bench.Stats[(Caster, StatType.HighFPAndStaminaAttackThresholdPercent)] = 50;
+        Bench.Stats[(Caster, StatType.HighFPAndStaminaAttackPercentAdjustment)] = 25;
 
         Impact(Hostile(), useNpcScaling: true);
 
@@ -572,14 +572,14 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [TestCase(100, 100, 0, 100, 0)]
     public void The_high_resource_attack_bonus_needs_both_resources_above_the_threshold(int fp, int stamina, int maxFp, int maxStamina, int percent)
     {
-        Service.NpcStats = new NPCStats();
-        Service.NpcStats.Skills[SkillType.Force] = 20;
-        Service.CurrentFP = fp;
-        Service.CurrentStamina = stamina;
-        Service.MaxFP = maxFp;
-        Service.MaxStamina = maxStamina;
-        Service.Stats[(Caster, StatType.HighFPAndStaminaAttackThresholdPercent)] = 50;
-        Service.Stats[(Caster, StatType.HighFPAndStaminaAttackPercentAdjustment)] = 25;
+        Bench.NpcStats = new NPCStats();
+        Bench.NpcStats.Skills[SkillType.Force] = 20;
+        Bench.CurrentFP = fp;
+        Bench.CurrentStamina = stamina;
+        Bench.MaxFP = maxFp;
+        Bench.MaxStamina = maxStamina;
+        Bench.Stats[(Caster, StatType.HighFPAndStaminaAttackThresholdPercent)] = 50;
+        Bench.Stats[(Caster, StatType.HighFPAndStaminaAttackPercentAdjustment)] = 25;
 
         Impact(Hostile(), useNpcScaling: true);
 
@@ -589,9 +589,9 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void A_negative_npc_attack_modifier_lowers_the_attack_but_never_below_one()
     {
-        Service.NpcStats = new NPCStats();
-        Service.NpcStats.Skills[SkillType.Devices] = 20;
-        Service.Stats[(Caster, StatType.AttackPercentAdjustment)] = -200;
+        Bench.NpcStats = new NPCStats();
+        Bench.NpcStats.Skills[SkillType.Devices] = 20;
+        Bench.Stats[(Caster, StatType.AttackPercentAdjustment)] = -200;
 
         Service.ApplyCombatImpact(Caster, Target, Bench.Nowhere(), SkillType.Devices, 10, 0, null!, false, useNPCStatScaling: true);
 
@@ -604,10 +604,10 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     public void A_factory_replaces_the_primary_status_and_additional_statuses_apply_once_each()
     {
         var ability = Hostile();
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
         Bench.Log.Clear();
 
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(ProbeEffect), 6,
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(ProbeEffect), 6,
             new[] { typeof(SecondEffect), typeof(SecondEffect), null! },
             () => new ControlEffect());
 
@@ -619,7 +619,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void A_primary_status_repeated_in_the_additional_list_applies_once()
     {
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6,
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6,
             new[] { typeof(SecondEffect) });
 
         LogOf("ApplyStatus").Should().ContainSingle();
@@ -629,9 +629,9 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void A_valid_resistance_type_is_what_the_status_rolls_against()
     {
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6,
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6,
             statusEffectFactory: null!, statusResistanceType: ResistanceType.Mind);
-        Service.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 0, CombatDamageType.Force, null!, 6,
+        HostileImpact.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 0, CombatDamageType.Force, null!, 6,
             statusEffectFactory: () => new ControlEffect(), statusResistanceType: ResistanceType.Mind);
 
         LogOf("ApplyStatus").Should().Equal(
@@ -644,11 +644,11 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     {
         Bench.StatusApplies = false;
 
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6,
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6,
             statusEffectFactory: null!);
-        Service.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 0, CombatDamageType.Force, null!, 6,
+        HostileImpact.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 0, CombatDamageType.Force, null!, 6,
             statusEffectFactory: () => new ControlEffect());
-        Service.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 0, CombatDamageType.Force, null!, 6,
+        HostileImpact.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 0, CombatDamageType.Force, null!, 6,
             statusEffectFactory: () => null!);
 
         LogOf("ImpactRiders").Should().OnlyContain(entry => entry.Contains(":False:False:True:None:"));
@@ -657,15 +657,15 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void A_status_with_no_duration_is_not_applied_and_the_duration_adjustment_keeps_at_least_one()
     {
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 0);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 0);
         LogOf("ApplyStatus").Should().BeEmpty();
 
-        Service.StatusDurationAdjustment = 50;
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6);
+        Bench.StatusDurationAdjustment = 50;
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6);
         LogOf("ApplyStatus").Last().Should().Contain(":9:");
 
-        Service.StatusDurationAdjustment = -200;
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6);
+        Bench.StatusDurationAdjustment = -200;
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6);
         LogOf("ApplyStatus").Last().Should().Contain(":1:");
     }
 
@@ -674,13 +674,13 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     {
         Bench.TypeCategories = StatusEffectCategory.Debuff;
 
-        Service.GetCombatImpactStatusCategories(null!, null!, null!).Should().Be(StatusEffectCategory.None);
+        StatusApplication.GetCombatImpactStatusCategories(null!, null!, null!).Should().Be(StatusEffectCategory.None);
 
-        var categories = Service.GetCombatImpactStatusCategories(typeof(SecondEffect), new[] { typeof(SecondEffect) }, () => new ControlEffect());
+        var categories = StatusApplication.GetCombatImpactStatusCategories(typeof(SecondEffect), new[] { typeof(SecondEffect) }, () => new ControlEffect());
         categories.HasFlag(StatusEffectCategory.Debuff).Should().BeTrue();
         categories.HasFlag(StatusEffectCategory.Control).Should().BeTrue();
 
-        Service.GetCombatImpactStatusCategories(null!, null!, () => null!).Should().Be(StatusEffectCategory.None);
+        StatusApplication.GetCombatImpactStatusCategories(null!, null!, () => null!).Should().Be(StatusEffectCategory.None);
     }
 
     // ----- Targets -----
@@ -721,14 +721,14 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
         captured.Should().Equal(Target);
         Bench.Log.Should().ContainInOrder($"EffectAt:Vfx:{VisualEffect.Vfx_Fnf_Sound_Burst}", $"BattleTheme:{Target}:{Caster}");
         LogOf("ModifyEnmity").Should().ContainSingle();
-        Service.GetActiveAbilityImpactSummary(Caster).IsAreaAbility.Should().BeTrue();
+        ImpactState.GetActiveAbilityImpactSummary(Caster).IsAreaAbility.Should().BeTrue();
     }
 
     [Test]
     public void An_area_impact_centred_on_nothing_skips_its_visual()
     {
         Bench.Invalid.Add(Target);
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
 
         Service.ApplyCombatImpact(Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, true,
             areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst);
@@ -740,11 +740,11 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void An_area_marked_single_target_counts_as_an_area_when_it_says_so()
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
 
         Service.ApplyCombatImpact(Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, false, isAreaImpact: true);
 
-        Service.GetActiveAbilityImpactSummary(Caster).IsAreaAbility.Should().BeTrue();
+        ImpactState.GetActiveAbilityImpactSummary(Caster).IsAreaAbility.Should().BeTrue();
     }
 
     [Test]
@@ -764,16 +764,16 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.TriggersDarkForceConversion = true;
-        Service.Stats[(Caster, StatType.DarkForceDamageHPPercentRestore)] = 10;
-        Service.Stats[(Caster, StatType.DarkForceDamageFPRestore)] = 5;
-        Service.Stats[(Caster, StatType.DarkForceDamageHPCostPercent)] = 50;
+        Bench.Stats[(Caster, StatType.DarkForceDamageHPPercentRestore)] = 10;
+        Bench.Stats[(Caster, StatType.DarkForceDamageFPRestore)] = 5;
+        Bench.Stats[(Caster, StatType.DarkForceDamageHPCostPercent)] = 50;
         Bench.Hp[Caster] = 30;
         Bench.MaxHp[Caster] = 100;
         Bench.Recording = true;
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
 
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force);
-        Service.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 25, CombatDamageType.Force);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Other, SkillType.Force, 25, CombatDamageType.Force);
 
         LogOf("DamageHealing").Should().Equal($"DamageHealing:{Caster}:25:10", $"DamageHealing:{Caster}:25:10");
         LogOf("RestoreFP").Should().ContainSingle().Which.Should().Be($"RestoreFP:{Caster}:5");
@@ -789,14 +789,14 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.TriggersDarkForceConversion = true;
-        Service.Stats[(Caster, StatType.DarkForceDamageHPCostPercent)] = 50;
-        Service.Stats[(Caster, StatType.DarkForceDamageLowTargetHPThresholdPercent)] = 50;
-        Service.Stats[(Caster, StatType.DarkForceDamageLowTargetHPCostPercent)] = 10;
+        Bench.Stats[(Caster, StatType.DarkForceDamageHPCostPercent)] = 50;
+        Bench.Stats[(Caster, StatType.DarkForceDamageLowTargetHPThresholdPercent)] = 50;
+        Bench.Stats[(Caster, StatType.DarkForceDamageLowTargetHPCostPercent)] = 10;
         Bench.Hp[Target] = 20;
         Bench.Recording = true;
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
 
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force);
 
         LogOf("RecorderHitPointCost").Should().Equal($"RecorderHitPointCost:{Caster}:10");
     }
@@ -806,10 +806,10 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.TriggersDarkForceConversion = true;
-        Service.Stats[(Caster, StatType.DarkForceDamageFPRestore)] = 5;
-        Service.BeginAbilityImpact(Caster, ability);
+        Bench.Stats[(Caster, StatType.DarkForceDamageFPRestore)] = 5;
+        Lifecycle.BeginAbilityImpact(Caster, ability);
 
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 0, CombatDamageType.Force, typeof(SecondEffect), 6);
 
         LogOf("RestoreFP").Should().ContainSingle();
     }
@@ -817,10 +817,10 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void An_ability_without_the_conversion_never_converts()
     {
-        Service.Stats[(Caster, StatType.DarkForceDamageFPRestore)] = 5;
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Bench.Stats[(Caster, StatType.DarkForceDamageFPRestore)] = 5;
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
 
-        Service.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force, typeof(SecondEffect), 6);
+        HostileImpact.ApplyHostileCombatImpact(Caster, Target, SkillType.Force, 25, CombatDamageType.Force, typeof(SecondEffect), 6);
 
         LogOf("RestoreFP", "DamageHealing").Should().BeEmpty();
     }
@@ -828,14 +828,14 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void The_public_dark_force_restoration_needs_damage_a_valid_caster_and_a_percent()
     {
-        Service.ApplyDarkForceDamageRestoration(Caster, 0);
+        DarkForce.ApplyDarkForceDamageRestoration(Caster, 0);
         Bench.Invalid.Add(Other);
-        Service.ApplyDarkForceDamageRestoration(Other, 10);
-        Service.ApplyDarkForceDamageRestoration(Caster, 10);
+        DarkForce.ApplyDarkForceDamageRestoration(Other, 10);
+        DarkForce.ApplyDarkForceDamageRestoration(Caster, 10);
         LogOf("DamageHealing").Should().BeEmpty();
 
-        Service.Stats[(Caster, StatType.DarkForceDamageHPPercentRestore)] = 10;
-        Service.ApplyDarkForceDamageRestoration(Caster, 10);
+        Bench.Stats[(Caster, StatType.DarkForceDamageHPPercentRestore)] = 10;
+        DarkForce.ApplyDarkForceDamageRestoration(Caster, 10);
         LogOf("DamageHealing").Should().Equal($"DamageHealing:{Caster}:10:10");
     }
 
@@ -847,7 +847,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
         var ability = Hostile();
         ability.ActivationType = AbilityActivationType.Weapon;
         ability.ImpactAnimationType = Animation.ThrowGrenade;
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
         Bench.Log.Clear();
 
         Service.PlayAbilityImpactAnimation(Caster);
@@ -858,7 +858,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
     [Test]
     public void An_ability_with_no_impact_animation_plays_nothing()
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Bench.Log.Clear();
 
         Service.PlayAbilityImpactAnimation(Caster);
@@ -873,7 +873,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
         var ability = Hostile();
         ability.ImpactAnimationType = Animation.ThrowGrenade;
         ability.AuthoredImpactAnimation = new AnimationClip("clip", 1f);
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
         Bench.Log.Clear();
 
         Service.PlayAbilityImpactAnimation(Caster);
@@ -891,7 +891,7 @@ public class AbilityServiceCombatImpactTests : AbilityServiceTestBase
         ability.ImmediateNativeImpactAnimationDuration = immediate;
         ability.ImpactAnimationSourceAnimationName = source;
         ability.ImpactAnimationReplacementAnimationName = replacement;
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
         Bench.Log.Clear();
 
         Service.PlayAbilityImpactAnimation(Caster);

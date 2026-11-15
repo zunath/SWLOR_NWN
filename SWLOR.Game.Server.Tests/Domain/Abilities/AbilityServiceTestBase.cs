@@ -25,6 +25,20 @@ public abstract class AbilityServiceTestBase
 
     protected TestAbilityService Service => Bench.Service;
 
+    // The parts of the ability split, as AbilityBench gives them (one accessor per part with public members).
+    protected TestAbilityService Catalog => Bench.Catalog;
+    protected TestAbilityService ImpactState => Bench.ImpactState;
+    protected TestAbilityService Geometry => Bench.Geometry;
+    protected TestAbilityService Magnitude => Bench.Magnitude;
+    protected TestAbilityService Lifecycle => Bench.Lifecycle;
+    protected TestAbilityService Activation => Bench.Activation;
+    protected TestAbilityService Aura => Bench.Aura;
+    protected TestAbilityService HostileImpact => Bench.HostileImpact;
+    protected TestAbilityService DarkForce => Bench.DarkForce;
+    protected TestAbilityService StatusApplication => Bench.StatusApplication;
+    protected TestAbilityService Immunity => Bench.Immunity;
+    protected TestAbilityService ActivationState => Bench.ActivationState;
+
     [OneTimeSetUp]
     public void BuildFacades() => _facades = new FacadeContainer();
 

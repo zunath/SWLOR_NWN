@@ -171,13 +171,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void TrackedAbilityImpacts_FlushQueuedDamageEffectsTogether()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var endImpactStart = source.IndexOf(
             "public AbilityImpactSummary EndAbilityImpact",
             StringComparison.Ordinal);
@@ -263,12 +257,7 @@ public class AbilityDamageQueueTests
         configureMultiHit.Should().Contain("Ability.ApplyCombatImpact(",
             "every hit is queued independently against the same target");
 
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var abilitySource = AbilitySource.Read().Replace("\r\n", "\n");
         var publicImpactStart = abilitySource.IndexOf(
             "public int ApplyHostileCombatImpact(",
             StringComparison.Ordinal);
@@ -289,13 +278,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void UnscaledCombatImpacts_RetainPrimaryDamageHandlingWithoutFormulaScaling()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var primaryImpactBody = source.Substring(
             source.IndexOf("public int ApplyHostileCombatImpact(", StringComparison.Ordinal),
             source.IndexOf("private int ApplyHostileCombatImpact(", StringComparison.Ordinal) -
@@ -334,12 +317,7 @@ public class AbilityDamageQueueTests
     public void FailedAbilityImpacts_AbortTrackedStateForCastAndQueuedPaths()
     {
         var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var abilitySource = AbilitySource.Read().Replace("\r\n", "\n");
         var usePerkFeatSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
@@ -404,13 +382,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void TwinFangFlurryTriggeredDamageDuringTrackedAbilityImpact_QueuesWithAbilityDamageEffects()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var abilitySource = AbilitySource.Read().Replace("\r\n", "\n");
         var combatSource = CombatSource.Read().Replace("\r\n", "\n");
         var queueMethod = abilitySource.Substring(
             abilitySource.IndexOf("public bool TryQueueTrackedDamageEffect", StringComparison.Ordinal),
@@ -430,13 +402,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void DelayedTelegraphedImpacts_PreserveQueuedDefenseIgnoreBonus()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var buildActionCall = source.Substring(
             source.IndexOf("var action = BuildTelegraphedCombatImpactAction(", StringComparison.Ordinal),
             source.IndexOf("switch (shape)", StringComparison.Ordinal) -
@@ -461,13 +427,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void DelayedTelegraphedImpacts_DoNotCountTheOriginatingCastTwice()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var delayedImpactBody = source.Substring(
             source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal),
             source.IndexOf("private int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
@@ -480,13 +440,7 @@ public class AbilityDamageQueueTests
     [Test]
     public void DelayedTelegraphedImpacts_RetainCostContextAndCleanUpEveryExitPath()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var abilitySource = AbilitySource.Read().Replace("\r\n", "\n");
         var combatSource = CombatSource.Read().Replace("\r\n", "\n");
         var telegraphMethod = abilitySource.Substring(
             abilitySource.IndexOf("public int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal),
@@ -513,12 +467,7 @@ public class AbilityDamageQueueTests
     public void DelayedTelegraphedImpacts_CaptureActivationIdleSnapshotsBeforeSharedCleanup()
     {
         var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var abilitySource = AbilitySource.Read().Replace("\r\n", "\n");
         var weaponAbilitySource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",

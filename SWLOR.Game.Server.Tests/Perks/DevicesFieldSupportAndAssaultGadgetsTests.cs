@@ -379,8 +379,7 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         var root = FindRepositoryRoot();
         var characterSheet = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "CharacterSheetViewModel.cs").FullName);
-        var ability = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
+        var ability = AbilitySource.Read();
         var combat = CombatSource.Read();
 
         characterSheet.Should().Contain("Assault Gadget Crit");

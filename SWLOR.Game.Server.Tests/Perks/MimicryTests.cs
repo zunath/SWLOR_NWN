@@ -1200,7 +1200,7 @@ public class MimicryTests
     [Test]
     public void Mimicry_SetBonusPotencyRewardsSharedDamageTypes()
     {
-        Ability.CacheData();
+        AbilityCatalog.CacheData();
         GameServices.Mimicry.CacheData();
 
         GameServices.Mimicry.GetSetBonusPotency(new Player()).Should().Be(0, "an empty loadout has no resonance");
@@ -1255,7 +1255,7 @@ public class MimicryTests
     [Test]
     public void Mimicry_UsedSlotsSumsEquippedTechniqueSlotCosts()
     {
-        Ability.CacheData();
+        AbilityCatalog.CacheData();
         GameServices.Mimicry.CacheData();
 
         var empty = new Player();

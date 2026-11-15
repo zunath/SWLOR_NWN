@@ -92,7 +92,7 @@ public class DroidInstructionsTests : SkillFacadeFixture
     public void EveryInstructionRankGrantsARegisteredCompanionAbility()
     {
         AbilityCache.Load();
-        var abilities = Ability.GetAllAbilityDetails();
+        var abilities = AbilityCatalog.GetAllAbilityDetails();
         var actions = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion]
             .Actions.Where(action => action.Type == AIActionType.Ability).Select(action => action.Feat).ToHashSet();
 
@@ -135,7 +135,7 @@ public class DroidInstructionsTests : SkillFacadeFixture
     public void CapstonesCannotBeUploadedOrSelectedFromSavedDroidInstructions()
     {
         AbilityCache.Load();
-        var capstones = Ability.GetAllAbilityDetails().Values
+        var capstones = AbilityCatalog.GetAllAbilityDetails().Values
             .Where(ability => ability.RecastGroup == RecastGroup.Capstone)
             .Select(ability => ability.EffectiveLevelPerkType)
             .Where(perk => perk != PerkType.Invalid)
@@ -162,7 +162,7 @@ public class DroidInstructionsTests : SkillFacadeFixture
     public void LeadershipForceAndPassiveWeaponTraitsRemainUnavailable()
     {
         AbilityCache.Load();
-        var abilities = Ability.GetAllAbilityDetails();
+        var abilities = AbilityCatalog.GetAllAbilityDetails();
         foreach (var (perk, detail) in Perk.GetAllPerks())
         foreach (var (rank, level) in detail.PerkLevels)
         {

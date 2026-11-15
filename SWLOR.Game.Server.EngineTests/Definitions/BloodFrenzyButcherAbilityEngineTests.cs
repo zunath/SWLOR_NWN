@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static bool IsOnRecast(uint creature, FeatType feat)
         {
-            return Recast.IsOnRecastDelay(creature, Ability.GetAbilityDetail(feat).RecastGroup).Item1;
+            return Recast.IsOnRecastDelay(creature, AbilityCatalog.GetAbilityDetail(feat).RecastGroup).Item1;
         }
     }
 }

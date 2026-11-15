@@ -56,8 +56,8 @@ public class BeastmasterCombatUpgradeTests
     [TestCase(-1f, 0f, false)]
     public void BruiserBreathCone_CoversSeparatedEnemiesAndRespectsBoundaries(float x, float y, bool expected)
     {
-        var method = AbilityInternals.Method("IsPositionInCone");
-        var result = (bool)method.Invoke(AbilityInternals.NoNeighbours(), new object[]
+        var method = AbilityInternals.GeometryMethod("IsPositionInCone");
+        var result = (bool)method.Invoke(AbilityInternals.Geometry(), new object[]
         {
             new System.Numerics.Vector3(x, y, 0f), System.Numerics.Vector3.Zero, 0f, 10f, 10f
         })!;

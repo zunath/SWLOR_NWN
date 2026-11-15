@@ -401,7 +401,7 @@ public class GeneratedWeaponPerkBehaviorTests
         modifier = modifier.Substring(0, modifier.IndexOf("public static int ", 10, StringComparison.Ordinal));
         modifier.Should().Contain("skillType != SkillType.Throwing");
         modifier.Should().Contain("!isAbilityDamage ||");
-        modifier.Should().Contain("_ability.IsSingleTargetImpact(attacker, ability)");
+        modifier.Should().Contain("_impactState.IsSingleTargetImpact(attacker, ability)");
 
         // Flurry Stance: the per-swing delay reads the swing's target, with and without limited Haste.
         Regex.IsMatch(attackSource,

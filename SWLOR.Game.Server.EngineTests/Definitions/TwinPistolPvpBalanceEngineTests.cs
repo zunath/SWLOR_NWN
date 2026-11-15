@@ -114,7 +114,7 @@ public static class TwinPistolPvpBalanceEngineTests
         var actor = player.Creature;
         var stamina = 0;
         var health = 0;
-        var ability = Ability.GetAbilityDetail(FeatType.FinalSalvo);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.FinalSalvo);
         var target = ctx.SpawnCreature("nw_rat001", 2f);
         await ctx.DelaySecondsAsync(1f);
         try
@@ -133,7 +133,7 @@ public static class TwinPistolPvpBalanceEngineTests
                 CadenceFixture.Grant(actor, 3);
                 ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0,
                     "Three Cadence charges were earned through the production landed-hit adapter");
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 HostileAbilityDelay.EndForTesting(actor);
                 ctx.SeedRandom(1);
                 stamina = Stat.GetCurrentStamina(actor);
@@ -141,9 +141,9 @@ public static class TwinPistolPvpBalanceEngineTests
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FinalSalvo, GetLocation(target)),
                     $"The real Cadence finisher begins in the same batch as its earned charges: {Ability.GetLastActivationDenialReason()}");
             });
-            await WaitFrames(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
+            await WaitFrames(ctx, () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
                 summary.Ability == ability && !Activity.IsBusy(actor), "Final Salvo's real paid impact", 5f);
-            var impact = Ability.GetLastCompletedAbilityImpactSummary(actor);
+            var impact = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor);
             await WaitFrames(ctx, () => health - GetCurrentHitPoints(target) == impact.AttributedDamage,
                 "all actual finisher damage to arrive", 2f);
             ctx.AssertEqual(stamina - Cost(FeatType.FinalSalvo) + 3, Stat.GetCurrentStamina(actor),
@@ -428,7 +428,7 @@ public static class TwinPistolPvpBalanceEngineTests
     private static async Task<int> ActivatedDamage(EngineTestContext ctx, uint actor, uint target, uint companion,
         FeatType feat, double playerSeconds)
     {
-        var ability = Ability.GetAbilityDetail(feat);
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
         var health = 0;
         var stamina = 0;
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
@@ -437,7 +437,7 @@ public static class TwinPistolPvpBalanceEngineTests
             PvpCombat.SetCombatSecondsForTesting(target, playerSeconds);
             Recast.ReduceRecastDelay(actor, ability.RecastGroup, 120f);
             HostileAbilityDelay.EndForTesting(actor);
-            Ability.ClearLastCompletedAbilityImpactSummary(actor);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
             health = GetCurrentHitPoints(target);
             stamina = Stat.GetCurrentStamina(actor);
             ctx.SeedRandom(1);
@@ -458,10 +458,10 @@ public static class TwinPistolPvpBalanceEngineTests
             ctx.Assert(shot is { Ordinary: false, Completed: true, Damage: 0 },
                 "The landed companion reserves Headshot and suppresses ordinary damage");
         });
-        await WaitFrames(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
+        await WaitFrames(ctx, () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
             summary.Ability == ability && !Activity.IsBusy(actor) && !UsePerkFeat.HasQueuedWeaponAbility(actor),
             "the actual activated or queued impact to complete", 4f);
-        var impact = Ability.GetLastCompletedAbilityImpactSummary(actor);
+        var impact = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor);
         ctx.Assert(health > impact.AttributedDamage, "The native player target survives its complete activated payload");
         await WaitFrames(ctx, () => health - GetCurrentHitPoints(target) == impact.AttributedDamage,
             "the completed impact to reconcile exactly to target HP", 2f);
@@ -577,7 +577,7 @@ public static class TwinPistolPvpBalanceEngineTests
         ResolveCompanion.Invoke(null, new object[] { native, defender, WeaponShotProfile.Capture(actor, companion, SkillType.TwinPistol) });
     }
 
-    private static int Cost(FeatType feat) => Ability.GetAbilityDetail(feat).Requirements
+    private static int Cost(FeatType feat) => AbilityCatalog.GetAbilityDetail(feat).Requirements
         .OfType<AbilityRequirementStamina>().Single().RequiredSTM;
 
     private static void ReplaceProperty(uint item, ItemPropertyType type, ItemProperty replacement)

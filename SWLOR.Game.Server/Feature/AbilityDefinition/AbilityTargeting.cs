@@ -20,25 +20,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return AbilityTargetingCache.GetAll();
         }
 
-        public static void CacheData(IReadOnlyDictionary<FeatType, AbilityDetail> abilities)
-        {
-            AbilityTargetingCache.Clear();
-
-            foreach (var (feat, ability) in abilities)
-            {
-                if (ability.Targeting == null)
-                    continue;
-
-                ValidateTargeting(feat, ability.Name, ability.Targeting);
-                if (!ability.Targeting.UpdatesClientTargeting)
-                    continue;
-
-                AbilityTargetingCache.Set(feat, ability.Targeting);
-            }
-
-            Console.WriteLine($"Loaded {AbilityTargetingCache.GetAll().Count} ability targeting overrides.");
-        }
-
         public static void RefreshClientTargeting(uint creature)
         {
             if (!IsClientControlled(creature))
@@ -283,52 +264,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                    GetDistanceBetweenLocations(GetLocation(creature), location) <= radius;
         }
 
-        private static void ValidateTargeting(FeatType feat, string abilityName, AbilityTargetingDetail targeting)
-        {
-            if (targeting.UpdatesClientTargeting &&
-                (targeting.Spell == Spell.Invalid ||
-                 targeting.Spell == Spell.AllSpells))
-            {
-                throw new InvalidOperationException(
-                    $"Ability '{abilityName}' ({feat}) declares targeting metadata without an explicit spell.");
-            }
-
-            if (!Enum.IsDefined(typeof(AbilityTargetingShapeType), targeting.Shape))
-            {
-                throw new InvalidOperationException(
-                    $"Ability '{abilityName}' ({feat}) declares unsupported targeting shape '{targeting.Shape}'.");
-            }
-
-            ValidateSize(feat, targeting.SizeX, targeting.SizeY);
-        }
-
         private static void ValidateResolvedTargeting(
             FeatType feat,
             AbilityTargetingDetail targeting,
             float sizeX,
             float sizeY)
         {
-            ValidateSize(feat, sizeX, sizeY);
+            AbilityTargetingCacheService.ValidateSize(feat, sizeX, sizeY);
 
             if (!Enum.IsDefined(typeof(AbilityTargetingShapeType), targeting.Shape))
             {
                 throw new InvalidOperationException(
                     $"Ability '{feat}' resolved unsupported targeting shape '{targeting.Shape}'.");
-            }
-        }
-
-        private static void ValidateSize(FeatType feat, float sizeX, float sizeY)
-        {
-            if (!float.IsFinite(sizeX) || sizeX <= 0f)
-            {
-                throw new InvalidOperationException(
-                    $"Ability '{feat}' resolved invalid targeting size X '{sizeX}'.");
-            }
-
-            if (!float.IsFinite(sizeY) || sizeY < 0f)
-            {
-                throw new InvalidOperationException(
-                    $"Ability '{feat}' resolved invalid targeting size Y '{sizeY}'.");
             }
         }
     }

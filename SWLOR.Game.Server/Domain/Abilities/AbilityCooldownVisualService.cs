@@ -35,13 +35,13 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         private readonly IDBService _db;
         private readonly IGuiService _gui;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly IAbilityCatalog _catalog;
 
-        public AbilityCooldownVisualService(IDBService db, IGuiService gui, Lazy<IAbilityService> ability)
+        public AbilityCooldownVisualService(IDBService db, IGuiService gui, IAbilityCatalog catalog)
         {
             _db = db;
             _gui = gui;
-            _ability = ability;
+            _catalog = catalog;
         }
 
         [BootPhase(BootReload.Rerun)]
@@ -503,7 +503,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         }
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _ability.Value.GetAllAbilityDetails();
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _catalog.GetAllAbilityDetails();
 
         private sealed class ActiveRecastVisual
         {

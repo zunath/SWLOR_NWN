@@ -387,7 +387,7 @@ public class TwinPistolAbilityServiceTests
         private readonly AbilityDetail _detail = new() { EffectiveLevelPerkType = PerkType.TempoShot };
 
         public TestAbility(IPairedRangedTraitsService traits, ITwinPistolMasteryService mastery)
-            : base(traits, mastery, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>())
+            : base(traits, mastery, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<IAbilityImpactState>())
         {
         }
 

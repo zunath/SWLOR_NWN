@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         public static Action<uint, uint> RestoreStaminaOnHit(int amount)
         {
             return (activator, _) => GameServices.CombatResources.RestoreAbilityHitStamina(
-                activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, amount);
+                activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator)?.Ability, amount);
         }
 
         /// <summary>Restores <paramref name="amount"/> FP to the caster on each successful hit.</summary>
@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         {
             return (activator, target) =>
             {
-                var sequence = oncePerCast ? Ability.GetAbilityImpactSequence(activator) : null;
+                var sequence = oncePerCast ? AbilityImpactState.GetAbilityImpactSequence(activator) : null;
                 if (sequence != null && !sequence.HasRemainingChainArcs(maxArcs))
                     return;
 

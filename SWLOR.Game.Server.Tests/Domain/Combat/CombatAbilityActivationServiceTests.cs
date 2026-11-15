@@ -145,6 +145,11 @@ public class CombatAbilityActivationServiceTests
     {
         var queries = ScriptedProxy.Create<ICombatQueriesService>(out var queryCalls);
         queryCalls
+            .On(nameof(ICombatQueriesService.IsForcePower), args =>
+            {
+                _asked.Add($"ForcePower {args[0]} {((AbilityDetail)args[1]!).Name}");
+                return _forcePower;
+            })
             .On(nameof(ICombatQueriesService.GetAbilitySkillType), _ => _abilitySkill)
             .On(nameof(ICombatQueriesService.AbilityUsedTriggerSkillMatches), args =>
             {
@@ -233,17 +238,12 @@ public class CombatAbilityActivationServiceTests
                 _asked.Add($"Temporary {args[0]} {args[1]} {args[2]}");
                 return _temporaryTotal;
             });
-        var ability = ScriptedProxy.Create<IAbilityService>(out var abilityCalls);
+        var ability = ScriptedProxy.Create<IAbilityImpactState>(out var abilityCalls);
         abilityCalls
-            .On(nameof(IAbilityService.IsAreaImpact), args =>
+            .On(nameof(IAbilityImpactState.IsAreaImpact), args =>
             {
                 _asked.Add($"AreaImpact {((AbilityDetail)args[1]!).Name}");
                 return _areaImpact;
-            })
-            .On(nameof(IAbilityService.IsForcePower), args =>
-            {
-                _asked.Add($"ForcePower {args[0]} {((AbilityDetail)args[1]!).Name}");
-                return _forcePower;
             });
         var perk = ScriptedProxy.Create<IPerkService>(out var perkCalls);
         perkCalls.On(nameof(IPerkService.IsPerkInCategory), args =>

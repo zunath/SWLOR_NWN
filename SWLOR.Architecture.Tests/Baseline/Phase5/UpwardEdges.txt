@@ -32,7 +32,7 @@ SWLOR.Game.Server/Domain/Character/EspionageInfiltrationService.cs: Character ->
 SWLOR.Game.Server/Domain/Character/EspionageInfiltrationService.cs: Character -> Creatures | 4
 SWLOR.Game.Server/Domain/Character/PerkRequirementBeastRole.cs: Character -> Companions | 2
 SWLOR.Game.Server/Domain/Character/PerkRequirementQuest.cs: Character -> Quests | 2
-SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Abilities | 6
+SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Abilities | 4
 SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Combat | 3
 SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs: Character -> Combat | 4
 SWLOR.Game.Server/Domain/Character/PlayerNameService.cs: Character -> Social | 8
@@ -41,35 +41,27 @@ SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Abilities | 4
 SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Combat | 40
 SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Items | 4
 SWLOR.Game.Server/Domain/Character/StatusEffectRules.cs: Character -> Combat | 1
-SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Abilities | 6
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Abilities | 3
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Combat | 18
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Quests | 3
-SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs: Combat -> Abilities | 5
-SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs: Combat -> Abilities | 3
-SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs: Combat -> Abilities | 10
+SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs: Combat -> Abilities | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs: Combat -> Social | 3
-SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs: Combat -> Abilities | 3
-SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs: Combat -> Abilities | 5
-SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs: Combat -> Abilities | 4
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs: Combat -> Quests | 3
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/CombatPointService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/CombatPointService.cs: Combat -> Space | 3
 SWLOR.Game.Server/Domain/Combat/CombatQueriesService.cs: Combat -> Social | 3
-SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs: Combat -> Abilities | 6
-SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs: Combat -> Abilities | 7
+SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs: Combat -> Abilities | 1
 SWLOR.Game.Server/Domain/Combat/DeathService.cs: Combat -> Abilities | 3
 SWLOR.Game.Server/Domain/Combat/DeathService.cs: Combat -> World | 5
 SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> Creatures | 13
 SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> World | 3
-SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs: Combat -> Abilities | 3
-SWLOR.Game.Server/Domain/Combat/PairedRangedTraitsService.cs: Combat -> Abilities | 3
 SWLOR.Game.Server/Domain/Combat/RecastService.cs: Combat -> Abilities | 4
 SWLOR.Game.Server/Domain/Combat/ResistanceService.cs: Combat -> Abilities | 3
 SWLOR.Game.Server/Domain/Combat/StealthService.cs: Combat -> Creatures | 4
 SWLOR.Game.Server/Domain/Combat/TelegraphService.cs: Combat -> Social | 3
-SWLOR.Game.Server/Domain/Combat/TwinPistolAbilityService.cs: Combat -> Abilities | 6
+SWLOR.Game.Server/Domain/Combat/TwinPistolAbilityService.cs: Combat -> Abilities | 5
 SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs: Combat -> Quests | 3
 SWLOR.Game.Server/Domain/Crafting/CraftService.cs: Crafting -> World | 3
 SWLOR.Game.Server/Domain/Creatures/AIService.cs: Creatures -> Social | 3
@@ -94,7 +86,7 @@ SWLOR.Game.Server/Domain/Items/LightsaberWorkbenchService.cs: Items -> Economy |
 SWLOR.Game.Server/Domain/Items/LootService.cs: Items -> Companions | 5
 SWLOR.Game.Server/Domain/Quests/GuildTaskXpReward.cs: Quests -> Economy | 2
 SWLOR.Game.Server/Domain/Quests/QuestRewards.cs: Quests -> Economy | 2
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Abilities | 11
+SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Abilities | 7
 SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Combat | 6
 SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Crafting | 3
 SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Items | 4
@@ -140,14 +132,10 @@ SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.c
 SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs: Foundation content -> UI content | 2
 SWLOR.Game.Server/Feature/StatusEffectDefinition/CleanseOrder1StatusEffect.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/StatusEffectDefinition/CleanseOrder2StatusEffect.cs: Character content -> Abilities content | 1
-SWLOR.Game.Server/Feature/StatusEffectDefinition/EmergencySealant1StatusEffect.cs: Character content -> Abilities content | 1
-SWLOR.Game.Server/Feature/StatusEffectDefinition/ForceDamageOverTimeStatusEffectBase.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/StatusEffectDefinition/GuardiansResolveStatusEffect.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/StatusEffectDefinition/LastBastionBarrierStatusEffect.cs: Character content -> Abilities content | 2
-SWLOR.Game.Server/Feature/StatusEffectDefinition/LastStandOfTheLight1StatusEffect.cs: Character content -> Abilities content | 1
-SWLOR.Game.Server/Feature/StatusEffectDefinition/ReflectiveBarrier1StatusEffect.cs: Character content -> Abilities content | 2
+SWLOR.Game.Server/Feature/StatusEffectDefinition/ReflectiveBarrier1StatusEffect.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/StatusEffectDefinition/RegenerativeHealingStatusEffect.cs: Character content -> Abilities content | 1
-SWLOR.Game.Server/Feature/StatusEffectDefinition/SocialScalingStatusEffectBase.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/StatusEffectDefinition/SoulDevourerStanceStatusEffect.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/StatusEffectDefinition/WardenWallStanceStatusEffect.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/UnarmedMastery.cs: Gameplay content -> Quests content | 1

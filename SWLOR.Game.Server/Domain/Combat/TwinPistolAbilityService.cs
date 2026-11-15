@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IPairedRangedTraitsService _traits;
         private readonly ITwinPistolMasteryService _mastery;
         private readonly IAbilityService _ability;
+        private readonly IAbilityImpactState _impactState;
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatQueriesService _queries;
         private readonly ICombatResourcesService _resources;
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             IAbilityService ability,
             IStatusEffectService statusEffect,
             ICombatQueriesService queries,
-            ICombatResourcesService resources)
+            ICombatResourcesService resources,
+            IAbilityImpactState impactState)
         {
             _traits = traits;
             _mastery = mastery;
@@ -46,6 +48,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect = statusEffect;
             _queries = queries;
             _resources = resources;
+            _impactState = impactState;
         }
 
         public bool HasActiveActivation(uint actor) =>
@@ -286,7 +289,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The ability of the actor's active ability impact, from the unconverted <c>Ability</c> service.</summary>
         protected virtual AbilityDetail GetActiveAbility(uint actor) =>
-            _ability.GetActiveAbilityImpactSummary(actor)?.Ability;
+            _impactState.GetActiveAbilityImpactSummary(actor)?.Ability;
 
         /// <summary>The unconverted <c>Ability</c> service.</summary>
         protected virtual Action<int> CaptureRepeatedAbilityImpact(uint actor, Action<int> impactAction, int baseDamage) =>

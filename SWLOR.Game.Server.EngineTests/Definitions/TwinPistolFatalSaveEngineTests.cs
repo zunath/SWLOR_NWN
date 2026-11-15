@@ -55,7 +55,7 @@ public static class TwinPistolFatalSaveEngineTests
     {
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
-        var ability = Ability.GetAbilityDetail(FeatType.FinalSalvo);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.FinalSalvo);
         var stamina = 0;
         var targetHealth = 0;
         var seededAt = DateTime.UtcNow;
@@ -78,7 +78,7 @@ public static class TwinPistolFatalSaveEngineTests
                 seededAt = DateTime.UtcNow;
                 stamina = Stat.GetCurrentStamina(actor);
                 targetHealth = GetCurrentHitPoints(target);
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 HostileAbilityDelay.EndForTesting(actor);
                 if (duringCast)
                 {
@@ -123,7 +123,7 @@ public static class TwinPistolFatalSaveEngineTests
                 ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled cast deadline spends no stamina or Cadence");
                 ctx.Assert(!Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1,
                     "The canceled cast starts no capstone recast");
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null,
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null,
                     "The canceled cast deadline resolves no impact");
                 ctx.AssertEqual(targetHealth, GetCurrentHitPoints(target), "The canceled cast deals no target damage");
             }

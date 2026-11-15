@@ -160,8 +160,8 @@ public class CombatAbilityHitServiceTests
             _log.Add($"Replace {args[0]} {args[1]} {args[2]} {args[3]} {args[4]}");
             return null;
         });
-        var ability = ScriptedProxy.Create<IAbilityService>(out var abilityCalls);
-        abilityCalls.On(nameof(IAbilityService.GetWeaponTraitAccuracy), _ => _traitAccuracy);
+        var ability = ScriptedProxy.Create<IAbilityImpactState>(out var abilityCalls);
+        abilityCalls.On(nameof(IAbilityImpactState.GetWeaponTraitAccuracy), _ => _traitAccuracy);
         var perk = ScriptedProxy.Create<IPerkService>(out var perkCalls);
         perkCalls.On(nameof(IPerkService.GetForceAffinityHitChanceAdjustment), args =>
         {

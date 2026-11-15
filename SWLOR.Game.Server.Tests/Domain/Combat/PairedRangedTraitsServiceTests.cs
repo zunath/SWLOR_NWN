@@ -48,7 +48,7 @@ public class PairedRangedTraitsServiceTests
         _scopes.Add(Clock.OverrideForTests(() => _now));
         var mastery = ScriptedProxy.Create<ITwinPistolMasteryService>(out _mastery);
         _mastery.On("RecordTargetChange", _ => null).On("ClearTrialState", _ => null);
-        _traits = new TestTraits(mastery);
+        _traits = new TestTraits(mastery, new AbilityImpactStore());
     }
 
     [TearDown]
@@ -68,6 +68,47 @@ public class PairedRangedTraitsServiceTests
         WeaponAbilityCadenceDamagePerCharge = damagePerCharge,
         WeaponAbilityCadenceOnHit = cadenceOnHit
     };
+
+    // RecordSuccessfulWeaponAbilityHit moved here from AbilityService with the ability split (P5-3b); the impact's traits come
+    // from the impact state store.
+    [Test]
+    public void ALandedWeaponSkillHitCompletesTheTrackedTraitsAndObservesCadenceOnce()
+    {
+        var traits = TrackWeaponAbilityImpact(committed: true);
+
+        _traits.RecordSuccessfulWeaponAbilityHit(Actor, Target, SkillType.Force);
+        traits.RecoveryCompleted.Should().BeFalse("only a weapon skill hit counts");
+        traits.CadenceHitObserved.Should().BeFalse();
+
+        _traits.RecordSuccessfulWeaponAbilityHit(Actor, Target, SkillType.Pistol);
+        traits.RecoveryCompleted.Should().BeTrue("a landed hit completes the committed traits");
+        traits.CadenceHitObserved.Should().BeTrue("the impact's first hit earns Cadence");
+
+        _traits.RecordSuccessfulWeaponAbilityHit(Actor, Target + 1, SkillType.Pistol);
+        traits.CadenceHitObserved.Should().BeTrue();
+    }
+
+    [Test]
+    public void AHitWithoutTrackedOrCommittedTraitsRecordsNothing()
+    {
+        _traits.RecordSuccessfulWeaponAbilityHit(Actor, Target, SkillType.Pistol);
+
+        var traits = TrackWeaponAbilityImpact(committed: false);
+        _traits.RecordSuccessfulWeaponAbilityHit(Actor, Target, SkillType.Pistol);
+
+        traits.RecoveryCompleted.Should().BeFalse();
+        traits.CadenceHitObserved.Should().BeFalse();
+        _traits.Applied.Should().BeEmpty();
+    }
+
+    private WeaponAbilityTraitActivation TrackWeaponAbilityImpact(bool committed)
+    {
+        var traits = new WeaponAbilityTraitActivation(new PairedRangedAbilityTraitsSnapshot(Guid.NewGuid(), true, true, 1, 6), 5) { IsCommitted = committed };
+        var impact = new AbilityImpactTracker(WeaponAbility(), 0, 0, 0, 0, 0, true, 0, null!, null!);
+        impact.Sequence.WeaponTraits = traits;
+        _traits.Store.Track(Actor, impact);
+        return traits;
+    }
 
     [Test]
     public void AnActorThatCannotReceiveEventsGetsNeutralAnswers()
@@ -409,10 +450,14 @@ public class PairedRangedTraitsServiceTests
         public readonly List<int> AbilityStaminaRestored = new();
         public bool DualWield;
 
-        public TestTraits(ITwinPistolMasteryService mastery)
-            : base(mastery, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
+        public TestTraits(ITwinPistolMasteryService mastery, AbilityImpactStore store)
+            : base(mastery, store, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>())
         {
+            Store = store;
         }
+
+        /// <summary>The impact state store the traits read the weapon ability's committed traits from.</summary>
+        public AbilityImpactStore Store { get; }
 
         protected override uint GetAbilityAttackWeapon(uint actor, AbilityDetail ability) => Weapon;
 

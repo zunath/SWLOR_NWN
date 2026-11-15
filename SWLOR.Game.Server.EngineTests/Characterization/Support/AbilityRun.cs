@@ -41,8 +41,8 @@ public static class AbilityRun
     /// <summary>Runs the case and returns the snapshot row: the input cells followed by the output cells.</summary>
     public static async Task<object[]> RunAsync(EngineTestContext ctx, AbilityBehaviorCase behaviorCase, int seed)
     {
-        ctx.Assert(Ability.IsFeatRegistered(behaviorCase.Feat), $"{behaviorCase.Feat} is registered to an ability");
-        var ability = Ability.GetAbilityDetail(behaviorCase.Feat);
+        ctx.Assert(AbilityCatalog.IsFeatRegistered(behaviorCase.Feat), $"{behaviorCase.Feat} is registered to an ability");
+        var ability = AbilityCatalog.GetAbilityDetail(behaviorCase.Feat);
 
         var caster = await ScenarioActors.SpawnQuietAsync(ctx, ScenarioActors.Humanoid, -0.5f, 0f);
         var target = caster;
@@ -94,7 +94,7 @@ public static class AbilityRun
             var casterHPBefore = GetCurrentHitPoints(caster);
             var targetHPBefore = GetCurrentHitPoints(target);
             var casterEffectsBefore = StatusEffect.GetCreatureStatusEffects(caster).GetAllEffects().Count;
-            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
 
             var accepted = false;
             var denial = string.Empty;
@@ -110,16 +110,16 @@ public static class AbilityRun
             {
                 if (ability.ActivationType == AbilityActivationType.Casted)
                 {
-                    await WaitFramesUntil(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(caster) != null, ImpactWaitSeconds);
+                    await WaitFramesUntil(ctx, () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster) != null, ImpactWaitSeconds);
                 }
                 else if (ability.ActivationType == AbilityActivationType.Stance)
                 {
                     await WaitFramesUntil(ctx, () => StatusEffect.GetCreatureStatusEffects(caster).GetAllEffects().Count > casterEffectsBefore
-                                                     || Ability.GetLastCompletedAbilityImpactSummary(caster) != null, StanceWaitSeconds);
+                                                     || AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster) != null, StanceWaitSeconds);
                 }
 
                 // The impact summary is completed before the queued damage lands; wait for the hit points to move.
-                var impact = Ability.GetLastCompletedAbilityImpactSummary(caster);
+                var impact = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
                 if (impact is { AttributedDamage: > 0 } && target != caster)
                     await WaitFramesUntil(ctx, () => GetCurrentHitPoints(target) < targetHPBefore, DamageWaitSeconds);
 
@@ -128,7 +128,7 @@ public static class AbilityRun
                 await Settle(ctx);
             }
 
-            var summary = Ability.GetLastCompletedAbilityImpactSummary(caster);
+            var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
             var queued = ability.ActivationType == AbilityActivationType.Weapon && UsePerkFeat.IsWeaponAbilityQueued(caster, behaviorCase.Feat);
             var row = new List<object>
             {

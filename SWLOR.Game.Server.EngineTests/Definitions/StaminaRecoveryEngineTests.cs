@@ -82,7 +82,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
             });
             await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(caster) < starting, 5f, "the missed impact to spend its cost");
             ctx.AssertEqual(starting - 10, Stat.GetCurrentStamina(caster), "both missed shots cost ten with no critical refund");
-            var ability = Ability.GetAbilityDetail(FeatType.DoubleShot3);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.DoubleShot3);
             ctx.Assert(Recast.IsOnRecastDelay(caster, ability.RecastGroup).Item1, "a missed attempt retains its cooldown");
             Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - 9);
             ctx.Assert(!string.IsNullOrWhiteSpace(ability.Requirements.OfType<AbilityRequirementStamina>().Single().CheckRequirements(caster, ability)), "nine stamina cannot fund the next ten-stamina cast");
@@ -150,7 +150,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
-        var ability = Ability.GetAbilityDetail(FeatType.DoubleShot3);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.DoubleShot3);
         var profile = new WeaponAbilityProfile { RestoreStaminaIfAnyCriticalHit = 4 };
         var summary = new AbilityImpactSummary { Ability = ability, ImpactedTargetCount = 1, CriticalHitCount = 2 };
         await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -178,7 +178,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
     {
         using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
         var player = fixture.Creature;
-        var ability = Ability.GetAbilityDetail(FeatType.BladeVortex2);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.BladeVortex2);
         var targets = Enumerable.Range(1, 3).Select(index => ctx.SpawnCreature("nw_rat001", index)).ToArray();
         await ctx.WaitFrameAsync();
         foreach (var target in targets)

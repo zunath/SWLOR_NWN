@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Domain.UI
         private readonly IGuiService _gui;
         private readonly IChatCommandService _chatCommand;
         private readonly IItemService _item;
-        private readonly IAbilityService _ability;
+        private readonly IAbilityCatalog _catalog;
         private readonly ICraftMinigameRoutingService _craftMinigameRouting;
         private readonly IPerkService _perk;
         private readonly IQuickCastService _quickCast;
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Domain.UI
             IGuiService gui,
             IChatCommandService chatCommand,
             IItemService item,
-            IAbilityService ability,
+            IAbilityCatalog catalog,
             ICraftMinigameRoutingService craftMinigameRouting,
             IPerkService perk,
             IQuickCastService quickCast,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Domain.UI
             _gui = gui;
             _chatCommand = chatCommand;
             _item = item;
-            _ability = ability;
+            _catalog = catalog;
             _craftMinigameRouting = craftMinigameRouting;
             _perk = perk;
             _quickCast = quickCast;
@@ -992,11 +992,11 @@ namespace SWLOR.Game.Server.Domain.UI
 
         // The calls below reach static code that is not converted yet and reads the database, the static ability table
         // or the native engine for a real player. Each body is the original call; a test subclass answers them.
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _ability.GetAllAbilityDetails();
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _catalog.GetAllAbilityDetails();
 
-        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _catalog.IsFeatRegistered(feat);
 
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _catalog.GetAbilityDetail(feat);
 
         protected virtual bool IsAnyCraftWindowOpen(uint player) => _craftMinigameRouting.IsAnyCraftWindowOpen(player);
 

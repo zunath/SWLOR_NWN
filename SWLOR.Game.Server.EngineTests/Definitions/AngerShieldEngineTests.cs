@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(enemy);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), enemy, 60f);
 
-            var anger = Ability.GetAbilityDetail(FeatType.Anger2);
+            var anger = AbilityCatalog.GetAbilityDetail(FeatType.Anger2);
             Ability.BeginAbilityImpact(beast, anger);
             try
             {

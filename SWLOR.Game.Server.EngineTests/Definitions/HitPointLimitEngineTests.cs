@@ -411,7 +411,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var arena = await QuietArena.CreateAsync(ctx);
             var npc = await SpawnNPCAsync(ctx, arena, "nw_rat001", 10000);
 
-            var expected = Ability.ApplyCombatReadinessMagnitude(
+            var expected = CombatAbilityMagnitude.ApplyCombatReadinessMagnitude(
                 npc,
                 AbilityEffectScaling.CalculateScaledHeal(npc, npc, HealAmount.Percent(15f)));
             AbilityEffectScaling.ApplyTemporaryHP(npc, npc, TemporaryHitPointEffectKey.GuardianWard, HealAmount.Percent(15f), 60f);

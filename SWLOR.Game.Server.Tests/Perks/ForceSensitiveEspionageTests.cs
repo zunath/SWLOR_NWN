@@ -417,9 +417,9 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void ForcePowerFlag_OnlyMarksTheThreeForceEspionagePowers()
     {
-        Ability.IsForcePower(false, SkillType.Force).Should().BeTrue();
-        Ability.IsForcePower(true, SkillType.Espionage).Should().BeTrue();
-        Ability.IsForcePower(false, SkillType.Espionage).Should().BeFalse();
+        CombatRules.IsForcePower(false, SkillType.Force).Should().BeTrue();
+        CombatRules.IsForcePower(true, SkillType.Espionage).Should().BeTrue();
+        CombatRules.IsForcePower(false, SkillType.Espionage).Should().BeFalse();
 
         var flagged = typeof(IAbilityListDefinition).Assembly.GetTypes()
             .Where(type => !type.IsAbstract && !type.IsInterface && typeof(IAbilityListDefinition).IsAssignableFrom(type))
@@ -438,7 +438,7 @@ public class ForceSensitiveEspionageTests
             "Force Disruption blocks the new powers");
         var combat = CombatSource.Read().Replace("\r\n", "\n");
         var triggerStart = combat.IndexOf("private static void ApplyForceFPCostActivatedEffects", StringComparison.Ordinal);
-        combat.Substring(triggerStart, 400).Should().Contain("!_ability.IsForcePower(activator, ability)",
+        combat.Substring(triggerStart, 400).Should().Contain("!IsForcePower(activator, ability)",
             "Danger Sense and Force Convergence fire on the new powers' FP spend");
     }
 

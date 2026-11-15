@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(10, Stat.GetStatAdjustment(caster, StatType.StatusAppliedNextAttackDamageBonus),
                 "Charged Blows supplies its rank-one next-attack bonus through perk stats");
 
-            var epicenter = Ability.GetAbilityDetail(FeatType.Epicenter1);
+            var epicenter = AbilityCatalog.GetAbilityDetail(FeatType.Epicenter1);
             var immuneTargetAccuracy = Stat.GetStatAdjustment(immuneTarget, StatType.AccuracyPercentAdjustment);
             TemporaryStatModifier.Add(immuneTarget, StatType.KnockdownImmunity, 1, 120f, "ENGINE_TEST_KNOCKDOWN_IMMUNITY");
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Stat.GetStatAdjustment(caster, StatType.StatusAppliedRequiredCategory),
                 "Guard Training declares the Control rider category");
 
-            var guardCounter = Ability.GetAbilityDetail(FeatType.GuardCounter3);
+            var guardCounter = AbilityCatalog.GetAbilityDetail(FeatType.GuardCounter3);
             async Task ApplyGuardCounter(uint target)
             {
                 ctx.MakeHostile(target);
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             // Queued abilities roll with the weapon attack, so the category accuracy must be added there.
             int QueuedHitChance(FeatType feat) => GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
-                caster, SkillType.Katar, Ability.GetAbilityDetail(feat));
+                caster, SkillType.Katar, AbilityCatalog.GetAbilityDetail(feat));
             var baseline = QueuedHitChance(FeatType.GuardCounter1);
             ctx.AssertEqual(baseline, QueuedHitChance(FeatType.GuardCounter3),
                 "without a guarded hit Guard Counter III is not a control ability for Scrapper Control");
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.ChargedBlows, 1);
 
             // Reprisal has no status of its own: it Dazes (a Control status) only a target that recently damaged you.
-            var reprisal = Ability.GetAbilityDetail(FeatType.Reprisal1);
+            var reprisal = AbilityCatalog.GetAbilityDetail(FeatType.Reprisal1);
             ctx.AssertEqual(StatusEffectCategory.None, reprisal.ResolveImpactStatusCategories(caster),
                 "Reprisal authors no impact status, so only its conditional Daze can make it Control");
             async Task ApplyReprisal(uint target)
@@ -318,7 +318,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(caster, () => AddHenchman(caster, ally));
             await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the ally to join the caster's party");
 
-            var jointLock = Ability.GetAbilityDetail(FeatType.JointLock1);
+            var jointLock = AbilityCatalog.GetAbilityDetail(FeatType.JointLock1);
             async Task ApplyJointLock(uint target)
             {
                 ctx.MakeHostile(target);
@@ -393,7 +393,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "Breaker Reversal requires a Control ability");
 
             StatusEffectCategory Categories(FeatType feat) =>
-                Ability.GetAbilityDetail(feat).ResolveImpactStatusCategories(defender);
+                AbilityCatalog.GetAbilityDetail(feat).ResolveImpactStatusCategories(defender);
 
             GameServices.CombatDamageTaken.ApplyDamageTakenEffects(defender, attacker, 5);
             ctx.AssertEqual((0, 0, 0), GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(defender, SkillType.Katar, Categories(FeatType.GuardCounter1)),
@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 FeatType.Rampage1, FeatType.Rampage2, FeatType.PrimalOverrun1
             })
             {
-                var ability = Ability.GetAbilityDetail(feat);
+                var ability = AbilityCatalog.GetAbilityDetail(feat);
                 var action = AIInternals.Profiles[AIProfileType.BeastCompanion].Actions
                     .Single(candidate => candidate.Type == AIActionType.Ability && candidate.Feat == feat);
                 var context = new AIContext(beast, AITriggerType.Heartbeat, target,
@@ -515,7 +515,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, beast);
             foreach (var entry in new[] { (FeatType.RampartHide1, -20), (FeatType.UnbreakableBeast1, -25) })
             {
-                var ability = Ability.GetAbilityDetail(entry.Item1);
+                var ability = AbilityCatalog.GetAbilityDetail(entry.Item1);
                 await ctx.ExecuteInCreatureContextAsync(beast, () => ability.ImpactAction(beast, beast, 1, GetLocation(beast)));
                 ctx.AssertEqual(entry.Item2, Stat.GetStatAdjustment(beast, StatType.DamageTakenPercentAdjustment), "Buff reduction");
                 ctx.AssertEqual(100 + entry.Item2, GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(beast, 100), "Reduction of a 100-point hit");
@@ -545,7 +545,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 foreach (var feat in new[] { FeatType.PiercingQuillsTechnique, FeatType.DarkShockTechnique,
                     FeatType.NullShockTechnique, FeatType.InnerCircleBindTechnique })
                 {
-                    var ability = Ability.GetAbilityDetail(feat);
+                    var ability = AbilityCatalog.GetAbilityDetail(feat);
                     var hp = GetCurrentHitPoints(target);
                     Ability.BeginAbilityImpact(caster, ability);
                     try
@@ -562,7 +562,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
 
                 // All three damage bonuses must remain available after the four control-only casts.
-                var attack = Ability.GetAbilityDetail(FeatType.ApexBite1);
+                var attack = AbilityCatalog.GetAbilityDetail(FeatType.ApexBite1);
                 for (var stack = 0; stack < 3; stack++)
                 {
                     ctx.AssertEqual(75, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
@@ -599,7 +599,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 StatType.NextAttackGuardedHitDMGBonus);
             TemporaryStatModifier.Add(caster, StatType.NextAttackGuardedHitEnmityBonus, 43, 120,
                 StatType.NextAttackGuardedHitDMGBonus);
-            var ability = Ability.GetAbilityDetail(FeatType.Flash1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.Flash1);
             var hp = GetCurrentHitPoints(target);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
@@ -647,9 +647,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Ability.EndAbilityImpact(caster);
             GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 101, 0, 120);
             await ctx.ExecuteInCreatureContextAsync(caster, pulse);
-            var first = Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage;
+            var first = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage;
             await ctx.ExecuteInCreatureContextAsync(caster, pulse);
-            var second = Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage;
+            var second = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage;
             ctx.Assert(first > second && second > 0, "Only the first impacting pulse uses the captured damage");
             ctx.AssertEqual(101, GameServices.CombatAbilityBonus.ConsumeNextSkillAbilityBonuses(caster, SkillType.Force).DamageBonus,
                 "Pulses preserve bonuses granted after the originating cast");
@@ -674,7 +674,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var target = targets[i];
                     Prepare(ctx, target);
                     ctx.MakeHostile(target);
-                    var ability = Ability.GetAbilityDetail(feats[i]);
+                    var ability = AbilityCatalog.GetAbilityDetail(feats[i]);
                     Ability.BeginAbilityImpact(caster, ability);
                     try
                     {
@@ -691,7 +691,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitDamageBonus, 75, 120f);
                 TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitMaximumCount, 1, 120f);
                 TemporaryStatModifier.Add(caster, StatType.FirstHostileAbilityHitCooldownSeconds, 90, 120f);
-                var choke = Ability.GetAbilityDetail(FeatType.ForceChoke1);
+                var choke = AbilityCatalog.GetAbilityDetail(FeatType.ForceChoke1);
                 ctx.Assert(choke.DealsDeferredDamage, "Choke declares its damaging status effect");
                 ctx.AssertEqual(75, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
                     "First Strike is initially available for Choke");
@@ -702,7 +702,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         () => choke.ImpactAction(caster, targets[0], 1, GetLocation(targets[0])));
                 }
                 finally { Ability.EndAbilityImpact(caster); }
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
                     "Choke applies the hostile-hit damage bonus despite having no immediate base damage");
                 ctx.AssertEqual(0, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
                     "Choke consumes the applied First Strike stack");
@@ -714,7 +714,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         () => choke.ImpactAction(caster, targets[0], 1, GetLocation(targets[0])));
                 }
                 finally { Ability.EndAbilityImpact(caster); }
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
                     "Choke applies captured flat damage even without a separate base-damage rider");
             }
             finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
@@ -732,7 +732,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var passiveCritical = Stat.GetStatAdjustment(caster, StatType.CriticalRatePercentAdjustment);
             var baseRate = GameServices.CombatAbilityHit.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false);
             ctx.AssertEqual(baseRate + 25, GameServices.CombatAbilityHit.GetAbilityCriticalRate(caster, SkillType.BeastMastery, false, 25), "Apex Bite impact critical chance");
-            var apex = Ability.GetAbilityDetail(FeatType.ApexBite1);
+            var apex = AbilityCatalog.GetAbilityDetail(FeatType.ApexBite1);
             var criticals = 0;
             ctx.SeedRandom(54321);
             for (var i = 0; i < 40; i++)
@@ -745,11 +745,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         () => apex.ImpactAction(caster, target, 1, GetLocation(target)));
                 }
                 finally { Ability.EndAbilityImpact(caster); }
-                criticals += Ability.GetLastCompletedAbilityImpactSummary(caster).CriticalHitCount;
+                criticals += AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).CriticalHitCount;
             }
             ctx.Assert(criticals > 0 && criticals < 40, "Apex Bite actually rolls critical impacts");
             ctx.AssertEqual(passiveCritical, Stat.GetStatAdjustment(caster, StatType.CriticalRatePercentAdjustment), "Apex Bite does not change passive critical rate");
-            var overload = Ability.GetAbilityDetail(FeatType.Overload);
+            var overload = AbilityCatalog.GetAbilityDetail(FeatType.Overload);
             await ctx.ExecuteInCreatureContextAsync(caster, () => overload.ImpactAction(caster, caster, 1, GetLocation(caster)));
             foreach (var stat in new[] { StatType.DamageDealtBleedChance, StatType.DamageDealtFreezingChance,
                 StatType.DamageDealtShockChance, StatType.DamageDealtSunderChance, StatType.DamageDealtHemorrhageChance })

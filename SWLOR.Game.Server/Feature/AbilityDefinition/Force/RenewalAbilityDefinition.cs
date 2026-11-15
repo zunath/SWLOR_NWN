@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
-            var affinityMultiplier = Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);
+            var affinityMultiplier = CombatAbilityMagnitude.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);
             var credited = new HashSet<uint>();
             if (StatusEffect.ApplyStatusEffect(
                 activator,

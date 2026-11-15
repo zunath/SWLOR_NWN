@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task StaggeredQueuedAbility(EngineTestContext ctx)
         {
             var (attacker, target, weapon) = await CreateFixture(ctx, "trn_saberstaff_1");
-            var ability = Ability.GetAbilityDetail(FeatType.ForceSheath1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.ForceSheath1);
             var originalImpact = ability.ImpactAction;
             var impactCount = 0;
             try
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Observe(attacker);
                 GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                 GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
-                Ability.ClearLastCompletedAbilityImpactSummary(attacker);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(attacker);
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
                     ctx.SetNPCResources(attacker, 100, 100);
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     "The second callback waits for the first end's complete swing");
                 ctx.AssertEqual(1, impactCount, "Only one end invokes the queued ability's real damage payload");
                 ctx.Assert(!UsePerkFeat.HasQueuedWeaponAbility(attacker), "The first end consumes the queued ability");
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(attacker);
+                var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(attacker);
                 ctx.Assert(summary != null && summary.ImpactedTargetCount == 1 && summary.AttributedDamage > 0,
                     "The consumed ability actually damages its selected target");
                 ctx.AssertEqual(1, _hits.Count, "The queued ability replaces one ordinary weapon roll");
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ability.ImpactAction = originalImpact;
                 UsePerkFeat.ClearQueuedAbility(attacker);
-                Ability.ClearLastCompletedAbilityImpactSummary(attacker);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(attacker);
                 Stop(attacker);
                 ResetObservation();
             }

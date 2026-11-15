@@ -93,9 +93,16 @@ public sealed partial class AbilityBench : IDisposable
         Engine.SetReturn("OBJECT_SELF", ObjectInvalid);
         _engineScope = NWScriptRuntime.Override(Engine);
 
-        Service = new TestAbilityService(this, StatusEffects(), Enmity(), CombatPoints(), Recast(), Telegraph(), Messaging(), Music(),
-            NamedAnimation(), Mimicry(), Activity(), Party(), PlayerFeedback(), Recorder(), MeleeTechnique(), CapstoneProof(),
-            Resistance(), Stealth(), PairedRangedTraits());
+        var telegraph = Telegraph();
+        CombatRecorder = Recorder();
+        Stat = new AbilityBenchStat(this);
+        Catalog = new TestAbilityCatalogService(this);
+        ImpactState = new AbilityImpactStore();
+        Geometry = new CombatImpactGeometryService(telegraph);
+        Magnitude = new TestCombatAbilityMagnitudeService(this, ImpactState);
+        Service = new TestAbilityService(this, StatusEffects(), Enmity(), CombatPoints(), Recast(), telegraph, Messaging(), Music(),
+            NamedAnimation(), Mimicry(), Activity(), Party(), PlayerFeedback(), CombatRecorder, MeleeTechnique(), CapstoneProof(),
+            Resistance(), Stealth(), Catalog, ImpactState, Geometry, Magnitude);
     }
 
     public AbilityEngine Engine { get; }
@@ -103,21 +110,27 @@ public sealed partial class AbilityBench : IDisposable
     /// <summary>The ability instance: the part that keeps the combat impacts content calls (part 9 of the split).</summary>
     public TestAbilityService Service { get; }
 
+    /// <summary>The recorder stand-in the parts share, for the reads that take the caller's recorder.</summary>
+    public ICombatRecorderService CombatRecorder { get; }
+
+    /// <summary>The stat service the impact state store reads an impact's stat sources through (it answers <see cref="StatSources"/>).</summary>
+    public AbilityBenchStat Stat { get; }
+
     // One accessor per part of the ability split that has public members (Readmes/MaintainabilityRefactorAbilitySplit.md,
     // "Every member"). A test calls a member through its part's accessor; until the part moves, the accessor is the one
     // instance, and the pull request that moves it points the accessor at the part's double, so the tests do not change.
 
     /// <summary>The catalog of definitions (part 1, <c>IAbilityCatalog</c>).</summary>
-    public TestAbilityService Catalog => Service;
+    public TestAbilityCatalogService Catalog { get; }
 
-    /// <summary>The impact state store (part 2, <c>IAbilityImpactState</c>).</summary>
-    public TestAbilityService ImpactState => Service;
+    /// <summary>The impact state store (part 2, <c>IAbilityImpactState</c>): the real store, which takes no service.</summary>
+    public AbilityImpactStore ImpactState { get; }
 
-    /// <summary>The combat impact geometry (part 3, <c>ICombatImpactGeometryService</c>).</summary>
-    public TestAbilityService Geometry => Service;
+    /// <summary>The combat impact geometry (part 3, <c>ICombatImpactGeometryService</c>): the real part over the telegraph stand-in.</summary>
+    public CombatImpactGeometryService Geometry { get; }
 
     /// <summary>The Force affinity and readiness magnitudes (part 4, <c>ICombatAbilityMagnitudeService</c>).</summary>
-    public TestAbilityService Magnitude => Service;
+    public TestCombatAbilityMagnitudeService Magnitude { get; }
 
     /// <summary>The impact lifecycle (part 5, <c>IAbilityImpactLifecycleService</c>).</summary>
     public TestAbilityService Lifecycle => Service;

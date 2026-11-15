@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
-        private readonly IAbilityService _ability;
+        private readonly IAbilityImpactState _impactState;
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly Lazy<ICombatDamageTakenService> _damageTaken;
 
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
-            IAbilityService ability,
+            IAbilityImpactState impactState,
             IPlayerFeedbackService playerFeedback,
             Lazy<ICombatDamageTakenService> damageTaken)
         {
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
-            _ability = ability;
+            _impactState = impactState;
             _playerFeedback = playerFeedback;
             _damageTaken = damageTaken;
         }
@@ -280,8 +280,8 @@ namespace SWLOR.Game.Server.Domain.Combat
                 damage = ApplyBackAttackDamageModifier(attacker, defender, skillType, damage);
             if (isAbilityDamage)
             {
-                var isArea = _ability.IsAreaImpact(attacker, ability);
-                var isSingleTarget = _ability.IsSingleTargetImpact(attacker, ability);
+                var isArea = _impactState.IsAreaImpact(attacker, ability);
+                var isSingleTarget = _impactState.IsSingleTargetImpact(attacker, ability);
                 damage = ApplyTwinBladeAbilityShapeDamageModifier(attacker, skillType, damage, isSingleTarget, isArea);
                 damage = ApplyThrowingAbilityShapeDamageModifier(attacker, skillType, damage, isArea);
                 damage = ApplySkillAreaAbilityDamageModifier(attacker, skillType, damage, isArea);
@@ -340,9 +340,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public int ApplyAbilityShapeDamageModifier(uint attacker, int damage, bool isAbilityDamage, AbilityDetail ability)
         {
-            var adjustment = !isAbilityDamage || ability?.IsHostileAbility == true && _ability.IsSingleTargetImpact(attacker, ability)
+            var adjustment = !isAbilityDamage || ability?.IsHostileAbility == true && _impactState.IsSingleTargetImpact(attacker, ability)
                 ? _stat.GetStatAdjustment(attacker, StatType.SingleTargetDamagePercentAdjustment)
-                : ability?.IsHostileAbility == true && _ability.IsAreaImpact(attacker, ability)
+                : ability?.IsHostileAbility == true && _impactState.IsAreaImpact(attacker, ability)
                     ? _stat.GetStatAdjustment(attacker, StatType.AreaAbilityDamagePercentAdjustment)
                     : 0;
             return ApplyPercentDamageAdjustment(damage, adjustment);
@@ -364,7 +364,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return damage;
 
             var isSingleTarget = !isAbilityDamage ||
-                                 ability?.IsHostileAbility == true && _ability.IsSingleTargetImpact(attacker, ability);
+                                 ability?.IsHostileAbility == true && _impactState.IsSingleTargetImpact(attacker, ability);
             if (!isSingleTarget)
                 return damage;
 

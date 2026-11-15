@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IPlayerFeedbackService _playerFeedback;
-        private readonly IAbilityService _ability;
+        private readonly IAbilityImpactState _impactState;
         private readonly IActivityService _activity;
 
         public CombatActivityService(
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
             IPlayerFeedbackService playerFeedback,
-            IAbilityService ability,
+            IAbilityImpactState impactState,
             IActivityService activity)
         {
             _queries = queries;
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
             _playerFeedback = playerFeedback;
-            _ability = ability;
+            _impactState = impactState;
             _activity = activity;
         }
 
@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var state = EnsureFirstHostileAbilityHitState(attacker, maximumCount, damageBonus, out _);
 
             var now = Clock.UtcNow;
-            if (_ability.IsAreaImpact(attacker, ability) &&
+            if (_impactState.IsAreaImpact(attacker, ability) &&
                 (now - state.LastHit).TotalSeconds <= 1)
             {
                 return;

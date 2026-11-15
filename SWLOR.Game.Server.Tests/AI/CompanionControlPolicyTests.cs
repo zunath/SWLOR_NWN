@@ -169,7 +169,7 @@ public class CompanionControlPolicyTests
     public void HealCommandOptionsAreDeclaredByAbilityMetadata()
     {
         AbilityCache.Load();
-        var healingAbilities = Ability.GetAllAbilityDetails()
+        var healingAbilities = AbilityCatalog.GetAllAbilityDetails()
             .Where(x => x.Value.IsHealingAbility)
             .ToDictionary(x => x.Key, x => x.Value);
 

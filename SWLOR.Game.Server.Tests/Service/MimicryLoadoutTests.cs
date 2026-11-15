@@ -105,7 +105,7 @@ public class MimicryLoadoutTests
     [Test]
     public void WholeBuildValidationRejectsUnknownUnlearnedDuplicateOverRankAndOverBudgetWithoutMutation()
     {
-        Ability.CacheData();
+        AbilityCatalog.CacheData();
         GameServices.Mimicry.CacheData();
         var player = new Player();
         player.Perks[PerkType.CombatAnalyzer] = 1;

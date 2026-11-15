@@ -163,7 +163,7 @@ public class ForceLightGuardianTests
         temporaryHP.Should().Contain("public static bool IsActivePoolFromSource(");
         temporaryHP.Should().Contain("GetEffectTag(effect) == effectTag");
 
-        var scaling = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityEffectScaling.cs").FullName);
+        var scaling = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Combat" / "AbilityEffectScaling.cs").FullName);
         scaling.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(source, target, effectKey, amount, durationSeconds)");
 
         var combat = CombatSource.Read();
@@ -225,17 +225,8 @@ public class ForceLightGuardianTests
             immediateDamageApplication,
             "ordinary damage reactions such as Guardian's Resolve healing must observe post-hit HP");
 
-        var queuedDamageFlushStart = abilityDamage.IndexOf(
-            "public void FlushDamageEffects(uint activator)",
-            StringComparison.Ordinal);
-        var pendingDamageEffectStart = abilityDamage.IndexOf(
-            "private sealed class PendingDamageEffect",
-            StringComparison.Ordinal);
-        queuedDamageFlushStart.Should().BeGreaterThan(-1);
-        pendingDamageEffectStart.Should().BeGreaterThan(queuedDamageFlushStart);
-        var queuedDamageFlush = abilityDamage.Substring(
-            queuedDamageFlushStart,
-            pendingDamageEffectStart - queuedDamageFlushStart);
+        var queuedDamageFlush = AbilitySource.Members("FlushDamageEffects");
+        queuedDamageFlush.Should().NotBeEmpty();
         var queuedPreDamageNotification = queuedDamageFlush.IndexOf(
             "_statusEffect.NotifyPreDamageStatusEffects(",
             StringComparison.Ordinal);
@@ -243,7 +234,7 @@ public class ForceLightGuardianTests
             "EffectDamage(effect.Damage, effect.DamageType)",
             StringComparison.Ordinal);
         var queuedReflection = queuedDamageFlush.IndexOf(
-            "_service.ApplyDamageReflectionEffects(",
+            "ApplyDamageReflectionEffects(",
             StringComparison.Ordinal);
         queuedPreDamageNotification.Should().BeGreaterThan(-1);
         queuedPreDamageNotification.Should().BeLessThan(

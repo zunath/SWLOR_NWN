@@ -15,7 +15,7 @@ public class AbilityDamageQueueTests
         var impactType = AbilityInternals.TrackedImpactType;
         var service = AbilityInternals.NoNeighbours();
         object CreateImpact() => AbilityInternals.NewTrackedImpact(
-            service, new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, Array.Empty<TelegraphGeometry>(), null);
+            new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, Array.Empty<TelegraphGeometry>(), null);
         var origin = CreateImpact();
         var firstPhase = CreateImpact();
         var secondPhase = CreateImpact();
@@ -43,7 +43,7 @@ public class AbilityDamageQueueTests
         var trackedImpactType = AbilityInternals.TrackedImpactType;
         var sharedSequence = hasSharedSequence ? new AbilityImpactSequence() : null;
         var trackedImpact = AbilityInternals.NewTrackedImpact(
-            AbilityInternals.NoNeighbours(), new AbilityDetail(), 0, 0, 0, 0, 0, true, 0,
+            new AbilityDetail(), 0, 0, 0, 0, 0, true, 0,
             Array.Empty<TelegraphGeometry>(), sharedSequence);
         var storedSequence = trackedImpactType.GetField(
             "_sequence", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
@@ -68,7 +68,6 @@ public class AbilityDamageQueueTests
         var trackedImpactType = AbilityInternals.TrackedImpactType;
         trackedImpactType.Should().NotBeNull();
         var trackedImpact = AbilityInternals.NewTrackedImpact(
-            AbilityInternals.NoNeighbours(),
             new AbilityDetail(),
             0,
             0,
@@ -171,44 +170,20 @@ public class AbilityDamageQueueTests
     [Test]
     public void TrackedAbilityImpacts_FlushQueuedDamageEffectsTogether()
     {
+        // The tracker moved to Combat with the ability split (P5-3b): it queues the damage, and AbilityService flushes the
+        // tracker's queue at the end of the impact, so each body is read by member.
         var source = AbilitySource.Read().Replace("\r\n", "\n");
-        var endImpactStart = source.IndexOf(
-            "public AbilityImpactSummary EndAbilityImpact",
-            StringComparison.Ordinal);
-        var trackedImpactLookupStart = source.IndexOf(
-            "private TrackedAbilityImpact GetTrackedAbilityImpact",
-            StringComparison.Ordinal);
-        var queueDamageStart = source.IndexOf(
-            "public void QueueDamageEffect",
-            StringComparison.Ordinal);
-        var flushDamageStart = source.IndexOf(
-            "public void FlushDamageEffects",
-            StringComparison.Ordinal);
-        var pendingDamageEffectStart = source.IndexOf(
-            "private sealed class PendingDamageEffect",
-            StringComparison.Ordinal);
-        endImpactStart.Should().BeGreaterThan(-1);
-        trackedImpactLookupStart.Should().BeGreaterThan(endImpactStart);
-        queueDamageStart.Should().BeGreaterThan(-1);
-        flushDamageStart.Should().BeGreaterThan(queueDamageStart);
-        pendingDamageEffectStart.Should().BeGreaterThan(flushDamageStart);
-        var endImpactBody = source.Substring(
-            endImpactStart,
-            trackedImpactLookupStart - endImpactStart);
-        var queueBody = source.Substring(
-            queueDamageStart,
-            flushDamageStart - queueDamageStart);
-        var flushBody = source.Substring(
-            flushDamageStart,
-            pendingDamageEffectStart - flushDamageStart);
+        var endImpactBody = AbilitySource.Members("EndAbilityImpact").Replace("\r\n", "\n");
+        var queueBody = AbilitySource.Members("QueueDamageEffect", "QueueDirectDamageEffect").Replace("\r\n", "\n");
+        var flushBody = AbilitySource.Members("FlushDamageEffects").Replace("\r\n", "\n");
 
-        endImpactBody.Should().Contain("impact.FlushDamageEffects(activator);");
+        endImpactBody.Should().Contain("FlushDamageEffects(impact, activator);");
         source.Should().Contain("trackedImpact.QueueDamageEffect(");
         source.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
         queueBody.Should().Contain("public void QueueDirectDamageEffect(");
-        queueBody.Should().Contain("QueueDamageEffect(target, damage, damageType, combatDamageType);");
+        queueBody.Should().Contain("QueueDamageEffect(target, damage, damageType, combatDamageType, recorder);");
         queueBody.Should().Contain("_pendingDamageEffects.Add(new PendingDamageEffect(");
-        flushBody.Should().Contain("var effects = _pendingDamageEffects.ToArray();");
+        flushBody.Should().Contain("var effects = impact.PendingDamageEffects.ToArray();");
         flushBody.Should().Contain("AssignCommand(activator, () =>");
         flushBody.Should().Contain("foreach (var effect in effects)");
         flushBody.Should().Contain("EffectDamage(effect.Damage, effect.DamageType)");
@@ -220,7 +195,7 @@ public class AbilityDamageQueueTests
             "EffectDamage(effect.Damage, effect.DamageType)",
             StringComparison.Ordinal);
         var reflection = flushBody.IndexOf(
-            "_service.ApplyDamageReflectionEffects(",
+            "ApplyDamageReflectionEffects(",
             StringComparison.Ordinal);
         preDamageValidation.Should().BeGreaterThan(-1);
         preDamageValidation.Should().BeLessThan(
@@ -384,18 +359,15 @@ public class AbilityDamageQueueTests
     {
         var abilitySource = AbilitySource.Read().Replace("\r\n", "\n");
         var combatSource = CombatSource.Read().Replace("\r\n", "\n");
-        var queueMethod = abilitySource.Substring(
-            abilitySource.IndexOf("public bool TryQueueTrackedDamageEffect", StringComparison.Ordinal),
-            abilitySource.IndexOf("private TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
-            abilitySource.IndexOf("public bool TryQueueTrackedDamageEffect", StringComparison.Ordinal));
+        var queueMethod = AbilitySource.Members("TryQueueTrackedDamageEffect").Replace("\r\n", "\n");
         var triggeredDamage = CombatSource.Members("ApplyTriggeredDamage", "ApplyTriggeredDamageTargetAdjustment", "GetRangedDeflectionReflectionAmount", "GetRangedDeflectionReflectionRates", "ApplyRangedDeflectionReflection", "BuildDeflectingReturnCombatLogMessage");
         var damageRiders = CombatSource.Members("ApplyAbilityDamageRiders", "ApplyFoggyMindResourceDrain", "GetAreaAbilityPulseSources", "ApplyAreaAbilityPulse", "ApplyAreaAbilityFragmentation", "GetAreaAbilityFragmentationStatAdjustment");
 
         queueMethod.Should().Contain("GetTrackedAbilityImpact(activator)");
-        queueMethod.Should().Contain("trackedImpact.QueueDamageEffect(target, damage, damageType);");
+        queueMethod.Should().Contain("trackedImpact.QueueDamageEffect(target, damage, damageType, recorder);");
         damageRiders.Should().Contain("StatType.KatarVenomCurrentSecondStrikeDamageBonus");
         damageRiders.Should().Contain("ApplyTriggeredDamage(activator, target, bonus, damageType);");
-        triggeredDamage.Should().Contain("_ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType)");
+        triggeredDamage.Should().Contain("_impactState.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType, _combatRecorder)");
         triggeredDamage.Should().Contain("AssignCommand(");
     }
 
@@ -493,7 +465,7 @@ public class AbilityDamageQueueTests
             weaponAbilitySource.IndexOf("if (isArea && ShouldUseTelegraphedCombatImpact", StringComparison.Ordinal) -
             weaponAbilitySource.IndexOf("profile.SpendHitPoints(activator);", StringComparison.Ordinal));
         hostileImpactSetup.Should().Contain("var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);");
-        hostileImpactSetup.Should().Contain("Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(");
+        hostileImpactSetup.Should().Contain("AbilityImpactState.AddActiveAbilityDefenseIgnorePercentAdjustment(");
         hostileImpactSetup.Should().Contain("profile.GetDefenseIgnorePercent(activator, activationIdleBonusSnapshot)",
             "the activation's defense-ignore snapshot must join the current tracked impact before instant or delayed damage resolves");
         weaponAbilitySource.Should().NotContain("GameServices.CombatAttackTiming.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore)",

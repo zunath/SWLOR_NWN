@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
             var invoked = false;
-            Ability.BeginAbilityImpact(caster, Ability.GetAbilityDetail(FeatType.RazorTrap1));
+            Ability.BeginAbilityImpact(caster, AbilityCatalog.GetAbilityDetail(FeatType.RazorTrap1));
             var trigger = Ability.CaptureRepeatedAbilityImpact(caster, () => invoked = true, baseDamage: 14);
             Ability.EndAbilityImpact(caster);
             ObjectPlugin.SetCurrentHitPoints(caster, 0);
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
-                Ability.ClearLastCompletedAbilityImpactSummary(caster);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
                 ctx.SeedRandom(12345);
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     ctx.Assert(Traps.TryPlaceKitTrap(caster, GetLocation(target), 1), "The tier-one kit trap is placed"));
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var observed = 1000 - GetCurrentHitPoints(target);
                 AssertPerceptionDamage(ctx, caster, target, 20, CombatDamageType.Physical, observed, null);
                 ctx.AssertEqual(caster, GetLastDamager(target), "Kit damage is attributed to its owner");
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster) == null,
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster) == null,
                     "The kit exercises the path without a tracked active ability");
                 ctx.Log($"Tier-one kit: native damage={observed}, PER={GetAbilityScore(caster, AbilityType.Perception)}, MGT={GetAbilityScore(caster, AbilityType.Might)}");
             }
@@ -88,8 +88,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature("nw_rat001", 1f);
             await ctx.WaitFrameAsync();
             Prepare(ctx, caster, target);
-            var trapAbility = Ability.GetAbilityDetail(feat);
-            var renewal = Ability.GetAbilityDetail(FeatType.Renewal1);
+            var trapAbility = AbilityCatalog.GetAbilityDetail(feat);
+            var renewal = AbilityCatalog.GetAbilityDetail(FeatType.Renewal1);
             var trackerOpen = false;
 
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     () => renewal.ImpactAction(caster, caster, renewal.AbilityLevel, GetLocation(caster)));
                 Ability.EndAbilityImpact(caster);
                 trackerOpen = false;
-                ctx.Assert(ReferenceEquals(renewal, Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability),
+                ctx.Assert(ReferenceEquals(renewal, AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability),
                     "A different registered ability completes between placement and detonation");
 
                 Ability.BeginAbilityImpact(caster, renewal);
@@ -126,10 +126,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "The trap owner remains valid but is dead before detonation");
                 }
                 await ctx.WaitUntilAsync(
-                    () => ReferenceEquals(trapAbility, Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability) &&
-                          Ability.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
+                    () => ReferenceEquals(trapAbility, AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability) &&
+                          AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
                     10f, "the real trap trigger to complete its captured originating impact");
-                var detonation = Ability.GetLastCompletedAbilityImpactSummary(caster);
+                var detonation = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
                 await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < 1000, 3f,
                     "the trap's attributed damage effect to reach native hit points");
                 StatusEffect.RemoveAllStatusEffects(target);
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, StatType.TrapBonus), "Trap Bonus is isolated");
             ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, StatType.TrapPlacementSpeedPercent), "The actual three-second arming delay is used");
             ctx.AssertEqual(0, Resistance.GetResistance(target, ResistanceType.Electrical), "Electrical resistance is isolated");
-            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
         }
     }
 }

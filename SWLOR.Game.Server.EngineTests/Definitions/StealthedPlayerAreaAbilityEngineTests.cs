@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 .Single(action => action.Type == AIActionType.Ability && action.Feat == FeatType.DisorientingScreech);
             var context = new AIContext(tusken, AITriggerType.CombatRound, decoy,
                 new AIProfile { Type = AIProfileType.Generic }, new AIState(), Array.Empty<uint>());
-            var radius = Ability.GetAbilityDetail(FeatType.DisorientingScreech).Targeting.ResolveSizeX(tusken, true);
+            var radius = AbilityCatalog.GetAbilityDetail(FeatType.DisorientingScreech).Targeting.ResolveSizeX(tusken, true);
             int CountScreechTargets()
             {
                 ctx.AssertEqual(tusken, (uint)AIInternals.Invoke("ResolveTarget", context, screech),
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static bool IsScreechOnRecast(uint creature)
         {
-            return Recast.IsOnRecastDelay(creature, Ability.GetAbilityDetail(FeatType.DisorientingScreech).RecastGroup).Item1;
+            return Recast.IsOnRecastDelay(creature, AbilityCatalog.GetAbilityDetail(FeatType.DisorientingScreech).RecastGroup).Item1;
         }
     }
 }

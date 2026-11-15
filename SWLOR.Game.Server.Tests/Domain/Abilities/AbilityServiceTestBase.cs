@@ -2,6 +2,7 @@ using System.Numerics;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
 
@@ -26,10 +27,10 @@ public abstract class AbilityServiceTestBase
     protected TestAbilityService Service => Bench.Service;
 
     // The parts of the ability split, as AbilityBench gives them (one accessor per part with public members).
-    protected TestAbilityService Catalog => Bench.Catalog;
-    protected TestAbilityService ImpactState => Bench.ImpactState;
-    protected TestAbilityService Geometry => Bench.Geometry;
-    protected TestAbilityService Magnitude => Bench.Magnitude;
+    protected TestAbilityCatalogService Catalog => Bench.Catalog;
+    protected AbilityImpactStore ImpactState => Bench.ImpactState;
+    protected CombatImpactGeometryService Geometry => Bench.Geometry;
+    protected TestCombatAbilityMagnitudeService Magnitude => Bench.Magnitude;
     protected TestAbilityService Lifecycle => Bench.Lifecycle;
     protected TestAbilityService Activation => Bench.Activation;
     protected TestAbilityService Aura => Bench.Aura;

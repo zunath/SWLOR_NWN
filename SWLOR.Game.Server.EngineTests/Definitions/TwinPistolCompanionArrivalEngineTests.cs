@@ -210,7 +210,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
                     $"Headshot queues through its normal paid pipeline: {Ability.GetLastActivationDenialReason()}");
                 paidStamina = Stat.GetCurrentStamina(actor);
-                var cost = Ability.GetAbilityDetail(FeatType.Headshot1).Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
+                var cost = AbilityCatalog.GetAbilityDetail(FeatType.Headshot1).Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
                 ctx.AssertEqual(stamina - cost, paidStamina, "The readied ability pays its authored cost exactly once at queue time");
                 var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();
                 var defender = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(target).AsNWSObject();
@@ -231,7 +231,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                 AssignCommand(GetModule(), () => DelayCommand(flight / 2f, () =>
                 {
                     sampledQueued = UsePerkFeat.HasQueuedWeaponAbility(actor);
-                    sampledSummary = Ability.GetLastCompletedAbilityImpactSummary(actor) != null;
+                    sampledSummary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) != null;
                     sampledHealth = GetCurrentHitPoints(target);
                     sampledLeadership = Points(actor, target, SkillType.Leadership);
                     sampledRare = GetLocalInt(target, "RARE_BONUS_CHANCE");
@@ -268,7 +268,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             ctx.AssertEqual(paidStamina, Stat.GetCurrentStamina(actor), "Arrival never pays the already readied ability again");
             if (outcome == "arrival")
             {
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
+                var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(summary != null && summary.AttributedDamage > 0 && summary.SkillType == SkillType.Rifle,
                     "One arriving companion resolves the original cross-trained ability");
                 ctx.AssertEqual(capturedMainDamage, summary.TriggeringWeaponDamage ?? -1, "Arrival retains the launch-captured main gun damage");
@@ -285,7 +285,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             }
             else
             {
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "The old projectile cannot resolve a canceled discarded or newer ability");
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null, "The old projectile cannot resolve a canceled discarded or newer ability");
                 ctx.AssertEqual(0, _damageEvents, "The old projectile deals no native ability damage");
                 ctx.AssertEqual(0, Points(actor, target, SkillType.Leadership), "The old projectile grants no Leadership");
                 ctx.AssertEqual(0, GetLocalInt(target, "RARE_BONUS_CHANCE"), "The old projectile marks no loot bonus");
@@ -304,7 +304,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                             "Discard releases the captured reservation instead of blocking every later queued roll");
                         Launch(ctx, actor, nextTarget, companion);
                     });
-                    await WaitFrames(ctx, () => Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
+                    await WaitFrames(ctx, () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
                         "the next valid companion projectile to consume the retained queue");
                     ctx.Assert(!UsePerkFeat.HasQueuedWeaponAbility(actor), "The next valid hit consumes the retained queue");
                     ctx.AssertEqual(paidStamina, Stat.GetCurrentStamina(actor), "Retrying the retained queue charges no additional stamina");
@@ -369,7 +369,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
             TemporaryStatModifier.Add(actor, StatType.RareItemFindChance, 42, 30f);
             Ability.ApplyAura(actor, typeof(DeflectingAuraStatusEffect), true, false, false);
-            Ability.ClearLastCompletedAbilityImpactSummary(actor);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
             ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The fixture uses a real generated companion pair");
         });
         _actor = actor;

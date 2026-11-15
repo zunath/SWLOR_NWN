@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Dictionary<(uint Creature, AbilityDetail Ability), CombatAbilityStaminaCostState> _abilityStaminaCosts = new();
 
         private readonly ICombatQueriesService _queries;
-        private readonly IAbilityService _ability;
+        private readonly IAbilityImpactState _impactState;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatRecorderService _combatRecorder;
@@ -40,14 +40,14 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public CombatResourcesService(
             ICombatQueriesService queries,
-            IAbilityService ability,
+            IAbilityImpactState impactState,
             IStatService stat,
             IStatusEffectService statusEffect,
             ICombatRecorderService combatRecorder,
             ITemporaryStatModifierService temporaryStatModifier)
         {
             _queries = queries;
-            _ability = ability;
+            _impactState = impactState;
             _stat = stat;
             _statusEffect = statusEffect;
             _combatRecorder = combatRecorder;
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 state = new DamageDerivedHealingState
                 {
                     Target = target,
-                    TargetHPBeforeImpact = _ability.GetRemainingDamageTargetHP(creature, target),
+                    TargetHPBeforeImpact = _impactState.GetRemainingDamageTargetHP(creature, target),
                     Parent = state
                 };
                 _damageDerivedHealingStates[creature] = state;
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (_damageDerivedHealingStates.TryGetValue(creature, out var state) &&
                 state.Target == target && !state.Damage.HasValue)
             {
-                state.TargetHPBeforeImpact = _ability.GetRemainingDamageTargetHP(creature, target);
+                state.TargetHPBeforeImpact = _impactState.GetRemainingDamageTargetHP(creature, target);
             }
         }
 
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             if (isActivatedHealing)
             {
-                var sequence = _ability.GetAbilityImpactSequence(creature);
+                var sequence = _impactState.GetAbilityImpactSequence(creature);
                 amount = sequence != null
                     ? sequence.TakeDamageDerivedHealing(maximumHP, amount)
                     : Math.Min(amount, Math.Max(0, CalculateMaxHPHealingBudget(
@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public int GetHighResourceStatAdjustment(uint activator, StatType payload, StatType threshold, AbilityDetail ability)
         {
-            var sources = _ability.GetAbilityImpactStatSources(activator, payload);
+            var sources = _impactState.GetAbilityImpactStatSources(activator, payload, _stat);
             var adjustment = 0;
             for (var index = 0; index < sources.Count; index++)
             {
@@ -439,7 +439,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private int RestoreAbilityHitStamina(uint creature, int requested)
         {
-            return RestoreAbilityHitStamina(creature, _ability.GetActiveAbilityImpactSummary(creature)?.Ability, requested);
+            return RestoreAbilityHitStamina(creature, _impactState.GetActiveAbilityImpactSummary(creature)?.Ability, requested);
         }
 
         public int GetPaidAbilityStaminaCost(uint creature, AbilityDetail ability) =>

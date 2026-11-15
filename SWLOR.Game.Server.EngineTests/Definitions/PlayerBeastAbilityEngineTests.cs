@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(Supports(feat), "player beast fixture must have a specific observable outcome for this feat");
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             fixture.Update(record => record.Perks[ability.EffectiveLevelPerkType] =
                 Math.Max(record.Perks.GetValueOrDefault(ability.EffectiveLevelPerkType), ability.AbilityLevel));
             CreaturePlugin.AddFeat(player, feat);

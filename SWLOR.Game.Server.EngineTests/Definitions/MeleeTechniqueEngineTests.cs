@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 await Cast(ctx, caster, target, FeatType.Jab1);
-                var ability = Ability.GetAbilityDetail(FeatType.FinishingCombination2);
+                var ability = AbilityCatalog.GetAbilityDetail(FeatType.FinishingCombination2);
                 ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target),
                     "the landed Jab supplies the Opening used by this selection check");
                 // Native LineOfSightVector requires a creature context in the tested area,
@@ -48,9 +48,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(caster, secondary, ability), "the secondary has no earned setup accuracy");
                 ctx.Assert(!MeleeTechnique.IsImpactValid(caster, excluded, ability), "a third enemy cannot join the captured sweep");
                 Ability.BeginAbilityImpact(caster, ability);
-                ctx.Assert(Ability.IsAreaImpact(caster, ability), "classification is area before either hit resolves");
-                ctx.Assert(!Ability.IsSingleTargetImpact(caster, ability), "single-target bonuses cannot also apply");
-                ctx.Assert(!Ability.IsAreaImpact(excluded, ability), "another actor cannot inherit this cast's area classification");
+                ctx.Assert(AbilityImpactState.IsAreaImpact(caster, ability), "classification is area before either hit resolves");
+                ctx.Assert(!AbilityImpactState.IsSingleTargetImpact(caster, ability), "single-target bonuses cannot also apply");
+                ctx.Assert(!AbilityImpactState.IsAreaImpact(excluded, ability), "another actor cannot inherit this cast's area classification");
                 ctx.Assert(!ability.IsAreaAbility && ability.IsSingleTargetAbility, "shared targeting metadata stays unchanged");
                 Ability.EndAbilityImpact(caster);
             }
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var secondaryHP = hasSecondary ? GetCurrentHitPoints(secondary) : 0;
                 var excludedHP = GetCurrentHitPoints(excluded);
                 await Cast(ctx, caster, target, FeatType.FinishingCombination2);
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(caster);
+                var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
                 var sweep = stage == MeleeTechniqueStage.Opening && hasSecondary;
                 ctx.AssertEqual(sweep, summary.IsAreaAbility, "only a captured Opening sweep counts as area");
                 ctx.AssertEqual(!sweep, summary.IsSingleTargetAbility, "the focused routes keep their original classification");
@@ -292,7 +292,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.Provoke, 1);
             await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.RightHand);
             ctx.Assert(!PowerGloveEquipment.IsActivePair(caster), "Payback begins without Power Gloves");
-            var ability = Ability.GetAbilityDetail(FeatType.BloodFrenzyBurst);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.BloodFrenzyBurst);
             var cost = ability.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.EquipItemAsync(standard.Creature, "b_longsword", InventorySlot.RightHand);
                 ctx.AssertEqual(15, Stat.GetStatAdjustment(standard.Creature, StatType.MobilityResistance), "Rooted Technique remains unconditional with a sword and shield");
                 ctx.AssertEqual(15, Stat.GetStatAdjustment(standard.Creature, StatType.TraumaResistance), "Hard Knocks remains unconditional with a sword and shield");
-                ctx.AssertEqual(string.Empty, MeleeTechnique.ValidateActivation(standard.Creature, Ability.GetAbilityDetail(FeatType.Jab1), target), "Unarmed strikes accept a sword and shield");
+                ctx.AssertEqual(string.Empty, MeleeTechnique.ValidateActivation(standard.Creature, AbilityCatalog.GetAbilityDetail(FeatType.Jab1), target), "Unarmed strikes accept a sword and shield");
                 await Cast(ctx, standard.Creature, standard.Creature, FeatType.BruiserStance1);
                 ctx.Assert(StatusEffect.HasStatusEffect(standard.Creature, typeof(BruiserStanceStatusEffect)), "Bruiser Stance activates with another weapon class");
                 ctx.Assert(!StatusEffect.HasStatusEffect(standard.Creature, typeof(FlowStanceStatusEffect)), "changing stances still removes the previous stance");
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 record.Perks[PerkType.Jab] = 1;
             });
             var caster = player.Creature;
-            var jab = Ability.GetAbilityDetail(FeatType.Jab1);
+            var jab = AbilityCatalog.GetAbilityDetail(FeatType.Jab1);
             var main = await ctx.EquipItemAsync(caster, "t_katar", InventorySlot.RightHand);
             var off = await ctx.EquipItemAsync(caster, "t_katar", InventorySlot.LeftHand);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
@@ -453,7 +453,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "Katar abilities still add one Katar's DMG");
                 });
                 await Cast(ctx, caster, target, FeatType.Jab1);
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).ImpactedTargetCount > 0, "Jab with two Katars lands");
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).ImpactedTargetCount > 0, "Jab with two Katars lands");
                 ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "Jab with two Katars earns Opening");
 
                 foreach (var katar in new[] { off, main })
@@ -470,7 +470,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 Recast.ReduceRecastDelay(caster, RecastGroup.UnarmedOpener, 100f);
                 await Cast(ctx, caster, target, FeatType.Jab1);
-                ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(caster).ImpactedTargetCount > 0, "Jab with a sword lands");
+                ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).ImpactedTargetCount > 0, "Jab with a sword lands");
                 ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "Jab with a sword earns Opening");
 
                 var secondSword = await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.LeftHand);
@@ -608,7 +608,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(16, MeleeTechnique.GetPendingWeavePower(caster, target), "the landed opener arms an ordinary-attempt weave");
                     ctx.Assert(UsePerkFeat.IsWeaponAbilityQueued(caster, FeatType.SoulStrike1), "the casted opener leaves the older queued delivery pending");
                     ctx.Assert(UsePerkFeat.TryGetQueuedWeaponAbility(caster, SkillType.Unarmed, out var queuedAbility) &&
-                               queuedAbility == Ability.GetAbilityDetail(FeatType.SoulStrike1),
+                               queuedAbility == AbilityCatalog.GetAbilityDetail(FeatType.SoulStrike1),
                         "the native resolver accepts the owned cross-skill queue before taking the attack roll");
                     ctx.Assert(!GameServices.CombatActivity.HasRecentAttackActivity(caster, 60f), "the fixture has not taken a native attack roll yet");
                     var hitPoints = GetCurrentHitPoints(deliveryTarget);
@@ -746,7 +746,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     await ctx.EquipItemAsync(caster, weapon, InventorySlot.RightHand);
                     ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "a different weapon class retains Opening");
                     ctx.AssertEqual(16, MeleeTechnique.GetPendingWeavePower(caster, target), "a swap cannot spend or remove the one ordinary weave");
-                    var ability = Ability.GetAbilityDetail(feat);
+                    var ability = AbilityCatalog.GetAbilityDetail(feat);
                     ctx.AssertEqual(10, MeleeTechnique.GetAbilityAccuracy(caster, target, ability), "Measured Technique applies to another skill's hostile ability");
                     ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(caster, other, ability), "another enemy receives no setup accuracy");
                     ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(other, target, ability), "another caster cannot borrow the setup accuracy");
@@ -802,7 +802,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SetNPCPerkLevel(caster, perk, 1);
                 ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
                 ctx.SetNPCPerkLevel(caster, PerkType.MeasuredTechnique, 1);
-                var ability = Ability.GetAbilityDetail(feat);
+                var ability = AbilityCatalog.GetAbilityDetail(feat);
                 var originalImpact = ability.ImpactAction;
                 var capturedAccuracy = -1;
                 var consumedStage = MeleeTechniqueStage.Opening;
@@ -845,7 +845,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var (caster, attacker) = await CreateFixture(ctx);
             ctx.SetNPCPerkLevel(caster, PerkType.Payback, 1);
             await ctx.EquipItemAsync(caster, "b_longsword", InventorySlot.RightHand);
-            var ability = Ability.GetAbilityDetail(FeatType.BloodFrenzyBurst);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.BloodFrenzyBurst);
             var triggeredAt = DateTime.UtcNow;
             await DirectHit();
             await ctx.WaitUntilAsync(() => MeleeTechnique.GetStaminaDiscount(caster, ability, 5, false) == 2, 3f, "direct HP loss without gloves grants Payback");
@@ -879,7 +879,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.FlowStance, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.FlowingForm, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.Payback, 1);
-            var discountedAbility = Ability.GetAbilityDetail(FeatType.DirtyJab1);
+            var discountedAbility = AbilityCatalog.GetAbilityDetail(FeatType.DirtyJab1);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
@@ -963,7 +963,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.Jab, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.PalmStrike, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.PerfectForm, 1);
-            var perfect = Ability.GetAbilityDetail(FeatType.PerfectForm1);
+            var perfect = AbilityCatalog.GetAbilityDetail(FeatType.PerfectForm1);
             var landings = new System.Collections.Generic.List<MeleeTechniqueStage>();
             void OnLanded(uint source, uint enemy, AbilityDetail ability, MeleeTechniqueStage stage)
             {
@@ -979,7 +979,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.DelaySecondsAsync(1.5f);
                 ctx.Assert(!string.IsNullOrEmpty(UsePerkFeat.GetActiveAbilityActivationId(caster)), "the two-second cast is still in progress");
                 ctx.AssertEqual(MeleeTechniqueStage.None, MeleeTechnique.GetSetupStage(caster, target), "the live four-second Finish has run out under the cast");
-                await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability == perfect,
+                await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability == perfect,
                     4f, "Perfect Form to complete its actual activation");
                 ctx.AssertEqual(1, landings.Count, "one landed Perfect Form");
                 ctx.AssertEqual(MeleeTechniqueStage.Finish, landings.Single(), "the completed cast spends the Finish it started with");
@@ -1026,7 +1026,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(3f);
             ctx.AssertEqual(MeleeTechniqueStage.Finish, MeleeTechnique.GetSetupStage(caster, target), "Finish is still live when Perfect Form starts");
             var stamina = Stat.GetCurrentStamina(caster);
-            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(caster, target, FeatType.PerfectForm1, GetLocation(target)),
                     $"Perfect Form starts with Finish: {Ability.GetLastActivationDenialReason()}"));
@@ -1068,12 +1068,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static async Task Cast(EngineTestContext ctx, uint caster, uint target, FeatType feat)
         {
-            var ability = Ability.GetAbilityDetail(feat);
-            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target)),
                     $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}"));
-            await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
+            await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
                 6f, $"{ability.Name} to complete its actual activation");
         }
 

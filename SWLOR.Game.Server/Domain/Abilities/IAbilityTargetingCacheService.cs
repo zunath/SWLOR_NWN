@@ -16,4 +16,10 @@ public interface IAbilityTargetingCacheService
 
     /// <summary>Caches the override for this feat, replacing an earlier one.</summary>
     void Set(FeatType feat, AbilityTargetingDetail targeting);
+
+    /// <summary>
+    /// Validates the targeting of every ability and caches the overrides that update the client's targeting data, replacing
+    /// the cached ones (the ability catalog calls it when the abilities are cached).
+    /// </summary>
+    void CacheData(IReadOnlyDictionary<FeatType, AbilityDetail> abilities);
 }

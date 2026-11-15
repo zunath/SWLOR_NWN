@@ -65,15 +65,17 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private readonly IDMPresenceService _dmPresence;
         private readonly IDBService _db;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly IAbilityCatalog _catalog;
+        private readonly IAbilityImpactState _impactState;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<ICombatQueriesService> _queries;
 
-        public CombatRecorderService(IDMPresenceService dmPresence, IDBService db, Lazy<IAbilityService> ability, Lazy<IStatService> stat, Lazy<ICombatQueriesService> queries)
+        public CombatRecorderService(IDMPresenceService dmPresence, IDBService db, IAbilityCatalog catalog, IAbilityImpactState impactState, Lazy<IStatService> stat, Lazy<ICombatQueriesService> queries)
         {
             _dmPresence = dmPresence;
             _db = db;
-            _ability = ability;
+            _catalog = catalog;
+            _impactState = impactState;
             _stat = stat;
             _queries = queries;
         }
@@ -1643,14 +1645,14 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         protected virtual void InstallEffectHooks() => CombatRecorderEffectHooks.Install();
 
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _ability.Value.GetAllAbilityDetails();
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _catalog.GetAllAbilityDetails();
 
-        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.Value.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _catalog.IsFeatRegistered(feat);
 
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.Value.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _catalog.GetAbilityDetail(feat);
 
         protected virtual AbilityImpactSummary GetActiveAbilityImpactSummary(uint creature) =>
-            _ability.Value.GetActiveAbilityImpactSummary(creature);
+            _impactState.GetActiveAbilityImpactSummary(creature);
 
         protected virtual SkillType GetEquippedWeaponSkillType(uint creature) => _queries.Value.GetEquippedWeaponSkillType(creature);
 

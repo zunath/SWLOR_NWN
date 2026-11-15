@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var amount = AbilityEffectScaling.CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
-            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
+            amount = CombatAbilityMagnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
 
             var hitPointsBeforeHealing = GetCurrentHitPoints(target);

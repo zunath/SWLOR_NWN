@@ -255,14 +255,13 @@ public class StatAdjustmentSourceTests
         AddStatus(Payload((payload, 12), (StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 60)));
         AddTemporary("other-source", payload, 7);
         AddTemporary("other-source", StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80);
-        var impactType = AbilityInternals.TrackedImpactType;
-        var service = AbilityInternals.NoNeighbours();
+        // The impact reads the sources it has not cached through its caller's stat service (the ability split, P5-3b).
+        var stat = FacadeForwarder.For<IStatService>();
         Func<uint, StatType, IReadOnlyList<StatAdjustmentSource>> CreateImpactReader()
         {
-            var impact = AbilityInternals.NewTrackedImpact(
-                service, new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, null, null);
-            return impactType.GetMethod("GetStatSources")!
-                .CreateDelegate<Func<uint, StatType, IReadOnlyList<StatAdjustmentSource>>>(impact);
+            var impact = (AbilityImpactTracker)AbilityInternals.NewTrackedImpact(
+                new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, null, null);
+            return (creature, statType) => impact.GetStatSources(creature, statType, stat);
         }
         var read = CreateImpactReader();
         var sources = read(Creature, payload);

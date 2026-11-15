@@ -113,6 +113,8 @@ public class ConvertedServiceContainerTests
             .Append("ICharacterRecording CharacterRecording")
             .Append("ICombatRecordingState CombatRecordingState")
             .Append("ICompanionLookup CompanionQuery")
+            // The ability impact state store Combat owns (P5-3b): a store, not a service, reached by the content that reads an impact.
+            .Append("IAbilityImpactState AbilityImpactState")
             .OrderBy(text => text, StringComparer.Ordinal);
 
         typeof(GameServices).GetProperties(Declared).Select(property => $"{property.PropertyType.Name} {property.Name}")
@@ -126,7 +128,10 @@ public class ConvertedServiceContainerTests
     public void Every_domain_service_in_the_container_is_listed_as_converted()
     {
         // The interfaces a lower domain owns and a higher service implements (P5-1g): the same instance as the service behind them.
-        var notServices = new[] { "ICompanionLookup", "ICombatRecording", "ICharacterRecording", "IGuiRefreshPublisher" };
+        var notServices = new[] { "ICompanionLookup", "ICombatRecording", "ICharacterRecording", "IGuiRefreshPublisher" }
+            // The ability split (P5-3b): the catalog as Character reads it, and the impact state store with its Character read.
+            .Concat(new[] { "IAbilityCatalog", "IAbilityImpactState", "IActiveAbilityImpact" })
+            .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);
 
@@ -152,11 +157,12 @@ public class ConvertedServiceContainerTests
     }
 
     [Test]
-    public void Combat_lists_its_fourteen_parts_and_each_part_has_a_GameServices_property()
+    public void Combat_lists_its_sixteen_parts_and_each_part_has_a_GameServices_property()
     {
-        // The cases above would pass vacuously if the list lost its parts.
+        // The cases above would pass vacuously if the list lost its parts. The ability split (P5-3b) added the impact
+        // geometry and the ability magnitude.
         var combat = ConvertedServiceFixtures.Load().Single(service => service.Name == "Combat");
-        combat.Parts.Should().HaveCount(14);
+        combat.Parts.Should().HaveCount(16);
         Rules(combat).Should().NotBeNull();
         combat.Parts.Should().OnlyContain(part => typeof(GameServices).GetProperty(part.Name.Substring(1, part.Name.Length - 1 - "Service".Length), BindingFlags.Public | BindingFlags.Static) != null);
     }

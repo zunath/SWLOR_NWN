@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task<IReadOnlyList<int>> MeasureAbility(EngineTestContext ctx, PlayerAbilityFixture fixture, uint target, FeatType feat, bool bleedingTarget)
         {
             var player = fixture.Creature;
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             var damage = new List<int>();
             for (var sample = 0; sample < Samples; sample++)
             {
@@ -95,16 +95,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssignCommand(player, () => ClearAllActions());
                 await ctx.WaitFrameAsync();
                 var hitPoints = GetCurrentHitPoints(target);
-                Ability.ClearLastCompletedAbilityImpactSummary(player);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(player);
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                     ctx.Assert(UsePerkFeat.TryUseAbility(player, target, feat, GetLocation(target)),
                         $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}"));
-                await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(player)?.Ability == ability,
+                await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(player)?.Ability == ability,
                     8f, $"{ability.Name} to complete");
                 // Telegraphed blasts land after the activation completes.
                 await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < hitPoints, 5f, $"{ability.Name} to damage the target");
                 // Damage over time can tick inside this window, so read the impact's own damage.
-                var dealt = Ability.GetLastCompletedAbilityImpactSummary(player)?.AttributedDamage ?? 0;
+                var dealt = AbilityImpactState.GetLastCompletedAbilityImpactSummary(player)?.AttributedDamage ?? 0;
                 ctx.Assert(dealt > 0, $"{ability.Name} records the damage of its own impact.");
                 damage.Add(dealt);
             }

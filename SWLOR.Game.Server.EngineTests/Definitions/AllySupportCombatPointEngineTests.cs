@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static async Task UseAbilityAsync(EngineTestContext ctx, uint caster, FeatType feat, uint target)
         {
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
                 Ability.BeginAbilityImpact(caster, ability);

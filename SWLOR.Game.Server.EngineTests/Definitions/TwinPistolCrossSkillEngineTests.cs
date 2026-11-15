@@ -78,17 +78,17 @@ public static class TwinPistolCrossSkillEngineTests
                     _queuedTarget = target;
                     _itemHitCallbacks = 0;
                     _ordinaryDamageEvents = 0;
-                    Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                    AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                     ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
                         $"The existing queued weapon ability accepts its damageable target: {Ability.GetLastActivationDenialReason()}");
                     ActionAttack(target);
                 });
                 await ctx.WaitUntilAsync(() => !UsePerkFeat.HasQueuedWeaponAbility(actor) &&
-                    Ability.GetLastCompletedAbilityImpactSummary(actor) != null, 8f, "the native item-hit callback to resolve the queued replacement");
+                    AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) != null, 8f, "the native item-hit callback to resolve the queued replacement");
                 await ctx.ExecuteInCreatureContextAsync(actor, () => ClearAllActions());
                 PairedRangedAttackCycle.Cancel(actor);
                 await ctx.DelaySecondsAsync(.3f);
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(actor);
+                var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor);
                 ctx.AssertEqual(1, _itemHitCallbacks, "One launched native projectile dispatches its queued item-hit callback once");
                 ctx.AssertEqual(0, _ordinaryDamageEvents, "The replaced native roll deals no additional ordinary damage to the placeable");
                 ctx.AssertEqual(6, StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor)?.Attempts ?? 0,
@@ -419,7 +419,7 @@ public static class TwinPistolCrossSkillEngineTests
                     ctx.MakeHostile(target);
                     _observedTarget = target;
                     _damageEvents = 0;
-                    Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                    AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                     if (killingShot)
                     {
                         PairedRangedPresentation.Release(actor);
@@ -429,7 +429,7 @@ public static class TwinPistolCrossSkillEngineTests
                         $"Paired Volley accepts {mainResref}/{offResref}: {Ability.GetLastActivationDenialReason()}");
                 });
                 await ctx.WaitUntilAsync(() => (killingShot ? GetIsDead(target) : _damageEvents >= impacts) &&
-                    Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
+                    AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
                     8f, $"the captured {mainResref}/{offResref} weapon impacts (lethal={killingShot})");
                 await ctx.DelaySecondsAsync(.4f);
                 if (!killingShot)
@@ -450,8 +450,8 @@ public static class TwinPistolCrossSkillEngineTests
                     }
                 }
                 ctx.Log($"Ability presentation {mainResref}/{offResref}: lethal={killingShot}, damageCallbacks={_damageEvents}, " +
-                    $"attributedDamage={Ability.GetLastCompletedAbilityImpactSummary(actor).AttributedDamage}, launches={firingSources}");
-                ctx.AssertEqual(SkillType.TwinPistol, Ability.GetLastCompletedAbilityImpactSummary(actor).SkillType,
+                    $"attributedDamage={AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor).AttributedDamage}, launches={firingSources}");
+                ctx.AssertEqual(SkillType.TwinPistol, AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor).SkillType,
                     "Cross-trained equipment does not redirect the purchased ability's skill");
                 await ctx.ExecuteInCreatureContextAsync(actor, () => ClearAllActions());
                 _observedTarget = OBJECT_INVALID;

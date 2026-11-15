@@ -138,8 +138,8 @@ public class CombatActivityServiceTests
             });
         var feedback = ScriptedProxy.Create<IPlayerFeedbackService>(out _feedbackCalls);
         _feedbackCalls.On(nameof(IPlayerFeedbackService.ShowDiagnosticFloatingText), _ => null);
-        var ability = ScriptedProxy.Create<IAbilityService>(out var abilityCalls);
-        abilityCalls.On(nameof(IAbilityService.IsAreaImpact), _ => _areaImpact);
+        var ability = ScriptedProxy.Create<IAbilityImpactState>(out var abilityCalls);
+        abilityCalls.On(nameof(IAbilityImpactState.IsAreaImpact), _ => _areaImpact);
         var activity = ScriptedProxy.Create<IActivityService>(out var activityCalls);
         activityCalls.On(nameof(IActivityService.GetBusyType), _ => _busy);
 

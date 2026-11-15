@@ -319,17 +319,19 @@ public class CombatAbilityImpactServiceTests
                 _log.Add($"AddCapped {string.Join(" ", args)}");
                 return (int)args[2]!;
             });
-        var ability = ScriptedProxy.Create<IAbilityService>(out var abilityCalls);
+        var ability = ScriptedProxy.Create<IAbilityImpactState>(out var abilityCalls);
+        var pairedRangedTraits = ScriptedProxy.Create<IPairedRangedTraitsService>(out var pairedRangedTraitsCalls);
+        pairedRangedTraitsCalls
+            .On(nameof(IPairedRangedTraitsService.RecordSuccessfulWeaponAbilityHit), args => Log($"Record {args[0]} {args[1]} {args[2]}"));
         abilityCalls
-            .On(nameof(IAbilityService.RecordSuccessfulWeaponAbilityHit), args => Log($"Record {args[0]} {args[1]} {args[2]}"))
-            .On(nameof(IAbilityService.IsAreaImpact), _ => _areaImpact)
-            .On(nameof(IAbilityService.TryTriggerAreaAbilityPulse), args =>
+            .On(nameof(IAbilityImpactState.IsAreaImpact), _ => _areaImpact)
+            .On(nameof(IAbilityImpactState.TryTriggerAreaAbilityPulse), args =>
             {
                 _log.Add($"Pulse {args[0]}");
                 return _pulseReady;
             })
-            .On(nameof(IAbilityService.GetAbilityImpactSequence), _ => _sequence)
-            .On(nameof(IAbilityService.GetAbilityImpactStatSources), args => _impactSources.TryGetValue((StatType)args[1]!, out var found)
+            .On(nameof(IAbilityImpactState.GetAbilityImpactSequence), _ => _sequence)
+            .On(nameof(IAbilityImpactState.GetAbilityImpactStatSources), args => _impactSources.TryGetValue((StatType)args[1]!, out var found)
                 ? found
                 : Array.Empty<StatAdjustmentSource>());
         var enmity = ScriptedProxy.Create<IEnmityService>(out var enmityCalls);
@@ -348,7 +350,7 @@ public class CombatAbilityImpactServiceTests
         });
 
         return new CombatAbilityImpactService(queries, resources, timing, activity, hitEffects, damageTaken, stat, statusEffect,
-            temporary, ability, enmity, _partyProxy, recorder);
+            temporary, ability, enmity, _partyProxy, recorder, pairedRangedTraits);
     }
 
     [TearDown]

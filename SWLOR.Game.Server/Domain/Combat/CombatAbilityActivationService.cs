@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
-        private readonly IAbilityService _ability;
+        private readonly IAbilityImpactState _impactState;
         private readonly IPerkService _perk;
         private readonly IRecastService _recast;
         private readonly IEnmityService _enmity;
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
-            IAbilityService ability,
+            IAbilityImpactState impactState,
             IPerkService perk,
             IRecastService recast,
             IEnmityService enmity,
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
-            _ability = ability;
+            _impactState = impactState;
             _perk = perk;
             _recast = recast;
             _enmity = enmity;
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ApplyAbilityUsedSkillAttackDeflection(activator, ability);
             ApplyAbilityUsedPerkCategoryAttackDeflection(activator, ability);
             ApplySingleTargetAbilityUsedAttackDeflection(activator, ability, isSingleTargetAbility);
-            var isAreaAbility = _ability.IsAreaImpact(summary, ability);
+            var isAreaAbility = _impactState.IsAreaImpact(summary, ability);
             ApplyAreaAbilityUsedEvasion(activator, ability, skillType, isAreaAbility);
             ApplyAreaAbilityUsedRewards(activator, ability, isAreaAbility);
             ApplyHostileAbilityForceAttack(activator, ability);
@@ -851,7 +851,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private void ApplyForceFPCostActivatedEffects(uint activator, AbilityDetail ability)
         {
-            if (!_ability.IsForcePower(activator, ability) ||
+            if (!_queries.IsForcePower(activator, ability) ||
                 !ability.Requirements.OfType<AbilityRequirementFP>().Any(x => x.RequiredFP > 0))
             {
                 return;

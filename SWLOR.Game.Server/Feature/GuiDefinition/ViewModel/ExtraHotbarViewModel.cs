@@ -759,9 +759,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             switch (slot.Type)
             {
                 case ExtraHotbarSlotType.Ability:
-                    if (Ability.IsFeatRegistered(slot.Feat))
+                    if (AbilityCatalog.IsFeatRegistered(slot.Feat))
                     {
-                        var ability = Ability.GetAbilityDetail(slot.Feat);
+                        var ability = AbilityCatalog.GetAbilityDetail(slot.Feat);
                         icon = ExtraHotbars.GetAbilityIcon(slot.Feat);
                         tooltip = ability.Name;
 

@@ -39,7 +39,7 @@ public static class PowerGlovePairEngineTests
             "Both native base541 and cosmetic base543 resolve as an Unarmed grip");
         foreach (var feat in new[] { FeatType.Jab1, FeatType.PerfectForm1, FeatType.Haymaker1 })
         {
-            var ability = GameServices.Ability.GetAbilityDetail(feat);
+            var ability = GameServices.AbilityCatalog.GetAbilityDetail(feat);
             var clip = AbilityAnimationBinding.ImpactClip(ability, actor);
             ctx.Assert(clip != null && ReferenceEquals(ability.AuthoredImpactAnimation, clip),
                 $"The actual equipped pair retains {feat}'s authored impact clip");

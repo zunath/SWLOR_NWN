@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             float durationSeconds)
         {
             var amount = shield.ForMaxHitPoints(GetMaxHitPoints(target));
-            amount = Ability.ApplyCombatReadinessMagnitude(activator, amount);
+            amount = CombatAbilityMagnitude.ApplyCombatReadinessMagnitude(activator, amount);
             var duration = durationSeconds;
 
             TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(target, "DEFLECTOR_SHIELD", amount, duration);

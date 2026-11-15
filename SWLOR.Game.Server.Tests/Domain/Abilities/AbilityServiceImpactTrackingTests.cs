@@ -189,31 +189,6 @@ public class AbilityServiceImpactTrackingTests : AbilityServiceTestBase
     }
 
     [Test]
-    public void A_landed_hit_completes_the_traits_every_time_and_earns_cadence_once()
-    {
-        var traits = Traits();
-        Lifecycle.BeginAbilityImpact(Caster, Hostile(skill: SkillType.Pistol), weaponTraits: traits);
-
-        Service.RecordSuccessfulWeaponAbilityHit(Caster, Target, SkillType.Force);
-        LogOf("Trait").Should().BeEmpty("only a weapon skill hit counts");
-
-        Service.RecordSuccessfulWeaponAbilityHit(Caster, Target, SkillType.Pistol);
-        Service.RecordSuccessfulWeaponAbilityHit(Caster, Other, SkillType.Pistol);
-
-        LogOf("Trait").Should().Equal($"TraitCompleteHit:{Caster}", $"TraitRecordHit:{Caster}", $"TraitCompleteHit:{Caster}");
-    }
-
-    [Test]
-    public void A_hit_of_uncommitted_traits_records_nothing()
-    {
-        Lifecycle.BeginAbilityImpact(Caster, Hostile(skill: SkillType.Pistol), weaponTraits: Traits(committed: false));
-
-        Service.RecordSuccessfulWeaponAbilityHit(Caster, Target, SkillType.Pistol);
-
-        LogOf("Trait").Should().BeEmpty();
-    }
-
-    [Test]
     public void The_remaining_healing_hp_of_a_target_subtracts_what_is_already_queued()
     {
         Bench.Hp[Target] = 50;
@@ -225,7 +200,7 @@ public class AbilityServiceImpactTrackingTests : AbilityServiceTestBase
         ImpactState.GetRemainingDamageTargetHP(Caster, Target).Should().Be(50);
 
         Lifecycle.BeginAbilityImpact(Caster, Hostile());
-        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 20, DamageType.Fire).Should().BeTrue();
+        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 20, DamageType.Fire, Bench.CombatRecorder).Should().BeTrue();
 
         ImpactState.GetRemainingDamageTargetHP(Caster, Target).Should().Be(30);
     }
@@ -233,19 +208,19 @@ public class AbilityServiceImpactTrackingTests : AbilityServiceTestBase
     [Test]
     public void Stat_sources_are_read_live_without_an_impact()
     {
-        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack).Should().BeEmpty();
+        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack, Bench.Stat).Should().BeEmpty();
         Bench.StatSourceReads.Should().Be(1);
 
         Lifecycle.BeginAbilityImpact(Caster, Hostile());
-        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack).Should().BeEmpty();
-        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack).Should().BeEmpty();
+        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack, Bench.Stat).Should().BeEmpty();
+        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack, Bench.Stat).Should().BeEmpty();
         Bench.StatSourceReads.Should().Be(3, "an empty answer is not cached");
 
         var sources = new[] { new StatAdjustmentSource("source", new Dictionary<StatType, int>()) };
         Bench.StatSources = sources;
-        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack).Should().BeSameAs(sources);
+        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack, Bench.Stat).Should().BeSameAs(sources);
         Bench.StatSources = Array.Empty<StatAdjustmentSource>();
-        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack).Should().BeSameAs(sources, "one impact keeps the sources it read");
+        ImpactState.GetAbilityImpactStatSources(Caster, StatType.Attack, Bench.Stat).Should().BeSameAs(sources, "one impact keeps the sources it read");
         Bench.StatSourceReads.Should().Be(4);
     }
 
@@ -341,10 +316,10 @@ public class AbilityServiceImpactTrackingTests : AbilityServiceTestBase
     [Test]
     public void Queued_damage_lands_when_the_impact_ends_inside_a_command_of_the_activator()
     {
-        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 5, DamageType.Fire).Should().BeFalse("no impact is active");
+        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 5, DamageType.Fire, Bench.CombatRecorder).Should().BeFalse("no impact is active");
         Lifecycle.BeginAbilityImpact(Caster, Hostile());
-        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 20, DamageType.Fire).Should().BeTrue();
-        ImpactState.TryQueueTrackedDamageEffect(Caster, Other, 0, DamageType.Fire).Should().BeTrue("zero damage is dropped by the tracker");
+        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 20, DamageType.Fire, Bench.CombatRecorder).Should().BeTrue();
+        ImpactState.TryQueueTrackedDamageEffect(Caster, Other, 0, DamageType.Fire, Bench.CombatRecorder).Should().BeTrue("zero damage is dropped by the tracker");
         ImpactState.GetActiveAbilityImpactSummary(Caster).AttributedDamage.Should().Be(20);
         LogOf("Effect:").Should().BeEmpty();
 
@@ -361,7 +336,7 @@ public class AbilityServiceImpactTrackingTests : AbilityServiceTestBase
     public void Queued_damage_of_a_target_that_is_gone_when_the_command_runs_is_dropped()
     {
         Lifecycle.BeginAbilityImpact(Caster, Hostile());
-        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 20, DamageType.Fire);
+        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 20, DamageType.Fire, Bench.CombatRecorder);
         Lifecycle.EndAbilityImpact(Caster);
 
         Bench.Invalid.Add(Target);
@@ -375,7 +350,7 @@ public class AbilityServiceImpactTrackingTests : AbilityServiceTestBase
     {
         Lifecycle.AbortAbilityImpact(Caster);
         Lifecycle.BeginAbilityImpact(Caster, Hostile());
-        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 20, DamageType.Fire);
+        ImpactState.TryQueueTrackedDamageEffect(Caster, Target, 20, DamageType.Fire, Bench.CombatRecorder);
         Bench.Log.Clear();
 
         Lifecycle.AbortAbilityImpact(Caster);

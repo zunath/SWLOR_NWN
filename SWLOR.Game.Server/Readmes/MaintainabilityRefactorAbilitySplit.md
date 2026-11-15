@@ -451,6 +451,52 @@ rebase, but the freeze makes serial cheaper than the rebases. P5-3a can run befo
 P5-3b merges if it needs only the catalog and the active-impact interface; the owner decides, because the plan chains P5-3 to
 P5-4 whole.
 
+## Progress
+
+### P5-3b (catalog, impact state, geometry, magnitude)
+
+Parts 1 to 4 moved, and the Combat and Character reads switched. Where the pull request differs from the map, a guard or a
+construction cycle decided:
+
+- **The store class is `AbilityImpactStore`** (`Domain/Combat`), behind `IAbilityImpactState` and the
+  `GameServices.AbilityImpactState` property. A class named like the property is ambiguous in every content file that imports
+  `Domain.Combat` and the static `GameServices`.
+- **`AbilityTargeting`'s target queries stay in `Feature/AbilityDefinition` until P5-3c.** They call `Party.IsInParty`, so in
+  `Domain/Combat` they would add a Combat -> Social upward edge until P5-3c gives Combat `IPartyRoster`. Only the cache half
+  moved: `CacheData` and the validation it runs are `AbilityTargetingCacheService.CacheData`, which the catalog calls, and
+  `ValidateSize` is a public static there that `AbilityTargeting.ValidateResolvedTargeting` shares. `RefreshClientTargeting` and
+  its three handlers stay in `AbilityTargeting`: in the cache service they would need `IQuickCastService`, which needs the
+  catalog, which needs the cache service (a construction cycle). `AbilityEffectScaling` moved to `Domain/Combat` as planned; it
+  names `TemporaryHitPointEffects`, one new `LogicToContent.txt` line, while three Domain files stop naming the folder.
+- **`AbilityImpactVisualEffects` moved to `Domain/Combat` with the tracker** (`AbilityImpactTracker` holds one); left in
+  Abilities it would be a Combat -> Abilities upward edge.
+- **The tracker's calls into the service went to its callers:** `GetStatSources` takes the caller's `IStatService`;
+  `QueueDamageEffect` and `QueueDirectDamageEffect` take the caller's recorder and still capture its scope at the same point; the
+  tracker keeps its half of consuming the status-applied bonus (`StatusAppliedNextAttackDamageBonusConsumed`,
+  `CompleteStatusAppliedNextAttackDamageBonusConsumption`) and `AbilityService` calls the bonus service first, as before; and
+  `FlushDamageEffects` is a private method of `AbilityService` over the tracker's `PendingDamageEffects` (part 13 takes it in
+  P5-3e). `PendingDamageEffect` is a public type of Combat. The healing-eligibility seam is gone: the store calls
+  `CombatRules.CalculateDamageEligibleForHealing`, the arithmetic it forwarded to.
+- **`IsForcePower` keeps its text in `CanUseAbility`** through a `protected virtual` seam over `ICombatQueriesService.IsForcePower`.
+- **More `Lazy<>` went than the five up ones.** Once Combat stopped injecting `IAbilityService`, `LazyDependencyCycleTests` found
+  needless: the eight `Lazy<ICombat...>` left in `AbilityService` (only `Lazy<ISpaceService>` still breaks a cycle, P5-3d) and
+  `PairedRangedTraitsService`'s `Lazy<ICombatResourcesService>`. The catalog readers that only read the catalog
+  (`MimicryService`, `QuickCastService`, `AbilityCooldownVisualService`, `CapstoneProofService`) take `IAbilityCatalog` directly.
+  `TwinPistolAbilityService` reads the active summary from the store until P5-3f moves it.
+- **The content rename is data:** `RemovedFacades.json` lists the `Ability` facade's members by owner, and `Apply-FacadeRemoval.ps1`
+  (a mechanical script the sync and the parity check already run) rewrites master's `Ability.GetAbilityDetail` to
+  `AbilityCatalog.GetAbilityDetail`. The tool writes a member of a split facade that is no namespace segment through its owner's
+  bare property (`Combat`, which is one, keeps `GameServices.CombatX`), and `-Reverse` maps it back. Since `Combat` and
+  `Ability` both hand members to `CombatQueries`, the reversal sends `GameServices.CombatQueries.X` to the facade that lists
+  `X` under that property.
+- **Growth the map implies:** while the remaining code waits for its parts, `AbilityService` takes the catalog, the store, the
+  geometry and the magnitude (31 -> 34 services). `StatusEffectService` takes `IAbilityCatalog` and `IActiveAbilityImpact` for the
+  one `Lazy<IAbilityService>`, `CombatRecorderService` the catalog and the store, `CombatAbilityImpactService`
+  `IPairedRangedTraitsService` for `RecordSuccessfulWeaponAbilityHit`, and `AIService` and `CompanionControlService` the catalog
+  beside the `Lazy<IAbilityService>` they keep for `CanUseAbility` until P5-3d: a few lines each in `LargeTypes.txt` and one
+  service each in `ServicesPerType.txt`. `UsePerkFeat` and `WeaponActiveAbilityDefinitionBase` reach one more `GameServices`
+  property each.
+
 ## Risks
 
 - **Hot paths.** `ApplyCombatImpact` runs per target per ability and the weapon abilities ride every landed swing, so the chain

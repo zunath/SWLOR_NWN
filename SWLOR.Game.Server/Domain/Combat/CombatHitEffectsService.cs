@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
-        private readonly IAbilityService _ability;
+        private readonly IAbilityImpactState _impactState;
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly ICapstoneProofService _capstoneProof;
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
-            IAbilityService ability,
+            IAbilityImpactState impactState,
             IPairedRangedTraitsService pairedRangedTraits,
             ICombatRecorderService combatRecorder,
             ICapstoneProofService capstoneProof,
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
-            _ability = ability;
+            _impactState = impactState;
             _pairedRangedTraits = pairedRangedTraits;
             _combatRecorder = combatRecorder;
             _capstoneProof = capstoneProof;
@@ -1227,7 +1227,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     attackCount,
                     SkillType.Invalid,
                     statusEffectIcon,
-                    _ability.GetActiveAbilityImpactSummary(attacker)),
+                    _impactState.GetActiveAbilityImpactSummary(attacker)),
                 duration);
         }
 
@@ -1665,7 +1665,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return 0;
 
             var effectDamageType = damageType.GetNWScriptDamageType();
-            if (!_ability.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType))
+            if (!_impactState.TryQueueTrackedDamageEffect(activator, target, damage, effectDamageType, _combatRecorder))
             {
                 AssignCommand(
                     activator,

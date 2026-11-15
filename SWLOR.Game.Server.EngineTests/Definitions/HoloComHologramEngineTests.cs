@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var hologramHP = GetCurrentHitPoints(holoReceiver);
 
                 // Creeping Terror III centers its 8 m field on the targeted creature, the calling player.
-                var ability = Ability.GetAbilityDetail(FeatType.CreepingTerror3);
+                var ability = AbilityCatalog.GetAbilityDetail(FeatType.CreepingTerror3);
                 ctx.SetNPCPerkLevel(caster, ability.EffectiveLevelPerkType, ability.AbilityLevel);
                 ctx.SetNPCResources(caster, 1000, 1000);
                 CreaturePlugin.AddFeat(caster, FeatType.CreepingTerror3);

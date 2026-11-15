@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // Bleed ticks every 6 seconds on the shared status interval.
                 await ctx.DelaySecondsAsync(13f);
 
-                Ability.BeginAbilityImpact(brawler, Ability.GetAbilityDetail(FeatType.ForceLightning1));
+                Ability.BeginAbilityImpact(brawler, AbilityCatalog.GetAbilityDetail(FeatType.ForceLightning1));
                 var pulse = Ability.CaptureRepeatedAbilityImpact(brawler, () => Ability.ApplyCombatImpact(
                     brawler, dummy, GetLocation(dummy), SkillType.Force, 10, 0, null, false,
                     resolvesHit: false, canCritical: false, useUnscaledDamage: true), baseDamage: 10);
@@ -425,7 +425,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // that impact, so it registers nothing; outside an impact it is registered.
                 await ctx.ExecuteInCreatureContextAsync(pyro, () =>
                 {
-                    Ability.BeginAbilityImpact(pyro, Ability.GetAbilityDetail(FeatType.CreepingTerror1));
+                    Ability.BeginAbilityImpact(pyro, AbilityCatalog.GetAbilityDetail(FeatType.CreepingTerror1));
                     GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
                     registeredInsideImpact = CombatRecorder.HasPendingDamage(pyro, dummy);
                     Ability.EndAbilityImpact(pyro);
@@ -557,7 +557,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // The mist's pulses are scheduled before the recording exists.
                 await UseAbilityAsync(ctx, medic, medic, FeatType.KoltoMist1);
                 await ctx.WaitUntilAsync(
-                    () => Ability.GetLastCompletedAbilityImpactSummary(medic)?.Ability?.Name == "Kolto Mist I",
+                    () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(medic)?.Ability?.Name == "Kolto Mist I",
                     10f,
                     "Kolto Mist I to land before the recording starts");
                 ctx.Assert(!CombatRecorder.IsRecording, "the mist landed before the recording started");

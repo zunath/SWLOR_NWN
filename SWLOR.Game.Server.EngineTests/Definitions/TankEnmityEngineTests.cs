@@ -315,13 +315,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Enmity.ModifyEnmity(pet, enemy, 100);
                     Enmity.ModifyEnmity(owner.Creature, enemy, 100);
                     ObjectPlugin.SetCurrentHitPoints(pet, GetMaxHitPoints(pet));
-                    var reward = Ability.GetAbilityDetail(FeatType.Reward1);
+                    var reward = AbilityCatalog.GetAbilityDetail(FeatType.Reward1);
                     reward.ImpactAction(owner.Creature, owner.Creature, 1, GetLocation(owner.Creature));
                     ctx.AssertEqual(100, Enmity.GetEnmityTable(enemy)[owner.Creature], "Full-health Reward generates no healing or support threat");
                     ObjectPlugin.SetCurrentHitPoints(pet, GetMaxHitPoints(pet) - 100);
                     reward.ImpactAction(owner.Creature, owner.Creature, 1, GetLocation(owner.Creature));
                     ctx.AssertEqual(450, Enmity.GetEnmityTable(enemy)[owner.Creature], "Reward credits 100 effective healing / 2 plus one 300 support bonus");
-                    var soothe = Ability.GetAbilityDetail(FeatType.SoothePet);
+                    var soothe = AbilityCatalog.GetAbilityDetail(FeatType.SoothePet);
                     soothe.ImpactAction(owner.Creature, owner.Creature, 1, GetLocation(owner.Creature));
                     ctx.AssertEqual(450, Enmity.GetEnmityTable(enemy)[owner.Creature], "Empty cleanse generates no support threat");
                     ctx.Assert(StatusEffect.ApplyStatusEffect(owner.Creature, pet, new PoisonStatusEffect(), 30f), "Pet poison applies");

@@ -43,8 +43,8 @@ public class MeleeTechniqueTests
             ability.MeleeTechnique.ImpactCount.Should().Be(2);
             ability.MeleeTechnique.WeaponDamagePercent.Should().Be(50);
             ability.MeleeTechnique.OpeningSweepRadiusMeters.Should().Be(5f);
-            Ability.IsAreaImpact(uint.MaxValue, ability).Should().BeFalse();
-            Ability.IsSingleTargetImpact(uint.MaxValue, ability).Should().BeTrue();
+            AbilityImpactState.IsAreaImpact(uint.MaxValue, ability).Should().BeFalse();
+            AbilityImpactState.IsSingleTargetImpact(uint.MaxValue, ability).Should().BeTrue();
         }
         new MeleeTechniqueDetail().OpeningSweepRadiusMeters.Should().Be(0f,
             "other techniques do not acquire a sweep implicitly");

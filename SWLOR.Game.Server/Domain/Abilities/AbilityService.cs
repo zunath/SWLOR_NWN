@@ -50,19 +50,22 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICapstoneProofService _capstoneProof;
         private readonly IResistanceService _resistance;
         private readonly IStealthService _stealth;
-        private readonly IPairedRangedTraitsService _pairedRangedTraits;
         private readonly IStatService _stat;
         private readonly IPerkService _perk;
-        private readonly Lazy<ICombatAbilityBonusService> _abilityBonus;
-        private readonly Lazy<ICombatAbilityHitService> _abilityHit;
-        private readonly Lazy<ICombatAbilityImpactService> _abilityImpact;
-        private readonly Lazy<ICombatActivityService> _combatActivity;
-        private readonly Lazy<ICombatDamageModifiersService> _damageModifiers;
-        private readonly Lazy<ICombatDamageTakenService> _damageTaken;
+        private readonly IAbilityCatalog _catalog;
+        private readonly IAbilityImpactState _impactState;
+        private readonly ICombatImpactGeometryService _geometry;
+        private readonly ICombatAbilityMagnitudeService _magnitude;
+        private readonly ICombatAbilityBonusService _abilityBonus;
+        private readonly ICombatAbilityHitService _abilityHit;
+        private readonly ICombatAbilityImpactService _abilityImpact;
+        private readonly ICombatActivityService _combatActivity;
+        private readonly ICombatDamageModifiersService _damageModifiers;
+        private readonly ICombatDamageTakenService _damageTaken;
         private readonly ICombatFeedbackService _feedback;
-        private readonly Lazy<ICombatHitEffectsService> _hitEffects;
+        private readonly ICombatHitEffectsService _hitEffects;
         private readonly ICombatQueriesService _queries;
-        private readonly Lazy<ICombatResourcesService> _resources;
+        private readonly ICombatResourcesService _resources;
 
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, AbilityActiveActivation> _activeAbilityActivations = new();
@@ -91,19 +94,22 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICapstoneProofService capstoneProof,
             IResistanceService resistance,
             IStealthService stealth,
-            IPairedRangedTraitsService pairedRangedTraits,
             IStatService stat,
             IPerkService perk,
-            Lazy<ICombatAbilityBonusService> abilityBonus,
-            Lazy<ICombatAbilityHitService> abilityHit,
-            Lazy<ICombatAbilityImpactService> abilityImpact,
-            Lazy<ICombatActivityService> combatActivity,
-            Lazy<ICombatDamageModifiersService> damageModifiers,
-            Lazy<ICombatDamageTakenService> damageTaken,
+            IAbilityCatalog catalog,
+            IAbilityImpactState impactState,
+            ICombatImpactGeometryService geometry,
+            ICombatAbilityMagnitudeService magnitude,
+            ICombatAbilityBonusService abilityBonus,
+            ICombatAbilityHitService abilityHit,
+            ICombatAbilityImpactService abilityImpact,
+            ICombatActivityService combatActivity,
+            ICombatDamageModifiersService damageModifiers,
+            ICombatDamageTakenService damageTaken,
             ICombatFeedbackService feedback,
-            Lazy<ICombatHitEffectsService> hitEffects,
+            ICombatHitEffectsService hitEffects,
             ICombatQueriesService queries,
-            Lazy<ICombatResourcesService> resources,
+            ICombatResourcesService resources,
             Lazy<ISpaceService> space)
         {
             _statusEffect = statusEffect;
@@ -123,9 +129,12 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _capstoneProof = capstoneProof;
             _resistance = resistance;
             _stealth = stealth;
-            _pairedRangedTraits = pairedRangedTraits;
             _stat = stat;
             _perk = perk;
+            _catalog = catalog;
+            _impactState = impactState;
+            _geometry = geometry;
+            _magnitude = magnitude;
             _abilityBonus = abilityBonus;
             _abilityHit = abilityHit;
             _abilityImpact = abilityImpact;
@@ -139,11 +148,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _space = space;
         }
 
-        private readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
-        [ReloadState(ReloadStateKind.Runtime)]
-        private readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
 
         /// <summary>
         /// How long the visual-only impact flash lingers on an instant area ability, in seconds.
@@ -156,67 +162,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private const int HostileAbilityMissEnmity = 1;
         private const int MinNPCAbilityScalingRank = 1;
         private const int MaxNPCAbilityScalingRank = 100;
-
-        /// <summary>
-        /// When the module caches, abilities will be cached and events will be scheduled.
-        /// </summary>
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public void CacheData()
-        {
-            CacheAbilities();
-        }
-
-        private void CacheAbilities()
-        {
-            _abilities.Clear();
-            var types = GetAbilityListDefinitionTypes();
-
-            foreach (var type in types)
-            {
-                var instance = (IAbilityListDefinition)Activator.CreateInstance(type);
-                var abilities = instance.BuildAbilities();
-
-                foreach (var (feat, ability) in abilities)
-                {
-                    _abilities[feat] = ability;
-                }
-            }
-
-            SWLOR.Game.Server.Domain.Abilities.AbilityAnimationBinding.Apply(_abilities, SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog.Entries);
-            Console.WriteLine($"Loaded {_abilities.Count} abilities.");
-            CacheAbilityTargeting(_abilities);
-        }
-
-        public IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails()
-        {
-            return _abilities;
-        }
-
-        /// <summary>
-        /// Returns true if a feat is registered to an ability.
-        /// Returns false otherwise.
-        /// </summary>
-        /// <param name="featType">The type of feat to check.</param>
-        /// <returns>true if feat is registered to an ability. false otherwise.</returns>
-        public bool IsFeatRegistered(FeatType featType)
-        {
-            return _abilities.ContainsKey(featType);
-        }
-
-        /// <summary>
-        /// Retrieves an ability's details by the specified feat type.
-        /// If feat does not have an ability, an exception will be thrown.
-        /// </summary>
-        /// <param name="featType">The type of feat</param>
-        /// <returns>The ability detail</returns>
-        public AbilityDetail GetAbilityDetail(FeatType featType)
-        {
-            if (!_abilities.ContainsKey(featType))
-                throw new KeyNotFoundException($"Feat '{featType}' is not registered to an ability.");
-
-            return _abilities[featType];
-        }
 
         /// <summary>
         /// Starts impact tracking and defers pending damage bonuses until a damaging payload,
@@ -239,7 +184,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             BeginAbilityImpact(activator, ability, 0, 0,
                 countsAsAttackAttempt: countsAsAttackAttempt,
                 activationAreaTelegraphs: activationAreaTelegraphs, sequence: sequence);
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             if (_meleeTechnique.IsSweepActivation(activator, ability))
                 trackedImpact.RecordShape(ability.SkillType, true);
             if (weaponTraits != null)
@@ -305,7 +250,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             int nextAbilityCriticalDamagePercentAdjustment = 0,
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
             AbilityImpactSequence sequence = null,
-            TrackedAbilityImpact sequenceOwner = null,
+            AbilityImpactTracker sequenceOwner = null,
             bool resolveDamageBonusesFromOwner = false,
             int? triggeringWeaponDamage = null,
             CombatDamageType? triggeringWeaponDamageType = null)
@@ -316,8 +261,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             var abilitySkillType = GetAbilitySkillType(activator, ability);
             var usesQueuedNaturalWeapon =
                 ability.ActivationType == AbilityActivationType.Weapon && ability.SkillType == SkillType.BeastMastery;
-            _trackedAbilityImpacts[activator] = new TrackedAbilityImpact(
-                this,
+            _impactState.Track(activator, new AbilityImpactTracker(
                 ability,
                 nextAbilityDamageBonus,
                 nextAbilityCriticalRatePercentAdjustment,
@@ -337,10 +281,10 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 TriggeringWeaponDamageType = triggeringWeaponDamageType ?? sequenceOwner?.TriggeringWeaponDamageType ??
                     _meleeTechnique.GetCapturedWeaponDamageType(activator, ability) ??
                     GetCombatImpactWeaponDamageType(activator, abilitySkillType, usesQueuedNaturalWeapon)
-            };
+            });
             if (resolveDamageBonusesFromOwner && sequenceOwner != null)
             {
-                var impact = _trackedAbilityImpacts[activator];
+                var impact = _impactState.GetTrackedAbilityImpact(activator);
                 impact.ResolveDamageBonuses = () =>
                 {
                     sequenceOwner.EnsureDamageBonuses();
@@ -355,62 +299,12 @@ namespace SWLOR.Game.Server.Domain.Abilities
             }
         }
 
-        public AbilityImpactSequence GetAbilityImpactSequence(uint activator)
-        {
-            return GetTrackedAbilityImpact(activator)?.Sequence;
-        }
-
-        public int GetWeaponTraitAccuracy(uint activator) =>
-            GetTrackedAbilityImpact(activator)?.Sequence.WeaponTraits is { IsCommitted: true } traits
-                ? traits.Snapshot.AccuracyAdjustment : 0;
-
-        public void RecordSuccessfulWeaponAbilityHit(uint activator, uint target, SkillType skill)
-        {
-            if (!IsWeaponSkillType(skill)) return;
-            var traits = GetTrackedAbilityImpact(activator)?.Sequence.WeaponTraits;
-            if (traits?.IsCommitted != true) return;
-            _pairedRangedTraits.CompleteWeaponAbilityHit(activator, traits);
-            // A field, channel, or multi-target action is one source activation; only its first hit earns Cadence.
-            if (traits.CadenceHitObserved) return;
-            traits.CadenceHitObserved = true;
-            _pairedRangedTraits.RecordWeaponAbilityHit(activator, traits);
-        }
-
-        private int TakeWeaponTraitDamageBonus(uint activator, SkillType skill, TrackedAbilityImpact impact)
+        private int TakeWeaponTraitDamageBonus(uint activator, SkillType skill, AbilityImpactTracker impact)
         {
             if (!IsWeaponSkillType(skill) || impact?.Sequence.WeaponTraits is not { IsCommitted: true } traits) return 0;
             var profile = WeaponImpactProfile.Get(activator);
             return traits.TryTakeDamageBonus(profile?.Weapon.Weapon ?? traits.PrimaryWeapon,
                 profile?.VolleyIndex ?? 0, profile?.VolleyCount ?? 1);
-        }
-
-        /// <summary>
-        /// Native current HP includes temporary HP. Subtract queued damage so another hit
-        /// cannot draw healing from health already claimed by an earlier impact.
-        /// </summary>
-        public int GetRemainingDamageTargetHP(uint activator, uint target)
-        {
-            if (!GetIsObjectValid(target) || GetPlotFlag(target))
-                return 0;
-
-            var pendingDamage = GetTrackedAbilityImpact(activator)?.GetPendingDamage(target) ?? 0;
-            var currentHP = GetCurrentHitPoints(target);
-            return CalculateDamageEligibleForHealing(currentHP, currentHP, pendingDamage);
-        }
-
-        /// <summary>
-        /// Reuses a payload's contributing sources within one impact. Delayed phases and
-        /// recurring pulses receive fresh trackers, while conditions can still be checked per target.
-        /// </summary>
-        public IReadOnlyList<StatAdjustmentSource> GetAbilityImpactStatSources(uint activator, StatType payload)
-        {
-            var impact = GetTrackedAbilityImpact(activator);
-            return impact == null ? GetStatSources(activator, payload) : impact.GetStatSources(activator, payload);
-        }
-
-        public bool TryTriggerAreaAbilityPulse(uint activator)
-        {
-            return GetAbilityImpactSequence(activator)?.TryTriggerAreaPulse() == true;
         }
 
         /// <summary>
@@ -438,7 +332,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             // Scheduled damage belongs to this cast. Resolve its armed bonuses now so
             // later pulses cannot consume bonuses earned after the field was created.
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
-            var originatingImpact = GetTrackedAbilityImpact(activator);
+            var originatingImpact = _impactState.GetTrackedAbilityImpact(activator);
             if (originatingImpact == null)
                 return impactAction;
 
@@ -452,14 +346,14 @@ namespace SWLOR.Game.Server.Domain.Abilities
                     return;
 
                 using var recorderAttribution = _combatRecorder.BeginAbilityAttribution(activator, ability);
-                var previousImpact = GetTrackedAbilityImpact(activator);
+                var previousImpact = _impactState.GetTrackedAbilityImpact(activator);
                 BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,
                     triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
                     triggeringWeaponDamageType: originatingImpact.TriggeringWeaponDamageType);
                 if (copyPartitionedBonuses != null)
-                    copyPartitionedBonuses(GetTrackedAbilityImpact(activator));
+                    copyPartitionedBonuses(_impactState.GetTrackedAbilityImpact(activator));
                 else
-                    GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
+                    _impactState.GetTrackedAbilityImpact(activator).CopyRepeatedDamageBonusesFrom(originatingImpact);
                 var completed = false;
                 try
                 {
@@ -477,7 +371,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                     if (!completed)
                         AbortAbilityImpact(activator);
                     if (previousImpact != null)
-                        _trackedAbilityImpacts[activator] = previousImpact;
+                        _impactState.Track(activator, previousImpact);
                 }
             };
         }
@@ -487,11 +381,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
         {
             ArgumentNullException.ThrowIfNull(impactAction);
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
-            var originatingImpact = GetTrackedAbilityImpact(activator);
+            var originatingImpact = _impactState.GetTrackedAbilityImpact(activator);
 
             return count =>
             {
-                TrackedAbilityImpact batchImpact = null;
+                AbilityImpactTracker batchImpact = null;
                 var batch = new AbilityImpactBatch<T>(count, (payload, isFinalImpact) =>
                 {
                     if (originatingImpact == null)
@@ -504,7 +398,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                         return;
 
                     using var recorderAttribution = _combatRecorder.BeginAbilityAttribution(activator, originatingImpact.Ability);
-                    var previousImpact = GetTrackedAbilityImpact(activator);
+                    var previousImpact = _impactState.GetTrackedAbilityImpact(activator);
                     try
                     {
                         if (batchImpact == null)
@@ -513,21 +407,21 @@ namespace SWLOR.Game.Server.Domain.Abilities
                                 countsAsAttackAttempt: false, sequence: originatingImpact.Sequence,
                                 triggeringWeaponDamage: originatingImpact.TriggeringWeaponDamage,
                                 triggeringWeaponDamageType: originatingImpact.TriggeringWeaponDamageType);
-                            batchImpact = GetTrackedAbilityImpact(activator);
+                            batchImpact = _impactState.GetTrackedAbilityImpact(activator);
                             batchImpact.CopyRepeatedDamageBonusesFrom(originatingImpact);
                         }
                         else
                         {
-                            _trackedAbilityImpacts[activator] = batchImpact;
+                            _impactState.Track(activator, batchImpact);
                         }
 
                         impactAction(payload);
-                        _trackedAbilityImpacts.Remove(activator);
-                        batchImpact.FlushDamageEffects(activator);
+                        _impactState.Remove(activator);
+                        FlushDamageEffects(batchImpact, activator);
                         originatingImpact.CompleteRepeatedDamageBonusImpact(batchImpact.Summary.ImpactedTargetCount > 0);
                         if (isFinalImpact)
                         {
-                            _trackedAbilityImpacts[activator] = batchImpact;
+                            _impactState.Track(activator, batchImpact);
                             var summary = EndAbilityImpact(activator);
                             if (_combatRecorder.IsRecording)
                                 _combatRecorder.RecordRecurringAbilityImpact(activator, originatingImpact.Ability, summary);
@@ -536,9 +430,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
                     }
                     finally
                     {
-                        _trackedAbilityImpacts.Remove(activator);
+                        _impactState.Remove(activator);
                         if (previousImpact != null)
-                            _trackedAbilityImpacts[activator] = previousImpact;
+                            _impactState.Track(activator, previousImpact);
                     }
                 });
                 return batch.Apply;
@@ -547,11 +441,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         public AbilityImpactSummary EndAbilityImpact(uint activator)
         {
-            if (!_trackedAbilityImpacts.TryGetValue(activator, out var impact))
+            if (!_impactState.TryGetTrackedAbilityImpact(activator, out var impact))
                 return new AbilityImpactSummary();
 
-            _trackedAbilityImpacts.Remove(activator);
-            impact.FlushDamageEffects(activator);
+            _impactState.Remove(activator);
+            FlushDamageEffects(impact, activator);
             if (impact.Ability.IsHostileAbility && impact.Summary.CriticalHitCount > 0)
             {
                 RefundCriticalRangedAbilityStaminaCost(
@@ -580,36 +474,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
                     impact.Summary.SkillType,
                     impact.Summary);
             }
-            _lastCompletedImpactSummaries[activator] = impact.Summary;
+            _impactState.SetLastCompletedAbilityImpactSummary(activator, impact.Summary);
             _meleeTechnique.CompleteActivation(activator, impact.Summary);
             return impact.Summary;
-        }
-
-        [ReloadState(ReloadStateKind.Runtime)]
-        private readonly Dictionary<uint, AbilityImpactSummary> _lastCompletedImpactSummaries = new();
-
-        /// <summary>
-        /// The summary of the activator's most recently COMPLETED ability impact, or null if
-        /// none completed since the last clear. Observability seam for the engine test
-        /// harness: a queued weapon ability's damage rides the same landed hit as the weapon
-        /// swing, so an HP drop alone cannot attribute damage to the ability - a completed
-        /// summary with impacted targets can.
-        /// </summary>
-        public AbilityImpactSummary GetLastCompletedAbilityImpactSummary(uint activator)
-        {
-            return _lastCompletedImpactSummaries.TryGetValue(activator, out var summary)
-                ? summary
-                : null;
-        }
-
-        /// <summary>
-        /// Clears the activator's last completed impact summary so a subsequent
-        /// <see cref="GetLastCompletedAbilityImpactSummary"/> observation cannot match an
-        /// earlier ability's impact.
-        /// </summary>
-        public void ClearLastCompletedAbilityImpactSummary(uint activator)
-        {
-            _lastCompletedImpactSummaries.Remove(activator);
         }
 
         /// <summary>
@@ -617,30 +484,15 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// </summary>
         public void AbortAbilityImpact(uint activator)
         {
-            if (!_trackedAbilityImpacts.TryGetValue(activator, out var impact))
+            if (!_impactState.TryGetTrackedAbilityImpact(activator, out var impact))
                 return;
 
-            _trackedAbilityImpacts.Remove(activator);
+            _impactState.Remove(activator);
             Log.WriteStructured(
                 LogGroup.Error,
                 "Ability impact aborted for activator {Activator}. Ability: {Ability}.",
                 activator,
                 impact.Ability?.Name ?? "Unknown");
-        }
-
-        public bool TryQueueTrackedDamageEffect(uint activator, uint target, int damage, DamageType damageType)
-        {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (trackedImpact == null)
-                return false;
-
-            trackedImpact.QueueDamageEffect(target, damage, damageType);
-            return true;
-        }
-
-        public AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator)
-        {
-            return GetTrackedAbilityImpact(activator)?.Summary;
         }
 
         /// <summary>
@@ -650,7 +502,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// </summary>
         public void PlaySuccessfulImpactVisualEffect(uint activator, uint recipient)
         {
-            PlaySuccessfulImpactVisualEffect(GetTrackedAbilityImpact(activator)?.VisualEffects, recipient);
+            PlaySuccessfulImpactVisualEffect(_impactState.GetTrackedAbilityImpact(activator)?.VisualEffects, recipient);
         }
 
         /// <summary>
@@ -679,7 +531,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>Returns the current impact's visual reference for a later independent combat event.</summary>
         public VisualEffect GetSuccessfulImpactVisualEffect(uint activator)
         {
-            return GetTrackedAbilityImpact(activator)?.Ability.SuccessfulImpactVisualEffect ?? VisualEffect.None;
+            return _impactState.GetTrackedAbilityImpact(activator)?.Ability.SuccessfulImpactVisualEffect ?? VisualEffect.None;
         }
 
         private void PlaySuccessfulImpactVisualEffect(AbilityImpactVisualEffects visuals, uint recipient)
@@ -694,102 +546,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visuals.Effect), recipient);
-        }
-
-        public void AddActiveAbilityDefenseIgnorePercentAdjustment(uint activator, int adjustment)
-        {
-            if (adjustment == 0)
-                return;
-
-            GetTrackedAbilityImpact(activator)?.AddDefenseIgnorePercentAdjustment(adjustment);
-        }
-
-        private TrackedAbilityImpact GetTrackedAbilityImpact(uint activator)
-        {
-            return _trackedAbilityImpacts.TryGetValue(activator, out var impact)
-                ? impact
-                : null;
-        }
-
-        public float GetActiveForceAffinityMagnitudeMultiplier(uint activator)
-        {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
-                return 1f;
-
-            return GetForceAffinityMagnitudeMultiplier(
-                activator,
-                trackedImpact.Ability.EffectiveLevelPerkType);
-        }
-
-        public float GetActiveForceAffinityRestorativeMagnitudeMultiplier(uint activator)
-        {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
-                return 1f;
-
-            return GetForceAffinityRestorativeMagnitudeMultiplier(
-                activator,
-                trackedImpact.Ability.EffectiveLevelPerkType);
-        }
-
-        public int ApplyActiveForceAffinityRestorativeMagnitude(uint activator, int amount)
-        {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
-                return amount;
-
-            return ApplyForceAffinityRestorativeMagnitude(
-                activator,
-                trackedImpact.Ability.EffectiveLevelPerkType,
-                amount);
-        }
-
-        public int ApplyActiveForceAffinityMagnitude(uint activator, int amount)
-        {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
-                return amount;
-
-            return ApplyForceAffinityMagnitude(
-                activator,
-                trackedImpact.Ability.EffectiveLevelPerkType,
-                amount);
-        }
-
-        public float ApplyActiveForceAffinityMagnitude(uint activator, float amount)
-        {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (trackedImpact?.Ability?.SkillType != SkillType.Force)
-                return amount;
-
-            return ApplyForceAffinityMagnitude(
-                activator,
-                trackedImpact.Ability.EffectiveLevelPerkType,
-                amount);
-        }
-
-        public int ApplyCombatReadinessToActivatedAbilityMagnitude(uint activator, int amount)
-        {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (trackedImpact == null)
-                return amount;
-
-            return ApplyCombatReadinessMagnitude(activator, amount);
-        }
-
-        public int ApplyCombatReadinessMagnitude(uint creature, int amount)
-        {
-            if (amount <= 0)
-                return amount;
-
-            var combatReadiness = GetCombatReadinessPercent(creature);
-            if (combatReadiness > 0)
-            {
-                amount += (int)Math.Ceiling(amount * (combatReadiness / 100f));
-            }
-
-            return amount;
         }
 
         public void ApplyHostileAbilityEnmity(uint activator, uint target, int bonus = 0)
@@ -808,54 +564,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _enmity.ModifyEnmity(activator, target, HostileAbilityMissEnmity);
         }
 
-        private void RecordAbilityImpactShape(uint activator, SkillType skillType, bool isArea)
-        {
-            var impact = GetTrackedAbilityImpact(activator);
-            if (impact == null)
-                return;
-
-            impact.RecordShape(skillType, isArea);
-        }
-
-        private void RecordAbilityImpactTarget(uint activator, uint target, SkillType skillType, bool isArea)
-        {
-            var impact = GetTrackedAbilityImpact(activator);
-            if (impact == null || !GetIsObjectValid(target))
-                return;
-
-            impact.RecordShape(skillType, isArea);
-            impact.RecordTarget(target);
-        }
-
-        private bool IsTrackedAbilityArea(uint activator)
-        {
-            var impact = GetTrackedAbilityImpact(activator);
-            return impact?.Summary.IsAreaAbility ?? false;
-        }
-
-        /// <summary>Only a melee technique's cast can change shape (its conditional sweep); other abilities keep their authored flags.</summary>
-        public bool IsAreaImpact(uint activator, AbilityDetail ability) =>
-            IsAreaImpact(GetTrackedAbilityImpact(activator)?.Summary, ability);
-
-        public bool IsAreaImpact(AbilityImpactSummary summary, AbilityDetail ability) =>
-            UsesTrackedImpactShape(summary, ability) ? summary.IsAreaAbility : ability?.IsAreaAbility == true;
-
-        public bool IsSingleTargetImpact(uint activator, AbilityDetail ability)
-        {
-            var summary = GetTrackedAbilityImpact(activator)?.Summary;
-            return UsesTrackedImpactShape(summary, ability)
-                ? summary.IsSingleTargetAbility : ability?.IsSingleTargetAbility == true;
-        }
-
-        private bool UsesTrackedImpactShape(AbilityImpactSummary summary, AbilityDetail ability) =>
-            ability?.MeleeTechnique != null && summary?.Ability == ability;
-
-        private bool IsTrackedAbilitySingleTarget(uint activator)
-        {
-            var impact = GetTrackedAbilityImpact(activator);
-            return impact?.Summary.IsSingleTargetAbility ?? false;
-        }
-
 
 
         /// <summary>
@@ -869,21 +577,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <returns>true if successful, false otherwise</returns>
         [ReloadState(ReloadStateKind.Runtime)]
         private string _lastActivationDenial = string.Empty;
-
-        /// <summary>
-        /// Returns whether the ability counts as a Force power: a Force skill ability, or an ability
-        /// of another skill flagged <see cref="AbilityDetail.IsForcePower"/> (Force Sensitive
-        /// Espionage powers).
-        /// </summary>
-        public bool IsForcePower(uint activator, AbilityDetail ability)
-        {
-            return IsForcePower(ability.IsForcePower, GetAbilitySkillType(activator, ability));
-        }
-
-        public bool IsForcePower(bool flaggedForcePower, SkillType abilitySkillType)
-        {
-            return flaggedForcePower || abilitySkillType == SkillType.Force;
-        }
 
         /// <summary>
         /// The reason the most recent CanUseAbility call returned false. Player-facing feedback
@@ -903,7 +596,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             int effectivePerkLevel,
             Location targetLocation)
         {
-            var ability = GetAbilityDetail(abilityType);
+            var ability = _catalog.GetAbilityDetail(abilityType);
 
             _lastActivationDenial = string.Empty;
 
@@ -957,7 +650,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             // Must be within line of sight.
             if (ability.RequiresTarget &&
                 GetIsObjectValid(target) &&
-                !HasAbilityLineOfSight(activator, target))
+                !_geometry.HasAbilityLineOfSight(activator, target))
             {
                 return Deny("You cannot see your target.");
             }
@@ -1067,12 +760,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             return true;
         }
 
-        private bool HasAbilityLineOfSight(uint activator, uint target)
-        {
-            return LineOfSightObject(activator, target) &&
-                   LineOfSightVector(GetPosition(activator), GetPosition(target));
-        }
-
         private string ValidateHostileAreaLineOfSight(
             uint activator,
             uint target,
@@ -1082,12 +769,12 @@ namespace SWLOR.Game.Server.Domain.Abilities
             var targeting = ability.Targeting;
             if (targeting == null ||
                 !targeting.Flags.HasFlag(AbilityTargetingFlags.HarmsEnemies) ||
-                !TryGetCombatImpactShape(targeting.Shape, out var shape))
+                !_geometry.TryGetCombatImpactShape(targeting.Shape, out var shape))
             {
                 return string.Empty;
             }
 
-            var creatures = GetHostileCreaturesInCombatImpactShape(
+            var creatures = _geometry.GetHostileCreaturesInCombatImpactShape(
                     activator,
                     target,
                     targetLocation,
@@ -1099,33 +786,12 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 .ToList();
 
             if (creatures.Count <= 0 ||
-                creatures.Any(creature => HasAbilityLineOfSight(activator, creature)))
+                creatures.Any(creature => _geometry.HasAbilityLineOfSight(activator, creature)))
             {
                 return string.Empty;
             }
 
             return "You cannot see any enemies in the target area.";
-        }
-
-        private bool TryGetCombatImpactShape(AbilityTargetingShapeType targetingShape, out CombatImpactAreaShape shape)
-        {
-            switch (targetingShape)
-            {
-                case AbilityTargetingShapeType.Sphere:
-                case AbilityTargetingShapeType.HSphere:
-                    shape = CombatImpactAreaShape.Sphere;
-                    return true;
-                case AbilityTargetingShapeType.Rect:
-                    shape = CombatImpactAreaShape.Line;
-                    return true;
-                case AbilityTargetingShapeType.Cone:
-                    shape = CombatImpactAreaShape.Cone;
-                    return true;
-                case AbilityTargetingShapeType.None:
-                default:
-                    shape = default;
-                    return false;
-            }
         }
 
         /// <summary>
@@ -1837,7 +1503,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         {
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
             var totalDamage = 0;
-            RecordAbilityImpactShape(activator, skillType, isArea || isAreaImpact);
+            _impactState.RecordAbilityImpactShape(activator, skillType, isArea || isAreaImpact);
 
             if (isArea)
             {
@@ -1849,7 +1515,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                     if (!GetIsObjectValid(creature))
                         continue;
 
-                    if (HasAbilityLineOfSight(activator, creature))
+                    if (_geometry.HasAbilityLineOfSight(activator, creature))
                         creatures.Add(creature);
 
                 }
@@ -1972,11 +1638,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
             Action<TelegraphGeometry> onGeometryResolved = null)
         {
             PrepareCombatImpactDamageBonuses(activator, baseDamage);
-            RecordAbilityImpactShape(activator, skillType, true);
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            _impactState.RecordAbilityImpactShape(activator, skillType, true);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             var backOffsetOrigin = trackedImpact?.Ability.Targeting?.Flags
                 .HasFlag(AbilityTargetingFlags.BackOffsetOrigin) == true;
-            var geometry = ResolveCombatImpactGeometry(
+            var geometry = _geometry.ResolveCombatImpactGeometry(
                 activator, target, targetLocation, shape, lengthOrRadius, width, centerOnActivator, backOffsetOrigin,
                 trackedImpact?.ActivationAreaTelegraphs);
 
@@ -2188,11 +1854,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
             bool canCritical,
             bool useUnscaledDamage)
         {
-            RecordAbilityImpactShape(activator, skillType, true);
+            _impactState.RecordAbilityImpactShape(activator, skillType, true);
 
             var origin = Location(geometry.Area, geometry.Position, 0f);
-            var creatures = GetHostileCreaturesInCombatImpactShape(activator, geometry)
-                .Where(creature => HasAbilityLineOfSight(activator, creature))
+            var creatures = _geometry.GetHostileCreaturesInCombatImpactShape(activator, geometry)
+                .Where(creature => _geometry.HasAbilityLineOfSight(activator, creature))
                 .ToList();
 
             if (alwaysApplyAreaVisualEffect || creatures.Count > 0)
@@ -2244,7 +1910,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             CombatImpactAreaShape shape,
             Location areaVisualLocation,
             AbilityDetail ability,
-            TrackedAbilityImpact sequenceOwner,
+            AbilityImpactTracker sequenceOwner,
             int nextAbilityDamageBonus,
             int nextAbilityCriticalRatePercentAdjustment,
             int nextAbilityDefenseIgnorePercentAdjustment,
@@ -2287,7 +1953,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                         .Where(creature =>
                             GetIsObjectValid(creature) &&
                             GetIsReactionTypeHostile(creature, creator) &&
-                            HasAbilityLineOfSight(creator, creature))
+                            _geometry.HasAbilityLineOfSight(creator, creature))
                         .ToList();
 
                     if (maxTargets > 0)
@@ -2327,7 +1993,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                             sequenceOwner: sequenceOwner,
                             resolveDamageBonusesFromOwner: resolveDamageBonusesFromOwner);
                         impactStarted = true;
-                        RecordAbilityImpactShape(creator, skillType, true);
+                        _impactState.RecordAbilityImpactShape(creator, skillType, true);
                     }
 
                     if (areaVisualEffect != VisualEffect.None)
@@ -2418,7 +2084,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         {
             var totalDamage = 0;
             var affectedCount = 0;
-            var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
+            var trackedAbility = _impactState.GetTrackedAbilityImpact(activator)?.Ability;
 
             var impactTargets = creatures.Distinct().ToList();
             if (beforeImpact != null)
@@ -2477,226 +2143,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             return totalDamage;
         }
 
-        private NumericsVector3 GetAreaImpactPosition(uint activator, uint target, Location targetLocation, bool centerOnActivator = false)
-        {
-            if (centerOnActivator)
-                return GetPosition(activator);
-
-            if (GetIsObjectValid(target))
-                return GetPosition(target);
-
-            var targetArea = GetAreaFromLocation(targetLocation);
-            return GetIsObjectValid(targetArea)
-                ? GetPositionFromLocation(targetLocation)
-                : GetPosition(activator);
-        }
-
-        private float GetImpactRotationRadians(uint activator, uint target, Location targetLocation)
-        {
-            var origin = GetPosition(activator);
-            var destination = GetIsObjectValid(target)
-                ? GetPosition(target)
-                : GetIsObjectValid(GetAreaFromLocation(targetLocation))
-                    ? GetPositionFromLocation(targetLocation)
-                    : origin;
-            var delta = destination - origin;
-
-            if (Math.Abs(delta.X) <= 0.01f && Math.Abs(delta.Y) <= 0.01f)
-                return DegreesToRadians(GetFacing(activator));
-
-            return (float)Math.Atan2(delta.Y, delta.X);
-        }
-
-        private Location GetCombatImpactShapeOrigin(
-            uint activator,
-            uint target,
-            Location targetLocation,
-            CombatImpactAreaShape shape,
-            bool centerOnActivator)
-        {
-            return shape == CombatImpactAreaShape.Sphere
-                ? Location(GetArea(activator), GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator), 0f)
-                : GetLocation(activator);
-        }
-
-        public IReadOnlyList<uint> GetHostileTargetsInSphere(uint activator, Location location, float radius)
-        {
-            return GetHostileCreaturesInCombatImpactShape(
-                    activator, OBJECT_INVALID, location, CombatImpactAreaShape.Sphere, radius, 0f, false, false)
-                .Where(creature => HasAbilityLineOfSight(activator, creature))
-                .ToList();
-        }
-
-        private IEnumerable<uint> GetHostileCreaturesInCombatImpactShape(
-            uint activator,
-            uint target,
-            Location targetLocation,
-            CombatImpactAreaShape shape,
-            float lengthOrRadius,
-            float width,
-            bool centerOnActivator,
-            bool backOffsetOrigin)
-        {
-            return GetHostileCreaturesInCombatImpactShape(activator,
-                ResolveCombatImpactGeometry(activator, target, targetLocation, shape, lengthOrRadius, width,
-                    centerOnActivator, backOffsetOrigin));
-        }
-
-        private TelegraphGeometry ResolveCombatImpactGeometry(
-            uint activator,
-            uint target,
-            Location targetLocation,
-            CombatImpactAreaShape shape,
-            float lengthOrRadius,
-            float width,
-            bool centerOnActivator,
-            bool backOffsetOrigin,
-            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
-        {
-            var origin = GetCombatImpactShapeOrigin(activator, target, targetLocation, shape, centerOnActivator);
-            var rotation = GetImpactRotationRadians(activator, target, targetLocation);
-            var originPosition = CombatImpactShapeGeometry.ResolveOrigin(
-                GetPositionFromLocation(origin),
-                rotation,
-                shape,
-                backOffsetOrigin);
-            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
-                shape,
-                lengthOrRadius,
-                backOffsetOrigin);
-            var telegraphType = shape switch
-            {
-                CombatImpactAreaShape.Sphere => TelegraphType.Sphere,
-                CombatImpactAreaShape.Cone => TelegraphType.Cone,
-                CombatImpactAreaShape.Line => TelegraphType.Line,
-                _ => throw new ArgumentOutOfRangeException(nameof(shape), shape, null)
-            };
-            var size = new System.Numerics.Vector2(adjustedLength,
-                shape == CombatImpactAreaShape.Sphere ? adjustedLength :
-                width > 0f ? width : shape == CombatImpactAreaShape.Cone ? adjustedLength : 2f);
-            var impact = new TelegraphGeometry(GetAreaFromLocation(origin), telegraphType, originPosition, size, rotation);
-            return _telegraph.ResolveImpactGeometry(impact, activationAreaTelegraphs);
-        }
-
-        private IEnumerable<uint> GetHostileCreaturesInCombatImpactShape(uint activator, TelegraphGeometry geometry)
-        {
-            var shape = geometry.Shape switch
-            {
-                TelegraphType.Sphere => CombatImpactAreaShape.Sphere,
-                TelegraphType.Cone => CombatImpactAreaShape.Cone,
-                TelegraphType.Line => CombatImpactAreaShape.Line,
-                _ => throw new ArgumentOutOfRangeException(nameof(geometry), geometry.Shape, null)
-            };
-            var maxDistance = GetCombatImpactShapeSearchRadius(shape, geometry.Size.X, geometry.Size.Y);
-            var candidates = GetAliveCreaturesInArea(geometry.Area)
-                .Select(creature => new
-                {
-                    Creature = creature,
-                    Position = GetPosition(creature)
-                })
-                .Where(candidate => GetHorizontalDistance(candidate.Position, geometry.Position) <= maxDistance)
-                .OrderBy(candidate => GetHorizontalDistance(candidate.Position, geometry.Position));
-
-            foreach (var candidate in candidates)
-            {
-                if (GetIsReactionTypeHostile(candidate.Creature, activator) &&
-                    IsPositionInCombatImpactShape(candidate.Position, geometry.Position, geometry.Rotation, shape, geometry.Size.X, geometry.Size.Y))
-                {
-                    yield return candidate.Creature;
-                }
-            }
-        }
-
-        private float DegreesToRadians(float degrees)
-        {
-            return degrees * ((float)Math.PI / 180f);
-        }
-
-        private bool IsPositionInCombatImpactShape(
-            NumericsVector3 position,
-            NumericsVector3 origin,
-            float rotation,
-            CombatImpactAreaShape shape,
-            float lengthOrRadius,
-            float width)
-        {
-            switch (shape)
-            {
-                case CombatImpactAreaShape.Sphere:
-                    return GetHorizontalDistance(position, origin) <= lengthOrRadius;
-                case CombatImpactAreaShape.Cone:
-                    return IsPositionInCone(position, origin, rotation, lengthOrRadius, width > 0f ? width : lengthOrRadius);
-                case CombatImpactAreaShape.Line:
-                    return IsPositionInLine(position, origin, rotation, lengthOrRadius, width > 0f ? width : 2.0f);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
-            }
-        }
-
-        private bool IsPositionInCone(NumericsVector3 position, NumericsVector3 origin, float rotation, float length, float width)
-        {
-            var toPoint = position - origin;
-            var distance = GetHorizontalDistance(position, origin);
-            if (distance <= 0.01f)
-                return true;
-
-            var direction = new NumericsVector3((float)Math.Cos(rotation), (float)Math.Sin(rotation), 0f);
-            var cosAngle = Math.Clamp(NumericsVector3.Dot(toPoint, direction) / distance, -1f, 1f);
-            var angleBetween = (float)Math.Acos(cosAngle);
-            var halfAngle = (float)Math.Atan(width * 0.5f / length);
-
-            return distance <= length && angleBetween <= halfAngle;
-        }
-
-        private float GetCombatImpactShapeSearchRadius(CombatImpactAreaShape shape, float lengthOrRadius, float width)
-        {
-            switch (shape)
-            {
-                case CombatImpactAreaShape.Sphere:
-                case CombatImpactAreaShape.Cone:
-                    return lengthOrRadius;
-                case CombatImpactAreaShape.Line:
-                    var effectiveWidth = width > 0f ? width : 2.0f;
-                    var halfWidth = effectiveWidth * 0.5f;
-                    return (float)Math.Sqrt(lengthOrRadius * lengthOrRadius + halfWidth * halfWidth);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
-            }
-        }
-
-        private float GetHorizontalDistance(NumericsVector3 position, NumericsVector3 origin)
-        {
-            var x = position.X - origin.X;
-            var y = position.Y - origin.Y;
-
-            return (float)Math.Sqrt(x * x + y * y);
-        }
-
-        private IEnumerable<uint> GetAliveCreaturesInArea(uint area)
-        {
-            if (!GetIsObjectValid(area))
-                yield break;
-
-            for (var creature = GetFirstObjectInArea(area, ObjectType.Creature);
-                 GetIsObjectValid(creature);
-                 creature = GetNextObjectInArea(area, ObjectType.Creature))
-            {
-                if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)
-                    yield return creature;
-            }
-        }
-
-        private bool IsPositionInLine(NumericsVector3 position, NumericsVector3 origin, float rotation, float length, float width)
-        {
-            var toPoint = position - origin;
-            var rotatedX = toPoint.X * (float)Math.Cos(-rotation) - toPoint.Y * (float)Math.Sin(-rotation);
-            var rotatedY = toPoint.X * (float)Math.Sin(-rotation) + toPoint.Y * (float)Math.Cos(-rotation);
-
-            return rotatedX >= 0f &&
-                   rotatedX <= length &&
-                   Math.Abs(rotatedY) <= width * 0.5f;
-        }
-
         /// <summary>Plays the current ability's declared impact gesture independently of target outcomes.</summary>
         public void PlayAbilityImpactAnimation(uint activator) =>
             PlayCombatImpactAnimation(activator, Animation.Invalid);
@@ -2706,7 +2152,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// </summary>
         private void PlayCombatImpactAnimation(uint activator, Animation impactAnimation)
         {
-            var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
+            var trackedAbility = _impactState.GetTrackedAbilityImpact(activator)?.Ability;
 
             // Queued weapon abilities resolve inside the engine's landed auto-attack. Playing a
             // scripted impact animation here would enqueue a second swing after the real hit,
@@ -2797,7 +2243,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             using var damageDerivedHealing = BeginDamageDerivedHealing(activator, target);
             // Read before this hit's damage and enmity can turn the target onto the activator.
             var targetWasAttackingAlly = IsTargetAttackingAllyForStatusAppliedRiders(activator, target);
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             var allowsHitProcs = trackedImpact?.Ability.MeleeTechnique == null ||
                 trackedImpact.Sequence.TryTriggerDamageRider($"TechniqueHitProcs:{target}");
             // Hostile abilities raise no attack or damage events when they only apply status effects.
@@ -2811,7 +2257,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
             if (damage > 0)
             {
-                trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);
+                ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);
                 if (trackedImpact == null)
                 {
                     _statusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);
@@ -2829,7 +2275,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
                         target,
                         damage,
                         effectDamageType ?? damageType.GetNWScriptDamageType(),
-                        damageType);
+                        damageType,
+                        _combatRecorder);
                 }
 
                 ApplyDarkForceConversion(activator, target, damage);
@@ -2910,7 +2357,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             }
 
             afterSuccessfulHit?.Invoke(target);
-            RecordAbilityImpactTarget(activator, target, skillType, false);
+            _impactState.RecordAbilityImpactTarget(activator, target, skillType, false);
             return damage;
         }
 
@@ -2920,14 +2367,14 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// </summary>
         public CombatDamageType GetWeaponAbilityDamageType(uint activator, SkillType skillType, CombatDamageType damageType)
         {
-            return ResolveWeaponAbilityDamageType(activator, skillType, damageType, GetTrackedAbilityImpact(activator));
+            return ResolveWeaponAbilityDamageType(activator, skillType, damageType, _impactState.GetTrackedAbilityImpact(activator));
         }
 
         private CombatDamageType ResolveWeaponAbilityDamageType(
             uint activator,
             SkillType skillType,
             CombatDamageType damageType,
-            TrackedAbilityImpact trackedImpact)
+            AbilityImpactTracker trackedImpact)
         {
             if (WeaponImpactProfile.Get(activator) is { } explicitProfile)
                 return explicitProfile.Weapon.DamageType;
@@ -2940,13 +2387,13 @@ namespace SWLOR.Game.Server.Domain.Abilities
                    GetCombatImpactWeaponDamageType(activator, skillType, usesQueuedNaturalWeapon);
         }
 
-        private bool UsesQueuedNaturalWeapon(TrackedAbilityImpact trackedImpact, SkillType skillType)
+        private bool UsesQueuedNaturalWeapon(AbilityImpactTracker trackedImpact, SkillType skillType)
         {
             return trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
                    skillType == SkillType.BeastMastery;
         }
 
-        private int ScaleImpactWeaponDamage(int damage, TrackedAbilityImpact impact)
+        private int ScaleImpactWeaponDamage(int damage, AbilityImpactTracker impact)
         {
             return impact?.Ability.MeleeTechnique is { } technique
                 ? TechniqueSequence.ScaleWeaponDamage(damage, technique.WeaponDamagePercent) : damage;
@@ -2954,7 +2401,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         private bool CanApplyTechniqueWeaponProc(uint activator, uint target)
         {
-            var impact = GetTrackedAbilityImpact(activator);
+            var impact = _impactState.GetTrackedAbilityImpact(activator);
             return impact?.Ability.MeleeTechnique == null ||
                    impact.Sequence.TryTriggerDamageRider($"TechniqueWeaponProc:{target}");
         }
@@ -2962,7 +2409,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private void ApplyTrackedCriticalHitEffects(uint activator, uint target, int damage,
             int criticalRating, bool singleTarget, SkillType skillType)
         {
-            var impact = GetTrackedAbilityImpact(activator);
+            var impact = _impactState.GetTrackedAbilityImpact(activator);
             if (impact?.Ability.MeleeTechnique == null || impact.Sequence.TryTriggerDamageRider("TechniqueCriticalNotification"))
                 ApplyCriticalHitEffects(activator, target, damage, criticalRating, singleTarget, skillType);
         }
@@ -2995,7 +2442,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             bool useUnscaledDamage = false)
         {
             using var damageDerivedHealing = BeginDamageDerivedHealing(activator, target);
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             // Unscaled impacts add no weapon DMG, so they keep their authored type.
             if (!_meleeTechnique.IsImpactValid(activator, target, trackedImpact?.Ability))
                 return 0;
@@ -3110,17 +2557,17 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// </summary>
         public int ApplyCapturedAbilityDamageBonus(uint activator, int damage)
         {
-            return damage > 0 ? damage + (GetTrackedAbilityImpact(activator)?.NextAbilityDamageBonus ?? 0) : 0;
+            return damage > 0 ? damage + (_impactState.GetTrackedAbilityImpact(activator)?.NextAbilityDamageBonus ?? 0) : 0;
         }
 
         private void PrepareCombatImpactDamageBonuses(uint activator, int baseDamage)
         {
-            var impact = GetTrackedAbilityImpact(activator);
+            var impact = _impactState.GetTrackedAbilityImpact(activator);
             if (impact != null && CanDealCombatImpactDamage(baseDamage, impact.Ability))
                 impact.EnsureDamageBonuses();
         }
 
-        private bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)
+        private bool ShouldResolveCombatImpactHit(AbilityImpactTracker trackedImpact)
         {
             return trackedImpact?.Ability?.ActivationType != AbilityActivationType.Weapon;
         }
@@ -3214,7 +2661,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             if (!GetIsObjectValid(target))
                 return 0;
 
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             if (trackedImpact?.Ability?.TriggersDarkForceConversion != true)
                 return 0;
 
@@ -3235,7 +2682,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             if (damage <= 0 || !GetIsObjectValid(activator))
                 return;
 
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             if (trackedImpact == null ||
                 trackedImpact.Ability?.TriggersDarkForceConversion != true)
             {
@@ -3260,7 +2707,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         private void ApplyDarkForceCastConversion(uint activator, uint target)
         {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             if (trackedImpact == null ||
                 trackedImpact.Ability?.TriggersDarkForceConversion != true)
             {
@@ -3316,7 +2763,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             int abilityDamagePercentAdjustment = 0,
             int lowHPAbilityDamagePercentAdjustment = 0)
         {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0, false))
                 return 0;
 
@@ -3334,7 +2781,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 targetStatusDamagePercentAdjustment: out var targetStatusDamageAdjustment,
                 abilityDamagePercentAdjustment,
                 lowHPAbilityDamagePercentAdjustment);
-            damage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, damage);
+            damage = _magnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, damage);
             ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref damage, targetStatusDamageAdjustment);
             damage = ApplyTypedLeadershipDamageTakenModifier(target, damage, damageType);
             damage = _resistance.ApplyResistanceToDamage(target, damageType, damage);
@@ -3361,7 +2808,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             int abilityDamagePercentAdjustment = 0,
             int lowHPAbilityDamagePercentAdjustment = 0)
         {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
             if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
                     IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
@@ -3410,7 +2857,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 ? CalculateAbilityCriticalRating(
                     activator,
                     skillType,
-                    IsTrackedAbilityArea(activator),
+                    _impactState.IsTrackedAbilityArea(activator),
                     (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
                     target)
                 : 0;
@@ -3454,7 +2901,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 out var targetStatusDamageAdjustment,
                 abilityDamagePercentAdjustment,
                 lowHPAbilityDamagePercentAdjustment);
-            calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            calculatedDamage = _magnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             if (WeaponImpactProfile.Get(activator) is { VolleyCount: > 1 } partition)
                 calculatedDamage = WeaponImpactDamagePartition.Partition(calculatedDamage, partition.VolleyIndex, partition.VolleyCount);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
@@ -3484,7 +2931,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                     target,
                     calculatedDamage,
                     criticalRating,
-                    IsTrackedAbilitySingleTarget(activator),
+                    _impactState.IsTrackedAbilitySingleTarget(activator),
                     skillType);
             }
             return calculatedDamage;
@@ -3577,7 +3024,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             int abilityDamagePercentAdjustment = 0,
             int lowHPAbilityDamagePercentAdjustment = 0)
         {
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
             if (!HasCombatImpactDamage(baseDamage, trackedImpact?.NextAbilityDamageBonus ?? 0,
                     IsWeaponSkillType(skillType) || usesQueuedNaturalWeapon))
@@ -3637,7 +3084,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 ? CalculateAbilityCriticalRating(
                     activator,
                     skillType,
-                    IsTrackedAbilityArea(activator),
+                    _impactState.IsTrackedAbilityArea(activator),
                     (trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0) + criticalRatePercentAdjustment,
                     target)
                 : 0;
@@ -3681,7 +3128,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 out var targetStatusDamageAdjustment,
                 abilityDamagePercentAdjustment,
                 lowHPAbilityDamagePercentAdjustment);
-            calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            calculatedDamage = _magnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             if (WeaponImpactProfile.Get(activator) is { VolleyCount: > 1 } partition)
                 calculatedDamage = WeaponImpactDamagePartition.Partition(calculatedDamage, partition.VolleyIndex, partition.VolleyCount);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
@@ -3710,7 +3157,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                     target,
                     calculatedDamage,
                     criticalRating,
-                    IsTrackedAbilitySingleTarget(activator),
+                    _impactState.IsTrackedAbilitySingleTarget(activator),
                     skillType);
             }
             return calculatedDamage;
@@ -3833,7 +3280,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             if (duration <= 0)
                 return duration;
 
-            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var trackedImpact = _impactState.GetTrackedAbilityImpact(activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var adjustment = GetAbilityStatusDurationPercentAdjustment(
                 activator,
@@ -3895,7 +3342,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         {
             var ability = combatImpactDamageAbility != AbilityType.Invalid
                 ? combatImpactDamageAbility
-                : GetTrackedAbilityImpact(activator)?.Ability?.CombatImpactDamageAbility ?? AbilityType.Invalid;
+                : _impactState.GetTrackedAbilityImpact(activator)?.Ability?.CombatImpactDamageAbility ?? AbilityType.Invalid;
 
             return ability == AbilityType.Invalid
                 ? AbilityType.Might
@@ -4077,14 +3524,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         public void RemoveQueuedWeaponAttack(uint activator) => _queuedWeaponAttacks.Remove(activator);
 
-        /// <summary>The ability definitions of every loaded assembly. The search stays lazy: each definition is built when the loop reaches it.</summary>
-        protected virtual IEnumerable<Type> GetAbilityListDefinitionTypes() =>
-            GameAssemblies.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IAbilityListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
-
-        protected virtual void CacheAbilityTargeting(IReadOnlyDictionary<FeatType, AbilityDetail> abilities) => AbilityTargeting.CacheData(abilities);
-
         protected virtual string GetUnusableEquipmentError(uint creature) => TwinPistolEquipmentValidation.GetUnusableEquipmentError(creature);
 
         protected virtual int GetAbilityDMG(uint creature, uint weapon, SkillType abilitySkill) => WeaponDamage.GetAbilityDMG(creature, weapon, abilitySkill);
@@ -4093,11 +3532,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual bool IsPlayerInSpaceMode(uint player) => _space.Value.IsPlayerInSpaceMode(player);
 
-        protected virtual IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat) => _stat.GetStatSources(creature, payloadStat);
-
         protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
-
-        protected virtual int GetCombatReadinessPercent(uint creature) => _stat.GetCombatReadinessPercent(creature);
 
         protected virtual int RestoreFP(uint creature, int amount) => _stat.RestoreFP(creature, amount);
 
@@ -4117,15 +3552,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual int GetMaxStamina(uint creature) => _stat.GetMaxStamina(creature);
 
-        protected virtual float GetForceAffinityMagnitudeMultiplier(uint creature, PerkType perkType) => _perk.GetForceAffinityMagnitudeMultiplier(creature, perkType);
-
-        protected virtual float GetForceAffinityRestorativeMagnitudeMultiplier(uint creature, PerkType perkType) => _perk.GetForceAffinityRestorativeMagnitudeMultiplier(creature, perkType);
-
-        protected virtual int ApplyForceAffinityRestorativeMagnitude(uint creature, PerkType perkType, int amount) => _perk.ApplyForceAffinityRestorativeMagnitude(creature, perkType, amount);
-
         protected virtual int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount) => _perk.ApplyForceAffinityMagnitude(creature, perkType, amount);
-
-        protected virtual float ApplyForceAffinityMagnitude(uint creature, PerkType perkType, float amount) => _perk.ApplyForceAffinityMagnitude(creature, perkType, amount);
 
         protected virtual bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType) => _perk.ShouldEnforceActiveAbilityFeatReplacement(creature, perkType);
 
@@ -4133,22 +3560,24 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual SkillType GetAbilitySkillType(uint creature, AbilityDetail ability) => _queries.GetAbilitySkillType(creature, ability);
 
-        protected virtual int ConsumeNextAbilityDamageBonus(uint creature, PerkType perkType) => _abilityBonus.Value.ConsumeNextAbilityDamageBonus(creature, perkType);
+        protected virtual bool IsForcePower(uint creature, AbilityDetail ability) => _queries.IsForcePower(creature, ability);
+
+        protected virtual int ConsumeNextAbilityDamageBonus(uint creature, PerkType perkType) => _abilityBonus.ConsumeNextAbilityDamageBonus(creature, perkType);
 
         protected virtual (int DamageBonus, int CriticalRatePercentAdjustment, int DefenseIgnorePercentAdjustment) ConsumeNextSkillAbilityBonuses(uint creature, SkillType skillType, StatusEffectCategory abilityStatusCategories) =>
-            _abilityBonus.Value.ConsumeNextSkillAbilityBonuses(creature, skillType, abilityStatusCategories);
+            _abilityBonus.ConsumeNextSkillAbilityBonuses(creature, skillType, abilityStatusCategories);
 
-        protected virtual int GetPersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => _abilityBonus.Value.GetPersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
+        protected virtual int GetPersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => _abilityBonus.GetPersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
 
         protected virtual (int DamageBonus, int CriticalRatePercentAdjustment, int CriticalDamagePercentAdjustment) ConsumeQueuedWeaponAbilityBonuses(uint creature, SkillType skillType) =>
-            _abilityBonus.Value.ConsumeQueuedWeaponAbilityBonuses(creature, skillType);
+            _abilityBonus.ConsumeQueuedWeaponAbilityBonuses(creature, skillType);
 
         protected virtual (int DMGBonus, int CriticalRatePercentAdjustment, int EnmityBonus) ConsumeNextAttackGuardedHitBonuses(uint creature) =>
-            _abilityBonus.Value.ConsumeNextAttackGuardedHitBonuses(creature);
+            _abilityBonus.ConsumeNextAttackGuardedHitBonuses(creature);
 
-        protected virtual int GetStatusAppliedNextAttackDamageBonus(uint creature) => _abilityBonus.Value.GetStatusAppliedNextAttackDamageBonus(creature);
+        protected virtual int GetStatusAppliedNextAttackDamageBonus(uint creature) => _abilityBonus.GetStatusAppliedNextAttackDamageBonus(creature);
 
-        protected virtual int ConsumeStatusAppliedNextAttackDamageBonus(uint creature) => _abilityBonus.Value.ConsumeStatusAppliedNextAttackDamageBonus(creature);
+        protected virtual int ConsumeStatusAppliedNextAttackDamageBonus(uint creature) => _abilityBonus.ConsumeStatusAppliedNextAttackDamageBonus(creature);
 
         protected virtual int GetCombatImpactWeaponDamage(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon = false, int? triggeringWeaponDamage = null, bool abilityImpact = false) =>
             _queries.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: triggeringWeaponDamage, abilityImpact: abilityImpact);
@@ -4158,415 +3587,173 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual bool IsWeaponSkillType(SkillType skillType) => CombatRules.IsWeaponSkillType(skillType);
 
-        protected virtual int CalculateDamageEligibleForHealing(int damage, int targetHP, int pendingDamage) => CombatRules.CalculateDamageEligibleForHealing(damage, targetHP, pendingDamage);
+        protected virtual void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) => _abilityImpact.ApplyAbilityImpactEffects(activator, summary);
 
-        protected virtual void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) => _abilityImpact.Value.ApplyAbilityImpactEffects(activator, summary);
+        protected virtual int RefundCriticalRangedAbilityStaminaCost(uint creature, AbilityDetail ability) => _resources.RefundCriticalRangedAbilityStaminaCost(creature, ability);
 
-        protected virtual int RefundCriticalRangedAbilityStaminaCost(uint creature, AbilityDetail ability) => _resources.Value.RefundCriticalRangedAbilityStaminaCost(creature, ability);
+        protected virtual int ConsumePersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => _abilityBonus.ConsumePersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
 
-        protected virtual int ConsumePersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => _abilityBonus.Value.ConsumePersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
-
-        protected virtual void ApplyNonCriticalAbilityEffects(uint activator, uint target, SkillType skillType) => _hitEffects.Value.ApplyNonCriticalAbilityEffects(activator, target, skillType);
+        protected virtual void ApplyNonCriticalAbilityEffects(uint activator, uint target, SkillType skillType) => _hitEffects.ApplyNonCriticalAbilityEffects(activator, target, skillType);
 
         protected virtual bool HasEquippedWeaponForAbility(uint creature) => _queries.HasEquippedWeaponForAbility(creature);
 
-        protected virtual void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability) => _resources.Value.DeferAbilityStaminaCostContext(creature, ability);
+        protected virtual void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability) => _resources.DeferAbilityStaminaCostContext(creature, ability);
 
-        protected virtual void CompleteDeferredAbilityStaminaCostContext(uint creature, AbilityDetail ability) => _resources.Value.CompleteDeferredAbilityStaminaCostContext(creature, ability);
+        protected virtual void CompleteDeferredAbilityStaminaCostContext(uint creature, AbilityDetail ability) => _resources.CompleteDeferredAbilityStaminaCostContext(creature, ability);
 
-        protected virtual IDisposable BeginDamageDerivedHealing(uint creature, uint target) => _resources.Value.BeginDamageDerivedHealing(creature, target);
+        protected virtual IDisposable BeginDamageDerivedHealing(uint creature, uint target) => _resources.BeginDamageDerivedHealing(creature, target);
 
-        protected virtual bool IsTargetAttackingAllyForStatusAppliedRiders(uint activator, uint target) => _abilityImpact.Value.IsTargetAttackingAllyForStatusAppliedRiders(activator, target);
+        protected virtual bool IsTargetAttackingAllyForStatusAppliedRiders(uint activator, uint target) => _abilityImpact.IsTargetAttackingAllyForStatusAppliedRiders(activator, target);
 
         protected virtual void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage) => _feedback.SendTemporaryHitPointDamageFeedback(attacker, defender, damage);
 
         protected virtual void ConsumeSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType, int damage) =>
-            _damageModifiers.Value.ConsumeSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType, damage);
+            _damageModifiers.ConsumeSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType, damage);
 
         protected virtual void ApplyDamageDealtEffects(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType, bool isAbilityDamage, bool allowsHitProcs) =>
-            _hitEffects.Value.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType, isAbilityDamage: isAbilityDamage, allowsHitProcs: allowsHitProcs);
+            _hitEffects.ApplyDamageDealtEffects(attacker, defender, damage, skillType, damageType, isAbilityDamage: isAbilityDamage, allowsHitProcs: allowsHitProcs);
 
-        protected virtual void ApplyDamageReflectionEffects(uint attacker, uint defender, int damage, CombatDamageType damageType) => _damageTaken.Value.ApplyDamageReflectionEffects(attacker, defender, damage, damageType);
+        protected virtual void ApplyDamageReflectionEffects(uint attacker, uint defender, int damage, CombatDamageType damageType) => _damageTaken.ApplyDamageReflectionEffects(attacker, defender, damage, damageType);
 
         protected virtual void ApplySuccessfulAbilityImpactRiders(uint activator, uint target, AbilityDetail ability, SkillType skillType, CombatDamageType damageType, int damage, bool statusApplied, Type primaryStatusEffect, IEnumerable<Type> additionalStatusEffects, bool firstHostileAbilityHitDamageBonusApplied, bool isFirstSuccessfulTarget, StatusEffectCategory appliedStatusCategories, bool allowsHitProcs, bool targetWasAttackingAlly) =>
-            _abilityImpact.Value.ApplySuccessfulAbilityImpactRiders(activator, target, ability, skillType, damageType, damage, statusApplied, primaryStatusEffect, additionalStatusEffects, firstHostileAbilityHitDamageBonusApplied, isFirstSuccessfulTarget, appliedStatusCategories, allowsHitProcs, targetWasAttackingAlly);
+            _abilityImpact.ApplySuccessfulAbilityImpactRiders(activator, target, ability, skillType, damageType, damage, statusApplied, primaryStatusEffect, additionalStatusEffects, firstHostileAbilityHitDamageBonusApplied, isFirstSuccessfulTarget, appliedStatusCategories, allowsHitProcs, targetWasAttackingAlly);
 
         protected virtual bool IncludesCombatImpactWeaponDamage(SkillType skillType, bool usesQueuedNaturalWeapon) => _queries.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon);
 
         protected virtual void ApplyCriticalHitEffects(uint attacker, uint defender, int damage, int criticalRating, bool isSingleTargetImpact, SkillType skillType) =>
-            _hitEffects.Value.ApplyCriticalHitEffects(attacker, defender, damage, criticalRating, isSingleTargetImpact, skillType);
+            _hitEffects.ApplyCriticalHitEffects(attacker, defender, damage, criticalRating, isSingleTargetImpact, skillType);
 
-        protected virtual void TrackHostileAbilityActivity(uint creature) => _combatActivity.Value.TrackHostileAbilityActivity(creature);
+        protected virtual void TrackHostileAbilityActivity(uint creature) => _combatActivity.TrackHostileAbilityActivity(creature);
 
-        protected virtual void TrackHostileDefensiveCombatEntryActivity(uint creature, uint attacker) => _combatActivity.Value.TrackHostileDefensiveCombatEntryActivity(creature, attacker);
+        protected virtual void TrackHostileDefensiveCombatEntryActivity(uint creature, uint attacker) => _combatActivity.TrackHostileDefensiveCombatEntryActivity(creature, attacker);
 
         protected virtual int GetAbilityStatusCategoryHitChancePercentAdjustment(uint creature, SkillType skillType, StatusEffectCategory appliedCategories) =>
-            _abilityBonus.Value.GetAbilityStatusCategoryHitChancePercentAdjustment(creature, skillType, appliedCategories);
+            _abilityBonus.GetAbilityStatusCategoryHitChancePercentAdjustment(creature, skillType, appliedCategories);
 
         protected virtual bool TryResolveAbilityHit(uint attacker, uint defender, SkillType skillType, PerkType perkType, out int hitRate, int hitChancePercentAdjustment, int skillLevelOverride, AbilityType statOverride, int accuracyFlatAdjustment) =>
-            _abilityHit.Value.TryResolveAbilityHit(attacker, defender, skillType, perkType, out hitRate, hitChancePercentAdjustment, skillLevelOverride, statOverride, accuracyFlatAdjustment);
+            _abilityHit.TryResolveAbilityHit(attacker, defender, skillType, perkType, out hitRate, hitChancePercentAdjustment, skillLevelOverride, statOverride, accuracyFlatAdjustment);
 
-        protected virtual int GetAbilityImpactBaseDamageBonus(uint activator, uint target, AbilityDetail ability, SkillType skillType) => _abilityImpact.Value.GetAbilityImpactBaseDamageBonus(activator, target, ability, skillType);
+        protected virtual int GetAbilityImpactBaseDamageBonus(uint activator, uint target, AbilityDetail ability, SkillType skillType) => _abilityImpact.GetAbilityImpactBaseDamageBonus(activator, target, ability, skillType);
 
-        protected virtual int GetAbilityStatusCategoryDamageBonus(uint creature, SkillType skillType, StatusEffectCategory appliedCategories) => _abilityBonus.Value.GetAbilityStatusCategoryDamageBonus(creature, skillType, appliedCategories);
+        protected virtual int GetAbilityStatusCategoryDamageBonus(uint creature, SkillType skillType, StatusEffectCategory appliedCategories) => _abilityBonus.GetAbilityStatusCategoryDamageBonus(creature, skillType, appliedCategories);
 
         protected virtual string BuildAbilityCombatLogMessage(uint observer, uint attacker, uint defender, string abilityName, int attackResultType, int chanceToHit) =>
             _feedback.BuildAbilityCombatLogMessage(observer, attacker, defender, abilityName, attackResultType, chanceToHit);
 
         protected virtual string BuildAbilityNoTargetCombatLogMessage(uint observer, uint attacker, string abilityName) => _feedback.BuildAbilityNoTargetCombatLogMessage(observer, attacker, abilityName);
 
-        protected virtual int ApplyDamageDerivedHealing(uint creature, int damage, int percent) => _resources.Value.ApplyDamageDerivedHealing(creature, damage, percent);
+        protected virtual int ApplyDamageDerivedHealing(uint creature, int damage, int percent) => _resources.ApplyDamageDerivedHealing(creature, damage, percent);
 
         protected virtual int ApplyDamageDealtModifiers(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType, bool isAbilityDamage, bool canApplyRandomFlatBonuses, bool isLandedAttack, AbilityDetail ability, out int targetStatusDamagePercentAdjustment, int abilityDamagePercentAdjustment, int lowHPAbilityDamagePercentAdjustment) =>
-            _damageModifiers.Value.ApplyDamageDealtModifiers(attacker, defender, damage, skillType, damageType, isAbilityDamage, canApplyRandomFlatBonuses, isLandedAttack, ability, out targetStatusDamagePercentAdjustment, abilityDamagePercentAdjustment, lowHPAbilityDamagePercentAdjustment);
+            _damageModifiers.ApplyDamageDealtModifiers(attacker, defender, damage, skillType, damageType, isAbilityDamage, canApplyRandomFlatBonuses, isLandedAttack, ability, out targetStatusDamagePercentAdjustment, abilityDamagePercentAdjustment, lowHPAbilityDamagePercentAdjustment);
 
         protected virtual int ApplyIncomingPhysicalToForceConversion(uint attacker, uint defender, CombatDamageType damageType, ref int physicalDamage, int targetStatusDamagePercentAdjustment) =>
-            _damageTaken.Value.ApplyIncomingPhysicalToForceConversion(attacker, defender, damageType, ref physicalDamage, targetStatusDamagePercentAdjustment);
+            _damageTaken.ApplyIncomingPhysicalToForceConversion(attacker, defender, damageType, ref physicalDamage, targetStatusDamagePercentAdjustment);
 
-        protected virtual int ApplyTypedLeadershipDamageTakenModifier(uint defender, int damage, CombatDamageType damageType) => _damageTaken.Value.ApplyTypedLeadershipDamageTakenModifier(defender, damage, damageType);
+        protected virtual int ApplyTypedLeadershipDamageTakenModifier(uint defender, int damage, CombatDamageType damageType) => _damageTaken.ApplyTypedLeadershipDamageTakenModifier(defender, damage, damageType);
 
         protected virtual int ApplyDamageTakenModifiers(uint defender, int damage, uint attacker, CombatDamageType damageType, int targetStatusDamagePercentAdjustment, bool typedLeadershipReductionAlreadyApplied) =>
-            _damageTaken.Value.ApplyDamageTakenModifiers(defender, damage, attacker, damageType, targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment, typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied);
+            _damageTaken.ApplyDamageTakenModifiers(defender, damage, attacker, damageType, targetStatusDamagePercentAdjustment: targetStatusDamagePercentAdjustment, typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied);
 
         protected virtual (int DamageBonus, int HitChancePercentAdjustment, int CriticalDamagePercentAdjustment) GetIdleSkillAbilityBonuses(uint activator, SkillType skillType) =>
-            _combatActivity.Value.GetIdleSkillAbilityBonuses(activator, skillType);
+            _combatActivity.GetIdleSkillAbilityBonuses(activator, skillType);
 
-        protected virtual int GetAbilityDamageBonus(uint creature, SkillType skill) => _abilityBonus.Value.GetAbilityDamageBonus(creature, skill);
+        protected virtual int GetAbilityDamageBonus(uint creature, SkillType skill) => _abilityBonus.GetAbilityDamageBonus(creature, skill);
 
-        protected virtual int GetAbilityDamageFlatAdjustment(uint creature, PerkType perkType, SkillType skillType) => _abilityBonus.Value.GetAbilityDamageFlatAdjustment(creature, perkType, skillType);
+        protected virtual int GetAbilityDamageFlatAdjustment(uint creature, PerkType perkType, SkillType skillType) => _abilityBonus.GetAbilityDamageFlatAdjustment(creature, perkType, skillType);
 
-        protected virtual int GetCostlyAbilityDamageBonus(uint activator, AbilityDetail ability, SkillType skillType) => _abilityImpact.Value.GetCostlyAbilityDamageBonus(activator, ability, skillType);
+        protected virtual int GetCostlyAbilityDamageBonus(uint activator, AbilityDetail ability, SkillType skillType) => _abilityImpact.GetCostlyAbilityDamageBonus(activator, ability, skillType);
 
-        protected virtual int GetSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType) => _damageModifiers.Value.GetSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType);
+        protected virtual int GetSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType) => _damageModifiers.GetSameTargetPressureWeaponAbilityDamageBonus(attacker, target, skillType);
 
-        protected virtual int ApplyTargetStatusAttackModifiers(uint attacker, uint defender, int attack, SkillType skillType) => _damageModifiers.Value.ApplyTargetStatusAttackModifiers(attacker, defender, attack, skillType);
+        protected virtual int ApplyTargetStatusAttackModifiers(uint attacker, uint defender, int attack, SkillType skillType) => _damageModifiers.ApplyTargetStatusAttackModifiers(attacker, defender, attack, skillType);
 
-        protected virtual int ApplyStatusSourceDefenseModifiers(uint attacker, uint defender, int defense) => _damageModifiers.Value.ApplyStatusSourceDefenseModifiers(attacker, defender, defense);
+        protected virtual int ApplyStatusSourceDefenseModifiers(uint attacker, uint defender, int defense) => _damageModifiers.ApplyStatusSourceDefenseModifiers(attacker, defender, defense);
 
         protected virtual int ApplyIncomingPhysicalToForceDefenseConversion(uint defender, CombatDamageType damageType, int physicalDefense, Func<int> forceDefenseProvider) =>
-            _damageTaken.Value.ApplyIncomingPhysicalToForceDefenseConversion(defender, damageType, physicalDefense, forceDefenseProvider);
+            _damageTaken.ApplyIncomingPhysicalToForceDefenseConversion(defender, damageType, physicalDefense, forceDefenseProvider);
 
-        protected virtual int GetAbilityDefenseIgnorePercentAdjustment(uint creature, PerkType perkType, SkillType skillType, uint defender) => _abilityBonus.Value.GetAbilityDefenseIgnorePercentAdjustment(creature, perkType, skillType, defender);
+        protected virtual int GetAbilityDefenseIgnorePercentAdjustment(uint creature, PerkType perkType, SkillType skillType, uint defender) => _abilityBonus.GetAbilityDefenseIgnorePercentAdjustment(creature, perkType, skillType, defender);
 
         protected virtual int ApplyDefenseIgnore(int defense, int defenseIgnorePercent) => CombatRules.ApplyDefenseIgnore(defense, defenseIgnorePercent);
 
         protected virtual int CalculateAbilityCriticalRating(uint attacker, SkillType skillType, bool isAreaAbility, int criticalRateAdjustment, uint defender) =>
-            _abilityHit.Value.CalculateAbilityCriticalRating(attacker, skillType, isAreaAbility, criticalRateAdjustment, defender);
+            _abilityHit.CalculateAbilityCriticalRating(attacker, skillType, isAreaAbility, criticalRateAdjustment, defender);
 
         protected virtual (int Damage, int CriticalRating, bool WasCriticalDowngraded) CalculateDamageWithCriticalMitigation(uint defender, int attackerAttack, int attackerDMG, int attackerStat, int defenderDefense, int defenderStat, int critical) =>
-            _damageModifiers.Value.CalculateDamageWithCriticalMitigation(defender, attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical);
+            _damageModifiers.CalculateDamageWithCriticalMitigation(defender, attackerAttack, attackerDMG, attackerStat, defenderDefense, defenderStat, critical);
 
         protected virtual void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender) => _feedback.SendIncomingCriticalHitDowngradeFeedback(attacker, defender);
 
         protected virtual int ApplyCriticalDamageModifier(uint attacker, int damage, int criticalRating, SkillType skillType, uint defender, int criticalDamagePercentAdjustment) =>
-            _damageModifiers.Value.ApplyCriticalDamageModifier(attacker, damage, criticalRating, skillType, defender, criticalDamagePercentAdjustment);
+            _damageModifiers.ApplyCriticalDamageModifier(attacker, damage, criticalRating, skillType, defender, criticalDamagePercentAdjustment);
 
         protected virtual void SendAbilityCriticalHitFeedback(uint attacker, uint defender, string abilityName) => _feedback.SendAbilityCriticalHitFeedback(attacker, defender, abilityName);
 
-        protected virtual int GetNearbyStatusTargetAttackAdjustment(uint creature) => _damageModifiers.Value.GetNearbyStatusTargetAttackAdjustment(creature);
+        protected virtual int GetNearbyStatusTargetAttackAdjustment(uint creature) => _damageModifiers.GetNearbyStatusTargetAttackAdjustment(creature);
 
-        protected virtual int GetLowHPAttackAdjustment(uint attacker) => _damageModifiers.Value.GetLowHPAttackAdjustment(attacker);
+        protected virtual int GetLowHPAttackAdjustment(uint attacker) => _damageModifiers.GetLowHPAttackAdjustment(attacker);
 
         protected virtual int GetAbilityStatusDurationPercentAdjustment(uint creature, PerkType perkType, SkillType skillType, Type primaryStatusEffect, IEnumerable<Type> additionalStatusEffects, Func<IStatusEffect> statusEffectFactory) =>
-            _abilityBonus.Value.GetAbilityStatusDurationPercentAdjustment(creature, perkType, skillType, primaryStatusEffect, additionalStatusEffects, statusEffectFactory);
+            _abilityBonus.GetAbilityStatusDurationPercentAdjustment(creature, perkType, skillType, primaryStatusEffect, additionalStatusEffects, statusEffectFactory);
 
-        private sealed class TrackedAbilityImpact
+        private void ConsumeStatusAppliedNextAttackDamageBonus(AbilityImpactTracker impact, uint activator)
         {
-            private readonly AbilityService _service;
-            private readonly HashSet<uint> _impactedTargets = new();
-            private readonly List<PendingDamageEffect> _pendingDamageEffects = new();
-            private AbilityImpactSequence _sequence;
-            private Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>> _statSources;
-
-            public AbilityDetail Ability { get; }
-            public AbilityImpactVisualEffects VisualEffects { get; }
-            public int? TriggeringWeaponDamage
+            if (impact == null || impact.StatusAppliedNextAttackDamageBonusConsumed ||
+                impact.StatusAppliedNextAttackDamageBonus <= 0)
             {
-                get => Summary.TriggeringWeaponDamage;
-                set => Summary.TriggeringWeaponDamage = value;
-            }
-            public CombatDamageType? TriggeringWeaponDamageType
-            {
-                get => Summary.TriggeringWeaponDamageType;
-                set => Summary.TriggeringWeaponDamageType = value;
-            }
-            // Delayed shapes share the original tracker until a rider actually needs cast state.
-            public TrackedAbilityImpact SequenceOwner { get; set; }
-            public AbilityImpactSequence Sequence => _sequence ??= SequenceOwner?.Sequence ?? new AbilityImpactSequence();
-            public AbilityImpactSummary Summary { get; }
-            public bool CountsAsAttackAttempt { get; }
-            public IReadOnlyList<TelegraphGeometry> ActivationAreaTelegraphs { get; }
-            public int NextAbilityDamageBonus { get; private set; }
-            public int NextAbilityCriticalRatePercentAdjustment { get; private set; }
-            public int NextAbilityCriticalDamagePercentAdjustment { get; private set; }
-            public int NextAbilityDefenseIgnorePercentAdjustment { get; private set; }
-            public int NextAttackEnmityBonus { get; private set; }
-            public int StatusAppliedNextAttackDamageBonus { get; private set; }
-            public Action ResolveDamageBonuses { get; set; }
-            public bool DarkForceConversionApplied { get; set; }
-            private bool _statusAppliedNextAttackDamageBonusConsumed;
-            private bool _repeatedDamageBonusesConsumed;
-
-            public void CopyRepeatedDamageBonusesFrom(TrackedAbilityImpact source)
-            {
-                if (source._repeatedDamageBonusesConsumed)
-                    return;
-
-                AddDamageBonuses(
-                    source.NextAbilityDamageBonus - source.StatusAppliedNextAttackDamageBonus,
-                    source.NextAbilityCriticalRatePercentAdjustment,
-                    source.NextAbilityDefenseIgnorePercentAdjustment,
-                    source.NextAttackEnmityBonus,
-                    0,
-                    source.NextAbilityCriticalDamagePercentAdjustment);
+                return;
             }
 
-            public void CompleteRepeatedDamageBonusImpact(bool impactedTarget)
-            {
-                _repeatedDamageBonusesConsumed |= impactedTarget;
-            }
-
-            public Action<TrackedAbilityImpact> CapturePartitionedDamageBonuses()
-            {
-                var damage = NextAbilityDamageBonus - StatusAppliedNextAttackDamageBonus;
-                var criticalRate = NextAbilityCriticalRatePercentAdjustment;
-                var defenseIgnore = NextAbilityDefenseIgnorePercentAdjustment;
-                var enmity = NextAttackEnmityBonus;
-                var criticalDamage = NextAbilityCriticalDamagePercentAdjustment;
-                return target => target.AddDamageBonuses(damage, criticalRate, defenseIgnore, enmity, 0, criticalDamage);
-            }
-
-            public void EnsureDamageBonuses()
-            {
-                var resolve = ResolveDamageBonuses;
-                ResolveDamageBonuses = null;
-                resolve?.Invoke();
-            }
-
-            public void AddDamageBonuses(
-                int damage, int criticalRate, int defenseIgnore, int enmity,
-                int statusAppliedDamage, int criticalDamage)
-            {
-                NextAbilityDamageBonus += damage;
-                NextAbilityCriticalRatePercentAdjustment += criticalRate;
-                NextAbilityDefenseIgnorePercentAdjustment += defenseIgnore;
-                NextAttackEnmityBonus += enmity;
-                StatusAppliedNextAttackDamageBonus += statusAppliedDamage;
-                NextAbilityCriticalDamagePercentAdjustment += criticalDamage;
-            }
-
-            /// <summary>
-            /// Initializes per-impact bonuses, summary classification, and the activation
-            /// geometry that can suppress redundant impact markers.
-            /// </summary>
-            public TrackedAbilityImpact(
-                AbilityService service,
-                AbilityDetail ability,
-                int nextAbilityDamageBonus,
-                int nextAbilityCriticalRatePercentAdjustment,
-                int nextAbilityDefenseIgnorePercentAdjustment,
-                int nextAttackEnmityBonus,
-                int statusAppliedNextAttackDamageBonus,
-                bool countsAsAttackAttempt,
-                int nextAbilityCriticalDamagePercentAdjustment,
-                IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs,
-                AbilityImpactSequence sequence)
-            {
-                _service = service;
-                Ability = ability;
-                VisualEffects = new AbilityImpactVisualEffects(ability.SuccessfulImpactVisualEffect);
-                _sequence = sequence;
-                NextAbilityDamageBonus = nextAbilityDamageBonus;
-                NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;
-                NextAbilityCriticalDamagePercentAdjustment = nextAbilityCriticalDamagePercentAdjustment;
-                NextAbilityDefenseIgnorePercentAdjustment = nextAbilityDefenseIgnorePercentAdjustment;
-                NextAttackEnmityBonus = nextAttackEnmityBonus;
-                StatusAppliedNextAttackDamageBonus = statusAppliedNextAttackDamageBonus;
-                CountsAsAttackAttempt = countsAsAttackAttempt;
-                ActivationAreaTelegraphs = activationAreaTelegraphs;
-                Summary = new AbilityImpactSummary
-                {
-                    Ability = ability,
-                    SkillType = ability.SkillType,
-                    IsAreaAbility = ability.IsAreaAbility,
-                    IsSingleTargetAbility = ability.IsSingleTargetAbility,
-                    ImpactedTargets = _impactedTargets
-                };
-            }
-
-            public IReadOnlyList<StatAdjustmentSource> GetStatSources(uint activator, StatType payload)
-            {
-                if (_statSources != null && _statSources.TryGetValue(payload, out var cached))
-                    return cached;
-
-                var sources = _service.GetStatSources(activator, payload);
-                if (sources.Count > 0)
-                {
-                    _statSources ??= new Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>>();
-                    _statSources.Add(payload, sources);
-                }
-                return sources;
-            }
-
-            public void ConsumeStatusAppliedNextAttackDamageBonus(uint activator)
-            {
-                if (_statusAppliedNextAttackDamageBonusConsumed ||
-                    StatusAppliedNextAttackDamageBonus <= 0)
-                {
-                    return;
-                }
-
-                _service.ConsumeStatusAppliedNextAttackDamageBonus(activator);
-                NextAbilityDamageBonus -= StatusAppliedNextAttackDamageBonus;
-                _statusAppliedNextAttackDamageBonusConsumed = true;
-            }
-
-            public void AddDefenseIgnorePercentAdjustment(int adjustment)
-            {
-                NextAbilityDefenseIgnorePercentAdjustment += adjustment;
-            }
-
-            public void RecordShape(SkillType skillType, bool isArea)
-            {
-                if (Summary.SkillType == SkillType.Invalid && skillType != SkillType.Invalid)
-                {
-                    Summary.SkillType = skillType;
-                }
-
-                if (isArea)
-                {
-                    Summary.IsAreaAbility = true;
-                    Summary.IsSingleTargetAbility = false;
-                }
-                else if (!Summary.IsAreaAbility)
-                {
-                    Summary.IsSingleTargetAbility = true;
-                }
-            }
-
-            public void RecordTarget(uint target)
-            {
-                _impactedTargets.Add(target);
-                Summary.ImpactedTargetCount = _impactedTargets.Count;
-
-                if (_impactedTargets.Count > 1)
-                {
-                    Summary.IsAreaAbility = true;
-                    Summary.IsSingleTargetAbility = false;
-                }
-            }
-
-            public void RecordCriticalHit()
-            {
-                Summary.CriticalHitCount++;
-            }
-
-            public void QueueDamageEffect(uint target, int damage, DamageType damageType)
-            {
-                QueueDamageEffect(target, damage, damageType, CombatDamageType.Invalid);
-            }
-
-            public int GetPendingDamage(uint target)
-            {
-                return _pendingDamageEffects.Where(effect => effect.Target == target).Sum(effect => effect.Damage);
-            }
-
-            public void QueueDirectDamageEffect(
-                uint target,
-                int damage,
-                DamageType damageType,
-                CombatDamageType combatDamageType)
-            {
-                QueueDamageEffect(target, damage, damageType, combatDamageType);
-            }
-
-            private void QueueDamageEffect(
-                uint target,
-                int damage,
-                DamageType damageType,
-                CombatDamageType combatDamageType)
-            {
-                if (!GetIsObjectValid(target) || damage <= 0)
-                    return;
-
-                Summary.AttributedDamage += damage;
-                _pendingDamageEffects.Add(new PendingDamageEffect(
-                    target,
-                    damage,
-                    damageType,
-                    combatDamageType,
-                    _service._combatRecorder.CaptureScope()));
-            }
-
-            public void FlushDamageEffects(uint activator)
-            {
-                if (_pendingDamageEffects.Count <= 0)
-                    return;
-
-                var effects = _pendingDamageEffects.ToArray();
-                _pendingDamageEffects.Clear();
-
-                AssignCommand(activator, () =>
-                {
-                    using var recorderAttribution = _service._combatRecorder.BeginAbilityAttribution(activator, Ability);
-                    foreach (var effect in effects)
-                    {
-                        if (!GetIsObjectValid(effect.Target))
-                            continue;
-
-                        // Damage queued under a nested scope, such as a status rider, lands under it.
-                        using var effectAttribution = _service._combatRecorder.BeginAttribution(effect.RecorderAttribution);
-                        var isDirectAbilityDamage = effect.CombatDamageType != CombatDamageType.Invalid;
-                        if (isDirectAbilityDamage)
-                        {
-                            // Resolve the direct-hit lifecycle inside this loop so the next queued
-                            // hit observes temporary HP and status effects consumed by this one.
-                            _service._statusEffect.NotifyPreDamageStatusEffects(
-                                activator,
-                                effect.Target,
-                                effect.Damage,
-                                effect.CombatDamageType);
-                            _service.SendTemporaryHitPointDamageFeedback(
-                                activator,
-                                effect.Target,
-                                effect.Damage);
-                            _service.ApplyDamageReflectionEffects(
-                                activator,
-                                effect.Target,
-                                effect.Damage,
-                                effect.CombatDamageType);
-                        }
-
-                        ApplyEffectToObject(
-                            DurationType.Instant,
-                            EffectDamage(effect.Damage, effect.DamageType),
-                            effect.Target);
-                    }
-                });
-            }
+            ConsumeStatusAppliedNextAttackDamageBonus(activator);
+            impact.CompleteStatusAppliedNextAttackDamageBonusConsumption();
         }
 
-        private sealed class PendingDamageEffect
+        private void FlushDamageEffects(AbilityImpactTracker impact, uint activator)
         {
-            public PendingDamageEffect(
-                uint target,
-                int damage,
-                DamageType damageType,
-                CombatDamageType combatDamageType,
-                CombatRecordAttribution recorderAttribution)
-            {
-                Target = target;
-                Damage = damage;
-                DamageType = damageType;
-                CombatDamageType = combatDamageType;
-                RecorderAttribution = recorderAttribution;
-            }
+            if (impact.PendingDamageEffects.Count <= 0)
+                return;
 
-            public uint Target { get; }
-            public int Damage { get; }
-            public DamageType DamageType { get; }
-            public CombatDamageType CombatDamageType { get; }
-            public CombatRecordAttribution RecorderAttribution { get; }
+            var effects = impact.PendingDamageEffects.ToArray();
+            impact.PendingDamageEffects.Clear();
+
+            AssignCommand(activator, () =>
+            {
+                using var recorderAttribution = _combatRecorder.BeginAbilityAttribution(activator, impact.Ability);
+                foreach (var effect in effects)
+                {
+                    if (!GetIsObjectValid(effect.Target))
+                        continue;
+
+                    // Damage queued under a nested scope, such as a status rider, lands under it.
+                    using var effectAttribution = _combatRecorder.BeginAttribution(effect.RecorderAttribution);
+                    var isDirectAbilityDamage = effect.CombatDamageType != CombatDamageType.Invalid;
+                    if (isDirectAbilityDamage)
+                    {
+                        // Resolve the direct-hit lifecycle inside this loop so the next queued
+                        // hit observes temporary HP and status effects consumed by this one.
+                        _statusEffect.NotifyPreDamageStatusEffects(
+                            activator,
+                            effect.Target,
+                            effect.Damage,
+                            effect.CombatDamageType);
+                        SendTemporaryHitPointDamageFeedback(
+                            activator,
+                            effect.Target,
+                            effect.Damage);
+                        ApplyDamageReflectionEffects(
+                            activator,
+                            effect.Target,
+                            effect.Damage,
+                            effect.CombatDamageType);
+                    }
+
+                    ApplyEffectToObject(
+                        DurationType.Instant,
+                        EffectDamage(effect.Damage, effect.DamageType),
+                        effect.Target);
+                }
+            });
         }
     }
 }

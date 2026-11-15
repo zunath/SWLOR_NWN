@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.CombatSim.Effects;
 using SWLOR.CombatSim.Engine;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
 

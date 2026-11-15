@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
 
         public DefaultAIProfileDefinition()
         {
-            _registeredAbilities = Ability.GetAllAbilityDetails()
+            _registeredAbilities = AbilityCatalog.GetAllAbilityDetails()
                 .OrderByDescending(x => x.Value.IsHostileAbility && x.Value.IsAreaAbility)
                 .ThenByDescending(x => x.Value.RequiresTarget && !x.Value.IsHostileAbility)
                 .ThenByDescending(x => !x.Value.RequiresTarget && !x.Value.IsHostileAbility)

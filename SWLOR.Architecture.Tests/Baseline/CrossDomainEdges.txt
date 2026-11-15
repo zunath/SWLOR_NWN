@@ -215,9 +215,8 @@ Domain/Crafting -> Feature/GuiDefinition | 4
 # Crafting -> World (1 edge)
 Domain/Crafting -> Domain/World | 3
 
-# Creatures -> Abilities (2 edges)
+# Creatures -> Abilities (1 edge)
 Domain/Creatures -> Domain/Abilities | 16
-Feature/AIDefinition -> Domain/Abilities | 1
 
 # Creatures -> Administration (1 edge)
 Domain/Creatures -> Domain/Administration | 3
@@ -529,9 +528,6 @@ Platform/Native -> Feature.UsePerkFeat | 11
 # Platform -> Items (1 edge)
 Platform/Native -> Domain/Items | 4
 
-# Quests -> Abilities (1 edge)
-Domain/Quests -> Domain/Abilities | 4
-
 # Quests -> Administration (1 edge)
 Domain/Quests -> Domain/Administration | 3
 
@@ -564,9 +560,8 @@ Feature/QuestDefinition -> Domain/Items | 75
 # Quests -> UI (1 edge)
 Domain/Quests -> Domain/UI | 9
 
-# Social -> Abilities (3 edges)
+# Social -> Abilities (2 edges)
 Domain/Social -> Domain/Abilities | 4
-Domain/Social -> Feature/AbilityDefinition | 2
 Feature/ChatCommandDefinition -> Domain/Abilities | 3
 
 # Social -> Administration (2 edges)

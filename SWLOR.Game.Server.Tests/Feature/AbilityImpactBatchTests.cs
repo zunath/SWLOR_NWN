@@ -18,7 +18,7 @@ public class AbilityImpactBatchTests
     {
         var impactType = AbilityInternals.TrackedImpactType;
         var impact = AbilityInternals.NewTrackedImpact(
-            AbilityInternals.NoNeighbours(), new AbilityDetail { IsAreaAbility = true }, 0, 0, 0, 0, 0, false, 0,
+            new AbilityDetail { IsAreaAbility = true }, 0, 0, 0, 0, 0, false, 0,
             Array.Empty<TelegraphGeometry>(), new AbilityImpactSequence());
         var summary = (AbilityImpactSummary)impactType.GetProperty("Summary")!.GetValue(impact)!;
         var completedSummaries = new List<AbilityImpactSummary>();

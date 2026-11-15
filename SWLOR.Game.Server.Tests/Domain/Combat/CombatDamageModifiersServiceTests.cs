@@ -83,7 +83,7 @@ public class CombatDamageModifiersServiceTests
             IStatService stat,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
-            IAbilityService ability,
+            IAbilityImpactState ability,
             IPlayerFeedbackService playerFeedback)
             : base(queries, resources, stat, statusEffect, temporaryStatModifier, ability, playerFeedback, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
         {
@@ -201,10 +201,10 @@ public class CombatDamageModifiersServiceTests
             .On(nameof(IStatService.GetMaxFP), _ => _maxFP)
             .On(nameof(IStatService.GetCurrentFP), _ => _currentFP)
             .On(nameof(IStatService.GetStatTypeDeflectionSource), _ => _deflectionSource);
-        var ability = ScriptedProxy.Create<IAbilityService>(out var abilityCalls);
+        var ability = ScriptedProxy.Create<IAbilityImpactState>(out var abilityCalls);
         abilityCalls
-            .On(nameof(IAbilityService.IsAreaImpact), _ => _area)
-            .On(nameof(IAbilityService.IsSingleTargetImpact), _ => _singleTarget);
+            .On(nameof(IAbilityImpactState.IsAreaImpact), _ => _area)
+            .On(nameof(IAbilityImpactState.IsSingleTargetImpact), _ => _singleTarget);
         var feedback = ScriptedProxy.Create<IPlayerFeedbackService>(out var feedbackCalls);
         feedbackCalls.On(nameof(IPlayerFeedbackService.ShowDiagnosticFloatingText), args =>
         {

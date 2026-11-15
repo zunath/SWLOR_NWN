@@ -348,14 +348,14 @@ public class AIModelTests
         const uint self = 100;
         const uint target = 200;
         StatusEffect.CacheData();
-        Ability.CacheData();
-        var ability = Ability.GetAbilityDetail(feat);
+        AbilityCatalog.CacheData();
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
         var score = ability.GetAIScore() ?? AIScore.Ability(ability);
-        var buff = Ability.GetAbilityDetail(FeatType.Invincible1);
+        var buff = AbilityCatalog.GetAbilityDetail(FeatType.Invincible1);
         var buffScore = buff.GetAIScore() ?? AIScore.Ability(buff);
         var creatureEffects = StatusEffectInternals.CreatureEffects;
         var tracker = new CreatureStatusEffect();
-        var effectType = Ability.GetAbilityDetail(activeStance)
+        var effectType = AbilityCatalog.GetAbilityDetail(activeStance)
             .StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
         var effect = (IStatusEffect)Activator.CreateInstance(effectType)!;
         creatureEffects.TryGetValue(self, out var previousEffects);
@@ -392,10 +392,10 @@ public class AIModelTests
         const uint self = 100;
         const uint target = 200;
         StatusEffect.CacheData();
-        Ability.CacheData();
-        var ability = Ability.GetAbilityDetail(feat);
+        AbilityCatalog.CacheData();
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
         var score = AIScore.Ability(ability);
-        var activeEffectType = Ability.GetAbilityDetail(activeFeat)
+        var activeEffectType = AbilityCatalog.GetAbilityDetail(activeFeat)
             .StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
         var selfEffectType = ability.StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle().Which;
         var creatureEffects = StatusEffectInternals.CreatureEffects;
@@ -1189,8 +1189,8 @@ public class AIModelTests
         abilityValidation.Should().Contain("var (isOnRecast, timeToWait) = _recast.IsOnRecastDelay(activator, ability.RecastGroup);");
         abilityValidation.Should().Contain("if (isOnRecast)");
 
-        Ability.CacheData();
-        var guardedBite = Ability.GetAbilityDetail(FeatType.GuardedBite1);
+        AbilityCatalog.CacheData();
+        var guardedBite = AbilityCatalog.GetAbilityDetail(FeatType.GuardedBite1);
         guardedBite.RecastGroup.Should().Be(RecastGroup.GuardedBite);
         guardedBite.RecastDelay(0).Should().Be(12f);
     }

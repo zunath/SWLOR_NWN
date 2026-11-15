@@ -60,7 +60,7 @@ public static class UnarmedMasteryEngineTests
         other.Update(record => record.Skills[SkillType.Unarmed].Rank = 50);
         await context.EquipItemAsync(owner.Creature, "t_pglove", InventorySlot.RightHand);
         context.AssertEqual(1, Perk.GetPerkLevel(owner.Creature, PerkType.OpportunistsFlow), "The player owns the real global four-stamina discount perk.");
-        var uppercut = Ability.GetAbilityDetail(FeatType.Uppercut1);
+        var uppercut = AbilityCatalog.GetAbilityDetail(FeatType.Uppercut1);
         var notifiedPayments = new List<int>();
         void TrackPayment(uint player, uint enemy, AbilityDetail ability, MeleeTechniqueStage stage)
         {
@@ -282,13 +282,13 @@ public static class UnarmedMasteryEngineTests
 
     private static async Task<AbilityImpactSummary> Cast(EngineTestContext context, uint player, uint target, FeatType feat)
     {
-        var ability = Ability.GetAbilityDetail(feat);
-        Ability.ClearLastCompletedAbilityImpactSummary(player);
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
+        AbilityImpactState.ClearLastCompletedAbilityImpactSummary(player);
         await context.ExecuteInCreatureContextAsync(player, () =>
             context.Assert(UsePerkFeat.TryUseAbility(player, target, feat, GetLocation(target)),
                 $"The real {ability.Name} activation starts: {Ability.GetLastActivationDenialReason()}"));
-        await context.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(player)?.Ability == ability,
+        await context.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(player)?.Ability == ability,
             6f, $"the real {ability.Name} impact");
-        return Ability.GetLastCompletedAbilityImpactSummary(player);
+        return AbilityImpactState.GetLastCompletedAbilityImpactSummary(player);
     }
 }

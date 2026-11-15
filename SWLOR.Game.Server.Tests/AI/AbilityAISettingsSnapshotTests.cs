@@ -43,7 +43,7 @@ public class AbilityAISettingsSnapshotTests
     {
         AbilityCache.Load();
         var text = new StringBuilder();
-        foreach (var (feat, ability) in Ability.GetAllAbilityDetails().OrderBy(entry => (int)entry.Key))
+        foreach (var (feat, ability) in AbilityCatalog.GetAllAbilityDetails().OrderBy(entry => (int)entry.Key))
         {
             text.Append((int)feat).Append(' ').Append(feat)
                 .Append("\tselector=").Append(Describe(ability.GetAITargetSelector()))

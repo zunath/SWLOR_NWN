@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(StatusEffect.ApplyStatusEffect<OrdnanceStanceStatusEffect>(ordnance, ordnance, 60f),
                 "Ordnance Stance applies");
 
-            var singleTarget = Ability.GetAbilityDetail(FeatType.SeveringToss1);
-            var area = Ability.GetAbilityDetail(FeatType.ExplosiveToss1);
+            var singleTarget = AbilityCatalog.GetAbilityDetail(FeatType.SeveringToss1);
+            var area = AbilityCatalog.GetAbilityDetail(FeatType.ExplosiveToss1);
             ctx.Assert(singleTarget.IsSingleTargetAbility && singleTarget.IsHostileAbility, "Severing Toss is a single-target hostile ability");
             ctx.Assert(area.IsAreaAbility, "Explosive Toss is an area ability");
 

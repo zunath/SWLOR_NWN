@@ -26,12 +26,12 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly HashSet<uint> _applying = new();
 
         private readonly IDBService _db;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly IAbilityCatalog _catalog;
 
-        public QuickCastService(IDBService db, Lazy<IAbilityService> ability)
+        public QuickCastService(IDBService db, IAbilityCatalog catalog)
         {
             _db = db;
-            _ability = ability;
+            _catalog = catalog;
         }
 
         public FeatType GetOriginalFeat(FeatType feat) => QuickCastFeatMap.GetOriginal(feat);
@@ -182,10 +182,10 @@ namespace SWLOR.Game.Server.Domain.Abilities
         }
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
-        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.Value.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _catalog.IsFeatRegistered(feat);
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.Value.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _catalog.GetAbilityDetail(feat);
 
         /// <summary>Reads the creature's applied effects from the native engine.</summary>
         protected virtual bool HasCastingBlockingEffect(uint player)

@@ -42,10 +42,11 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
-        private readonly IAbilityService _ability;
+        private readonly IAbilityImpactState _impactState;
         private readonly IEnmityService _enmity;
         private readonly IPartyService _party;
         private readonly ICombatRecorderService _combatRecorder;
+        private readonly IPairedRangedTraitsService _pairedRangedTraits;
 
         public CombatAbilityImpactService(
             ICombatQueriesService queries,
@@ -57,10 +58,11 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
-            IAbilityService ability,
+            IAbilityImpactState impactState,
             IEnmityService enmity,
             IPartyService party,
-            ICombatRecorderService combatRecorder)
+            ICombatRecorderService combatRecorder,
+            IPairedRangedTraitsService pairedRangedTraits)
         {
             _queries = queries;
             _resources = resources;
@@ -71,10 +73,11 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
-            _ability = ability;
+            _impactState = impactState;
             _enmity = enmity;
             _party = party;
             _combatRecorder = combatRecorder;
+            _pairedRangedTraits = pairedRangedTraits;
         }
 
         public int GetAbilityImpactBaseDamageBonus(
@@ -190,7 +193,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (WeaponImpactProfile.Get(activator)?.Activation.TryHitRiders(target) == false)
                 return;
 
-            _ability.RecordSuccessfulWeaponAbilityHit(activator, target, skillType);
+            _pairedRangedTraits.RecordSuccessfulWeaponAbilityHit(activator, target, skillType);
 
             ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
 
@@ -533,7 +536,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             AbilityDetail ability,
             bool isFirstSuccessfulTarget)
         {
-            if (ability?.IsHostileAbility != true || !_ability.IsAreaImpact(activator, ability) || !isFirstSuccessfulTarget)
+            if (ability?.IsHostileAbility != true || !_impactState.IsAreaImpact(activator, ability) || !isFirstSuccessfulTarget)
                 return Array.Empty<StatAdjustmentSource>();
 
             return _stat.GetStatSources(activator, StatType.AreaAbilityPulseDamage);
@@ -550,7 +553,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             while (index < sources.Count &&
                    (sources[index][StatType.AreaAbilityPulseDamage] <= 0 || sources[index][StatType.AreaAbilityPulseRadiusMeters] <= 0))
                 index++;
-            if (index == sources.Count || !_ability.TryTriggerAreaAbilityPulse(activator))
+            if (index == sources.Count || !_impactState.TryTriggerAreaAbilityPulse(activator))
                 return;
 
             var location = GetLocation(target);
@@ -574,7 +577,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             SkillType skillType,
             CombatDamageType damageType)
         {
-            if (ability == null || !_ability.IsAreaImpact(activator, ability) || !GetIsObjectValid(target))
+            if (ability == null || !_impactState.IsAreaImpact(activator, ability) || !GetIsObjectValid(target))
                 return;
 
             var damage = GetAreaAbilityFragmentationStatAdjustment(activator, skillType, StatType.AreaAbilityFragmentationDamage);
@@ -646,7 +649,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var bonus = _stat.GetStatAdjustment(activator, StatType.ThrowingBombardierClusterStormDamageBonus);
             var maximumTargets = _stat.GetStatAdjustment(activator, StatType.ThrowingBombardierClusterStormMaximumTargets);
             if (bonus <= 0 || maximumTargets <= 0 ||
-                _ability.GetAbilityImpactSequence(activator)?.TryTriggerDamageRider(
+                _impactState.GetAbilityImpactSequence(activator)?.TryTriggerDamageRider(
                     nameof(StatType.ThrowingBombardierClusterStormDamageBonus)) != true)
                 return;
 
@@ -664,10 +667,10 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!_statusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Bleeding))
                 return;
 
-            foreach (var source in _ability.GetAbilityImpactStatSources(activator, StatType.BleedingTargetAbilitySplashDamage))
+            foreach (var source in _impactState.GetAbilityImpactStatSources(activator, StatType.BleedingTargetAbilitySplashDamage, _stat))
             {
                 if (!CanTriggerBleedingTargetAbilitySplash(source, skillType, true, 1) ||
-                    _ability.GetAbilityImpactSequence(activator)?.TryTriggerDamageRider(
+                    _impactState.GetAbilityImpactSequence(activator)?.TryTriggerDamageRider(
                         source.GetModifierGroup(StatType.BleedingTargetAbilitySplashDamage)) != true ||
                     !CanTriggerBleedingTargetAbilitySplash(source, skillType, true, Random.D100(1)))
                     continue;
@@ -938,7 +941,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 nameStrRef <= 0 || icon == EffectIconType.Invalid)
                 return;
 
-            var sequence = _ability.GetAbilityImpactSequence(activator);
+            var sequence = _impactState.GetAbilityImpactSequence(activator);
             if (sequence != null && !sequence.TryTriggerPartyBuff())
                 return;
             if (!_resources.TryUseStatTrigger(activator, StatType.HostileAbilityPartyBuffDamagePercent, cooldown))
@@ -1432,7 +1435,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             AbilityDetail ability,
             SkillType skillType)
         {
-            if (ability == null || !_ability.IsAreaImpact(activator, ability) || !GetIsObjectValid(target))
+            if (ability == null || !_impactState.IsAreaImpact(activator, ability) || !GetIsObjectValid(target))
                 return;
 
             var requiredSkillType = GetSkillTypeFromStat(_stat.GetStatAdjustment(

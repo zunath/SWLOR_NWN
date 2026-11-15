@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly Func<IReadOnlyDictionary<FeatType, AbilityDetail>> _abilities;
         private Dictionary<AbilityDetail, FeatType> _featsByAbility;
 
-        /// <param name="abilities">The build's ability definitions by feat (<see cref="IAbilityService.GetAllAbilityDetails"/>).</param>
+        /// <param name="abilities">The build's ability definitions by feat (<see cref="IAbilityCatalog.GetAllAbilityDetails"/>).</param>
         public AbilityDetailReloadConverter(Func<IReadOnlyDictionary<FeatType, AbilityDetail>> abilities)
         {
             _abilities = abilities ?? throw new ArgumentNullException(nameof(abilities));

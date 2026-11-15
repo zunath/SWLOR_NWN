@@ -7,6 +7,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Ability definitions, activation checks, impact tracking, auras and immunities (the facade <c>Service.Ability</c> until P2-ZF).</summary>
         public static IAbilityService Ability => FacadeAccessor.Resolve<IAbilityService>();
 
+        /// <summary>The catalog of ability definitions, a part of the ability service (P5-3b).</summary>
+        public static IAbilityCatalogService AbilityCatalog => FacadeAccessor.Resolve<IAbilityCatalogService>();
+
         /// <summary>Elapsed recharge on ability icons (the facade <c>Service.AbilityCooldownVisual</c> until P2-ZF).</summary>
         public static IAbilityCooldownVisualService AbilityCooldownVisual => FacadeAccessor.Resolve<IAbilityCooldownVisualService>();
 

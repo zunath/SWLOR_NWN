@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
-namespace SWLOR.Game.Server.Domain.Abilities
+namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>Prevents several successful riders from replaying the same receipt burst on one recipient.</summary>
     public sealed class AbilityImpactVisualEffects

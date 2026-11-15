@@ -555,7 +555,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 : emitter.Radius;
             ApplyDiagnosticSweep(emitter.Activator, emitter.Location, radius);
 
-            var targets = Ability.GetHostileTargetsInSphere(emitter.Activator, emitter.Location, radius);
+            var targets = CombatImpactGeometry.GetHostileTargetsInSphere(emitter.Activator, emitter.Location, radius);
             if (targets.Count == 0)
                 return;
 

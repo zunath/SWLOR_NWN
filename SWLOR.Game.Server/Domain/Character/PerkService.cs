@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IQuickCastService _quickCast;
         private readonly ICompanionLookup _companions;
         private readonly IStatusEffectService _statusEffect;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly IAbilityCatalog _catalog;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<ICombatService> _combat;
 
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Domain.Character
             IQuickCastService quickCast,
             ICompanionLookup companions,
             IStatusEffectService statusEffect,
-            Lazy<IAbilityService> ability,
+            IAbilityCatalog catalog,
             Lazy<IStatService> stat,
             Lazy<ICombatService> combat)
         {
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _quickCast = quickCast;
             _companions = companions;
             _statusEffect = statusEffect;
-            _ability = ability;
+            _catalog = catalog;
             _stat = stat;
             _combat = combat;
         }
@@ -1455,7 +1455,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails()
         {
-            return _ability.Value.GetAllAbilityDetails();
+            return _catalog.GetAllAbilityDetails();
         }
 
         protected virtual int GetCreatureStatAdjustment(uint creature, StatType stat)

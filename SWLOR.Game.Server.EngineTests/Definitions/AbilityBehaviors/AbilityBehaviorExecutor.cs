@@ -135,8 +135,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             var skipped = skippedFeats.Count;
             var passed = passedCount;
             var summary = $"{cases.Count} case(s): {passed} passed, {failures.Count} failed, {skipped} skipped.";
-            if (cases.Any(testCase => Ability.IsFeatRegistered(testCase.Feat) &&
-                                      Ability.GetAbilityDetail(testCase.Feat).IsMimicryTechnique))
+            if (cases.Any(testCase => AbilityCatalog.IsFeatRegistered(testCase.Feat) &&
+                                      AbilityCatalog.GetAbilityDetail(testCase.Feat).IsMimicryTechnique))
                 summary += " Techniques use persisted player loadouts; passive traits are checked while equipped and after removal.";
             if (abortedAsSystemic)
             {
@@ -174,8 +174,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 await PerformanceAbilityEngineTests.RunCaseAsync(ctx, behaviorCase.Feat);
                 return;
             }
-            ctx.Assert(Ability.IsFeatRegistered(behaviorCase.Feat), "feat is not registered to any ability");
-            var ability = Ability.GetAbilityDetail(behaviorCase.Feat);
+            ctx.Assert(AbilityCatalog.IsFeatRegistered(behaviorCase.Feat), "feat is not registered to any ability");
+            var ability = AbilityCatalog.GetAbilityDetail(behaviorCase.Feat);
             var requiresPlayerTechniqueLoadout = ability.IsMimicryTechnique;
 
             using var playerFixture = requiresPlayerTechniqueLoadout
@@ -562,7 +562,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
                         // Cleared so a post-consumption observation can only match THIS
                         // ability's completed impact, never an earlier case's.
-                        Ability.ClearLastCompletedAbilityImpactSummary(caster);
+                        AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
 
                         GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
                         try
@@ -587,7 +587,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                             // (the impact records targets it merely VISITED, even at zero
                             // damage). AttributedDamage counts only damage the ability's own
                             // impact actually queued.
-                            var impactSummary = Ability.GetLastCompletedAbilityImpactSummary(caster);
+                            var impactSummary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
                             ctx.Assert(
                                 impactSummary is { AttributedDamage: > 0 },
                                 $"the queued ability's completed impact to attribute damage of its own (summary: {(impactSummary == null ? "none" : $"targets={impactSummary.ImpactedTargetCount}, attributedDamage={impactSummary.AttributedDamage}")})");

@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(GetDistanceBetween(center, outsideNear) > FieldRadius + 0.5f, "the near hostile stands outside the field");
             ctx.Assert(GetDistanceBetween(center, outsideFar) > FieldRadius + 0.5f, "the far hostile stands outside the field");
 
-            var ability = Ability.GetAbilityDetail(FeatType.CreepingTerror3);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.CreepingTerror3);
             ctx.SetNPCPerkLevel(caster, ability.EffectiveLevelPerkType, ability.AbilityLevel);
             ctx.SetNPCResources(caster, 1000, 1000);
             CreaturePlugin.AddFeat(caster, FeatType.CreepingTerror3);

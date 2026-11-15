@@ -122,9 +122,9 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
         var hostileImpact = ExtractMethod(ability, "public int ApplyHostileCombatImpact(");
         hostileImpact.Should().Contain("if (damage > 0)");
-        hostileImpact.Should().Contain("trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);");
+        hostileImpact.Should().Contain("ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);");
         hostileImpact.IndexOf(
-                "trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);",
+                "ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);",
                 StringComparison.Ordinal)
             .Should()
             .BeLessThan(hostileImpact.IndexOf("ApplyCombatImpactStatusEffect(", StringComparison.Ordinal),
@@ -132,9 +132,12 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         ability.Should().Contain("_statusAppliedNextAttackDamageBonusConsumed",
             "an area ability must not consume a newly granted proc on each additional target");
         ability.Should().Contain("public int NextAbilityDamageBonus { get; private set; }");
+        ExtractMethod(ability, "private void ConsumeStatusAppliedNextAttackDamageBonus(AbilityImpactTracker impact, uint activator)")
+            .Should().Contain("impact.StatusAppliedNextAttackDamageBonusConsumed",
+                "the bonus service is asked once per impact, not once per area target");
         var consumeStatusBonus = ExtractMethod(
             ability,
-            "public void ConsumeStatusAppliedNextAttackDamageBonus(uint activator)");
+            "public void CompleteStatusAppliedNextAttackDamageBonusConsumption()");
         consumeStatusBonus.Should().Contain(
             "NextAbilityDamageBonus -= StatusAppliedNextAttackDamageBonus;",
             "the consumed Charged Blows value must be removed from the tracked aggregate before another hit or area target calculates damage");
@@ -230,7 +233,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             .EnumerateFiles(Path.Combine(root.FullName, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
             .Where(path => !CombatSource.IsCombatFile(path))
             .Where(path => File.ReadAllText(path) is var text && (text.Contains("GameServices.CombatDamageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
-                                                                  text.Contains("_damageTaken.Value.ApplyDamageReflectionEffects(", StringComparison.Ordinal)))
+                                                                  text.Contains("_damageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal)))
             // The part files of AbilityService count as the one ability source they were split from.
             .Select(path => AbilitySource.IsAbilityFile(path) ? "AbilityService" : Path.GetRelativePath(root.FullName, path).Replace('\\', '/'))
             .Distinct()

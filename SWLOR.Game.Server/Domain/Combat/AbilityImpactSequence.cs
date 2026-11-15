@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Domain.Combat;
 
-namespace SWLOR.Game.Server.Domain.Abilities
+namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// Shares once-per-cast triggers across delayed shapes and repeated field impacts.

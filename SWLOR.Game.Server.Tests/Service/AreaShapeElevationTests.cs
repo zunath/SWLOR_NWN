@@ -236,10 +236,10 @@ public class AreaShapeElevationTests
         float lengthOrRadius,
         float width)
     {
-        var method = AbilityInternals.Method("IsPositionInCombatImpactShape");
+        var method = AbilityInternals.GeometryMethod("IsPositionInCombatImpactShape");
 
         return (bool)method.Invoke(
-            AbilityInternals.NoNeighbours(),
+            AbilityInternals.Geometry(),
             new object[]
             {
                 position,

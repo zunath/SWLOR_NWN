@@ -22,22 +22,22 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Dictionary<uint, PairedRangedTraitState> _states = new();
 
         private readonly ITwinPistolMasteryService _mastery;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly IAbilityImpactState _impactState;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatQueriesService _queries;
-        private readonly Lazy<ICombatResourcesService> _resources;
+        private readonly ICombatResourcesService _resources;
 
         public PairedRangedTraitsService(
             ITwinPistolMasteryService mastery,
-            Lazy<IAbilityService> ability,
+            IAbilityImpactState impactState,
             IStatService stat,
             IStatusEffectService statusEffect,
             ICombatQueriesService queries,
-            Lazy<ICombatResourcesService> resources)
+            ICombatResourcesService resources)
         {
             _mastery = mastery;
-            _ability = ability;
+            _impactState = impactState;
             _stat = stat;
             _statusEffect = statusEffect;
             _queries = queries;
@@ -55,6 +55,22 @@ namespace SWLOR.Game.Server.Domain.Combat
             state.RecordAbilityHit(now, GetConfiguration(actor), activation.Snapshot.ActivationId,
                 activation.CadenceEarnedOnHitAt(now));
             Sync(actor, state);
+        }
+
+        /// <summary>
+        /// Completes the committed traits of the activator's weapon ability impact on each landed weapon-skill hit, and reports
+        /// the impact's first hit for Cadence (moved from <c>AbilityService</c>, part 2 of the ability split).
+        /// </summary>
+        public void RecordSuccessfulWeaponAbilityHit(uint activator, uint target, SkillType skill)
+        {
+            if (!CombatRules.IsWeaponSkillType(skill)) return;
+            var traits = _impactState.GetTrackedAbilityImpact(activator)?.Sequence.WeaponTraits;
+            if (traits?.IsCommitted != true) return;
+            CompleteWeaponAbilityHit(activator, traits);
+            // A field, channel, or multi-target action is one source activation; only its first hit earns Cadence.
+            if (traits.CadenceHitObserved) return;
+            traits.CadenceHitObserved = true;
+            RecordWeaponAbilityHit(activator, traits);
         }
 
         public WeaponAbilityTraitActivation CaptureWeaponAbility(uint actor, AbilityDetail ability)
@@ -419,15 +435,15 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual int GetAbilityStaminaPaid(uint actor, AbilityDetail ability) =>
-            _resources.Value.GetAbilityStaminaPaid(actor, ability);
+            _resources.GetAbilityStaminaPaid(actor, ability);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual int RestoreAbilityHitStamina(uint actor, AbilityDetail ability, int requested) =>
-            _resources.Value.RestoreAbilityHitStamina(actor, ability, requested);
+            _resources.RestoreAbilityHitStamina(actor, ability, requested);
 
         /// <summary>The ability of the actor's active ability impact, from the unconverted <c>Ability</c> service.</summary>
         protected virtual AbilityDetail GetActiveAbility(uint actor) =>
-            _ability.Value.GetActiveAbilityImpactSummary(actor)?.Ability;
+            _impactState.GetActiveAbilityImpactSummary(actor)?.Ability;
 
         /// <summary>The unconverted <c>Stat</c> service.</summary>
         protected virtual int GetStatAdjustment(uint actor, StatType stat) => _stat.GetStatAdjustment(actor, stat);

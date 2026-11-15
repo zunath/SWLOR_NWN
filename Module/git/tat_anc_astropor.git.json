@@ -22455,7 +22455,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "tat_broker"
         },
         "CRAdjust": {
           "type": "int",
@@ -22475,7 +22475,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A Rodian gambler who watches every new arrival and seems to be working out the odds on each of them."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -22490,6 +22492,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 50
@@ -22580,11 +22602,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 6
+                "value": 41
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 6
+                "value": 93
               },
               "Cost": {
                 "type": "dword",
@@ -22597,13 +22619,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A leather tunic with uncomplicated fastenings and a lining easy to reach for repairs. It is the sort of modest purchase that can follow a traveller through several fortunes without ever becoming the reason for one."
+                  "0": "Clothing worn by Dreeko Vant."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A leather tunic with uncomplicated fastenings and a lining easy to reach for repairs. It is the sort of modest purchase that can follow a traveller through several fortunes without ever becoming the reason for one."
+                  "0": "Clothing worn by Dreeko Vant."
                 }
               },
               "Identified": {
@@ -22612,26 +22634,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 5
+                "value": 147
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 6
+                "value": 23
               },
               "LocalizedName": {
-                "id": 12835,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Basic Leather Tunic"
+                  "0": "[NPC] Dreeko Vant's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 7
+                "value": 9
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 7
+                "value": 28
               },
               "Plot": {
                 "type": "byte",
@@ -22639,132 +22660,7 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 50
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 117
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 49
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 116
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 130
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
+                "value": []
               },
               "StackSize": {
                 "type": "word",
@@ -22776,11 +22672,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "leather_tunic_b"
+                "value": "tat_broker_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "leather_tunic_b"
+                "value": "tat_broker_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -22857,26 +22773,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 189
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             },
             {
@@ -23096,7 +22992,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Rodian Smuggler"
+            "0": "Dreeko"
           }
         },
         "fortbonus": {
@@ -23413,7 +23309,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Vant"
           }
         },
         "LawfulChaotic": {
@@ -23446,7 +23342,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -23474,7 +23370,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -23735,7 +23631,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "RodianSmuggler"
+          "value": "tat_broker"
         },
         "Tail_New": {
           "type": "dword",
@@ -23747,7 +23643,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "npc_rodiansmugg"
+          "value": "tat_broker"
         },
         "WalkRate": {
           "type": "int",
@@ -23994,7 +23890,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "tat_guard"
         },
         "CRAdjust": {
           "type": "int",
@@ -24014,7 +23910,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A caravan guard captain with a sand-scoured rifle and a list of names folded in his breast pocket."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -24029,6 +23927,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 50
@@ -24119,11 +24037,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 75
+                "value": 98
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 60
               },
               "Cost": {
                 "type": "dword",
@@ -24136,13 +24054,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+                  "0": "Clothing worn by Captain Jorn Hale."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A bounty hunter's working outfit with concealed closures and space for a few useful necessities. It looks respectable enough to meet a client and worn enough to suggest the meeting is only the beginning of the job."
+                  "0": "Clothing worn by Captain Jorn Hale."
                 }
               },
               "Identified": {
@@ -24151,26 +24069,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 60
+                "value": 127
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 74
+                "value": 23
               },
               "LocalizedName": {
-                "id": 12835,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Bounty Hunter Outfit A"
+                  "0": "[NPC] Captain Jorn Hale's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 79
+                "value": 5
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 79
+                "value": 25
               },
               "Plot": {
                 "type": "byte",
@@ -24178,70 +24095,7 @@
               },
               "PropertiesList": {
                 "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 50
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 117
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 48
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 100
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 131
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  }
-                ]
+                "value": []
               },
               "StackSize": {
                 "type": "word",
@@ -24253,11 +24107,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "leather_tunic_b"
+                "value": "tat_guard_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "leather_tunic005"
+                "value": "tat_guard_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -24334,26 +24208,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 188
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             },
             {
@@ -24661,7 +24515,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Human Mercenary"
+            "0": "Captain Jorn"
           }
         },
         "fortbonus": {
@@ -25040,7 +24894,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Hale"
           }
         },
         "LawfulChaotic": {
@@ -25073,7 +24927,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -25101,7 +24955,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -25362,7 +25216,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "HumanMerc"
+          "value": "tat_guard"
         },
         "Tail_New": {
           "type": "dword",
@@ -25374,7 +25228,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "human_merc01"
+          "value": "tat_guard"
         },
         "WalkRate": {
           "type": "int",

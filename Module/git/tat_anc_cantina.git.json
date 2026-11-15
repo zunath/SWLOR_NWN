@@ -1412,7 +1412,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "tat_farmer"
         },
         "CRAdjust": {
           "type": "int",
@@ -1432,7 +1432,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A sunburned moisture farmer nursing a drink he clearly cannot afford, with the hands of a man who fixes his own machines."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -1447,6 +1449,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 4
@@ -1537,11 +1559,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 168
+                "value": 148
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 15
+                "value": 128
               },
               "Cost": {
                 "type": "dword",
@@ -1554,13 +1576,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A desert traveller's outfit with loose layers and practical bindings around its more exposed seams. Tatooine dust has little respect for careful tailoring, but the owner has made a reasonable argument on behalf of comfort."
+                  "0": "Clothing worn by Odrin Vass."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A desert traveller's outfit with loose layers and practical bindings around its more exposed seams. Tatooine dust has little respect for careful tailoring, but the owner has made a reasonable argument on behalf of comfort."
+                  "0": "Clothing worn by Odrin Vass."
                 }
               },
               "Identified": {
@@ -1569,26 +1591,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 119
+                "value": 130
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 127
+                "value": 3
               },
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Vet Tatooine",
-                  "2": "Vet Tatooine"
+                  "0": "[NPC] Odrin Vass's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 114
+                "value": 6
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 114
+                "value": 1
               },
               "Plot": {
                 "type": "byte",
@@ -1608,11 +1629,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "vet_tatooine004"
+                "value": "tat_farmer_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "vet_tatooine004"
+                "value": "tat_farmer_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -1689,26 +1730,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 54
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             }
           ]
@@ -1816,7 +1837,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Farmer"
+            "0": "Odrin"
           }
         },
         "fortbonus": {
@@ -1854,7 +1875,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Vass"
           }
         },
         "LawfulChaotic": {
@@ -1915,7 +1936,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2176,7 +2197,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "neu_fermier001"
+          "value": "tat_farmer"
         },
         "Tail_New": {
           "type": "dword",
@@ -2188,7 +2209,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "neu_fermier001"
+          "value": "tat_farmer"
         },
         "WalkRate": {
           "type": "int",

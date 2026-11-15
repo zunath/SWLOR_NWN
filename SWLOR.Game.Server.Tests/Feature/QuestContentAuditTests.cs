@@ -205,7 +205,9 @@ public sealed partial class QuestConversationTests
                 .SelectMany(table => table.Value.Spawns).Where(spawn => spawn.Type == ObjectType.Creature)
                 .Select(spawn => spawn.Resref)).ToHashSet();
         var groups = ModuleDocuments("utc").Where(obj => creatures.Contains(Field(obj, "TemplateResRef")))
-            .Concat(world).Select(obj => Local(obj, "QUEST_NPC_GROUP_ID")).ToHashSet();
+            .Concat(world)
+            .SelectMany(obj => new[] { Local(obj, "QUEST_NPC_GROUP_ID"), Local(obj, "QUEST_NPC_GROUP_ID_2") })
+            .ToHashSet();
         var count = 0;
         foreach (var quest in BuildQuests().Values)
         foreach (var objective in quest.States.Values.SelectMany(state => state.GetObjectives()).OfType<KillTargetObjective>())

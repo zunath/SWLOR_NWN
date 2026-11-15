@@ -27798,6 +27798,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Rancor-Hide Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rancorhide_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Kwi Heavy Belt"
                           },
                           "RESREF": {
@@ -27814,6 +27825,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "kwi_hyper_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Caravan Master's Sash"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "caravan_sash"
                           }
                         },
                         {
@@ -31091,6 +31113,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "sysshut_w3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Hunter's Vambrace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hunter_vambrace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Foundry Breaker's Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "fdybreak_bracer"
                           }
                         },
                         {
@@ -39792,6 +39836,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dark_bass"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Foundry Memory Core"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fdy_memory_core"
                     }
                   },
                   {
@@ -54835,6 +54890,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Coral Sample Canister"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mon_coral_canist"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Stolen Artifact"
                     },
                     "RESREF": {
@@ -59338,11 +59404,33 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Chieftain's Torc"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "chieftain_torc"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Kwi Heavy Necklace"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "kwi_heavy_neck"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Spirit Charm"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "kwi_spirit_charm"
                           }
                         },
                         {
@@ -59651,6 +59739,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "sc_pendant"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tidecaller's Pendant"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tidecall_pendant"
                           }
                         },
                         {
@@ -61092,6 +61191,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Broodguard Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "broodguard_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Kwi Heavy Ring"
                           },
                           "RESREF": {
@@ -61108,6 +61218,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "kwi_hyper_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Canopy Stalker's Band"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "canopy_band"
                           }
                         },
                         {
@@ -61273,6 +61394,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "pit_signet"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Reefwarden's Band"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "reefwarden_band"
                           }
                         },
                         {
@@ -84353,6 +84485,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "sandcall_wraps"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Kwi Ritual Fetish"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dath_kwi_fetish"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tusken War Banner"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tat_war_banner"
                           }
                         },
                         {

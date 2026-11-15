@@ -620,6 +620,30 @@ namespace SWLOR.Game.Server.Service.AchievementService
         // END space achievements
         [Achievement("Stablemaster", "Earned both extra stable slots from Dorra Vesk at the Anchorhead stables on Tatooine.", true)]
         Stablemaster = 260,
+        [Achievement("Poisoned Tide", "Broke the eco-terrorist cell poisoning the reefs of Mon Cala.", true)]
+        PoisonedTide = 261,
+        [Achievement("Legends of the Deep", "Hunted Reefmaw, Glassjaw and the Inkveil Matron on Mon Cala.", true)]
+        LegendsOfTheDeep = 262,
+        [Achievement("The Kwi Encroachment", "Broke the Kwi shaman circle threatening the Czerka landing on Dathomir.", true)]
+        TheKwiEncroachment = 263,
+        [Achievement("The Trophy Wall", "Brought down the four great beasts of Dathomir.", true)]
+        DathomirTrophyWall = 264,
+        [Achievement("The Warlord's Toll", "Ended the Tusken Warlord's toll on the Anchorhead caravans.", true)]
+        TheWarlordsToll = 265,
+        [Achievement("Break the Stronghold", "Killed the Byysk Chieftain in the Qion Hive ziggurat on Hutlar.", true)]
+        BreakTheStronghold = 266,
+        [Achievement("Station Hand", "Helped sickbay, Maintenance and stores on CZ-220.", true)]
+        StationHand = 267,
+        [Achievement("Eyes of the Clans", "Drove the Mandalorian scouts and hunters back from Veles.", true)]
+        EyesOfTheClans = 268,
+        [Achievement("Storm the Fortress", "Killed the renegade Sith Temple Master in the Sith Fortress on Korriban.", true)]
+        StormTheFortress = 269,
+        [Achievement("The Serpent's Head", "Killed the leader of the Black Serpents on the abandoned Smuggler's Moon Station.", true)]
+        TheSerpentsHead = 270,
+        [Achievement("The South Fields", "Broke the Dantari attacks on the South Fields of Dantooine.", true)]
+        TheSouthFields = 271,
+        [Achievement("Break the Garrison", "Broke the Neo-Crusader command of the Ruined Garrison on Eshan.", true)]
+        BreakTheGarrison = 272,
 	}
 
     public class AchievementAttribute: Attribute

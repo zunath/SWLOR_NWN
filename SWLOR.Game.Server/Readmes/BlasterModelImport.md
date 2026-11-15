@@ -548,7 +548,9 @@ Trophy Stands, which are new blueprints (resref = model name) rather than statio
 and withered models have a null `blueprint` because Farming creates them at run time (their rows are the `FarmingRules`
 stage appearances). Each stage is only its plants: Meshy builds a whole bed per concept image and the frames came out
 different at every stage, so the plants were cut out of each stage bed (the faces above its soil and inside the rim) and
-stand on the empty bed's soil at `FarmingRules.GetCropModelHeight`. Re-exporting a model that is already in the haks
+stand on the empty bed's soil at `FarmingRules.GetCropModelHeight`. The sapling is a separate Meshy text-to-3d young tree.
+Check a Meshy bed's soil from above and at a low angle before shipping: the empty bed came with frame shards poking
+through the soil and a few down-facing dents, which show in the game as specks. Re-exporting a model that is already in the haks
 but not yet on the live server needs `replaces_haks_resources: true` in the manifest.
 
 ### Meshy placeables

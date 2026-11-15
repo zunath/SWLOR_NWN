@@ -69,7 +69,7 @@ public class FarmingReadinessTests
         FarmingRules.GetCropAppearance(GardenPlotStage.Withered, false).Should().Be(FarmingRules.WitheredCropAppearance);
         FarmingRules.GetCropAppearance(GardenPlotStage.Ripe, true).Should().Be(FarmingRules.SaplingAppearance);
         FarmingRules.GetCropAppearance(GardenPlotStage.Withered, true).Should().Be(FarmingRules.WitheredCropAppearance);
-        new[] { FarmingRules.EmptyPlotAppearance, FarmingRules.GrowingCropAppearance, FarmingRules.RipeCropAppearance, FarmingRules.WitheredCropAppearance }
+        new[] { FarmingRules.EmptyPlotAppearance, FarmingRules.GrowingCropAppearance, FarmingRules.RipeCropAppearance, FarmingRules.WitheredCropAppearance, FarmingRules.SaplingAppearance }
             .Should().OnlyHaveUniqueItems("each stage looks different");
         foreach (var appearance in new[] { FarmingRules.GrowingCropAppearance, FarmingRules.RipeCropAppearance, FarmingRules.WitheredCropAppearance, FarmingRules.SaplingAppearance })
             FarmingRules.GetCropModelHeight(appearance).Should().BeInRange(FarmingRules.PlotSoilHeight - 0.1f, FarmingRules.PlotSoilHeight,
@@ -94,6 +94,7 @@ public class FarmingReadinessTests
         ModelOf(FarmingRules.GrowingCropAppearance).Should().Be("swc_gplot_sprout");
         ModelOf(FarmingRules.RipeCropAppearance).Should().Be("swc_gplot_ripe");
         ModelOf(FarmingRules.WitheredCropAppearance).Should().Be("swc_gplot_dead");
+        ModelOf(FarmingRules.SaplingAppearance).Should().Be("swc_gplot_sapl");
         File.ReadAllText(Path.Combine(root.FullName, "Module", "utp", "growing_plant.utp.json"))
             .Should().MatchRegex($@"""Appearance"": \{{\s*""type"": ""dword"",\s*""value"": {FarmingRules.EmptyPlotAppearance}\b", "the Garden Plot is the empty bed");
     }

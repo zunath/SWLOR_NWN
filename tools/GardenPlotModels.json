@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "notes": "Garden plot placeables from Meshy. The Garden Plot blueprint is the empty bed; the sprouting, ripe and withered models are only the plants, which Farming stands on the bed's soil at run time (FarmingRules stage appearances and heights), so those models have no blueprint.",
+  "notes": "Garden plot placeables from Meshy. The Garden Plot blueprint is the empty bed; the sprouting, ripe, withered and sapling models are only the plants, which Farming stands on the bed's soil at run time (FarmingRules stage appearances and heights), so those models have no blueprint.",
   "stations": [
     {
       "blueprint": "growing_plant",
@@ -28,6 +28,13 @@
       "structure_type": null,
       "model": "swc_gplot_dead",
       "label": "[SWLOR] Farming - Garden Plot (Withered)",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": null,
+      "structure_type": null,
+      "model": "swc_gplot_sapl",
+      "label": "[SWLOR] Farming - Garden Plot (Sapling)",
       "sound_app_type": null
     }
   ]

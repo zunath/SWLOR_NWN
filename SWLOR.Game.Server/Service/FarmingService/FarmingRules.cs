@@ -44,12 +44,13 @@ namespace SWLOR.Game.Server.Service.FarmingService
         public const int NoPlotLimit = int.MaxValue;
 
         // What a garden plot shows at each stage (placeables.2da rows, installed by tools/GardenPlotModels.json). The plot itself is the
-        // empty bed; a crop's stage is the plants alone, standing on the bed's soil. A sapling is a young tree in the same soil.
+        // empty bed; a crop's stage is the plants alone, standing on the bed's soil. A sapling is a young tree in the same soil, the
+        // same until it is felled.
         public const int EmptyPlotAppearance = 32111;
         public const int GrowingCropAppearance = 32112;
         public const int RipeCropAppearance = 32113;
         public const int WitheredCropAppearance = 32114;
-        public const int SaplingAppearance = 20911;
+        public const int SaplingAppearance = 32115;
 
         private static readonly int[] TierLevels = { 5, 15, 25, 35, 45 };
         private static readonly int[] TierGrowHours = { 12, 16, 20, 24, 24 };
@@ -122,6 +123,7 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 GrowingCropAppearance => PlotSoilHeight - 0.004f,
                 RipeCropAppearance => PlotSoilHeight - 0.067f,
                 WitheredCropAppearance => PlotSoilHeight - 0.031f,
+                SaplingAppearance => PlotSoilHeight - 0.03f,
                 _ => PlotSoilHeight
             };
         }

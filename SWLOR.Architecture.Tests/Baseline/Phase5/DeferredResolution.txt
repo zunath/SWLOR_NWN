@@ -1,6 +1,8 @@
-# Phase 5 debt (P5-0): deferred resolution in SWLOR.Game.Server (target 4).
-# Line: <file> | <parameters>: constructor parameters of type Lazy<T> or Func<T> where T is a service (a type
-# Composition/ServiceRegistrations.Register registers).
+# Phase 5 debt (P5-0, by direction since P5-1b): deferred resolution in SWLOR.Game.Server (target 4).
+# Line: <file> -> <domain> (<direction>) | <parameters>: constructor parameters of type Lazy<T> or Func<T> where T is a
+# service (a type Composition/ServiceRegistrations.Register registers) of <domain>, from the file's domain: up or down
+# the domain order (DomainMap.json order), or inside one domain. An up Lazy<> hides the half of a construction cycle
+# that an inversion removes; a down one becomes a plain parameter once its up half is gone (MaintainabilityRefactorDomainOrder.md).
 # Line: <file> (IServiceProvider) | <uses>: names outside Composition/ that bind to System.IServiceProvider (a hard rule
 # as well: ConvertedServicesTests.Nothing_locates_a_service_outside_composition).
 #
@@ -9,45 +11,80 @@
 # SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
-SWLOR.Game.Server/Domain/Abilities/AbilityCooldownVisualService.cs | 1
-SWLOR.Game.Server/Domain/Abilities/AbilityService.cs | 9
-SWLOR.Game.Server/Domain/Abilities/MimicryService.cs | 5
-SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs | 1
-SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs | 3
-SWLOR.Game.Server/Domain/Character/PerkService.cs | 4
-SWLOR.Game.Server/Domain/Character/PlayerDescriptorService.cs | 1
-SWLOR.Game.Server/Domain/Character/PlayerNameService.cs | 2
-SWLOR.Game.Server/Domain/Character/SkillService.cs | 2
-SWLOR.Game.Server/Domain/Character/StatService.cs | 6
-SWLOR.Game.Server/Domain/Character/StatusEffectService.cs | 4
-SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs | 1
-SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs | 1
-SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs | 1
-SWLOR.Game.Server/Domain/Combat/CombatPointService.cs | 1
-SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs | 3
-SWLOR.Game.Server/Domain/Combat/EnmityService.cs | 5
-SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs | 5
-SWLOR.Game.Server/Domain/Combat/PairedRangedTraitsService.cs | 2
-SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs | 1
-SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs | 1
-SWLOR.Game.Server/Domain/Combat/ResistanceService.cs | 2
-SWLOR.Game.Server/Domain/Combat/StealthService.cs | 5
-SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs | 2
-SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs | 8
-SWLOR.Game.Server/Domain/Companions/DroidEquipmentDiagnosticsService.cs | 1
-SWLOR.Game.Server/Domain/Companions/IncubationFieldNoteService.cs | 1
-SWLOR.Game.Server/Domain/Crafting/CraftService.cs | 1
-SWLOR.Game.Server/Domain/Creatures/AIService.cs | 9
-SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs | 4
-SWLOR.Game.Server/Domain/Items/ItemService.cs | 4
-SWLOR.Game.Server/Domain/Quests/CapstoneProofService.cs | 1
-SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs | 1
-SWLOR.Game.Server/Domain/Social/ChatPortraitTellsService.cs | 1
-SWLOR.Game.Server/Domain/Social/PartyService.cs | 2
-SWLOR.Game.Server/Domain/Social/PerformanceAudienceService.cs | 1
-SWLOR.Game.Server/Domain/Social/PerformanceSnapshotService.cs | 1
-SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs | 1
-SWLOR.Game.Server/Domain/Social/PlayerListService.cs | 4
-SWLOR.Game.Server/Domain/World/AreaService.cs | 1
-SWLOR.Game.Server/Domain/World/HoloComService.cs | 1
-SWLOR.Game.Server/Domain/World/MusicService.cs | 1
+SWLOR.Game.Server/Domain/Abilities/AbilityCooldownVisualService.cs -> Abilities (inside) | 1
+SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Combat (down) | 8
+SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Space (up) | 1
+SWLOR.Game.Server/Domain/Abilities/MimicryService.cs -> Abilities (inside) | 1
+SWLOR.Game.Server/Domain/Abilities/MimicryService.cs -> Character (down) | 3
+SWLOR.Game.Server/Domain/Abilities/MimicryService.cs -> Combat (down) | 1
+SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Abilities (inside) | 1
+SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs -> Administration (inside) | 1
+SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs -> Space (up) | 1
+SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs -> UI (down) | 1
+SWLOR.Game.Server/Domain/Character/PerkService.cs -> Abilities (up) | 1
+SWLOR.Game.Server/Domain/Character/PerkService.cs -> Character (inside) | 1
+SWLOR.Game.Server/Domain/Character/PerkService.cs -> Combat (up) | 1
+SWLOR.Game.Server/Domain/Character/PerkService.cs -> Companions (up) | 1
+SWLOR.Game.Server/Domain/Character/PlayerDescriptorService.cs -> Character (inside) | 1
+SWLOR.Game.Server/Domain/Character/PlayerNameService.cs -> Character (inside) | 2
+SWLOR.Game.Server/Domain/Character/SkillService.cs -> Character (inside) | 1
+SWLOR.Game.Server/Domain/Character/SkillService.cs -> Companions (up) | 1
+SWLOR.Game.Server/Domain/Character/StatService.cs -> Combat (up) | 5
+SWLOR.Game.Server/Domain/Character/StatService.cs -> Companions (up) | 1
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Abilities (up) | 1
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Character (inside) | 1
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Combat (up) | 2
+SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Combat (inside) | 1
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Combat (inside) | 1
+SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Combat (inside) | 1
+SWLOR.Game.Server/Domain/Combat/CombatPointService.cs -> Space (up) | 1
+SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Abilities (up) | 1
+SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Character (down) | 1
+SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Combat (inside) | 1
+SWLOR.Game.Server/Domain/Combat/EnmityService.cs -> Character (down) | 1
+SWLOR.Game.Server/Domain/Combat/EnmityService.cs -> Combat (inside) | 3
+SWLOR.Game.Server/Domain/Combat/EnmityService.cs -> Companions (up) | 1
+SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Abilities (up) | 1
+SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Character (down) | 2
+SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Combat (inside) | 2
+SWLOR.Game.Server/Domain/Combat/PairedRangedTraitsService.cs -> Abilities (up) | 1
+SWLOR.Game.Server/Domain/Combat/PairedRangedTraitsService.cs -> Combat (inside) | 1
+SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs -> Companions (up) | 1
+SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs -> Character (down) | 1
+SWLOR.Game.Server/Domain/Combat/ResistanceService.cs -> Character (down) | 2
+SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Character (down) | 4
+SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Combat (inside) | 1
+SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Character (down) | 1
+SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Companions (up) | 1
+SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Character (down) | 3
+SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Combat (down) | 2
+SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Creatures (down) | 2
+SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Items (down) | 1
+SWLOR.Game.Server/Domain/Companions/DroidEquipmentDiagnosticsService.cs -> Companions (inside) | 1
+SWLOR.Game.Server/Domain/Companions/IncubationFieldNoteService.cs -> Companions (inside) | 1
+SWLOR.Game.Server/Domain/Crafting/CraftService.cs -> Crafting (inside) | 1
+SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Abilities (down) | 1
+SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Character (down) | 4
+SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Combat (down) | 2
+SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Companions (up) | 1
+SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Creatures (inside) | 1
+SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Abilities (down) | 1
+SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Combat (down) | 2
+SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Companions (up) | 1
+SWLOR.Game.Server/Domain/Items/ItemService.cs -> Character (down) | 2
+SWLOR.Game.Server/Domain/Items/ItemService.cs -> Combat (up) | 1
+SWLOR.Game.Server/Domain/Items/ItemService.cs -> Companions (up) | 1
+SWLOR.Game.Server/Domain/Quests/CapstoneProofService.cs -> Abilities (down) | 1
+SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs -> Quests (inside) | 1
+SWLOR.Game.Server/Domain/Social/ChatPortraitTellsService.cs -> Character (down) | 1
+SWLOR.Game.Server/Domain/Social/PartyService.cs -> Abilities (down) | 1
+SWLOR.Game.Server/Domain/Social/PartyService.cs -> Combat (down) | 1
+SWLOR.Game.Server/Domain/Social/PerformanceAudienceService.cs -> Social (inside) | 1
+SWLOR.Game.Server/Domain/Social/PerformanceSnapshotService.cs -> Social (inside) | 1
+SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs -> Social (inside) | 1
+SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Character (down) | 2
+SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Space (down) | 1
+SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> World (down) | 1
+SWLOR.Game.Server/Domain/World/AreaService.cs -> World (inside) | 1
+SWLOR.Game.Server/Domain/World/HoloComService.cs -> Space (up) | 1
+SWLOR.Game.Server/Domain/World/MusicService.cs -> Social (up) | 1

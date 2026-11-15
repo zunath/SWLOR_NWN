@@ -67,7 +67,7 @@ internal static class StaticFieldWriteScanner
 
     private static bool IsWrittenIn(CSharpCompilation compilation, SyntaxTree tree, ISymbol field)
     {
-        var model = compilation.GetSemanticModel(tree, ignoreAccessibility: true);
+        var model = SourceSnapshot.Bind(compilation, tree);
         foreach (var name in tree.GetRoot().DescendantNodes().OfType<IdentifierNameSyntax>().Where(name => name.Identifier.ValueText == field.Name))
         {
             if (!IsWriteContext(name) || IsInitialization(name, field))
@@ -143,7 +143,7 @@ internal static class StaticFieldWriteScanner
                     _ => null
                 };
                 if (declared != null)
-                    return compilation.GetSemanticModel(tree, ignoreAccessibility: true).GetDeclaredSymbol(declared);
+                    return SourceSnapshot.Bind(compilation, tree).GetDeclaredSymbol(declared);
             }
         }
 

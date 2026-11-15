@@ -1,14 +1,13 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Architecture.Tests.Debt;
-using SWLOR.Architecture.Tests.Domains;
 using SWLOR.Architecture.Tests.Scanning;
 
 namespace SWLOR.Architecture.Tests;
 
 /// <summary>
-/// The Phase 5 debt baseline format and comparison, and the measures read from the compiled server (domain cycles, static
-/// state) on hand-made inputs.
+/// The Phase 5 debt baseline format and comparison, and the measure read from the compiled server (static state) on
+/// hand-made inputs. The domain order measures are in <see cref="DomainOrderMeasureTests"/>.
 /// </summary>
 [TestFixture]
 public class DebtBaselineAndAssemblyMeasureTests
@@ -73,33 +72,6 @@ public class DebtBaselineAndAssemblyMeasureTests
         comparison.IsClean.Should().BeFalse();
         message.Should().Contain("< Shrinks.cs | 5 -> 4 lines").And.Contain("- Gone.cs | 1 lines").And.Contain("Debt paid");
         DebtComparison.Compare(new Dictionary<string, int> { ["Shrinks.cs"] = 4 }, [new DebtEntry("Shrinks.cs", 4)]).IsClean.Should().BeTrue();
-    }
-
-    [Test]
-    public void Domain_cycles_are_pairs_with_edges_both_ways_counting_unit_edges()
-    {
-        static UnitEdge Edge(string from, string to, string fromDomain, string toDomain, int members)
-        {
-            DependencyUnit.TryParse(from, out var fromUnit).Should().BeTrue();
-            DependencyUnit.TryParse(to, out var toUnit).Should().BeTrue();
-            return new UnitEdge(fromUnit, toUnit, fromDomain, toDomain, Enumerable.Range(0, members).Select(index => $"m{index}").ToHashSet());
-        }
-
-        var cycles = DomainCycleScanner.Scan(
-        [
-            Edge("Domain/Combat", "Domain/Character", "Combat", "Character", 5),
-            Edge("Domain/Combat", "Feature/PerkDefinition", "Combat", "Character", 1),
-            Edge("Domain/Character", "Domain/Combat", "Character", "Combat", 2),
-            Edge("Domain/Quests", "Domain/Character", "Quests", "Character", 1),
-            Edge("Domain/Character", "Platform/Core", "Character", "Platform", 3),
-            Edge("Platform/Native", "Domain/Character", "Platform", "Character", 1)
-        ]);
-
-        cycles.Select(cycle => cycle.Key).Should().Equal("Character <-> Combat", "Character <-> Platform");
-        var combat = cycles[0];
-        (combat.ForwardEdges, combat.BackwardEdges).Should().Be((1, 2));
-        combat.Detail.Should().Be("Character -> Combat: 1 edge(s); Combat -> Character: 2 edge(s)");
-        DebtMeasures.DomainCycles(cycles).Entries.Should().Contain(new DebtEntry("Character <-> Combat", 3, combat.Detail));
     }
 
     [Test]

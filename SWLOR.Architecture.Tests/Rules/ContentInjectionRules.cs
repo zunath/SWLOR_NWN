@@ -434,7 +434,7 @@ internal sealed class ContentInjectionRules
     private SemanticModel Model(SyntaxTree tree)
     {
         if (!_models.TryGetValue(tree, out var model))
-            _models[tree] = model = _compilation.GetSemanticModel(tree, ignoreAccessibility: true);
+            _models[tree] = model = SourceSnapshot.Bind(_compilation, tree);
         return model;
     }
 

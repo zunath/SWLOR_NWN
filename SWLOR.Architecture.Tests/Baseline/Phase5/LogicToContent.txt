@@ -3,8 +3,9 @@
 # <content unit> is a Feature folder (Feature/StatusEffectDefinition) or a type directly in Feature (Feature.UsePerkFeat);
 # <types> counts the distinct types of that unit the file names (in code, attributes and using static directives;
 # constants and nameof included). Names are bound the way the compiler binds them, so the result does not depend on the
-# build configuration. A name of the file's own domain's content counts. The composition root (Composition) is wiring
-# and is not listed. A content member reached without naming its type (a variable, an extension method) is not seen.
+# build configuration. A name of the file's own domain's content counts. The composition root (Composition) registers
+# content and is not listed; the native sinks (NativeSinks) are wiring in the domain order but stay under this rule.
+# A content member reached without naming its type (a variable, an extension method) is not seen.
 #
 # The guard (SWLOR.Architecture.Tests, Phase5DebtTests) fails when a line appears, when a count grows, and when a count
 # shrinks or a line disappears: each Phase 5 item shrinks this file in the same pull request. Plan and targets:

@@ -38,7 +38,7 @@ internal static class ServiceScanner
         foreach (var reference in references)
         {
             var node = reference.GetSyntax();
-            var model = compilation.GetSemanticModel(node.SyntaxTree, ignoreAccessibility: true);
+            var model = SourceSnapshot.Bind(compilation, node.SyntaxTree);
             foreach (var invocation in node.DescendantNodes().OfType<InvocationExpressionSyntax>())
             {
                 if (invocation.Expression is not MemberAccessExpressionSyntax { Name: GenericNameSyntax generic } || !RegistrationMethods.Contains(generic.Identifier.ValueText))
@@ -72,7 +72,7 @@ internal static class ServiceScanner
             if (parameterLists.Count == 0)
                 continue;
 
-            var model = compilation.GetSemanticModel(tree, ignoreAccessibility: true);
+            var model = SourceSnapshot.Bind(compilation, tree);
             foreach (var list in parameterLists)
             {
                 var topLevel = SyntaxNames.TopLevelType(list)!;
@@ -107,7 +107,7 @@ internal static class ServiceScanner
             if (tree.FilePath.StartsWith(allowedFolder, StringComparison.Ordinal) || !tree.GetText().ToString().Contains("IServiceProvider", StringComparison.Ordinal))
                 continue;
 
-            var model = compilation.GetSemanticModel(tree, ignoreAccessibility: true);
+            var model = SourceSnapshot.Bind(compilation, tree);
             foreach (var name in tree.GetRoot().DescendantNodes().OfType<SimpleNameSyntax>().Where(name => name.Identifier.ValueText == "IServiceProvider"))
             {
                 if (name.Ancestors().Any(node => node is UsingDirectiveSyntax))

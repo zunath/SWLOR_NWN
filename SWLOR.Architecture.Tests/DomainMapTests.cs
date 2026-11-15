@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Architecture.Tests.Domains;
 
@@ -20,6 +21,20 @@ public class DomainMapTests
 
         if (map.Problems.Count > 0)
             Assert.Fail($"{MapName} has {map.Problems.Count} problem(s):{Environment.NewLine}  {string.Join(Environment.NewLine + "  ", map.Problems)}");
+    }
+
+    [Test]
+    public void Domain_map_records_the_approved_domain_order()
+    {
+        // P5-1, owner decisions 10 to 13 (MaintainabilityRefactorDomainOrder.md). Domain_map_file_is_well_formed checks that
+        // the order lists every domain once; this one keeps it from being dropped.
+        var map = DomainMap.Load(ArchitectureProject.DomainMapPath);
+
+        map.Order.Should().NotBeEmpty($"{MapName} records the domain order the Phase 5 guards measure");
+        map.Order.Take(2).Should().Equal(["Platform", "Foundation"], "Platform and Foundation are at the bottom (target 4)");
+        map.DomainOf(new DependencyUnit(UnitKind.Platform, "Entity")).Should().Be("Foundation", "persisted data counts as Foundation (decision 11)");
+        map.IsWiringSource(new DependencyUnit(UnitKind.Platform, "NativeSinks")).Should().BeTrue("the sinks count as wiring (decision 12)");
+        map.IsContentRuleExempt(new DependencyUnit(UnitKind.Platform, "NativeSinks")).Should().BeFalse("the sinks stay under the no-content rule");
     }
 
     [Test]
@@ -59,7 +74,7 @@ public class DomainMapTests
             return;
 
         Assert.Fail(
-            $"{stale.Count} entry(ies) of {MapName} match no service or Feature folder of SWLOR.Game.Server any more: " +
+            $"{stale.Count} entry(ies) of {MapName} match no service, Feature folder or Platform area of SWLOR.Game.Server any more: " +
             string.Join(", ", stale) + Environment.NewLine +
             "Remove them, or fix the name if the unit was renamed.");
     }

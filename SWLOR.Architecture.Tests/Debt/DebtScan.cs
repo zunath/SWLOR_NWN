@@ -13,7 +13,7 @@ internal sealed class DebtScan
         Timings = timings;
     }
 
-    /// <summary>The eight measures, in the plan's order.</summary>
+    /// <summary>The ten measures, in the plan's order (P5-0's eight, then P5-1b's two).</summary>
     public IReadOnlyList<DebtMeasure> Measures { get; }
 
     /// <summary>How long each stage took, for the test output.</summary>
@@ -45,7 +45,10 @@ internal sealed class DebtScan
         var constructorServices = Timed("constructor services", () => ServiceScanner.ConstructorServices(snapshot, ServiceScanner.ServiceTypes(snapshot)));
         var providerUses = Timed("IServiceProvider", () => ServiceScanner.ServiceProviderUses(snapshot, DebtMeasures.CompositionFolder));
         var content = Timed("logic to content", () => LogicToContentScanner.Scan(snapshot, dependencies.Map));
-        var cycles = Timed("domain cycles (IL)", () => DomainCycleScanner.Scan(dependencies.Edges));
+        var references = Timed("references (bound in the server)", () => SourceReferenceScanner.Scan(snapshot));
+        var cycles = Timed("domain cycles", () => DomainCycleScanner.Scan(references, dependencies.Map));
+        var upward = Timed("upward references", () => DomainCycleScanner.Upward(references, dependencies.Map));
+        var sinks = Timed("sink work", () => SinkWorkScanner.Scan(snapshot));
         var holders = Timed("static state (IL)", () => StaticStateScanner.Scan(facts, graph));
         var written = Timed("static field writes", () => StaticFieldWriteScanner.Written(snapshot, holders.SelectMany(holder => holder.Fields).ToList()));
 
@@ -55,10 +58,12 @@ internal sealed class DebtScan
             DebtMeasures.LargeTypes(types),
             DebtMeasures.LongMethods(members),
             DebtMeasures.ServicesPerType(serverSites, constructorServices, snapshot.Server, exemptions),
-            DebtMeasures.DeferredResolution(constructorServices, providerUses),
+            DebtMeasures.DeferredResolution(constructorServices, providerUses, dependencies.Map),
             DebtMeasures.LogicToContent(content),
             DebtMeasures.DomainCycles(cycles),
-            DebtMeasures.StaticState(holders, written, exemptions)
+            DebtMeasures.StaticState(holders, written, exemptions),
+            DebtMeasures.UpwardEdges(upward),
+            DebtMeasures.SinkWork(sinks)
         };
 
         return new DebtScan(measures, timings);

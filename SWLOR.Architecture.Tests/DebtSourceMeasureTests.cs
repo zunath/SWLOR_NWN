@@ -47,6 +47,21 @@ public class DebtSourceMeasureTests
         }
         """;
 
+    /// <summary>A domain map with an order: Platform, Foundation, Character, Combat, Gameplay, bottom to top.</summary>
+    private const string OrderedMap = """
+        {
+          "platformDomain": "Platform", "featureTypeDomain": "Gameplay", "unrestrictedTargetDomains": ["Platform"],
+          "wiringPlatformAreas": ["Composition", "NativeSinks"], "contentRuleExemptAreas": ["Composition"],
+          "order": ["Platform", "Foundation", "Character", "Combat", "Gameplay"], "contentBand": "aboveAllLogic",
+          "domains": {
+            "Foundation": { "services": [], "featureFolders": [] },
+            "Character": { "services": [], "featureFolders": ["StatusEffectDefinition"] },
+            "Combat": { "services": [], "featureFolders": [] },
+            "Gameplay": { "services": [], "featureFolders": [] }
+          }
+        }
+        """;
+
     private static SourceSnapshot Snapshot(params (string Project, string File, string Text)[] files)
     {
         var projects = files
@@ -332,7 +347,7 @@ public class DebtSourceMeasureTests
     }
 
     [Test]
-    public void Deferred_resolution_lists_lazy_parameters_per_file_and_IServiceProvider_outside_composition()
+    public void Deferred_resolution_lists_lazy_parameters_per_file_and_direction_and_IServiceProvider_outside_composition()
     {
         var snapshot = Snapshot(
             (Server, "SWLOR.Game.Server/Domain/Locator.cs", """
@@ -346,27 +361,40 @@ public class DebtSourceMeasureTests
                 }
                 """),
             (Server, "SWLOR.Game.Server/Composition/Root.cs", "namespace SWLOR.Game.Server.Composition { public sealed class Root { public Root(System.IServiceProvider provider) { } } }"));
+        const string Character = "SWLOR.Game.Server.Domain.Character.";
+        const string Combat = "SWLOR.Game.Server.Domain.Combat.";
 
         var uses = ServiceScanner.ServiceProviderUses(snapshot, DebtMeasures.CompositionFolder);
         var measure = DebtMeasures.DeferredResolution(
-            [new ConstructorService("A", "A.cs", "IStat", "Lazy"), new ConstructorService("A", "A.cs", "IBank", "Lazy"), new ConstructorService("A", "A.cs", "IItem", string.Empty)],
-            uses);
+            [
+                new ConstructorService(Character + "StatService", "Stat.cs", Combat + "ICombatService", "Lazy"),
+                new ConstructorService(Character + "StatService", "Stat.cs", Combat + "IEnmityService", "Func"),
+                new ConstructorService(Combat + "CombatService", "Combat.cs", Character + "IStatService", "Lazy"),
+                new ConstructorService(Combat + "CombatService", "Combat.cs", Combat + "IEnmityService", "Lazy"),
+                new ConstructorService(Combat + "CombatService", "Combat.cs", Character + "IStatService", string.Empty)
+            ],
+            uses,
+            SWLOR.Architecture.Tests.Domains.DomainMap.Parse(OrderedMap));
 
         uses.Should().Equal(("SWLOR.Game.Server/Domain/Locator.cs", "SWLOR.Game.Server.Domain.Locator"));
         measure.Entries.Select(entry => (entry.Key, entry.Count)).Should().BeEquivalentTo(new[]
         {
-            ("A.cs", 2),
+            ("Stat.cs -> Combat (up)", 2),
+            ("Combat.cs -> Character (down)", 1),
+            ("Combat.cs -> Combat (inside)", 1),
             ("SWLOR.Game.Server/Domain/Locator.cs (IServiceProvider)", 1)
-        });
+        }, "a direct parameter is not deferred, and the order puts Character below Combat");
+        measure.Entries.Single(entry => entry.Key == "Stat.cs -> Combat (up)").Detail.Should().Be("Character -> Combat: Func 1, Lazy 1 (ICombatService, IEnmityService)");
+        measure.Summary.Should().Contain("By direction in the domain order: up 2, down 1, inside one domain 1.").And.Contain("Up: Character -> Combat 2.");
     }
 
     [Test]
-    public void Logic_that_names_content_is_listed_per_file_and_content_unit_and_wiring_is_not()
+    public void Logic_that_names_content_is_listed_per_file_and_content_unit_the_sinks_included_and_the_composition_root_is_not()
     {
         var map = SWLOR.Architecture.Tests.Domains.DomainMap.Parse("""
             {
               "platformDomain": "Platform", "featureTypeDomain": "Gameplay", "unrestrictedTargetDomains": ["Platform"],
-              "wiringPlatformAreas": ["Composition"],
+              "wiringPlatformAreas": ["Composition", "NativeSinks"], "contentRuleExemptAreas": ["Composition"],
               "domains": {
                 "Combat": { "services": [], "featureFolders": [] },
                 "Character": { "services": [], "featureFolders": ["StatusEffectDefinition"] },
@@ -403,6 +431,7 @@ public class DebtSourceMeasureTests
                 }
                 """),
             (Server, "SWLOR.Game.Server/Native/GetDamageRoll.cs", "namespace SWLOR.Game.Server.Native { public static class GetDamageRoll { public static void Roll() => SWLOR.Game.Server.Feature.UsePerkFeat.Use(); } }"),
+            (Server, "SWLOR.Game.Server/NativeSinks/AttackSink.cs", "namespace SWLOR.Game.Server.NativeSinks { public sealed class AttackSink { public void Attack() => SWLOR.Game.Server.Feature.UsePerkFeat.Use(); } }"),
             (Server, "SWLOR.Game.Server/Composition/Wiring.cs", "namespace SWLOR.Game.Server.Composition { public static class Wiring { public static object Build() => new SWLOR.Game.Server.Feature.StatusEffectDefinition.StunnedStatusEffect(); } }"));
 
         var references = LogicToContentScanner.Scan(snapshot, map);
@@ -411,8 +440,10 @@ public class DebtSourceMeasureTests
         {
             ("SWLOR.Game.Server/Domain/Combat/CombatService.cs -> Feature/StatusEffectDefinition", 2, false),
             ("SWLOR.Game.Server/Domain/Character/StatService.cs -> Feature/StatusEffectDefinition", 1, true),
-            ("SWLOR.Game.Server/Native/GetDamageRoll.cs -> Feature.UsePerkFeat", 1, false)
-        }, "a constant and nameof name content too; comments, content naming logic and the composition root do not count");
+            ("SWLOR.Game.Server/Native/GetDamageRoll.cs -> Feature.UsePerkFeat", 1, false),
+            ("SWLOR.Game.Server/NativeSinks/AttackSink.cs -> Feature.UsePerkFeat", 1, false)
+        }, "a constant and nameof name content too, and the sinks are wiring under the no-content rule; comments, content naming " +
+           "logic and the composition root do not count");
     }
 
     [Test]

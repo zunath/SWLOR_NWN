@@ -118,7 +118,7 @@ Never inject `IServiceProvider` or take the container in a constructor, and a cl
 - **The cross-domain guard works by domain.** `UnitClassifier` counts every type of `Domain.<Domain>` and its topics as one unit, `Domain/<Domain>` in `CrossDomainEdges.txt`, so converting a service or adding a support type changes no edge; only a new dependency on another domain does. Nothing is left directly in `Service`: P2-Z3 moved the last static helpers and records into their domains (`tools/Refactor/TypeMoves.json`), so a type there belongs to no unit and the namespace guard fails it.
 - **Namespaces.** `NamespaceGuardTests` fails, with no exceptions, on a namespace segment equal to a type name of the server (the namespace hides the type), a leaf segment under two parents, any `Service.<Name>Service` namespace, and any type declared directly in `SWLOR.Game.Server.Service`.
 
-The composition root (`Composition/`) names every service it registers, so its outgoing edges are left out of the cross-domain guard (`wiringPlatformAreas` in `DomainMap.json`).
+The composition root (`Composition/`) names every service it registers, and a native sink (`NativeSinks/`) only forwards a hook to the code that handles it (`SinkWork.txt` measures what the sinks still do), so their outgoing edges are left out of the cross-domain guard and the domain order (`wiringPlatformAreas` in `DomainMap.json`). Only the composition root may name content (`contentRuleExemptAreas`); the sinks stay under the no-content rule (`LogicToContent.txt`).
 
 ## Reaching a service from static code
 

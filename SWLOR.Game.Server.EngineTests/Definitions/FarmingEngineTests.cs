@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.BeastMasteryService;
@@ -13,6 +14,7 @@ using SWLOR.Game.Server.Service.LivestockService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
@@ -95,6 +97,67 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
+                farm.DeleteAll();
+            }
+        }
+
+        [EngineTest("A growing crop stands as its own bed over a hidden plot, and the plot shows again once the crop is harvested", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task GrowingCropReplacesThePlotsBed(EngineTestContext ctx)
+        {
+            using var farmer = await PlayerAbilityFixture.CreateAsync(ctx);
+            await RequireCharacterSaves(ctx, farmer);
+            var farm = new FarmRecords();
+            farm.TrackPlayer(farmer.Id);
+            var placeable = OBJECT_INVALID;
+
+            try
+            {
+                var city = farm.City(farmer.Id);
+                farm.GrantGardens(city.Id, farmer.Id);
+                var plot = farm.Structure(StructureType.GardenPlot, city.Id);
+                MakeFarmer(farmer, city.Id, agricultureRank: 15, cropManagement: 2, bountifulHarvest: 1);
+                var crop = Farming.GetCrop(CropType.ViscaranApple);
+                await Give(ctx, farmer, crop.SeedResref, 1);
+
+                await Run(ctx, farmer.Creature, () =>
+                {
+                    placeable = CreateObject(ObjectType.Placeable, "growing_plant", GetLocation(farmer.Creature));
+                    ctx.Assert(GetIsObjectValid(placeable), "the Garden Plot blueprint spawns");
+                    Farming.OnPlotSpawned(plot, placeable);
+                    ctx.Assert(!GetIsObjectValid(Farming.GetCropModel(placeable)), "an empty plot shows only its own bed");
+                    ctx.AssertEqual(VisibilityType.Default, VisibilityPlugin.GetVisibilityOverride(OBJECT_INVALID, placeable), "an empty plot is shown");
+                });
+
+                var planted = await Run(ctx, farmer.Creature, () => Farming.Plant(farmer.Creature, plot.Id, crop.SeedResref, string.Empty));
+                ctx.Assert(planted.Succeeded, $"the farmer plants the seed: {planted.Message}");
+                await Run(ctx, farmer.Creature, () =>
+                {
+                    Farming.OnPlotSpawned(plot, placeable);
+                    var model = Farming.GetCropModel(placeable);
+                    ctx.Assert(GetIsObjectValid(model), "a growing crop stands as its own bed");
+                    ctx.AssertEqual(FarmingRules.GrowingCropAppearance, GetLocalInt(placeable, "GARDEN_PLOT_CROP_APPEARANCE"), "the bed is the sprouting bed");
+                    ctx.AssertEqual(VisibilityType.Hidden, VisibilityPlugin.GetVisibilityOverride(OBJECT_INVALID, placeable), "the plot's own bed hides behind it");
+                });
+
+                ShiftPlot(plot.Id, TimeSpan.FromHours(crop.GrowHours));
+                var harvested = await Run(ctx, farmer.Creature, () => Farming.Harvest(farmer.Creature, plot.Id));
+                ctx.Assert(harvested.Succeeded, $"the ripe crop is harvested: {harvested.Message}");
+                await Run(ctx, farmer.Creature, () =>
+                {
+                    Farming.OnPlotSpawned(plot, placeable);
+                    ctx.Assert(!GetIsObjectValid(Farming.GetCropModel(placeable)), "the harvested plot has no crop bed");
+                    ctx.AssertEqual(VisibilityType.Default, VisibilityPlugin.GetVisibilityOverride(OBJECT_INVALID, placeable), "the harvested plot shows again");
+                });
+            }
+            finally
+            {
+                if (GetIsObjectValid(placeable))
+                {
+                    var model = Farming.GetCropModel(placeable);
+                    if (GetIsObjectValid(model))
+                        DestroyObject(model);
+                    DestroyObject(placeable);
+                }
                 farm.DeleteAll();
             }
         }

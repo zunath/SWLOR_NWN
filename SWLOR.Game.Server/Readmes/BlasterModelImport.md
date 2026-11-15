@@ -544,6 +544,9 @@ the new appearance after both.
 
 `--config` points the tool at another model list in the same format. `tools/TrophyStandModels.json` holds the ten furniture
 Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place.
+`tools/GardenPlotModels.json` holds the garden plot beds: the empty bed is the Garden Plot blueprint, and the sprouting,
+ripe and withered beds have a null `blueprint` because Farming creates them at run time (their rows are the
+`FarmingRules` stage appearances).
 
 ### Meshy placeables
 
@@ -558,7 +561,10 @@ and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS outp
   cloth-draped Veilcarved stand is the high one) and `max_opposed_fraction`. Check open parts such as cloth and wings from
   behind in the client.
 - **Normals.** Meshy ships a tangent-space normal map for its own mesh. Reprojection fails (faces with no texel-center
-  coverage), so use `normal_basis_policy: "authored_tangents"` (the stands used `authored_angle_limit_degrees: 2`).
+  coverage), so use `normal_basis_policy: "authored_tangents"` (the stands used `authored_angle_limit_degrees: 2`). When
+  packaging stops with "Authored tangent conflict ... do not average" (the garden plot beds, whose soil and leaves split
+  tangents at many shared corners), use `"authored_tangent_seams"`: export keeps Meshy's exact corner normals and
+  packaging keeps each tangent seam instead of averaging it, as the weapon exporter does.
 - **Tangents.** Meshy GLBs carry no `TANGENT` attribute. When the computed MikkTSpace tangents differ between corners of
   one vertex, export stops with "Missing source tangent requires splitting a Mikk seam". Re-export that GLB from Blender 4.0
   with `export_tangents=True` (it splits those vertices) and replace any zero-length tangent with a unit vector

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "notes": "Garden plot placeables, one Meshy model per crop stage. The Garden Plot blueprint shows the empty bed; Farming lays the sprouting, ripe and withered beds over it at run time (FarmingRules stage appearances), so those models have no blueprint.",
+  "stations": [
+    {
+      "blueprint": "growing_plant",
+      "structure_type": "GardenPlot",
+      "model": "swc_gplot_empty",
+      "label": "[SWLOR] Farming - Garden Plot (Empty)",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": null,
+      "structure_type": null,
+      "model": "swc_gplot_sprout",
+      "label": "[SWLOR] Farming - Garden Plot (Sprouting)",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": null,
+      "structure_type": null,
+      "model": "swc_gplot_ripe",
+      "label": "[SWLOR] Farming - Garden Plot (Ripe)",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": null,
+      "structure_type": null,
+      "model": "swc_gplot_dead",
+      "label": "[SWLOR] Farming - Garden Plot (Withered)",
+      "sound_app_type": null
+    }
+  ]
+}

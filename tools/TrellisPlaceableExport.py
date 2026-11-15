@@ -28,7 +28,8 @@ Schema 1 assets (all paths relative to the manifest):
     most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals) or
     authored_winding (Meshy's open, part-separated meshes: the generated winding is kept and only the open-edge and
     wound-against-normals limits apply, because an open shell has no meaningful signed volume);
-  normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees
+  normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees,
+    or authored_tangent_seams (exact source normals kept across tangent seams, as in TrellisWeaponExport)
     0.5..90: up to 2 for compiler normal quantization; blocky hard-edged consoles measured up to 80 (probably a neighbouring
     source face matched at a crease; the package report lists the maxima), so read the report and the render before widening it;
   reference: the replaced station (bounds, footprint, use nodes), recorded in the report and the review renders only.
@@ -310,7 +311,7 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
         raise ValueError(f'{asset}: greeble must be 0..1')
     if not finite(item.get('black_lift', 0)) or not 0 <= item.get('black_lift', 0) <= .5:
         raise ValueError(f'{asset}: black_lift must be 0..0.5')
-    if item.get('normal_basis_policy', 'reproject') not in ('reproject', 'authored_tangents'):
+    if item.get('normal_basis_policy', 'reproject') not in ('reproject', 'authored_tangents', 'authored_tangent_seams'):
         raise ValueError(f'{asset}: unknown normal_basis_policy')
     if not finite(item.get('authored_angle_limit_degrees', .5)) or not .5 <= item.get('authored_angle_limit_degrees', .5) <= 90:
         raise ValueError(f'{asset}: authored_angle_limit_degrees must be 0.5..90')
@@ -1173,6 +1174,14 @@ def export_asset(weapon, item, repo, out, mode, helpers):
     basis_config = {'orientation': rows, 'scale': scale, 'source_grip': [0, 0, 0], 'target_grip': translation, 'sha256': source_sha}
     normal_helper = weapon.load_module_snapshot('trellis_weapon_normals', Path(weapon.__file__).with_name('TrellisWeaponNormals.py'))
     report['source_normal_basis'] = normal_helper.source_basis(doc, binary, basis_config, names, out / 'source_basis.npz')
+    if item.get('normal_basis_policy') == 'authored_tangent_seams':
+        # Restore the exact source corner normals so packaging can keep authored tangent seams instead of averaging them.
+        seam_helper = weapon.load_module_snapshot('native_source_normals', Path(weapon.__file__).with_name('NativeTangentSeams.py'))
+        np = weapon.np
+        with np.load(out / 'source_basis.npz', allow_pickle=False) as data:
+            fields = {name: {key: data[name + '__' + key] for key in ('positions', 'uv', 'normals', 'tangents', 'signs')} for name, _ in meshes}
+        meshes = [(name, seam_helper.restore_source_normals(mesh, fields[name], normal_helper)) for name, mesh in meshes]
+        report['source_corner_normal_producer_sha256'] = seam_helper.SNAPSHOT_SHA256
     (resources / (model + '.mdl')).write_text(write_mdl_text(model, short, meshes, list(lo), list(hi)), encoding='ascii')
     # Footprint: the convex hull of the whole model in plan, shrunk by `inset`, flat at the ground plane.
     plan = [(v[0], v[1]) for _, mesh in meshes for v in mesh[0]]

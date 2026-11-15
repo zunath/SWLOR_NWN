@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CityAffairsService;
@@ -650,6 +651,9 @@ namespace SWLOR.Game.Server.Service
                 SetLocalObject(model, CropModelPlotVariable, placeable);
                 SetLocalObject(placeable, CropModelVariable, model);
                 SetLocalInt(placeable, CropModelAppearanceVariable, appearance);
+                // A stage bed stands where the plot's own bed is; both drawn at once would flicker through each other.
+                VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, placeable,
+                    FarmingRules.ReplacesPlot(appearance) ? VisibilityType.Hidden : VisibilityType.Default);
             }
 
             SetName(model, GetName(placeable));
@@ -665,6 +669,13 @@ namespace SWLOR.Game.Server.Service
 
             DeleteLocalObject(placeable, CropModelVariable);
             DeleteLocalInt(placeable, CropModelAppearanceVariable);
+            VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, placeable, VisibilityType.Default);
+        }
+
+        /// <summary>The model a plot's crop stands as, when one stands in it (the plot itself may be hidden behind it).</summary>
+        public static uint GetCropModel(uint placeable)
+        {
+            return GetLocalObject(placeable, CropModelVariable);
         }
 
         /// <summary>A plot's plant: gone with its plot, and brought up to date once the crop's stage changes on its own.</summary>

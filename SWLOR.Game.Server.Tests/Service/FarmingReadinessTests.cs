@@ -1,4 +1,7 @@
 #nullable enable
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
@@ -66,8 +69,34 @@ public class FarmingReadinessTests
         FarmingRules.GetCropAppearance(GardenPlotStage.Withered, false).Should().Be(FarmingRules.WitheredCropAppearance);
         FarmingRules.GetCropAppearance(GardenPlotStage.Ripe, true).Should().Be(FarmingRules.SaplingAppearance);
         FarmingRules.GetCropAppearance(GardenPlotStage.Withered, true).Should().Be(FarmingRules.WitheredCropAppearance);
-        new[] { FarmingRules.GrowingCropAppearance, FarmingRules.RipeCropAppearance, FarmingRules.WitheredCropAppearance }
+        new[] { FarmingRules.EmptyPlotAppearance, FarmingRules.GrowingCropAppearance, FarmingRules.RipeCropAppearance, FarmingRules.WitheredCropAppearance }
             .Should().OnlyHaveUniqueItems("each stage looks different");
+        FarmingRules.ReplacesPlot(FarmingRules.GrowingCropAppearance).Should().BeTrue();
+        FarmingRules.ReplacesPlot(FarmingRules.RipeCropAppearance).Should().BeTrue();
+        FarmingRules.ReplacesPlot(FarmingRules.WitheredCropAppearance).Should().BeTrue();
+        FarmingRules.ReplacesPlot(FarmingRules.SaplingAppearance).Should().BeFalse("a sapling stands in the empty bed");
+    }
+
+    [Test]
+    public void EachStageAppearance_IsItsGardenPlotModel()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !File.Exists(Path.Combine(root.FullName, "tools", "GardenPlotModels.json")))
+            root = root.Parent;
+        root.Should().NotBeNull("the tests run inside the repository");
+        var placeables = Path.Combine(root!.FullName, "SWLOR_Haks", "sw_2da", "placeables.2da");
+        if (!File.Exists(placeables))
+            Assert.Ignore("SWLOR_Haks/sw_2da is not checked out");
+
+        // A placeables.2da appearance ID is the row's position after the three header lines, not its first-column label.
+        var rows = File.ReadAllLines(placeables).Skip(3).ToArray();
+        string ModelOf(int appearance) => Regex.Match(rows[appearance], @"^\S+\s+(""[^""]*""|\S+)\s+\S+\s+(\S+)").Groups[2].Value;
+        ModelOf(FarmingRules.EmptyPlotAppearance).Should().Be("swc_gplot_empty");
+        ModelOf(FarmingRules.GrowingCropAppearance).Should().Be("swc_gplot_sprout");
+        ModelOf(FarmingRules.RipeCropAppearance).Should().Be("swc_gplot_ripe");
+        ModelOf(FarmingRules.WitheredCropAppearance).Should().Be("swc_gplot_dead");
+        File.ReadAllText(Path.Combine(root.FullName, "Module", "utp", "growing_plant.utp.json"))
+            .Should().MatchRegex($@"""Appearance"": \{{\s*""type"": ""dword"",\s*""value"": {FarmingRules.EmptyPlotAppearance}\b", "the Garden Plot is the empty bed");
     }
 
     [Test]

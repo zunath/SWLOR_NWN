@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var permission = GetPermission();
                 var structureDetail = Property.GetStructureByType(structure.StructureType);
 
-                PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.Vfx_Dur_Aura_Green);
+                Highlight(placeable, VisualEffect.Vfx_Dur_Aura_Green);
                 _currentPosition = GetPosition(placeable);
                 _currentFacing = GetFacing(placeable);
 
@@ -340,7 +340,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var propertyId = _structurePropertyIds[SelectedStructureIndex];
             var placeable = Property.GetPlaceableByPropertyId(propertyId);
-            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.None);
+            Highlight(placeable, VisualEffect.None);
+        }
+
+        /// <summary>A garden plot can be hidden behind the bed its crop stands as, so that bed lights up with it.</summary>
+        private void Highlight(uint placeable, VisualEffect effect)
+        {
+            PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, effect);
+            var cropModel = Farming.GetCropModel(placeable);
+            if (GetIsObjectValid(cropModel))
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, cropModel, effect);
         }
 
         public Action OnCloseWindow() => () =>

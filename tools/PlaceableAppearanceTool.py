@@ -11,7 +11,8 @@ Appearance of each station's blueprint (Module/utp) and of every placed instance
 byte-level (CRLF and float formatting untouched); the Appearance dword is the only byte range that changes.
 `check` is read-only: it fails when a station still points at another appearance or a resource is missing.
 Station data lives in tools/StationModels.json; `--config` names another file in the same format (tools/TrophyStandModels.json
-holds the furniture Trophy Stands).
+holds the furniture Trophy Stands, tools/GardenPlotModels.json the garden plot stages). A model with a null `blueprint` only
+gets its resources and row; the server applies it at run time, and `--only` names it by its model.
 """
 from __future__ import annotations
 
@@ -29,16 +30,21 @@ HEADER_COLUMNS = ('Label', 'StrRef', 'ModelName', 'LightColor', 'LightOffsetX', 
                   'SoundAppType', 'ShadowSize', 'BodyBag', 'LowGore', 'Reflection', 'Static')
 
 
+def key(station):
+    """A station's name on the command line: its blueprint, or its model when the model has no blueprint of its own."""
+    return station.get('blueprint') or station['model']
+
+
 def load_stations(only=None, config_path=None):
     config = json.loads(Path(config_path or CONFIG).read_text(encoding='utf-8'))
     if config.get('schema_version') != 1:
         raise ValueError('Unsupported StationModels.json schema')
     stations = config['stations']
     if only:
-        unknown = set(only) - {s['blueprint'] for s in stations}
+        unknown = set(only) - {key(s) for s in stations}
         if unknown:
             raise ValueError('Unknown station blueprint(s): ' + ', '.join(sorted(unknown)))
-        stations = [s for s in stations if s['blueprint'] in set(only)]
+        stations = [s for s in stations if key(s) in set(only)]
     return stations
 
 
@@ -117,12 +123,12 @@ def install_haks(package, haks, only, config_path=None):
     added = {}
     for station in selected:
         if station['model'] in by_model:
-            added[station['blueprint']] = by_model[station['model']]
+            added[key(station)] = by_model[station['model']]
             continue
         last_label += 1
         text += format_row(last_label, station, offsets)
         by_model[station['model']] = len(rows)
-        added[station['blueprint']] = len(rows)
+        added[key(station)] = len(rows)
         rows[len(rows)] = station['model']
     path.write_bytes(text.encode('latin-1'))
     print(json.dumps(added, indent=2))
@@ -162,6 +168,8 @@ def swap_module(root, haks, only, check=False, config_path=None):
     by_model, _ = appearance_rows(haks)
     report, problems = {}, []
     for station in stations:
+        if not station.get('blueprint'):
+            continue  # A model the server applies at run time; no blueprint or placed instance points at it.
         resref, model = station['blueprint'], station['model']
         row = by_model.get(model)
         if row is None:

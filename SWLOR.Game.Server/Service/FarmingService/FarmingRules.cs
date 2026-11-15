@@ -43,11 +43,13 @@ namespace SWLOR.Game.Server.Service.FarmingService
         /// <summary>No limit besides the city's own structure limit.</summary>
         public const int NoPlotLimit = int.MaxValue;
 
-        // The plant a garden plot shows at each stage, from the existing placeable models (placeables.2da). An empty plot shows only
-        // its own grass tuft.
-        public const int GrowingCropAppearance = 31879;
-        public const int RipeCropAppearance = 31883;
-        public const int WitheredCropAppearance = 6959;
+        // What a garden plot shows at each stage (placeables.2da rows, installed by tools/GardenPlotModels.json). The plot itself is the
+        // empty bed; a crop's stage is a whole bed of its own laid over it, so the plot hides while one stands. A sapling is a young
+        // tree standing in the empty bed.
+        public const int EmptyPlotAppearance = 32111;
+        public const int GrowingCropAppearance = 32112;
+        public const int RipeCropAppearance = 32113;
+        public const int WitheredCropAppearance = 32114;
         public const int SaplingAppearance = 20911;
 
         private static readonly int[] TierLevels = { 5, 15, 25, 35, 45 };
@@ -105,6 +107,12 @@ namespace SWLOR.Game.Server.Service.FarmingService
                 GardenPlotStage.Ripe => RipeCropAppearance,
                 _ => GrowingCropAppearance
             };
+        }
+
+        /// <summary>Whether a stage's model is a whole bed that stands in place of the plot (so the plot hides), rather than a plant in it.</summary>
+        public static bool ReplacesPlot(int appearance)
+        {
+            return appearance is GrowingCropAppearance or RipeCropAppearance or WitheredCropAppearance;
         }
 
         /// <summary>

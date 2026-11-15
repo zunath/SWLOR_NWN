@@ -189,7 +189,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "ns_barkeep"
         },
         "CRAdjust": {
           "type": "int",
@@ -209,7 +209,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "The Hyper Dive's bartender, lining up glasses that glow faintly at the rim."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -224,248 +226,6 @@
           "value": [
             {
               "__struct_id": 2,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "ArmorPart_Belt": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_LBicep": {
-                "type": "byte",
-                "value": 109
-              },
-              "ArmorPart_LFArm": {
-                "type": "byte",
-                "value": 1
-              },
-              "ArmorPart_LFoot": {
-                "type": "byte",
-                "value": 63
-              },
-              "ArmorPart_LHand": {
-                "type": "byte",
-                "value": 110
-              },
-              "ArmorPart_LShin": {
-                "type": "byte",
-                "value": 241
-              },
-              "ArmorPart_LShoul": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_LThigh": {
-                "type": "byte",
-                "value": 238
-              },
-              "ArmorPart_Neck": {
-                "type": "byte",
-                "value": 1
-              },
-              "ArmorPart_Pelvis": {
-                "type": "byte",
-                "value": 237
-              },
-              "ArmorPart_RBicep": {
-                "type": "byte",
-                "value": 109
-              },
-              "ArmorPart_RFArm": {
-                "type": "byte",
-                "value": 1
-              },
-              "ArmorPart_RFoot": {
-                "type": "byte",
-                "value": 63
-              },
-              "ArmorPart_RHand": {
-                "type": "byte",
-                "value": 110
-              },
-              "ArmorPart_Robe": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_RShin": {
-                "type": "byte",
-                "value": 241
-              },
-              "ArmorPart_RShoul": {
-                "type": "byte",
-                "value": 0
-              },
-              "ArmorPart_RThigh": {
-                "type": "byte",
-                "value": 238
-              },
-              "ArmorPart_Torso": {
-                "type": "byte",
-                "value": 115
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 16
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cloth1Color": {
-                "type": "byte",
-                "value": 1
-              },
-              "Cloth2Color": {
-                "type": "byte",
-                "value": 1
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 1
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 0
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
-                }
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "A worker's outfit with broad pockets and stout seams around the shoulders. It has been cut for the part of a shift spent carrying, lifting, and reaching rather than the moment somebody takes attendance."
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "Leather1Color": {
-                "type": "byte",
-                "value": 3
-              },
-              "Leather2Color": {
-                "type": "byte",
-                "value": 3
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Worker Outfit"
-                }
-              },
-              "Metal1Color": {
-                "type": "byte",
-                "value": 8
-              },
-              "Metal2Color": {
-                "type": "byte",
-                "value": 9
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": []
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "WorkerOutfit"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "worker_outfit"
-              },
-              "xArmorPart_Belt": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_LBice": {
-                "type": "word",
-                "value": 109
-              },
-              "xArmorPart_LFArm": {
-                "type": "word",
-                "value": 1
-              },
-              "xArmorPart_LFoot": {
-                "type": "word",
-                "value": 63
-              },
-              "xArmorPart_LHand": {
-                "type": "word",
-                "value": 110
-              },
-              "xArmorPart_LShin": {
-                "type": "word",
-                "value": 241
-              },
-              "xArmorPart_LShou": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_LThig": {
-                "type": "word",
-                "value": 238
-              },
-              "xArmorPart_Neck": {
-                "type": "word",
-                "value": 1
-              },
-              "xArmorPart_Pelvi": {
-                "type": "word",
-                "value": 237
-              },
-              "xArmorPart_RBice": {
-                "type": "word",
-                "value": 109
-              },
-              "xArmorPart_RFArm": {
-                "type": "word",
-                "value": 1
-              },
-              "xArmorPart_RFoot": {
-                "type": "word",
-                "value": 63
-              },
-              "xArmorPart_RHand": {
-                "type": "word",
-                "value": 110
-              },
-              "xArmorPart_Robe": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RShin": {
-                "type": "word",
-                "value": 241
-              },
-              "xArmorPart_RShou": {
-                "type": "word",
-                "value": 0
-              },
-              "xArmorPart_RThig": {
-                "type": "word",
-                "value": 238
-              },
-              "xArmorPart_Torso": {
-                "type": "word",
-                "value": 115
-              },
               "XOrientation": {
                 "type": "float",
                 "value": 0.0
@@ -485,6 +245,268 @@
               "ZPosition": {
                 "type": "float",
                 "value": -1.0
+              },
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "ArmorPart_Belt": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LBicep": {
+                "type": "byte",
+                "value": 109
+              },
+              "ArmorPart_LFArm": {
+                "type": "byte",
+                "value": 125
+              },
+              "ArmorPart_LFoot": {
+                "type": "byte",
+                "value": 63
+              },
+              "ArmorPart_LHand": {
+                "type": "byte",
+                "value": 150
+              },
+              "ArmorPart_LShin": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_LShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LThigh": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_Neck": {
+                "type": "byte",
+                "value": 112
+              },
+              "ArmorPart_Pelvis": {
+                "type": "byte",
+                "value": 237
+              },
+              "ArmorPart_RBicep": {
+                "type": "byte",
+                "value": 109
+              },
+              "ArmorPart_RFArm": {
+                "type": "byte",
+                "value": 125
+              },
+              "ArmorPart_RFoot": {
+                "type": "byte",
+                "value": 63
+              },
+              "ArmorPart_RHand": {
+                "type": "byte",
+                "value": 150
+              },
+              "ArmorPart_Robe": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RShin": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_RShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RThigh": {
+                "type": "byte",
+                "value": 245
+              },
+              "ArmorPart_Torso": {
+                "type": "byte",
+                "value": 196
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 16
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 27
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 146
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Clothing worn by Jorro."
+                }
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Clothing worn by Jorro."
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 40
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 23
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "[NPC] Jorro's Outfit"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 32
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 28
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "ns_barkeep_o"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "ns_barkeep_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 125
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 63
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 150
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 112
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 237
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 109
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 125
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 63
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 150
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 245
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 196
               }
             }
           ]
@@ -585,7 +607,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Bartender"
+            "0": "Jorro"
           }
         },
         "fortbonus": {
@@ -656,7 +678,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -684,7 +706,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -945,7 +967,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mcdce_bartender"
+          "value": "ns_barkeep"
         },
         "Tail_New": {
           "type": "dword",
@@ -957,7 +979,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "mcdce_bartender"
+          "value": "ns_barkeep"
         },
         "WalkRate": {
           "type": "int",

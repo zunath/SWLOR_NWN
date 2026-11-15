@@ -29523,7 +29523,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "tat_outfitter"
         },
         "CRAdjust": {
           "type": "int",
@@ -29544,7 +29544,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Karrav Maubar is a well known member of anchorhead and a well respected merchant. She sells everything that you can think of and will buy almost anything, should she be able to make a profit. Only problem with Karrav is that she hates being screwed around. If someone screws her over, sometimes they are never seen again. Perhaps it's best to stay on her good side, right?"
+            "0": "Karrav Maubar is a well known member of Anchorhead and a well respected merchant. She outfits every caravan that leaves town and will buy almost anything, should she be able to make a profit."
           }
         },
         "Dex": {
@@ -30086,7 +30086,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Karrav Maubar"
+            "0": "Karrav"
           }
         },
         "fortbonus": {
@@ -30891,7 +30891,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Maubar"
           }
         },
         "LawfulChaotic": {
@@ -30924,7 +30924,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -30952,7 +30952,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -31213,7 +31213,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "KarravMaubar"
+          "value": "tat_outfitter"
         },
         "Tail_New": {
           "type": "dword",
@@ -31225,7 +31225,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "nw_karravmaubar"
+          "value": "tat_outfitter"
         },
         "WalkRate": {
           "type": "int",

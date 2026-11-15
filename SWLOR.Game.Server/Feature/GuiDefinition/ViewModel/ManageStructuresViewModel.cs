@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Highlight(placeable, VisualEffect.None);
         }
 
-        /// <summary>A garden plot can be hidden behind the bed its crop stands as, so that bed lights up with it.</summary>
+        /// <summary>A garden plot's crop is a model of its own standing in the plot, so it lights up with the plot.</summary>
         private void Highlight(uint placeable, VisualEffect effect)
         {
             PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, effect);
@@ -634,8 +634,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// A planted garden plot is hidden behind its crop's bed, so the bed takes each change of position or facing with it. The
-        /// facing changes run as the placeable's own commands, so this is queued after them.
+        /// A garden plot's crop is a model of its own, so it takes each change of the plot's position or facing with it. The facing
+        /// changes run as the placeable's own commands, so this is queued after them.
         /// </summary>
         private static void FollowStructure(uint placeable)
         {

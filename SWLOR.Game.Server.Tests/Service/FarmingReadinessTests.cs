@@ -71,10 +71,9 @@ public class FarmingReadinessTests
         FarmingRules.GetCropAppearance(GardenPlotStage.Withered, true).Should().Be(FarmingRules.WitheredCropAppearance);
         new[] { FarmingRules.EmptyPlotAppearance, FarmingRules.GrowingCropAppearance, FarmingRules.RipeCropAppearance, FarmingRules.WitheredCropAppearance }
             .Should().OnlyHaveUniqueItems("each stage looks different");
-        FarmingRules.ReplacesPlot(FarmingRules.GrowingCropAppearance).Should().BeTrue();
-        FarmingRules.ReplacesPlot(FarmingRules.RipeCropAppearance).Should().BeTrue();
-        FarmingRules.ReplacesPlot(FarmingRules.WitheredCropAppearance).Should().BeTrue();
-        FarmingRules.ReplacesPlot(FarmingRules.SaplingAppearance).Should().BeFalse("a sapling stands in the empty bed");
+        foreach (var appearance in new[] { FarmingRules.GrowingCropAppearance, FarmingRules.RipeCropAppearance, FarmingRules.WitheredCropAppearance, FarmingRules.SaplingAppearance })
+            FarmingRules.GetCropModelHeight(appearance).Should().BeInRange(FarmingRules.PlotSoilHeight - 0.1f, FarmingRules.PlotSoilHeight,
+                "every crop stands in the empty bed's soil, its stems reaching no more than 10 cm below it");
     }
 
     [Test]
@@ -125,7 +124,7 @@ public class FarmingReadinessTests
     {
         var farming = ReadSource("Service", "Farming.cs");
         var refresh = Between(farming, "private static void RefreshCropModel(", "private static void DestroyCropModel(");
-        refresh.Should().Contain("DestroyCropModel(placeable);\n                model = CreateObject(ObjectType.Placeable, CropModelResref, GetLocation(placeable));",
+        refresh.Should().Contain("DestroyCropModel(placeable);\n                model = CreateObject(ObjectType.Placeable, CropModelResref, CropModelLocation(placeable, appearance));",
                 "a placeable's appearance does not change for players already in the area")
             .And.Contain("SetEventScript(model, EventScript.Placeable_OnUsed, ScriptName.OnGardenPlotUsed);")
             .And.Contain("SetEventScript(model, EventScript.Placeable_OnHeartbeat, ScriptName.OnGardenPlotCropHeartbeat);");

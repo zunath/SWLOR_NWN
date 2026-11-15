@@ -28,10 +28,12 @@ Schema 1 assets (all paths relative to the manifest):
     most max_defect_fraction open edges and max_opposed_fraction of the area wound against its normals) or
     authored_winding (Meshy's open, part-separated meshes: the generated winding is kept and only the open-edge and
     wound-against-normals limits apply, because an open shell has no meaningful signed volume);
-  normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees,
-    or authored_tangent_seams (exact source normals kept across tangent seams, as in TrellisWeaponExport)
+  normal_basis_policy: reproject, or authored_tangents (mixed tangent handedness) with authored_angle_limit_degrees
     0.5..90: up to 2 for compiler normal quantization; blocky hard-edged consoles measured up to 80 (probably a neighbouring
     source face matched at a crease; the package report lists the maxima), so read the report and the render before widening it;
+    or authored_tangent_seams (exact source normals kept across tangent seams, as in TrellisWeaponExport);
+  replaces_haks_resources (default false): true lets the model and texture names already exist in SWLOR_Haks, for a new
+    export of a model that is not on the live server yet; otherwise an existing name is refused;
   reference: the replaced station (bounds, footprint, use nodes), recorded in the report and the review renders only.
 Output per asset: resources/ (ASCII MDL, MTR, TGA maps), walkmesh/<model>.pwk, review renders and report.json. Package
 output is compiled MDL + MTR + DDS + PWK only. Native verification is separate.
@@ -272,7 +274,9 @@ def validate_item(item, manifest_dir, haks_names=None, inspect_only=False):
         raise ValueError(f'{asset}: texture_size must be 512 or 1024')
     if item.get('scalar_texture_size', item['texture_size']) not in (256, 512, 1024):
         raise ValueError(f'{asset}: scalar_texture_size must be 256, 512 or 1024')
-    if haks_names is not None:
+    if item.get('replaces_haks_resources', False) not in (True, False):
+        raise ValueError(f'{asset}: replaces_haks_resources must be true or false')
+    if haks_names is not None and not item.get('replaces_haks_resources', False):
         taken = [n for n in (item['model'], item['texture']) if n in haks_names]
         taken += [item['texture'] + s for s in ('_n', '_s', '_r', '_e') if item['texture'] + s in haks_names]
         if taken:

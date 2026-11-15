@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "notes": "Garden plot placeables, one Meshy model per crop stage. The Garden Plot blueprint shows the empty bed; Farming lays the sprouting, ripe and withered beds over it at run time (FarmingRules stage appearances), so those models have no blueprint.",
+  "notes": "Garden plot placeables from Meshy. The Garden Plot blueprint is the empty bed; the sprouting, ripe and withered models are only the plants, which Farming stands on the bed's soil at run time (FarmingRules stage appearances and heights), so those models have no blueprint.",
   "stations": [
     {
       "blueprint": "growing_plant",

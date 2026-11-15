@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CityAffairsService;
@@ -622,9 +621,9 @@ namespace SWLOR.Game.Server.Service
         private const string CropModelNextChangeVariable = "GARDEN_PLOT_CROP_NEXT_CHANGE";
 
         /// <summary>
-        /// Shows the crop's stage as a plant standing on the plot. A placeable's appearance does not change for players already in the
-        /// area, so each stage is its own plant: the old one goes and a new one is created. The plant opens the plot's window when used,
-        /// and its heartbeat brings it up to date when the crop's stage changes on its own and removes it when the plot is gone.
+        /// Shows the crop's stage as plants standing in the plot's soil. A placeable's appearance does not change for players already in
+        /// the area, so each stage is its own model: the old one goes and a new one is created. The plants open the plot's window when
+        /// used, and their heartbeat brings them up to date when the crop's stage changes on its own and removes them when the plot is gone.
         /// </summary>
         private static void RefreshCropModel(uint placeable, GardenPlot record, int appearance, DateTime now)
         {
@@ -638,7 +637,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(model) || GetLocalInt(placeable, CropModelAppearanceVariable) != appearance)
             {
                 DestroyCropModel(placeable);
-                model = CreateObject(ObjectType.Placeable, CropModelResref, GetLocation(placeable));
+                model = CreateObject(ObjectType.Placeable, CropModelResref, CropModelLocation(placeable, appearance));
                 if (!GetIsObjectValid(model))
                     return;
 
@@ -651,9 +650,6 @@ namespace SWLOR.Game.Server.Service
                 SetLocalObject(model, CropModelPlotVariable, placeable);
                 SetLocalObject(placeable, CropModelVariable, model);
                 SetLocalInt(placeable, CropModelAppearanceVariable, appearance);
-                // A stage bed stands where the plot's own bed is; both drawn at once would flicker through each other.
-                VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, placeable,
-                    FarmingRules.ReplacesPlot(appearance) ? VisibilityType.Hidden : VisibilityType.Default);
             }
 
             SetName(model, GetName(placeable));
@@ -669,18 +665,25 @@ namespace SWLOR.Game.Server.Service
 
             DeleteLocalObject(placeable, CropModelVariable);
             DeleteLocalInt(placeable, CropModelAppearanceVariable);
-            VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, placeable, VisibilityType.Default);
         }
 
-        /// <summary>The model a plot's crop stands as, when one stands in it (the plot itself may be hidden behind it).</summary>
+        /// <summary>Where a stage's plants stand: on the plot's soil, turned with the plot.</summary>
+        private static Location CropModelLocation(uint placeable, int appearance)
+        {
+            var position = GetPosition(placeable);
+            position.Z += FarmingRules.GetCropModelHeight(appearance);
+            return Location(GetArea(placeable), position, GetFacing(placeable));
+        }
+
+        /// <summary>The model a plot's crop stands as, when one stands in it.</summary>
         public static uint GetCropModel(uint placeable)
         {
             return GetLocalObject(placeable, CropModelVariable);
         }
 
         /// <summary>
-        /// Stands a plot's crop where the plot now is. Moving a structure in Manage Structures moves only the plot, and a planted plot is
-        /// hidden behind its crop's bed, so the bed follows each nudge and turn; saving the move stands the crop up again for good.
+        /// Stands a plot's crop where the plot now is. Moving a structure in Manage Structures moves only the plot, so the plants follow
+        /// each nudge and turn; saving the move stands the crop up again for good.
         /// </summary>
         public static void MatchCropModel(uint placeable)
         {
@@ -688,7 +691,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(model))
                 return;
 
-            ObjectPlugin.SetPosition(model, GetPosition(placeable));
+            ObjectPlugin.SetPosition(model, GetPositionFromLocation(CropModelLocation(placeable, GetLocalInt(placeable, CropModelAppearanceVariable))));
             var facing = GetFacing(placeable);
             AssignCommand(model, () => SetFacing(facing));
         }

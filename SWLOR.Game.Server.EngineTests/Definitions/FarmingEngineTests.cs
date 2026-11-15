@@ -101,8 +101,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        [EngineTest("A growing crop stands as its own bed over a hidden plot, and the plot shows again once the crop is harvested", Category = Category, TimeoutSeconds = 60f)]
-        public static async Task GrowingCropReplacesThePlotsBed(EngineTestContext ctx)
+        [EngineTest("A growing crop stands in its plot's soil, follows the plot when it is moved, and goes once the crop is harvested", Category = Category, TimeoutSeconds = 60f)]
+        public static async Task GrowingCropStandsInThePlot(EngineTestContext ctx)
         {
             using var farmer = await PlayerAbilityFixture.CreateAsync(ctx);
             await RequireCharacterSaves(ctx, farmer);
@@ -125,7 +125,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(GetIsObjectValid(placeable), "the Garden Plot blueprint spawns");
                     Farming.OnPlotSpawned(plot, placeable);
                     ctx.Assert(!GetIsObjectValid(Farming.GetCropModel(placeable)), "an empty plot shows only its own bed");
-                    ctx.AssertEqual(VisibilityType.Default, VisibilityPlugin.GetVisibilityOverride(OBJECT_INVALID, placeable), "an empty plot is shown");
                 });
 
                 var planted = await Run(ctx, farmer.Creature, () => Farming.Plant(farmer.Creature, plot.Id, crop.SeedResref, string.Empty));
@@ -134,11 +133,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     Farming.OnPlotSpawned(plot, placeable);
                     var model = Farming.GetCropModel(placeable);
-                    ctx.Assert(GetIsObjectValid(model), "a growing crop stands as its own bed");
-                    ctx.AssertEqual(FarmingRules.GrowingCropAppearance, GetLocalInt(placeable, "GARDEN_PLOT_CROP_APPEARANCE"), "the bed is the sprouting bed");
-                    ctx.AssertEqual(VisibilityType.Hidden, VisibilityPlugin.GetVisibilityOverride(OBJECT_INVALID, placeable), "the plot's own bed hides behind it");
+                    ctx.Assert(GetIsObjectValid(model), "a growing crop stands in the plot");
+                    ctx.AssertEqual(FarmingRules.GrowingCropAppearance, GetLocalInt(placeable, "GARDEN_PLOT_CROP_APPEARANCE"), "the crop shows as seedlings");
+                    ctx.Assert(System.Math.Abs(GetPosition(model).Z - GetPosition(placeable).Z - FarmingRules.GetCropModelHeight(FarmingRules.GrowingCropAppearance)) < 0.01f,
+                        $"the seedlings stand in the bed's soil ({GetPosition(model).Z} vs plot {GetPosition(placeable).Z})");
+                    ctx.AssertEqual(VisibilityType.Default, VisibilityPlugin.GetVisibilityOverride(OBJECT_INVALID, placeable), "the plot's bed stays in view");
 
-                    // Manage Structures nudges and turns only the plot; the bed standing in for it follows.
+                    // Manage Structures nudges and turns only the plot; its crop follows.
                     var moved = GetPosition(placeable);
                     moved.X += 0.5f;
                     ObjectPlugin.SetPosition(placeable, moved);
@@ -149,8 +150,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await Run(ctx, farmer.Creature, () =>
                 {
                     var model = Farming.GetCropModel(placeable);
-                    ctx.Assert(GetDistanceBetweenLocations(GetLocation(model), GetLocation(placeable)) < 0.01f, "the crop's bed moves with its plot");
-                    ctx.Assert(System.Math.Abs(GetFacing(model) - GetFacing(placeable)) < 0.5f, $"the crop's bed turns with its plot ({GetFacing(model)} vs {GetFacing(placeable)})");
+                    var offset = GetPosition(model) - GetPosition(placeable);
+                    ctx.Assert(System.Math.Abs(offset.X) < 0.01f && System.Math.Abs(offset.Y) < 0.01f, "the crop moves with its plot");
+                    ctx.Assert(System.Math.Abs(offset.Z - FarmingRules.GetCropModelHeight(FarmingRules.GrowingCropAppearance)) < 0.01f, "the moved crop stays in the bed's soil");
+                    ctx.Assert(System.Math.Abs(GetFacing(model) - GetFacing(placeable)) < 0.5f, $"the crop turns with its plot ({GetFacing(model)} vs {GetFacing(placeable)})");
                 });
 
                 ShiftPlot(plot.Id, TimeSpan.FromHours(crop.GrowHours));
@@ -159,8 +162,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await Run(ctx, farmer.Creature, () =>
                 {
                     Farming.OnPlotSpawned(plot, placeable);
-                    ctx.Assert(!GetIsObjectValid(Farming.GetCropModel(placeable)), "the harvested plot has no crop bed");
-                    ctx.AssertEqual(VisibilityType.Default, VisibilityPlugin.GetVisibilityOverride(OBJECT_INVALID, placeable), "the harvested plot shows again");
+                    ctx.Assert(!GetIsObjectValid(Farming.GetCropModel(placeable)), "the harvested plot has no crop");
                 });
             }
             finally

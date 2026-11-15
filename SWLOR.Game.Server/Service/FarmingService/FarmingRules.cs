@@ -44,8 +44,7 @@ namespace SWLOR.Game.Server.Service.FarmingService
         public const int NoPlotLimit = int.MaxValue;
 
         // What a garden plot shows at each stage (placeables.2da rows, installed by tools/GardenPlotModels.json). The plot itself is the
-        // empty bed; a crop's stage is a whole bed of its own laid over it, so the plot hides while one stands. A sapling is a young
-        // tree standing in the empty bed.
+        // empty bed; a crop's stage is the plants alone, standing on the bed's soil. A sapling is a young tree in the same soil.
         public const int EmptyPlotAppearance = 32111;
         public const int GrowingCropAppearance = 32112;
         public const int RipeCropAppearance = 32113;
@@ -109,10 +108,22 @@ namespace SWLOR.Game.Server.Service.FarmingService
             };
         }
 
-        /// <summary>Whether a stage's model is a whole bed that stands in place of the plot (so the plot hides), rather than a plant in it.</summary>
-        public static bool ReplacesPlot(int appearance)
+        /// <summary>The empty bed's soil, in meters above the plot's base.</summary>
+        public const float PlotSoilHeight = 0.464f;
+
+        /// <summary>
+        /// How high above the plot's base a stage's plants stand, in meters: the bed's soil, less how far the model's stems reach
+        /// below its own soil line, so every crop's stems meet the empty bed's soil.
+        /// </summary>
+        public static float GetCropModelHeight(int appearance)
         {
-            return appearance is GrowingCropAppearance or RipeCropAppearance or WitheredCropAppearance;
+            return appearance switch
+            {
+                GrowingCropAppearance => PlotSoilHeight - 0.004f,
+                RipeCropAppearance => PlotSoilHeight - 0.067f,
+                WitheredCropAppearance => PlotSoilHeight - 0.031f,
+                _ => PlotSoilHeight
+            };
         }
 
         /// <summary>

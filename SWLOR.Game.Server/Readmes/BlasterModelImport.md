@@ -544,15 +544,20 @@ the new appearance after both.
 
 `--config` points the tool at another model list in the same format. `tools/TrophyStandModels.json` holds the ten furniture
 Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place.
-`tools/GardenPlotModels.json` holds the garden plot beds: the empty bed is the Garden Plot blueprint, and the sprouting,
-ripe and withered beds have a null `blueprint` because Farming creates them at run time (their rows are the
-`FarmingRules` stage appearances).
+`tools/GardenPlotModels.json` holds the garden plots: the empty bed is the Garden Plot blueprint, and the sprouting, ripe
+and withered models have a null `blueprint` because Farming creates them at run time (their rows are the `FarmingRules`
+stage appearances). Each stage is only its plants: Meshy builds a whole bed per concept image and the frames came out
+different at every stage, so the plants were cut out of each stage bed (the faces above its soil and inside the rim) and
+stand on the empty bed's soil at `FarmingRules.GetCropModelHeight`. Re-exporting a model that is already in the haks
+but not yet on the live server needs `replaces_haks_resources: true` in the manifest.
 
 ### Meshy placeables
 
 The Trophy Stands came from Meshy (opt-in and paid; see the weapon section above for the approval rule) with one owner-made
 concept image each, `model_type: smart-topology`, `ai_model: meshy-t2`, `target_polycount: 8000`, `texture_model: meshy-7`
-and `enable_pbr: true` (15 credits each). Meshy output differs from TRELLIS output in three ways:
+and `enable_pbr: true` (15 credits each). For anything with foliage use `ai_model: meshy-t2.5` at a higher
+`target_polycount` (the garden plots used 12,000 for the bed and 20,000 per crop, same price): at 8,000 on `meshy-t2`
+seedlings came out as pegs and plants as blobs. Meshy output differs from TRELLIS output in three ways:
 
 - **Winding.** Meshy builds a model from separate open parts (a skull, a chain, a cloth). An open part has no meaningful
   signed volume, so `near_closed` rejects good models, and `reorient: propagate` turned 18-23 percent of their area against

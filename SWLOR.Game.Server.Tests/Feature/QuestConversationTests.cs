@@ -244,7 +244,7 @@ public sealed partial class QuestConversationTests
                     Grants.Add((resref, player, quantity));
                     return 500;
                 }
-                public static void GiveKeyItem(uint player, SWLOR.Game.Server.Domain.Items.KeyItemType type) { }
+                public static void GiveKeyItem(uint player, SWLOR.Game.Server.Domain.Foundation.KeyItemType type) { }
             }
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!)

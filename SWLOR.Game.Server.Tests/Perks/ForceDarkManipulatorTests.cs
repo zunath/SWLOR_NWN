@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -95,12 +96,12 @@ public class ForceDarkManipulatorTests
         var creepingTerrorDot = new CreepingTerrorDamageStatusEffect();
         creepingTerrorDot.Name.Should().Be("Creeping Terror");
         creepingTerrorDot.Frequency.Should().Be(3f);
-        creepingTerrorDot.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Combat.ResistanceType.Disruption);
+        creepingTerrorDot.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Foundation.ResistanceType.Disruption);
 
         var forceChokeDot = new ForceChokeDamageStatusEffect();
         forceChokeDot.Name.Should().Be("Force Choke");
         forceChokeDot.Frequency.Should().Be(3f);
-        forceChokeDot.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Combat.ResistanceType.Disruption);
+        forceChokeDot.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Foundation.ResistanceType.Disruption);
     }
 
     [Test]

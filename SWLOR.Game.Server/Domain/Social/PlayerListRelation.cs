@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Domain.World;
+
 namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>

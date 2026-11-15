@@ -5,6 +5,7 @@ using System.Linq;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Domain.Items

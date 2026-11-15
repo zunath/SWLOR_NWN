@@ -6,6 +6,7 @@ using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.CraftSim.Tests.Progression

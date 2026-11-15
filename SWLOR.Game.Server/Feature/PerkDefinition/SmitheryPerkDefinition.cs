@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 
 namespace SWLOR.Game.Server.Tests.Domain.Administration;

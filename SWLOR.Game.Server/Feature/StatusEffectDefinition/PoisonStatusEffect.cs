@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {

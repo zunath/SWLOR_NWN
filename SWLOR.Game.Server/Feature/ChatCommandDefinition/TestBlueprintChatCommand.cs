@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Research;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Core;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Core;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition

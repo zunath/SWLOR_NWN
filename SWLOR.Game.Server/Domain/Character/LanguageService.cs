@@ -8,9 +8,9 @@ using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Domain.Foundation.Random;
-using SkillCategoryType = SWLOR.Game.Server.Domain.Character.SkillCategoryType;
-using SkillAttribute = SWLOR.Game.Server.Domain.Character.SkillAttribute;
-using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
+using SkillCategoryType = SWLOR.Game.Server.Domain.Foundation.SkillCategoryType;
+using SkillAttribute = SWLOR.Game.Server.Domain.Foundation.SkillAttribute;
+using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 
 namespace SWLOR.Game.Server.Domain.Character
 {

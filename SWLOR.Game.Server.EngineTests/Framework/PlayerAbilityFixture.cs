@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using NWN.Native.API;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;

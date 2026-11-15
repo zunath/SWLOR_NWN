@@ -2,6 +2,8 @@ using SWLOR.CraftSim.Gates;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Fishing

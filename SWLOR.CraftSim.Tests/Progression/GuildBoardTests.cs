@@ -4,6 +4,7 @@ using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Tests.Progression
 {

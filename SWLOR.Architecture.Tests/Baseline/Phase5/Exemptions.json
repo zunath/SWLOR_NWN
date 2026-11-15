@@ -32,25 +32,25 @@
       "reason": "Each member carries its row of data in attributes."
     },
     {
-      "match": "type", "value": "SWLOR.Game.Server.Domain.World.StructureType",
+      "match": "type", "value": "SWLOR.Game.Server.Domain.Foundation.StructureType",
       "measures": ["typeSize"],
       "category": "attribute-row enum",
       "reason": "Each member carries its row of data in attributes."
     },
     {
-      "match": "type", "value": "SWLOR.Game.Server.Domain.Items.KeyItemType",
+      "match": "type", "value": "SWLOR.Game.Server.Domain.Foundation.KeyItemType",
       "measures": ["typeSize"],
       "category": "attribute-row enum",
       "reason": "Each member carries its row of data in attributes."
     },
     {
-      "match": "type", "value": "SWLOR.Game.Server.Domain.Character.PerkType",
+      "match": "type", "value": "SWLOR.Game.Server.Domain.Foundation.PerkType",
       "measures": ["typeSize"],
       "category": "attribute-row enum",
       "reason": "Each member carries its row of data in attributes (898 lines today; listed so it may grow past the limit)."
     },
     {
-      "match": "type", "value": "SWLOR.Game.Server.Domain.Abilities.RecastGroup",
+      "match": "type", "value": "SWLOR.Game.Server.Domain.Foundation.RecastGroup",
       "measures": ["typeSize"],
       "category": "attribute-row enum",
       "reason": "Each member carries its row of data in attributes (959 lines today; listed so it may grow past the limit)."
@@ -154,7 +154,7 @@
   ],
   "approvedStaticEntryPoints": [
     {
-      "type": "SWLOR.Game.Server.Domain.Foundation.Log",
+      "type": "SWLOR.Game.Server.Core.Log",
       "reason": "Owner decision 3 (2026-11-14): the logging entry point, static since P2-C1, so every layer logs without taking a logger."
     },
     {
@@ -166,7 +166,7 @@
       "reason": "Owner decision 3 (2026-11-14): the shared dice generator, static since P2-C5, which keeps its state."
     },
     {
-      "type": "SWLOR.Game.Server.Domain.Foundation.FrameProfiler",
+      "type": "SWLOR.Game.Server.Core.FrameProfiler",
       "reason": "Owner decision 3 (2026-11-14): the frame profiler the main loop and the native hooks call without an instance."
     }
   ]

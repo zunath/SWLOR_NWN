@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Composition.GameServices;
 

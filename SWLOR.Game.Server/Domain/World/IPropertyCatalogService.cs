@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.World
 {

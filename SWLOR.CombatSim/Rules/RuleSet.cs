@@ -1,5 +1,6 @@
 using SWLOR.CombatSim.Data;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CombatSim.Rules
 {

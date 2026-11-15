@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Tests.Service.Line;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Crafting;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.World;

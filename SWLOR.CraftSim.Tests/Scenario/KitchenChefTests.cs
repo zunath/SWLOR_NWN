@@ -8,6 +8,7 @@ using SWLOR.CraftSim.Scenario.Kitchen;
 using SWLOR.CraftSim.Tests.Support;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Tests.Scenario
 {

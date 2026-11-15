@@ -8,6 +8,7 @@ using Player = SWLOR.Game.Server.Entity.Player;
 using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using static SWLOR.NWN.API.NWScript.NWScript;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Core;
 using static SWLOR.Game.Server.Composition.GameServices;
 using static SWLOR.Game.Server.Native.ResolveAttackRoll;
 

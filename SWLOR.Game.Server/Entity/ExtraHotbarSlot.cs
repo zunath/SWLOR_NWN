@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.NWScript.Enum;
 

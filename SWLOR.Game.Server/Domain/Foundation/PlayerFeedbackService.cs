@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Domain.Foundation

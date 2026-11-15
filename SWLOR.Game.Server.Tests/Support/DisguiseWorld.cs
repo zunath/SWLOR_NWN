@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;

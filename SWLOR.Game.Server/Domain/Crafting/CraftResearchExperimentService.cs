@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Research;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Domain.Crafting;
 

@@ -1,5 +1,6 @@
 using NWN.Native.API;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 using static SWLOR.Game.Server.Composition.GameServices;

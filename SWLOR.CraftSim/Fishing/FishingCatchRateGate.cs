@@ -3,6 +3,7 @@ using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Crafting;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Fishing

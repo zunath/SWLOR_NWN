@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Social
 {

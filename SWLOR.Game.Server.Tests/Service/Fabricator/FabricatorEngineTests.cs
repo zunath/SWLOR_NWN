@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Fabricator;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Tests.Service.Fabricator.FabricatorTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Fabricator;
@@ -755,7 +756,7 @@ public class FabricatorEngineTests
     {
         var setup = Setup();
         var engine = new FabricatorEngine(new SeededMinigameRandom(seed), setup);
-        var chooser = new Random(seed);
+        var chooser = new System.Random(seed);
 
         for (var step = 0; step < 80 && engine.Status == MinigameStatus.InProgress; step++)
         {

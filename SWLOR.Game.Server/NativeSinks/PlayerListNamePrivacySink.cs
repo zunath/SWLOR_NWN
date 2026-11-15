@@ -3,6 +3,7 @@ using System.Linq;
 using NWN.Native.API;
 using NWNX.NET.Native;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.NativeSinks;

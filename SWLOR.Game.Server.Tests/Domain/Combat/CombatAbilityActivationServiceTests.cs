@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Tests.Support;
@@ -1134,9 +1135,9 @@ public class CombatAbilityActivationServiceTests
             $"Trigger {Activator} {StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent} 30",
             $"Attribute {Activator} {StatType.HeavyVibrobladeDefenseGuardiansResolveShieldPercent}");
         var shield = SWLOR.Game.Server.Feature.AbilityDefinition.TemporaryHitPointEffects.GetGrantedAmount(
-            Activator, SWLOR.Game.Server.Feature.AbilityDefinition.TemporaryHitPointEffectKey.GuardiansResolve);
+            Activator, SWLOR.Game.Server.Domain.Combat.TemporaryHitPointEffectKey.GuardiansResolve);
         var generation = SWLOR.Game.Server.Feature.AbilityDefinition.TemporaryHitPointEffects.GetGrantGeneration(
-            Activator, SWLOR.Game.Server.Feature.AbilityDefinition.TemporaryHitPointEffectKey.GuardiansResolve);
+            Activator, SWLOR.Game.Server.Domain.Combat.TemporaryHitPointEffectKey.GuardiansResolve);
         shield.Should().Be(10, "10% of 100 HP fits under every cap");
         generation.Should().BeGreaterThan(0);
         _log.Skip(3).Should().Equal($"Apply {Activator}>{Activator} GuardiansResolveStatusEffect({shield},{generation}) 8");

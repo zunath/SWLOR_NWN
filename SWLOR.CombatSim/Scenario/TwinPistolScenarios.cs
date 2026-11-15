@@ -1,5 +1,6 @@
 using SWLOR.CombatSim.Data;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CombatSim.Scenario;
 

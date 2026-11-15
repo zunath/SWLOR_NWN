@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -719,7 +720,7 @@ public class CapstoneQuestDefinitionTests : SkillFacadeFixture
             root.FullName,
             "SWLOR.Game.Server",
             "Domain",
-            "Abilities",
+            "Foundation",
             "RecastGroup.cs");
         var recastGroupSource = File.ReadAllText(recastGroupPath);
         recastGroupSource.Should().NotContain("CapstoneSignature");

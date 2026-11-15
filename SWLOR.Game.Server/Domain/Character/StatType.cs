@@ -4872,7 +4872,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         /// <summary>
         /// RecastGroup value whose active cooldown is reduced when a deflection succeeds. This
-        /// holds a <see cref="SWLOR.Game.Server.Domain.Abilities.RecastGroup"/> id, so a second source must replace
+        /// holds a <see cref="SWLOR.Game.Server.Domain.Foundation.RecastGroup"/> id, so a second source must replace
         /// the selector rather than add to it.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum, deflectionSource: DeflectionSource.Shield)]

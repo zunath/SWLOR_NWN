@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using static SWLOR.Game.Server.Composition.GameServices;

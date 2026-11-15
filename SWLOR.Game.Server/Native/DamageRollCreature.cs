@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using RacialType = SWLOR.NWN.API.NWScript.Enum.RacialType;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Core;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native

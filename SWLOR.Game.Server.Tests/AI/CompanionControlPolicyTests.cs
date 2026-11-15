@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using AssociateCommand = SWLOR.NWN.API.NWScript.Enum.Associate.Command;
 using static SWLOR.Game.Server.Composition.GameServices;

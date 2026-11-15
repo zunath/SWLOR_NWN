@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using MarketCategoryType = SWLOR.Game.Server.Domain.Economy.MarketCategoryType;
+using MarketCategoryType = SWLOR.Game.Server.Domain.Foundation.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Domain.Economy
 {

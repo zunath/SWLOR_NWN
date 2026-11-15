@@ -7,6 +7,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -391,7 +392,7 @@ public class CombatSourceTests
         engine.SetReturn("GetIsObjectValid", true);
         using var runtime = SWLOR.NWN.API.NWScript.NWScriptRuntime.Override(engine);
         const uint creature = 0xFFFFFFF2;
-        const SWLOR.Game.Server.Domain.Combat.DeflectionSource shield = SWLOR.Game.Server.Domain.Combat.DeflectionSource.Shield;
+        const SWLOR.Game.Server.Domain.Character.DeflectionSource shield = SWLOR.Game.Server.Domain.Character.DeflectionSource.Shield;
         if (name == "_recentGuardedHits")
         {
             table[creature] = SWLOR.Game.Server.Core.Clock.UtcNow;

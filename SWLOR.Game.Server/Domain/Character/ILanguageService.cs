@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Character;
-using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
+using SWLOR.Game.Server.Domain.Foundation;
+using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 
 namespace SWLOR.Game.Server.Domain.Character
 {

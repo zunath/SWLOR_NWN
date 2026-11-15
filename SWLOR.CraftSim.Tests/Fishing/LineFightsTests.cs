@@ -3,8 +3,10 @@ using NUnit.Framework;
 using SWLOR.CraftSim.Fishing;
 using SWLOR.CraftSim.Play;
 using SWLOR.CraftSim.Rng;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.CraftSim.Tests.Fishing

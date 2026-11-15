@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 namespace SWLOR.CombatSim.Engine;
 public sealed class TechniqueActivation
 {

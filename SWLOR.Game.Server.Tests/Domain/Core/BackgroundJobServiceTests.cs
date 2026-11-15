@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Tests.Domain.Core;
 

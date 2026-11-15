@@ -450,10 +450,10 @@ SWLOR.Game.Server.Tests/Support/AbilityCache.cs | 2
 SWLOR.Game.Server.Tests/Support/CommunicationBench.cs | 3
 SWLOR.Game.Server/Composition/NativeHookAccess.cs | 1
 SWLOR.Game.Server/Core/ManagedEntryDepth.cs | 2
-SWLOR.Game.Server/Domain/Abilities/AbilityDetail.cs | 1
 SWLOR.Game.Server/Domain/Abilities/AbilityRequirementFP.cs | 9
 SWLOR.Game.Server/Domain/Abilities/AbilityRequirementItem.cs | 4
 SWLOR.Game.Server/Domain/Abilities/AbilityRequirementStamina.cs | 18
+SWLOR.Game.Server/Domain/Character/AbilityDetail.cs | 1
 SWLOR.Game.Server/Domain/Character/CreatureStatusEffect.cs | 4
 SWLOR.Game.Server/Domain/Character/EquipmentPredicates.cs | 23
 SWLOR.Game.Server/Domain/Character/EquipmentStatTotals.cs | 4

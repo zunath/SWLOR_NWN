@@ -1,6 +1,7 @@
 using System.Text;
 using NWN.Native.API;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Native;

@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;

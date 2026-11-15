@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Domain.Foundation;
+
 namespace SWLOR.Game.Server.Domain.Crafting.Research;
 
 /// <summary>What completing a research job gave the blueprint, for the message the player reads.</summary>

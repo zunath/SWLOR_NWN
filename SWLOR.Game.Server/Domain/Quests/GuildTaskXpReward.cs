@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Domain.Quests
                 return;
 
             var skill = GuildTaskXp.SkillOf(Guild);
-            dbPlayer.PendingCraftXp ??= new Dictionary<SWLOR.Game.Server.Domain.Character.SkillType, int>();
+            dbPlayer.PendingCraftXp ??= new Dictionary<SWLOR.Game.Server.Domain.Foundation.SkillType, int>();
             dbPlayer.PendingCraftXp[skill] = dbPlayer.PendingCraftXp.GetValueOrDefault(skill) + xp;
         }
 

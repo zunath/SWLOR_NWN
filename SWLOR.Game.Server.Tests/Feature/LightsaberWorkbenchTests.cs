@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -57,7 +58,7 @@ public class LightsaberWorkbenchTests
         var root = FindRepositoryRoot();
         var serverRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
 
-        var currencyType = File.ReadAllText(Path.Combine(serverRoot, "Domain", "Economy", "CurrencyType.cs"));
+        var currencyType = File.ReadAllText(Path.Combine(serverRoot, "Domain", "Foundation", "CurrencyType.cs"));
         currencyType.Should().Contain("KyberToken");
 
         var consumables = File.ReadAllText(Path.Combine(serverRoot, "Feature", "ItemDefinition", "ConsumableItemDefinition.cs"));

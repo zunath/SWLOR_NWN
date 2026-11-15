@@ -14,7 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
 using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 using static SWLOR.NWN.API.NWScript.NWScript;
-using NpcGroup = SWLOR.Game.Server.Domain.Creatures.NPCGroupType;
+using NpcGroup = SWLOR.Game.Server.Domain.Foundation.NPCGroupType;
 
 namespace SWLOR.Game.Server.Tests.Domain.Quests;
 

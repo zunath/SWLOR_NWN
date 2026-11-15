@@ -10,6 +10,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -743,7 +744,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var item in new[] { disc, otherDisc, weapon, controller })
                 ctx.Assert(GetIsObjectValid(item), "the programming fixture item exists");
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidInstruction,
-                (int)SWLOR.Game.Server.Domain.Character.PerkType.AdrenalStim, 1), controller);
+                (int)SWLOR.Game.Server.Domain.Foundation.PerkType.AdrenalStim, 1), controller);
             ctx.AssertEqual(string.Empty, Droid.GetInstructionDiscValidationError(programmer, disc), "an owned instruction disc is accepted");
             foreach (var item in new[] { otherDisc, weapon, controller, OBJECT_INVALID })
                 ctx.Assert(!string.IsNullOrEmpty(Droid.GetInstructionDiscValidationError(programmer, item)), "invalid programming inputs are rejected before consumption");

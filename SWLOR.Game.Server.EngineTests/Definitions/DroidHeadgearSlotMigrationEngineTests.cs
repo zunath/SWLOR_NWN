@@ -61,7 +61,7 @@ public static partial class DroidInventoryEngineTests
                 SetLocalString(visor, "DROID_ITEM_ID", "equipped-visor");
             }
             if (denyEquip) AddItemProperty(DurationType.Permanent,
-                ItemPropertyCustom(ItemPropertyType.RequiresSkill, (int)SWLOR.Game.Server.Domain.Character.SkillType.Rifle, 50), visor);
+                ItemPropertyCustom(ItemPropertyType.RequiresSkill, (int)SWLOR.Game.Server.Domain.Foundation.SkillType.Rifle, 50), visor);
             var archive = new ConstructedDroid
             {
                 Name = "Headgear fixture",

@@ -1,7 +1,9 @@
 using SWLOR.CraftSim.Gates;
 using SWLOR.CraftSim.Legacy.Gathering;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.CraftSim.Fishing

@@ -2,6 +2,7 @@ using System.Text;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
 using static SWLOR.Game.Server.Composition.GameServices;
 

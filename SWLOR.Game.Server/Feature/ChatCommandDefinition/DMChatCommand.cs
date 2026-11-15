@@ -1368,7 +1368,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             {
                                 var playerId = GetObjectUUID(target);
                                 var dbPlayer = DB.Get<Player>(playerId);
-                                level = dbPlayer.Skills[SWLOR.Game.Server.Domain.Character.SkillType.Piloting].Rank;
+                                level = dbPlayer.Skills[SWLOR.Game.Server.Domain.Foundation.SkillType.Piloting].Rank;
                             }
                             var targetName = GetName(target);
                             var targetStatus = Space.GetShipStatus(target);

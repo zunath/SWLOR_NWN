@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Domain.World;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel

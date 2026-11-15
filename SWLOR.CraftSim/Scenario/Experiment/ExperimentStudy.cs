@@ -4,6 +4,7 @@ using SWLOR.CraftSim.Rng;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
 using SWLOR.Game.Server.Domain.Crafting.Research;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Scenario.Experiment
 {

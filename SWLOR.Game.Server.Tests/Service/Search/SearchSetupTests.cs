@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Tests.Service.Search.SearchTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Search;

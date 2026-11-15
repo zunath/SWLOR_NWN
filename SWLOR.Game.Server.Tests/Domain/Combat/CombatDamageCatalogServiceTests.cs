@@ -8,6 +8,7 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
 using PlayerEntity = SWLOR.Game.Server.Entity.Player;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 /// male human body, so that body has no entry. Nearly every value is derived from the hand models by
 /// tools/WeaponGripFit.py, which also checks them (see Readmes/WeaponHandFit.md); the commented entries are
 /// hands it cannot derive, judged on review sheets and in the client. A rifle takes
-/// <see cref="WeaponHandFit.RifleMove"/> of the same move.
+/// <see cref="WeaponHandFit.RifleMove"/> of the same move and a hilted weapon <see cref="WeaponHandFit.HiltMove"/>.
 /// </summary>
 public static class WeaponHandFitCatalog
 {

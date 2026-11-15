@@ -82,17 +82,53 @@ public class WeaponHandFitTests
     }
 
     [TestCase(BaseItem.Pistol, true, false)]
-    [TestCase(BaseItem.Sling, true, false)]
-    [TestCase(BaseItem.LegacyPistol, true, false)]
     [TestCase(BaseItem.CompanionPistol, true, false)]
-    [TestCase(BaseItem.Rifle, false, true)]
-    [TestCase(BaseItem.Cannon, false, true)]
+    [TestCase(BaseItem.Rifle, true, true)]
+    [TestCase(BaseItem.Cannon, true, true)]
+    [TestCase(BaseItem.Longsword, true, false)]
+    [TestCase(BaseItem.Lightsaber, true, false)]
+    [TestCase(BaseItem.Saberstaff, true, false)]
+    [TestCase(BaseItem.QuarterStaff, true, false)]
+    [TestCase(BaseItem.Katar, true, false)]
     [TestCase(BaseItem.PowerGlove, false, false)]
-    [TestCase(BaseItem.Longsword, false, false)]
-    public void OnlyPistolsAndRiflesAreMoved(BaseItem type, bool pistol, bool rifle)
+    [TestCase(BaseItem.CompanionPowerGlove, false, false)]
+    [TestCase(BaseItem.LargeShield, false, false)]
+    [TestCase(BaseItem.Invalid, false, false)]
+    public void EveryHeldWeaponIsMovedExceptPowerGlovesAndShields(BaseItem type, bool held, bool rifle)
     {
-        WeaponHandFit.IsPistol(type).Should().Be(pistol);
+        WeaponHandFit.IsHeld(type).Should().Be(held);
         WeaponHandFit.IsRifle(type).Should().Be(rifle);
+    }
+
+    [TestCase(BaseItem.Pistol)]
+    [TestCase(BaseItem.Sling)]
+    [TestCase(BaseItem.LegacyPistol)]
+    [TestCase(BaseItem.CompanionPistol)]
+    public void APistolTakesTheWholeMove(BaseItem type)
+    {
+        var move = new FitVector(.01f, -.02f, .03f);
+        WeaponHandFit.MoveFor(type, move, "pmo0_handr201").Should().Be(move);
+    }
+
+    [TestCase(BaseItem.Rifle)]
+    [TestCase(BaseItem.Cannon)]
+    public void ARifleTakesTheRifleMove(BaseItem type)
+    {
+        var move = new FitVector(.01f, -.02f, .03f);
+        WeaponHandFit.MoveFor(type, move, "pmo0_handr201").Should().Be(WeaponHandFit.RifleMove(move, "pmo0_handr201"));
+    }
+
+    [TestCase(BaseItem.Longsword)]
+    [TestCase(BaseItem.Dagger)]
+    [TestCase(BaseItem.Lightsaber)]
+    [TestCase(BaseItem.Saberstaff)]
+    [TestCase(BaseItem.QuarterStaff)]
+    [TestCase(BaseItem.Shuriken)]
+    public void AHiltedWeaponIsMovedAcrossItsHiltOnly(BaseItem type)
+    {
+        // Along the hilt the body's own hook already puts the guard against the fist.
+        WeaponHandFit.MoveFor(type, new FitVector(.01f, -.02f, .03f), "pmo0_handr201")
+            .Should().Be(new FitVector(.01f, 0f, .03f));
     }
 
     [TestCase("pmo0_handr201")]

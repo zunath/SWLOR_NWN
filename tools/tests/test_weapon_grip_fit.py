@@ -88,6 +88,37 @@ class WeaponSheetTests(unittest.TestCase):
             self.assertTrue(all(path.is_file() for path in written))
         self.assertTrue(all(name.startswith("wbwxh_m_") for name in skipped))
 
+    def test_an_uncompiled_model_is_read_with_its_nodes_placed(self):
+        text = """node dummy gun
+  parent NULL
+endnode
+node trimesh body
+  parent gun
+  position 0 0.1 0
+  orientation 1 0 0 3.14159265
+  verts 3
+    0 0 0
+    1 0 0
+    0 0.5 0
+  faces 1
+    0 1 2 1 0 0 0 0
+endnode
+node trimesh hidden
+  parent gun
+  render 0
+  verts 3
+    0 0 0
+    1 0 0
+    0 1 0
+  faces 1
+    0 1 2 1 0 0 0 0
+endnode
+endmodelgeom gun
+"""
+        vertices, faces = fit.ascii_mesh(text)
+        self.assertEqual(faces.tolist(), [[0, 1, 2]])
+        np.testing.assert_allclose(vertices, [[0, 0.1, 0], [1, 0.1, 0], [0, -0.4, 0]], atol=1e-6)
+
 
 class RifleMoveTests(unittest.TestCase):
     def test_a_move_along_the_turn_axis_is_the_same_in_every_clip(self):

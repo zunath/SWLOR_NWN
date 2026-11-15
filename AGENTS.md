@@ -50,7 +50,7 @@ Read the guide before working in its area. `Readmes/README.md` lists every guide
 - Engine tests: `Readmes/EngineTesting.md`
 - Active abilities and targeting: `Readmes/AbilityTargeting.md`. Icons: `Readmes/IconStandards.md` (check every new or changed icon upright in the client; key items: `Readmes/KeyItemIconStandards.md`). VFX: `Readmes/VisualEffectSelection.md`
 - Quests: `Readmes/QuestContentValidation.md`. Conversations: `Readmes/Conversations.md`. Player names: `Readmes/PlayerIdentity.md`. Player messages: `Readmes/PlayerFeedback.md`
-- Item models (helmet model 223 is reserved): `Readmes/ItemAppearanceRules.md`. Held pistol and rifle seating per body and hand (never per weapon or player): `Readmes/WeaponHandFit.md`. Item blueprints and pickers: `Readmes/EconomyRestrictedItems.md`. Creature HP: `Readmes/NpcHitPoints.md`
+- Item models (helmet model 223 is reserved): `Readmes/ItemAppearanceRules.md`. Held weapon seating per body and hand (never per weapon or player): `Readmes/WeaponHandFit.md`. Item blueprints and pickers: `Readmes/EconomyRestrictedItems.md`. Creature HP: `Readmes/NpcHitPoints.md`
 - Wearable parts, robes, skinning, clipping and motion regressions: `Readmes/GarmentModelRules.md`
 - Tint maps, the palette atlas, tint shaders, and dyed parts that glitter, fizz, or turn magenta: `Readmes/TintMapRendering.md`
 - NUI windows: `Readmes/NuiLayoutRules.md`, `Readmes/GuiWindowAuthoring.md`

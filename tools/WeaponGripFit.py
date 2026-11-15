@@ -203,7 +203,74 @@ def hand_mesh(hand: str, hold: str) -> tuple[np.ndarray, np.ndarray]:
 
 
 def weapon_mesh(name: str) -> tuple[np.ndarray, np.ndarray]:
+    data = model_index()[name.lower()].read_bytes() if name.lower() in model_index() else None
+    if data is not None and data[:4] != b"\0\0\0\0":
+        return ascii_mesh(data.decode("latin1"))  # some weapon models are stored uncompiled
     return load(name).mesh()
+
+
+def axis_angle_matrix(x: float, y: float, z: float, angle: float) -> np.ndarray:
+    length = math.sqrt(x * x + y * y + z * z)
+    if length < 1e-12:
+        return np.eye(3)
+    x, y, z = x / length, y / length, z / length
+    c, s = math.cos(angle), math.sin(angle)
+    return np.array([[c + x * x * (1 - c), x * y * (1 - c) - z * s, x * z * (1 - c) + y * s],
+                     [y * x * (1 - c) + z * s, c + y * y * (1 - c), y * z * (1 - c) - x * s],
+                     [z * x * (1 - c) - y * s, z * y * (1 - c) + x * s, c + z * z * (1 - c)]])
+
+
+def ascii_mesh(text: str) -> tuple[np.ndarray, np.ndarray]:
+    """Rendered triangles of an uncompiled (ASCII) model's geometry, in model space."""
+    nodes, order, current = {}, [], None
+    lines = iter(text.split("endmodelgeom", 1)[0].splitlines())
+    for raw in lines:
+        parts = raw.split()
+        if not parts:
+            continue
+        key = parts[0].lower()
+        if key == "node" and len(parts) >= 3:
+            current = dict(kind=parts[1].lower(), name=parts[2].lower(), parent=None, position=np.zeros(3),
+                           rotation=np.eye(3), vertices=None, faces=None, render=True)
+            nodes.setdefault(current["name"], current)
+            order.append(current)
+        elif current is None:
+            continue
+        elif key == "parent":
+            current["parent"] = parts[1].lower()
+        elif key == "position":
+            current["position"] = np.array([float(value) for value in parts[1:4]])
+        elif key == "orientation":
+            current["rotation"] = axis_angle_matrix(*[float(value) for value in parts[1:5]])
+        elif key == "render":
+            current["render"] = parts[1] != "0"
+        elif key == "verts":
+            current["vertices"] = np.array([[float(value) for value in next(lines).split()[:3]]
+                                            for _ in range(int(parts[1]))])
+        elif key == "faces":
+            current["faces"] = np.array([[int(value) for value in next(lines).split()[:3]]
+                                         for _ in range(int(parts[1]))])
+        elif key == "endnode":
+            current = None
+
+    def world(node, depth=0) -> np.ndarray:
+        local = transform(node["rotation"], node["position"])
+        parent = nodes.get(node["parent"])
+        if parent is None or parent is node or depth > 64:  # a root, or a model whose parents loop
+            return local
+        return world(parent, depth + 1) @ local
+
+    vertices, faces, base = [], [], 0
+    for node in order:
+        if node["kind"] != "trimesh" or node["vertices"] is None or node["faces"] is None or not node["render"]:
+            continue
+        matrix = world(node)
+        vertices.append((matrix[:3, :3] @ node["vertices"].T).T + matrix[:3, 3])
+        faces.append(node["faces"] + base)
+        base += len(node["vertices"])
+    if not vertices:
+        raise ValueError("model has no rendered mesh")
+    return np.vstack(vertices), np.vstack(faces)
 
 
 def hands(body: str, side: str) -> list[str]:
@@ -610,7 +677,7 @@ def write_weapon_sheets(weapon_class: str, output: Path, size: int = 180, per_sh
     """Every middle-part model of a weapon class in the reference hand; returns the sheets and the models skipped.
 
     The hand moves assume a weapon is fitted to the reference hand, so a weapon whose grip is not in that fist
-    here sits wrong on every body. Models stored uncompiled cannot be read and are listed instead.
+    here sits wrong on every body. Models with no rendered mesh are listed instead.
     """
     from PIL import Image
     output.mkdir(parents=True, exist_ok=True)
@@ -717,7 +784,7 @@ def main() -> int:
         for path in written:
             print(path)
         if skipped:
-            print("not compiled, not drawn:", " ".join(skipped))
+            print("no rendered mesh, not drawn:", " ".join(skipped))
         return 0
     trial = None if args.move is None else [value / 1000 for value in args.move]
     only = {name.lower() for name in args.hand} if args.hand else None

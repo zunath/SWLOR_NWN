@@ -1,14 +1,14 @@
 # Weapon hand fit
 
-How a held pistol or rifle is seated in each playable hand, and how to change it. Players never adjust this themselves.
+How a held weapon is seated in each playable hand, and how to change it. Players never adjust this themselves.
 
 ## How it works
 
-- Pistols and rifles are fitted to one body, the male human (`pmh0`). Fit a weapon model to that body only (see [BlasterModelImport.md](BlasterModelImport.md), "Hand fit", and [RifleModelImport.md](RifleModelImport.md)).
+- Weapons are fitted to one body, the male human (`pmh0`). Fit a weapon model to that body only (see [BlasterModelImport.md](BlasterModelImport.md), "Hand fit", and [RifleModelImport.md](RifleModelImport.md)).
 - Every other body carries the weapon hook in a hand of another size and place, so the same weapon sits beside, above or below the hand. `WeaponHandFitCatalog.cs` records how far to move the weapon, in metres, in weapon space (barrel -Z, grip -Y, +X toward the right palm):
   - `Bodies`: one move per body and side, keyed like `pfd0_handr`. A hand style without its own entry takes it.
   - `Hands`: a move for one hand model, keyed like `pfh0_handr204`. It replaces the body's move.
-- `WeaponHandFit` applies the move to pistols held in either hand and to a held rifle or cannon whenever the creature's appearance is refreshed (equip, spawn, area entry, appearance edits). It looks up the hand model the creature shows, so a glove that replaces the natural hand is used. An unequipped weapon carries no move. The move is added to the item's base transform and tracked on the item, so a transform something else set on the item survives.
+- `WeaponHandFit` applies the move to every weapon held in either hand whenever the creature's appearance is refreshed (equip, spawn, area entry, appearance edits). A pistol takes the whole move, a rifle or cannon the rifle move (see Rifles), and anything else the hilt move (see Hilted weapons). Power Gloves have their own fit (`PowerGloveFit`) and shields are strapped to the forearm, so neither takes one. It looks up the hand model the creature shows, so a glove that replaces the natural hand is used. An unequipped weapon carries no move. The move is added to the item's base transform and tracked on the item, so a transform something else set on the item survives.
 - The move depends on the hand only, never on the weapon. Do not add per-weapon or per-player moves. A weapon that sits wrong on the male human is a model fault; fix the model.
 
 Playable bodies: `h` human frame (most species), `e` elf frame (Bothan, Rodian, Wookiee), `d` dwarf frame (Ugnaught, Ewok), `o` half-orc frame (Cathar), `z` droid frame; `m` and `f`; normal phenotype only. A species' natural hand is the first entry of its `RightHand` list in `Feature/AppearanceDefinition/RacialAppearance`.
@@ -45,6 +45,14 @@ python GenerateRobeRgbModels.py --check --game-data "<NWN>\data"
 
 `--baseline` is the git revision whose rifle banks the robe banks hold now (normally `HEAD` before the change is committed). Bodies whose move did not change come out byte for byte the same.
 
+## Hilted weapons
+
+Everything held that is not a gun (swords, sabers, knives, staves, polearms, thrown weapons) takes `WeaponHandFit.HiltMove`: the hand's move without its part along the hilt (weapon-space Y, the line a pistol's handle runs on).
+
+- Across the hilt, the hand needs what it needs for a pistol: the move brings the hilt out of the fingers or from beside the hand into the palm.
+- Along the hilt, each body's weapon hook already puts the guard against the fist. Sliding the weapon that way buries the guard in the hand (checked in the client on the Mon Calamari and Wookiee hands, whose moves along the handle are the largest).
+- The rest pose and the idle clips leave the weapon hook at rest. The one-handed combat clips turn it 7 to 18 degrees against the hand, which shifts a 2 cm move by about 5 mm, and the two-handed swings turn it further for a moment. That is accepted: there is one move per hand, not one per clip.
+
 ## Reviewing and changing a move
 
 `tools/WeaponGripFit.py` works from the compiled models, without the client. It needs numpy, scipy and Pillow, and the hak folders `sw_pt_rhand sw_pt_lhand sw_weapon sw_pt_root tools` (`git -C SWLOR_Haks sparse-checkout add ...`). Without `tools`, `check` cannot compare the rifle bank table and says so.
@@ -59,7 +67,7 @@ python tools/WeaponGripFit.py sheet --hand pfd0_handr209 --move 15 0 0 --output 
 python tools/WeaponGripFit.py weapons --class wbwxl --output C:\Temp\grip                    # every rifle model in the reference hand
 ```
 
-The moves assume each weapon is fitted to the male human. `weapons` draws every model of a class (`wbwsh` pistols, `wbwxl` rifles, `wbwxh` cannons) in that hand, so a model whose grip is not in the fist stands out. Run it when weapon models are added.
+The moves assume each weapon is fitted to the male human. `weapons` draws every model of a class (`wbwsh` pistols, `wbwxl` rifles, `wbwxh` cannons) in that hand, so a model whose grip is not in the fist stands out. Run it when weapon models are added. A tile is small: before calling a model wrong, draw it large with `sheet --weapon`. A straight stock, a wire stock or a wide tube that passes through the fist is held correctly even though no grip shows, and so is a grip wider than the fist. A model is wrong when its grip or stock lies in front of, behind, above or beside the fist; fix it by moving the nodes under the model's root, never with a catalog entry.
 
 A sheet tile shows the side view, the view from below, and two cuts across the handle (hand outline in brown, pistol in blue), once without a move and once with it. In the cuts, +X is to the right and the barrel side is up. A drawing resolves about a centimetre; use it to catch a weapon that sits outside the hand, not to tune a derived move.
 
@@ -70,5 +78,6 @@ A sheet tile shows the side view, the view from below, and two cuts across the h
 
 ## Not covered
 
-- **Melee weapons and Power Gloves.** Power Gloves have their own fit (`PowerGloveFit`).
+- **Power Gloves and shields.** Power Gloves have their own fit (`PowerGloveFit`); a shield hangs from the forearm, not the hand.
+- **Turning or resizing a weapon.** The hands differ by a scale and a shift, so a move is all a hand needs.
 - **Wide (large phenotype) bodies.** They are not playable and get no move.

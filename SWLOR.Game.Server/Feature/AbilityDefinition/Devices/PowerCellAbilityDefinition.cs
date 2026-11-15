@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             var powered = new List<uint>();
             var isInitialTarget = true;
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 10));
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell1StatusEffect), 30f))
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         {
             var powered = new List<uint>();
             var isInitialTarget = true;
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell2StatusEffect), 30f))

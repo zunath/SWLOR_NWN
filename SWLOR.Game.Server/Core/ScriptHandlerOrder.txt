@@ -211,10 +211,10 @@ assoc_stateffect
   action      SWLOR.Game.Server.Domain.Character.StatService.ReapplyFoodHP
 
 aura_enter
-  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.AuraEnter
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.AuraEnter
 
 aura_exit
-  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.AuraExit
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.AuraExit
 
 bart_end_bef
   action      SWLOR.Game.Server.Feature.SaveCharacters.RemoveBarteringFlag
@@ -451,7 +451,7 @@ dm_poss_bef
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAvatarFadeOnRelease
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveSettingsOnPossession
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.CloseAppearanceWindowOnPossessionBefore
-  action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnDMPossess
+  action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnDMPossess
 
 dm_possfull_bef
   action      SWLOR.Game.Server.Domain.Foundation.CommunicationService.OnDMPossess
@@ -462,7 +462,7 @@ dm_possfull_bef
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAvatarFadeOnRelease
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveSettingsOnPossession
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.CloseAppearanceWindowOnPossessionBefore
-  action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnDMPossess
+  action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnDMPossess
 
 dm_spwnobj_aft
   action      SWLOR.Game.Server.Domain.Creatures.SpawnService.DMSpawnCreature
@@ -634,7 +634,7 @@ item_eqpval_bef
   action      SWLOR.Game.Server.Feature.EquipmentRestrictions.ValidateItemEquip
 
 item_on_hit
-  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.AddLeadershipCombatPoint
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.AddLeadershipCombatPoint
   action      SWLOR.Game.Server.Domain.Combat.CombatPointService.OnHitCastSpell
   action      SWLOR.Game.Server.Domain.Items.LootService.MarkCreditfinderAndTreasureHunterOnTarget
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ProcessQueuedWeaponAbility
@@ -702,7 +702,7 @@ mod_chat
   action      SWLOR.Game.Server.Domain.World.HoloComService.OnModuleChat
 
 mod_death
-  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnDeath
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnDeath
   action      SWLOR.Game.Server.Domain.Character.ActivityService.WipeStatusOnDeath
   action      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.RecordPlayerDeath
   action      SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerDeath
@@ -731,7 +731,7 @@ mod_dying
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnDying
 
 mod_enter
-  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ApplyAuraAOE
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ApplyAuraAOE
   action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.RestoreCooldownVisuals
   action      SWLOR.Game.Server.Domain.Character.ActivityService.WipeStatusOnEntry
   action      SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.RememberEnteringPlayer
@@ -787,7 +787,7 @@ mod_enter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEnter
-  action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnEnter
+  action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnEnter
 
 mod_equip
   action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnEquip
@@ -804,7 +804,7 @@ mod_equip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEquip
 
 mod_exit
-  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnExit
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnExit
   action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.ClearCooldownVisualsOnExit
   action      SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.ForgetExitingPlayer
   action      SWLOR.Game.Server.Domain.Combat.CombatService.ClearStatTriggerState
@@ -873,7 +873,7 @@ mod_p_target
   action      SWLOR.Game.Server.Domain.Combat.TargetingService.RunTargetedItemAction
 
 mod_respawn
-  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ReapplyAuraOnRespawn
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ReapplyAuraOnRespawn
   action      SWLOR.Game.Server.Domain.Combat.DeathService.OnPlayerRespawn
   action      SWLOR.Game.Server.Feature.CraftingInterruptions.GrantPendingXpOnRespawn
   action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnPlayerRespawn
@@ -1104,7 +1104,7 @@ slice_terminal
   action      SWLOR.Game.Server.Feature.SlicingTerminal.UseTerminal
 
 space_enter
-  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnSpaceEntry
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnSpaceEntry
   action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.RemoveAssociate
   action      SWLOR.Game.Server.Domain.Companions.DroidService.RemoveAssociate
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.RefreshStatusDisplayOnSpaceTransition

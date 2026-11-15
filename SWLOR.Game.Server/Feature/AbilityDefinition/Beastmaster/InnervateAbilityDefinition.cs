@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private static void ApplyInnervate(uint activator, uint target, HealAmount heal)
         {
             var healed = new List<uint>();
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Heal(activator, friendly, heal);
                 healed.Add(friendly);

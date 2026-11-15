@@ -1,69 +1,21 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Abilities;
-using SWLOR.Game.Server.Domain.Character;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using static SWLOR.Game.Server.Composition.GameServices;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition
+namespace SWLOR.Game.Server.Domain.Combat
 {
+    /// <summary>
+    /// The target queries of the ability definitions: friendly and hostile targets around a creature or a location, and where an
+    /// impact lands. Moved from <c>Feature/AbilityDefinition</c> with the namespace changed (P5-3c); the party reads go through
+    /// Combat's <see cref="IPartyRoster"/>. The client targeting data is <c>AbilityClientTargeting</c>'s.
+    /// </summary>
     public static class AbilityTargeting
     {
         private const float DefaultFriendlyTargetRadius = 5f;
-
-        public static IReadOnlyDictionary<FeatType, AbilityTargetingDetail> GetAllTargetingDetails()
-        {
-            return AbilityTargetingCache.GetAll();
-        }
-
-        public static void RefreshClientTargeting(uint creature)
-        {
-            if (!IsClientControlled(creature))
-                return;
-
-            foreach (var (feat, targeting) in AbilityTargetingCache.GetAll())
-            {
-                var hasFeat = QuickCast.KnowsFeat(creature, feat);
-                var sizeX = targeting.ResolveSizeX(creature, hasFeat);
-                var sizeY = targeting.ResolveSizeY();
-                ValidateResolvedTargeting(feat, targeting, sizeX, sizeY);
-
-                SetSpellTargetingData(
-                    creature,
-                    targeting.Spell,
-                    (int)targeting.Shape,
-                    sizeX,
-                    sizeY,
-                    (int)targeting.Flags);
-            }
-        }
-
-        [PlayerSession(PlayerReload.LoginOnly,
-            "The client targeting data stays in the engine.")]
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public static void RefreshClientTargetingOnEnter()
-        {
-            RefreshClientTargeting(GetEnteringObject());
-        }
-
-        [NWNEventHandler(ScriptName.OnDMPossessBefore)]
-        [NWNEventHandler(ScriptName.OnDMPossessFullPowerBefore)]
-        public static void RefreshClientTargetingOnDMPossess()
-        {
-            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
-            var creature = GetIsObjectValid(target)
-                ? target
-                : GetMaster(OBJECT_SELF);
-
-            if (!GetIsObjectValid(creature))
-                return;
-
-            DelayCommand(0.1f, () => RefreshClientTargeting(creature));
-        }
 
         public static string ValidateFriendlyTarget(
             uint activator,
@@ -133,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (!GetIsObjectValid(creature))
                     continue;
 
-                if (creature == activator || Party.IsInParty(activator, creature))
+                if (creature == activator || PartyRoster.IsInParty(activator, creature))
                 {
                     if (creature == activator)
                         yieldedActivator = true;
@@ -164,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (!GetIsObjectValid(creature))
                     continue;
 
-                if (creature == activator ? includeActivator : Party.IsInParty(activator, creature))
+                if (creature == activator ? includeActivator : PartyRoster.IsInParty(activator, creature))
                 {
                     if (creature == activator)
                         yieldedActivator = true;
@@ -244,12 +196,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                    GetCurrentHitPoints(creature) > 0;
         }
 
-        private static bool IsClientControlled(uint creature)
-        {
-            return GetIsObjectValid(creature) &&
-                   (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature));
-        }
-
         private static bool IsValidHostileTarget(uint activator, uint target, Location location, float radius, Func<uint, bool> predicate)
         {
             return IsAlive(target) &&
@@ -262,21 +208,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             return GetArea(creature) == GetAreaFromLocation(location) &&
                    GetDistanceBetweenLocations(GetLocation(creature), location) <= radius;
-        }
-
-        private static void ValidateResolvedTargeting(
-            FeatType feat,
-            AbilityTargetingDetail targeting,
-            float sizeX,
-            float sizeY)
-        {
-            AbilityTargetingCacheService.ValidateSize(feat, sizeX, sizeY);
-
-            if (!Enum.IsDefined(typeof(AbilityTargetingShapeType), targeting.Shape))
-            {
-                throw new InvalidOperationException(
-                    $"Ability '{feat}' resolved unsupported targeting shape '{targeting.Shape}'.");
-            }
         }
     }
 }

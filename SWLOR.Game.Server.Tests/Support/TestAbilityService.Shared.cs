@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// </summary>
 public sealed partial class TestAbilityService
 {
-    // Called by the activation checks, the aura, Dark Force and the damage formulas.
+    // Called by the activation checks, Dark Force and the damage formulas; the aura part has its own (TestAbilityAuraService).
     protected override int GetStatAdjustment(uint creature, StatType stat) => _bench.Stats.GetValueOrDefault((creature, stat));
 
     // Called by the damage formulas; the magnitude part has its own (TestCombatAbilityMagnitudeService).

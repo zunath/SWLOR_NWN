@@ -92,7 +92,7 @@ SWLOR.Game.Server.Domain.World.FishingService._fishResrefsByLocation
 SWLOR.Game.Server.Domain.World.FishingService._fishingLocations
 
 == CARRIED STATE ==
-SWLOR.Game.Server.Domain.Abilities.AbilityService._playerAuras
+SWLOR.Game.Server.Domain.Abilities.AbilityAuraService._playerAuras
 SWLOR.Game.Server.Domain.Abilities.ForceControlCooldownsService._forceMendCooldowns
 SWLOR.Game.Server.Domain.Abilities.ForceControlCooldownsService._harmonicRestorationCooldowns
 SWLOR.Game.Server.Domain.Abilities.MimicryService._analysisObservers
@@ -127,9 +127,9 @@ SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService._modifiers
 SWLOR.Game.Server.Domain.Combat.TwinPistolEquipmentService._pairs
 SWLOR.Game.Server.Domain.Quests.QuestEncounterService._activeCreaturesByEncounterId
 SWLOR.Game.Server.Domain.Quests.QuestEncounterService._lastActivityByCreature
-SWLOR.Game.Server.Domain.Social.PartyService._creatureToParty
-SWLOR.Game.Server.Domain.Social.PartyService._parties
-SWLOR.Game.Server.Domain.Social.PartyService._partyLeaders
+SWLOR.Game.Server.Domain.Social.PartyRosterService._creatureToParty
+SWLOR.Game.Server.Domain.Social.PartyRosterService._parties
+SWLOR.Game.Server.Domain.Social.PartyRosterService._partyLeaders
 SWLOR.Game.Server.Domain.Space.SpaceService._pendingShipLaunches
 SWLOR.Game.Server.Domain.Space.SpaceService._playersInSpace
 SWLOR.Game.Server.Domain.Space.SpaceService._shipClones

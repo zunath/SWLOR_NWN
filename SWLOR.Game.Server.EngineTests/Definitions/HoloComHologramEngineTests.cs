@@ -7,6 +7,7 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

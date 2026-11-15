@@ -32,7 +32,7 @@ public class ReloadHooksTests
     {
         Names(ReloadHooks.Discover(Game, ReloadHookPhase.Quiesce)).Should().Contain(new[]
         {
-            "AbilityService.QuiesceForReload",
+            "AbilityActivationStateService.QuiesceForReload",
             "ItemService.QuiesceForReload",
             "FishingService.QuiesceForReload",
             "StealthService.QuiesceForReload",

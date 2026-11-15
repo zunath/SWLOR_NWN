@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IAreaService _area;
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatRecorderService _combatRecorder;
-        private readonly IAbilityService _ability;
+        private readonly ICreatureRevivedListener[] _revivedListeners;
         private readonly ICombatDamageTakenService _damageTaken;
 
         public DeathService(
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IAreaService area,
             IStatusEffectService statusEffect,
             ICombatRecorderService combatRecorder,
-            IAbilityService ability,
+            IEnumerable<ICreatureRevivedListener> revivedListeners,
             ICombatDamageTakenService damageTaken)
         {
             _db = db;
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _area = area;
             _statusEffect = statusEffect;
             _combatRecorder = combatRecorder;
-            _ability = ability;
+            _revivedListeners = revivedListeners.ToArray();
             _damageTaken = damageTaken;
         }
 
@@ -365,7 +365,15 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         protected virtual void RestoreGhostAfterRevive(uint creature) => Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(creature);
 
-        protected virtual void ReapplyAuraEffectsForCreature(uint creature) => _ability.ReapplyAuraEffectsForCreature(creature);
+        /// <summary>
+        /// Tells the services that keep state by area of effect (the ability auras) that the creature was revived in place, as
+        /// the call into <c>Ability</c> did before the ability split (P5-3c).
+        /// </summary>
+        protected virtual void ReapplyAuraEffectsForCreature(uint creature)
+        {
+            foreach (var listener in _revivedListeners)
+                listener.OnCreatureRevived(creature);
+        }
 
         protected virtual void ApplyStatusEffect(uint source, uint creature, Type statusEffectClass, float durationSeconds) =>
             _statusEffect.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);

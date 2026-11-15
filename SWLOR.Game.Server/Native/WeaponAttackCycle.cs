@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Native
             {
                 if (!ResolveAttackRoll.IsSuccessfulAttackResult(round.GetAttack(index).m_nAttackResult)) continue;
                 CombatPoint.RecordWeaponAttackPoint(attacker, pending.Target, glove, GameServices.Skill.GetWeaponSkill(attacker, glove));
-                GameServices.Ability.RecordLeadershipWeaponHit(attacker, pending.Target);
+                GameServices.AbilityAura.RecordLeadershipWeaponHit(attacker, pending.Target);
                 Loot.RecordWeaponHitFindBonuses(attacker, pending.Target);
                 UsePerkFeat.ResolveQueuedWeaponAbilityHit(attacker, pending.Target, glove);
             }

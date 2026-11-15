@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Domain.Space
         private const float ShipDamageMessageRange = 10f;
 
 
-        private readonly IAbilityService _ability;
+        private readonly IAbilityAuraService _abilityAura;
         private readonly IAbilityCooldownVisualService _abilityCooldownVisual;
         private readonly IAIService _ai;
         private readonly IAreaService _area;
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Domain.Space
         private readonly IStatusEffectService _statusEffect;
 
         public SpaceService(
-            IAbilityService ability,
+            IAbilityAuraService abilityAura,
             IAbilityCooldownVisualService abilityCooldownVisual,
             IAIService ai,
             IAreaService area,
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Domain.Space
             IStatService stat,
             IStatusEffectService statusEffect)
         {
-            _ability = ability;
+            _abilityAura = abilityAura;
             _abilityCooldownVisual = abilityCooldownVisual;
             _ai = ai;
             _area = area;
@@ -1092,7 +1092,7 @@ namespace SWLOR.Game.Server.Domain.Space
         public void WarpPlayerInsideShip(uint player)
         {
             ExitSpaceMode(player);
-            _ability.ReapplyPlayerAuraAOE(player);
+            _abilityAura.ReapplyPlayerAuraAOE(player);
 
             if (!GetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET"))
                 return;

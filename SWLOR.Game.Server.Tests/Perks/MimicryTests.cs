@@ -240,8 +240,8 @@ public class MimicryTests
         var abilityTargeting = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
-            "Feature",
-            "AbilityDefinition",
+            "Domain",
+            "Combat",
             "AbilityTargeting.cs"));
         var stimCanister = File.ReadAllText(Path.Combine(
             techniqueDirectory,
@@ -256,7 +256,7 @@ public class MimicryTests
             "StatusEffect.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f)");
         abilityTargeting.Should().Contain("bool includeActivator = true");
         abilityTargeting.Should().Contain(
-            "if (creature == activator ? includeActivator : Party.IsInParty(activator, creature))",
+            "if (creature == activator ? includeActivator : PartyRoster.IsInParty(activator, creature))",
             "excluding the caster must take precedence over party membership for Warden Wall Stance");
         abilityTargeting.Should().Contain(
             "if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)",

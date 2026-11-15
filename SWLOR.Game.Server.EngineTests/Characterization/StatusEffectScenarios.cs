@@ -135,7 +135,7 @@ public static class StatusEffectScenarios
             new Step("advance 4", 4),
             new Step("advance 4", 4),
             new Step("advance 1", 1, (_, target) =>
-                $"stun immunity {Ability.HasHardCrowdControlImmunity(target, ImmunityType.Stun)}")
+                $"stun immunity {AbilityImmunity.HasHardCrowdControlImmunity(target, ImmunityType.Stun)}")
         });
         yield return new Plan("Bleed extended and refreshed", () => new BleedStatusEffect(), 12f, StatType.Invalid, 0, new[]
         {

@@ -872,8 +872,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (SelfKnockdownDazedImmunityDurationSeconds <= 0)
                     return;
 
-                Ability.ApplyTemporaryImmunity(activator, SelfKnockdownDazedImmunityDurationSeconds, ImmunityType.Knockdown);
-                Ability.ApplyTemporaryImmunity(activator, SelfKnockdownDazedImmunityDurationSeconds, ImmunityType.Dazed);
+                AbilityImmunity.ApplyTemporaryImmunity(activator, SelfKnockdownDazedImmunityDurationSeconds, ImmunityType.Knockdown);
+                AbilityImmunity.ApplyTemporaryImmunity(activator, SelfKnockdownDazedImmunityDurationSeconds, ImmunityType.Dazed);
             }
 
             private void ApplySelfModifiers(uint activator)

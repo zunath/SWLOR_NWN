@@ -70,7 +70,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
                 ClearAllActions();
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
                     $"Foreign Rifle Headshot queues: {Ability.GetLastActivationDenialReason()}");
-                ctx.Assert(Ability.TryGetQueuedWeaponTraits(actor, out traits), "the queued Headshot captures its traits");
+                ctx.Assert(AbilityActivationState.TryGetQueuedWeaponTraits(actor, out traits), "the queued Headshot captures its traits");
                 ctx.AssertEqual(5, UsePerkFeat.GetQueuedWeaponTraitAccuracy(actor), "Captured Changing Angles reaches the carrier attack roll");
                 ctx.AssertEqual(1, traits.Snapshot.CadenceSpent, "A foreign paid weapon ability captures Cadence");
                 ctx.AssertEqual(0, State(actor).Cadence, "The captured Cadence is spent once when the queued cost is paid");

@@ -37,7 +37,6 @@ public sealed partial class TestAbilityService : AbilityService
         INamedAnimationService namedAnimation,
         IMimicryService mimicry,
         IActivityService activity,
-        IPartyService party,
         IPlayerFeedbackService playerFeedback,
         ICombatRecorderService combatRecorder,
         IMeleeTechniqueService meleeTechnique,
@@ -48,9 +47,9 @@ public sealed partial class TestAbilityService : AbilityService
         IAbilityImpactState impactState,
         ICombatImpactGeometryService geometry,
         ICombatAbilityMagnitudeService magnitude)
-        : base(statusEffect, enmity, combatPoint, recast, telegraph, messaging, music, namedAnimation, mimicry, activity, party,
+        : base(statusEffect, enmity, combatPoint, recast, telegraph, messaging, music, namedAnimation, mimicry, activity,
             playerFeedback, combatRecorder, meleeTechnique, capstoneProof, resistance, stealth, FacadeForwarder.For<IStatService>(),
-            FacadeForwarder.For<IPerkService>(), catalog, impactState, geometry, magnitude, FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.LazyFor<ISpaceService>())
+            FacadeForwarder.For<IPerkService>(), catalog, impactState, geometry, magnitude, FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ISpaceService>())
     {
         _bench = bench;
     }

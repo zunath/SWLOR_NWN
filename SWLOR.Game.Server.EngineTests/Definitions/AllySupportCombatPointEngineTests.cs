@@ -149,8 +149,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var leader = await PlayerAbilityFixture.CreateAsync(ctx);
             var ally = await SpawnPartyAllyAsync(ctx, leader.Creature);
-            Ability.ReapplyPlayerAuraAOE(leader.Creature);
-            await ctx.WaitUntilAsync(() => Ability.GetSelfAndPartyAuraRecipients(leader.Creature).Contains(ally), 10f,
+            AbilityAura.ReapplyPlayerAuraAOE(leader.Creature);
+            await ctx.WaitUntilAsync(() => AbilityAura.GetSelfAndPartyAuraRecipients(leader.Creature).Contains(ally), 10f,
                 "the party ally to enter the leader's aura");
 
             TemporaryStatModifier.Add(leader.Creature, StatType.ChargeOrderAuraLevel, 1, 60f);
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Ability.RemoveAura(leader.Creature, typeof(ChargeOrder1StatusEffect));
+                AbilityAura.RemoveAura(leader.Creature, typeof(ChargeOrder1StatusEffect));
                 ClearCombatPoints(leader.Creature);
             }
         }

@@ -469,6 +469,19 @@ public class DeathServiceTests
         _death.HasRespawnArea(null!).Should().BeFalse();
     }
 
+    [Test]
+    public void A_revive_in_place_tells_every_revived_listener_in_order()
+    {
+        // The subdual revive used to call the ability service's aura reapply; the death service now tells each listener the
+        // container registered (the aura part, P5-3c), once per revive.
+        var heard = new List<string>();
+        var death = new ReviveProbe(new[] { new RecordingRevivedListener("first", heard), new RecordingRevivedListener("second", heard) });
+
+        death.Revive(42);
+
+        heard.Should().Equal("first:42", "second:42");
+    }
+
     private static Vector3 Vector3Of(float x, float y, float z) => new(x, y, z);
 
     private sealed class TestWaiver
@@ -498,7 +511,7 @@ public class DeathServiceTests
             IPropertyService property,
             IAreaService areas)
             : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>(),
-                FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICombatDamageTakenService>())
+                Array.Empty<ICreatureRevivedListener>(), FacadeForwarder.For<ICombatDamageTakenService>())
         {
         }
 
@@ -546,6 +559,30 @@ public class DeathServiceTests
             Calls.Add($"ApplyStatusEffect:{source}:{creature}:{statusEffectClass.Name}:{durationSeconds}");
 
         protected override void WriteLog(LogGroup group, string details) => Logs.Add((group, details));
+    }
+
+    private sealed class RecordingRevivedListener : ICreatureRevivedListener
+    {
+        private readonly string _name;
+        private readonly List<string> _heard;
+
+        public RecordingRevivedListener(string name, List<string> heard)
+        {
+            _name = name;
+            _heard = heard;
+        }
+
+        public void OnCreatureRevived(uint creature) => _heard.Add($"{_name}:{creature}");
+    }
+
+    private sealed class ReviveProbe : DeathService
+    {
+        public ReviveProbe(IEnumerable<ICreatureRevivedListener> listeners)
+            : base(null!, null!, null!, null!, null!, null!, null!, null!, listeners, null!)
+        {
+        }
+
+        public void Revive(uint creature) => ReapplyAuraEffectsForCreature(creature);
     }
 
     private sealed class Scope : IDisposable

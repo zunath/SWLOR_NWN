@@ -33,12 +33,12 @@ public abstract class AbilityServiceTestBase
     protected TestCombatAbilityMagnitudeService Magnitude => Bench.Magnitude;
     protected TestAbilityService Lifecycle => Bench.Lifecycle;
     protected TestAbilityService Activation => Bench.Activation;
-    protected TestAbilityService Aura => Bench.Aura;
+    protected TestAbilityAuraService Aura => Bench.Aura;
     protected TestAbilityService HostileImpact => Bench.HostileImpact;
     protected TestAbilityService DarkForce => Bench.DarkForce;
     protected TestAbilityService StatusApplication => Bench.StatusApplication;
-    protected TestAbilityService Immunity => Bench.Immunity;
-    protected TestAbilityService ActivationState => Bench.ActivationState;
+    protected AbilityImmunityService Immunity => Bench.Immunity;
+    protected AbilityActivationStateService ActivationState => Bench.ActivationState;
 
     [OneTimeSetUp]
     public void BuildFacades() => _facades = new FacadeContainer();

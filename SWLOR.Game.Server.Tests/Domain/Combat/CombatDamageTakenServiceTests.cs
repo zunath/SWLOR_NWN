@@ -136,12 +136,13 @@ public class CombatDamageTakenServiceTests
             base.CalculateDamage(attack, dmg, attackStat, defense, defenseStat, critical);
     }
 
-    // The ally search of the deflection guard asks the party facade whether a nearby creature is in the creature's party.
+    // The ally search of the deflection guard asks the party roster (GameServices.PartyRoster, P5-3c) whether a nearby creature
+    // is in the creature's party.
     [OneTimeSetUp]
     public void BuildFacades()
     {
-        var party = ScriptedProxy.Create<IPartyService>(out var partyCalls);
-        partyCalls.On(nameof(IPartyService.IsInParty), args => _party.Contains((uint)args[1]!));
+        var party = ScriptedProxy.Create<IPartyRoster>(out var partyCalls);
+        partyCalls.On(nameof(IPartyRoster.IsInParty), args => _party.Contains((uint)args[1]!));
         _facades = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton(party)));
     }
 

@@ -93,11 +93,11 @@ public class NativeControlStatusEffectTests
 
         source.Should().Contain("protected override void Remove(uint creature)");
         source.Should().Contain("if (IsBeingReplaced)");
-        source.Should().Contain("Ability.ApplyPostControlImmunity(");
+        source.Should().Contain("AbilityImmunity.ApplyPostControlImmunity(");
         source.Should().Contain("SecondsSinceNaturalExpiration");
         source.Should().Contain($"ImmunityType.{immunityType});");
         source.Should().NotContain(
-            $"Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.{immunityType});",
+            $"AbilityImmunity.ApplyTemporaryImmunity(creature, duration, ImmunityType.{immunityType});",
             "hard-control immunity begins after the status ends, not while it is active");
     }
 
@@ -135,7 +135,7 @@ public class NativeControlStatusEffectTests
             "StatusEffect.HasStatusEffect(creature, GetType())",
             StringComparison.Ordinal);
         var immunityCheck = canApply.IndexOf(
-            "Ability.HasHardCrowdControlImmunity(",
+            "AbilityImmunity.HasHardCrowdControlImmunity(",
             StringComparison.Ordinal);
         activeCheck.Should().BeGreaterThanOrEqualTo(0);
         activeCheck.Should().BeLessThan(
@@ -250,7 +250,7 @@ public class NativeControlStatusEffectTests
     [Test]
     public void HardCrowdControlEffects_DeclareTheCategoryTheSharedGateReads()
     {
-        // While one hard CC runs, a different one must not land: Ability.HasHardCrowdControlImmunity
+        // While one hard CC runs, a different one must not land: AbilityImmunity.HasHardCrowdControlImmunity
         // treats any active status carrying StatusEffectCategory.HardCrowdControl as immunity. An
         // effect that grants post-control immunity on Remove but forgets the category would be
         // stackable during its own duration - the regression this pins down.

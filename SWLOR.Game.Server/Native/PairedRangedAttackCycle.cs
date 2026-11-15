@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Native
                 {
                     var applyQueuedHit = UsePerkFeat.CaptureQueuedWeaponAbilityHit(actor, targetId, weaponId, () =>
                     {
-                        GameServices.Ability.RecordLeadershipWeaponHit(actor, targetId);
+                        GameServices.AbilityAura.RecordLeadershipWeaponHit(actor, targetId);
                         Loot.RecordWeaponHitFindBonuses(actor, targetId);
                     });
                     if (applyQueuedHit != null)
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Native
                         var resolvedDamage = resolveDamageTaken?.Invoke() ?? damage;
                         shot.Damage = resolvedDamage;
                         CombatPoint.RecordWeaponAttackPoint(actor, targetId, weaponId, skill);
-                        GameServices.Ability.RecordLeadershipWeaponHit(actor, targetId);
+                        GameServices.AbilityAura.RecordLeadershipWeaponHit(actor, targetId);
                         Loot.RecordWeaponHitFindBonuses(actor, targetId);
                         TwinPistolMastery.RecordOrdinaryHit(actor, targetId, true);
                         foreach (var applyImpact in impactActions) applyImpact(resolvedDamage);

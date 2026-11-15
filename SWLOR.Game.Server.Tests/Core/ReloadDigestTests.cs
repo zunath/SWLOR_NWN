@@ -252,7 +252,7 @@ public class ReloadDigestTests
             "SWLOR.Game.Server.Domain.Economy.GuildService.DateTasksLoaded",
             "SWLOR.Game.Server.Feature.StoreManagement._stores",
             "SWLOR.Game.Server.Domain.Character.StatusEffectService._creatureEffects",
-            "SWLOR.Game.Server.Domain.Social.PartyService._parties",
+            "SWLOR.Game.Server.Domain.Social.PartyRosterService._parties",
         });
         lines.Should().OnlyContain(line => line.Kind == ReloadDigests.AdoptedKind && line.Hash != "unresolved");
     }

@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             if (includeSelf)
             {
-                Ability.ApplyTemporaryImmunity(activator, duration, immunity);
+                AbilityImmunity.ApplyTemporaryImmunity(activator, duration, immunity);
             }
 
             var location = GetLocation(activator);
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
-                    Ability.ApplyTemporaryImmunity(creature, duration, immunity);
+                    AbilityImmunity.ApplyTemporaryImmunity(creature, duration, immunity);
                 }
 
             }

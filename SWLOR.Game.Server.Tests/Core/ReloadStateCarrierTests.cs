@@ -38,7 +38,7 @@ public class ReloadStateCarrierTests
     {
         ReloadStateCarrier.CarriedClasses(Game).Select(entry => entry.Type.Name).Should().Contain(new[]
         {
-            nameof(StatusEffectService), nameof(PartyService), nameof(AbilityService), "CombatActivityService", "CombatPointService",
+            nameof(StatusEffectService), nameof(PartyRosterService), nameof(AbilityAuraService), "CombatActivityService", "CombatPointService",
             "EnmityService", nameof(PlayerNameService), "PvpCombatService", "TemporaryStatModifierService", nameof(ShuttleService),
         });
     }
@@ -210,12 +210,12 @@ public class ReloadStateCarrierTests
     public void AClassThatFailsIsNamedAndTheOthersStillCarry()
     {
         var store = new Dictionary<string, string>();
-        object Resolve(Type type) => type == typeof(PartyService) ? null : ReloadCarrySamples.Owner(type, FieldsOf(type));
+        object Resolve(Type type) => type == typeof(PartyRosterService) ? null : ReloadCarrySamples.Owner(type, FieldsOf(type));
 
         Carrier().Invoking(carrier => carrier.CarryAll(Resolve, (key, text) => store[key] = text))
-            .Should().Throw<InvalidOperationException>().WithMessage("*PartyService*");
+            .Should().Throw<InvalidOperationException>().WithMessage("*PartyRosterService*");
         store.Should().ContainKey(ReloadStateCarrier.KeyPrefix + typeof(MusicService).FullName);
-        store.Should().NotContainKey(ReloadStateCarrier.KeyPrefix + typeof(PartyService).FullName);
+        store.Should().NotContainKey(ReloadStateCarrier.KeyPrefix + typeof(PartyRosterService).FullName);
     }
 
     [Test]

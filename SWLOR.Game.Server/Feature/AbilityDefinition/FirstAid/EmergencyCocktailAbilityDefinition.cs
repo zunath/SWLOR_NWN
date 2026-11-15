@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var duration = CapstoneAbility.ActiveDurationSeconds;
             var treated = new List<uint>();
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 25));
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(EmergencyCocktailStatusEffect), duration))

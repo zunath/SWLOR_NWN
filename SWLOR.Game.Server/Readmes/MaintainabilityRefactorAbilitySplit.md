@@ -497,6 +497,42 @@ construction cycle decided:
   service each in `ServicesPerType.txt`. `UsePerkFeat` and `WeaponActiveAbilityDefinitionBase` reach one more `GameServices`
   property each.
 
+### P5-3c (auras, immunities, activation state and the leaf edges)
+
+Parts 8, 19 and 20 moved verbatim: `AbilityAuraService` (the 8 handlers, renamed in place in `ScriptHandlerOrder.txt` and
+`HandlerRenames.txt`; `_playerAuras` stays `Carried`), `AbilityImmunityService` and `AbilityActivationStateService` (the three
+dictionaries stay `Runtime`, the `Quiesce` hook moves with them). `PartyRosterService` (Social, behind `IPartyRosterService`,
+read through Combat's `IPartyRoster`) holds the three party caches, still `Carried`; `DeathService` tells
+`IEnumerable<ICreatureRevivedListener>` (copied to an array once), which the aura part implements; `AuraStatusEffectBase`
+implements Character's `IAuraStatusEffect`. Where the pull request differs from the map:
+
+- **`PartyService` keeps a `Lazy<>` to the aura part** (`Lazy<IAbilityAuraService>`, narrowed from `Lazy<IAbilityService>`). The
+  aura part's own services still reach `IPartyService` (`ICombatPointService` directly, `IStatService` through `IEnmityService`,
+  `IStatusEffectService` through `IStealthService` and `IAIService`), so a plain parameter is a construction cycle. It goes when
+  those services read `IPartyRoster` instead (P5-7, P5-8). `DeferredResolution.txt` holds.
+- **The roster hands its caches to the party service.** `IPartyRosterService` exposes the three dictionaries, so the code of
+  `PartyService` that keeps them is unchanged except for the receiver (`_roster.Parties`); its three reads forward to the roster.
+- **`AbilityTargeting`'s client half is `AbilityClientTargeting`.** The target queries moved to `Domain/Combat` as `AbilityTargeting`
+  (a `DomainOrderTypeMoves.json` entry, so content keeps its call text and gains a `using`) and read the roster through
+  `GameServices.PartyRoster` (typed `IPartyRoster`). The client refresh (`RefreshClientTargeting`, its two handlers on three events)
+  cannot share the name in another namespace and cannot join `AbilityTargetingCacheService` (the P5-3b cycle), so it stays in
+  `Feature/AbilityDefinition` under a new name; the handler lines are renamed in place with `HandlerRenames.txt` lines. Master's
+  three perk definitions that call `AbilityTargeting.RefreshClientTargeting` take the new name by hand on a sync.
+- **Growth:** `UsePerkFeat` (29 -> 30) and `WeaponActiveAbilityDefinitionBase` (17 -> 18) reach `AbilityActivationState` beside
+  `Ability`, and the split `AbilityTargeting` file has a second `using static` (`StaticLookups.txt` 6 -> 3 + 4). `AbilityService`
+  loses only `IPartyService` (34 -> 33): the moved code shared its other services with the parts that remain.
+- **`AbilityService` takes `ISpaceService` directly.** Once `SpaceService` took the aura part instead of `IAbilityService`,
+  `LazyDependencyCycleTests` found the `Lazy<ISpaceService>` needless (row 6's cycle is gone). The upward edge stays until P5-3d
+  replaces it with `ISpaceModeQuery`; `DeferredResolution.txt` loses its line now.
+- **Tests:** the bench's aura accessor is `TestAbilityAuraService` (the command radius read), the immunity and activation state
+  accessors are the real parts, and `AbilityFacadeAllocationTests` registers all three and pins the activation state reads through
+  `GameServices.AbilityActivationState`; the aura and immunity reads call the engine on every call (the engine fake records each
+  call), so they have no zero pin, as before. `AbilityTargetingTests` covers the target queries now that Combat's coverage floor
+  applies to them. Tests that read source text follow the new receivers
+  (`AbilityImmunity.`, `AbilityActivationState.`, `_roster.Parties`, `PartyRoster.IsInParty`), and the Combat part tests answer
+  the target queries' party reads through an `IPartyRoster` stand-in.
+- **CombatSim** reads `TemporaryImmunityBaseDurationSeconds` from `AbilityImmunityService`.
+
 ## Risks
 
 - **Hot paths.** `ApplyCombatImpact` runs per target per ability and the weapon abilities ride every landed swing, so the chain

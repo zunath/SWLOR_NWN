@@ -69,12 +69,13 @@ public class CombatAbilityActivationServiceTests
     private int _temporaryTotal;
     private object? _currentForceAttack;
 
-    // The nearby friend search asks the party facade whether a creature in range is in the activator's party.
+    // The nearby friend search asks the party roster (GameServices.PartyRoster, P5-3c) whether a creature in range is in the
+    // activator's party.
     [OneTimeSetUp]
     public void BuildFacades()
     {
-        var party = ScriptedProxy.Create<IPartyService>(out var partyCalls);
-        partyCalls.On(nameof(IPartyService.IsInParty), args => _party.Contains((uint)args[1]!));
+        var party = ScriptedProxy.Create<IPartyRoster>(out var partyCalls);
+        partyCalls.On(nameof(IPartyRoster.IsInParty), args => _party.Contains((uint)args[1]!));
         _facades = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton(party)));
     }
 

@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitUntilAsync(() => Party.IsInParty(leader.Creature, ally), 5f, "the ally to join the leader's party");
                 await ctx.WaitUntilAsync(() => HasChargeOrder(ally, leader.Creature), 3f,
                     "the active Charge Order to reach the ally who joined inside the aura");
-                ctx.Assert(Ability.GetSelfAndPartyAuraRecipients(leader.Creature).Contains(ally),
+                ctx.Assert(AbilityAura.GetSelfAndPartyAuraRecipients(leader.Creature).Contains(ally),
                     "the ally who joined inside the aura is a party aura recipient");
 
                 await ToggleChargeOrderAsync(ctx, leader.Creature);
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Ability.RemoveAura(leader.Creature, typeof(ChargeOrder1StatusEffect));
+                AbilityAura.RemoveAura(leader.Creature, typeof(ChargeOrder1StatusEffect));
             }
         }
 
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     // The joining player accepts the member's invitation.
                     await ctx.ExecuteInCreatureContextAsync(joiner.Creature, () => InvokeParty("AddToParty", member, joiner.Creature));
                     ctx.Assert(Party.IsInParty(joiner.Creature, member), $"cycle {cycle}: the player joins the member's party");
-                    ctx.Assert(Ability.GetSelfAndPartyAuraRecipients(joiner.Creature).Contains(member),
+                    ctx.Assert(AbilityAura.GetSelfAndPartyAuraRecipients(joiner.Creature).Contains(member),
                         $"cycle {cycle}: the member already inside the joining player's aura is a party aura recipient");
 
                     if (cycle == 1)
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                     await ctx.ExecuteInCreatureContextAsync(joiner.Creature, () => InvokeParty("RemoveCreatureFromParty", joiner.Creature));
                     ctx.Assert(!Party.IsInParty(joiner.Creature, member), $"cycle {cycle}: the player leaves the party");
-                    ctx.Assert(!Ability.GetSelfAndPartyAuraRecipients(joiner.Creature).Contains(member),
+                    ctx.Assert(!AbilityAura.GetSelfAndPartyAuraRecipients(joiner.Creature).Contains(member),
                         $"cycle {cycle}: the member is no longer a party aura recipient after the player leaves");
                     ctx.Assert(!HasChargeOrder(member, joiner.Creature),
                         $"cycle {cycle}: leaving the party removes Charge Order from the member");
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Ability.RemoveAura(joiner.Creature, typeof(ChargeOrder1StatusEffect));
+                AbilityAura.RemoveAura(joiner.Creature, typeof(ChargeOrder1StatusEffect));
                 if (Party.IsInParty(joiner.Creature, member))
                     await ctx.ExecuteInCreatureContextAsync(joiner.Creature, () => InvokeParty("RemoveCreatureFromParty", joiner.Creature));
             }
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var player in new[] { strong.Creature, weak.Creature })
             {
                 TemporaryStatModifier.Add(player, StatType.ChargeOrderAuraLevel, 1, 120f);
-                Ability.ReapplyPlayerAuraAOE(player);
+                AbilityAura.ReapplyPlayerAuraAOE(player);
             }
 
             await ctx.WaitUntilAsync(() => IsInsidePlayerAura(strong.Creature, weak.Creature) && IsInsidePlayerAura(weak.Creature, strong.Creature), 10f,
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Ability.RemoveAura(strong.Creature, typeof(ChargeOrder1StatusEffect));
-                Ability.RemoveAura(weak.Creature, typeof(ChargeOrder1StatusEffect));
+                AbilityAura.RemoveAura(strong.Creature, typeof(ChargeOrder1StatusEffect));
+                AbilityAura.RemoveAura(weak.Creature, typeof(ChargeOrder1StatusEffect));
                 if (Party.IsInParty(strong.Creature, weak.Creature))
                     await ctx.ExecuteInCreatureContextAsync(weak.Creature, () => InvokeParty("RemoveCreatureFromParty", weak.Creature));
             }
@@ -163,13 +163,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task ApplyAuraAndWaitForCreatureInsideAsync(EngineTestContext ctx, uint player, uint creature)
         {
             ctx.Assert(!Party.IsInParty(player, creature), "the creature starts outside the player's party");
-            Ability.ReapplyPlayerAuraAOE(player);
+            AbilityAura.ReapplyPlayerAuraAOE(player);
             await ctx.WaitUntilAsync(() => IsInsidePlayerAura(player, creature), 10f,
                 "the creature to stand inside the player's aura before joining the party");
 
             // The enter event runs as the creature is placed inside the aura; give it a moment to settle.
             await ctx.DelaySecondsAsync(1f);
-            ctx.Assert(!Ability.GetSelfAndPartyAuraRecipients(player).Contains(creature),
+            ctx.Assert(!AbilityAura.GetSelfAndPartyAuraRecipients(player).Contains(creature),
                 "a creature outside the party is not a party aura recipient");
         }
 

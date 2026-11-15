@@ -29,8 +29,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 CapstoneAbility.StaminaCost,
                 activator =>
                 {
-                    Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown);
-                    Ability.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed);
+                    AbilityImmunity.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown);
+                    AbilityImmunity.ApplyTemporaryImmunity(activator, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed);
                 },
                 activationDelay: 1f);
 

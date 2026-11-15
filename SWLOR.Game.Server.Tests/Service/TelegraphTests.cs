@@ -95,7 +95,7 @@ public class TelegraphTests
             "_telegraph.Value.UpdateShadersForPlayers(GetAllPartyMembers(requester));",
             "joining players and associates must see active party telegraphs change color immediately");
         removePartyBody.Should().Contain(
-            "var affectedPartyMembers = _parties[partyId].ToList();",
+            "var affectedPartyMembers = _roster.Parties[partyId].ToList();",
             "the former party must be captured before its membership cache changes");
         removePartyBody.Should().Contain(
             "_telegraph.Value.UpdateShadersForPlayers(affectedPartyMembers);",

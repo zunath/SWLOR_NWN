@@ -79,10 +79,15 @@ namespace SWLOR.Game.Server.Composition
         {
             // Abilities
             services.AddSingleton<IAbilityService, AbilityService>();
+            services.AddSingleton<IAbilityActivationStateService, AbilityActivationStateService>();
+            services.AddSingleton<IAbilityAuraService, AbilityAuraService>();
+            // The same instance, seen through the interface Combat owns for a creature revived in place (P5-3c).
+            services.AddSingleton<ICreatureRevivedListener>(provider => provider.GetRequiredService<IAbilityAuraService>());
             services.AddSingleton<IAbilityCatalogService, AbilityCatalogService>();
             // The same instance, seen through the interface Character owns for the domains below Abilities (P5-3b).
             services.AddSingleton<IAbilityCatalog>(provider => provider.GetRequiredService<IAbilityCatalogService>());
             services.AddSingleton<IAbilityCooldownVisualService, AbilityCooldownVisualService>();
+            services.AddSingleton<IAbilityImmunityService, AbilityImmunityService>();
             services.AddSingleton<IAbilityTargetingCacheService, AbilityTargetingCacheService>();
             services.AddSingleton<IFieldEngineerPulseEmittersService, FieldEngineerPulseEmittersService>();
             services.AddSingleton<IForceControlCooldownsService, ForceControlCooldownsService>();
@@ -241,6 +246,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IChatCommandService, ChatCommandService>();
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
             services.AddSingleton<IPartyService, PartyService>();
+            services.AddSingleton<IPartyRosterService, PartyRosterService>();
+            // The same instance, seen through the interface Combat owns for the domains below Social (P5-3c).
+            services.AddSingleton<IPartyRoster>(provider => provider.GetRequiredService<IPartyRosterService>());
             services.AddSingleton<IPerformanceService, PerformanceService>();
             services.AddSingleton<IPerformanceAudienceService, PerformanceAudienceService>();
             services.AddSingleton<IPerformanceVenueService, PerformanceVenueService>();

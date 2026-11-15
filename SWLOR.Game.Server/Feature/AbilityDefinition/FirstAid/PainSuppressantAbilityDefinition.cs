@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
             var treated = new List<uint>();
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, new HealAmount(24, 2.5f), duration);
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant1StatusEffect), duration))
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 30f);
             var treated = new List<uint>();
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 ApplyTemporaryHP(activator, friendly, new HealAmount(68, 3.75f), duration);
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PainSuppressant2StatusEffect), duration))

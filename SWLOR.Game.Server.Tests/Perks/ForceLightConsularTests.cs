@@ -72,7 +72,7 @@ public class ForceLightConsularTests
         var root = FindSourceRepositoryRoot();
         var confusionSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ConfusionStatusEffect.cs").FullName);
         confusionSource.Should().Contain("public override string CanApply(uint creature)");
-        confusionSource.Should().Contain("Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)");
+        confusionSource.Should().Contain("AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)");
         confusionSource.Should().Contain("Target is temporarily immune to confusion.");
     }
 

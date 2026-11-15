@@ -1,24 +1,24 @@
 [
   {
-    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
-    "Line": 913,
-    "Member": "CanUseAbility",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, reason)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
-    "Line": 1353,
+    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityAuraService.cs",
+    "Line": 265,
     "Member": "ApplyAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Green($\"Aura '{effectName}' activated.\"))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
-    "Line": 1417,
+    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityAuraService.cs",
+    "Line": 329,
     "Member": "ToggleAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Red($\"Aura '{effectName}' deactivated.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
+    "Line": 913,
+    "Member": "CanUseAbility",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(activator, reason)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",

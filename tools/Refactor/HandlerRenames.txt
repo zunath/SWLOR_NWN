@@ -89,15 +89,15 @@ SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnUnequipping SWLOR.Game.Ser
 SWLOR.Game.Server.Service.IncubationFieldNote.LoadDisplayText SWLOR.Game.Server.Domain.Companions.IncubationFieldNoteService.LoadDisplayText
 SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.ClearExitingObject SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.ClearExitingObject
 SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.PurgeAllExpired SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.PurgeAllExpired
-SWLOR.Game.Server.Service.Ability.AddLeadershipCombatPoint SWLOR.Game.Server.Domain.Abilities.AbilityService.AddLeadershipCombatPoint
-SWLOR.Game.Server.Service.Ability.ApplyAuraAOE SWLOR.Game.Server.Domain.Abilities.AbilityService.ApplyAuraAOE
-SWLOR.Game.Server.Service.Ability.AuraEnter SWLOR.Game.Server.Domain.Abilities.AbilityService.AuraEnter
-SWLOR.Game.Server.Service.Ability.AuraExit SWLOR.Game.Server.Domain.Abilities.AbilityService.AuraExit
+SWLOR.Game.Server.Service.Ability.AddLeadershipCombatPoint SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.AddLeadershipCombatPoint
+SWLOR.Game.Server.Service.Ability.ApplyAuraAOE SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ApplyAuraAOE
+SWLOR.Game.Server.Service.Ability.AuraEnter SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.AuraEnter
+SWLOR.Game.Server.Service.Ability.AuraExit SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.AuraExit
 SWLOR.Game.Server.Service.Ability.CacheData SWLOR.Game.Server.Domain.Abilities.AbilityCatalogService.CacheData
-SWLOR.Game.Server.Service.Ability.ClearAurasOnDeath SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnDeath
-SWLOR.Game.Server.Service.Ability.ClearAurasOnExit SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnExit
-SWLOR.Game.Server.Service.Ability.ClearAurasOnSpaceEntry SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnSpaceEntry
-SWLOR.Game.Server.Service.Ability.ReapplyAuraOnRespawn SWLOR.Game.Server.Domain.Abilities.AbilityService.ReapplyAuraOnRespawn
+SWLOR.Game.Server.Service.Ability.ClearAurasOnDeath SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnDeath
+SWLOR.Game.Server.Service.Ability.ClearAurasOnExit SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnExit
+SWLOR.Game.Server.Service.Ability.ClearAurasOnSpaceEntry SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnSpaceEntry
+SWLOR.Game.Server.Service.Ability.ReapplyAuraOnRespawn SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ReapplyAuraOnRespawn
 SWLOR.Game.Server.Service.AbilityCooldownVisual.CacheData SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
 SWLOR.Game.Server.Service.AbilityCooldownVisual.ClearCooldownVisualsOnExit SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.ClearCooldownVisualsOnExit
 SWLOR.Game.Server.Service.AbilityCooldownVisual.RestoreCooldownVisuals SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.RestoreCooldownVisuals
@@ -393,3 +393,5 @@ SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload SWLOR.Game.Server.Fe
 SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp SWLOR.Game.Server.Feature.ServerTasks.StartRestartReminders
 SWLOR.Game.Server.Feature.StoreManagement.ProcessStores SWLOR.Game.Server.Feature.StoreManagement.LoadStores SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
 SWLOR.Game.Server.Feature.DialogDefinition.CoxxionTerminalDialog.LoadDoors SWLOR.Game.Server.Domain.World.CoxxionBaseDoorsService.LoadDoors
+SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnDMPossess SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnDMPossess
+SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnEnter SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnEnter

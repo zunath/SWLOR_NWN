@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () =>
             {
-                Ability.ReapplyAuraEffectsForCreature(target);
+                AbilityAura.ReapplyAuraEffectsForCreature(target);
                 if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)
                     playResurrectionVisual(target);
             });
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 using var recorderScope = CombatRecorder.BeginAbilityFeatAttribution(activator, FeatType.Resuscitation2);
                 // A revive restores a share of the target's own HP, so it stays a percent.
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, HealAmount.Percent(20));
-                Ability.ReapplyAuraEffectsForCreature(target);
+                AbilityAura.ReapplyAuraEffectsForCreature(target);
                 if (GetIsObjectValid(target) && !GetIsDead(target) && GetCurrentHitPoints(target) > 0)
                     playResurrectionVisual(target);
             });

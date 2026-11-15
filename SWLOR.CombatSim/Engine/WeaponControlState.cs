@@ -6,7 +6,7 @@ namespace SWLOR.CombatSim.Engine;
 
 public sealed class WeaponControlState
 {
-    private static readonly double PostControlSeconds = Convert.ToDouble(typeof(SWLOR.Game.Server.Domain.Abilities.AbilityService)
+    private static readonly double PostControlSeconds = Convert.ToDouble(typeof(SWLOR.Game.Server.Domain.Abilities.AbilityImmunityService)
         .GetField("TemporaryImmunityBaseDurationSeconds", BindingFlags.NonPublic | BindingFlags.Static)?.GetRawConstantValue()
         ?? throw new InvalidDataException("Cannot read the production post-control immunity duration."));
 
@@ -23,7 +23,7 @@ public sealed class WeaponControlState
     /// <summary>StatusEffect.HasStatusEffectCategory(target, Control) for the controls the weapon simulation applies.</summary>
     public bool IsControlled(double now) => IsIncapacitated(now) || now < HamstrungUntil;
 
-    // Ability.HasHardCrowdControlImmunity: shared post-control immunity, or a hard control already active.
+    // AbilityImmunity.HasHardCrowdControlImmunity: shared post-control immunity, or a hard control already active.
     private bool HasHardControlImmunity(double now) => now < HardControlImmunityUntil || IsIncapacitated(now);
 
     public bool TryDaze(double now, double duration)

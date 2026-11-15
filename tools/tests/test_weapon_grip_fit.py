@@ -103,6 +103,11 @@ node trimesh body
   faces 1
     0 1 2 1 0 0 0 0
 endnode
+node trimesh empty
+  parent gun
+  verts 0
+  faces 0
+endnode
 node trimesh hidden
   parent gun
   render 0

@@ -264,6 +264,8 @@ def ascii_mesh(text: str) -> tuple[np.ndarray, np.ndarray]:
     for node in order:
         if node["kind"] != "trimesh" or node["vertices"] is None or node["faces"] is None or not node["render"]:
             continue
+        if len(node["vertices"]) == 0 or len(node["faces"]) == 0:  # an empty mesh node draws nothing
+            continue
         matrix = world(node)
         vertices.append((matrix[:3, :3] @ node["vertices"].T).T + matrix[:3, 3])
         faces.append(node["faces"] + base)

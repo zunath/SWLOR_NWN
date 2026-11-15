@@ -29,7 +29,7 @@ public class ArmorDualWieldTests
         armorPerks.Should().Contain("StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 20 : 0");
         armorPerks.Should().Contain("StatType.OffhandAttackDelayReductionPercent, creature => EquipmentPredicates.HasDualWield(creature) ? 30 : 0");
 
-        var equipmentPredicates = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Character" / "EquipmentPredicates.cs").FullName);
+        var equipmentPredicates = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Items" / "EquipmentPredicates.cs").FullName);
         equipmentPredicates.Should().Contain("public static bool HasDualWield(uint creature)");
         equipmentPredicates.Should().Contain("Item.IsAttackWeaponType(GetBaseItemType(mainHand))");
         equipmentPredicates.Should().Contain("Item.IsAttackWeaponType(GetBaseItemType(offHand))");

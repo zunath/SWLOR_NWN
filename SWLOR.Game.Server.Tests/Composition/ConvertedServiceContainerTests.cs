@@ -56,14 +56,16 @@ public class ConvertedServiceContainerTests
         // (SWLOR.Game.Server.Domain.Combat.TemporaryStatModifier before the facade moved to Service.TemporaryStatModifier), so a line
         // belongs to this service when its master name is on that facade or its branch name on the instance; of a split
         // service (Combat), only a line whose branch name is on this class: the facade's handlers went to the parts that own
-        // them.
+        // them. A handler that left for content (Migration's login restoration, P5-1h) is on that content class, so a line whose
+        // branch name is in Feature is not this service's.
         var moved = service.Instance.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly)
             .Where(method => method.GetCustomAttributes().Any(a => a.GetType().Name == HandlerAttribute))
             .ToList();
         var isSplit = service.IsSplitFacade;
         moved.Select(method => service.Instance.FullName + "." + method.Name).Should().BeEquivalentTo(
             ConvertedServiceFixtures.HandlerRenames()
-                .Where(rename => (!isSplit && service.RemovedFacade is not null && rename.Master.StartsWith(service.RemovedFacade + ".", StringComparison.Ordinal)) ||
+                .Where(rename => (!isSplit && service.RemovedFacade is not null && rename.Master.StartsWith(service.RemovedFacade + ".", StringComparison.Ordinal) &&
+                                  !rename.Branch.StartsWith("SWLOR.Game.Server.Feature.", StringComparison.Ordinal)) ||
                                  rename.Branch.StartsWith(service.Instance.FullName + ".", StringComparison.Ordinal))
                 .Select(rename => rename.Branch),
             "the instance keeps exactly the handlers its facade had, under the names HandlerRenames.txt gives them");

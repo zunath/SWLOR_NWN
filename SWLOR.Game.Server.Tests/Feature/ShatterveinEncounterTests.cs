@@ -54,7 +54,7 @@ public class ShatterveinEncounterTests
     }
 
     [TestCase("esh_veinwolf", 6356, new[] { 1861, 1862 })]
-    [TestCase("esh_veinboss", 6473, new[] { 1861, 1862, 1863, 1864, 1765, 1844 })]
+    [TestCase("esh_veinboss", (int)AppearanceType.SWLORThornboundWarden, new[] { 1861, 1862, 1863, 1864, 1765, 1844 })]
     public void Encounters_UseLevel45ForcePackages_WithoutUnrelatedQuestCredit(string resref, int appearance, int[] abilities)
     {
         using var utc = Read("utc", resref);

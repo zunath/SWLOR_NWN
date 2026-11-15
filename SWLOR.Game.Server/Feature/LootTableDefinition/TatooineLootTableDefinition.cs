@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         public Dictionary<string, LootTable> BuildLootTables()
         {
             Womprat();
+            TuskenWarBanners();
             Sandswimmer();
             SandBeetle();
             SandDemon();
@@ -322,6 +323,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("chiro_shard", 1, 1, true)
                 .AddItem("lockbox_t5", 2, 1, true)
                 .AddGold(1000, 5);
+        }
+
+        /// <summary>The war banners Tusken Elites carry for the Warlord's Toll quest line.</summary>
+        private void TuskenWarBanners()
+        {
+            _builder.Create("TATOOINE_WAR_BANNERS")
+                .AddItem("tat_war_banner", 1);
         }
     }
 }

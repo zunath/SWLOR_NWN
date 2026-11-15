@@ -473,6 +473,118 @@ namespace SWLOR.Game.Server.Service.NPCService
         Eshan_ScrapyardSmuggler = 307,
         [NPCGroup("Gorak Vesh, the Icebound")]
         Eshan_GorakVesh = 308,
+        [NPCGroup("Eco-Terrorist Leader")]
+        MonCala_EcoTerroristLeader = 312,
+        [NPCGroup("Sable Quarr")]
+        MonCala_SableQuarr = 313,
+        [NPCGroup("Kael Drox")]
+        MonCala_KaelDrox = 314,
+        [NPCGroup("Reefmaw Tidebreaker")]
+        MonCala_ReefmawTidebreaker = 315,
+        [NPCGroup("Glassjaw Stalker")]
+        MonCala_GlassjawStalker = 316,
+        [NPCGroup("Inkveil Matron")]
+        MonCala_InkveilMatron = 317,
+        [NPCGroup("Gaping Spiders")]
+        Dathomir_GapingSpider = 318,
+        [NPCGroup("Grotto Chirodactyl")]
+        Dathomir_GrottoChirodactyl = 319,
+        [NPCGroup("Dark Side Adept")]
+        Dathomir_DarkSideAdept = 320,
+        [NPCGroup("Rancor")]
+        Dathomir_Rancor = 321,
+        [NPCGroup("Tusken Elites")]
+        Tatooine_TuskenElite = 322,
+        [NPCGroup("Tusken Warlord")]
+        Tatooine_TuskenWarlord = 323,
+        [NPCGroup("Urrok, Gaderffii Champion")]
+        Tatooine_UrrokGaderffiiChampion = 324,
+        [NPCGroup("Sharrak Long-Eye")]
+        Tatooine_SharrakLongEye = 325,
+        [NPCGroup("Warcaller Aa'rkha")]
+        Tatooine_WarcallerAarkha = 326,
+        [NPCGroup("Sand Worm")]
+        Tatooine_SandWorm = 327,
+        [NPCGroup("Krayt Dragon")]
+        Tatooine_KraytDragon = 328,
+        [NPCGroup("Peerless Bounty Hunter")]
+        Tatooine_PeerlessBountyHunter = 329,
+        [NPCGroup("Byysk Shamans")]
+        Hutlar_ByyskShaman = 330,
+        [NPCGroup("Byysk Cryo Adepts")]
+        Hutlar_ByyskCryoAdept = 331,
+        [NPCGroup("Byysk Champions")]
+        Hutlar_ByyskChampion = 332,
+        [NPCGroup("Byysk Chieftain")]
+        Hutlar_ByyskChieftain = 333,
+        [NPCGroup("Qion Hive Slugs")]
+        Hutlar_QionHiveSlug = 334,
+        [NPCGroup("Qion Hive Tunnelers")]
+        Hutlar_QionHiveTunneler = 335,
+        [NPCGroup("Qion Hive Broodmother")]
+        Hutlar_QionHiveBroodmother = 336,
+        [NPCGroup("Smelter Hulks")]
+        Hutlar_FoundrySmelterHulk = 337,
+        [NPCGroup("Forge Wardens")]
+        Hutlar_FoundryForgeWarden = 338,
+        [NPCGroup("Foundry Overseer")]
+        Hutlar_FoundryOverseer = 339,
+        [NPCGroup("Sorter Prime")]
+        Hutlar_SorterPrime = 340,
+        [NPCGroup("Foreman RX-12")]
+        Hutlar_ForemanRX12 = 341,
+        [NPCGroup("Inspector Q-0")]
+        Hutlar_InspectorQ0 = 342,
+        [NPCGroup("Mandalorian Scouts")]
+        Viscara_MandalorianScouts = 343,
+        [NPCGroup("Mandalorian Hunters")]
+        Viscara_MandalorianHunters = 344,
+        [NPCGroup("Nara Venn, Blackleaf Cutpurse")]
+        Viscara_NaraVenn = 345,
+        [NPCGroup("Sootline Rusk")]
+        Viscara_SootlineRusk = 346,
+        [NPCGroup("Tuk'ata")]
+        Korriban_TukataHound = 347,
+        [NPCGroup("Sith Frostbinders")]
+        Korriban_SithFrostbinder = 348,
+        [NPCGroup("Sith Temple Guards")]
+        Korriban_FortressGuard = 349,
+        [NPCGroup("Sith Marauders and Sorceresses")]
+        Korriban_FortressMarauder = 350,
+        [NPCGroup("Temple Guardian")]
+        Korriban_TempleGuardian = 351,
+        [NPCGroup("Sith Temple Master")]
+        Korriban_TempleMaster = 352,
+        [NPCGroup("Imperial Prototype Warform")]
+        Korriban_PrototypeWarform = 353,
+        [NPCGroup("Temple Council Guardian")]
+        Korriban_CouncilGuardian = 354,
+        [NPCGroup("Red Blades")]
+        NarShaddaa_RedBlades = 355,
+        [NPCGroup("Black Serpents")]
+        NarShaddaa_BlackSerpents = 356,
+        [NPCGroup("Hidden Blades")]
+        NarShaddaa_HiddenBlades = 357,
+        [NPCGroup("Troublemakers")]
+        NarShaddaa_Troublemakers = 358,
+        [NPCGroup("Arena Fighters")]
+        NarShaddaa_ArenaFighters = 359,
+        [NPCGroup("Serpent Leader")]
+        NarShaddaa_SerpentLeader = 360,
+        [NPCGroup("Rogue Droids")]
+        NarShaddaa_RogueDroids = 361,
+        [NPCGroup("Scavenger Droids")]
+        NarShaddaa_ScavengerDroids = 362,
+        [NPCGroup("Thieves")]
+        NarShaddaa_Thieves = 363,
+        [NPCGroup("Hive Kinrath")]
+        Dantooine_HiveKinrath = 364,
+        [NPCGroup("Herd Leader Thune")]
+        Dantooine_HerdLeaderThune = 365,
+        [NPCGroup("Dantari Hunters")]
+        Dantooine_DantariHunter = 366,
+        [NPCGroup("Graul")]
+        Dantooine_Graul = 367,
     }
 
     public class NPCGroupAttribute : Attribute

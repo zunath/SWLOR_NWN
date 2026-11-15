@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
@@ -33,6 +34,29 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             MedicalEquipmentForShelby();
             SpiceOneSmallFavour();
             PutThemToRest();
+
+            ClearTheWildwoodsRoad();
+            RoadPatrol();
+            WantedNaraVenn();
+            WantedSootlineRusk();
+            EyesOfTheClansScouts();
+            EyesOfTheClansHunters();
+            WarocasSeason();
+            WebInTheWildwoods();
+            HatchlingTrouble();
+            NashtahOnTheSlopes();
+            CrystalCavern();
+            PushBackTheFlesheaters();
+            WildlandsPatrol();
+            WarocasRoast();
+            GimpassaStew();
+            CairnmogRibs();
+            RaivorFeast();
+            WoodlandCrab();
+            BeaksAndSpines();
+            TheNashtahStudy();
+            EightLegs();
+            ToothRings();
 
             return _builder.Build();
         }
@@ -568,6 +592,353 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddGoldReward(400)
                 .AddXPReward(950);
+        }
+    
+
+        private void ClearTheWildwoodsRoad()
+        {
+            _builder.Create("vis_outlaw_sweep", "Clear the Wildwoods Road")
+
+                .AddState()
+                .SetStateJournalText("Outlaws are robbing colonists on the road through the Wildwoods. Kill 10 Outlaws in the Wildwoods or the Veles Sewers on Viscara, then return to Deputy Kessa Vorn in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_WildwoodsOutlaws, 10)
+
+                .AddState()
+                .SetStateJournalText("You have killed 10 Outlaws. Return to Deputy Kessa Vorn in Veles on Viscara for your reward.")
+
+                .AddGoldReward(1500)
+                .AddXPReward(3000);
+        }
+
+        private void RoadPatrol()
+        {
+            _builder.Create("vis_outlaw_patrol", "Road Patrol")
+                .IsRepeatable()
+
+                .AddState()
+                .SetStateJournalText("The Veles Sheriff's office pays deputies for every patrol against the Outlaws. Kill 20 Outlaws in the Wildwoods or the Veles Sewers on Viscara, then return to Deputy Kessa Vorn in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_WildwoodsOutlaws, 20)
+
+                .AddState()
+                .SetStateJournalText("You have killed 20 Outlaws. Return to Deputy Kessa Vorn in Veles on Viscara for your reward.")
+
+                .AddGoldReward(400)
+                .AddXPReward(950);
+        }
+
+        private void WantedNaraVenn()
+        {
+            _builder.Create("vis_wanted_nara", "Wanted: Nara Venn")
+                .PrerequisiteQuest("vis_outlaw_sweep")
+
+                .AddState()
+                .SetStateJournalText("Nara Venn, the Blackleaf Cutpurse, leads the Outlaws in the Wildwoods. Kill Nara Venn in the Wildwoods on Viscara, then return to Deputy Kessa Vorn in Veles on Viscara. She is not always there, so keep searching.")
+                .AddKillObjective(NPCGroupType.Viscara_NaraVenn, 1)
+
+                .AddState()
+                .SetStateJournalText("You have killed Nara Venn, the Blackleaf Cutpurse. Return to Deputy Kessa Vorn in Veles on Viscara to collect the bounty.")
+
+                .AddGoldReward(2625)
+                .AddXPReward(4000);
+        }
+
+        private void WantedSootlineRusk()
+        {
+            _builder.Create("vis_wanted_rusk", "Wanted: Sootline Rusk")
+                .PrerequisiteQuest("vis_outlaw_sweep")
+
+                .AddState()
+                .SetStateJournalText("Sootline Rusk runs the Outlaws hiding in the Veles Sewers. Kill Sootline Rusk in the Veles Sewers on Viscara, then return to Deputy Kessa Vorn in Veles on Viscara. He is not always there, so keep searching.")
+                .AddKillObjective(NPCGroupType.Viscara_SootlineRusk, 1)
+
+                .AddState()
+                .SetStateJournalText("You have killed Sootline Rusk, the leader of the sewer Outlaws. Return to Deputy Kessa Vorn in Veles on Viscara to collect the bounty.")
+
+                .AddGoldReward(2625)
+                .AddXPReward(4000);
+        }
+
+        private void EyesOfTheClansScouts()
+        {
+            _builder.Create("vis_scouts", "Eyes of the Clans: Scouts")
+
+                .AddState()
+                .SetStateJournalText("Mandalorian Scouts are mapping the approaches to Veles. Kill 8 Mandalorian Scouts in the Wildwoods on Viscara, then return to Deputy Kessa Vorn in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_MandalorianScouts, 8)
+
+                .AddState()
+                .SetStateJournalText("You have killed 8 Mandalorian Scouts. Return to Deputy Kessa Vorn in Veles on Viscara for your reward.")
+
+                .AddGoldReward(1500)
+                .AddXPReward(4000);
+        }
+
+        private void EyesOfTheClansHunters()
+        {
+            _builder.Create("vis_hunters", "Eyes of the Clans: Hunters")
+                .PrerequisiteQuest("vis_scouts")
+
+                .AddState()
+                .SetStateJournalText("Mandalorian Hunters have come looking for their missing scouts. Kill 8 Mandalorian Hunters in the Wildwoods on Viscara, then return to Deputy Kessa Vorn in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_MandalorianHunters, 8)
+
+                .AddState()
+                .SetStateJournalText("You have killed 8 Mandalorian Hunters. Return to Deputy Kessa Vorn in Veles on Viscara for your reward.")
+
+                .AddGoldReward(2250)
+                .AddXPReward(4000)
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    Achievement.GiveAchievement(player, AchievementType.EyesOfTheClans);
+                });
+        }
+
+        private void WarocasSeason()
+        {
+            _builder.Create("vis_warocas", "Warocas Season")
+
+                .AddState()
+                .SetStateJournalText("Warocas flocks are attacking survey teams in the Wildlands. Kill 10 Warocas in the Wildlands or by the Lake on Viscara, then return to Ranger Tam Orrel in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_WildlandsWarocas, 10)
+
+                .AddState()
+                .SetStateJournalText("You have killed 10 Warocas. Return to Ranger Tam Orrel in Veles on Viscara for your reward.")
+
+                .AddGoldReward(1500)
+                .AddXPReward(3000);
+        }
+
+        private void WebInTheWildwoods()
+        {
+            _builder.Create("vis_kinrath", "Web in the Wildwoods")
+
+                .AddState()
+                .SetStateJournalText("Kinrath have webbed over the trails in the Wildwoods. Kill 10 Kinrath in the Wildwoods on Viscara, then return to Ranger Tam Orrel in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_WildwoodsKinraths, 10)
+
+                .AddState()
+                .SetStateJournalText("You have killed 10 Kinrath. Return to Ranger Tam Orrel in Veles on Viscara for your reward.")
+
+                .AddGoldReward(1500)
+                .AddXPReward(3000);
+        }
+
+        private void HatchlingTrouble()
+        {
+            _builder.Create("vis_gimpassa", "Hatchling Trouble")
+
+                .AddState()
+                .SetStateJournalText("Gimpassa Hatchlings are overrunning the Wildwoods. Kill 8 Gimpassa Hatchlings in the Wildwoods on Viscara, then return to Ranger Tam Orrel in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_WildwoodsGimpassas, 8)
+
+                .AddState()
+                .SetStateJournalText("You have killed 8 Gimpassa Hatchlings. Return to Ranger Tam Orrel in Veles on Viscara for your reward.")
+
+                .AddGoldReward(2250)
+                .AddXPReward(4000);
+        }
+
+        private void NashtahOnTheSlopes()
+        {
+            _builder.Create("vis_nashtah", "Nashtah on the Slopes")
+
+                .AddState()
+                .SetStateJournalText("Nashtah are hunting the herders of the Mountain Valley. Kill 8 Nashtah in the Mountain Valley on Viscara, then return to Ranger Tam Orrel in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_ValleyNashtah, 8)
+
+                .AddState()
+                .SetStateJournalText("You have killed 8 Nashtah. Return to Ranger Tam Orrel in Veles on Viscara for your reward.")
+
+                .AddGoldReward(2250)
+                .AddXPReward(4000);
+        }
+
+        private void CrystalCavern()
+        {
+            _builder.Create("vis_spiders", "Crystal Cavern")
+
+                .AddState()
+                .SetStateJournalText("Crystal Spiders have closed the Cavern to Czerka's miners. Kill 8 Crystal Spiders in the Cavern on Viscara, then return to Ranger Tam Orrel in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_CrystalSpider, 8)
+
+                .AddState()
+                .SetStateJournalText("You have killed 8 Crystal Spiders. Return to Ranger Tam Orrel in Veles on Viscara for your reward.")
+
+                .AddGoldReward(2250)
+                .AddXPReward(4000);
+        }
+
+        private void PushBackTheFlesheaters()
+        {
+            _builder.Create("vis_flesheaters", "Push Back the Flesheaters")
+
+                .AddState()
+                .SetStateJournalText("Vellen Flesheaters are raiding out of the Coxxion Base and the Swamplands. Kill 12 Vellen Flesheaters at the Coxxion Base or in the Swamplands on Viscara, then return to Ranger Tam Orrel in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_VellenFlesheater, 12)
+
+                .AddState()
+                .SetStateJournalText("You have killed 12 Vellen Flesheaters. Return to Ranger Tam Orrel in Veles on Viscara for your reward.")
+
+                .AddGoldReward(3000)
+                .AddXPReward(6000);
+        }
+
+        private void WildlandsPatrol()
+        {
+            _builder.Create("vis_wilds_patrol", "Wildlands Patrol")
+                .IsRepeatable()
+
+                .AddState()
+                .SetStateJournalText("Czerka wildlife control pays for regular patrols of the Wildlands. Kill 10 Warocas and 10 Kath Hounds in the Wildlands on Viscara, then return to Ranger Tam Orrel in Veles on Viscara.")
+                .AddKillObjective(NPCGroupType.Viscara_WildlandsWarocas, 10)
+                .AddKillObjective(NPCGroupType.Viscara_WildlandKathHounds, 10)
+
+                .AddState()
+                .SetStateJournalText("You have killed 10 Warocas and 10 Kath Hounds. Return to Ranger Tam Orrel in Veles on Viscara for your reward.")
+
+                .AddGoldReward(400)
+                .AddXPReward(950);
+        }
+
+        private void WarocasRoast()
+        {
+            _builder.Create("vis_warocas_roast", "Warocas Roast")
+
+                .AddState()
+                .SetStateJournalText("The Veles militia kitchen needs meat for a Warocas roast. Collect 5 Warocas Legs and 5 Warocas Meat from the Warocas of the Wildlands, then bring them to Marta Quill in Veles on Viscara.")
+                .AddCollectItemObjective("waro_leg", 5)
+                .AddCollectItemObjective("warocas_meat", 5)
+
+                .AddState()
+                .SetStateJournalText("You handed over 5 Warocas Legs and 5 Warocas Meat. Speak to Marta Quill in Veles on Viscara for your reward.")
+
+                .AddGoldReward(1500)
+                .AddXPReward(3000);
+        }
+
+        private void GimpassaStew()
+        {
+            _builder.Create("vis_gimpassa_stew", "Gimpassa Stew")
+
+                .AddState()
+                .SetStateJournalText("Marta Quill wants Gimpassa meat for the militia's stew. Collect 6 Gimpassa Meat from the Gimpassa Hatchlings of the Wildwoods, then bring them to Marta Quill in Veles on Viscara.")
+                .AddCollectItemObjective("gimp_meat", 6)
+
+                .AddState()
+                .SetStateJournalText("You handed over 6 Gimpassa Meat. Speak to Marta Quill in Veles on Viscara for your reward.")
+
+                .AddGoldReward(2250)
+                .AddXPReward(4000);
+        }
+
+        private void CairnmogRibs()
+        {
+            _builder.Create("vis_cairnmog_ribs", "Cairnmog Ribs")
+
+                .AddState()
+                .SetStateJournalText("Marta Quill is cooking Cairnmog ribs and broth for the Veles militia. Collect 5 Cairnmog Meat and 3 Cairnmog Spines from the Cairnmogs of the Mountain Valley, then bring them to Marta Quill in Veles on Viscara.")
+                .AddCollectItemObjective("cairnmog_meat", 5)
+                .AddCollectItemObjective("cairnmog_spine", 3)
+
+                .AddState()
+                .SetStateJournalText("You handed over 5 Cairnmog Meat and 3 Cairnmog Spines. Speak to Marta Quill in Veles on Viscara for your reward.")
+
+                .AddGoldReward(2250)
+                .AddXPReward(4000)
+                .AddItemReward("cairn_sandwich", 3);
+        }
+
+        private void RaivorFeast()
+        {
+            _builder.Create("vis_raivor_feast", "Raivor Feast")
+
+                .AddState()
+                .SetStateJournalText("Marta Quill wants Raivor for a militia feast. Collect 4 Raivor Meat and 4 Raivor Claws from the Raivors of the Deep Mountains, then bring them to Marta Quill in Veles on Viscara.")
+                .AddCollectItemObjective("raivor_meat", 4)
+                .AddCollectItemObjective("raivor_claw", 4)
+
+                .AddState()
+                .SetStateJournalText("You handed over 4 Raivor Meat and 4 Raivor Claws. Speak to Marta Quill in Veles on Viscara for your reward.")
+
+                .AddGoldReward(2625)
+                .AddXPReward(4000);
+        }
+
+        private void WoodlandCrab()
+        {
+            _builder.Create("vis_woodland_crab", "Woodland Crab")
+
+                .AddState()
+                .SetStateJournalText("Marta Quill serves Kinrath to the militia under the name woodland crab. Collect 5 Kinrath Meat from the Kinrath of the Wildwoods, then bring them to Marta Quill in Veles on Viscara.")
+                .AddCollectItemObjective("kinrath_meat", 5)
+
+                .AddState()
+                .SetStateJournalText("You handed over 5 Kinrath Meat. Speak to Marta Quill in Veles on Viscara for your reward.")
+
+                .AddGoldReward(1500)
+                .AddXPReward(3000);
+        }
+
+        private void BeaksAndSpines()
+        {
+            _builder.Create("vis_beaks_spines", "Beaks and Spines")
+
+                .AddState()
+                .SetStateJournalText("Edren Pax is cataloguing the Warocas of Viscara. Collect 4 Intact Warocas Beaks and 5 Warocas Spines from the Warocas of the Wildlands, then bring them to Edren Pax in Veles on Viscara.")
+                .AddCollectItemObjective("warocas_beak", 4)
+                .AddCollectItemObjective("waro_feathers", 5)
+
+                .AddState()
+                .SetStateJournalText("You handed over 4 Intact Warocas Beaks and 5 Warocas Spines. Speak to Edren Pax in Veles on Viscara for your reward.")
+
+                .AddGoldReward(1500)
+                .AddXPReward(3000);
+        }
+
+        private void TheNashtahStudy()
+        {
+            _builder.Create("vis_nashtah_study", "The Nashtah Study")
+
+                .AddState()
+                .SetStateJournalText("Edren Pax is studying how Nashtah climb. Collect 5 Nashtah Scales and 3 Nashtah Feet from the Nashtah of the Mountain Valley, then bring them to Edren Pax in Veles on Viscara.")
+                .AddCollectItemObjective("nash_scale", 5)
+                .AddCollectItemObjective("nashtah_foot", 3)
+
+                .AddState()
+                .SetStateJournalText("You handed over 5 Nashtah Scales and 3 Nashtah Feet. Speak to Edren Pax in Veles on Viscara for your reward.")
+
+                .AddGoldReward(2250)
+                .AddXPReward(4000);
+        }
+
+        private void EightLegs()
+        {
+            _builder.Create("vis_kinrath_limbs", "Eight Legs")
+
+                .AddState()
+                .SetStateJournalText("Edren Pax wants Kinrath limbs for his catalogue. Collect 6 Kinrath Limbs from the Kinrath of the Wildwoods, then bring them to Edren Pax in Veles on Viscara.")
+                .AddCollectItemObjective("kinrath_limb", 6)
+
+                .AddState()
+                .SetStateJournalText("You handed over 6 Kinrath Limbs. Speak to Edren Pax in Veles on Viscara for your reward.")
+
+                .AddGoldReward(1500)
+                .AddXPReward(3000);
+        }
+
+        private void ToothRings()
+        {
+            _builder.Create("vis_gimpassa_teeth", "Tooth Rings")
+
+                .AddState()
+                .SetStateJournalText("Edren Pax is working out the age of Gimpassa from the rings in their teeth. Collect 6 Gimpassa Teeth from the Gimpassa Hatchlings of the Wildwoods, then bring them to Edren Pax in Veles on Viscara.")
+                .AddCollectItemObjective("gimp_tooth", 6)
+
+                .AddState()
+                .SetStateJournalText("You handed over 6 Gimpassa Teeth. Speak to Edren Pax in Veles on Viscara for your reward.")
+
+                .AddGoldReward(2250)
+                .AddXPReward(4000);
         }
     }
 }

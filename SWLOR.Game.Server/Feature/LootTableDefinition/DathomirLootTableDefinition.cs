@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         public Dictionary<string, LootTable> BuildLootTables()
         {
             Chirodactyl();
+            KwiRitualFetishes();
             DragonTurtle();
             KwiGuardian();
             KwiShaman();
@@ -661,5 +662,11 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("emerald", 1, 1, true);
         }
 
+        /// <summary>The ritual fetishes Kwi Shamans carry for the Kwi Encroachment quest line.</summary>
+        private void KwiRitualFetishes()
+        {
+            _builder.Create("DATHOMIR_KWI_FETISHES")
+                .AddItem("dath_kwi_fetish", 1);
+        }
     }
 }

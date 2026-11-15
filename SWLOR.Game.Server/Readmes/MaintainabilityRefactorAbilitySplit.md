@@ -426,9 +426,9 @@ P5-3a prepared the tests so each later pull request changes only the helpers, no
 - **`TestAbilityService`** is split into partial files by the part whose code calls each seam
   (`TestAbilityService.<Part>.cs`; `.Shared.cs` holds the seams several parts call). When a part moves, its file becomes
   the part's double.
-- **The allocation pins** (`AbilityFacadeAllocationTests`) read each member through a local accessor named like the
-  `GameServices` property its interface gets (`AbilityCatalog`, `AbilityImpactState`, `CombatAbilityMagnitude`, ...); the
-  pull request that moves the part deletes the local line, so the pin reads the new property.
+- **The allocation pins** (`AbilityFacadeAllocationTests`) are grouped by the interface each member goes to and still read
+  through `Ability.` (a local accessor per part would add `GameServices` lookups to `StaticLookups.txt`); the pull request
+  that moves a part points its group at the new property and registers the part's bench instance in the container.
 
 ## Order
 

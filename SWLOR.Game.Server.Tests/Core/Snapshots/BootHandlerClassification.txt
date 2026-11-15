@@ -74,7 +74,7 @@ mod_cache_aft (15)
   BootOnly    SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterCacheLoaded
   Rerun       SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.PerkService.CachePerkFeatData
-  Rerun       SWLOR.Game.Server.Domain.Foundation.AnimationPreviewCatalog.CacheCategories
+  Rerun       SWLOR.Game.Server.Domain.Abilities.AnimationPreviewCatalog.CacheCategories
   Rerun       SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterUnequipGuard
   Rerun       SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterAttackRules
   Rerun       SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.RegisterUnequipGuard

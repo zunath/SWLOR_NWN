@@ -4,6 +4,7 @@
     "SWLOR.Game.Server/Feature/DialogDefinition/",
     "SWLOR.Game.Server/Feature/GuiDefinition/Payload/ExamineItemPayload.cs",
     "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ConversationViewModel.cs",
+    "SWLOR.Game.Server/Feature/MigrationDefinition/CharacterLoginRestoration.cs",
     "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
     "SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs"
   ]

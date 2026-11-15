@@ -387,7 +387,7 @@ public class CombatReadinessEquipmentTests
         var registration = File.ReadAllText(Path.Combine(_root, "SWLOR.Game.Server", "Feature", "EventRegistration.cs"));
         registration.Should().Contain("SubscribeEvent(\"NWNX_ON_ITEM_EQUIP_AFTER\", ScriptName.OnItemEquipValidateAfter)");
         registration.Should().Contain("SubscribeEvent(\"NWNX_ON_ITEM_UNEQUIP_AFTER\", ScriptName.OnItemUnequipAfter)");
-        typeof(MigrationService).GetMethod(nameof(MigrationService.AfterCharacterInitialization))!
+        typeof(Game.Server.Feature.MigrationDefinition.CharacterLoginRestoration).GetMethod(nameof(Game.Server.Feature.MigrationDefinition.CharacterLoginRestoration.AfterCharacterInitialization))!
             .GetCustomAttributes<NWNEventHandler>().Select(attribute => attribute.Script).Should().Equal(ScriptName.OnCharacterInitAfter);
         // MigrationServiceTests pins the login order: feats, then combat readiness (third from last), max HP, equipment stats.
     }

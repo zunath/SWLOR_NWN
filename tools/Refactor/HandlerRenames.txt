@@ -225,7 +225,7 @@ SWLOR.Game.Server.Service.Loot.RegisterLootTables SWLOR.Game.Server.Domain.Items
 SWLOR.Game.Server.Service.Loot.SpawnLootOnCreatureDeath SWLOR.Game.Server.Domain.Items.LootService.SpawnLootOnCreatureDeath
 SWLOR.Game.Server.Service.Loot.SpawnStealLoot SWLOR.Game.Server.Domain.Items.LootService.SpawnStealLoot
 SWLOR.Game.Server.Service.Migration.AfterCacheLoaded SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterCacheLoaded
-SWLOR.Game.Server.Service.Migration.AfterCharacterInitialization SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterCharacterInitialization
+SWLOR.Game.Server.Service.Migration.AfterCharacterInitialization SWLOR.Game.Server.Feature.MigrationDefinition.CharacterLoginRestoration.AfterCharacterInitialization
 SWLOR.Game.Server.Service.Migration.AfterDatabaseLoaded SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterDatabaseLoaded
 SWLOR.Game.Server.Service.Music.ApplyPlayerMusic SWLOR.Game.Server.Domain.World.MusicService.ApplyPlayerMusic
 SWLOR.Game.Server.Service.Music.ForgetBattleThemeCombat SWLOR.Game.Server.Domain.World.MusicService.ForgetBattleThemeCombat
@@ -386,7 +386,7 @@ SWLOR.Game.Server.Service.Space.ApplyDeath SWLOR.Game.Server.Domain.Space.SpaceS
 SWLOR.Game.Server.Service.Space.RestoreLeashedShip SWLOR.Game.Server.Domain.Space.SpaceService.RestoreLeashedShip
 SWLOR.Game.Server.Service.Space.TargetSpaceObject SWLOR.Game.Server.Domain.Space.SpaceService.TargetSpaceObject
 SWLOR.Game.Server.Service.Space.PreventSpaceStealth SWLOR.Game.Server.Domain.Space.SpaceService.PreventSpaceStealth
-SWLOR.Game.Server.Service.AnimationService.AnimationPreviewCatalog.CacheCategories SWLOR.Game.Server.Domain.Foundation.AnimationPreviewCatalog.CacheCategories
+SWLOR.Game.Server.Service.AnimationService.AnimationPreviewCatalog.CacheCategories SWLOR.Game.Server.Domain.Abilities.AnimationPreviewCatalog.CacheCategories
 SWLOR.Game.Server.Service.FrameProfiler.Load SWLOR.Game.Server.Core.FrameProfiler.Load
 SWLOR.Game.Server.Service.Log.OnApplicationShutdown SWLOR.Game.Server.Core.Log.OnApplicationShutdown
 SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload SWLOR.Game.Server.Feature.EventRegistration.StartServerEvents SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload

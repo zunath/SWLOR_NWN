@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 }
             }
 
-            SWLOR.Game.Server.Domain.Foundation.AbilityAnimationBinding.Apply(_abilities, SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog.Entries);
+            SWLOR.Game.Server.Domain.Abilities.AbilityAnimationBinding.Apply(_abilities, SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog.Entries);
             Console.WriteLine($"Loaded {_abilities.Count} abilities.");
             CacheAbilityTargeting(_abilities);
         }
@@ -2721,7 +2721,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             if (animation == Animation.Invalid)
                 return;
 
-            var authoredImpact = SWLOR.Game.Server.Domain.Foundation.AbilityAnimationBinding.ImpactClip(trackedAbility, activator);
+            var authoredImpact = SWLOR.Game.Server.Domain.Abilities.AbilityAnimationBinding.ImpactClip(trackedAbility, activator);
             if (authoredImpact != null)
             {
                 // Damage and projectile effects are already dispatched by the ability. Use the

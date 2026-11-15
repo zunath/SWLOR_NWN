@@ -3,8 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -32,21 +30,15 @@ namespace SWLOR.Game.Server.Domain.Foundation
         public const string PlayerFileVersionVariable = "PLAYER_MIGRATION_VERSION";
 
         private readonly IDBService _db;
-        private readonly IOverflowStorageService _overflowStorage;
-        private readonly IPerkService _perk;
-        private readonly IStatService _stat;
         private readonly Lazy<IReadOnlyList<ICharacterMigration>> _characterMigrations;
         private int _currentMigrationVersion;
         private ServerMigrationState _serverMigrationState = new(0);
         private readonly Dictionary<int, IServerMigration> _serverMigrationsPostDatabase = new();
         private readonly Dictionary<int, IServerMigration> _serverMigrationsPostCache = new();
 
-        public MigrationService(IDBService db, IOverflowStorageService overflowStorage, IPerkService perk, IStatService stat)
+        public MigrationService(IDBService db)
         {
             _db = db;
-            _overflowStorage = overflowStorage;
-            _perk = perk;
-            _stat = stat;
             _characterMigrations = new Lazy<IReadOnlyList<ICharacterMigration>>(LoadCharacterMigrations);
         }
 
@@ -264,13 +256,14 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// <summary>
         /// Character migrations run on saved characters at boot (<see cref="CharacterFileUpgrade"/>). A character
         /// still behind the latest version was not upgraded, so it is refused instead of played in an outdated state.
+        /// Returns true when the entering object is a player that may log in (its upgrade notices are delivered), so the
+        /// login restoration that follows (<c>CharacterLoginRestoration</c>) runs; false for a staff member, an object
+        /// that is not a player, and a refused character.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnCharacterInitAfter)]
-        public void AfterCharacterInitialization()
+        public bool AdmitLogin(uint player)
         {
-            var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player))
-                return;
+                return false;
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = _db.Get<Player>(playerId);
@@ -285,49 +278,11 @@ namespace SWLOR.Game.Server.Domain.Foundation
                 if (dbPlayer != null)
                     RequestVaultRescan();
                 BootPC(player, "Your character needs an update that runs when the server restarts. Please try again after the next restart, or contact a server administrator.");
-                return;
+                return false;
             }
 
             DeliverUpgradeNotices(player, dbPlayer);
-            _overflowStorage.NotifyOnLogin(player);
-
-            // Restore the base attributes and native feats the record holds, which saved characters may lack.
-            RestorePlayerAttributes(player);
-            RestorePlayerFeats(player);
-            // Saved equipment does not emit equip events on login.
-            RefreshCombatReadinessEquipment(player);
-            RefreshPlayerMaxHP(player);
-            RefreshPlayerEquipmentStats(player);
-        }
-
-        /// <summary>Restores the base attributes the record holds. The static <c>Stat</c> reads the record and the engine.</summary>
-        protected virtual void RestorePlayerAttributes(uint player)
-        {
-            _stat.RestorePlayerAttributes(player);
-        }
-
-        /// <summary>Restores the native feats the record holds. The static <c>Perk</c> reads the record and the engine.</summary>
-        protected virtual void RestorePlayerFeats(uint player)
-        {
-            _perk.RestorePlayerFeats(player);
-        }
-
-        /// <summary>Reconciles combat readiness with the worn equipment. The static <c>Stat</c> reads the record and the engine.</summary>
-        protected virtual void RefreshCombatReadinessEquipment(uint player)
-        {
-            _stat.RefreshCombatReadinessEquipment(player);
-        }
-
-        /// <summary>Recomputes the maximum hit points. The static <c>Stat</c> reads the record and the engine.</summary>
-        protected virtual void RefreshPlayerMaxHP(uint player)
-        {
-            _stat.RefreshPlayerMaxHP(player);
-        }
-
-        /// <summary>Recomputes the equipment stats on the record. The static <c>Stat</c> reads the record and the engine.</summary>
-        protected virtual void RefreshPlayerEquipmentStats(uint player)
-        {
-            _stat.RefreshPlayerEquipmentStats(player);
+            return true;
         }
 
         private void DeliverUpgradeNotices(uint player, Player dbPlayer)

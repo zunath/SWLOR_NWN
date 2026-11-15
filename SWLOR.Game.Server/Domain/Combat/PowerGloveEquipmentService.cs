@@ -135,7 +135,7 @@ public class PowerGloveEquipmentService : IPowerGloveEquipmentService
     /// A Power Glove fills both hands, so its equipment stats count once per hand: one glove grants what two
     /// identical Katars do. Every equipped-stat sum uses this, so equipping and removing a glove stay symmetric.
     /// </summary>
-    public int GetEquipmentStatCopies(BaseItem type) => type == BaseItem.PowerGlove ? 2 : 1;
+    public int GetEquipmentStatCopies(BaseItem type) => PowerGloveStatCopies.For(type);
 
     public uint GetCompanion(uint creature) => IsActivePair(creature)
         ? GetItemInSlot(InventorySlot.LeftHand, creature) : OBJECT_INVALID;

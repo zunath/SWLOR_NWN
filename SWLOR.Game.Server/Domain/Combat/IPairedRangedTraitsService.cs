@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Combat
 {
@@ -9,6 +10,12 @@ namespace SWLOR.Game.Server.Domain.Combat
     {
         /// <summary>Reports a weapon ability's first landed hit; its chain or own grant adds Cadence once.</summary>
         void RecordWeaponAbilityHit(uint actor, WeaponAbilityTraitActivation activation);
+
+        /// <summary>
+        /// Completes the committed traits of the activator's weapon ability impact on each landed weapon-skill hit, and reports
+        /// the impact's first hit for Cadence.
+        /// </summary>
+        void RecordSuccessfulWeaponAbilityHit(uint activator, uint target, SkillType skill);
 
         WeaponAbilityTraitActivation CaptureWeaponAbility(uint actor, AbilityDetail ability);
 

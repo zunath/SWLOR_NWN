@@ -63,7 +63,7 @@ public class ExtraHotbarsServiceTests
     private sealed class TestHotbars : ExtraHotbarsService
     {
         public TestHotbars(IDBService db, IGuiService gui, IChatCommandService chat, IItemService item)
-            : base(db, gui, chat, item, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuickCastService>(), FacadeForwarder.For<ITargetingService>(), FacadeForwarder.For<ITwinPistolEquipmentService>())
+            : base(db, gui, chat, item, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuickCastService>(), FacadeForwarder.For<ITargetingService>(), FacadeForwarder.For<ITwinPistolEquipmentService>())
         {
         }
 

@@ -10,27 +10,27 @@
 # SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
-SWLOR.Game.Server.Domain.Abilities.AbilityService | 4572
+SWLOR.Game.Server.Domain.Abilities.AbilityService | 3759
 SWLOR.Game.Server.Domain.Abilities.MimicryService | 1434
 SWLOR.Game.Server.Domain.Character.PerkService | 1486
 SWLOR.Game.Server.Domain.Character.PlayerNameService | 1039
 SWLOR.Game.Server.Domain.Character.SkillService | 1142
 SWLOR.Game.Server.Domain.Character.StatService | 3358
-SWLOR.Game.Server.Domain.Character.StatusEffectService | 2801
+SWLOR.Game.Server.Domain.Character.StatusEffectService | 2804
 SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 1200
 SWLOR.Game.Server.Domain.Combat.CombatAbilityBonusService | 1061
-SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1686
+SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1689
 SWLOR.Game.Server.Domain.Combat.CombatDamageModifiersService | 1433
 SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService | 1640
 SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 1707
-SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1689
+SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1691
 SWLOR.Game.Server.Domain.Combat.EnmityService | 1244
 SWLOR.Game.Server.Domain.Companions.BeastMasteryService | 1232
 SWLOR.Game.Server.Domain.Companions.DroidService | 1195
 SWLOR.Game.Server.Domain.Crafting.BlueprintBonuses | 1002
 SWLOR.Game.Server.Domain.Crafting.CraftService | 1319
-SWLOR.Game.Server.Domain.Creatures.AIService | 1871
-SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1087
+SWLOR.Game.Server.Domain.Creatures.AIService | 1874
+SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1090
 SWLOR.Game.Server.Domain.Creatures.SpawnService | 1208
 SWLOR.Game.Server.Domain.Foundation.CommunicationService | 1096
 SWLOR.Game.Server.Domain.Items.ItemService | 1605

@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, DirectDamageSnapshot> DirectDamage = new();
         private readonly Lazy<IStatService> _stat;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly ICombatImpactGeometryService _geometry;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly Lazy<IStatusEffectService> _statusEffect;
         private readonly Lazy<ICombatActivityService> _combatActivity;
@@ -34,14 +34,14 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public MeleeTechniqueService(
             Lazy<IStatService> stat,
-            Lazy<IAbilityService> ability,
+            ICombatImpactGeometryService geometry,
             ICombatRecorderService combatRecorder,
             Lazy<IStatusEffectService> statusEffect,
             Lazy<ICombatActivityService> combatActivity,
             Lazy<ICombatResourcesService> resources)
         {
             _stat = stat;
-            _ability = ability;
+            _geometry = geometry;
             _combatRecorder = combatRecorder;
             _statusEffect = statusEffect;
             _combatActivity = combatActivity;
@@ -702,7 +702,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat.Value.GetStatAdjustment(creature, stat);
 
         protected virtual IReadOnlyList<uint> GetHostileTargetsInSphere(uint activator, Location location, float radius) =>
-            _ability.Value.GetHostileTargetsInSphere(activator, location, radius);
+            _geometry.GetHostileTargetsInSphere(activator, location, radius);
 
         protected virtual string GetActiveAbilityActivationId(uint activator) =>
             UsePerkFeat.GetActiveAbilityActivationId(activator);

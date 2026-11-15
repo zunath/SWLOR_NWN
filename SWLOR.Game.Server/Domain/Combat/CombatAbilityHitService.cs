@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
-        private readonly IAbilityService _ability;
+        private readonly IAbilityImpactState _impactState;
         private readonly IPerkService _perk;
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
 
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
-            IAbilityService ability,
+            IAbilityImpactState impactState,
             IPerkService perk,
             IPairedRangedTraitsService pairedRangedTraits)
         {
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
-            _ability = ability;
+            _impactState = impactState;
             _perk = perk;
             _pairedRangedTraits = pairedRangedTraits;
         }
@@ -287,7 +287,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             if (WeaponImpactProfile.Get(attacker) is { } explicitProfile)
                 return _damageModifiers.ApplyStatusSourceAccuracyModifiers(attacker, defender,
-                    explicitProfile.Weapon.Accuracy + explicitProfile.AccuracyAdjustment + _ability.GetWeaponTraitAccuracy(attacker));
+                    explicitProfile.Weapon.Accuracy + explicitProfile.AccuracyAdjustment + _impactState.GetWeaponTraitAccuracy(attacker));
             var weapon = _queries.GetRelevantSkillWeapon(attacker, skillType);
             var usesForceAccuracy = skillType == SkillType.Force;
             var accuracyStatOverride = usesForceAccuracy ? AbilityType.Willpower : statOverride;
@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 skillType,
                 skillLevelOverride,
                 ignoreWeaponAccuracyStatOverride: usesForceAccuracy);
-            return _damageModifiers.ApplyStatusSourceAccuracyModifiers(attacker, defender, accuracy + _ability.GetWeaponTraitAccuracy(attacker));
+            return _damageModifiers.ApplyStatusSourceAccuracyModifiers(attacker, defender, accuracy + _impactState.GetWeaponTraitAccuracy(attacker));
         }
 
         private int GetAbilityHitOrCriticalAdjustment(

@@ -101,6 +101,13 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         SkillType GetAbilitySkillType(uint creature, AbilityDetail ability);
 
+        /// <summary>
+        /// Returns whether the ability counts as a Force power: a Force skill ability, or an ability
+        /// of another skill flagged <see cref="AbilityDetail.IsForcePower"/> (Force Sensitive
+        /// Espionage powers).
+        /// </summary>
+        bool IsForcePower(uint activator, AbilityDetail ability);
+
         SkillType GetEquippedWeaponSkillType(uint creature);
 
         bool AbilityMatchesHeavyVibrobladeDefenseAbilityTrigger(

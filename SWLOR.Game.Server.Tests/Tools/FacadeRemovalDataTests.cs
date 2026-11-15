@@ -40,24 +40,31 @@ public class FacadeRemovalDataTests
             "a namespace of the same name hides the imported property, so callers write GameServices.<Name>");
     }
 
-    [Test]
-    public void Every_member_of_a_split_facade_is_a_member_of_its_owner()
+    [TestCase("Combat")]
+    [TestCase("Ability")]
+    public void Every_member_of_a_split_facade_is_a_member_of_its_owner(string facadeName)
     {
-        var combat = Data.Single(facade => facade.Facade == "Combat");
-        combat.IsSplit.Should().BeTrue("Combat's members went to its parts, its service and its rules");
+        // Combat's members went to its parts, its service and its rules; Ability's go to its parts as the ability split
+        // (P5-3) moves them, the rest stay on Ability.
+        var facade = Data.Single(candidate => candidate.Facade == facadeName);
+        facade.IsSplit.Should().BeTrue($"{facadeName}'s members went to more than one class");
         var assembly = typeof(SWLOR.Game.Server.Composition.CompositionRoot).Assembly;
+        const System.Reflection.BindingFlags All = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance;
 
-        foreach (var member in combat.Members!)
+        foreach (var member in facade.Members!)
         {
+            // An accessor owner is the interface its property returns (I<Owner>Service, or I<Owner> for a store such as
+            // AbilityImpactState); that interface may extend another one.
+            var interfaces = assembly.GetTypes().Where(type => type.IsInterface && type.Namespace!.StartsWith("SWLOR.Game.Server.Domain.", StringComparison.Ordinal)).ToList();
             var owner = member.IsAccessorProperty
-                ? assembly.GetType($"SWLOR.Game.Server.Domain.Combat.I{member.Owner}Service", throwOnError: true)!
+                ? interfaces.SingleOrDefault(type => type.Name == $"I{member.Owner}Service") ?? interfaces.Single(type => type.Name == $"I{member.Owner}")
                 : assembly.GetType(member.Owner, throwOnError: true)!;
-            owner.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance)
+            owner.GetInterfaces().Prepend(owner).SelectMany(type => type.GetMethods(All))
                 .Should().Contain(method => method.Name == member.Name,
                 $"{member.Owner} holds {member.Name}, which the tool rewrites the call to");
         }
 
-        foreach (var constant in combat.Constants)
+        foreach (var constant in facade.Constants)
             assembly.GetType(constant.Owner, throwOnError: true)!.GetField(constant.Name).Should().NotBeNull($"{constant.Owner} holds the constant {constant.Name}");
     }
 

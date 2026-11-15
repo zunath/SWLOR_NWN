@@ -42,14 +42,20 @@ public class AbilityFacadeAllocationTests
     private IDisposable _installed = null!;
 
     /// <summary>
-    /// The container's ability service is the bench's instance, whose calls into unconverted code answer from its own
+    /// The container's ability service and its parts (catalog, impact state store, magnitude) are the bench's, whose calls into unconverted code answer from its own
     /// tables without allocating, so a count here is the accessor and the instance and nothing behind them.
     /// </summary>
     [SetUp]
     public void SetUp()
     {
         _world = new AbilityBench();
-        _container = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton<IAbilityService>(_world.Service)));
+        _container = new FacadeContainer(services =>
+        {
+            services.Replace(ServiceDescriptor.Singleton<IAbilityService>(_world.Service));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityCatalogService>(_world.Catalog));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityImpactState>(_world.ImpactState));
+            services.Replace(ServiceDescriptor.Singleton<ICombatAbilityMagnitudeService>(_world.Magnitude));
+        });
         _installed = _container.Install();
         _world.Catalog.Register(Registered, Force);
         _world.Lifecycle.BeginAbilityImpact(Tracked, Force);
@@ -80,10 +86,10 @@ public class AbilityFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += Ability.IsFeatRegistered(Registered) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += Ability.IsFeatRegistered(FeatType.Invalid) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += Ability.GetAbilityDetail(Registered).AbilityLevel).Should().Be(0);
-        Allocated(() => sink += Ability.GetAllAbilityDetails().Count).Should().Be(0);
+        Allocated(() => sink += AbilityCatalog.IsFeatRegistered(Registered) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += AbilityCatalog.IsFeatRegistered(FeatType.Invalid) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += AbilityCatalog.GetAbilityDetail(Registered).AbilityLevel).Should().Be(0);
+        Allocated(() => sink += AbilityCatalog.GetAllAbilityDetails().Count).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
@@ -105,14 +111,14 @@ public class AbilityFacadeAllocationTests
 
         foreach (var creature in new[] { Tracked, Untracked })
         {
-            Allocated(() => sink += Ability.GetAbilityImpactSequence(creature) == null ? 1 : 0).Should().Be(0);
-            Allocated(() => sink += Ability.GetActiveAbilityImpactSummary(creature) == null ? 1 : 0).Should().Be(0);
-            Allocated(() => sink += Ability.GetLastCompletedAbilityImpactSummary(creature) == null ? 1 : 0).Should().Be(0);
-            Allocated(() => sink += Ability.GetWeaponTraitAccuracy(creature)).Should().Be(0);
-            Allocated(() => sink += Ability.IsAreaImpact(creature, Force) ? 1 : 0).Should().Be(0);
-            Allocated(() => sink += Ability.IsSingleTargetImpact(creature, Force) ? 1 : 0).Should().Be(0);
-            Allocated(() => sink += Ability.TryTriggerAreaAbilityPulse(creature) ? 1 : 0).Should().Be(0);
-            Allocated(() => Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(creature, 0)).Should().Be(0);
+            Allocated(() => sink += AbilityImpactState.GetAbilityImpactSequence(creature) == null ? 1 : 0).Should().Be(0);
+            Allocated(() => sink += AbilityImpactState.GetActiveAbilityImpactSummary(creature) == null ? 1 : 0).Should().Be(0);
+            Allocated(() => sink += AbilityImpactState.GetLastCompletedAbilityImpactSummary(creature) == null ? 1 : 0).Should().Be(0);
+            Allocated(() => sink += AbilityImpactState.GetWeaponTraitAccuracy(creature)).Should().Be(0);
+            Allocated(() => sink += AbilityImpactState.IsAreaImpact(creature, Force) ? 1 : 0).Should().Be(0);
+            Allocated(() => sink += AbilityImpactState.IsSingleTargetImpact(creature, Force) ? 1 : 0).Should().Be(0);
+            Allocated(() => sink += AbilityImpactState.TryTriggerAreaAbilityPulse(creature) ? 1 : 0).Should().Be(0);
+            Allocated(() => AbilityImpactState.AddActiveAbilityDefenseIgnorePercentAdjustment(creature, 0)).Should().Be(0);
         }
 
         GC.KeepAlive(sink);
@@ -126,12 +132,12 @@ public class AbilityFacadeAllocationTests
 
         foreach (var creature in new[] { Tracked, Untracked })
         {
-            Allocated(() => sink += Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, 5)).Should().Be(0);
-            Allocated(() => sink += (int)Ability.GetActiveForceAffinityMagnitudeMultiplier(creature)).Should().Be(0);
-            Allocated(() => sink += (int)Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(creature)).Should().Be(0);
-            Allocated(() => sink += Ability.ApplyActiveForceAffinityMagnitude(creature, 5)).Should().Be(0);
-            Allocated(() => sink += (int)Ability.ApplyActiveForceAffinityMagnitude(creature, 5f)).Should().Be(0);
-            Allocated(() => sink += Ability.ApplyActiveForceAffinityRestorativeMagnitude(creature, 5)).Should().Be(0);
+            Allocated(() => sink += CombatAbilityMagnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, 5)).Should().Be(0);
+            Allocated(() => sink += (int)CombatAbilityMagnitude.GetActiveForceAffinityMagnitudeMultiplier(creature)).Should().Be(0);
+            Allocated(() => sink += (int)CombatAbilityMagnitude.GetActiveForceAffinityRestorativeMagnitudeMultiplier(creature)).Should().Be(0);
+            Allocated(() => sink += CombatAbilityMagnitude.ApplyActiveForceAffinityMagnitude(creature, 5)).Should().Be(0);
+            Allocated(() => sink += (int)CombatAbilityMagnitude.ApplyActiveForceAffinityMagnitude(creature, 5f)).Should().Be(0);
+            Allocated(() => sink += CombatAbilityMagnitude.ApplyActiveForceAffinityRestorativeMagnitude(creature, 5)).Should().Be(0);
         }
 
         GC.KeepAlive(sink);
@@ -160,8 +166,8 @@ public class AbilityFacadeAllocationTests
         _world.StatSources = new[] { new StatAdjustmentSource("source", new Dictionary<StatType, int>()) };
         var sink = 0;
 
-        Allocated(() => sink += Ability.GetAbilityImpactStatSources(Tracked, StatType.Attack).Count).Should().Be(0);
-        Allocated(() => sink += Ability.GetAbilityImpactStatSources(Untracked, StatType.Attack).Count).Should().Be(0);
+        Allocated(() => sink += AbilityImpactState.GetAbilityImpactStatSources(Tracked, StatType.Attack, _world.Stat).Count).Should().Be(0);
+        Allocated(() => sink += AbilityImpactState.GetAbilityImpactStatSources(Untracked, StatType.Attack, _world.Stat).Count).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
@@ -171,11 +177,11 @@ public class AbilityFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += Ability.IsForcePower(false, SkillType.Force) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += Ability.IsForcePower(Untracked, Force) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += CombatRules.IsForcePower(false, SkillType.Force) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += CombatQueries.IsForcePower(Untracked, Force) ? 1 : 0).Should().Be(0);
         Allocated(() => sink += Ability.CalculateHostileAbilityEnmity(5, 0, 1)).Should().Be(0);
-        Allocated(() => sink += Ability.IsAreaImpact(null!, Force) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += Ability.ApplyCombatReadinessMagnitude(Untracked, 0)).Should().Be(0);
+        Allocated(() => sink += AbilityImpactState.IsAreaImpact(null!, Force) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += CombatAbilityMagnitude.ApplyCombatReadinessMagnitude(Untracked, 0)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 

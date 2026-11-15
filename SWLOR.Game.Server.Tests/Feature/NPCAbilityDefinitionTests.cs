@@ -222,7 +222,7 @@ public class NPCAbilityDefinitionTests
 
         foreach (var feat in ExpectedAbilities().Keys)
         {
-            Ability.IsFeatRegistered(feat).Should().BeTrue($"{feat} must be registered before AI can execute it");
+            AbilityCatalog.IsFeatRegistered(feat).Should().BeTrue($"{feat} must be registered before AI can execute it");
             genericAbilityFeats.Should().Contain(feat, $"{feat} should be exposed through the Generic NPC AI profile");
         }
     }

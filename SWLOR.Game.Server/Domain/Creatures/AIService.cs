@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly ICompanionLookup _companions;
         private readonly IDMPresenceService _dmPresence;
         private readonly Lazy<IAbilityService> _ability;
+        private readonly IAbilityCatalog _catalog;
         private readonly IActivityService _activity;
         private readonly Lazy<ICompanionControlService> _companionControl;
         private readonly IConversationMenuService _conversationMenu;
@@ -66,6 +67,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             ICompanionLookup companions,
             IDMPresenceService dmPresence,
             Lazy<IAbilityService> ability,
+            IAbilityCatalog catalog,
             IActivityService activity,
             Lazy<ICompanionControlService> companionControl,
             IConversationMenuService conversationMenu,
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _companions = companions;
             _dmPresence = dmPresence;
             _ability = ability;
+            _catalog = catalog;
             _activity = activity;
             _companionControl = companionControl;
             _conversationMenu = conversationMenu;
@@ -1409,7 +1412,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             if (action.Type == AIActionType.Ability)
             {
-                var ability = _ability.Value.GetAbilityDetail(action.Feat);
+                var ability = _catalog.GetAbilityDetail(action.Feat);
                 AITargetSelector selector;
                 if (action.TargetSelector != null)
                     selector = action.TargetSelector;
@@ -1477,13 +1480,13 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
             return action.Type == AIActionType.Ability &&
                    action.Feat != FeatType.Invalid &&
-                   _ability.Value.IsFeatRegistered(action.Feat) &&
-                   _ability.Value.GetAbilityDetail(action.Feat).IsHostileAbility;
+                   _catalog.IsFeatRegistered(action.Feat) &&
+                   _catalog.GetAbilityDetail(action.Feat).IsHostileAbility;
         }
 
         private bool CanUseAbility(AIContext context, AIActionDefinition action, uint target)
         {
-            if (action.Feat == FeatType.Invalid || !_ability.Value.IsFeatRegistered(action.Feat))
+            if (action.Feat == FeatType.Invalid || !_catalog.IsFeatRegistered(action.Feat))
                 return false;
 
             if (IsControlledCompanion(context.Self) &&
@@ -1495,7 +1498,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (!GetHasFeat(action.Feat, context.Self))
                 return false;
 
-            var ability = _ability.Value.GetAbilityDetail(action.Feat);
+            var ability = _catalog.GetAbilityDetail(action.Feat);
             if (ability.IsHostileAbility &&
                 ability.IsSingleTargetAbility &&
                 (!GetIsObjectValid(target) ||
@@ -1636,7 +1639,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                 return false;
             }
 
-            var candidates = _ability.Value.GetAllAbilityDetails()
+            var candidates = _catalog.GetAllAbilityDetails()
                 .Where(x => x.Value.IsHealingAbility &&
                             !x.Value.IsHostileAbility &&
                             x.Value.RequiresTarget &&
@@ -1761,7 +1764,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
                         throw new InvalidOperationException($"AI profile '{profile.Type}' has an ability action with an invalid feat.");
                     }
 
-                    if (!_ability.Value.IsFeatRegistered(action.Feat))
+                    if (!_catalog.IsFeatRegistered(action.Feat))
                     {
                         throw new InvalidOperationException($"AI profile '{profile.Type}' references feat '{action.Feat}', but it is not registered as an ability.");
                     }

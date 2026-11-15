@@ -29,13 +29,23 @@ public static class AbilitySource
     public static readonly IReadOnlyList<string> PartFiles = new[]
     {
         "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
+        // P5-3b: the catalog, the impact state store and its tracker, the geometry and the magnitude.
+        "SWLOR.Game.Server/Domain/Abilities/AbilityCatalogService.cs",
+        "SWLOR.Game.Server/Domain/Combat/AbilityImpactStore.cs",
+        "SWLOR.Game.Server/Domain/Combat/AbilityImpactTracker.cs",
+        "SWLOR.Game.Server/Domain/Combat/PendingDamageEffect.cs",
+        "SWLOR.Game.Server/Domain/Combat/CombatImpactGeometryService.cs",
+        "SWLOR.Game.Server/Domain/Combat/CombatAbilityMagnitudeService.cs",
     };
 
     /// <summary>
     /// The interfaces of the parts: a call through a field of one of these types was a call on the same instance before
     /// the move.
     /// </summary>
-    public static readonly IReadOnlySet<string> PartInterfaces = new HashSet<string>(StringComparer.Ordinal);
+    public static readonly IReadOnlySet<string> PartInterfaces = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "IAbilityCatalog", "IAbilityCatalogService", "IAbilityImpactState", "ICombatImpactGeometryService", "ICombatAbilityMagnitudeService"
+    };
 
     private static readonly Lazy<IReadOnlyList<SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));
 

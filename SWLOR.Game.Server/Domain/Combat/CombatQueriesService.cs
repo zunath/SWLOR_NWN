@@ -426,6 +426,16 @@ namespace SWLOR.Game.Server.Domain.Combat
             return GetEquippedWeaponSkillType(creature);
         }
 
+        /// <summary>
+        /// Returns whether the ability counts as a Force power: a Force skill ability, or an ability
+        /// of another skill flagged <see cref="AbilityDetail.IsForcePower"/> (Force Sensitive
+        /// Espionage powers).
+        /// </summary>
+        public bool IsForcePower(uint activator, AbilityDetail ability)
+        {
+            return CombatRules.IsForcePower(ability.IsForcePower, GetAbilitySkillType(activator, ability));
+        }
+
         public SkillType GetEquippedWeaponSkillType(uint creature)
         {
             if (!GetIsObjectValid(creature))

@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var target in targets)
                 Prepare(ctx, target, 1000, 1000);
             TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 12, 30f);
-            var definition = Ability.GetAbilityDetail(FeatType.ForceDrain3);
+            var definition = AbilityCatalog.GetAbilityDetail(FeatType.ForceDrain3);
             Ability.BeginAbilityImpact(source, definition);
             try
             {
@@ -320,7 +320,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, source, 1000, 1);
             Prepare(ctx, target, 1000, 20);
             TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 8, 30f);
-            var definition = Ability.GetAbilityDetail(FeatType.ForceDrain3);
+            var definition = AbilityCatalog.GetAbilityDetail(FeatType.ForceDrain3);
             Ability.BeginAbilityImpact(source, definition);
             try
             {
@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(1, ObjectPlugin.GetCurrentHitPoints(target), "NWNX reports the target's underlying HP");
             ctx.AssertEqual(100, TemporaryHitPointEffects.GetRemaining(target), "target has a 100-HP temporary pool");
             ctx.AssertEqual(101, GetCurrentHitPoints(target), "native current HP already includes the temporary pool");
-            ctx.AssertEqual(101, Ability.GetRemainingDamageTargetHP(source, target),
+            ctx.AssertEqual(101, AbilityImpactState.GetRemainingDamageTargetHP(source, target),
                 "damageable health counts the temporary pool exactly once");
             using (GameServices.CombatResources.BeginDamageDerivedHealing(source, target))
                 ctx.AssertEqual(50, GameServices.CombatResources.ApplyDamageDerivedHealing(source, 100, 50, true),
@@ -357,7 +357,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 3f, "the real hit to consume the temporary pool");
             ctx.AssertEqual(1, GetCurrentHitPoints(target), "underlying HP remains after the shield absorbs the hit");
             ctx.AssertEqual(51, GetCurrentHitPoints(source), "the source receives 50 HP from shield damage");
-            ctx.AssertEqual(1, Ability.GetRemainingDamageTargetHP(source, target), "consumed temporary HP cannot supply another hit");
+            ctx.AssertEqual(1, AbilityImpactState.GetRemainingDamageTargetHP(source, target), "consumed temporary HP cannot supply another hit");
         }
 
         [EngineTest("Queued lifesteal cannot reuse stacked temporary HP or heal from shield overkill", Category = "CombatHealing", TimeoutSeconds = 20f)]
@@ -371,19 +371,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryHitPointEffects.ApplyFlat(target, "LIFESTEAL_TARGET_FIRST", 100, 30f);
             TemporaryHitPointEffects.ApplyFlat(target, "LIFESTEAL_TARGET_SECOND", 50, 30f);
             TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 8, 30f);
-            var definition = Ability.GetAbilityDetail(FeatType.ForceDrain3);
+            var definition = AbilityCatalog.GetAbilityDetail(FeatType.ForceDrain3);
             Ability.BeginAbilityImpact(source, definition);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(source, () =>
                 {
-                    ctx.AssertEqual(151, Ability.GetRemainingDamageTargetHP(source, target),
+                    ctx.AssertEqual(151, AbilityImpactState.GetRemainingDamageTargetHP(source, target),
                         "both temporary pools and underlying HP are counted once");
                     Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
-                    ctx.AssertEqual(51, Ability.GetRemainingDamageTargetHP(source, target),
+                    ctx.AssertEqual(51, AbilityImpactState.GetRemainingDamageTargetHP(source, target),
                         "the first queued hit reserves 100 HP from the combined pool");
                     Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
-                    ctx.AssertEqual(0, Ability.GetRemainingDamageTargetHP(source, target),
+                    ctx.AssertEqual(0, AbilityImpactState.GetRemainingDamageTargetHP(source, target),
                         "the second queued hit claims the last 51 HP and excludes overkill");
                     Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
                 });
@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(target);
             ctx.Assert(GetIsReactionTypeHostile(target, source), "the ability target is hostile");
             TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 8, 30f);
-            Ability.BeginAbilityImpact(source, Ability.GetAbilityDetail(FeatType.ForceDrain3));
+            Ability.BeginAbilityImpact(source, AbilityCatalog.GetAbilityDetail(FeatType.ForceDrain3));
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(source, () =>
@@ -480,7 +480,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(150, GameServices.CombatResources.ApplyDamageDerivedHealing(source, damage, 40, true),
                             "the outer active-drain scope also observes the newly granted shield");
                     }
-                    ctx.AssertEqual(600 - damage, Ability.GetRemainingDamageTargetHP(source, target),
+                    ctx.AssertEqual(600 - damage, AbilityImpactState.GetRemainingDamageTargetHP(source, target),
                         "the queued hit is subtracted from base HP plus the new shield exactly once");
                     Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 400, CombatDamageType.Force);
                     var expected = 1 + 150 + GameMath.PercentOf(damage, 8) + GameMath.PercentOf(600 - damage, 8);

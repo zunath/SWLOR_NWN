@@ -177,8 +177,8 @@ public static class MeleeTechniqueLifecycleEngineTests
 
     private static async Task Cast(EngineTestContext context, uint caster, uint target, FeatType feat)
     {
-        var ability = Ability.GetAbilityDetail(feat);
-        Ability.ClearLastCompletedAbilityImpactSummary(caster);
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
+        AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
         await context.ExecuteInCreatureContextAsync(caster, () =>
         {
             // Match the directional hostility check used by ability activation and target-bound technique state.
@@ -187,7 +187,7 @@ public static class MeleeTechniqueLifecycleEngineTests
             context.Assert(UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target)),
                 $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}");
         });
-        await context.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
+        await context.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
             6f, $"{ability.Name} to complete its actual activation");
         AssignCommand(caster, () => ClearAllActions());
     }

@@ -288,7 +288,7 @@ public class FirstAidCombatUpgradeTests
 
         var includedSources = new[]
         {
-            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityEffectScaling.cs",
+            root / "SWLOR.Game.Server" / "Domain" / "Combat" / "AbilityEffectScaling.cs",
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs",
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "MedKitAbilityDefinition.cs",
             root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "RewardAbilityDefinition.cs",

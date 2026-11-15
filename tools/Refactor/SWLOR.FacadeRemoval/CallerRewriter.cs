@@ -86,10 +86,19 @@ internal static class CallerRewriter
                 if (owners.Count != 1)
                     continue;
 
-                if (owners[0].IsAccessorProperty)
+                if (owners[0].IsAccessorProperty && (facade.Explicit || declaredNames.Contains(owners[0].Owner)))
                 {
                     edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, AccessorClass + "." + owners[0].Owner));
                     needsComposition = true;
+                }
+                else if (owners[0].IsAccessorProperty)
+                {
+                    // A facade that is no namespace segment (Ability) keeps the bare form of a facade of one service: the
+                    // owner's imported GameServices property serves the call, so only the name before the member changes
+                    // (Ability.GetAbilityDetail becomes AbilityCatalog.GetAbilityDetail).
+                    if (prefix != owners[0].Owner)
+                        edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, owners[0].Owner));
+                    needsAccessorImport = true;
                 }
                 else
                 {
@@ -152,9 +161,15 @@ internal static class CallerRewriter
                 .Concat((facade.Members ?? []).Where(member => !member.IsAccessorProperty)
                     .Select(member => (Facade: facade, Constant: new RemovedConstant(member.Name, member.Owner)))))
             .ToList();
+        var bareOwners = facades.Where(facade => facade.IsSplit && !facade.Explicit)
+            .SelectMany(facade => facade.Members!.Where(member => member.IsAccessorProperty && member.Owner != facade.Name))
+            .Select(member => member.Owner)
+            .Distinct()
+            .ToList();
         if (!text.Contains(AccessorClass, StringComparison.Ordinal) &&
             !text.Contains(AccessorNamespace, StringComparison.Ordinal) &&
-            !owners.Any(owner => text.Contains(owner.Constant.OwnerName, StringComparison.Ordinal)))
+            !owners.Any(owner => text.Contains(owner.Constant.OwnerName, StringComparison.Ordinal)) &&
+            !bareOwners.Any(owner => text.Contains(owner, StringComparison.Ordinal)))
         {
             return new RewriteResult(text, 0, 0, false);
         }
@@ -192,11 +207,30 @@ internal static class CallerRewriter
                 continue;
 
             var member = access.Name.Identifier.ValueText;
-            var viaAccessor = facades.FirstOrDefault(facade => prefix.Contains(AccessorClass + ".", StringComparison.Ordinal) &&
-                (Names(AccessorType + "." + facade.Name, prefix) || (facade.Members ?? []).Any(candidate => candidate.IsAccessorProperty && Names(AccessorType + "." + candidate.Owner, prefix))));
+
+            // Two facades can hand members to one property (Combat and Ability both to CombatQueries), and a facade can share
+            // its name with another's owner (PairedRangedTraits): the facade that lists this member under that property wins,
+            // then the facade of that name, then any facade that hands that property a member.
+            bool HandsTo(RemovedFacade facade, bool sameName) => (facade.Members ?? []).Any(candidate =>
+                candidate.IsAccessorProperty && (!sameName || candidate.Name == member) && Names(AccessorType + "." + candidate.Owner, prefix));
+            var viaAccessor = !prefix.Contains(AccessorClass + ".", StringComparison.Ordinal)
+                ? null
+                : facades.FirstOrDefault(facade => HandsTo(facade, sameName: true)) ??
+                  facades.FirstOrDefault(facade => Names(AccessorType + "." + facade.Name, prefix)) ??
+                  facades.FirstOrDefault(facade => HandsTo(facade, sameName: false));
             if (viaAccessor != null)
             {
                 edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, viaAccessor.Name));
+                continue;
+            }
+
+            // A member of a split facade that is no namespace segment, called through its owner's bare property
+            // (AbilityCatalog.GetAbilityDetail), goes back to the facade (Ability.GetAbilityDetail).
+            var bareOwner = facades.FirstOrDefault(facade => facade.IsSplit && !facade.Explicit && (facade.Members ?? []).Any(candidate =>
+                candidate.IsAccessorProperty && candidate.Name == member && candidate.Owner == prefix && candidate.Owner != facade.Name));
+            if (bareOwner != null)
+            {
+                edits.Add(new TextEdit(access.Expression.SpanStart, access.Expression.Span.Length, bareOwner.Name));
                 continue;
             }
 

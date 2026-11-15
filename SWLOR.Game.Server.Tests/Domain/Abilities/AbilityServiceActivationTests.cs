@@ -1,6 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
@@ -301,10 +302,10 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
     [Test]
     public void A_force_power_is_a_force_skill_or_a_flagged_ability()
     {
-        Service.IsForcePower(true, SkillType.Devices).Should().BeTrue();
-        Service.IsForcePower(false, SkillType.Force).Should().BeTrue();
-        Service.IsForcePower(false, SkillType.Devices).Should().BeFalse();
-        Service.IsForcePower(Caster, Hostile(skill: SkillType.Force)).Should().BeTrue();
-        Service.IsForcePower(Caster, Hostile(skill: SkillType.Devices)).Should().BeFalse();
+        // The rule moved to Combat with the ability split (P5-3b): CombatRules for the flag and skill, and
+        // CombatQueriesService.IsForcePower for an ability (CombatQueriesServiceTests).
+        CombatRules.IsForcePower(true, SkillType.Devices).Should().BeTrue();
+        CombatRules.IsForcePower(false, SkillType.Force).Should().BeTrue();
+        CombatRules.IsForcePower(false, SkillType.Devices).Should().BeFalse();
     }
 }

@@ -380,8 +380,8 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [TestCase(CombatImpactAreaShape.Line, -1f, 0f, 5f, 2f, false)]
     public void The_shape_test_matches_the_footprint(CombatImpactAreaShape shape, float x, float y, float length, float width, bool expected)
     {
-        var inside = (bool)AbilityInternals.Method("IsPositionInCombatImpactShape").Invoke(
-            Service, new object[] { new Vector3(x, y, 0f), Vector3.Zero, 0f, shape, length, width })!;
+        var inside = (bool)AbilityInternals.GeometryMethod("IsPositionInCombatImpactShape").Invoke(
+            Geometry, new object[] { new Vector3(x, y, 0f), Vector3.Zero, 0f, shape, length, width })!;
 
         inside.Should().Be(expected);
     }
@@ -389,10 +389,10 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [Test]
     public void An_unknown_shape_is_never_inside_or_searched()
     {
-        var inside = () => AbilityInternals.Method("IsPositionInCombatImpactShape").Invoke(
-            Service, new object[] { Vector3.Zero, Vector3.Zero, 0f, (CombatImpactAreaShape)99, 5f, 0f });
-        var search = () => AbilityInternals.Method("GetCombatImpactShapeSearchRadius").Invoke(
-            Service, new object[] { (CombatImpactAreaShape)99, 5f, 0f });
+        var inside = () => AbilityInternals.GeometryMethod("IsPositionInCombatImpactShape").Invoke(
+            Geometry, new object[] { Vector3.Zero, Vector3.Zero, 0f, (CombatImpactAreaShape)99, 5f, 0f });
+        var search = () => AbilityInternals.GeometryMethod("GetCombatImpactShapeSearchRadius").Invoke(
+            Geometry, new object[] { (CombatImpactAreaShape)99, 5f, 0f });
 
         inside.Should().Throw<System.Reflection.TargetInvocationException>().WithInnerException<ArgumentOutOfRangeException>();
         search.Should().Throw<System.Reflection.TargetInvocationException>().WithInnerException<ArgumentOutOfRangeException>();
@@ -412,8 +412,8 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [Test]
     public void The_area_search_radius_of_a_line_reaches_its_far_corners()
     {
-        var radius = (float)AbilityInternals.Method("GetCombatImpactShapeSearchRadius").Invoke(
-            Service, new object[] { CombatImpactAreaShape.Line, 3f, 8f })!;
+        var radius = (float)AbilityInternals.GeometryMethod("GetCombatImpactShapeSearchRadius").Invoke(
+            Geometry, new object[] { CombatImpactAreaShape.Line, 3f, 8f })!;
 
         radius.Should().Be(5f);
     }

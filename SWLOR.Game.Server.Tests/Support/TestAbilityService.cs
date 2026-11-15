@@ -44,10 +44,13 @@ public sealed partial class TestAbilityService : AbilityService
         ICapstoneProofService capstoneProof,
         IResistanceService resistance,
         IStealthService stealth,
-        IPairedRangedTraitsService pairedRangedTraits)
+        IAbilityCatalog catalog,
+        IAbilityImpactState impactState,
+        ICombatImpactGeometryService geometry,
+        ICombatAbilityMagnitudeService magnitude)
         : base(statusEffect, enmity, combatPoint, recast, telegraph, messaging, music, namedAnimation, mimicry, activity, party,
-            playerFeedback, combatRecorder, meleeTechnique, capstoneProof, resistance, stealth, pairedRangedTraits, FacadeForwarder.For<IStatService>(),
-            FacadeForwarder.For<IPerkService>(), FacadeForwarder.LazyFor<ICombatAbilityBonusService>(), FacadeForwarder.LazyFor<ICombatAbilityHitService>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.LazyFor<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>(), FacadeForwarder.LazyFor<ISpaceService>())
+            playerFeedback, combatRecorder, meleeTechnique, capstoneProof, resistance, stealth, FacadeForwarder.For<IStatService>(),
+            FacadeForwarder.For<IPerkService>(), catalog, impactState, geometry, magnitude, FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.LazyFor<ISpaceService>())
     {
         _bench = bench;
     }

@@ -10,14 +10,9 @@ public class AbilityLineOfSightTests
     public void TargetedAbilityValidation_RequiresObjectAndVectorLineOfSight()
     {
         var source = AbilitySource.Read().Replace("\r\n", "\n");
-        var validationBody = source.Substring(
-            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal),
-            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal) -
-            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal));
-        var helperBody = source.Substring(
-            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal),
-            source.IndexOf("/// <summary>\n        /// Whenever a weapon's OnHit event is fired", StringComparison.Ordinal) -
-            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal));
+        // The line-of-sight helper moved to the geometry part with the ability split (P5-3b), so each body is read by member.
+        var validationBody = AbilitySource.Members("CanUseAbility").Replace("\r\n", "\n");
+        var helperBody = AbilitySource.Members("HasAbilityLineOfSight").Replace("\r\n", "\n");
 
         validationBody.Should().Contain("!HasAbilityLineOfSight(activator, target)");
         // Denials route through the local Deny helper (which both records the reason for the
@@ -32,10 +27,8 @@ public class AbilityLineOfSightTests
     public void AimedAreaValidation_UsesLocationWithoutObjectTargetFallback()
     {
         var source = AbilitySource.Read().Replace("\r\n", "\n");
-        var validationBody = source.Substring(
-            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal),
-            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal) -
-            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal));
+        // The line-of-sight helper moved to the geometry part with the ability split (P5-3b), so each body is read by member.
+        var validationBody = AbilitySource.Members("CanUseAbility").Replace("\r\n", "\n");
 
         validationBody.Should().Contain("if (ability.RequiresLocationTarget)");
         validationBody.Should().Contain("GetAreaFromLocation(targetLocation)");
@@ -86,14 +79,9 @@ public class AbilityLineOfSightTests
     public void HostileAreaAbilityValidation_RejectsBlockedAreaTargetsBeforeRecast()
     {
         var source = AbilitySource.Read().Replace("\r\n", "\n");
-        var validationBody = source.Substring(
-            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal),
-            source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal) -
-            source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal));
-        var areaValidationBody = source.Substring(
-            source.IndexOf("private string ValidateHostileAreaLineOfSight", StringComparison.Ordinal),
-            source.IndexOf("private bool TryGetCombatImpactShape", StringComparison.Ordinal) -
-            source.IndexOf("private string ValidateHostileAreaLineOfSight", StringComparison.Ordinal));
+        // The line-of-sight helper moved to the geometry part with the ability split (P5-3b), so each body is read by member.
+        var validationBody = AbilitySource.Members("CanUseAbility").Replace("\r\n", "\n");
+        var areaValidationBody = AbilitySource.Members("ValidateHostileAreaLineOfSight").Replace("\r\n", "\n");
 
         var areaValidationIndex = validationBody.IndexOf(
             "ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability)",

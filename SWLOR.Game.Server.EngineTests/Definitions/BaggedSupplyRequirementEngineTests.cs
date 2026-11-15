@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static AbilityRequirementItem GetEmergencyTriageSupplyRequirement(EngineTestContext ctx)
         {
-            var requirement = Ability.GetAbilityDetail(FeatType.EmergencyTriage1).Requirements
+            var requirement = AbilityCatalog.GetAbilityDetail(FeatType.EmergencyTriage1).Requirements
                 .OfType<AbilityRequirementItem>()
                 .SingleOrDefault(r => r.ItemResref == "med_supplies");
             ctx.Assert(requirement != null, "Emergency Triage requires medical supplies");

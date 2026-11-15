@@ -167,7 +167,7 @@ public static class SingleWeaponEngineTests
         });
         var weapon = await ctx.EquipItemAsync(player.Creature, "b_longsword", InventorySlot.RightHand);
         await SetDamage(ctx, player.Creature, weapon, 24);
-        var ability = Ability.GetAbilityDetail(FeatType.SavageCleave1);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.SavageCleave1);
         Ability.BeginAbilityImpact(player.Creature, ability);
         try
         {

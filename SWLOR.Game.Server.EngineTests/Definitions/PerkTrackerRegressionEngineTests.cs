@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.MakeHostile(hostile);
             }
 
-            var bloom = Ability.GetAbilityDetail(FeatType.TempestBloom1);
+            var bloom = AbilityCatalog.GetAbilityDetail(FeatType.TempestBloom1);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var casterHP = GetCurrentHitPoints(caster);
             var allyHP = GetCurrentHitPoints(ally);
             var outsiderHP = GetCurrentHitPoints(outsider);
-            var ability = Ability.GetAbilityDetail(FeatType.WardenOrderTechnique);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.WardenOrderTechnique);
             Ability.BeginAbilityImpact(caster, ability);
             try
             {
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCResources(caster, 100, 100);
             // An uncapped reward reveals duplicate applications that a cooldown would hide.
             TemporaryStatModifier.Add(caster, StatType.AbilityGrantedAttackDeflectionFPRestore, 2, 30f);
-            var ability = Ability.GetAbilityDetail(FeatType.CircleSlash1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.CircleSlash1);
             try
             {
                 foreach (var scenario in new (bool Lands, bool Immune)[] { (true, false), (true, true), (false, true) })
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             ability.ImpactAction(caster, target, 1, GetLocation(caster));
                             ctx.AssertEqual(before + (scenario.Lands ? 2 : 0), Stat.GetCurrentFP(caster),
                                 "landed instant impacts grant one reward even at zero damage; misses grant none");
-                            var summary = Ability.GetActiveAbilityImpactSummary(caster);
+                            var summary = AbilityImpactState.GetActiveAbilityImpactSummary(caster);
                             ctx.AssertEqual(scenario.Lands, summary.ImpactedTargetCount > 0, "the hit result is recorded independently of damage");
                             if (scenario.Immune)
                                 ctx.AssertEqual(0, summary.AttributedDamage, "physical immunity makes the impact deal zero damage");
@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         try
                         {
                             ability.ImpactAction(caster, target, 1, GetLocation(caster));
-                            var summary = Ability.GetActiveAbilityImpactSummary(caster);
+                            var summary = AbilityImpactState.GetActiveAbilityImpactSummary(caster);
                             ctx.AssertEqual(scenario.Lands, summary.ImpactedTargetCount > 0, "the impact records whether a target was hit");
                             if (scenario.Immune)
                                 ctx.AssertEqual(0, summary.AttributedDamage, "immunity exercises a landed zero-damage impact");
@@ -328,7 +328,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the party link");
             foreach (var feat in new[] { FeatType.ShelterCircle1, FeatType.UnmovingCenter1 })
             {
-                var ability = Ability.GetAbilityDetail(feat);
+                var ability = AbilityCatalog.GetAbilityDetail(feat);
                 ctx.Assert(!ability.IsHostileAbility, "the real support ability follows the non-hostile activation path");
                 await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, caster, 1, GetLocation(caster)));
             }
@@ -357,7 +357,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityPulseRadiusMeters, 5, 30f, "pulse");
             TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestorePerTarget, 2, 30f, "reward");
             TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestoreMaximum, 6, 30f, "reward");
-            var area = Ability.GetAbilityDetail(FeatType.KillzoneBeacon1);
+            var area = AbilityCatalog.GetAbilityDetail(FeatType.KillzoneBeacon1);
             var firstHP = GetCurrentHitPoints(first);
             var secondHP = GetCurrentHitPoints(second);
             var stamina = 0;
@@ -389,16 +389,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Keep that tracker alive across the timer to verify that it is restored.
             var otherAbility = new AbilityDetail { IsSingleTargetAbility = true, SkillType = SkillType.Mimicry };
             Ability.BeginAbilityImpact(caster, otherAbility);
-            var otherSummary = Ability.GetActiveAbilityImpactSummary(caster);
-            var otherSequence = Ability.GetAbilityImpactSequence(caster);
+            var otherSummary = AbilityImpactState.GetActiveAbilityImpactSummary(caster);
+            var otherSequence = AbilityImpactState.GetAbilityImpactSequence(caster);
             try
             {
                 await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(caster) >= stamina + 8, 8f, "both channels to grant their area-hit rewards");
                 await ctx.WaitFrameAsync();
                 ctx.AssertEqual(firstHP - 8, GetCurrentHitPoints(first), "the two channels share one bonus pulse");
                 ctx.AssertEqual(secondHP - 8, GetCurrentHitPoints(second), "the bonus pulse reaches both targets");
-                ctx.Assert(ReferenceEquals(otherSummary, Ability.GetActiveAbilityImpactSummary(caster)), "the surrounding impact summary survives");
-                ctx.Assert(ReferenceEquals(otherSequence, Ability.GetAbilityImpactSequence(caster)), "the surrounding cast sequence survives");
+                ctx.Assert(ReferenceEquals(otherSummary, AbilityImpactState.GetActiveAbilityImpactSummary(caster)), "the surrounding impact summary survives");
+                ctx.Assert(ReferenceEquals(otherSequence, AbilityImpactState.GetAbilityImpactSequence(caster)), "the surrounding cast sequence survives");
                 ctx.Assert(otherSummary.IsSingleTargetAbility && !otherSummary.IsAreaAbility, "field hits are not attributed to the other ability");
             }
             finally { Ability.EndAbilityImpact(caster); }
@@ -407,7 +407,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             ctx.AssertEqual(firstHP - 8, GetCurrentHitPoints(first), "later ticks do not restart the once-per-cast bonus");
             ctx.AssertEqual(100, GameServices.CombatAbilityBonus.ConsumeNextAbilityDamageBonus(caster, PerkType.KillzoneBeacon), "scheduled ticks leave the next activation's bonus untouched");
-            ctx.Assert(Ability.GetActiveAbilityImpactSummary(caster) == null, "scheduled impacts leave no active tracker");
+            ctx.Assert(AbilityImpactState.GetActiveAbilityImpactSummary(caster) == null, "scheduled impacts leave no active tracker");
 
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
@@ -478,15 +478,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80, 45f, "third-resource-source");
             StatusEffect.ApplyStatusEffect(caster, caster, new InfiniteConduitStatusEffect(), 45f);
             Ability.BeginAbilityImpact(caster, new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true });
+            // The impact state store reads the sources it has not cached through the caller's stat service (P5-3b).
+            var stat = Stat;
             try
             {
-                var sources = Ability.GetAbilityImpactStatSources(caster, StatType.HighFPAndStaminaAbilityDamageBonus);
+                var sources = AbilityImpactState.GetAbilityImpactStatSources(caster, StatType.HighFPAndStaminaAbilityDamageBonus, stat);
                 foreach (var (resource, expected) in new[] { (81, 39), (80, 32), (71, 32), (70, 12), (65, 12), (61, 12), (60, 0) })
                 {
-                    Stat.ReduceFP(caster, Stat.GetCurrentFP(caster) - resource);
-                    Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - resource);
+                    stat.ReduceFP(caster, stat.GetCurrentFP(caster) - resource);
+                    stat.ReduceStamina(caster, stat.GetCurrentStamina(caster) - resource);
                     ctx.AssertEqual(expected, GameServices.CombatAbilityImpact.GetHighResourceAbilityDamageBonus(caster), $"flat ability bonus at {resource}% FP and STM");
-                    ctx.Assert(ReferenceEquals(sources, Ability.GetAbilityImpactStatSources(caster, StatType.HighFPAndStaminaAbilityDamageBonus)),
+                    ctx.Assert(ReferenceEquals(sources, AbilityImpactState.GetAbilityImpactStatSources(caster, StatType.HighFPAndStaminaAbilityDamageBonus, stat)),
                         "resource thresholds are evaluated per target while source descriptions are reused");
                 }
             }
@@ -538,7 +540,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, beast, new DazedStatusEffect(), 15f), "explicit immunity survives a Mind vulnerability");
             // A native knockdown exercises pulling an incapacitated creature.
             ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), ordinary, 3f);
-            var maul = Ability.GetAbilityDetail(FeatType.WardenMaulTechnique);
+            var maul = AbilityCatalog.GetAbilityDetail(FeatType.WardenMaulTechnique);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             Ability.BeginAbilityImpact(caster, maul);
             try
@@ -570,7 +572,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.MakeHostile(target);
             }
             var initialHP = targets.ToDictionary(target => target, GetCurrentHitPoints);
-            var burst = Ability.GetAbilityDetail(FeatType.StaticBurstTechnique);
+            var burst = AbilityCatalog.GetAbilityDetail(FeatType.StaticBurstTechnique);
             // Exercise the actual definition's chain callback separately from its primary damage.
             // This isolates arc fanout and keeps the fixture on the arena's small walkable anchor.
             var closure = burst.ImpactAction.Target;
@@ -610,7 +612,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 PrepareStationaryCreature(ctx, enemy);
                 ctx.MakeHostile(enemy);
             }
-            Ability.GetAbilityDetail(FeatType.LastBastionTechnique).ImpactAction(caster, caster, 1, GetLocation(caster));
+            AbilityCatalog.GetAbilityDetail(FeatType.LastBastionTechnique).ImpactAction(caster, caster, 1, GetLocation(caster));
             ctx.AssertEqual(12, enemies.Count(enemy => StatusEffect.HasStatusEffect(enemy, typeof(LastBastionStatusEffect))), "no undocumented ten-target cap");
         }
 
@@ -654,7 +656,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             PrepareStationaryCreature(ctx, caster);
             ctx.SetNPCResources(caster, 100, 100);
-            var ability = Ability.GetAbilityDetail(FeatType.BladeVortex2);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.BladeVortex2);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
@@ -771,7 +773,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.Assert(StatusEffect.ApplyStatusEffect(caster, dazed, new DazedStatusEffect(), 30f), "setup Dazed applies");
                     TemporaryStatModifier.Add(immune, StatType.KnockdownImmunity, 1, 30f);
                     var originalDaze = StatusEffect.GetStatusEffect(immune, typeof(DazedStatusEffect));
-                    var ability = Ability.GetAbilityDetail(feat);
+                    var ability = AbilityCatalog.GetAbilityDetail(feat);
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     {
                         Ability.BeginAbilityImpact(caster, ability);

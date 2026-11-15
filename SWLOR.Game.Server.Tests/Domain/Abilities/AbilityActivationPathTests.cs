@@ -78,7 +78,7 @@ public class AbilityActivationPathTests
         _engine.SetReturnHandler("GetIsReactionTypeHostile", args => (uint)args[0]! == Target && (uint)args[1]! == Caster);
         _engine.SetReturn("GetHasFeat", true);
         _engineScope = NWScriptRuntime.Override(_engine);
-        _catalog = (Dictionary<FeatType, AbilityDetail>)Ability.GetAllAbilityDetails();
+        _catalog = (Dictionary<FeatType, AbilityDetail>)AbilityCatalog.GetAllAbilityDetails();
     }
 
     [TearDown]
@@ -168,7 +168,7 @@ public class AbilityActivationPathTests
         ImpactAction = (activator, _, _, _) =>
         {
             _log.Add("Impact");
-            Ability.GetActiveAbilityImpactSummary(activator).Should().NotBeNull("the impact is tracked while it runs");
+            AbilityImpactState.GetActiveAbilityImpactSummary(activator).Should().NotBeNull("the impact is tracked while it runs");
         }
     };
 
@@ -209,7 +209,7 @@ public class AbilityActivationPathTests
             "Impact",
             "ApplyRecastDelay:12");
         Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse("the completed activation is released");
-        Ability.GetLastCompletedAbilityImpactSummary(Caster).Should().NotBeNull();
+        AbilityImpactState.GetLastCompletedAbilityImpactSummary(Caster).Should().NotBeNull();
     }
 
     [Test]

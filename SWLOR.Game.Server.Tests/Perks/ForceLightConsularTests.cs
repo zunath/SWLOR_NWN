@@ -344,7 +344,7 @@ public class ForceLightConsularTests
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal I\", new HealAmount(1, 0.25f));");
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal II\", new HealAmount(6, 0.5f));");
         source.Should().Contain("ApplyRenewal(activator, target, \"Renewal III\", new HealAmount(14, 0.75f));");
-        source.Should().Contain("var affinityMultiplier = Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);");
+        source.Should().Contain("var affinityMultiplier = CombatAbilityMagnitude.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);");
         source.Should().Contain("new RegenerativeHealingStatusEffect(name, healPerTick, affinityMultiplier, supportSkill: SkillType.Force, supportCredited: credited)");
         source.Should().MatchRegex(@"new RegenerativeHealingStatusEffect\(name, healPerTick, affinityMultiplier, [^)]*\),\s*30f\)");
         new RegenerativeHealingStatusEffect("Renewal", new HealAmount(14, 0.75f)).Frequency.Should().Be(3f);

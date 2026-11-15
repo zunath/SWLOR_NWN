@@ -18,28 +18,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// </summary>
     public interface IAbilityService
     {
-        /// <summary>
-        /// When the module caches, abilities will be cached and events will be scheduled.
-        /// </summary>
-        void CacheData();
-
-        IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails();
-
-        /// <summary>
-        /// Returns true if a feat is registered to an ability.
-        /// Returns false otherwise.
-        /// </summary>
-        /// <param name="featType">The type of feat to check.</param>
-        /// <returns>true if feat is registered to an ability. false otherwise.</returns>
-        bool IsFeatRegistered(FeatType featType);
-
-        /// <summary>
-        /// Retrieves an ability's details by the specified feat type.
-        /// If feat does not have an ability, an exception will be thrown.
-        /// </summary>
-        /// <param name="featType">The type of feat</param>
-        /// <returns>The ability detail</returns>
-        AbilityDetail GetAbilityDetail(FeatType featType);
 
         /// <summary>
         /// Starts impact tracking and defers pending damage bonuses until a damaging payload,
@@ -55,26 +33,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             int? triggeringWeaponDamage = null,
             CombatDamageType? triggeringWeaponDamageType = null,
             WeaponAbilityTraitActivation weaponTraits = null);
-
-        AbilityImpactSequence GetAbilityImpactSequence(uint activator);
-
-        int GetWeaponTraitAccuracy(uint activator);
-
-        void RecordSuccessfulWeaponAbilityHit(uint activator, uint target, SkillType skill);
-
-        /// <summary>
-        /// Native current HP includes temporary HP. Subtract queued damage so another hit
-        /// cannot draw healing from health already claimed by an earlier impact.
-        /// </summary>
-        int GetRemainingDamageTargetHP(uint activator, uint target);
-
-        /// <summary>
-        /// Reuses a payload's contributing sources within one impact. Delayed phases and
-        /// recurring pulses receive fresh trackers, while conditions can still be checked per target.
-        /// </summary>
-        IReadOnlyList<StatAdjustmentSource> GetAbilityImpactStatSources(uint activator, StatType payload);
-
-        bool TryTriggerAreaAbilityPulse(uint activator);
 
         /// <summary>
         /// Retains the originating ability and cast sequence for recurring impacts without
@@ -97,29 +55,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
         AbilityImpactSummary EndAbilityImpact(uint activator);
 
         /// <summary>
-        /// The summary of the activator's most recently COMPLETED ability impact, or null if
-        /// none completed since the last clear. Observability seam for the engine test
-        /// harness: a queued weapon ability's damage rides the same landed hit as the weapon
-        /// swing, so an HP drop alone cannot attribute damage to the ability - a completed
-        /// summary with impacted targets can.
-        /// </summary>
-        AbilityImpactSummary GetLastCompletedAbilityImpactSummary(uint activator);
-
-        /// <summary>
-        /// Clears the activator's last completed impact summary so a subsequent
-        /// <see cref="GetLastCompletedAbilityImpactSummary"/> observation cannot match an
-        /// earlier ability's impact.
-        /// </summary>
-        void ClearLastCompletedAbilityImpactSummary(uint activator);
-
-        /// <summary>
         /// Discards an incomplete tracked impact without applying its queued damage effects.
         /// </summary>
         void AbortAbilityImpact(uint activator);
-
-        bool TryQueueTrackedDamageEffect(uint activator, uint target, int damage, DamageType damageType);
-
-        AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator);
 
         /// <summary>
         /// Plays the definition's finite receipt burst after a heal, buff, or other noncombat
@@ -143,41 +81,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// <summary>Returns the current impact's visual reference for a later independent combat event.</summary>
         VisualEffect GetSuccessfulImpactVisualEffect(uint activator);
 
-        void AddActiveAbilityDefenseIgnorePercentAdjustment(uint activator, int adjustment);
-
-        float GetActiveForceAffinityMagnitudeMultiplier(uint activator);
-
-        float GetActiveForceAffinityRestorativeMagnitudeMultiplier(uint activator);
-
-        int ApplyActiveForceAffinityRestorativeMagnitude(uint activator, int amount);
-
-        int ApplyActiveForceAffinityMagnitude(uint activator, int amount);
-
-        float ApplyActiveForceAffinityMagnitude(uint activator, float amount);
-
-        int ApplyCombatReadinessToActivatedAbilityMagnitude(uint activator, int amount);
-
-        int ApplyCombatReadinessMagnitude(uint creature, int amount);
-
         void ApplyHostileAbilityEnmity(uint activator, uint target, int bonus = 0);
 
         int CalculateHostileAbilityEnmity(int bonus, int volleyIndex = 0, int volleyCount = 1);
-
-        /// <summary>Only a melee technique's cast can change shape (its conditional sweep); other abilities keep their authored flags.</summary>
-        bool IsAreaImpact(uint activator, AbilityDetail ability);
-
-        bool IsAreaImpact(AbilityImpactSummary summary, AbilityDetail ability);
-
-        bool IsSingleTargetImpact(uint activator, AbilityDetail ability);
-
-        /// <summary>
-        /// Returns whether the ability counts as a Force power: a Force skill ability, or an ability
-        /// of another skill flagged <see cref="AbilityDetail.IsForcePower"/> (Force Sensitive
-        /// Espionage powers).
-        /// </summary>
-        bool IsForcePower(uint activator, AbilityDetail ability);
-
-        bool IsForcePower(bool flaggedForcePower, SkillType abilitySkillType);
 
         /// <summary>
         /// The reason the most recent CanUseAbility call returned false. Player-facing feedback
@@ -385,8 +291,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             float impactFlashDuration = AbilityService.DefaultImpactFlashDuration,
             bool useUnscaledDamage = false,
             Action<TelegraphGeometry> onGeometryResolved = null);
-
-        IReadOnlyList<uint> GetHostileTargetsInSphere(uint activator, Location location, float radius);
 
         /// <summary>Plays the current ability's declared impact gesture independently of target outcomes.</summary>
         void PlayAbilityImpactAnimation(uint activator);

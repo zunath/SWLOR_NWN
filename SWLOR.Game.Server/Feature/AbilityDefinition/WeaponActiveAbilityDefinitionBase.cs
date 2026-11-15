@@ -518,7 +518,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (RestoreStaminaOnHit > 0)
-                    GameServices.CombatResources.RestoreAbilityHitStamina(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, RestoreStaminaOnHit);
+                    GameServices.CombatResources.RestoreAbilityHitStamina(activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator)?.Ability, RestoreStaminaOnHit);
                 if (RestoreFPOnHit > 0)
                 {
                     if (Stat.RestoreFP(activator, RestoreFPOnHit) > 0)
@@ -1631,7 +1631,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         ? impactedTarget => spreadSnapshot.Capture(impactedTarget)
                         : null;
                     var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);
-                    Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(
+                    AbilityImpactState.AddActiveAbilityDefenseIgnorePercentAdjustment(
                         activator,
                         profile.GetDefenseIgnorePercent(activator, activationIdleBonusSnapshot));
 
@@ -1698,7 +1698,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             activator,
                             areaDamage,
                             areaDamage > 0 ? 1 : 0,
-                            Ability.GetActiveAbilityImpactSummary(activator),
+                            AbilityImpactState.GetActiveAbilityImpactSummary(activator),
                             clearActivationIdleBonusSnapshots: false);
                         return;
                     }
@@ -1748,8 +1748,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             successfulHitCount++;
                     }
 
-                    profile.RestoreResourcesForTargetCount(activator, Ability.GetActiveAbilityImpactSummary(activator));
-                    profile.AfterImpact(activator, totalDamage, successfulHitCount, Ability.GetActiveAbilityImpactSummary(activator));
+                    profile.RestoreResourcesForTargetCount(activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator));
+                    profile.AfterImpact(activator, totalDamage, successfulHitCount, AbilityImpactState.GetActiveAbilityImpactSummary(activator));
                 })
                 .BreaksStealth();
 

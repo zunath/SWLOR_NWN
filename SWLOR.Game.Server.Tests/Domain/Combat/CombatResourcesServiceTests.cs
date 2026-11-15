@@ -79,12 +79,12 @@ public class CombatResourcesServiceTests
 
         var queries = ScriptedProxy.Create<ICombatQueriesService>(out _queryCalls);
         _queryCalls.On(nameof(ICombatQueriesService.GetAbilitySkillType), args => ((AbilityDetail?)args[1])?.SkillType ?? SkillType.Invalid);
-        var ability = ScriptedProxy.Create<IAbilityService>(out var abilityCalls);
+        var ability = ScriptedProxy.Create<IAbilityImpactState>(out var abilityCalls);
         abilityCalls
-            .On(nameof(IAbilityService.GetRemainingDamageTargetHP), args => _remainingTargetHP.GetValueOrDefault((uint)args[1]!))
-            .On(nameof(IAbilityService.GetAbilityImpactSequence), _ => _sequence)
-            .On(nameof(IAbilityService.GetAbilityImpactStatSources), _ => _impactSources)
-            .On(nameof(IAbilityService.GetActiveAbilityImpactSummary), _ => _activeSummary);
+            .On(nameof(IAbilityImpactState.GetRemainingDamageTargetHP), args => _remainingTargetHP.GetValueOrDefault((uint)args[1]!))
+            .On(nameof(IAbilityImpactState.GetAbilityImpactSequence), _ => _sequence)
+            .On(nameof(IAbilityImpactState.GetAbilityImpactStatSources), _ => _impactSources)
+            .On(nameof(IAbilityImpactState.GetActiveAbilityImpactSummary), _ => _activeSummary);
         var stat = ScriptedProxy.Create<IStatService>(out _statCalls);
         _statCalls
             .On(nameof(IStatService.GetStatAdjustment), args => _stats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)))

@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Composition
 
             return new ReloadStateCarrier(typeof(ReloadWiring).Assembly, new JsonConverter[]
             {
-                new AbilityDetailReloadConverter(() => container.Resolve<IAbilityService>().GetAllAbilityDetails()),
+                new AbilityDetailReloadConverter(() => container.Resolve<IAbilityCatalog>().GetAllAbilityDetails()),
             }, container.Resolve<IContentFactory>(), container.IsRegistered);
         }
 

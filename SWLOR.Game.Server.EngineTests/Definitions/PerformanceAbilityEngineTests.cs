@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var cueFeats = isDance ? DanceCueFeats : MusicCueFeats;
             var modeFeats = cueFeats.Concat(new[] { FeatType.PerformanceFlourish, FeatType.PerformanceOptions }).ToArray();
             var otherCueFeats = isDance ? MusicCueFeats : DanceCueFeats;
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             var level = ability.AbilityLevel;
             ctx.AssertEqual(perk, ability.EffectiveLevelPerkType, $"{feat} belongs to {perk}");
 

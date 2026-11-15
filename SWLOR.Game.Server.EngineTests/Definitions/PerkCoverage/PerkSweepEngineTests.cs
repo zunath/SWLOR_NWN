@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 }
             }
 
-            var referencedPerks = Ability.GetAllAbilityDetails()
+            var referencedPerks = AbilityCatalog.GetAllAbilityDetails()
                 .Select(pair => (Feat: pair.Key, Perk: pair.Value.EffectiveLevelPerkType))
                 .Where(x => x.Perk != PerkType.Invalid)
                 .ToList();

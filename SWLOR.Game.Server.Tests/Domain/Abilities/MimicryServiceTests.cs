@@ -1358,7 +1358,7 @@ public class MimicryServiceTests
     private sealed class TestMimicry : MimicryService
     {
         public TestMimicry(IDBService db, IQuickCastService quickCast, IDMPresenceService presence, IPlayerFeedbackService feedback, IGuiService gui)
-            : base(db, quickCast, presence, feedback, gui, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(),
+            : base(db, quickCast, presence, feedback, gui, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IStatService>(),
                 FacadeForwarder.For<ISkillService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatPointService>())
         {
         }

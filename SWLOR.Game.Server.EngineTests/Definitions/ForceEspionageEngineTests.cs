@@ -283,7 +283,7 @@ public static class ForceEspionageEngineTests
             ctx.AssertEqual(player.Creature, Enmity.GetHighestEnmityAttackTarget(enemy), "the enemy targets the player");
         }
 
-        var ability = Ability.GetAbilityDetail(FeatType.ForceDecoy2);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.ForceDecoy2);
         await ctx.ExecuteInCreatureContextAsync(player.Creature,
             () => ability.ImpactAction(player.Creature, player.Creature, 2, GetLocation(player.Creature)));
 
@@ -309,7 +309,7 @@ public static class ForceEspionageEngineTests
 
     private static async Task CastSharedPresenceAsync(EngineTestContext ctx, uint caster)
     {
-        var ability = Ability.GetAbilityDetail(FeatType.SharedPresence);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.SharedPresence);
         ctx.AssertEqual(string.Empty, ability.CustomValidation(caster, caster, 1, GetLocation(caster)),
             "Shared Presence is usable out of combat");
         await ctx.ExecuteInCreatureContextAsync(caster,

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Mimicry hotbar descriptions show costs and recasts without duplicating menu text", Category = "MimicryDescriptions")]
         public static Task TechniqueDescriptionsIncludeActivationDetails(EngineTestContext ctx)
         {
-            var techniques = Ability.GetAllAbilityDetails().Where(entry => entry.Value.IsMimicryTechnique).ToArray();
+            var techniques = AbilityCatalog.GetAllAbilityDetails().Where(entry => entry.Value.IsMimicryTechnique).ToArray();
             ctx.Assert(techniques.Length > 2, "The entire learned technique registry is available");
             var cache = ServiceInternals.Field<IMimicryService, Dictionary<FeatType, string>>("_techniqueDescriptions");
             ctx.AssertEqual(techniques.Length, cache.Count, "Boot cached every authored description before UI access");

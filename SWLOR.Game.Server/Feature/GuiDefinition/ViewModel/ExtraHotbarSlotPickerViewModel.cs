@@ -103,9 +103,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 case AbilitiesCategory:
                     foreach (var feat in ExtraHotbars.GetKnownAbilities(Player)
-                                 .OrderBy(feat => Ability.GetAbilityDetail(feat).Name))
+                                 .OrderBy(feat => AbilityCatalog.GetAbilityDetail(feat).Name))
                     {
-                        var name = Ability.GetAbilityDetail(feat).Name;
+                        var name = AbilityCatalog.GetAbilityDetail(feat).Name;
                         if (!Matches(name))
                             continue;
 

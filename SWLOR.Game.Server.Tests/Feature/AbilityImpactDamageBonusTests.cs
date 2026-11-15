@@ -29,7 +29,7 @@ public class AbilityImpactDamageBonusTests
         var type = AbilityInternals.TrackedImpactType;
         var service = AbilityInternals.NoNeighbours();
         object Create(int damage = 0, int statusDamage = 0) => AbilityInternals.NewTrackedImpact(
-            service, new AbilityDetail(), damage, 11, 13, 17, statusDamage, false, 19,
+            new AbilityDetail(), damage, 11, 13, 17, statusDamage, false, 19,
             Array.Empty<TelegraphGeometry>(), null);
         var source = Create(82, 7);
         var copy = type.GetMethod("CopyRepeatedDamageBonusesFrom")!;
@@ -55,7 +55,7 @@ public class AbilityImpactDamageBonusTests
         var service = AbilityInternals.NoNeighbours();
         object Create(int damage = 0, int criticalRate = 0, int defenseIgnore = 0, int enmity = 0,
             int statusDamage = 0, int criticalDamage = 0) => AbilityInternals.NewTrackedImpact(
-            service, new AbilityDetail(), damage, criticalRate, defenseIgnore, enmity, statusDamage, false,
+            new AbilityDetail(), damage, criticalRate, defenseIgnore, enmity, statusDamage, false,
             criticalDamage, Array.Empty<TelegraphGeometry>(), null);
         var source = Create(82, 11, 13, 17, 7, 19);
         var copy = (Delegate)type.GetMethod("CapturePartitionedDamageBonuses")!.Invoke(source, null)!;
@@ -154,7 +154,7 @@ public class AbilityImpactDamageBonusTests
         var flash = new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1];
         var service = AbilityInternals.NoNeighbours();
         var impact = AbilityInternals.NewTrackedImpact(
-            service, flash, 0, 0, 0, 0, 0, true, 0, Array.Empty<TelegraphGeometry>(), null);
+            flash, 0, 0, 0, 0, 0, true, 0, Array.Empty<TelegraphGeometry>(), null);
         var calls = 0;
         impactType.GetProperty("ResolveDamageBonuses")!.SetValue(impact, (Action)(() => calls++));
         var impacts = AbilityInternals.TrackedImpacts(service);

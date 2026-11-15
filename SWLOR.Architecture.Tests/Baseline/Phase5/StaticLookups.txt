@@ -159,7 +159,7 @@ SWLOR.Game.Server.EngineTests/Definitions/PeriodicDamageMitigationEngineTests.cs
 SWLOR.Game.Server.EngineTests/Definitions/PerkCoverage/PerkLevelBehaviorEngineTests.cs | 4
 SWLOR.Game.Server.EngineTests/Definitions/PerkCoverage/PerkSweepEngineTests.cs | 5
 SWLOR.Game.Server.EngineTests/Definitions/PerkEngineTests.cs | 2
-SWLOR.Game.Server.EngineTests/Definitions/PerkTrackerRegressionEngineTests.cs | 219
+SWLOR.Game.Server.EngineTests/Definitions/PerkTrackerRegressionEngineTests.cs | 216
 SWLOR.Game.Server.EngineTests/Definitions/PiercingTossEngineTests.cs | 12
 SWLOR.Game.Server.EngineTests/Definitions/PistolPresentationEngineTests.cs | 2
 SWLOR.Game.Server.EngineTests/Definitions/PlayerBeastAbilityEngineTests.cs | 20
@@ -281,7 +281,7 @@ SWLOR.Game.Server.Tests/Composition/GameServicesAllocationTests.cs | 11
 SWLOR.Game.Server.Tests/Core/HostedEntryDepthTests.cs | 2
 SWLOR.Game.Server.Tests/Domain/Abilities/AbilityActivationPathTests.cs | 19
 SWLOR.Game.Server.Tests/Domain/Abilities/AbilityActivationStateTests.cs | 23
-SWLOR.Game.Server.Tests/Domain/Abilities/AbilityFacadeAllocationTests.cs | 39
+SWLOR.Game.Server.Tests/Domain/Abilities/AbilityFacadeAllocationTests.cs | 38
 SWLOR.Game.Server.Tests/Domain/Abilities/AbilityServiceDefaultSeamsTests.cs | 2
 SWLOR.Game.Server.Tests/Domain/Abilities/FieldEngineerPulseEmittersServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Administration/DMPlayerDirectoryServiceTests.cs | 2
@@ -372,7 +372,7 @@ SWLOR.Game.Server.Tests/Perks/FabricationPerkLineTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/FabricationPerkLines.cs | 2
 SWLOR.Game.Server.Tests/Perks/FirstAidCombatUpgradeTests.cs | 4
 SWLOR.Game.Server.Tests/Perks/ForceLightConsularTests.cs | 11
-SWLOR.Game.Server.Tests/Perks/ForceSensitiveEspionageTests.cs | 8
+SWLOR.Game.Server.Tests/Perks/ForceSensitiveEspionageTests.cs | 5
 SWLOR.Game.Server.Tests/Perks/GatheringPerkLineTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/GeneratedWeaponPerkBehaviorTests.cs | 91
 SWLOR.Game.Server.Tests/Perks/IndependentBuffWindowTests.cs | 3
@@ -467,6 +467,7 @@ SWLOR.Game.Server/Domain/Character/PerkRequirementSkill.cs | 3
 SWLOR.Game.Server/Domain/Character/PerkRequirementUnlock.cs | 2
 SWLOR.Game.Server/Domain/Character/StatusEffectBase.cs | 11
 SWLOR.Game.Server/Domain/Character/StatusEffectSelectors.cs | 2
+SWLOR.Game.Server/Domain/Combat/AbilityEffectScaling.cs | 10
 SWLOR.Game.Server/Domain/Combat/CombatRecordAbilityCostScope.cs | 2
 SWLOR.Game.Server/Domain/Combat/WeaponAttackTiming.cs | 13
 SWLOR.Game.Server/Domain/Combat/WeaponDamage.cs | 10
@@ -530,8 +531,7 @@ SWLOR.Game.Server/Domain/World/NwnFishingFightWorld.cs | 15
 SWLOR.Game.Server/Domain/World/StructureChangedAction.cs | 18
 SWLOR.Game.Server/Feature/AIDefinition/DefaultAIProfileDefinition.cs | 2
 SWLOR.Game.Server/Feature/AbilityDefinition/AbilityAreaEffects.cs | 8
-SWLOR.Game.Server/Feature/AbilityDefinition/AbilityEffectScaling.cs | 10
-SWLOR.Game.Server/Feature/AbilityDefinition/AbilityTargeting.cs | 9
+SWLOR.Game.Server/Feature/AbilityDefinition/AbilityTargeting.cs | 6
 SWLOR.Game.Server/Feature/AbilityDefinition/Armor/ProvokeAbilityDefinition.cs | 9
 SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/AlphaRhythmAbilityDefinition.cs | 3
 SWLOR.Game.Server/Feature/AbilityDefinition/Beastmaster/AngerAbilityDefinition.cs | 4

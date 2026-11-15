@@ -26,7 +26,7 @@ public sealed partial class TestAbilityService
     // Called by the activation checks, the aura, Dark Force and the damage formulas.
     protected override int GetStatAdjustment(uint creature, StatType stat) => _bench.Stats.GetValueOrDefault((creature, stat));
 
-    // Called by the magnitude part and the damage formulas.
+    // Called by the damage formulas; the magnitude part has its own (TestCombatAbilityMagnitudeService).
     protected override int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount) => amount + 2;
 
     // Called by the impact lifecycle and the activation checks.

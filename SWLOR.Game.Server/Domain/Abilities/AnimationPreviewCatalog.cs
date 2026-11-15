@@ -42,7 +42,7 @@ public static class AnimationPreviewCatalog
     /// The preview entries of every authored clip and the abilities registered now. Built on demand from the ability
     /// and perk catalogs, which hold the data, so this class keeps no state of its own.
     /// </summary>
-    public static IReadOnlyList<Entry> Entries => CreateEntries(Ability.GetAllAbilityDetails().Values, Perk.GetAllPerks());
+    public static IReadOnlyList<Entry> Entries => CreateEntries(AbilityCatalog.GetAllAbilityDetails().Values, Perk.GetAllPerks());
 
     /// <summary>
     /// Builds the catalog once when the module caches, so a duplicate or invalid entry stops the boot as it always did.

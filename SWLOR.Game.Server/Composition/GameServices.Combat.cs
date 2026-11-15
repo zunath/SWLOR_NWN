@@ -7,6 +7,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The DM battle grids of the areas (the facade <c>Service.BattleGrid</c> until P2-ZG).</summary>
         public static IBattleGridService BattleGrid => FacadeAccessor.Resolve<IBattleGridService>();
 
+        /// <summary>The ability impacts in progress and the last completed summary of each activator (<c>IAbilityImpactState</c>, P5-3b).</summary>
+        public static IAbilityImpactState AbilityImpactState => FacadeAccessor.Resolve<IAbilityImpactState>();
+
         /// <summary>What is left of combat once its parts are split out: the damage roll and the stat-driven tracker refresh (the facade <c>Service.Combat</c> until P2-ZP). Combat has one property per part below, because its members live on the parts; no call goes through another service first.</summary>
         public static ICombatService Combat => FacadeAccessor.Resolve<ICombatService>();
 
@@ -21,6 +24,9 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>The ability impact part of combat, a part of combat.</summary>
         public static ICombatAbilityImpactService CombatAbilityImpact => FacadeAccessor.Resolve<ICombatAbilityImpactService>();
+
+        /// <summary>How Force affinity and combat readiness scale an ability's magnitude, a part of combat (P5-3b).</summary>
+        public static ICombatAbilityMagnitudeService CombatAbilityMagnitude => FacadeAccessor.Resolve<ICombatAbilityMagnitudeService>();
 
         /// <summary>The combat activity records, a part of combat.</summary>
         public static ICombatActivityService CombatActivity => FacadeAccessor.Resolve<ICombatActivityService>();
@@ -42,6 +48,9 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>The hit effects of combat, a part of combat.</summary>
         public static ICombatHitEffectsService CombatHitEffects => FacadeAccessor.Resolve<ICombatHitEffectsService>();
+
+        /// <summary>The shape of an ability impact and the hostile creatures inside it, a part of combat (P5-3b).</summary>
+        public static ICombatImpactGeometryService CombatImpactGeometry => FacadeAccessor.Resolve<ICombatImpactGeometryService>();
 
         /// <summary>The combat points players earn against NPCs (the facade <c>Service.CombatPoint</c> until P2-ZG).</summary>
         public static ICombatPointService CombatPoint => FacadeAccessor.Resolve<ICombatPointService>();

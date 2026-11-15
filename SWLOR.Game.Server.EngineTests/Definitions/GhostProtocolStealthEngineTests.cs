@@ -60,7 +60,7 @@ public static class GhostProtocolStealthEngineTests
 
     private static async Task CastGhostProtocolAsync(EngineTestContext ctx, uint creature)
     {
-        var ability = Ability.GetAbilityDetail(FeatType.GhostProtocol);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.GhostProtocol);
         await ctx.ExecuteInCreatureContextAsync(creature,
             () => ability.ImpactAction(creature, creature, 1, GetLocation(creature)));
         await ctx.WaitUntilAsync(() => GetActionMode(creature, ActionMode.Stealth), 5f,

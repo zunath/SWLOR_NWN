@@ -708,12 +708,12 @@ public class CombatDamageTests
         usePerkFeatSource.Should().Contain("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)");
         usePerkFeatSource.Should().Contain("var abilityId = GetLocalString(activator, ActiveAbilityIdName);");
         usePerkFeatSource.Should().Contain("if (string.IsNullOrWhiteSpace(abilityId))");
-        usePerkFeatSource.Should().Contain("ability = Ability.GetAbilityDetail(activeWeaponAbility);");
+        usePerkFeatSource.Should().Contain("ability = AbilityCatalog.GetAbilityDetail(activeWeaponAbility);");
         usePerkFeatSource.Should().Contain("SuppressQueuedAbilityFeedback(activator);");
         usePerkFeatSource.Should().Contain("FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatWeaponNotEffective, true, player);");
         usePerkFeatSource.Should().Contain("DequeueWeaponAbility(activator, ability.DisplaysActivationMessage, abilityId);");
         usePerkFeatSource.Should().Contain("if (!string.IsNullOrWhiteSpace(expectedAbilityId) && abilityId != expectedAbilityId)");
-        usePerkFeatSource.Should().Contain("if (!Ability.IsFeatRegistered(featType))");
+        usePerkFeatSource.Should().Contain("if (!AbilityCatalog.IsFeatRegistered(featType))");
         usePerkFeatSource.Should().Contain("DelayCommand(0.2f, () => RestoreQueuedAbilityFeedbackIfNoQueuedAbility(activator));");
         usePerkFeatSource.Should().Contain("private static void RestoreQueuedAbilityFeedbackIfNoQueuedAbility(uint player)");
         usePerkFeatSource.Should().Contain("FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatWeaponNotEffective, wasHidden, player);");
@@ -759,7 +759,7 @@ public class CombatDamageTests
         queuedAbilitySuppressionIndex.Should().BeLessThan(guardedHitIndex);
         queuedAbilityCleanupIndex.Should().BeLessThan(calculateDamageIndex);
         queuedAbilityCleanupIndex.Should().BeLessThan(guardedHitIndex);
-        abilitySource.Should().Contain("private bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)");
+        abilitySource.Should().Contain("private bool ShouldResolveCombatImpactHit(AbilityImpactTracker trackedImpact)");
         abilitySource.Should().Contain("trackedImpact?.Ability?.ActivationType != AbilityActivationType.Weapon");
         abilitySource.Should().MatchRegex(
             @"if \(shouldResolveHit &&\s*!TryResolveAbilityHit\(\s*activator,\s*target,\s*skillType,\s*perkType,\s*out hitRate");
@@ -1010,7 +1010,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var healingSources = new[]
         {
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "AbilityEffectScaling.cs"),
+            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "AbilityEffectScaling.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "FirstAidTreatmentAdjustments.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "FirstAid", "MedKitAbilityDefinition.cs"),
             Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Beastmaster", "InnervateAbilityDefinition.cs"),
@@ -1019,7 +1019,7 @@ public class CombatDamageTests
 
         foreach (var sourcePath in healingSources)
         {
-            File.ReadAllText(sourcePath).Should().Contain("Ability.ApplyCombatReadinessToActivatedAbilityMagnitude");
+            File.ReadAllText(sourcePath).Should().Contain("CombatAbilityMagnitude.ApplyCombatReadinessToActivatedAbilityMagnitude");
         }
 
         var heavyVibrobladeSource = File.ReadAllText(Path.Combine(

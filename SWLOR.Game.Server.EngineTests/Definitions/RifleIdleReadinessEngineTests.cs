@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(creature, () =>
                 {
                     GameServices.CombatActivity.TrackAttackActivity(creature);
-                    GameServices.CombatAbilityActivation.TrackQueuedWeaponAbilityUse(creature, Ability.GetAbilityDetail(FeatType.Headshot1));
+                    GameServices.CombatAbilityActivation.TrackQueuedWeaponAbilityUse(creature, AbilityCatalog.GetAbilityDetail(FeatType.Headshot1));
                 });
                 ctx.Assert(attacks.ContainsKey(creature) && abilities.ContainsKey(creature),
                     "the live combat creature has both offensive activity records");
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(rifleman, PerkType.Patience, 3);
             ctx.SetNPCPerkLevel(rifleman, PerkType.DeadCenter, 1);
             await ctx.ExecuteInCreatureContextAsync(rifleman, () =>
-                GameServices.CombatAbilityActivation.TrackQueuedWeaponAbilityUse(rifleman, Ability.GetAbilityDetail(FeatType.Headshot1)));
+                GameServices.CombatAbilityActivation.TrackQueuedWeaponAbilityUse(rifleman, AbilityCatalog.GetAbilityDetail(FeatType.Headshot1)));
             var completedAt = GameServices.CombatActivity.GetLastCompletedOffensiveActivityAt(rifleman);
             while ((DateTime.UtcNow - completedAt).TotalSeconds < 3.5)
             {
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static async Task<AbilityImpactSummary> CastAimedShot(EngineTestContext ctx, uint caster, uint target)
         {
-            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
             Recast.ReduceRecastDelay(caster, RecastGroup.AimedShot, 60f);
             var hp = GetCurrentHitPoints(target);
             ctx.SeedRandom(16351);
@@ -255,9 +255,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ClearAllActions(false);
             });
             SetCommandable(false, caster);
-            await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(caster)?.AttributedDamage > 0 &&
+            await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.AttributedDamage > 0 &&
                 GetCurrentHitPoints(target) < hp, 5f, "Aimed Shot's attributed damage and real HP loss");
-            return Ability.GetLastCompletedAbilityImpactSummary(caster);
+            return AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
         }
 
         private static void AssertBonuses(EngineTestContext ctx, uint creature, bool ready)

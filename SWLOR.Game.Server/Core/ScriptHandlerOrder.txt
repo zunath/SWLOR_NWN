@@ -18,7 +18,7 @@ mod_content_chg  # run by EventRegistration.OnModulePreload through ExecuteScrip
   action      SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
 
 mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
-  action      SWLOR.Game.Server.Domain.Abilities.AbilityService.CacheData
+  action      SWLOR.Game.Server.Domain.Abilities.AbilityCatalogService.CacheData
   action      SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
   action      SWLOR.Game.Server.Domain.World.AreaService.CacheData
   action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.CacheData

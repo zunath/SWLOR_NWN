@@ -15,7 +15,6 @@
 Abilities <-> Character | 2
 Abilities <-> Combat | 2
 Abilities <-> Platform | 5
-Abilities <-> Quests | 2
 Abilities <-> Social | 2
 Abilities <-> Space | 2
 Abilities <-> UI | 2

@@ -101,10 +101,10 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
                 TemporaryStatModifier.Add(actor, StatType.CadenceMaximum, 3, 30f);
                 TemporaryStatModifier.Add(actor, StatType.CadenceDamagePerCharge, 2, 30f);
                 TemporaryStatModifier.Add(actor, StatType.CadenceBonusDamagePerCharge, 3, 30f);
-                var salvo = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.FinalSalvo));
-                var closing = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.ClosingShot1));
-                var lead = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.LeadShot1));
-                var tempo = PairedRangedTraits.CaptureWeaponAbility(actor, Ability.GetAbilityDetail(FeatType.TempoShot1));
+                var salvo = PairedRangedTraits.CaptureWeaponAbility(actor, AbilityCatalog.GetAbilityDetail(FeatType.FinalSalvo));
+                var closing = PairedRangedTraits.CaptureWeaponAbility(actor, AbilityCatalog.GetAbilityDetail(FeatType.ClosingShot1));
+                var lead = PairedRangedTraits.CaptureWeaponAbility(actor, AbilityCatalog.GetAbilityDetail(FeatType.LeadShot1));
+                var tempo = PairedRangedTraits.CaptureWeaponAbility(actor, AbilityCatalog.GetAbilityDetail(FeatType.TempoShot1));
                 ctx.AssertEqual(7, salvo.DamagePerCharge, "Final Salvo's own 4 per charge plus Steady Cadence III's 3");
                 ctx.AssertEqual(5, closing.DamagePerCharge, "Closing Shot's generic 2 per charge plus Steady Cadence III's 3");
                 ctx.Assert(salvo.Snapshot.SpendsCadence && closing.Snapshot.SpendsCadence, "Finishers spend Cadence");
@@ -163,7 +163,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             // A direct requirement invocation isolates the next payment without bypassing
             // or resetting Shielding's real cooldown. No damage event can re-arm the charge.
             await InFrame(ctx, actor, () => new AbilityRequirementStamina(3).AfterActivationAction(actor,
-                Ability.GetAbilityDetail(FeatType.Shielding1)));
+                AbilityCatalog.GetAbilityDetail(FeatType.Shielding1)));
             ctx.AssertEqual(stamina - (otherMakesFree ? 0 : 1), Stat.GetCurrentStamina(actor),
                 "The charge cannot make an unlimited series of one-STM support actions free");
             ctx.AssertEqual(0, PairedRangedTraits.GetAbilityStaminaCostAdjustment(actor), "The charge is consumed at most once");

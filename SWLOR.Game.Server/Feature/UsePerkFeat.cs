@@ -383,10 +383,10 @@ namespace SWLOR.Game.Server.Feature
             Location targetLocation,
             bool skipNativeEvent = false)
         {
-            if (!Ability.IsFeatRegistered(feat))
+            if (!AbilityCatalog.IsFeatRegistered(feat))
                 return false;
 
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             if (skipNativeEvent)
                 EventsPlugin.SkipEvent();
 
@@ -1115,13 +1115,13 @@ namespace SWLOR.Game.Server.Feature
             }
 
             var featType = (FeatType)featId;
-            if (!Ability.IsFeatRegistered(featType))
+            if (!AbilityCatalog.IsFeatRegistered(featType))
             {
                 ClearQueuedAbility(target);
                 return;
             }
 
-            var abilityDetail = Ability.GetAbilityDetail(featType);
+            var abilityDetail = AbilityCatalog.GetAbilityDetail(featType);
             ClearQueuedAbility(target);
 
             // Readiness changes inform the actor and nearby players. The nearby helper includes the actor once.
@@ -1222,14 +1222,14 @@ namespace SWLOR.Game.Server.Feature
             }
 
             var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
-            if (!Ability.IsFeatRegistered(activeWeaponAbility))
+            if (!AbilityCatalog.IsFeatRegistered(activeWeaponAbility))
             {
                 ClearQueuedAbility(activator);
                 ability = null;
                 return false;
             }
 
-            ability = Ability.GetAbilityDetail(activeWeaponAbility);
+            ability = AbilityCatalog.GetAbilityDetail(activeWeaponAbility);
             if (ability.ActivationType == AbilityActivationType.Weapon &&
                 IsQueuedWeaponAbilityStillAvailable(activator, activeWeaponAbility, ability))
             {
@@ -1640,9 +1640,9 @@ namespace SWLOR.Game.Server.Feature
             GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityActivationBonuses(player);
             GameServices.CombatAbilityBonus.ClearQueuedWeaponAbilityAttemptBonuses(player);
             var featType = (FeatType)GetLocalInt(player, ActiveAbilityFeatIdName);
-            if (Ability.IsFeatRegistered(featType))
+            if (AbilityCatalog.IsFeatRegistered(featType))
             {
-                GameServices.CombatResources.CompleteAbilityStaminaCostContext(player, Ability.GetAbilityDetail(featType));
+                GameServices.CombatResources.CompleteAbilityStaminaCostContext(player, AbilityCatalog.GetAbilityDetail(featType));
             }
 
             RestoreQueuedAbilityFeedback(player);

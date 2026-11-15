@@ -160,6 +160,11 @@
     { "type": "AbilityAnimationBinding", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Abilities" },
     { "type": "AnimationPreviewCatalog", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Abilities" },
     { "type": "IGuiRefreshEvent", "from": "SWLOR.Game.Server.Domain.UI", "to": "SWLOR.Game.Server.Domain.Foundation" },
+    { "type": "AbilityImpactSequence", "from": "SWLOR.Game.Server.Domain.Abilities", "to": "SWLOR.Game.Server.Domain.Combat" },
+    { "type": "AbilityImpactVisualEffects", "from": "SWLOR.Game.Server.Domain.Abilities", "to": "SWLOR.Game.Server.Domain.Combat" },
+    { "type": "CombatImpactAreaShape", "from": "SWLOR.Game.Server.Domain.Abilities", "to": "SWLOR.Game.Server.Domain.Combat" },
+    { "type": "CombatImpactShapeGeometry", "from": "SWLOR.Game.Server.Domain.Abilities", "to": "SWLOR.Game.Server.Domain.Combat", "file": "CombatImpactAreaShape.cs" },
+    { "type": "AbilityEffectScaling", "from": "SWLOR.Game.Server.Feature.AbilityDefinition", "to": "SWLOR.Game.Server.Domain.Combat" },
   ],
   "textExcludes": [
     "SWLOR.Game.Server/Readmes/Maintainability*",

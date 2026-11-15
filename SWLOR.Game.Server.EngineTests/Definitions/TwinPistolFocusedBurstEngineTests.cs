@@ -407,7 +407,7 @@ public static class TwinPistolFocusedBurstEngineTests
             TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 40f);
             ctx.MakeHostile(target);
             player.Update(record => record.Stamina = Stat.GetMaxStamina(actor));
-            Ability.ClearLastCompletedAbilityImpactSummary(actor);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
         });
         GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
@@ -418,10 +418,10 @@ public static class TwinPistolFocusedBurstEngineTests
         ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FocusedBurst3, GetLocation(target)),
             $"Focused Burst enters the real ability pipeline: {Ability.GetLastActivationDenialReason()}");
 
-    private static int Cost() => Ability.GetAbilityDetail(FeatType.FocusedBurst3).Requirements
+    private static int Cost() => AbilityCatalog.GetAbilityDetail(FeatType.FocusedBurst3).Requirements
         .OfType<AbilityRequirementStamina>().Single().RequiredSTM;
     private static bool OnRecast(uint actor) => Recast.IsOnRecastDelay(actor,
-        Ability.GetAbilityDetail(FeatType.FocusedBurst3).RecastGroup).Item1;
+        AbilityCatalog.GetAbilityDetail(FeatType.FocusedBurst3).RecastGroup).Item1;
 
     private static void BeginObservation(uint actor, uint target)
     {

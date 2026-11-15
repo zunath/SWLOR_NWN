@@ -204,7 +204,8 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IDBService _db;
         private readonly IQuickCastService _quickCast;
         private readonly Lazy<IStatService> _stat;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly IAbilityCatalog _catalog;
+        private readonly IActiveAbilityImpact _activeImpact;
         private readonly Lazy<ICombatAbilityImpactService> _abilityImpact;
         private readonly Lazy<ICombatAttackTimingService> _attackTiming;
 
@@ -221,7 +222,8 @@ namespace SWLOR.Game.Server.Domain.Character
             IDBService db,
             IQuickCastService quickCast,
             Lazy<IStatService> stat,
-            Lazy<IAbilityService> ability,
+            IAbilityCatalog catalog,
+            IActiveAbilityImpact activeImpact,
             Lazy<ICombatAbilityImpactService> abilityImpact,
             Lazy<ICombatAttackTimingService> attackTiming)
         {
@@ -237,7 +239,8 @@ namespace SWLOR.Game.Server.Domain.Character
             _db = db;
             _quickCast = quickCast;
             _stat = stat;
-            _ability = ability;
+            _catalog = catalog;
+            _activeImpact = activeImpact;
             _abilityImpact = abilityImpact;
             _attackTiming = attackTiming;
         }
@@ -2736,13 +2739,13 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual void ReapplyFoodHP(uint player) => _stat.Value.ReapplyFoodHP(player);
 
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _ability.Value.GetAllAbilityDetails();
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _catalog.GetAllAbilityDetails();
 
         protected virtual void ApplyCreatureMovementRate(uint creature) => _stat.Value.ApplyCreatureMovementRate(creature);
 
         protected virtual int GetCreatureStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
 
-        protected virtual AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator) => _ability.Value.GetActiveAbilityImpactSummary(activator);
+        protected virtual AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator) => _activeImpact.GetActiveAbilityImpactSummary(activator);
 
         protected virtual void ApplyStatusAppliedTargetStaminaDrain(uint activator, uint target, StatusEffectCategory appliedCategories)
         {

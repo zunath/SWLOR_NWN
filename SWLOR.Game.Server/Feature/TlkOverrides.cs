@@ -134,11 +134,11 @@ namespace SWLOR.Game.Server.Feature
                             continue;
                         if (!int.TryParse(Get2DAString("feat", "DESCRIPTION", (int)feat), out var featDescriptionId))
                             continue;
-                        if (!Ability.IsFeatRegistered(feat))
+                        if (!AbilityCatalog.IsFeatRegistered(feat))
                             continue;
 
                         var spellDescriptionId = GetSpellDescriptionId(feat);
-                        var abilityDetail = Ability.GetAbilityDetail(feat);
+                        var abilityDetail = AbilityCatalog.GetAbilityDetail(feat);
                         var description = BuildAbilityDescription(abilityDetail, perkLevel.Description);
 
                         if (level == 1)
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Feature
 
             // Learned techniques grant their feats through Mimicry equipment rather than
             // perk levels, so they need the same hotbar overrides from the ability registry.
-            foreach (var (feat, abilityDetail) in Ability.GetAllAbilityDetails())
+            foreach (var (feat, abilityDetail) in AbilityCatalog.GetAllAbilityDetails())
             {
                 if (!abilityDetail.IsMimicryTechnique ||
                     !int.TryParse(Get2DAString("feat", "DESCRIPTION", (int)feat), out var descriptionId) ||

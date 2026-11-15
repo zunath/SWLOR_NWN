@@ -93,7 +93,7 @@ SWLOR.Game.Server.Service.Ability.AddLeadershipCombatPoint SWLOR.Game.Server.Dom
 SWLOR.Game.Server.Service.Ability.ApplyAuraAOE SWLOR.Game.Server.Domain.Abilities.AbilityService.ApplyAuraAOE
 SWLOR.Game.Server.Service.Ability.AuraEnter SWLOR.Game.Server.Domain.Abilities.AbilityService.AuraEnter
 SWLOR.Game.Server.Service.Ability.AuraExit SWLOR.Game.Server.Domain.Abilities.AbilityService.AuraExit
-SWLOR.Game.Server.Service.Ability.CacheData SWLOR.Game.Server.Domain.Abilities.AbilityService.CacheData
+SWLOR.Game.Server.Service.Ability.CacheData SWLOR.Game.Server.Domain.Abilities.AbilityCatalogService.CacheData
 SWLOR.Game.Server.Service.Ability.ClearAurasOnDeath SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnDeath
 SWLOR.Game.Server.Service.Ability.ClearAurasOnExit SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnExit
 SWLOR.Game.Server.Service.Ability.ClearAurasOnSpaceEntry SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnSpaceEntry

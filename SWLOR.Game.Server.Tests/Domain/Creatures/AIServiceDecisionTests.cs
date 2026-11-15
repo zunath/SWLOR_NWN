@@ -1000,7 +1000,7 @@ public class AIServiceDecisionTests : AIServiceTestBase
     {
         var ally = Bench.AddCreature("ally", Area, 1f);
         ally.HitPoints = 10;
-        var healing = Ability.GetAllAbilityDetails()
+        var healing = AbilityCatalog.GetAllAbilityDetails()
             .Where(entry => entry.Value.IsHealingAbility && !entry.Value.IsHostileAbility && entry.Value.RequiresTarget && entry.Value.IsSingleTargetAbility)
             .OrderByDescending(entry => entry.Value.AbilityLevel)
             .ThenBy(entry => entry.Value.Name)
@@ -1163,5 +1163,5 @@ public class AIServiceDecisionTests : AIServiceTestBase
     }
 
     private static KeyValuePair<FeatType, AbilityDetail> FindAbility(Func<AbilityDetail, bool> predicate) =>
-        Ability.GetAllAbilityDetails().First(entry => predicate(entry.Value));
+        AbilityCatalog.GetAllAbilityDetails().First(entry => predicate(entry.Value));
 }

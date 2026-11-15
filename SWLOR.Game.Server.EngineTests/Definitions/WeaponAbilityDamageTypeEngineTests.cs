@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(caster, () => ConfigureWeapon(off, CombatDamageType.Ice));
             await ctx.WaitFrameAsync();
 
-            var ability = Ability.GetAbilityDetail(FeatType.PathogenStrike1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.PathogenStrike1);
             ctx.SetNPCPerkLevel(caster, PerkType.PathogenStrike, 1);
             await ObserveImpact(ctx, target, async () =>
             {
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var (caster, target, pistol) = await CreateFixture(ctx, "b_pistol", CombatDamageType.Fire);
             ctx.SetNPCPerkLevel(caster, PerkType.DoubleShot, 1);
-            var ability = Ability.GetAbilityDetail(FeatType.DoubleShot1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.DoubleShot1);
             await ObserveImpact(ctx, target, async () =>
             {
                 Ability.BeginAbilityImpact(caster, ability);
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(target);
             ctx.SetNPCPerkLevel(beast, PerkType.Bite, 1);
 
-            var bite = Ability.GetAbilityDetail(FeatType.Bite1);
+            var bite = AbilityCatalog.GetAbilityDetail(FeatType.Bite1);
             await ObserveImpact(ctx, target, async () =>
             {
                 Ability.BeginAbilityImpact(beast, bite, triggeringWeapon: claw);
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCResources(caster, 100, 100);
             ctx.SetNPCPerkLevel(caster, PerkType.PathogenStrike, 1);
             ResetDamage(target);
-            Ability.ClearLastCompletedAbilityImpactSummary(caster);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
             _observedAttacker = caster;
             _autoAttackDamageEvents = 0;
             GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
@@ -179,8 +179,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // The consuming swing is replaced by the ability, and attacks stop once it lands. With no
                 // auto-attack damage in the window, every observed point came from Pathogen Strike.
                 ctx.AssertEqual(0, _autoAttackDamageEvents, "Auto-attack damage events while observing the queued ability");
-                var summary = Ability.GetLastCompletedAbilityImpactSummary(caster);
-                ctx.Assert(summary?.Ability == Ability.GetAbilityDetail(FeatType.PathogenStrike1) && summary.AttributedDamage > 0,
+                var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster);
+                ctx.Assert(summary?.Ability == AbilityCatalog.GetAbilityDetail(FeatType.PathogenStrike1) && summary.AttributedDamage > 0,
                     "Pathogen Strike's own impact dealt damage");
                 AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Pathogen Strike from a Fire knife");
             }
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             uint impactTarget)
         {
             ctx.SetNPCPerkLevel(caster, perk, 1);
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             await ObserveImpact(ctx, target, async () =>
             {
                 Ability.BeginAbilityImpact(caster, ability);

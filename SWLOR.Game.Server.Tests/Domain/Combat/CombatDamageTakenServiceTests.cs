@@ -1756,7 +1756,7 @@ public class CombatDamageTakenServiceTests
         _triggered = _ => 0;
 
         _service.ApplyMeleeDamageTakenEffects(Defender, Attacker);
-        var expected = SWLOR.Game.Server.Feature.AbilityDefinition.AbilityEffectScaling.ScaleDirectEffect(
+        var expected = SWLOR.Game.Server.Domain.Combat.AbilityEffectScaling.ScaleDirectEffect(
             6, 10 + (int)AbilityType.Agility, source: Defender);
         Lines("Triggered").Should().Equal($"Triggered {Defender} {Attacker} {expected} Poison Invalid False null False");
         Visuals().Should().BeEmpty("nothing was dealt");

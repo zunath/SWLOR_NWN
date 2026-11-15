@@ -12,7 +12,8 @@ using SWLOR.FacadeRemoval;
  *   - a qualified call (Service.Taxi.X) loses its qualifier; an explicit name (Combat) is written GameServices.Combat.X;
  *     a moved constant (Combat.MaximumHitRate) is read from its owner (CombatRules.MaximumHitRate); a member of a facade
  *     split over several classes (Combat) goes to the part or class its "members" line names (GameServices.CombatQueries.X,
- *     CombatRules.X), and a name with two owners or none is left alone for a person;
+ *     CombatRules.X; a split facade that is no namespace segment, Ability, keeps the bare form under its owner's name,
+ *     AbilityCatalog.X), and a name with two owners or none is left alone for a person;
  *   - a bare name the file declares itself (a property named Snippet) and every file of a project that does not reference
  *     the server (SWLOR.BackgroundServices) are left alone: they are not callers of a facade;
  *   - each manifest line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt that names a removed facade's handler takes the

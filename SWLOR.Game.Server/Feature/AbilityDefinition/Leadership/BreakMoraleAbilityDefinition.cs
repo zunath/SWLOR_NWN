@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             if (affected.Count <= 0)
                 return;
 
-            GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);
+            GameServices.CombatAbilityImpact.ApplyHostileAbilityPartyBuff(activator, AbilityImpactState.GetActiveAbilityImpactSummary(activator)?.Ability, 0, true);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Sound_Burst), location);
             var untagged = affected.Where(hostile => !CombatPoint.HasCombatPoints(activator, hostile)).ToList();
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);

@@ -26,7 +26,7 @@ public static class MimicryTraitPotencyEngineTests
         var forceBefore = Stat.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower);
         var fireBefore = Resistance.GetResistance(player, ResistanceType.Fire);
 
-        var overload = Ability.GetAbilityDetail(FeatType.Overload);
+        var overload = AbilityCatalog.GetAbilityDetail(FeatType.Overload);
         await ctx.ExecuteInCreatureContextAsync(player, () => overload.ImpactAction(player, player, 1, GetLocation(player)));
         ctx.Assert(StatusEffect.HasStatusEffect<OverloadStatusEffect>(player), "the real capstone applies Overload");
         AssertDefense(ctx, player, 18, 30, 23);
@@ -52,7 +52,7 @@ public static class MimicryTraitPotencyEngineTests
         var record = DB.Get<Player>(fixture.Id);
         record.EquippedTechniques.AddRange(new[] { FeatType.IronCarapaceTechnique, FeatType.MaulingBiteTechnique });
         DB.Set(record);
-        var iron = Ability.GetAbilityDetail(FeatType.IronCarapaceTechnique);
+        var iron = AbilityCatalog.GetAbilityDetail(FeatType.IronCarapaceTechnique);
         var before = Stat.GetStatSources(player, StatType.PhysicalDefensePercentAdjustment)
             .Single(source => source.Key == $"trait:{(int)FeatType.IronCarapaceTechnique}");
         StatusEffect.ApplyStatusEffect(player, player, new OverloadStatusEffect(), 30f);

@@ -59,7 +59,7 @@ public static class CapstoneProofEngineTests
         SetPlotFlag(enemy, false);
         ctx.Assert(!CapstoneProof.HasProof(player, enemy, "hold_the_line"), "No support has been used yet.");
 
-        var ability = Ability.GetAbilityDetail(FeatType.RousingShout1);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.RousingShout1);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
             Ability.BeginAbilityImpact(player, ability);
@@ -85,7 +85,7 @@ public static class CapstoneProofEngineTests
         {
             ctx.Assert(StatusEffect.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Unattributed Venom applies.");
             ctx.Assert(!CapstoneProof.HasProof(player, enemy, "viral_cascade"), "Item Venom alone does not prove the skill.");
-            var ability = Ability.GetAbilityDetail(FeatType.VirulentBlade1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.VirulentBlade1);
             Ability.BeginAbilityImpact(player, ability);
             try
             {

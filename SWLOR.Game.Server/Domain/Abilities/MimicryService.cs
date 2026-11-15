@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IDMPresenceService _dmPresence;
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly IGuiService _gui;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly IAbilityCatalog _catalog;
         private readonly Lazy<IPerkService> _perk;
         private readonly Lazy<IStatService> _stat;
         private readonly ISkillService _skill;
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IDMPresenceService dmPresence,
             IPlayerFeedbackService playerFeedback,
             IGuiService gui,
-            Lazy<IAbilityService> ability,
+            IAbilityCatalog catalog,
             Lazy<IPerkService> perk,
             Lazy<IStatService> stat,
             ISkillService skill,
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _dmPresence = dmPresence;
             _playerFeedback = playerFeedback;
             _gui = gui;
-            _ability = ability;
+            _catalog = catalog;
             _perk = perk;
             _stat = stat;
             _skill = skill;
@@ -1390,13 +1390,13 @@ namespace SWLOR.Game.Server.Domain.Abilities
         public int TechniqueCount => _techniques.Count;
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _ability.Value.GetAllAbilityDetails();
+        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _catalog.GetAllAbilityDetails();
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
-        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.Value.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _catalog.IsFeatRegistered(feat);
 
         /// <summary>The unconverted <c>Ability</c> registry.</summary>
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.Value.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _catalog.GetAbilityDetail(feat);
 
         /// <summary>The unconverted <c>Perk</c> service.</summary>
         protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.Value.GetPerkLevel(creature, perkType);

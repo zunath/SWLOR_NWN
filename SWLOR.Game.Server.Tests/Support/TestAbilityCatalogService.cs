@@ -1,28 +1,25 @@
-using System.Numerics;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Quests;
-using SWLOR.Game.Server.Domain.Social;
-using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Domain.Space;
-using SWLOR.NWN.API.Engine;
-using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.NWN.API.Testing;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// The answers of <see cref="TestAbilityService"/> for the catalog of definitions (part 1). When the ability split
-/// (<c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>) moves the part, these overrides become its own double; the
-/// answers come from the bench, so the tests that set them do not change.
+/// The catalog part of the ability split (<c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>, part 1) with its definition
+/// search answered by the bench, and a way to put one ability in it without building the real definitions.
 /// </summary>
-public sealed partial class TestAbilityService
+public sealed class TestAbilityCatalogService : AbilityCatalogService
 {
+    private readonly AbilityBench _bench;
+
+    public TestAbilityCatalogService(AbilityBench bench)
+        : base(FacadeForwarder.For<IAbilityTargetingCacheService>())
+    {
+        _bench = bench;
+    }
+
+    private void Log(string entry) => _bench.Log.Add(entry);
+
     /// <summary>Puts one ability in the catalog, without building the real definitions.</summary>
     public void Register(FeatType feat, AbilityDetail ability) =>
         ((Dictionary<FeatType, AbilityDetail>)GetAllAbilityDetails())[feat] = ability;

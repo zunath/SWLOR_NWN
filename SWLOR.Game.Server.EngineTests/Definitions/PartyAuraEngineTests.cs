@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static async Task ToggleChargeOrderAsync(EngineTestContext ctx, uint caster)
         {
-            var ability = Ability.GetAbilityDetail(FeatType.ChargeOrder1);
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.ChargeOrder1);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
                 Ability.BeginAbilityImpact(caster, ability);

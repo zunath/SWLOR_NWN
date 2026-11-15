@@ -275,6 +275,79 @@ public class FacadeRemovalRewriterTests
         CallerRewriter.Apply(text, Split, false).Text.Should().BeSameAs(text);
     }
 
+    // A facade that is no namespace segment (Ability, split by P5-3): its members keep the bare form and change only the name
+    // before the member, which is the owner's imported GameServices property.
+    private static readonly RemovedFacade[] BareSplit =
+    [
+        new("Ability", false, [],
+        [
+            new RemovedMember("ApplyCombatImpact", "Ability"),
+            new RemovedMember("GetAbilityDetail", "AbilityCatalog"),
+            new RemovedMember("IsForcePower", "CombatQueries"),
+            new RemovedMember("IsForcePower", "SWLOR.Game.Server.Domain.Combat.CombatRules")
+        ])
+    ];
+
+    [Test]
+    public void A_member_of_a_split_facade_that_is_no_namespace_segment_keeps_the_bare_form_under_its_owners_name()
+    {
+        const string text = "using SWLOR.Game.Server.Service;\nclass C { void M() { Ability.ApplyCombatImpact(1); var d = Ability.GetAbilityDetail(2); var e = Service.Ability.GetAbilityDetail(3); } }\n";
+
+        var result = CallerRewriter.Apply(text, BareSplit, false);
+
+        result.Text.Should().Be("using SWLOR.Game.Server.Service;\nusing static SWLOR.Game.Server.Composition.GameServices;\n" +
+                                "class C { void M() { Ability.ApplyCombatImpact(1); var d = AbilityCatalog.GetAbilityDetail(2); var e = AbilityCatalog.GetAbilityDetail(3); } }\n");
+        result.NeedsAccessorImport.Should().BeTrue();
+        CallerRewriter.Apply(result.Text, BareSplit, false).Changed(result.Text).Should().BeFalse("a second run changes nothing");
+    }
+
+    [Test]
+    public void A_member_of_a_split_facade_whose_owner_the_file_declares_is_written_explicitly()
+    {
+        const string text = "class C { int AbilityCatalog; void M() { var d = Ability.GetAbilityDetail(2); } }\n";
+
+        CallerRewriter.Apply(text, BareSplit, false).Text.Should().Be(
+            "using SWLOR.Game.Server.Composition;\nclass C { int AbilityCatalog; void M() { var d = GameServices.AbilityCatalog.GetAbilityDetail(2); } }\n");
+    }
+
+    [Test]
+    public void A_member_of_a_bare_split_facade_with_two_owners_is_left_alone()
+    {
+        const string text = "class C { bool M() => Ability.IsForcePower(1, null); }\n";
+
+        CallerRewriter.Apply(text, BareSplit, false).Text.Should().BeSameAs(text);
+    }
+
+    [Test]
+    public void The_reversal_of_a_bare_owner_gives_back_the_facade_call()
+    {
+        const string text = "using static SWLOR.Game.Server.Composition.GameServices;\n" +
+                            "class C { void M() { Ability.ApplyCombatImpact(1); var d = AbilityCatalog.GetAbilityDetail(2); var e = GameServices.AbilityCatalog.GetAbilityDetail(3); var f = AbilityCatalog.NotOnTheFacade(); } }\n";
+
+        CallerRewriter.Reverse(text, BareSplit).Text.Should().Be(
+            "class C { void M() { Ability.ApplyCombatImpact(1); var d = Ability.GetAbilityDetail(2); var e = Ability.GetAbilityDetail(3); var f = AbilityCatalog.NotOnTheFacade(); } }\n");
+    }
+
+    [Test]
+    public void The_reversal_of_a_property_two_facades_hand_members_to_gives_back_the_facade_that_lists_the_member()
+    {
+        RemovedFacade[] facades =
+        [
+            new("Ability", false, [],
+            [
+                new RemovedMember("IsForcePower", "CombatQueries"),
+                new RemovedMember("RecordSuccessfulWeaponAbilityHit", "PairedRangedTraits")
+            ]),
+            new("Combat", true, [], [new RemovedMember("IncludesCombatImpactWeaponDamage", "CombatQueries")]),
+            new("PairedRangedTraits", false, [])
+        ];
+        const string text = "using SWLOR.Game.Server.Composition;\n" +
+                            "class C { bool M() => GameServices.CombatQueries.IncludesCombatImpactWeaponDamage(1, false) && GameServices.CombatQueries.IsForcePower(1, null) && GameServices.PairedRangedTraits.ShouldTriggerFollowUp(1) && GameServices.PairedRangedTraits.RecordSuccessfulWeaponAbilityHit(1); }\n";
+
+        CallerRewriter.Reverse(text, facades).Text.Should().Be(
+            "class C { bool M() => Combat.IncludesCombatImpactWeaponDamage(1, false) && Ability.IsForcePower(1, null) && PairedRangedTraits.ShouldTriggerFollowUp(1) && Ability.RecordSuccessfulWeaponAbilityHit(1); }\n");
+    }
+
     [Test]
     public void The_reversal_of_a_split_facade_gives_back_the_facade_call()
     {

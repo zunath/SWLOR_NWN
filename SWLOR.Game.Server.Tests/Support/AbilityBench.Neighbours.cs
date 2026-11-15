@@ -283,20 +283,4 @@ public sealed partial class AbilityBench
         proxy.On("IsConcealed", args => Concealed.Contains((uint)args[0]!));
         return service;
     }
-
-    private IPairedRangedTraitsService PairedRangedTraits()
-    {
-        var service = ScriptedProxy.Create<IPairedRangedTraitsService>(out var proxy);
-        proxy.On("CompleteWeaponAbilityHit", args =>
-            {
-                Log.Add($"TraitCompleteHit:{args[0]}");
-                return null;
-            })
-            .On("RecordWeaponAbilityHit", args =>
-            {
-                Log.Add($"TraitRecordHit:{args[0]}");
-                return null;
-            });
-        return service;
-    }
 }

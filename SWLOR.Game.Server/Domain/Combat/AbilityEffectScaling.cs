@@ -1,10 +1,10 @@
 using System;
-using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using static SWLOR.Game.Server.Composition.GameServices;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition
+namespace SWLOR.Game.Server.Domain.Combat
 {
     public static class AbilityEffectScaling
     {
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (source == 0 || source == OBJECT_INVALID || !GetIsObjectValid(source) || amount <= 0)
                 return amount;
 
-            return Ability.ApplyActiveForceAffinityRestorativeMagnitude(source, amount);
+            return CombatAbilityMagnitude.ApplyActiveForceAffinityRestorativeMagnitude(source, amount);
         }
 
         public static int ApplyActiveForceAffinityMagnitude(uint source, int amount)
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (source == 0 || source == OBJECT_INVALID || !GetIsObjectValid(source) || amount <= 0)
                 return amount;
 
-            return Ability.ApplyActiveForceAffinityMagnitude(source, amount);
+            return CombatAbilityMagnitude.ApplyActiveForceAffinityMagnitude(source, amount);
         }
 
         public static float ApplyActiveForceAffinityMagnitude(uint source, float amount)
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (source == 0 || source == OBJECT_INVALID || !GetIsObjectValid(source) || amount <= 0f)
                 return amount;
 
-            return Ability.ApplyActiveForceAffinityMagnitude(source, amount);
+            return CombatAbilityMagnitude.ApplyActiveForceAffinityMagnitude(source, amount);
         }
 
         public static int ScaleValueBySourceSocial(uint source, int baseValue, int maximumValue)
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             var amount = CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
             amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
-            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
+            amount = CombatAbilityMagnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             var amount = CalculateScaledHeal(source, target, shield, scalingAbility, multiplier);
             if (GetIsObjectValid(source))
-                amount = Ability.ApplyCombatReadinessMagnitude(source, amount);
+                amount = CombatAbilityMagnitude.ApplyCombatReadinessMagnitude(source, amount);
             TemporaryHitPointEffects.ApplyFlatFromSource(source, target, effectKey, amount, durationSeconds);
         }
 

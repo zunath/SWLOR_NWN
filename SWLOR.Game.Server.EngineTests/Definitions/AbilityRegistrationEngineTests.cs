@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Every registered ability has a name and resolves without throwing", Category = "Ability")]
         public static async Task AllRegisteredAbilitiesResolve(EngineTestContext ctx)
         {
-            var abilities = Ability.GetAllAbilityDetails();
+            var abilities = AbilityCatalog.GetAllAbilityDetails();
             ctx.Assert(abilities.Count > 0, "Expected at least one ability to be registered in the live engine.");
 
             var count = 0;
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AbilityDetail resolved;
                 try
                 {
-                    resolved = Ability.GetAbilityDetail(feat);
+                    resolved = AbilityCatalog.GetAbilityDetail(feat);
                 }
                 catch (Exception ex)
                 {

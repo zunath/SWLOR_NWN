@@ -18,8 +18,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task TechniqueDamageScalesWithMomentumAndOverload(EngineTestContext ctx)
         {
             var caster = await CreateCasterAsync(ctx);
-            var momentum = Ability.GetAbilityDetail(FeatType.FinishingDriveTechnique);
-            var overload = Ability.GetAbilityDetail(FeatType.Overload);
+            var momentum = AbilityCatalog.GetAbilityDetail(FeatType.FinishingDriveTechnique);
+            var overload = AbilityCatalog.GetAbilityDetail(FeatType.Overload);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 var startingHP = targets.Select(GetCurrentHitPoints).ToArray();
-                var ability = Ability.GetAbilityDetail(feat);
+                var ability = AbilityCatalog.GetAbilityDetail(feat);
                 var stacks = (StatusEffect.GetStatusEffect(caster, typeof(FinishingDriveMomentumStatusEffect)) as FinishingDriveMomentumStatusEffect)?.Stacks ?? 0;
                 ctx.Log($"Measuring {feat}: caster={caster}, targets=[{string.Join(", ", targets)}], chain={withChainTarget}, stacks={stacks}, potency={Stat.GetStatAdjustment(caster, StatType.MimicryPotencyPercent)}%, starting HP=[{string.Join(", ", startingHP)}], seed=20260908.");
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>

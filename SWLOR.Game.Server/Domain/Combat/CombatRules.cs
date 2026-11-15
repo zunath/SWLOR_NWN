@@ -632,6 +632,12 @@ namespace SWLOR.Game.Server.Domain.Combat
                    skillType.GetAttribute<SkillType, SkillAttribute>().CombatPointCategory == CombatPointCategoryType.Weapon;
         }
 
+        /// <summary>Whether an ability flagged as a Force power, or of the Force skill, counts as a Force power.</summary>
+        public static bool IsForcePower(bool flaggedForcePower, SkillType abilitySkillType)
+        {
+            return flaggedForcePower || abilitySkillType == SkillType.Force;
+        }
+
         internal static PerkType GetPerkTypeFromStat(int value)
         {
             return value > 0 && Enum.IsDefined(typeof(PerkType), value)

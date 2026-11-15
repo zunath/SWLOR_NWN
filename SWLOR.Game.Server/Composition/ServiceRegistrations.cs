@@ -79,6 +79,9 @@ namespace SWLOR.Game.Server.Composition
         {
             // Abilities
             services.AddSingleton<IAbilityService, AbilityService>();
+            services.AddSingleton<IAbilityCatalogService, AbilityCatalogService>();
+            // The same instance, seen through the interface Character owns for the domains below Abilities (P5-3b).
+            services.AddSingleton<IAbilityCatalog>(provider => provider.GetRequiredService<IAbilityCatalogService>());
             services.AddSingleton<IAbilityCooldownVisualService, AbilityCooldownVisualService>();
             services.AddSingleton<IAbilityTargetingCacheService, AbilityTargetingCacheService>();
             services.AddSingleton<IFieldEngineerPulseEmittersService, FieldEngineerPulseEmittersService>();
@@ -119,11 +122,16 @@ namespace SWLOR.Game.Server.Composition
         private static void RegisterCombat(IServiceCollection services)
         {
             // Combat
+            // The ability impacts in progress, which the ability lifecycle writes and Combat reads; the store takes no service (P5-3b).
+            services.AddSingleton<IAbilityImpactState, AbilityImpactStore>();
+            // The same instance, seen through the interface Character owns for the active impact (P5-3b).
+            services.AddSingleton<IActiveAbilityImpact>(provider => provider.GetRequiredService<IAbilityImpactState>());
             services.AddSingleton<IBattleGridService, BattleGridService>();
             services.AddSingleton<ICombatAbilityActivationService, CombatAbilityActivationService>();
             services.AddSingleton<ICombatAbilityBonusService, CombatAbilityBonusService>();
             services.AddSingleton<ICombatAbilityHitService, CombatAbilityHitService>();
             services.AddSingleton<ICombatAbilityImpactService, CombatAbilityImpactService>();
+            services.AddSingleton<ICombatAbilityMagnitudeService, CombatAbilityMagnitudeService>();
             services.AddSingleton<ICombatActivityService, CombatActivityService>();
             services.AddSingleton<ICombatAttackTimingService, CombatAttackTimingService>();
             services.AddSingleton<ICombatDamageCatalogService, CombatDamageCatalogService>();
@@ -131,6 +139,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatDamageTakenService, CombatDamageTakenService>();
             services.AddSingleton<ICombatFeedbackService, CombatFeedbackService>();
             services.AddSingleton<ICombatHitEffectsService, CombatHitEffectsService>();
+            services.AddSingleton<ICombatImpactGeometryService, CombatImpactGeometryService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatQueriesService, CombatQueriesService>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();

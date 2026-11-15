@@ -680,7 +680,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             selectedDetails += $"[{categoryDetail.Name}]\n";
             var isActive = detail.HotBarActionModes.Count > 0 ||
                            detail.PerkLevels.Values.SelectMany(level => level.GrantedFeats)
-                               .Any(feat => Ability.IsFeatRegistered(feat));
+                               .Any(feat => AbilityCatalog.IsFeatRegistered(feat));
             selectedDetails += $"Type: {(isActive ? "Active" : "Passive")}\n";
 
             var forceAffinityText = BuildForceAffinityPerkDetailText(detail);
@@ -723,8 +723,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static string BuildAbilityCostText(PerkLevel level)
         {
             var abilities = level.GrantedFeats
-                .Where(feat => Ability.IsFeatRegistered(feat))
-                .Select(feat => Ability.GetAbilityDetail(feat))
+                .Where(feat => AbilityCatalog.IsFeatRegistered(feat))
+                .Select(feat => AbilityCatalog.GetAbilityDetail(feat))
                 .ToList();
             var text = string.Empty;
             foreach (var ability in abilities)
@@ -1040,8 +1040,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static bool CanAddFeatToHotBar(FeatType feat)
         {
             feat = QuickCast.GetOriginalFeat(feat);
-            return Ability.IsFeatRegistered(feat) &&
-                   Ability.GetAbilityDetail(feat).ImpactAction != null;
+            return AbilityCatalog.IsFeatRegistered(feat) &&
+                   AbilityCatalog.GetAbilityDetail(feat).ImpactAction != null;
         }
 
         private static bool IsFeatHotBarSlot(QuickBarSlot quickBarSlot, IReadOnlySet<FeatType> feats)

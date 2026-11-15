@@ -88,7 +88,7 @@ public static class TwinPistolCastCancellationEngineTests
         using var player = await PlayerAbilityFixture.CreateAsync(ctx);
         var actor = player.Creature;
         CombatRecordWriter writer = null;
-        var ability = Ability.GetAbilityDetail(feat);
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
         GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
@@ -116,7 +116,7 @@ public static class TwinPistolCastCancellationEngineTests
                     ctx.AssertEqual(1, GetCurrentHitPoints(actor), "Native fatal-save setup starts at one HP");
                     ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(actor), "No shield exists before the native dying event");
                 }
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(CombatRecorder.Start(GetArea(actor), "Twin capstone death regression", out var message), message);
                 writer = CombatRecorder.LastWriter;
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
@@ -158,7 +158,7 @@ public static class TwinPistolCastCancellationEngineTests
             await ctx.DelaySecondsAsync(2.2f);
             ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled cast never pays stamina");
             ctx.Assert(!Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1, "The canceled cast starts no capstone recast");
-            ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled cast never resolves an impact");
+            ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled cast never resolves an impact");
             ctx.AssertEqual(health, GetCurrentHitPoints(target), "The canceled cast never damages its selected target");
             if (fatalSave)
             {
@@ -232,7 +232,7 @@ public static class TwinPistolCastCancellationEngineTests
                 SeedExistingTraits(actor, target);
                 stamina = Stat.GetCurrentStamina(actor);
                 haste = Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent);
-                Ability.ClearLastCompletedAbilityImpactSummary(actor);
+                AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
                     $"The real two-second cast starts: {Ability.GetLastActivationDenialReason()}");
                 ctx.Assert(TwinPistolAbility.HasActiveActivation(actor) && Activity.IsBusy(actor), "The unpaid capture belongs to the active cast");
@@ -256,9 +256,9 @@ public static class TwinPistolCastCancellationEngineTests
             });
             await ctx.DelaySecondsAsync(2.2f);
             ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The canceled deadline does not spend stamina");
-            ctx.Assert(!Recast.IsOnRecastDelay(actor, Ability.GetAbilityDetail(feat).RecastGroup).Item1, "The canceled deadline starts no capstone recast");
+            ctx.Assert(!Recast.IsOnRecastDelay(actor, AbilityCatalog.GetAbilityDetail(feat).RecastGroup).Item1, "The canceled deadline starts no capstone recast");
             ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0, "The canceled deadline spends no Cadence");
-            ctx.Assert(Ability.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled deadline resolves no ability impact");
+            ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) == null, "The canceled deadline resolves no ability impact");
             ctx.AssertEqual(health, GetCurrentHitPoints(target), "With ordinary misses forced, the canceled cast deals no damage");
             ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null, "The canceled cast grants no ordinary-shot capstone bonus");
         }
@@ -297,9 +297,9 @@ public static class TwinPistolCastCancellationEngineTests
             await ctx.WaitUntilAsync(() => !Activity.IsBusy(actor) &&
                 StatusEffect.GetStatusEffect<WatchfulPresence1StatusEffect>(actor) != null,
                 5f, "the unrelated cast to complete its actual aura impact");
-            ctx.Assert(Recast.IsOnRecastDelay(actor, Ability.GetAbilityDetail(FeatType.WatchfulPresence1).RecastGroup).Item1,
+            ctx.Assert(Recast.IsOnRecastDelay(actor, AbilityCatalog.GetAbilityDetail(FeatType.WatchfulPresence1).RecastGroup).Item1,
                 "The unrelated cast completes its normal recast");
-            ctx.Assert(!Recast.IsOnRecastDelay(actor, Ability.GetAbilityDetail(FeatType.FinalSalvo).RecastGroup).Item1,
+            ctx.Assert(!Recast.IsOnRecastDelay(actor, AbilityCatalog.GetAbilityDetail(FeatType.FinalSalvo).RecastGroup).Item1,
                 "The interrupted Twin cast remains unpaid and without recast");
         }
         finally { Cleanup(actor); }

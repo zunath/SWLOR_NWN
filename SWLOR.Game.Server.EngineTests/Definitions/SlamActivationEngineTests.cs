@@ -143,7 +143,7 @@ public static class SlamActivationEngineTests
         ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(5000), target, 120f);
         var staminaBefore = Stat.GetCurrentStamina(player);
         var hpBefore = GetCurrentHitPoints(target);
-        Ability.ClearLastCompletedAbilityImpactSummary(player);
+        AbilityImpactState.ClearLastCompletedAbilityImpactSummary(player);
         GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         try
         {
@@ -153,7 +153,7 @@ public static class SlamActivationEngineTests
                 ctx.Assert(UsePerkFeat.TryUseAbility(player, target, FeatType.Slam1, GetLocation(target)),
                     $"Slam I starts: {Ability.GetLastActivationDenialReason()}");
             });
-            await ctx.WaitUntilAsync(() => Ability.GetLastCompletedAbilityImpactSummary(player) != null,
+            await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(player) != null,
                 5f, "Slam I's player impact");
             ctx.Assert(!Activity.IsBusy(player), "Slam I releases busy state after impact.");
             ctx.Assert(Stat.GetCurrentStamina(player) < staminaBefore, "Slam I spends stamina.");

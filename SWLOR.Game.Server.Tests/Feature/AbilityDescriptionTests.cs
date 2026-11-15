@@ -34,7 +34,7 @@ public class AbilityDescriptionTests
     [Test]
     public void TechniqueDescriptionCacheMissDoesNotReadFromTheEngine()
     {
-        Ability.CacheData();
+        AbilityCatalog.CacheData();
         GameServices.Mimicry.CacheData();
 
         // A registered technique with no engine-backed boot data must remain a cache miss.

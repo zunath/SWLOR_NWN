@@ -177,12 +177,12 @@ public static class TwinPistolMasteryEngineTests
     {
         await context.ExecuteInCreatureContextAsync(actor, () =>
         {
-            Ability.ClearLastCompletedAbilityImpactSummary(actor);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
             var activated = UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target));
             context.Assert(activated, $"The mastery action uses the normal validated feat pipeline: {Ability.GetLastActivationDenialReason()}");
         });
         await context.WaitUntilAsync(() => !TwinPistolAbility.HasActiveActivation(actor) &&
-            Ability.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
+            AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
             8f, "a landed captured attack");
         // A single melee weapon naturally resumes pursuit after its paid impact.
         // Stop that ordinary follow-up before the next sequence step.

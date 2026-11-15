@@ -555,11 +555,11 @@ public class CapstoneProofServiceTests
         // The defaults are the original Ability calls. Their answer depends on the shared ability table, so each is
         // compared with the answer of the static service itself.
         var feat = FeatType.QuickDraw1;
-        _service.RunDefaultIsFeatRegistered(feat).Should().Be(Ability.IsFeatRegistered(feat));
+        _service.RunDefaultIsFeatRegistered(feat).Should().Be(AbilityCatalog.IsFeatRegistered(feat));
 
-        if (Ability.IsFeatRegistered(feat))
+        if (AbilityCatalog.IsFeatRegistered(feat))
         {
-            _service.RunDefaultGetAbilityDetail(feat).Should().BeSameAs(Ability.GetAbilityDetail(feat));
+            _service.RunDefaultGetAbilityDetail(feat).Should().BeSameAs(AbilityCatalog.GetAbilityDetail(feat));
         }
         else
         {
@@ -572,7 +572,7 @@ public class CapstoneProofServiceTests
     private sealed class TestCapstoneProofService : CapstoneProofService
     {
         public TestCapstoneProofService(IBeastMasteryService beastMastery)
-            : base(beastMastery, FacadeForwarder.LazyFor<IAbilityService>())
+            : base(beastMastery, FacadeForwarder.For<IAbilityCatalog>())
         {
         }
 

@@ -121,7 +121,9 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_definition_search_is_lazy_and_finds_only_concrete_definitions()
     {
-        var types = (IEnumerable<Type>)Run("GetAbilityListDefinitionTypes")!;
+        // The search moved to the catalog part with the ability split (P5-3b).
+        var types = (IEnumerable<Type>)typeof(AbilityCatalogService).GetMethod("GetAbilityListDefinitionTypes", BindingFlags.NonPublic | BindingFlags.Instance)!
+            .Invoke(new AbilityCatalogService(null!), null)!;
 
         types.Should().NotBeAssignableTo<ICollection<Type>>("each definition is built when the loop reaches it");
         types.Should().OnlyContain(type => typeof(IAbilityListDefinition).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface);
@@ -156,7 +158,8 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_healing_eligibility_is_combats_arithmetic()
     {
-        Run("CalculateDamageEligibleForHealing", 50, 50, 20).Should().Be(30);
+        // The impact state store calls the rule directly since the ability split (P5-3b).
+        CombatRules.CalculateDamageEligibleForHealing(50, 50, 20).Should().Be(30);
     }
 
     [Test]

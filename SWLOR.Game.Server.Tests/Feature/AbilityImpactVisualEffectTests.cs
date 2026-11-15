@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

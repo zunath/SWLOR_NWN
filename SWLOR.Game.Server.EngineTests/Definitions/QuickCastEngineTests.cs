@@ -135,10 +135,10 @@ public static class QuickCastEngineTests
                 ActionAttack(enemy);
             });
             await ctx.WaitUntilAsync(() => GetAttackTarget(player) == enemy, 10f, "native attack target");
-            GameServices.Ability.ClearLastCompletedAbilityImpactSummary(player);
+            GameServices.AbilityImpactState.ClearLastCompletedAbilityImpactSummary(player);
             await ctx.ExecuteInCreatureContextAsync(player, () => UseNativeFeat(player, FeatType.AutoCastForceDrain1));
-            await ctx.WaitUntilAsync(() => GameServices.Ability.GetLastCompletedAbilityImpactSummary(player) != null && !Activity.IsBusy(player), 10f, "native hostile feat impact");
-            ctx.AssertEqual("Force Drain I", GameServices.Ability.GetLastCompletedAbilityImpactSummary(player).Ability.Name, "ordinary hostile ability pipeline completed");
+            await ctx.WaitUntilAsync(() => GameServices.AbilityImpactState.GetLastCompletedAbilityImpactSummary(player) != null && !Activity.IsBusy(player), 10f, "native hostile feat impact");
+            ctx.AssertEqual("Force Drain I", GameServices.AbilityImpactState.GetLastCompletedAbilityImpactSummary(player).Ability.Name, "ordinary hostile ability pipeline completed");
             ctx.AssertEqual(96, Stat.GetCurrentFP(player), "ordinary FP cost is charged");
             // The ability resumes the attack shortly after its impact; cancel that resumed attack.
             await ctx.WaitUntilAsync(() => ActionInterruption.GetQueuedAttackTarget(player) == enemy, 5f, "resumed attack");
@@ -194,7 +194,7 @@ public static class QuickCastEngineTests
                     ctx.AssertEqual(1, GetCurrentHitPoints(player), "blocked casts do not heal");
                     ctx.AssertEqual(100, Stat.GetCurrentFP(player), "blocked casts do not spend FP");
                     ctx.Assert(!Activity.IsBusy(player), "blocked casts do not start activation");
-                    ctx.Assert(!Recast.IsOnRecastDelay(player, GameServices.Ability.GetAbilityDetail(FeatType.Innervate1).RecastGroup).Item1, "blocked casts do not start recast");
+                    ctx.Assert(!Recast.IsOnRecastDelay(player, GameServices.AbilityCatalog.GetAbilityDetail(FeatType.Innervate1).RecastGroup).Item1, "blocked casts do not start recast");
                 });
                 RemoveEffectByTag(player, effectTag);
                 await ctx.WaitFrameAsync();

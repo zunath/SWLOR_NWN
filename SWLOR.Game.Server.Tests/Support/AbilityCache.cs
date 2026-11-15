@@ -9,5 +9,5 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// </summary>
 public static class AbilityCache
 {
-    public static void Load() => Ability.CacheData();
+    public static void Load() => AbilityCatalog.CacheData();
 }

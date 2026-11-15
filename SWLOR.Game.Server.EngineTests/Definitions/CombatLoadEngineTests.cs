@@ -390,7 +390,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 foreach (var (feat, _) in Rotation)
                 {
-                    var ability = Ability.GetAbilityDetail(feat);
+                    var ability = AbilityCatalog.GetAbilityDetail(feat);
                     record.Perks[ability.EffectiveLevelPerkType] =
                         Math.Max(record.Perks.GetValueOrDefault(ability.EffectiveLevelPerkType), ability.AbilityLevel);
                 }
@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task GiveConsumablesAsync(EngineTestContext ctx, uint player)
         {
             var resrefs = Rotation
-                .SelectMany(entry => Ability.GetAbilityDetail(entry.Feat).Requirements.OfType<AbilityRequirementItem>())
+                .SelectMany(entry => AbilityCatalog.GetAbilityDetail(entry.Feat).Requirements.OfType<AbilityRequirementItem>())
                 .Select(requirement => requirement.ItemResref)
                 .Distinct();
             foreach (var resref in resrefs)

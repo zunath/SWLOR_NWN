@@ -19,7 +19,7 @@ mod_content_chg (1)
   BootOnly    SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
 
 mod_cache_bef (44)
-  Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityCatalogService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Companions.BeastMasteryService.CacheData

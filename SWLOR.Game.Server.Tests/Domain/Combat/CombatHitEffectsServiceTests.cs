@@ -89,7 +89,7 @@ public class CombatHitEffectsServiceTests
             IStatService stat,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
-            IAbilityService ability,
+            IAbilityImpactState ability,
             IPairedRangedTraitsService pairedRangedTraits,
             ICombatRecorderService combatRecorder,
             ICapstoneProofService capstoneProof,
@@ -295,14 +295,14 @@ public class CombatHitEffectsServiceTests
                 _log.Add($"AddCapped {string.Join(" ", args)}");
                 return (int)args[2]!;
             });
-        var ability = ScriptedProxy.Create<IAbilityService>(out var abilityCalls);
+        var ability = ScriptedProxy.Create<IAbilityImpactState>(out var abilityCalls);
         abilityCalls
-            .On(nameof(IAbilityService.TryQueueTrackedDamageEffect), args =>
+            .On(nameof(IAbilityImpactState.TryQueueTrackedDamageEffect), args =>
             {
                 _log.Add($"Queue {args[0]} {args[1]} {args[2]} {args[3]}");
                 return _queued;
             })
-            .On(nameof(IAbilityService.GetActiveAbilityImpactSummary), _ => null);
+            .On(nameof(IAbilityImpactState.GetActiveAbilityImpactSummary), _ => null);
         var traits = ScriptedProxy.Create<IPairedRangedTraitsService>(out var traitCalls);
         traitCalls
             .On(nameof(IPairedRangedTraitsService.HasDirectHostileDamageTrait), _ => _directTrait)

@@ -31,7 +31,7 @@ public class AIProfileValidationTests
     public void DefaultProfileAbilityActions_AllReferenceRegisteredAbilities()
     {
         AbilityCache.Load();
-        var registeredFeats = Ability.GetAllAbilityDetails().Keys.ToHashSet();
+        var registeredFeats = AbilityCatalog.GetAllAbilityDetails().Keys.ToHashSet();
 
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
         var abilityActions = profiles.Values
@@ -47,7 +47,7 @@ public class AIProfileValidationTests
     public void DefaultProfiles_ExposeEveryRegisteredAbilityFeat()
     {
         AbilityCache.Load();
-        var registeredFeats = Ability.GetAllAbilityDetails().Keys.ToHashSet();
+        var registeredFeats = AbilityCatalog.GetAllAbilityDetails().Keys.ToHashSet();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
 
         foreach (var profile in profiles.Values)
@@ -66,7 +66,7 @@ public class AIProfileValidationTests
     public void DefaultProfiles_CanEvaluateEveryRegisteredAbilityAction()
     {
         AbilityCache.Load();
-        var registeredAbilities = Ability.GetAllAbilityDetails();
+        var registeredAbilities = AbilityCatalog.GetAllAbilityDetails();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
 
         foreach (var profile in profiles.Values)
@@ -100,7 +100,7 @@ public class AIProfileValidationTests
     public void DefaultProfiles_UseAbilitySpecificAIMetadata()
     {
         AbilityCache.Load();
-        var abilities = Ability.GetAllAbilityDetails();
+        var abilities = AbilityCatalog.GetAllAbilityDetails();
         var profiles = new DefaultAIProfileDefinition().BuildProfiles();
         var beastActions = profiles[AIProfileType.BeastCompanion].Actions
             .Where(action => action.Type == AIActionType.Ability)
@@ -127,7 +127,7 @@ public class AIProfileValidationTests
     public void DroidProfile_SteelShoulderUsesTheAbilityTargetSelector()
     {
         AbilityCache.Load();
-        var ability = Ability.GetAbilityDetail(FeatType.TwinGuardStance1);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.TwinGuardStance1);
         var profile = new DefaultAIProfileDefinition().BuildProfiles()[AIProfileType.DroidCompanion];
         var action = profile.Actions.Single(action => action.Feat == FeatType.TwinGuardStance1);
 
@@ -143,7 +143,7 @@ public class AIProfileValidationTests
     public void DroidProfile_HitPointSpendingAbilitiesApplyHealthReservesToCustomScores(FeatType feat)
     {
         AbilityCache.Load();
-        var ability = Ability.GetAbilityDetail(feat);
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
         ability.GetAIHitPointCostPercent().Should().NotBeNull();
         // Isolate profile composition from the NWN engine's live Might and hostile-cluster reads.
         // The production cost calculation and score boundaries are exercised in AIModelTests.
@@ -184,7 +184,7 @@ public class AIProfileValidationTests
 
         foreach (var feat in feats)
         {
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             ability.IsHostileAbility.Should().BeTrue($"{feat} applies harmful effects to its target");
             ability.IsSingleTargetAbility.Should().BeTrue($"{feat} applies directly to one target");
             ability.RequiresTarget.Should().BeTrue($"{feat} must not fall back to targeting the caster");
@@ -204,7 +204,7 @@ public class AIProfileValidationTests
 
         foreach (var feat in feats)
         {
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             ability.IsHostileAbility.Should().BeTrue($"{feat} affects enemies");
             ability.IsAreaAbility.Should().BeTrue($"{feat} affects an area");
             ability.RequiresTarget.Should().BeTrue($"{feat} should only be selected when an enemy target exists");
@@ -225,7 +225,7 @@ public class AIProfileValidationTests
 
         foreach (var feat in feats)
         {
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             ability.IsHostileAbility.Should().BeTrue($"{feat} affects enemies around the caster");
             ability.IsAreaAbility.Should().BeTrue($"{feat} affects an area");
             ability.RequiresTarget.Should().BeFalse($"{feat} is self-centered and must not request an activation target");
@@ -237,7 +237,7 @@ public class AIProfileValidationTests
     public void PlayerLocationSelectableHostileAreaAbilities_RequireLocationsNotObjects()
     {
         AbilityCache.Load();
-        var ability = Ability.GetAbilityDetail(FeatType.Provoke2);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.Provoke2);
 
         ability.IsHostileAbility.Should().BeTrue();
         ability.IsAreaAbility.Should().BeTrue();
@@ -249,7 +249,7 @@ public class AIProfileValidationTests
     public void NPCSelfBuffAbilities_DoNotRequireTargets()
     {
         AbilityCache.Load();
-        var ability = Ability.GetAbilityDetail(FeatType.IronCarapace);
+        var ability = AbilityCatalog.GetAbilityDetail(FeatType.IronCarapace);
 
         ability.IsHostileAbility.Should().BeFalse();
         ability.RequiresTarget.Should().BeFalse();

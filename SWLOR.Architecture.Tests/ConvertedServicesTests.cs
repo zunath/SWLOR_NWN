@@ -37,10 +37,11 @@ public class ConvertedServicesTests
 
         var combat = List.Services.Should().ContainSingle(service => service.Name == "Combat").Subject;
         combat.Domain.Should().Be("Combat");
+        // The ability split (P5-3b) added the ability magnitude and the impact geometry.
         combat.Extras.Select(extra => extra.Name).Should().Equal(
-            "CombatAbilityActivation", "CombatAbilityBonus", "CombatAbilityHit", "CombatAbilityImpact", "CombatActivity",
-            "CombatAttackTiming", "CombatDamageCatalog", "CombatDamageModifiers", "CombatDamageTaken", "CombatFeedback",
-            "CombatHitEffects", "CombatQueries", "CombatResources", "CombatSuppression");
+            "CombatAbilityActivation", "CombatAbilityBonus", "CombatAbilityHit", "CombatAbilityImpact", "CombatAbilityMagnitude",
+            "CombatActivity", "CombatAttackTiming", "CombatDamageCatalog", "CombatDamageModifiers", "CombatDamageTaken",
+            "CombatFeedback", "CombatHitEffects", "CombatImpactGeometry", "CombatQueries", "CombatResources", "CombatSuppression");
     }
 
     [Test]

@@ -186,10 +186,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         // damage can't stand in for an ability's.
         private static async Task AssertStaffAbilitiesLandApartAsync(EngineTestContext ctx, uint player, Func<Task> press)
         {
-            var ribBreaker = Ability.GetAbilityDetail(FeatType.RibBreaker1);
-            var slam = Ability.GetAbilityDetail(FeatType.Slam1);
+            var ribBreaker = AbilityCatalog.GetAbilityDetail(FeatType.RibBreaker1);
+            var slam = AbilityCatalog.GetAbilityDetail(FeatType.Slam1);
             CombatRecordWriter writer = null;
-            Ability.ClearLastCompletedAbilityImpactSummary(player);
+            AbilityImpactState.ClearLastCompletedAbilityImpactSummary(player);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     if (slamAt == null && IsOnRecast(player, RecastGroup.Slam))
                         slamAt = now;
 
-                    var summary = Ability.GetLastCompletedAbilityImpactSummary(player);
+                    var summary = AbilityImpactState.GetLastCompletedAbilityImpactSummary(player);
                     if (summary == null || ReferenceEquals(summary, lastSummary))
                         return;
 

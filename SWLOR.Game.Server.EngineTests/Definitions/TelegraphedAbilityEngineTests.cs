@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = ctx.SpawnCreature("nw_bandit001");
             var dodger = ctx.SpawnCreature("nw_rat001", 2f, 0f);
             var stationary = ctx.SpawnCreature("nw_rat001", 1f, 0f);
-            var ability = Ability.GetAbilityDetail(feat);
+            var ability = AbilityCatalog.GetAbilityDetail(feat);
             var wasTechnique = ability.IsMimicryTechnique;
             var originalImpactDelay = ability.ImpactDelay;
             var originalImpact = ability.ImpactAction;

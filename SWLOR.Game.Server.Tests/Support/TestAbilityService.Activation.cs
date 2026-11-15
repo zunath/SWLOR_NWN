@@ -25,6 +25,9 @@ public sealed partial class TestAbilityService
 {
     protected override string GetUnusableEquipmentError(uint creature) => _bench.EquipmentError;
 
+    // The Force power rule moved to Combat (CombatRules and CombatQueriesService.IsForcePower); the check keeps the double's skill.
+    protected override bool IsForcePower(uint creature, AbilityDetail ability) => CombatRules.IsForcePower(ability.IsForcePower, GetAbilitySkillType(creature, ability));
+
     protected override bool IsPlayerInSpaceMode(uint player) => _bench.SpaceMode.Contains(player);
 
     protected override bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType) => _bench.EnforcesFeatReplacement;

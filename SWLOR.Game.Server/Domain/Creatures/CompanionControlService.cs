@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IAIService _ai;
         private readonly ICompanionLookup _companions;
         private readonly Lazy<IAbilityService> _ability;
+        private readonly IAbilityCatalog _catalog;
         private readonly IActivityService _activity;
         private readonly IPerkService _perk;
         private readonly IPlayerNameService _playerName;
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IAIService ai,
             ICompanionLookup companions,
             Lazy<IAbilityService> ability,
+            IAbilityCatalog catalog,
             IActivityService activity,
             IPerkService perk,
             IPlayerNameService playerName,
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _ai = ai;
             _companions = companions;
             _ability = ability;
+            _catalog = catalog;
             _activity = activity;
             _perk = perk;
             _playerName = playerName;
@@ -1072,9 +1075,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
         protected virtual int GetPerkLevel(uint creature, PerkType perkType) =>
             _perk.GetPerkLevel(creature, perkType);
 
-        protected virtual bool IsFeatRegistered(FeatType feat) => _ability.Value.IsFeatRegistered(feat);
+        protected virtual bool IsFeatRegistered(FeatType feat) => _catalog.IsFeatRegistered(feat);
 
-        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _ability.Value.GetAbilityDetail(feat);
+        protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _catalog.GetAbilityDetail(feat);
 
         protected virtual bool CanUseAbility(
             uint activator,

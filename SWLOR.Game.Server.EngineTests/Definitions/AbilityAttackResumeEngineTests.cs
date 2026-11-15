@@ -34,7 +34,7 @@ public static class AbilityAttackResumeEngineTests
         SetAILevel(creature, AILevel.VeryLow);
         await ctx.ExecuteInCreatureContextAsync(owner.Creature, () => AddHenchman(owner.Creature, creature));
         ctx.AssertEqual(owner.Creature, GetMaster(creature), "player controls the attacker so resumption retains its chosen enemy");
-        var ability = Ability.GetAbilityDetail(feat);
+        var ability = AbilityCatalog.GetAbilityDetail(feat);
         ctx.SetNPCPerkLevel(creature, ability.EffectiveLevelPerkType, ability.AbilityLevel);
         ctx.SetNPCResources(creature, 1000, 1000);
         CreaturePlugin.AddFeat(creature, feat);

@@ -305,7 +305,7 @@ public static class WeaponRotationBalanceEngineTests
         _ordinaryResolvedDamage = _activatedResolvedDamage = 0;
         ObservedImpacts.Clear();
         ActivatedDamageByAbility.Clear();
-        Ability.ClearLastCompletedAbilityImpactSummary(actor);
+        AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
         var clock = new Stopwatch();
         try
         {
@@ -383,7 +383,7 @@ public static class WeaponRotationBalanceEngineTests
                 {
                     if (elapsed < next[index] || GameServices.Activity.IsBusy(actor)) continue;
                     var feat = feats[index];
-                    var ability = Ability.GetAbilityDetail(feat);
+                    var ability = AbilityCatalog.GetAbilityDetail(feat);
                     if (Recast.IsOnRecastDelay(actor, ability.RecastGroup).Item1) continue;
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
@@ -491,7 +491,7 @@ public static class WeaponRotationBalanceEngineTests
 
     private static void SampleCompletedAbilityDamage(uint actor)
     {
-        var latest = Ability.GetLastCompletedAbilityImpactSummary(actor);
+        var latest = AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor);
         if (latest != null) ObservedImpacts.TryAdd(latest, 0);
         // Delayed pulses may continue updating a completed summary. Keep reference identity
         // and count only new damage; do not count a summary again on every polling frame.

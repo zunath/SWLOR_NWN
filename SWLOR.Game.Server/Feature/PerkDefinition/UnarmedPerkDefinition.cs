@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -257,7 +256,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Spends your Finish against one enemy to deal weapon DMG + 75. Cannot be used without Finish, and Finish cannot expire during the cast. Practiced Form applies.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
-                .RequirementQuest(UnarmedMasteryQuestDefinition.PerfectFormMasteryQuestId)
+                .RequirementQuest(CapstoneQuestIds.PerfectFormMasteryQuestId)
                 .RequirementMustHavePerk(PerkType.PalmStrike);
         }
 
@@ -472,7 +471,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deals weapon DMG + 50 to one enemy. No Rattled requirement. Heavy Blows applies, and the strike can spend optional Retaliation against its enemy.")
                 .Price(6)
                 .RequirementSkill(SkillType.Unarmed, 50)
-                .RequirementQuest(UnarmedMasteryQuestDefinition.HaymakerMasteryQuestId)
+                .RequirementQuest(CapstoneQuestIds.HaymakerMasteryQuestId)
                 .RequirementMustHavePerk(PerkType.DirtyJab);
         }
     }

@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private void PopulateResists()
         {
-            foreach (var type in ResistanceRules.EnumerateResistanceTypes())
+            foreach (var type in DamageTableDefaults.EnumerateResistanceTypes())
             {
                 Resists[type] = 0;
             }

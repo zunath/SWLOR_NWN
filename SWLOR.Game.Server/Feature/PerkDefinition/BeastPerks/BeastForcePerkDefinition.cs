@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition.BeastPerks
@@ -197,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.BeastPerks
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Force)
                 .GrantsFeat(FeatType.ForceBondedBeast1)
-                .RequirementQuest(BeastMasteryCapstoneQuestDefinition.ForceBondedBeastMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.ForceBondedBeastMasteryQuestId);
         }
 
     }

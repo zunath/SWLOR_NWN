@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -60,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("For 45 seconds, gain +15% Haste. Successful auto-attacks restore 1 STM, and defeating an enemy restores 8 STM. Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50)
-                .RequirementQuest(BloodFrenzyQuestDefinition.FinalQuestId);
+                .RequirementQuest(CapstoneQuestIds.BloodFrenzyFinalQuestId);
         }
 
         private void CoveringStrike()
@@ -149,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("For 45 seconds, you take 50% less physical damage and are immune to Knockdown and Dazed.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50)
-                .RequirementQuest(VibrobladeCapstoneQuestDefinition.InvincibleMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.InvincibleMasteryQuestId);
         }
 
         private void Alacrity()

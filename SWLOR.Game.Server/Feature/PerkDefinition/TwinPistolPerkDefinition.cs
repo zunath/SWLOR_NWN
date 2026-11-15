@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -230,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Attack one enemy with each equipped attack weapon for weapon DMG + 20 per impact. Your next six weapon auto-attack attempts gain +25% damage for up to 12 seconds. Misses and deflections consume charges. Works with any weapon.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinPistol, 50)
-                .RequirementQuest(TwinPistolCapstoneQuestDefinition.TwinSunsMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.TwinSunsMasteryQuestId);
         }
 
         private void LeadShot()
@@ -444,7 +443,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deals weapon DMG + 20. Spends all Cadence for +4 DMG per charge.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinPistol, 50)
-                .RequirementQuest(TwinPistolCapstoneQuestDefinition.FinalSalvoMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.FinalSalvoMasteryQuestId);
         }
     }
 }

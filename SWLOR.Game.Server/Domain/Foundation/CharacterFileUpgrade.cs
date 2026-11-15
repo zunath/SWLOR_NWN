@@ -44,7 +44,7 @@ internal static class CharacterFileUpgrade
         migrations.Count == 0 ? 0 : migrations[^1].Version;
 
     /// <summary>The checkpoint saved in a character file: its root PlayerFileVer field.</summary>
-    internal static int ReadFileVersion(SavedCharacter character) => character.ReadInteger(PlayerFileCheckpoint.FieldName);
+    internal static int ReadFileVersion(SavedCharacter character) => character.ReadInteger(PlayerFileFieldNames.FileVersion);
 
     /// <summary>
     /// The version a character file has reached: its checkpoint, or for a file without one, its record's
@@ -107,7 +107,7 @@ internal static class CharacterFileUpgrade
 
         // A migration that changes an item's base item can leave it overlapping another item or past its grid.
         character.RepairPlacement();
-        character.WriteInteger(PlayerFileCheckpoint.FieldName, fileVersion);
+        character.WriteInteger(PlayerFileFieldNames.FileVersion, fileVersion);
         record.CharacterFileVersion = Math.Max(record.CharacterFileVersion, fileVersion);
         record.UpgradeNotices ??= new List<string>();
         // A retry after a crash repeats file migrations, and their notices with them.

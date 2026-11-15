@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         public static Dictionary<CombatDamageType, int> CreateDefensePurities(
             IReadOnlyDictionary<CombatDamageType, int> defensePurities)
         {
-            var purities = CombatRules.CreateDefaultDefenseValues();
+            var purities = DamageTableDefaults.CreateDefaultDefenseValues();
 
             foreach (var type in purities.Keys.ToList())
             {

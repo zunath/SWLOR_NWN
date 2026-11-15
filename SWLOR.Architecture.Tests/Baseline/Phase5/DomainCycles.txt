@@ -37,11 +37,9 @@ Character <-> Platform | 6
 Character <-> Quests | 2
 Character <-> Social | 2
 Character <-> UI | 2
-Character content <-> Quests content | 2
-Character content <-> UI content | 2
 Combat <-> Companions | 2
 Combat <-> Creatures | 2
-Combat <-> Foundation | 4
+Combat <-> Foundation | 3
 Combat <-> Items | 2
 Combat <-> Platform | 7
 Combat <-> Quests | 2
@@ -62,10 +60,10 @@ Foundation <-> Items | 4
 Foundation <-> Platform | 9
 Foundation <-> Social | 4
 Foundation <-> Space | 4
-Foundation <-> UI | 4
+Foundation <-> UI | 5
 Foundation <-> World | 4
 Foundation content <-> Gameplay content | 7
-Gameplay content <-> UI content | 13
+Gameplay content <-> UI content | 8
 Items <-> Platform | 4
 Items <-> UI | 2
 Items <-> World | 2

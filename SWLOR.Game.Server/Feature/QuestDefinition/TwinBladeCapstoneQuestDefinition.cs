@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string TempestBloomMeasureQuestId = "tempest_bloom_measure";
         internal const string TempestBloomBreachQuestId = "tempest_bloom_breach";
         internal const string TempestBloomCircleQuestId = "tempest_bloom_circle";
-        internal const string TempestBloomMasteryQuestId = "tempest_bloom_mastery";
+        internal const string TempestBloomMasteryQuestId = CapstoneQuestIds.TempestBloomMasteryQuestId;
         internal const string TempestBloomAdeptResref = "cp_tempbloom_ad";
         internal const string TempestBloomSpecialistResref = "cp_tempbloom_sp";
         internal const string TempestBloomInnerCircleResref = "cp_tempbloom_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string RedBloomMeasureQuestId = "red_bloom_measure";
         internal const string RedBloomBreachQuestId = "red_bloom_breach";
         internal const string RedBloomCircleQuestId = "red_bloom_circle";
-        internal const string RedBloomMasteryQuestId = "red_bloom_mastery";
+        internal const string RedBloomMasteryQuestId = CapstoneQuestIds.RedBloomMasteryQuestId;
         internal const string RedBloomAdeptResref = "cp_redbloom_ad";
         internal const string RedBloomSpecialistResref = "cp_redbloom_sp";
         internal const string RedBloomInnerCircleResref = "cp_redbloom_ic";

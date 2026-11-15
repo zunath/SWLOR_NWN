@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -239,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(6)
                 .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementQuest(LightsaberCapstoneQuestDefinition.SaberStormMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.SaberStormMasteryQuestId);
         }
 
         private void SaberWard()
@@ -440,7 +439,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(6)
                 .RequirementSkill(SkillType.Lightsaber, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .RequirementQuest(LightsaberCapstoneQuestDefinition.GuardianMasterMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.GuardianMasterMasteryQuestId);
         }
 
     }

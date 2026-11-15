@@ -11,7 +11,7 @@ binding path, and known-good/known-bad layout shape.
 A window is three classes plus one enum entry. Registration is automatic
 (reflection) — the enum entry is the only registry edit.
 
-1. **Enum entry** — add to `Domain/UI/GuiWindowType.cs`. Player-facing
+1. **Enum entry** — add to `Domain/Foundation/GuiWindowType.cs`. Player-facing
    windows use the next sequential id; debug windows use the 900 range
    (`DebugEnmity = 900`, `DebugNuiGallery = 901`). Duplicate ids throw at boot.
 2. **Definition** — `Feature/GuiDefinition/<Name>Definition.cs`, implements

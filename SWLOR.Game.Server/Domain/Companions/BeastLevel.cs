@@ -33,9 +33,9 @@ namespace SWLOR.Game.Server.Domain.Companions
                 {AbilityType.Social, 0}
             };
 
-            MaxDefenseBonuses = CombatRules.CreateDefaultDefenseValues();
+            MaxDefenseBonuses = DamageTableDefaults.CreateDefaultDefenseValues();
 
-            MaxResistanceBonuses = ResistanceRules.CreateDefaultResistanceValues();
+            MaxResistanceBonuses = DamageTableDefaults.CreateDefaultResistanceValues();
         }
     }
 }

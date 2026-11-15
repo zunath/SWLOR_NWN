@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string UnmovingCenterMeasureQuestId = "unmoving_center_measure";
         internal const string UnmovingCenterBreachQuestId = "unmoving_center_breach";
         internal const string UnmovingCenterCircleQuestId = "unmoving_center_circle";
-        internal const string UnmovingCenterMasteryQuestId = "unmoving_center_mastery";
+        internal const string UnmovingCenterMasteryQuestId = CapstoneQuestIds.UnmovingCenterMasteryQuestId;
         internal const string UnmovingCenterAdeptResref = "cp_unmovctr_ad";
         internal const string UnmovingCenterSpecialistResref = "cp_unmovctr_sp";
         internal const string UnmovingCenterInnerCircleResref = "cp_unmovctr_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string WorldbreakerMeasureQuestId = "worldbreaker_measure";
         internal const string WorldbreakerBreachQuestId = "worldbreaker_breach";
         internal const string WorldbreakerCircleQuestId = "worldbreaker_circle";
-        internal const string WorldbreakerMasteryQuestId = "worldbreaker_mastery";
+        internal const string WorldbreakerMasteryQuestId = CapstoneQuestIds.WorldbreakerMasteryQuestId;
         internal const string WorldbreakerAdeptResref = "cp_worldbrk_ad";
         internal const string WorldbreakerSpecialistResref = "cp_worldbrk_sp";
         internal const string WorldbreakerInnerCircleResref = "cp_worldbrk_ic";

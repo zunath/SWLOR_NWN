@@ -61,9 +61,9 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Willpower, 0}
             };
 
-            Defenses = CombatRules.CreateDefaultDefenseValues();
+            Defenses = DamageTableDefaults.CreateDefaultDefenseValues();
 
-            Resistances = ResistanceRules.CreateDefaultResistanceValues();
+            Resistances = DamageTableDefaults.CreateDefaultResistanceValues();
 
             ActiveShipId = Guid.Empty.ToString();
             UnknownDisplayName = string.Empty;

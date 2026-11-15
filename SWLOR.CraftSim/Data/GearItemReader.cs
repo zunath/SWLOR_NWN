@@ -7,7 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.CraftSim.Data
 {
-    /// <summary>Reads crafting stats from Module/uti as EquipmentStats.cs:929-1125 applies them; CraftingGearCostTableTests checks that the cost value is the amount.</summary>
+    /// <summary>Reads crafting stats from Module/uti as EquipmentStats.cs:930-1126 applies them; CraftingGearCostTableTests checks that the cost value is the amount.</summary>
     public static class GearItemReader
     {
         public const int ControlProperty = 88;

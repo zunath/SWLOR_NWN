@@ -51,8 +51,8 @@ namespace SWLOR.Game.Server.Entity
 
         public IncubationJob()
         {
-            DefensePurities = CombatRules.CreateDefaultDefenseValues();
-            ResistancePurities = ResistanceRules.CreateDefaultResistanceValues();
+            DefensePurities = DamageTableDefaults.CreateDefaultDefenseValues();
+            ResistancePurities = DamageTableDefaults.CreateDefaultResistanceValues();
             LyaseColors = new Dictionary<EnzymeColorType, int>
             {
                 { EnzymeColorType.Blue, 0 },

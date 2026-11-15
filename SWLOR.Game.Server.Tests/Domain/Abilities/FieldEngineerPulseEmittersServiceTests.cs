@@ -1,25 +1,22 @@
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using System;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
+using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Tests.Domain.Abilities;
 
 [TestFixture]
 public class FieldEngineerPulseEmittersServiceTests
 {
-    // The real constructor captures ability impacts through the engine; the service only reads Activator, so an
-    // emitter without a constructor run stands in.
-    private static DeviceAbilityEffects.FieldEngineerPulseEmitter Emitter(uint activator)
+    // The constructor only holds state (the ability definition binds the pulse delegates), so a real emitter stands in.
+    private static FieldEngineerPulseEmitter Emitter(uint activator)
     {
-        var emitter = (DeviceAbilityEffects.FieldEngineerPulseEmitter)RuntimeHelpers.GetUninitializedObject(
-            typeof(DeviceAbilityEffects.FieldEngineerPulseEmitter));
-        typeof(DeviceAbilityEffects.FieldEngineerPulseEmitter)
-            .GetField("<Activator>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .SetValue(emitter, activator);
-        return emitter;
+        return new FieldEngineerPulseEmitter(
+            activator, default, SkillType.Invalid, 0, 0, typeof(object), 0f, 0f, CombatDamageType.Physical,
+            VisualEffect.None, VisualEffect.None, VisualEffect.None, 1f, false, false, false);
     }
 
     [Test]

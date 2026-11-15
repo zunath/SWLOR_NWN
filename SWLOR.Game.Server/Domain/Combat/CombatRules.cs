@@ -47,15 +47,10 @@ namespace SWLOR.Game.Server.Domain.Combat
         private const int MillisecondsPerSecond = 1000;
         private const int BaseAttackDelayUnits = BaseAttackDelayMilliseconds * AttackDelayUnitsPerSecond / MillisecondsPerSecond;
 
-        // The defense damage types in enum order: the order of the keys of every Defenses dictionary.
-        private static readonly ImmutableArray<CombatDamageType> DefenseDamageTypes =
-            Enum.GetValues<CombatDamageType>().Where(type => type.IsDefenseDamageType()).ToImmutableArray();
-
-        /// <summary>A new table holding <paramref name="defaultValue"/> for every defense damage type, in enum order.</summary>
+        /// <summary>A new table holding <paramref name="defaultValue"/> for every defense damage type, in enum order. Forwards to <see cref="DamageTableDefaults"/>, which master's code reaches through here.</summary>
         public static Dictionary<CombatDamageType, int> CreateDefaultDefenseValues(int defaultValue = 0)
         {
-            return DefenseDamageTypes
-                .ToDictionary(type => type, _ => defaultValue);
+            return DamageTableDefaults.CreateDefaultDefenseValues(defaultValue);
         }
 
         /// <summary>

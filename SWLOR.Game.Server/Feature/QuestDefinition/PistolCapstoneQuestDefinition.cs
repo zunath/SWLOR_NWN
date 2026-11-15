@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string LastWordMeasureQuestId = "last_word_measure";
         internal const string LastWordBreachQuestId = "last_word_breach";
         internal const string LastWordCircleQuestId = "last_word_circle";
-        internal const string LastWordMasteryQuestId = "last_word_mastery";
+        internal const string LastWordMasteryQuestId = CapstoneQuestIds.LastWordMasteryQuestId;
         internal const string LastWordAdeptResref = "cp_lastword_ad";
         internal const string LastWordSpecialistResref = "cp_lastword_sp";
         internal const string LastWordInnerCircleResref = "cp_lastword_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string DeadMansHandMeasureQuestId = "dead_mans_hand_measure";
         internal const string DeadMansHandBreachQuestId = "dead_mans_hand_breach";
         internal const string DeadMansHandCircleQuestId = "dead_mans_hand_circle";
-        internal const string DeadMansHandMasteryQuestId = "dead_mans_hand_mastery";
+        internal const string DeadMansHandMasteryQuestId = CapstoneQuestIds.DeadMansHandMasteryQuestId;
         internal const string DeadMansHandAdeptResref = "cp_deadhand_ad";
         internal const string DeadMansHandSpecialistResref = "cp_deadhand_sp";
         internal const string DeadMansHandInnerCircleResref = "cp_deadhand_ic";

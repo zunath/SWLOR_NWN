@@ -49,9 +49,8 @@ Feature/AbilityDefinition -> Domain/Social | 11
 # Abilities -> Space (1 edge)
 Domain/Abilities -> Domain/Space | 3
 
-# Abilities -> UI (2 edges)
+# Abilities -> UI (1 edge)
 Domain/Abilities -> Domain/UI | 12
-Domain/Abilities -> Feature/GuiDefinition | 8
 
 # Abilities -> World (2 edges)
 Domain/Abilities -> Domain/World | 3
@@ -119,11 +118,9 @@ Domain/Character -> Domain/Social | 8
 Feature/AppearanceDefinition -> Domain/Social | 1
 Feature/StatusEffectDefinition -> Domain/Social | 4
 
-# Character -> UI (4 edges)
+# Character -> UI (2 edges)
 Domain/Character -> Domain/UI | 17
-Domain/Character -> Feature/GuiDefinition | 6
 Feature/AppearanceDefinition -> Domain/UI | 41
-Feature/AppearanceDefinition -> Feature/GuiDefinition | 2
 
 # Combat -> Abilities (2 edges)
 Domain/Combat -> Domain/Abilities | 66
@@ -160,9 +157,8 @@ Domain/Combat -> Domain/Social | 18
 # Combat -> Space (1 edge)
 Domain/Combat -> Domain/Space | 3
 
-# Combat -> UI (2 edges)
+# Combat -> UI (1 edge)
 Domain/Combat -> Domain/UI | 3
-Domain/Combat -> Feature/GuiDefinition | 1
 
 # Combat -> World (1 edge)
 Domain/Combat -> Domain/World | 8
@@ -190,9 +186,8 @@ Domain/Companions -> Domain/Items | 16
 # Companions -> Quests (1 edge)
 Domain/Companions -> Feature/QuestDefinition | 3
 
-# Companions -> UI (2 edges)
+# Companions -> UI (1 edge)
 Domain/Companions -> Domain/UI | 9
-Domain/Companions -> Feature/GuiDefinition | 2
 
 # Companions -> World (1 edge)
 Domain/Companions -> Domain/World | 3
@@ -268,9 +263,8 @@ Domain/Economy -> Domain/Quests | 12
 # Economy -> Space (1 edge)
 Domain/Economy -> Domain/Space | 3
 
-# Economy -> UI (2 edges)
+# Economy -> UI (1 edge)
 Domain/Economy -> Domain/UI | 11
-Domain/Economy -> Feature/GuiDefinition | 3
 
 # Economy -> World (1 edge)
 Domain/Economy -> Domain/World | 7
@@ -288,12 +282,11 @@ Feature/DialogDefinition -> Domain/Character | 19
 Feature/MigrationDefinition -> Domain/Character | 11
 Feature/MigrationDefinition -> Feature/AppearanceDefinition | 17
 
-# Foundation -> Combat (5 edges)
+# Foundation -> Combat (4 edges)
 Domain/Foundation -> Domain/Combat | 8
 Feature/DialogDefinition -> Domain/Combat | 8
 Feature/MigrationDefinition -> Domain/Combat | 11
 Feature/SnippetDefinition -> Domain/Combat | 1
-Platform/Entity -> Domain/Combat | 3
 
 # Foundation -> Companions (1 edge)
 Feature/MigrationDefinition -> Domain/Companions | 45
@@ -452,23 +445,18 @@ Feature.UsePerkFeat -> Domain/Social | 1
 # Gameplay -> Space (1 edge)
 Feature.PlayerStatusWindow -> Domain/Space | 1
 
-# Gameplay -> UI (18 edges)
+# Gameplay -> UI (13 edges)
 Feature.ArmorDisplay -> Domain/UI | 1
-Feature.ArmorDisplay -> Feature/GuiDefinition | 1
 Feature.CivilianPatrol -> Domain/UI | 1
 Feature.DMActions -> Domain/UI | 1
-Feature.DMActions -> Feature/GuiDefinition | 1
 Feature.DMToolbarWindow -> Domain/UI | 3
-Feature.DMToolbarWindow -> Feature/GuiDefinition | 2
 Feature.EchaniTempleMonks -> Domain/UI | 1
 Feature.EquipmentStats -> Domain/UI | 2
-Feature.EquipmentStats -> Feature/GuiDefinition | 2
 Feature.HolonetTerminal -> Domain/UI | 1
 Feature.Jukebox -> Domain/UI | 1
 Feature.Jukebox -> Feature/GuiDefinition | 1
 Feature.PlaceableScripts -> Domain/UI | 4
 Feature.PlayerStatusWindow -> Domain/UI | 16
-Feature.PlayerStatusWindow -> Feature/GuiDefinition | 11
 Feature.SlicingTerminal -> Domain/UI | 1
 Feature.SlicingTerminal -> Feature/GuiDefinition | 1
 
@@ -518,9 +506,8 @@ Feature/ItemDefinition -> Feature.BeastStableTrials | 1
 # Items -> Space (1 edge)
 Feature/ItemDefinition -> Domain/Space | 1
 
-# Items -> UI (4 edges)
+# Items -> UI (3 edges)
 Domain/Items -> Domain/UI | 8
-Domain/Items -> Feature/GuiDefinition | 1
 Feature/ItemDefinition -> Domain/UI | 4
 Feature/ItemDefinition -> Feature/GuiDefinition | 4
 
@@ -582,9 +569,8 @@ Domain/Quests -> Domain/Economy | 4
 Domain/Quests -> Domain/Items | 16
 Feature/QuestDefinition -> Domain/Items | 75
 
-# Quests -> UI (2 edges)
+# Quests -> UI (1 edge)
 Domain/Quests -> Domain/UI | 9
-Domain/Quests -> Feature/GuiDefinition | 7
 
 # Social -> Abilities (3 edges)
 Domain/Social -> Domain/Abilities | 4

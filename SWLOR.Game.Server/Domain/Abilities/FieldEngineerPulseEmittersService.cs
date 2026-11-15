@@ -11,9 +11,9 @@ namespace SWLOR.Game.Server.Domain.Abilities;
 /// </summary>
 public class FieldEngineerPulseEmittersService : IFieldEngineerPulseEmittersService
 {
-    private readonly Dictionary<uint, List<DeviceAbilityEffects.FieldEngineerPulseEmitter>> _activeEmitters = new();
+    private readonly Dictionary<uint, List<FieldEngineerPulseEmitter>> _activeEmitters = new();
 
-    public bool TryGetSnapshot(uint activator, out DeviceAbilityEffects.FieldEngineerPulseEmitter[] emitters)
+    public bool TryGetSnapshot(uint activator, out FieldEngineerPulseEmitter[] emitters)
     {
         if (!_activeEmitters.TryGetValue(activator, out var list))
         {
@@ -25,24 +25,24 @@ public class FieldEngineerPulseEmittersService : IFieldEngineerPulseEmittersServ
         return true;
     }
 
-    public void Track(DeviceAbilityEffects.FieldEngineerPulseEmitter emitter)
+    public void Track(FieldEngineerPulseEmitter emitter)
     {
         if (!_activeEmitters.TryGetValue(emitter.Activator, out var emitters))
         {
-            emitters = new List<DeviceAbilityEffects.FieldEngineerPulseEmitter>();
+            emitters = new List<FieldEngineerPulseEmitter>();
             _activeEmitters[emitter.Activator] = emitters;
         }
 
         emitters.Add(emitter);
     }
 
-    public bool IsTracked(DeviceAbilityEffects.FieldEngineerPulseEmitter emitter)
+    public bool IsTracked(FieldEngineerPulseEmitter emitter)
     {
         return _activeEmitters.TryGetValue(emitter.Activator, out var emitters) &&
                emitters.Contains(emitter);
     }
 
-    public bool TryRemove(DeviceAbilityEffects.FieldEngineerPulseEmitter emitter)
+    public bool TryRemove(FieldEngineerPulseEmitter emitter)
     {
         if (!_activeEmitters.TryGetValue(emitter.Activator, out var emitters))
             return false;
@@ -57,7 +57,7 @@ public class FieldEngineerPulseEmittersService : IFieldEngineerPulseEmittersServ
             _activeEmitters.Remove(activator);
     }
 
-    public IReadOnlyList<DeviceAbilityEffects.FieldEngineerPulseEmitter> TakeAll()
+    public IReadOnlyList<FieldEngineerPulseEmitter> TakeAll()
     {
         var all = _activeEmitters.Values.SelectMany(emitters => emitters).ToArray();
         _activeEmitters.Clear();

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
 using Slicing = SWLOR.Game.Server.Domain.Crafting.Slicing;
 using static SWLOR.Game.Server.Composition.GameServices;
 

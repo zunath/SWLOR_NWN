@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string SaberStormMeasureQuestId = "saber_storm_measure";
         internal const string SaberStormBreachQuestId = "saber_storm_breach";
         internal const string SaberStormCircleQuestId = "saber_storm_circle";
-        internal const string SaberStormMasteryQuestId = "saber_storm_mastery";
+        internal const string SaberStormMasteryQuestId = CapstoneQuestIds.SaberStormMasteryQuestId;
         internal const string SaberStormAdeptResref = "cp_sabstorm_ad";
         internal const string SaberStormSpecialistResref = "cp_sabstorm_sp";
         internal const string SaberStormInnerCircleResref = "cp_sabstorm_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string GuardianMasterMeasureQuestId = "guardian_master_measure";
         internal const string GuardianMasterBreachQuestId = "guardian_master_breach";
         internal const string GuardianMasterCircleQuestId = "guardian_master_circle";
-        internal const string GuardianMasterMasteryQuestId = "guardian_master_mastery";
+        internal const string GuardianMasterMasteryQuestId = CapstoneQuestIds.GuardianMasterMasteryQuestId;
         internal const string GuardianMasterAdeptResref = "cp_guardmst_ad";
         internal const string GuardianMasterSpecialistResref = "cp_guardmst_sp";
         internal const string GuardianMasterInnerCircleResref = "cp_guardmst_ic";

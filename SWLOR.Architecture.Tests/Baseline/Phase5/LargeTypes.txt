@@ -44,7 +44,7 @@ SWLOR.Game.Server.Domain.World.ShuttleService | 1314
 SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase | 2332
 SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService | 1926
 SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand | 1441
-SWLOR.Game.Server.Feature.EquipmentStats | 1130
+SWLOR.Game.Server.Feature.EquipmentStats | 1131
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel | 6180
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 1516
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DisguiseViewModel | 1029

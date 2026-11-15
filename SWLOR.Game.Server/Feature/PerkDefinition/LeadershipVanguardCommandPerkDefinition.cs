@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -203,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
                 .GrantsFeat(FeatType.DecisiveCommand1)
-                .RequirementQuest(LeadershipCapstoneQuestDefinition.DecisiveCommandMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.DecisiveCommandMasteryQuestId);
         }
 
     }

@@ -1056,13 +1056,7 @@ public class MimicryTests
     [Test]
     public void MimicryTechniqueActivation_RequiresTheTechniqueToRemainEquipped()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
 
         abilitySource.Should().Contain("ability.IsMimicryTechnique &&");
         abilitySource.Should().Contain("!_mimicry.IsTechniqueEquipped(activator, abilityType)",

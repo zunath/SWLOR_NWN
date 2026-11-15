@@ -10,6 +10,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
 using TelegraphInstance = SWLOR.Game.Server.Domain.Combat.TelegraphService;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -142,7 +143,7 @@ public class TelegraphTests
     public void ApplyTelegraphedCombatImpact_FlashesOnlyWhenActivationDidNotAlreadyShowTheShape()
     {
         // Guards the wiring itself: the zero-telegraph branch must still render something.
-        var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var source = AbilitySource.Read();
         var branchStart = source.IndexOf("if (telegraphDuration <= 0f)", StringComparison.Ordinal);
 
         branchStart.Should().BeGreaterThan(
@@ -183,7 +184,7 @@ public class TelegraphTests
         impactBody.Should().NotContain("ImpactDelay",
             "a separate delay must not discard the warned footprint");
 
-        var abilitySource = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         abilitySource.Should().Contain("trackedImpact?.Ability.ImpactDelay > 0f ? null : trackedImpact?.ActivationAreaTelegraphs",
             "a separately delayed impact still needs a fresh flash at the original footprint");
     }
@@ -258,7 +259,7 @@ public class TelegraphTests
     [Test]
     public void AreaImpactFlash_IsMarkedSoAlliedViewersCanSkipIt()
     {
-        var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var source = AbilitySource.Read();
         var flashStart = source.IndexOf("private void ShowAreaImpactFlash(", StringComparison.Ordinal);
 
         ExtractBlockBody(source, flashStart).Should().Contain("isImpactFlash: true");

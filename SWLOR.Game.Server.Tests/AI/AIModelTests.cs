@@ -1183,11 +1183,7 @@ public class AIModelTests
     [Test]
     public void GuardedBiteAISelectionUsesTheSharedAbilityRecastGate()
     {
-        var abilitySource = ReadSource(
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs");
+        var abilitySource = AbilitySource.Read();
         var abilityValidation = ExtractMethodBody(abilitySource, "public bool CanUseAbility");
 
         abilityValidation.Should().Contain("var (isOnRecast, timeToWait) = _recast.IsOnRecastDelay(activator, ability.RecastGroup);");

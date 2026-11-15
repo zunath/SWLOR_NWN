@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -61,7 +62,7 @@ public class AuraAnnouncementTests
             directory = directory.Parent;
         directory.Should().NotBeNull();
 
-        var source = File.ReadAllText(Path.Combine(directory!.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var source = AbilitySource.Read();
         source.Should().Contain("aura.AnnouncesApplication = !detail.AnnouncedTo.Contains(recipient);");
         source.Should().Contain("detail?.AnnouncedTo.Add(recipient);");
         source.Should().Contain("aura.AnnouncedTo.Remove(target);");

@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -127,7 +128,7 @@ public class EquipmentAnimationPlaybackTests
         AssertEquipmentPlayback(activationBody.DescendantNodes().OfType<InvocationExpressionSyntax>(), "NamedAnimation.Queue", "ability.AnimationEquipmentRequirement");
         var queued = activation.DescendantNodes().OfType<MethodDeclarationSyntax>().Single(method => method.Identifier.Text == "QueueWeaponAbility");
         AssertCreatureBinding(queued.DescendantNodes().OfType<InvocationExpressionSyntax>(), "QueuedClip");
-        var impact = Read("SWLOR.Game.Server/Domain/Abilities/AbilityService.cs").DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var impact = AbilitySource.Nodes<MethodDeclarationSyntax>()
             .Single(method => method.Identifier.Text == "PlayCombatImpactAnimation");
         AssertCreatureBinding(impact.DescendantNodes().OfType<InvocationExpressionSyntax>(), "ImpactClip");
         AssertEquipmentPlayback(impact.DescendantNodes().OfType<InvocationExpressionSyntax>(), "_namedAnimation.Play", "trackedAbility.AnimationEquipmentRequirement");

@@ -146,13 +146,7 @@ public class NativeControlStatusEffectTests
     [Test]
     public void RepeatedHardControlRemovals_RestartTheSharedImmunityWindow()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var methodStart = abilitySource.IndexOf(
             "private void ApplyTemporaryImmunitySingle(",
             StringComparison.Ordinal);
@@ -189,13 +183,7 @@ public class NativeControlStatusEffectTests
     [Test]
     public void PostControlImmunity_AgesTheWindowDuringOfflineReconciliation()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var method = ExtractMethod(abilitySource, "public void ApplyPostControlImmunity(");
 
         method.Should().Contain(
@@ -282,7 +270,7 @@ public class NativeControlStatusEffectTests
                 "stacks during its duration or blocks without ever releasing");
         }
 
-        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"))
+        AbilitySource.Read()
             .Should().Contain("HasActiveHardCrowdControlStatus(target)",
                 "the shared immunity gate must treat an active hard-CC status as immunity");
     }

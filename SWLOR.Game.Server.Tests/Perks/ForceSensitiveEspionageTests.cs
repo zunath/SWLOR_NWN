@@ -287,7 +287,7 @@ public class ForceSensitiveEspionageTests
         new MessagingService(FacadeForwarder.For<IStealthService>()).ShouldDeliverNearby(senderHidden, actorHidden).Should().Be(nearby);
         var messaging = ReadSource("Domain", "Foundation", "MessagingService.cs");
         messaging.Should().Contain("if (!ShouldDeliverNearby(IsConcealed(sender), IsConcealed(concealedActor)))");
-        var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
+        var ability = AbilitySource.Read().Replace("\r\n", "\n");
         ability.Should().Contain("                60f,\n                activator);", "ability combat-log lines name the activator");
     }
 
@@ -303,7 +303,7 @@ public class ForceSensitiveEspionageTests
         usePerkFeat.Should().Contain("if (Stealth.IsConcealed(activator))\n                return;", "ability sounds reach only the hidden activator");
         usePerkFeat.Should().Contain("ability.ActivationVisualEffect != VisualEffect.None && !Stealth.IsConcealed(activator)");
 
-        var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
+        var ability = AbilitySource.Read().Replace("\r\n", "\n");
         ability.Should().Contain("if (_stealth.IsConcealed(recipient))\n            {\n                ShowVisualEffectToPlayer(recipient, recipient, visuals.Effect);");
 
         foreach (var file in new[] { "GhostProtocolAbilityDefinition.cs", "SharedPresenceAbilityDefinition.cs" })
@@ -433,7 +433,7 @@ public class ForceSensitiveEspionageTests
     [Test]
     public void ForcePowerHelper_DrivesForceDisruptionAndFpSpendTriggers()
     {
-        var ability = ReadSource("Domain", "Abilities", "AbilityService.cs");
+        var ability = AbilitySource.Read().Replace("\r\n", "\n");
         ability.Should().Contain("if (IsForcePower(activator, ability) &&\n                GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)",
             "Force Disruption blocks the new powers");
         var combat = CombatSource.Read().Replace("\r\n", "\n");

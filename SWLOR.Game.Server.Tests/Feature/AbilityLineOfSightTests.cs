@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -8,13 +9,7 @@ public class AbilityLineOfSightTests
     [Test]
     public void TargetedAbilityValidation_RequiresObjectAndVectorLineOfSight()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var validationBody = source.Substring(
             source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal),
             source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal) -
@@ -36,13 +31,7 @@ public class AbilityLineOfSightTests
     [Test]
     public void AimedAreaValidation_UsesLocationWithoutObjectTargetFallback()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var validationBody = source.Substring(
             source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal),
             source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal) -
@@ -96,13 +85,7 @@ public class AbilityLineOfSightTests
     [Test]
     public void HostileAreaAbilityValidation_RejectsBlockedAreaTargetsBeforeRecast()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var validationBody = source.Substring(
             source.IndexOf("public bool CanUseAbility", StringComparison.Ordinal),
             source.IndexOf("private bool HasAbilityLineOfSight", StringComparison.Ordinal) -
@@ -129,13 +112,7 @@ public class AbilityLineOfSightTests
     [Test]
     public void HostileAreaImpact_FiltersBlockedTargetsAtImpactTime()
     {
-        var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Abilities",
-            "AbilityService.cs")).Replace("\r\n", "\n");
+        var source = AbilitySource.Read().Replace("\r\n", "\n");
         var shapeImpactStartIndex = source.IndexOf("private int ApplyCombatImpactInShape", StringComparison.Ordinal);
         var shapeImpactBody = source.Substring(
             shapeImpactStartIndex,

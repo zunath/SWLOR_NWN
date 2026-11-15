@@ -157,9 +157,7 @@ public class CombatDamageTests
     [Test]
     public void NPCAbilityHitResolution_UsesCreatureLevelNotScalingRank()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
 
         // The derived scaling rank belongs to NPC damage only. Feeding it into hit resolution made
         // a level 40 enemy resolve its ability accuracy as though it were rank 11, which clamped
@@ -257,8 +255,7 @@ public class CombatDamageTests
     [Test]
     public void NPCAbilityScaling_DoesNotFallbackToUnrelatedResistancesForUnresistedDamageTypes()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
 
         abilitySource.Should().NotContain("npcStats.Resistances.Values.Max()");
     }
@@ -267,7 +264,7 @@ public class CombatDamageTests
     public void AbilityCombatImpact_IncludesWeaponDamageAndKeepsPhysicalEffectDamagePhysical()
     {
         var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var combatSource = CombatSource.Read();
         var damageTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Foundation", "CombatDamageType.cs"));
         var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");
@@ -306,7 +303,7 @@ public class CombatDamageTests
         CombatRules.CanWeaponSkillTriggerAbility(SkillType.Spear, SkillType.Invalid).Should().BeTrue();
 
         var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
 
         abilitySource.Should().NotContain("HasEquippedWeaponForAbilitySkill");
@@ -320,8 +317,7 @@ public class CombatDamageTests
     [Test]
     public void WeaponAbilityDamage_TakesTheElementWheneverWeaponDmgIsIncluded()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var combatSource = CombatSource.Read();
 
         ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage")
@@ -362,7 +358,7 @@ public class CombatDamageTests
     public void QueuedWeaponDamage_UsesTheTriggeringItemAndPreservesReflectionWeaponSelection()
     {
         var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var combatSource = CombatSource.Read();
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
 
@@ -425,8 +421,7 @@ public class CombatDamageTests
     [Test]
     public void NonCriticalRangedAbilities_ReserveStatDrivenStaminaCostAndRefundCriticalResults()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var combatSource = CombatSource.Read();
         var endAbilityImpact = ExtractMethod(abilitySource, "public AbilityImpactSummary EndAbilityImpact");
         var getFlatAdjustment = ExtractMethod(combatSource, "public static int GetAbilityStaminaCostFlatAdjustment(uint creature, AbilityDetail ability)");
@@ -477,7 +472,7 @@ public class CombatDamageTests
         consumeNextSkillBonuses.Should().Contain("_temporaryStatModifier.Consume(",
             "ordinary next-ability Critical Rate bonuses must still be consumed on the next ability");
 
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var endAbilityImpact = ExtractMethod(abilitySource, "public AbilityImpactSummary EndAbilityImpact");
         endAbilityImpact.Should().Contain("impact.Summary.CriticalHitCount > 0");
         endAbilityImpact.Should().Contain("ConsumePersistentNextSkillAbilityCriticalRateBonus");
@@ -487,9 +482,8 @@ public class CombatDamageTests
     [Test]
     public void SkillSpecificCriticalStats_UseAbilitySkillInsteadOfEquippedWeaponPredicates()
     {
-        var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var damageRollSource = NativeCombatSource.DamageRoll();
         var attackRollSource = NativeCombatSource.AttackRoll();
 
@@ -699,7 +693,7 @@ public class CombatDamageTests
     public void QueuedWeaponAbilityImpacts_DoNotRollSeparateAbilityHit()
     {
         var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var combatSource = CombatSource.Read();
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         var damageRollSource = NativeCombatSource.DamageRoll();
@@ -837,8 +831,7 @@ public class CombatDamageTests
     [Test]
     public void QueuedBeastWeaponAbilities_IncludeNaturalWeaponDamage()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var combatSource = CombatSource.Read();
         var playerDamage = ExtractMethod(abilitySource, "private int CalculateCombatImpactDamage");
         var npcDamage = ExtractMethod(abilitySource, "private int CalculateNPCCombatImpactDamage");
@@ -888,9 +881,8 @@ public class CombatDamageTests
     [Test]
     public void CombatTriggeredDamage_IsAttributedToTheGameplaySource()
     {
-        var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
 
         combatSource.Should().Contain("ApplyTriggeredDamage(defender, attacker, reflectedDamage, damageType);");
         combatSource.Should().Contain("var appliedDamage = ApplyTriggeredDamage(");
@@ -942,7 +934,7 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var skillTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Foundation", "SkillType.cs"));
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
 
         skillTypeSource.Should().NotContain("CombatImpactDamageAbility");
         skillTypeSource.Should().NotContain("AbilityType.");
@@ -1136,9 +1128,8 @@ public class CombatDamageTests
     [Test]
     public void TemporaryHitPointDamageFeedback_IsSentBeforeEngineDamageIsApplied()
     {
-        var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var damageRollSource = NativeCombatSource.DamageRoll();
 
         combatSource.Should().Contain("public static void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage)");
@@ -1150,9 +1141,8 @@ public class CombatDamageTests
     [Test]
     public void IncomingCriticalHitDowngrade_FeedbackIsSentFromStatDrivenMitigationPaths()
     {
-        var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
+        var abilitySource = AbilitySource.Read();
         var damageRollSource = NativeCombatSource.DamageRoll();
         var resolveAttackRollSource = NativeCombatSource.AttackRoll();
 

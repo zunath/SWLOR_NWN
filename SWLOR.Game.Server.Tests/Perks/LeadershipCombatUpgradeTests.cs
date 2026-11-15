@@ -369,7 +369,6 @@ public class LeadershipCombatUpgradeTests
     [Test]
     public void LeadershipPhysicalAndForceReduction_CoversNonDirectDamageWithoutDoubleApplyingDirectDamage()
     {
-        var root = FindRepositoryRoot();
         var combat = CombatSource.Read();
         var genericStage = CombatSource.Members("ApplyDamageTakenModifiers");
         var percentageStage = CombatSource.Members("ApplyDamageTakenPercentageModifiers", "ApplyTypedLeadershipDamageTakenModifier", "GetLeadershipPhysicalDamageTakenPercentAdjustment", "GetLeadershipForceDamageTakenPercentAdjustment", "ApplyTypedLeadershipDamageTakenPercentageModifier");
@@ -401,7 +400,7 @@ public class LeadershipCombatUpgradeTests
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
 
-        var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Abilities" / "AbilityService.cs").FullName);
+        var ability = AbilitySource.Read();
         (ability.Split("typedLeadershipReductionAlreadyApplied: true").Length - 1).Should().Be(3,
             "all direct ability damage paths apply typed Leadership in the explicit post-conversion stage");
         (ability.Split("ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)").Length - 1)

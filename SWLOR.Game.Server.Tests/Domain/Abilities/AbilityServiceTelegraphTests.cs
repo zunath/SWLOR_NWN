@@ -47,7 +47,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     public void An_instant_area_impact_resolves_its_footprint_flashes_then_hits_what_is_inside()
     {
         Bench.CreaturesInArea.AddRange(new[] { Target, Caster });
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Bench.Log.Clear();
         TelegraphGeometry? geometry = null;
 
@@ -57,7 +57,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
         geometry!.Value.Shape.Should().Be(TelegraphType.Sphere);
         geometry.Value.Position.Should().Be(Bench.Positions[Target]);
         OrderOf("Flash:", "EffectAt:", "BattleTheme:").Should().BeInAscendingOrder();
-        Service.GetActiveAbilityImpactSummary(Caster).IsAreaAbility.Should().BeTrue();
+        ImpactState.GetActiveAbilityImpactSummary(Caster).IsAreaAbility.Should().BeTrue();
     }
 
     [Test]
@@ -68,7 +68,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
         Instant(after: summaries.Add);
         summaries.Should().BeEmpty();
 
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Instant(after: summaries.Add);
         summaries.Should().ContainSingle();
     }
@@ -78,7 +78,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [TestCase(CombatImpactAreaShape.Line, "Line")]
     public void Each_shape_has_its_own_telegraph(CombatImpactAreaShape shape, string name)
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Bench.Log.Clear();
 
         var dealt = Service.ApplyTelegraphedCombatImpact(
@@ -103,14 +103,14 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.DealsDeferredDamage = true;
-        Service.NextAbilityDamageBonus = 3;
-        Service.StatusAppliedBonus = 0;
-        Service.BeginAbilityImpact(Caster, ability);
+        Bench.NextAbilityDamageBonus = 3;
+        Bench.StatusAppliedBonus = 0;
+        Lifecycle.BeginAbilityImpact(Caster, ability);
         var summaries = new List<AbilityImpactSummary>();
         Service.ApplyTelegraphedCombatImpact(
             Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, CombatImpactAreaShape.Sphere, 2f, 6f,
             areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst, afterImpactAction: summaries.Add, playImpactAnimation: false);
-        Service.EndAbilityImpact(Caster);
+        Lifecycle.EndAbilityImpact(Caster);
         Bench.Log.Clear();
 
         Bench.PendingTelegraph!(Caster, new List<uint> { Target, Other });
@@ -129,7 +129,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [Test]
     public void A_telegraph_with_no_hostile_left_reports_it_and_keeps_the_stamina_cost_paid()
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Service.ApplyTelegraphedCombatImpact(
             Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, CombatImpactAreaShape.Sphere, 2f, 6f,
             areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst, playImpactAnimation: false);
@@ -147,7 +147,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [Test]
     public void A_telegraph_can_stay_quiet_about_no_targets()
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Service.ApplyTelegraphedCombatImpact(
             Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, CombatImpactAreaShape.Sphere, 2f, 6f,
             areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst, alwaysApplyAreaVisualEffect: false, sendsNoTargetMessage: false,
@@ -163,7 +163,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [Test]
     public void A_dead_creator_resolves_nothing_but_still_completes_the_stamina_context()
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Service.ApplyTelegraphedCombatImpact(
             Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, CombatImpactAreaShape.Sphere, 2f, 6f, playImpactAnimation: false);
         Bench.Hp[Caster] = 0;
@@ -177,13 +177,13 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [Test]
     public void A_control_telegraph_consumes_the_armed_bonuses_only_when_its_target_turns_out_to_take_damage()
     {
-        Service.NextAbilityDamageBonus = 3;
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Bench.NextAbilityDamageBonus = 3;
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Service.ApplyTelegraphedCombatImpact(
             Caster, Target, Bench.Nowhere(), SkillType.Force, 0, 0, null!, CombatImpactAreaShape.Sphere, 2f, 6f,
             baseDamageAdjustment: target => target == Other ? 10 : 0, playImpactAnimation: false);
         LogOf("ConsumeNextAbilityDamageBonus").Should().BeEmpty("the telegraph has not resolved");
-        Service.EndAbilityImpact(Caster);
+        Lifecycle.EndAbilityImpact(Caster);
 
         Bench.PendingTelegraph!(Caster, new List<uint> { Target, Other });
 
@@ -195,7 +195,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     {
         Bench.Positions[Target] = new Vector3(1f, 0f, 0f);
         Bench.Positions[Other] = new Vector3(4f, 0f, 0f);
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         var ability = Hostile();
         Service.ApplyTelegraphedCombatImpact(
             Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, CombatImpactAreaShape.Sphere, 2f, 6f,
@@ -210,17 +210,17 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [Test]
     public void A_failure_inside_the_telegraph_aborts_its_impact_and_completes_the_stamina_context()
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Service.ApplyTelegraphedCombatImpact(
             Caster, Target, Bench.Nowhere(), SkillType.Force, 10, 0, null!, CombatImpactAreaShape.Sphere, 2f, 6f,
             afterSuccessfulHit: _ => throw new InvalidOperationException("boom"), playImpactAnimation: false);
-        Service.EndAbilityImpact(Caster);
+        Lifecycle.EndAbilityImpact(Caster);
         Bench.Log.Clear();
 
         var run = () => Bench.PendingTelegraph!(Caster, new List<uint> { Target });
 
         run.Should().Throw<InvalidOperationException>();
-        Service.GetActiveAbilityImpactSummary(Caster).Should().BeNull();
+        ImpactState.GetActiveAbilityImpactSummary(Caster).Should().BeNull();
         Bench.Log.Should().Contain($"CompleteDeferredStamina:{Caster}:Blast");
     }
 
@@ -235,14 +235,14 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
 
         Bench.Log.Should().Contain($"BattleTheme:{Target}:{Caster}");
         Bench.Log.Should().Contain($"CompleteDeferredStamina:{Caster}:");
-        Service.GetActiveAbilityImpactSummary(Caster).Should().BeNull();
+        ImpactState.GetActiveAbilityImpactSummary(Caster).Should().BeNull();
     }
 
     [TestCase(0f, true)]
     [TestCase(0.3f, false)]
     public void The_flash_needs_a_duration_and_a_size_and_the_telegraph_service_agrees(float duration, bool hidden)
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
 
         Instant(flash: duration);
 
@@ -253,7 +253,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     public void The_flash_is_suppressed_when_the_activation_marker_already_shows_the_shape()
     {
         Bench.ImpactFlashShows = false;
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
 
         Instant();
 
@@ -264,7 +264,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     public void A_shape_the_telegraph_resolves_to_nothing_has_no_flash()
     {
         Bench.ResolveGeometry = impact => impact with { Size = Vector2.Zero };
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
 
         Instant();
 
@@ -277,7 +277,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     {
         Bench.CreaturesInArea.AddRange(new[] { Target, Other });
         Bench.Positions[Other] = new Vector3(-4f, 0f, 0f);
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         Bench.Log.Clear();
         TelegraphGeometry? geometry = null;
 
@@ -293,7 +293,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     {
         Bench.Positions[Target] = Vector3.Zero;
         Bench.Facing = 90f;
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         TelegraphGeometry? geometry = null;
 
         Instant(CombatImpactAreaShape.Cone, resolved: resolved => geometry = resolved);
@@ -305,7 +305,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     public void A_location_aims_the_shape_and_with_nothing_to_aim_at_the_caster_stands_at_the_origin()
     {
         Bench.Invalid.Add(Target);
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         TelegraphGeometry? geometry = null;
 
         Service.ApplyTelegraphedCombatImpact(
@@ -322,7 +322,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [Test]
     public void A_centered_sphere_stays_on_the_caster()
     {
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
         TelegraphGeometry? geometry = null;
 
         Instant(centerOnActivator: true, resolved: resolved => geometry = resolved);
@@ -335,7 +335,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.Targeting = new AbilityTargetingDetail(Spell.Invalid, AbilityTargetingShapeType.Rect, 8f, 2f, AbilityTargetingFlags.BackOffsetOrigin, null!);
-        Service.BeginAbilityImpact(Caster, ability);
+        Lifecycle.BeginAbilityImpact(Caster, ability);
         TelegraphGeometry? geometry = null;
 
         Instant(CombatImpactAreaShape.Line, 8f, 2f, resolved: resolved => geometry = resolved);
@@ -359,7 +359,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
         Bench.NoLineOfSight.Add(Other);
         Bench.Positions[Other] = new Vector3(2f, 0f, 0f);
 
-        var found = Service.GetHostileTargetsInSphere(Caster, Bench.At(AbilityBench.TheArea, Vector3.Zero), 5f);
+        var found = Geometry.GetHostileTargetsInSphere(Caster, Bench.At(AbilityBench.TheArea, Vector3.Zero), 5f);
 
         found.Should().Equal(Target);
     }
@@ -367,7 +367,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     [Test]
     public void The_hostiles_of_an_area_with_no_valid_area_are_none()
     {
-        Service.GetHostileTargetsInSphere(Caster, Bench.Nowhere(), 5f).Should().BeEmpty();
+        Geometry.GetHostileTargetsInSphere(Caster, Bench.Nowhere(), 5f).Should().BeEmpty();
     }
 
     [TestCase(CombatImpactAreaShape.Sphere, 3f, 0f, 5f, 0f, true)]
@@ -402,7 +402,7 @@ public class AbilityServiceTelegraphTests : AbilityServiceTestBase
     public void An_unknown_geometry_is_not_searched()
     {
         Bench.ResolveGeometry = impact => impact with { Shape = TelegraphType.None };
-        Service.BeginAbilityImpact(Caster, Hostile());
+        Lifecycle.BeginAbilityImpact(Caster, Hostile());
 
         var run = () => Instant();
 

@@ -49,12 +49,13 @@ public class PlayerMessageAuditTests
     public void GameplayOutcomes_CannotBeHiddenBehindDiagnostics()
     {
         var root = FindRepositoryRoot();
-        var files = new[] { "Domain/Space/SpaceService.cs", "Domain/Abilities/AbilityService.cs", "Domain/Character/StatusEffectService.cs",
+        var files = new[] { "Domain/Space/SpaceService.cs", "Domain/Character/StatusEffectService.cs",
             "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Domain/Character/SkillService.cs", "Domain/Companions/BeastMasteryService.cs",
             "Domain/Quests/QuestObjectives.cs", "Domain/Quests/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Domain/Abilities/MimicryService.cs",
             "Domain/World/FishingService.cs", "Domain/World/WeatherService.cs", "Feature/ScavengePoint.cs",
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }
             .Select(relative => Path.Combine(root, "SWLOR.Game.Server", relative)).ToList();
+        files.AddRange(AbilitySource.Paths());
         files.AddRange(Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition"), "*.cs"));
 
         var hiddenOutcomes = files.SelectMany(file => ReadCalls(file)
@@ -88,12 +89,15 @@ public class PlayerMessageAuditTests
         messages.Should().NotContain(call => UsesDiagnostics(call));
     }
 
-    [TestCase("Domain/Abilities/AbilityService.cs", "SendCombatImpactNoTargetsMessage")]
+    // AbilityService: the part files of AbilitySource, wherever the split puts the member.
+    [TestCase("AbilityService", "SendCombatImpactNoTargetsMessage")]
     [TestCase("Feature/AbilityDefinition/Force/ThrowLightsaberAbilityDefinition.cs", "ApplyThrowLightsaber")]
     public void NoTargetOutcomes_ReachTheActorAndNearbyObservers(string relative, string member)
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", relative);
-        var messages = ReadCalls(file).Where(call => MethodName(call) == "SendMessageNearbyToPlayers" &&
+        var calls = relative == "AbilityService"
+            ? AbilitySource.Nodes<InvocationExpressionSyntax>()
+            : ReadCalls(Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", relative));
+        var messages = calls.Where(call => MethodName(call) == "SendMessageNearbyToPlayers" &&
             call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == member).ToArray();
         messages.Should().ContainSingle();
         var message = messages.Single();

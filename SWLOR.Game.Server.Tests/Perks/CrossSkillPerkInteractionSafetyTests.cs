@@ -114,7 +114,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         var statusApplied = ExtractMethod(combat, "private static void ApplyStatusAppliedEffects(");
         statusApplied.Should().Contain("GrantStatusAppliedNextAttackDamageBonus");
 
-        var ability = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs");
+        var ability = AbilitySource.Read();
         var beginAbilityImpact = ExtractMethod(ability, "public void BeginAbilityImpact(");
         beginAbilityImpact.Should().Contain("GetStatusAppliedNextAttackDamageBonus");
         beginAbilityImpact.Should().NotContain("ConsumeStatusAppliedNextAttackDamageBonus",
@@ -154,8 +154,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
     [Test]
     public void StatusAppliedCategoryRiders_OnlyCountCategoriesFromSuccessfulApplications()
     {
-        var root = FindRepositoryRoot();
-        var abilitySource = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs");
+        var abilitySource = AbilitySource.Read();
         var applyImpactStatus = ExtractMethod(abilitySource, "private bool ApplyCombatImpactStatusEffect(");
         applyImpactStatus.Should().Contain("out StatusEffectCategory appliedStatusCategories");
         applyImpactStatus.Should().Contain("if (applied)");
@@ -232,20 +231,21 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             .Where(path => !CombatSource.IsCombatFile(path))
             .Where(path => File.ReadAllText(path) is var text && (text.Contains("GameServices.CombatDamageTaken.ApplyDamageReflectionEffects(", StringComparison.Ordinal) ||
                                                                   text.Contains("_damageTaken.Value.ApplyDamageReflectionEffects(", StringComparison.Ordinal)))
-            .Select(path => Path.GetRelativePath(root.FullName, path).Replace('\\', '/'))
-            .OrderBy(path => path)
+            // The part files of AbilityService count as the one ability source they were split from.
+            .Select(path => AbilitySource.IsAbilityFile(path) ? "AbilityService" : Path.GetRelativePath(root.FullName, path).Replace('\\', '/'))
+            .Distinct()
+            .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
         reflectionDispatchFiles.Should().Equal(
-            "SWLOR.Game.Server/Domain/Abilities/AbilityService.cs",
+            "AbilityService",
             "SWLOR.Game.Server/Native/GetDamageRoll.cs");
     }
 
     [Test]
     public void DirectDamageRiders_RunOnlyForTheirIntendedDeliveryPath()
     {
-        var root = FindRepositoryRoot();
         var combat = CombatSource.Read();
-        var ability = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs");
+        var ability = AbilitySource.Read();
 
         var damageEffects = ExtractMethod(combat, "public static void ApplyDamageDealtEffects(");
         damageEffects.Should().Contain("bool isAbilityDamage = false");
@@ -462,9 +462,8 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
     [Test]
     public void CrossSkillDamageHealing_UsesOneAggregatePerHitCap()
     {
-        var root = FindRepositoryRoot();
         var combat = CombatSource.Read();
-        var ability = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs");
+        var ability = AbilitySource.Read();
         var nativeDamage = NativeCombatSource.DamageRoll();
 
         var healing = ExtractMethod(combat, "public static int ApplyDamageDerivedHealing(");
@@ -566,7 +565,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         crossSkillCounter.Should().Contain("StatType.NextAttackGuardedHitDMGBonus");
         crossSkillCounter.Should().Contain("StatType.NextAttackGuardedHitEnmityBonus");
 
-        var abilitySource = Read(root, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs");
+        var abilitySource = AbilitySource.Read();
         var beginAbilityImpact = ExtractMethod(abilitySource, "public void BeginAbilityImpact(");
         beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
         beginAbilityImpact.Should().Contain("ConsumeNextAttackGuardedHitBonuses");

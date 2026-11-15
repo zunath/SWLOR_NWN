@@ -31,14 +31,14 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
     [Test]
     public void The_catalog_is_empty_until_the_definitions_are_cached()
     {
-        Service.GetAllAbilityDetails().Should().BeEmpty();
-        Service.IsFeatRegistered(Feat).Should().BeFalse();
+        Catalog.GetAllAbilityDetails().Should().BeEmpty();
+        Catalog.IsFeatRegistered(Feat).Should().BeFalse();
     }
 
     [Test]
     public void An_unregistered_feat_has_no_detail()
     {
-        var read = () => Service.GetAbilityDetail(Feat);
+        var read = () => Catalog.GetAbilityDetail(Feat);
 
         read.Should().Throw<KeyNotFoundException>().WithMessage($"Feat '{Feat}' is not registered to an ability.");
     }
@@ -46,31 +46,31 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
     [Test]
     public void Caching_builds_every_definition_binds_the_animations_and_fills_the_targeting_cache()
     {
-        Service.DefinitionTypes = Service.DefaultDefinitionTypes().ToList();
+        Bench.DefinitionTypes = Catalog.DefaultDefinitionTypes().ToList();
 
-        Service.CacheData();
+        Catalog.CacheData();
 
-        Service.IsFeatRegistered(FeatType.Flash1).Should().BeTrue();
-        Service.GetAbilityDetail(FeatType.Flash1).Should().BeSameAs(Service.GetAllAbilityDetails()[FeatType.Flash1]);
-        Service.CachedTargeting.Should().BeSameAs(Service.GetAllAbilityDetails());
+        Catalog.IsFeatRegistered(FeatType.Flash1).Should().BeTrue();
+        Catalog.GetAbilityDetail(FeatType.Flash1).Should().BeSameAs(Catalog.GetAllAbilityDetails()[FeatType.Flash1]);
+        Bench.CachedTargeting.Should().BeSameAs(Catalog.GetAllAbilityDetails());
         Bench.Log.Should().Contain("CacheAbilityTargeting");
     }
 
     [Test]
     public void Caching_again_replaces_the_catalog()
     {
-        Service.DefinitionTypes = Service.DefaultDefinitionTypes().ToList();
-        Service.Register(FeatType.Invalid, new AbilityDetail());
+        Bench.DefinitionTypes = Catalog.DefaultDefinitionTypes().ToList();
+        Catalog.Register(FeatType.Invalid, new AbilityDetail());
 
-        Service.CacheData();
+        Catalog.CacheData();
 
-        Service.IsFeatRegistered(FeatType.Invalid).Should().BeFalse();
+        Catalog.IsFeatRegistered(FeatType.Invalid).Should().BeFalse();
     }
 
     [Test]
     public void The_definition_search_finds_the_definitions_of_the_server()
     {
-        Service.DefaultDefinitionTypes().Should().Contain(typeof(ForcePushAbilityDefinition));
+        Catalog.DefaultDefinitionTypes().Should().Contain(typeof(ForcePushAbilityDefinition));
     }
 
     /// <summary>
@@ -99,21 +99,21 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
             Targeting = new AbilityTargetingDetail(Spell.Invalid, AbilityTargetingShapeType.Sphere, 5f, 0f,
                 AbilityTargetingFlags.HarmsEnemies, null!)
         };
-        Service.Register(Feat, ability);
+        Catalog.Register(Feat, ability);
         var location = Bench.At(AbilityBench.TheArea, Bench.Positions[Target]);
 
         var level = 1;
-        Service.SpaceMode.Add(Caster);
-        Service.EnforcesFeatReplacement = true;
-        Service.RepliesActiveFeat = false;
+        Bench.SpaceMode.Add(Caster);
+        Bench.EnforcesFeatReplacement = true;
+        Bench.RepliesActiveFeat = false;
         Bench.TechniqueEquipped = false;
         Bench.Hp[Caster] = 0;
         Bench.NotCommandable.Add(Caster);
         Bench.NoLineOfSight.Add(Target);
         Bench.Busy.Add(Caster);
-        Service.HasEquippedWeapon = false;
-        Service.EquipmentError = "Bad equipment.";
-        Service.Stats[(Caster, StatType.ForceAbilityActivationDisabled)] = 1;
+        Bench.HasEquippedWeapon = false;
+        Bench.EquipmentError = "Bad equipment.";
+        Bench.Stats[(Caster, StatType.ForceAbilityActivationDisabled)] = 1;
         Bench.Positions[Target] = new Vector3(50f, 0f, 0f);
         Bench.Hostile.Remove((Target, Caster));
         Bench.TechniqueError = "Technique failed.";
@@ -121,23 +121,23 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
 
         void Next(string expected, Action clear)
         {
-            Service.CanUseAbility(Caster, Target, Feat, level, location).Should().BeFalse(expected);
-            Service.GetLastActivationDenialReason().Should().Be(expected);
+            Activation.CanUseAbility(Caster, Target, Feat, level, location).Should().BeFalse(expected);
+            Activation.GetLastActivationDenialReason().Should().Be(expected);
             Bench.Messages.Last().Should().Be((Caster, expected));
             clear();
         }
 
-        Next("This ability cannot be used in space.", () => Service.SpaceMode.Clear());
+        Next("This ability cannot be used in space.", () => Bench.SpaceMode.Clear());
         Next("You do not meet the prerequisites to use this ability.", () => level = 2);
-        Next("A newer rank has replaced this ability.", () => Service.RepliesActiveFeat = true);
+        Next("A newer rank has replaced this ability.", () => Bench.RepliesActiveFeat = true);
         Next("That technique is not equipped.", () => Bench.TechniqueEquipped = true);
         Next("You are dead.", () => Bench.Hp[Caster] = 10);
         Next("You cannot take actions at this time.", () => Bench.NotCommandable.Clear());
         Next("You cannot see your target.", () => Bench.NoLineOfSight.Clear());
         Next("You are busy.", () => Bench.Busy.Clear());
-        Next("You must equip a weapon to use this ability.", () => Service.HasEquippedWeapon = true);
-        Next("Bad equipment.", () => Service.EquipmentError = string.Empty);
-        Next("You cannot use Force abilities right now.", () => Service.Stats.Clear());
+        Next("You must equip a weapon to use this ability.", () => Bench.HasEquippedWeapon = true);
+        Next("Bad equipment.", () => Bench.EquipmentError = string.Empty);
+        Next("You cannot use Force abilities right now.", () => Bench.Stats.Clear());
         Next("You are out of range.  This ability has a range of 5 meters.", () => Bench.Positions[Target] = new Vector3(3f, 0f, 0f));
         Next("You may only use this ability on enemies.", () => Bench.Hostile.Add((Target, Caster)));
         Next("Technique failed.", () => Bench.TechniqueError = string.Empty);
@@ -150,17 +150,17 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
             $"IsOnRecastDelay:{Caster}:{RecastGroup.Flash}",
             $"CooldownText:{Caster}:Probe:3 seconds");
 
-        Service.CanUseAbility(Caster, Target, Feat, level, location).Should().BeTrue();
-        Service.GetLastActivationDenialReason().Should().BeEmpty("every check clears the last reason first");
+        Activation.CanUseAbility(Caster, Target, Feat, level, location).Should().BeTrue();
+        Activation.GetLastActivationDenialReason().Should().BeEmpty("every check clears the last reason first");
     }
 
     [Test]
     public void A_rank_that_is_not_enforced_passes_the_replacement_check()
     {
-        Service.Register(Feat, Hostile());
-        Service.RepliesActiveFeat = false;
+        Catalog.Register(Feat, Hostile());
+        Bench.RepliesActiveFeat = false;
 
-        Service.CanUseAbility(Caster, Target, Feat, 1, Bench.Nowhere()).Should().BeTrue();
+        Activation.CanUseAbility(Caster, Target, Feat, 1, Bench.Nowhere()).Should().BeTrue();
     }
 
     [TestCase(0)]
@@ -169,10 +169,10 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.AbilityLevel = 0;
-        Service.Register(Feat, ability);
+        Catalog.Register(Feat, ability);
 
-        Service.CanUseAbility(Caster, Target, Feat, level, Bench.Nowhere()).Should().BeFalse();
-        Service.GetLastActivationDenialReason().Should().Be("You do not meet the prerequisites to use this ability.");
+        Activation.CanUseAbility(Caster, Target, Feat, level, Bench.Nowhere()).Should().BeFalse();
+        Activation.GetLastActivationDenialReason().Should().Be("You do not meet the prerequisites to use this ability.");
     }
 
     [Test]
@@ -180,11 +180,11 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.RequiresTarget = true;
-        Service.Register(Feat, ability);
+        Catalog.Register(Feat, ability);
 
-        Service.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.Nowhere()).Should().BeFalse();
+        Activation.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.Nowhere()).Should().BeFalse();
 
-        Service.GetLastActivationDenialReason().Should().Be("A target is required.");
+        Activation.GetLastActivationDenialReason().Should().Be("A target is required.");
     }
 
     [Test]
@@ -192,23 +192,23 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
     {
         var ability = Hostile(skill: SkillType.Devices);
         ability.IsForcePower = true;
-        Service.Register(Feat, ability);
-        Service.Stats[(Caster, StatType.ForceAbilityActivationDisabled)] = 1;
+        Catalog.Register(Feat, ability);
+        Bench.Stats[(Caster, StatType.ForceAbilityActivationDisabled)] = 1;
 
-        Service.CanUseAbility(Caster, Target, Feat, 1, Bench.Nowhere()).Should().BeFalse();
+        Activation.CanUseAbility(Caster, Target, Feat, 1, Bench.Nowhere()).Should().BeFalse();
 
-        Service.GetLastActivationDenialReason().Should().Be("You cannot use Force abilities right now.");
+        Activation.GetLastActivationDenialReason().Should().Be("You cannot use Force abilities right now.");
     }
 
     [Test]
     public void Equipment_is_checked_for_a_hostile_weapon_skill_ability_even_when_casted()
     {
-        Service.Register(Feat, Hostile(skill: SkillType.Vibroblade));
-        Service.EquipmentError = "Bad equipment.";
+        Catalog.Register(Feat, Hostile(skill: SkillType.Vibroblade));
+        Bench.EquipmentError = "Bad equipment.";
 
-        Service.CanUseAbility(Caster, Target, Feat, 1, Bench.Nowhere()).Should().BeFalse();
+        Activation.CanUseAbility(Caster, Target, Feat, 1, Bench.Nowhere()).Should().BeFalse();
 
-        Service.GetLastActivationDenialReason().Should().Be("Bad equipment.");
+        Activation.GetLastActivationDenialReason().Should().Be("Bad equipment.");
     }
 
     [Test]
@@ -224,18 +224,18 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
             Requirements = new List<IAbilityActivationRequirement>(),
             Targeting = new AbilityTargetingDetail(Spell.Invalid, AbilityTargetingShapeType.Cone, 8f, 8f, AbilityTargetingFlags.None, null!)
         };
-        Service.Register(Feat, ability);
+        Catalog.Register(Feat, ability);
 
-        Service.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.Nowhere()).Should().BeFalse();
-        Service.GetLastActivationDenialReason().Should().Be("A target location in your current area is required.");
+        Activation.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.Nowhere()).Should().BeFalse();
+        Activation.GetLastActivationDenialReason().Should().Be("A target location in your current area is required.");
 
-        Service.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.At(AbilityBench.TheArea + 1, Vector3.Zero)).Should().BeFalse();
-        Service.GetLastActivationDenialReason().Should().Be("A target location in your current area is required.");
+        Activation.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.At(AbilityBench.TheArea + 1, Vector3.Zero)).Should().BeFalse();
+        Activation.GetLastActivationDenialReason().Should().Be("A target location in your current area is required.");
 
-        Service.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.At(AbilityBench.TheArea, new Vector3(30f, 0f, 0f))).Should().BeFalse();
-        Service.GetLastActivationDenialReason().Should().Be("You are out of range.  This ability has a range of 10 meters.");
+        Activation.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.At(AbilityBench.TheArea, new Vector3(30f, 0f, 0f))).Should().BeFalse();
+        Activation.GetLastActivationDenialReason().Should().Be("You are out of range.  This ability has a range of 10 meters.");
 
-        Service.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.At(AbilityBench.TheArea, new Vector3(5f, 0f, 0f))).Should().BeTrue();
+        Activation.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.At(AbilityBench.TheArea, new Vector3(5f, 0f, 0f))).Should().BeTrue();
     }
 
     [Test]
@@ -251,16 +251,16 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
             Requirements = new List<IAbilityActivationRequirement>(),
             Targeting = new AbilityTargetingDetail(Spell.Invalid, AbilityTargetingShapeType.Sphere, 5f, 0f, AbilityTargetingFlags.HarmsEnemies, null!)
         };
-        Service.Register(Feat, ability);
+        Catalog.Register(Feat, ability);
         Bench.CreaturesInArea.AddRange(new[] { Target, Other });
         Bench.NoLineOfSight.Add(Other);
         Bench.Positions[Other] = new Vector3(4f, 1f, 0f);
 
-        Service.CanUseAbility(Caster, Target, Feat, 1, Bench.Nowhere()).Should().BeTrue("the target itself can be seen");
+        Activation.CanUseAbility(Caster, Target, Feat, 1, Bench.Nowhere()).Should().BeTrue("the target itself can be seen");
 
         Bench.Positions[Target] = new Vector3(3f, 0f, 0f);
         Bench.NoLineOfSight.Clear();
-        Bench.Service.GetLastActivationDenialReason().Should().BeEmpty();
+        Bench.Activation.GetLastActivationDenialReason().Should().BeEmpty();
     }
 
     [Test]
@@ -276,13 +276,13 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
             Targeting = new AbilityTargetingDetail(Spell.Invalid, AbilityTargetingShapeType.Sphere, 8f, 0f,
                 AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf, null!)
         };
-        Service.Register(Feat, ability);
+        Catalog.Register(Feat, ability);
         Bench.CreaturesInArea.Add(Target);
         Bench.NoLineOfSight.Add(Target);
 
-        Service.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.Nowhere()).Should().BeFalse();
+        Activation.CanUseAbility(Caster, ObjectInvalid, Feat, 1, Bench.Nowhere()).Should().BeFalse();
 
-        Service.GetLastActivationDenialReason().Should().Be("You cannot see any enemies in the target area.");
+        Activation.GetLastActivationDenialReason().Should().Be("You cannot see any enemies in the target area.");
     }
 
     [TestCase(AbilityTargetingShapeType.None)]
@@ -293,9 +293,9 @@ public class AbilityServiceActivationTests : AbilityServiceTestBase
     {
         var ability = Hostile();
         ability.Targeting = new AbilityTargetingDetail(Spell.Invalid, shape, 5f, 2f, AbilityTargetingFlags.HarmsEnemies, null!);
-        Service.Register(Feat, ability);
+        Catalog.Register(Feat, ability);
 
-        Service.CanUseAbility(Caster, Target, Feat, 1, Bench.At(AbilityBench.TheArea, Vector3.One)).Should().BeTrue("no creature is in the area");
+        Activation.CanUseAbility(Caster, Target, Feat, 1, Bench.At(AbilityBench.TheArea, Vector3.One)).Should().BeTrue("no creature is in the area");
     }
 
     [Test]

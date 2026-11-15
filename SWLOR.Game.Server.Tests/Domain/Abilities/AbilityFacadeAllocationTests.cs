@@ -51,8 +51,8 @@ public class AbilityFacadeAllocationTests
         _world = new AbilityBench();
         _container = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton<IAbilityService>(_world.Service)));
         _installed = _container.Install();
-        _world.Service.Register(Registered, Force);
-        _world.Service.BeginAbilityImpact(Tracked, Force);
+        _world.Catalog.Register(Registered, Force);
+        _world.Lifecycle.BeginAbilityImpact(Tracked, Force);
     }
 
     [TearDown]
@@ -74,6 +74,7 @@ public class AbilityFacadeAllocationTests
         return GC.GetAllocatedBytesForCurrentThread() - before;
     }
 
+    // The reads of IAbilityCatalog (GameServices.AbilityCatalog after P5-3b) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_catalog_reads_allocate_nothing()
     {
@@ -83,12 +84,22 @@ public class AbilityFacadeAllocationTests
         Allocated(() => sink += Ability.IsFeatRegistered(FeatType.Invalid) ? 1 : 0).Should().Be(0);
         Allocated(() => sink += Ability.GetAbilityDetail(Registered).AbilityLevel).Should().Be(0);
         Allocated(() => sink += Ability.GetAllAbilityDetails().Count).Should().Be(0);
+        GC.KeepAlive(sink);
+    }
+
+    // The reads of IAbilityActivationService (GameServices.AbilityActivation after P5-3d) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    [Test]
+    public void The_last_denial_read_allocates_nothing()
+    {
+        var sink = 0;
+
         Allocated(() => sink += Ability.GetLastActivationDenialReason().Length).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
+    // The reads of IAbilityImpactState (GameServices.AbilityImpactState after P5-3b) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
-    public void The_impact_reads_allocate_nothing_with_or_without_an_active_impact()
+    public void The_impact_state_reads_allocate_nothing_with_or_without_an_active_impact()
     {
         var sink = 0;
 
@@ -98,28 +109,55 @@ public class AbilityFacadeAllocationTests
             Allocated(() => sink += Ability.GetActiveAbilityImpactSummary(creature) == null ? 1 : 0).Should().Be(0);
             Allocated(() => sink += Ability.GetLastCompletedAbilityImpactSummary(creature) == null ? 1 : 0).Should().Be(0);
             Allocated(() => sink += Ability.GetWeaponTraitAccuracy(creature)).Should().Be(0);
-            Allocated(() => sink += (int)Ability.GetSuccessfulImpactVisualEffect(creature)).Should().Be(0);
             Allocated(() => sink += Ability.IsAreaImpact(creature, Force) ? 1 : 0).Should().Be(0);
             Allocated(() => sink += Ability.IsSingleTargetImpact(creature, Force) ? 1 : 0).Should().Be(0);
             Allocated(() => sink += Ability.TryTriggerAreaAbilityPulse(creature) ? 1 : 0).Should().Be(0);
-            Allocated(() => sink += Ability.ApplyCapturedAbilityDamageBonus(creature, 5)).Should().Be(0);
-            Allocated(() => sink += Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, 5)).Should().Be(0);
-            Allocated(() => sink += (int)Ability.GetActiveForceAffinityMagnitudeMultiplier(creature)).Should().Be(0);
-            Allocated(() => sink += (int)Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(creature)).Should().Be(0);
-            Allocated(() => sink += Ability.ApplyActiveForceAffinityMagnitude(creature, 5)).Should().Be(0);
-            Allocated(() => sink += (int)Ability.ApplyActiveForceAffinityMagnitude(creature, 5f)).Should().Be(0);
-            Allocated(() => sink += Ability.ApplyActiveForceAffinityRestorativeMagnitude(creature, 5)).Should().Be(0);
-            Allocated(() => sink += (int)Ability.GetWeaponAbilityDamageType(creature, SkillType.Force, CombatDamageType.Fire)).Should().Be(0);
             Allocated(() => Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(creature, 0)).Should().Be(0);
         }
 
         GC.KeepAlive(sink);
     }
 
+    // The reads of ICombatAbilityMagnitudeService (GameServices.CombatAbilityMagnitude after P5-3b) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    [Test]
+    public void The_magnitude_reads_allocate_nothing_with_or_without_an_active_impact()
+    {
+        var sink = 0;
+
+        foreach (var creature in new[] { Tracked, Untracked })
+        {
+            Allocated(() => sink += Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(creature, 5)).Should().Be(0);
+            Allocated(() => sink += (int)Ability.GetActiveForceAffinityMagnitudeMultiplier(creature)).Should().Be(0);
+            Allocated(() => sink += (int)Ability.GetActiveForceAffinityRestorativeMagnitudeMultiplier(creature)).Should().Be(0);
+            Allocated(() => sink += Ability.ApplyActiveForceAffinityMagnitude(creature, 5)).Should().Be(0);
+            Allocated(() => sink += (int)Ability.ApplyActiveForceAffinityMagnitude(creature, 5f)).Should().Be(0);
+            Allocated(() => sink += Ability.ApplyActiveForceAffinityRestorativeMagnitude(creature, 5)).Should().Be(0);
+        }
+
+        GC.KeepAlive(sink);
+    }
+
+    // The reads of IAbilityService (stays) and IAbilityHostileImpactService (GameServices.AbilityHostileImpact after P5-3f) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    [Test]
+    public void The_impact_reads_allocate_nothing_with_or_without_an_active_impact()
+    {
+        var sink = 0;
+
+        foreach (var creature in new[] { Tracked, Untracked })
+        {
+            Allocated(() => sink += (int)Ability.GetSuccessfulImpactVisualEffect(creature)).Should().Be(0);
+            Allocated(() => sink += Ability.ApplyCapturedAbilityDamageBonus(creature, 5)).Should().Be(0);
+            Allocated(() => sink += (int)Ability.GetWeaponAbilityDamageType(creature, SkillType.Force, CombatDamageType.Fire)).Should().Be(0);
+        }
+
+        GC.KeepAlive(sink);
+    }
+
+    // The reads of IAbilityImpactState (GameServices.AbilityImpactState after P5-3b) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_stat_source_read_allocates_nothing()
     {
-        _world.Service.StatSources = new[] { new StatAdjustmentSource("source", new Dictionary<StatType, int>()) };
+        _world.StatSources = new[] { new StatAdjustmentSource("source", new Dictionary<StatType, int>()) };
         var sink = 0;
 
         Allocated(() => sink += Ability.GetAbilityImpactStatSources(Tracked, StatType.Attack).Count).Should().Be(0);
@@ -127,6 +165,7 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
+    // The reads of CombatRules and ICombatQueriesService (IsForcePower), IAbilityHostileImpactService, IAbilityImpactState and ICombatAbilityMagnitudeService (P5-3b and P5-3f) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_pure_rules_allocate_nothing()
     {
@@ -140,6 +179,7 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
+    // The reads of IAbilityActivationStateService (GameServices.AbilityActivationState after P5-3c) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_activation_and_queued_attack_reads_allocate_nothing()
     {

@@ -15,7 +15,7 @@ public class AbilityServiceImmunityTests : AbilityServiceTestBase
     [Test]
     public void An_immunity_lasts_twenty_seconds_longer_than_the_ability_and_replaces_the_old_one()
     {
-        Service.ApplyTemporaryImmunity(Target, 5f, ImmunityType.Slow);
+        Immunity.ApplyTemporaryImmunity(Target, 5f, ImmunityType.Slow);
 
         Bench.Log.Should().Equal(
             $"RemoveEffectByTag:{Target}:{Tag(ImmunityType.Slow)}",
@@ -27,7 +27,7 @@ public class AbilityServiceImmunityTests : AbilityServiceTestBase
     [Test]
     public void A_hard_control_also_grants_the_shared_immunity()
     {
-        Service.ApplyTemporaryImmunity(Target, 5f, ImmunityType.Knockdown);
+        Immunity.ApplyTemporaryImmunity(Target, 5f, ImmunityType.Knockdown);
 
         Bench.Log.Should().Equal(
             $"RemoveEffectByTag:{Target}:{Tag(ImmunityType.Knockdown)}",
@@ -42,7 +42,7 @@ public class AbilityServiceImmunityTests : AbilityServiceTestBase
         Bench.EffectWalk.AddRange(new[] { "other", Tag(ImmunityType.Slow), Tag(ImmunityType.Slow) });
         Bench.EffectDurations[Tag(ImmunityType.Slow)] = 90;
 
-        Service.ApplyTemporaryImmunity(Target, 5f, ImmunityType.Slow);
+        Immunity.ApplyTemporaryImmunity(Target, 5f, ImmunityType.Slow);
 
         Bench.Engine.CallsTo("ApplyEffectToObject").Single().Arguments[3].Should().Be(90f);
     }
@@ -52,7 +52,7 @@ public class AbilityServiceImmunityTests : AbilityServiceTestBase
     [TestCase(6f, 14f)]
     public void The_post_control_immunity_subtracts_the_time_spent_logged_out(float elapsed, float expected)
     {
-        Service.ApplyPostControlImmunity(Target, elapsed, ImmunityType.Slow);
+        Immunity.ApplyPostControlImmunity(Target, elapsed, ImmunityType.Slow);
 
         Bench.Engine.CallsTo("ApplyEffectToObject").Single().Arguments[3].Should().Be(expected);
     }
@@ -60,7 +60,7 @@ public class AbilityServiceImmunityTests : AbilityServiceTestBase
     [Test]
     public void A_post_control_immunity_that_has_run_out_applies_nothing()
     {
-        Service.ApplyPostControlImmunity(Target, 25f, ImmunityType.Slow);
+        Immunity.ApplyPostControlImmunity(Target, 25f, ImmunityType.Slow);
 
         Bench.Log.Should().BeEmpty();
     }
@@ -68,33 +68,33 @@ public class AbilityServiceImmunityTests : AbilityServiceTestBase
     [Test]
     public void The_immunity_reads_look_for_the_tag()
     {
-        Service.HasTemporaryImmunity(Target, ImmunityType.Slow).Should().BeFalse();
+        Immunity.HasTemporaryImmunity(Target, ImmunityType.Slow).Should().BeFalse();
 
         Bench.NativeTags.Add(Tag(ImmunityType.Slow));
 
-        Service.HasTemporaryImmunity(Target, ImmunityType.Slow).Should().BeTrue();
+        Immunity.HasTemporaryImmunity(Target, ImmunityType.Slow).Should().BeTrue();
     }
 
     [Test]
     public void Hard_control_immunity_is_its_own_type_the_shared_window_or_an_active_control()
     {
-        Service.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeFalse();
+        Immunity.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeFalse();
 
         Bench.NativeTags.Add(Tag(ImmunityType.Stun));
-        Service.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeTrue();
+        Immunity.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeTrue();
 
         Bench.NativeTags.Clear();
         Bench.NativeTags.Add(Tag(ImmunityType.HardCrowdControl));
-        Service.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeTrue();
+        Immunity.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeTrue();
 
         Bench.NativeTags.Clear();
         var effects = new CreatureStatusEffect { StatGroup = new StatGroup() };
         effects.Add(new ProbeEffect { CategoriesValue = StatusEffectCategory.Debuff });
         Bench.CreatureEffects[Target] = effects;
-        Service.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeFalse();
+        Immunity.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeFalse();
 
         effects.Add(new ProbeEffect { CategoriesValue = StatusEffectCategory.HardCrowdControl });
-        Service.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeTrue();
+        Immunity.HasHardCrowdControlImmunity(Target, ImmunityType.Stun).Should().BeTrue();
     }
 
     [Test]
@@ -107,7 +107,7 @@ public class AbilityServiceImmunityTests : AbilityServiceTestBase
                  })
         {
             Bench.Log.Clear();
-            Service.ApplyTemporaryImmunity(Target, 1f, immunity);
+            Immunity.ApplyTemporaryImmunity(Target, 1f, immunity);
             Bench.Log.Should().Contain($"RemoveEffectByTag:{Target}:{Tag(ImmunityType.HardCrowdControl)}", immunity.ToString());
         }
     }

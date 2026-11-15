@@ -65,14 +65,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
-                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                     var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
 
                     if (isHit)
                     {
                         AssignCommand(activator, () =>
                         {
-                            ApplyEffectToObject(DurationType.Instant, sound, target);
+                            ShipSound.Play(target, ShipSound.Laser);
                             ApplyEffectToObject(DurationType.Instant, missile, target);
 
                             DelayCommand(0.3f, () =>
@@ -85,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     {
                         AssignCommand(activator, () =>
                         {
-                            ApplyEffectToObject(DurationType.Instant, sound, target);
+                            ShipSound.Play(target, ShipSound.Laser);
                             ApplyEffectToObject(DurationType.Instant, missile, target);
                         });
                     }

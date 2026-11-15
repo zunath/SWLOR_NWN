@@ -230,15 +230,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CategoryName);
         }
 
+        private bool HasCategorySelection =>
+            SelectedCategoryIndex >= 0 &&
+            SelectedCategoryIndex < _categoryIds.Count;
+
+        private bool HasItemSelection =>
+            SelectedItemIndex >= 0 &&
+            SelectedItemIndex < _itemIds.Count;
+
         private void LoadCategory()
         {
             var playerId = GetObjectUUID(Player);
+
+            // The item list is rebuilt below, so any item selection no longer applies.
+            // Clearing IsItemSelected also disables the Retrieve button.
+            SelectedItemIndex = -1;
+            IsItemSelected = false;
             _itemIds.Clear();
             var itemNames = new GuiBindingList<string>();
             var itemToggles = new GuiBindingList<bool>();
             var itemResrefs = new GuiBindingList<string>();
 
-            if (SelectedCategoryIndex > -1)
+            if (HasCategorySelection)
             {
                 var area = GetArea(Player);
                 var propertyId = Property.GetPropertyId(area);
@@ -348,6 +361,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var area = GetArea(Player);
                     var propertyId = Property.GetPropertyId(area);
                     var playerId = GetObjectUUID(Player);
+                    if (!HasCategorySelection)
+                        return;
+
                     var categoryId = _categoryIds[SelectedCategoryIndex];
                     var category = DB.Get<WorldPropertyCategory>(categoryId);
 
@@ -401,6 +417,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ClearInstructions();
 
+            if (!HasCategorySelection)
+                return;
+
             var playerId = GetObjectUUID(Player);
             var categoryId = _categoryIds[SelectedCategoryIndex];
             var categoryPermission = GetCategoryPermission(playerId, categoryId);
@@ -422,6 +441,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 InstructionsColor = GuiColor.Red;
                 return;
             }
+
+            if (!HasCategorySelection)
+                return;
 
             var playerId = GetObjectUUID(Player);
             var area = GetArea(Player);
@@ -456,6 +478,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     InstructionsColor = GuiColor.Red;
                     return;
                 }
+
+                if (!HasCategorySelection)
+                    return;
 
                 var playerId = GetObjectUUID(Player);
                 var area = GetArea(Player);
@@ -511,6 +536,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ClearInstructions();
 
+            // A click can arrive before the client has disabled the button for a cleared selection.
+            if (!HasCategorySelection || !HasItemSelection)
+                return;
+
             var area = GetArea(Player);
             var playerId = GetObjectUUID(Player);
             var propertyId = Property.GetPropertyId(area);
@@ -562,6 +591,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ClearInstructions();
 
             var index = NuiGetEventArrayIndex();
+            if (!HasCategorySelection || index < 0 || index >= _itemIds.Count)
+                return;
+
             var categoryId = _categoryIds[SelectedCategoryIndex];
             var itemId = _itemIds[index];
             var category = DB.Get<WorldPropertyCategory>(categoryId);
@@ -582,28 +614,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectCategory() => () =>
         {
-            ClearInstructions();
-
-            if (SelectedCategoryIndex > -1)
-                CategoryToggles[SelectedCategoryIndex] = false;
-
-            SelectedCategoryIndex = NuiGetEventArrayIndex();
-            CategoryToggles[SelectedCategoryIndex] = true;
-
-            SelectedItemIndex = -1;
-            LoadCategory();
+            SelectCategory(NuiGetEventArrayIndex());
         };
 
-        public Action OnSelectItem() => () =>
+        private void SelectCategory(int index)
         {
             ClearInstructions();
 
-            if (SelectedItemIndex > -1)
+            // Ignore rows the client still shows but this list no longer has.
+            if (index < 0 || index >= _categoryIds.Count)
+                return;
+
+            if (HasCategorySelection)
+                CategoryToggles[SelectedCategoryIndex] = false;
+
+            SelectedCategoryIndex = index;
+            CategoryToggles[SelectedCategoryIndex] = true;
+
+            LoadCategory();
+        }
+
+        public Action OnSelectItem() => () =>
+        {
+            SelectItem(NuiGetEventArrayIndex());
+        };
+
+        private void SelectItem(int index)
+        {
+            ClearInstructions();
+
+            // Ignore rows the client still shows but this list no longer has.
+            if (!HasCategorySelection || index < 0 || index >= _itemIds.Count)
+                return;
+
+            if (HasItemSelection)
                 ItemToggles[SelectedItemIndex] = false;
 
-            SelectedItemIndex = NuiGetEventArrayIndex();
+            SelectedItemIndex = index;
             ItemToggles[SelectedItemIndex] = true;
             IsItemSelected = true;
-        };
+        }
     }
 }

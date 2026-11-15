@@ -167,6 +167,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Moves every open bar with the screen edges it sits nearest after the game window or UI scale changes.
+        /// Bars go in order, each kept off the bars below it, so a smaller screen cannot stack them on each other.
+        /// </summary>
+        public static void FollowScreen(uint player)
+        {
+            var viewModels = new List<ExtraHotbarViewModel>();
+            foreach (var windowType in _windowTypes)
+            {
+                if (Gui.IsWindowOpen(player, windowType))
+                    viewModels.Add((ExtraHotbarViewModel)Gui.GetPlayerWindow(player, windowType).ViewModel);
+            }
+
+            var moved = new List<ExtraHotbarViewModel>();
+            foreach (var viewModel in viewModels)
+            {
+                if (!viewModel.HasScreenChanged())
+                    continue;
+
+                viewModel.FollowScreen();
+                moved.Add(viewModel);
+            }
+
+            foreach (var viewModel in moved)
+                viewModel.KeepClearOfLowerBarsAfterScreenChange();
+        }
+
+        /// <summary>
         /// Saves where each open bar's slots sit, without the title bar shown while bars are unlocked.
         /// </summary>
         private static void SaveLockedPositions(uint player)
@@ -485,6 +512,13 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // A craft holds the player's gear, so nothing goes on or comes off either hand while any crafting window is open.
+            if (CraftMinigameRouting.IsAnyCraftWindowOpen(player))
+            {
+                SendMessageToPC(player, ColorToken.Red("Items cannot be equipped while crafting."));
+                return;
+            }
+
             var currentMainHand = GetItemInSlot(InventorySlot.RightHand, player);
             var currentOffHand = GetItemInSlot(InventorySlot.LeftHand, player);
             var (newMainHand, newOffHand) = PlanHands(currentMainHand, currentOffHand, mainHand, offHand, CanPairHands);
@@ -499,13 +533,6 @@ namespace SWLOR.Game.Server.Service
             // and, if the set keeps it, equipped again.
             var offHandChanges = currentOffHand != newOffHand;
             var mainHandChanges = currentMainHand != newMainHand || (offHandChanges && IsHandCompanion(currentOffHand));
-
-            // A craft holds the player's gear, so nothing comes off either hand while any crafting window is open.
-            if (CraftMinigameRouting.IsAnyCraftWindowOpen(player))
-            {
-                SendMessageToPC(player, ColorToken.Red("Items cannot be equipped while crafting."));
-                return;
-            }
 
             // Nothing comes off until everything going on is known to be usable.
             foreach (var (changes, item) in new[] { (mainHandChanges, newMainHand), (offHandChanges, newOffHand) })

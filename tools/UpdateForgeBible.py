@@ -33,6 +33,7 @@ from UpdateCraftingProgressionBible import (  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 RULES = ROOT / "SWLOR.Game.Server" / "Service" / "CraftService" / "Minigame" / "Forge" / "ForgeRules.cs"
+TOP_RECIPE_RULES = RULES.parent.parent / "TopRecipeRules.cs"
 SHEET = "System Changes & Migrations"
 MARKER = "Smithery recipes are crafted in the Plasma Forge"
 TEMPLATE_ROW = 13
@@ -66,6 +67,13 @@ def read_constant(name: str) -> float:
     return float(match.group(1))
 
 
+def top_recipe_constant(name: str) -> float:
+    match = re.search(rf"public const (?:int|double) {name} = ([0-9.]+);", TOP_RECIPE_RULES.read_text(encoding="utf-8"))
+    if not match:
+        raise SystemExit(f"{name} was not found in {TOP_RECIPE_RULES}.")
+    return float(match.group(1))
+
+
 def percent_per_level(name: str) -> str:
     return f"{read_constant(name) * 100:.2f}".rstrip("0").rstrip(".")
 
@@ -73,6 +81,7 @@ def percent_per_level(name: str) -> str:
 def entry_text(bands: list[tuple[str, str]]) -> str:
     listed = ", ".join(f"{multiplier} at {label}" for label, multiplier in bands)
     start = int(read_constant("DifficultyStartLevel"))
+    last = int(top_recipe_constant("LastOrdinaryLevel"))
     return (
         f"{MARKER}, and the base XP of a Smithery craft is multiplied by a factor for the recipe's level band, a failed craft's"
         f" included: {listed}. The Forge's crafts take 10 to 20 actions where the old window's early crafts took about 6, so"
@@ -82,7 +91,10 @@ def entry_text(bands: list[tuple[str, str]]) -> str:
         f" Above recipe level {start} each level adds {percent_per_level('FinishDifficultyPerLevel')}% to the Finish a recipe needs and"
         f" {percent_per_level('ShapeDifficultyPerLevel')}% to its Shape, and a recipe's Finish before that factor rises to at least"
         f" {int(read_constant('FinishFloor'))} by level {int(read_constant('FinishFloorFullLevel'))}, so Shape-heavy armor needs gear as"
-        " much as weapons do. A full set of top-tier gear with both slots of the best mods is the target for the top recipes.")
+        " much as weapons do. A full set of top-tier gear with both slots of the best mods is the target for the top recipes."
+        f" Recipes above level {last} compare an enhancement's penalty with level {last}'s progress, so it costs them the Shape it costs a"
+        f" level {last} recipe, and Control above {int(top_recipe_constant('ControlSoftCap'))} counts for"
+        f" {top_recipe_constant('ControlAboveSoftCapValue') * 100:.0f}% on them.")
 
 
 def update_sheet(sheet: Sheet, bands: list[tuple[str, str]]) -> None:

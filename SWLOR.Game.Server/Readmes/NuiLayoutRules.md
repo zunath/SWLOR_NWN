@@ -208,6 +208,22 @@ The hook fires after every modal close (confirm and cancel, both modal kinds).
 - After a partial makes the whole window layout fail (e.g. loading an R2c shape), the
   remembered layout fails every rebuild — close and reopen the window.
 
+### R8 — Windows do not follow a game window resize (verified in the real client 2026-11)
+
+NUI windows sit at fixed screen pixels. NUI has no screen anchors (the window's
+`edge_constraint` only keeps margins) and raises no event when the game window is
+resized. `GetPlayerDeviceProperty` `GuiWidth`/`GuiHeight` do update live. When the game
+window shrinks, the client pushes each window that would leave the screen back on by
+the smallest amount and reports that spot through the `Geometry` watch, which
+`Gui` saves. Nothing moves a window back when the game window grows again.
+
+- A HUD window the player cannot move works out its spot from the screen size on
+  each refresh (`PlayerStatusViewModel`, `PlayerStatusPortraitViewModel`).
+- A window the player places keeps the spot they chose plus the screen it was chosen
+  on, and moves with the screen edges it sits nearest when the screen changes
+  (`ExtraHotbarViewModel.FollowScreen`). Treat a `Geometry` report that arrives with a
+  new screen size as the client's push, not a drag.
+
 ## Verified-working shapes (do not fear these)
 
 All verified in-game 2026-07 via DebugNuiGallery; each remains loadable on the

@@ -138,6 +138,17 @@ class AppearanceToolTests(unittest.TestCase):
         _, problems = tool.swap_module(self.root, self.haks, ['research_term'])
         self.assertEqual(len(problems), 1)
 
+    def test_config_option_reads_another_model_list(self):
+        other = self.root / 'other.json'
+        other.write_text(json.dumps({'schema_version': 1, 'stations': [
+            {'blueprint': 'research_term', 'model': 'swc_stn_forge', 'label': '[SWLOR] Furniture - Stand', 'sound_app_type': None}]}))
+        added = tool.install_haks(self.package, self.haks, None, other)
+        self.assertEqual(added, {'research_term': 4})
+        self.assertIn(b'"[SWLOR] Furniture - Stand"', self.table())
+        report, problems = tool.swap_module(self.root, self.haks, None, config_path=other)
+        self.assertEqual((report['research_term']['row'], problems), (4, []))
+        self.assertNotIn('smithery_bench', report)
+
     def test_unknown_station_is_rejected(self):
         with self.assertRaises(ValueError):
             tool.load_stations(['nope'])

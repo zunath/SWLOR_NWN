@@ -264,6 +264,23 @@ public class AbilityImpactVisualEffectTests
     }
 
     [Test]
+    public void VisualEffectTable_NeverShakesTheCamera()
+    {
+        var table = File.ReadAllLines(Path.Combine(FindRepositoryRoot(), "SWLOR_Haks", "sw_2da", "visualeffects.2da"));
+        var header = Regex.Split(table.First(line => line.TrimStart().StartsWith("Label ")).Trim(), @"\s+");
+        var shakeColumns = new[] { "ShakeType", "ShakeDelay", "ShakeDuration" }
+            .Select(name => Array.IndexOf(header, name) + 1)
+            .ToArray();
+
+        var shaking = table.Where(line => Regex.IsMatch(line, @"^\s*\d+\s"))
+            .Select(line => Regex.Split(line.Trim(), @"\s+"))
+            .Where(row => shakeColumns.Any(column => row.Length > column && row[column] != "****"))
+            .Select(row => row[1]);
+
+        shaking.Should().BeEmpty("players asked for combat without camera shake");
+    }
+
+    [Test]
     public void SubsequentPulse_HasItsOwnReceiptState()
     {
         var first = new AbilityImpactVisualEffects(VisualEffect.Vfx_Imp_Shield_Bash);

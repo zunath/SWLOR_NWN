@@ -55,7 +55,7 @@ public sealed record ForgeSetup(
 
     /// <summary>The factor on every Finish gain: the crafter's rank against the recipe's level and the Control of their gear.</summary>
     public double FinishScale =>
-        ForgeRules.RankFactor(Rank, RecipeLevel) * (1.0 + Control * ForgeRules.OutputPerGearPoint);
+        ForgeRules.RankFactor(Rank, RecipeLevel) * (1.0 + TopRecipeRules.EffectiveControl(Control, RecipeLevel) * ForgeRules.OutputPerGearPoint);
 
     /// <summary>The Thermal the piece loses after every action: the recipe's cooling rate less the perks', never below 1 unless the recipe's own is lower.</summary>
     public int CoolingRate =>

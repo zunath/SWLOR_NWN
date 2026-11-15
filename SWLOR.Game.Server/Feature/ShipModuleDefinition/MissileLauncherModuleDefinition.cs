@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     // Shoot some missiles out to the target.
                     AssignCommand(activator, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ship_Trp), activator);
+                        ShipSound.Play(activator, ShipSound.Torpedo);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Mirv_Torpedo, !isHit), target);
                     });
 

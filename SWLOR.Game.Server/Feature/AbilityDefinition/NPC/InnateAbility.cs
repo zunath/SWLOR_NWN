@@ -470,7 +470,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
 
                     if (targetVisualEffect != VisualEffect.None)
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), activator);
+                        VisualEffectPlayback.ApplyToObject(targetVisualEffect, activator);
                     }
                 });
 

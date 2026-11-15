@@ -29,7 +29,7 @@ public class EchaolmEncounterTests
     {
         using var utc = Read("utc", "esh_echaolm");
         var creature = utc.RootElement;
-        Value(creature, "Appearance_Type").GetInt32().Should().Be((int)AppearanceType.DogWinterWolf);
+        Value(creature, "Appearance_Type").GetInt32().Should().Be((int)AppearanceType.SWLOREchaolm);
         var tame = Value(creature, "VarTable").EnumerateArray().Single(v => Value(v, "Name").GetString() == "BEAST_TYPE");
         Value(tame, "Value").GetInt32().Should().Be((int)BeastType.Echaolm);
         Value(creature, "VarTable").EnumerateArray().Should().NotContain(v => Value(v, "Name").GetString() == "QUEST_NPC_GROUP_ID");
@@ -39,7 +39,7 @@ public class EchaolmEncounterTests
         var baseline = new PlainsThuneBeastDefinition().Build()[BeastType.PlainsThune];
         beast.Name.Should().Be("Echa'olm");
         beast.Role.Should().Be(BeastRoleType.Bruiser);
-        beast.Appearance.Should().Be(AppearanceType.DogWinterWolf);
+        beast.Appearance.Should().Be(AppearanceType.SWLOREchaolm);
         beast.PortraitId.Should().Be(320);
         beast.AccuracyStat.Should().Be(baseline.AccuracyStat);
         beast.DamageStat.Should().Be(baseline.DamageStat);

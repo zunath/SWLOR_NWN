@@ -73,7 +73,11 @@ public sealed class EshanAuthoringReviewTests
         var are = Read($"Module/are/{area}.are.json");
         var gic = Read($"Module/gic/{area}.gic.json");
         var creatures = (JArray)git["Creature List"]!["value"]!;
-        creatures.Should().HaveCount(15);
+        creatures.Select(npc => Value(npc, "TemplateResRef")).Should().BeEquivalentTo(new[]
+        {
+            "hc_seris", "hc_tovan", "hc_ilyra", "hc_daren", "hc_nema", "hc_vesa", "hc_orel",
+            "hc_pell", "hc_mira", "hc_tellis", "hc_kael", "hc_renn", "hc_aelis", "hc_sivra"
+        });
         creatures.Select(npc => Value(npc, "Tag")).Should().OnlyHaveUniqueItems();
         foreach (var list in new[] { "Creature List", "StoreList" })
             ((JArray)git[list]!["value"]!).Count.Should().Be(((JArray)gic[list]!["value"]!).Count);

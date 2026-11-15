@@ -10,7 +10,8 @@ physical position in the file, not its first-column label (the labels have gaps)
 Appearance of each station's blueprint (Module/utp) and of every placed instance in Module/git to that row. Edits are
 byte-level (CRLF and float formatting untouched); the Appearance dword is the only byte range that changes.
 `check` is read-only: it fails when a station still points at another appearance or a resource is missing.
-Station data lives in tools/StationModels.json.
+Station data lives in tools/StationModels.json; `--config` names another file in the same format (tools/TrophyStandModels.json
+holds the furniture Trophy Stands).
 """
 from __future__ import annotations
 
@@ -28,8 +29,8 @@ HEADER_COLUMNS = ('Label', 'StrRef', 'ModelName', 'LightColor', 'LightOffsetX', 
                   'SoundAppType', 'ShadowSize', 'BodyBag', 'LowGore', 'Reflection', 'Static')
 
 
-def load_stations(only=None):
-    config = json.loads(CONFIG.read_text(encoding='utf-8'))
+def load_stations(only=None, config_path=None):
+    config = json.loads(Path(config_path or CONFIG).read_text(encoding='utf-8'))
     if config.get('schema_version') != 1:
         raise ValueError('Unsupported StationModels.json schema')
     stations = config['stations']
@@ -86,9 +87,9 @@ def appearance_rows(haks):
     return by_model, label
 
 
-def install_haks(package, haks, only):
+def install_haks(package, haks, only, config_path=None):
     package = Path(package)
-    stations = load_stations(only)
+    stations = load_stations(only, config_path)
     folder = Path(haks) / FOLDER
     if not folder.is_dir():
         raise FileNotFoundError(f'{folder} is not checked out')
@@ -156,8 +157,8 @@ def swap_instances(data, resref, row):
     return b''.join(out), edits, already
 
 
-def swap_module(root, haks, only, check=False):
-    stations = load_stations(only)
+def swap_module(root, haks, only, check=False, config_path=None):
+    stations = load_stations(only, config_path)
     by_model, _ = appearance_rows(haks)
     report, problems = {}, []
     for station in stations:
@@ -194,10 +195,10 @@ def swap_module(root, haks, only, check=False):
     return report, problems
 
 
-def check_resources(haks, only):
+def check_resources(haks, only, config_path=None):
     problems = []
     by_model, _ = appearance_rows(haks)
-    for station in load_stations(only):
+    for station in load_stations(only, config_path):
         model = station['model']
         if model not in by_model:
             problems.append(f'no placeables.2da row for {model}')
@@ -214,17 +215,18 @@ def main():
     parser.add_argument('--haks', type=Path)
     parser.add_argument('--package', type=Path)
     parser.add_argument('--only', nargs='*')
+    parser.add_argument('--config', type=Path, help='Model list in the StationModels.json format (default: tools/StationModels.json)')
     args = parser.parse_args()
     haks = args.haks or args.root / 'SWLOR_Haks'
     if args.command == 'install-haks':
         if args.package is None:
             parser.error('install-haks requires --package')
-        install_haks(args.package, haks, args.only)
+        install_haks(args.package, haks, args.only, args.config)
     elif args.command == 'swap-module':
-        swap_module(args.root, haks, args.only)
+        swap_module(args.root, haks, args.only, config_path=args.config)
     else:
-        problems = check_resources(haks, args.only)
-        _, more = swap_module(args.root, haks, args.only, check=True)
+        problems = check_resources(haks, args.only, args.config)
+        _, more = swap_module(args.root, haks, args.only, check=True, config_path=args.config)
         problems += more
         if problems:
             print('\n'.join(problems))

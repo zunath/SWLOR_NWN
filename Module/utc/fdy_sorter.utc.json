@@ -104,6 +104,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 46
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 1823
         }
       },
@@ -514,6 +521,21 @@
   "VarTable": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "QUEST_NPC_GROUP_ID_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 340
+        }
+      },
       {
         "__struct_id": 0,
         "Name": {

@@ -51,10 +51,19 @@ clipping checks and dependent robe/part-skin regeneration.
   slots (`ArmorAppearanceCatalog.AcceptsSavedStyle`) and shows it as the list's bare option ("None", or
   1 where the list has no 0), which it looks like; the item keeps its value until the player picks a
   part. Body-part lists (Appearance tab) still offer 1 and 2, so their names stay.
+- `RetiredAppearances` lists the armor parts, heads, helmets and cloaks removed from the haks to shrink
+  them (none was used by a player, NPC, blueprint or DM template in the 2026-11-13 production data).
+  Their parts 2DA and `cloakmodel.2da` rows are retired in place; never offer them again or reuse
+  their numbers for new art. `RetiredAppearanceMigration` moves anything still on one to the bare
+  option, the race's first head, helmet 1 or the Plain cloak (`SavedDataItemSweepTests`, filter
+  `RetiredAppearances`).
 - Every catalog part needs a `tintmap.2da` row so palette and exact RGB colors reach it.
   Stock parts are imported with their stock PLT and converted like hak parts; a part that
   only has fixed artwork gets an authored palette from
   `SWLOR_Haks/tools/GenerateAuthoredPartPalettes.py` before `--generate-preserving`.
+- Quarterstaff parts 62 (model 6, color 2; editor part 206) in every role are the Tusken Gaderffii,
+  used by the Tusken weapons and the Sandstorm Gaderffii loot. A weapon revamp must keep that look in
+  those slots rather than replace them with a copy of a generic part (`GaderffiiAppearanceTests`).
 - Check embedded item instances in creature equipment, stores, containers, and area
   JSON as well as standalone `Module/uti` blueprints. Update any generator or migration
   fallback that could recreate a prohibited appearance. Preserve stats and item identity.
@@ -75,4 +84,6 @@ not yet upgraded receive migration 23 at the next boot. Saved DM creatures recei
 correction within their existing artwork visit, retaining authored stats and equipment slots.
 Valid custom models and the reserved NPC prop remain untouched. Keep the appearance, type and
 stat corrections in one combined visit per release rather than adding another pass; a later
-stored-item correction goes into the next release's stored-item sweep (`Migrations.md`).
+stored-item correction goes into the next release's stored-item sweep (`Migrations.md`). The release after
+player migration 25 and server migration 30 gives owned Sandstorm Gaderffii staffs their look back in its
+enzyme and building-icon visit (`GaderffiiAppearanceMigration`).

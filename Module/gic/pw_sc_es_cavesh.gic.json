@@ -1880,6 +1880,14 @@
   },
   "WaypointList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 5,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Local /stuck recovery at the area entrance or medical terminal"
+        }
+      }
+    ]
   }
 }

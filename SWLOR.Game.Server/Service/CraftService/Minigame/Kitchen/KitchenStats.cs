@@ -96,6 +96,6 @@ public sealed record KitchenStats(int Rank, int Craftsmanship, int Control, int 
 
     /// <summary>The Doneness an action of the given base strength gives this cook on this recipe.</summary>
     public int Doneness(double baseAmount, int recipeLevel) => (int)Math.Round(
-        baseAmount * (1 + KitchenTuning.CraftsmanshipDonenessPerPoint * Math.Max(0, Craftsmanship)) * LevelFactor(recipeLevel),
+        baseAmount * (1 + KitchenTuning.CraftsmanshipDonenessPerPoint * Math.Max(0, Craftsmanship)) * LevelFactor(recipeLevel) * (TopRecipeRules.IsTopRecipe(recipeLevel) ? KitchenTuning.TopRecipeDonenessFactor : 1.0),
         MidpointRounding.AwayFromZero);
 }

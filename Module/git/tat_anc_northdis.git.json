@@ -32540,7 +32540,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "tat_mechanic"
         },
         "CRAdjust": {
           "type": "int",
@@ -32561,7 +32561,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "A male civilian of Tatooine."
+            "0": "An Anchorhead mechanic with coolant stains to the elbow and a vaporator coupling in one hand."
           }
         },
         "Dex": {
@@ -32577,6 +32577,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -32667,11 +32687,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 7
+                "value": 34
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 14
+                "value": 131
               },
               "Cost": {
                 "type": "dword",
@@ -32684,13 +32704,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Light, loosely layered clothing suited to Tatooine's heat and abrasive dust. The easy cut leaves room to move while giving its wearer something to pull close when the wind changes its mind."
+                  "0": "Clothing worn by Bex Tarrow."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Light, loosely layered clothing suited to Tatooine's heat and abrasive dust. The easy cut leaves room to move while giving its wearer something to pull close when the wind changes its mind."
+                  "0": "Clothing worn by Bex Tarrow."
                 }
               },
               "Identified": {
@@ -32699,25 +32719,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 13
+                "value": 119
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 63
+                "value": 22
               },
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Male Tat Civilian Outfit"
+                  "0": "[NPC] Bex Tarrow's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 63
+                "value": 17
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 63
+                "value": 2
               },
               "Plot": {
                 "type": "byte",
@@ -32737,11 +32757,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "MaleTatCivilianOutfit"
+                "value": "tat_mechanic_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "nw_maletatcivout"
+                "value": "tat_mechanic_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -32818,26 +32858,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 53
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             }
           ]
@@ -32952,7 +32972,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Tatooine Civilian (Male)"
+            "0": "Bex"
           }
         },
         "fortbonus": {
@@ -32990,7 +33010,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Tarrow"
           }
         },
         "LawfulChaotic": {
@@ -33051,7 +33071,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -33312,7 +33332,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "TatooineCivilianMale"
+          "value": "tat_mechanic"
         },
         "Tail_New": {
           "type": "dword",
@@ -33324,7 +33344,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "nw_tatcivmale"
+          "value": "tat_mechanic"
         },
         "WalkRate": {
           "type": "int",

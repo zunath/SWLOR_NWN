@@ -66,7 +66,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             chanceToHit = 20;
                         }
                     }
-                    var sound = EffectVisualEffect(VisualEffect.Vfx_Ship_Blast);
                     var missile = EffectVisualEffect(VisualEffect.Mirv_StarWars_Bolt2);
                     for (var i = 0; i < attacks; i++)
                     {
@@ -88,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 {
                                     AssignCommand(activator, () =>
                                     {
-                                        ApplyEffectToObject(DurationType.Instant, sound, target);
+                                        ShipSound.Play(target, ShipSound.Laser);
                                         ApplyEffectToObject(DurationType.Instant, missile, target);
                                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Fire), target);
 
@@ -102,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                 {
                                     AssignCommand(activator, () =>
                                     {
-                                        ApplyEffectToObject(DurationType.Instant, sound, target);
+                                        ShipSound.Play(target, ShipSound.Laser);
                                         ApplyEffectToObject(DurationType.Instant, missile, target);
                                     });
                                 }

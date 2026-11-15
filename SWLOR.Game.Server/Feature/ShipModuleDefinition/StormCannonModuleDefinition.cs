@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                                     {
                                         ApplyEffectToObject(DurationType.Temporary, effectBeam, target, 1.0f);
                                         ApplyEffectToObject(DurationType.Temporary, effectLightning, target, 1.0f);
-                                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Ion_Shot), activator);
+                                        ShipSound.Play(activator, ShipSound.Ion);
                                     });
 
                                     DelayCommand(0.1f, () =>

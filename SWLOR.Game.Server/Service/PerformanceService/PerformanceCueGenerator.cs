@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
         /// <summary>
         /// Builds the beat that follows <paramref name="previous"/>, or the opening beat when it is null.
         /// Strings play a cue every beat with occasional same-lane repeats; horns hold some beats as rests
-        /// (never two in a row, never the opening beat); chords appear only in music at Upbeat.
+        /// (never two in a row, never the opening beat). Vocals use breath rests and neighboring pitches;
+        /// chords appear only on instruments at Upbeat.
         /// </summary>
         public static PerformanceBeat Next(
             System.Random random,
@@ -38,7 +39,9 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             var isMusic = kind == PerformanceKind.Music;
             var lastNote = previous is { IsRest: false } note ? note.Primary : (PerformanceCue?)null;
 
-            if (isMusic && family == PerformanceInstrumentFamily.Horns && lastNote.HasValue &&
+            if (isMusic &&
+                family is PerformanceInstrumentFamily.Horns or PerformanceInstrumentFamily.Vocals or PerformanceInstrumentFamily.Pipes &&
+                lastNote.HasValue &&
                 random.NextDouble() < HornsRestChance)
             {
                 return PerformanceBeat.Rest;
@@ -47,7 +50,8 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             var lanes = GetLanes(kind);
             var primary = PickLane(random, isMusic, family, lanes, lastNote);
 
-            if (isMusic && tempo == PerformanceTempo.Upbeat && random.NextDouble() < ChordChance)
+            if (isMusic && family is not (PerformanceInstrumentFamily.Vocals or PerformanceInstrumentFamily.Pipes) &&
+                tempo == PerformanceTempo.Upbeat && random.NextDouble() < ChordChance)
                 return PerformanceBeat.Chord(primary, PickOtherLane(random, lanes, primary));
 
             return PerformanceBeat.Single(primary);
@@ -63,14 +67,24 @@ namespace SWLOR.Game.Server.Service.PerformanceService
             if (!isMusic || !lastNote.HasValue)
                 return lanes[random.Next(lanes.Count)];
 
-            if (family == PerformanceInstrumentFamily.Strings)
+            if (family is PerformanceInstrumentFamily.Strings or PerformanceInstrumentFamily.BowedStrings or PerformanceInstrumentFamily.Percussion)
             {
                 return random.NextDouble() < StringsRepeatChance
                     ? lastNote.Value
                     : PickOtherLane(random, lanes, lastNote.Value);
             }
 
-            return family == PerformanceInstrumentFamily.Horns
+            if (family == PerformanceInstrumentFamily.Vocals)
+            {
+                if (random.NextDouble() < StringsRepeatChance)
+                    return lastNote.Value;
+
+                return lastNote == PerformanceCue.Mid
+                    ? (random.Next(2) == 0 ? PerformanceCue.Low : PerformanceCue.High)
+                    : PerformanceCue.Mid;
+            }
+
+            return family is PerformanceInstrumentFamily.Horns or PerformanceInstrumentFamily.Pipes
                 ? PickOtherLane(random, lanes, lastNote.Value)
                 : lanes[random.Next(lanes.Count)];
         }

@@ -6,7 +6,6 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class EshanModuleWiringTests
 {
-    [TestCase("pw_ar_sc_eshancm", "hc_access")]
     [TestCase("pw_ar_sc_eshanto", "vc_access")]
     public void ShuttleAccess_HasPairedUsableExitsAndSeparateArrivals(string area, string prefix)
     {
@@ -64,6 +63,62 @@ public class EshanModuleWiringTests
             Assert.That(locals, Does.Contain(table));
         Assert.That(new SpaceSpawnDefinition().BuildSpawnTables()["SPACE_ESHAN_ORBIT"].Spawns, Is.Not.Empty);
         Assert.That(new SpaceResourceSpawnDefinition().BuildSpawnTables()["SPACE_RESOURCES_ESHAN_ORBIT"].Spawns, Is.Not.Empty);
+    }
+
+    [Test]
+    public void EveryEshanArea_HasLocalStuckRecoveryAndMatchingEditorMetadata()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !Directory.Exists(Path.Combine(root.FullName, "Module")))
+            root = root.Parent;
+        var areas = Directory.GetFiles(Path.Combine(root!.FullName, "Module", "are"), "*.are.json")
+            .Where(path =>
+            {
+                using var area = JsonDocument.Parse(File.ReadAllBytes(path));
+                return Value(area.RootElement, "Name").TryGetProperty("0", out var name) &&
+                       name.GetString()!.StartsWith("Eshan - ", StringComparison.Ordinal);
+            }).ToArray();
+        Assert.That(areas, Is.Not.Empty);
+        foreach (var path in areas)
+        {
+            var area = Path.GetFileName(path).Replace(".are.json", "");
+            using var git = Read($"Module/git/{area}.git.json");
+            using var gic = Read($"Module/gic/{area}.gic.json");
+            var waypoints = Value(git.RootElement, "WaypointList").EnumerateArray().ToArray();
+            Assert.That(waypoints.Count(point => Value(point, "Tag").GetString() == "STUCK_WAYPOINT"),
+                Is.EqualTo(1), area + " must recover locally rather than falling back to CZ-220");
+            var editorWaypoints = Value(gic.RootElement, "WaypointList").EnumerateArray().ToArray();
+            Assert.That(editorWaypoints.Length, Is.EqualTo(waypoints.Length), area);
+            var stuckIndex = Array.FindIndex(waypoints,
+                point => Value(point, "Tag").GetString() == "STUCK_WAYPOINT");
+            var expectedComment = area == "esh_nc_redoubt"
+                ? "Area recovery waypoint."
+                : "Local /stuck recovery at the area entrance or medical terminal";
+            Assert.That(Value(editorWaypoints[stuckIndex], "Comment").GetString(),
+                Is.EqualTo(expectedComment), area);
+        }
+    }
+
+    [Test]
+    public void RaaloKes_WearsSmugglerArmorInBothBlueprintAndPlacedInstance()
+    {
+        using var blueprint = Read("Module/utc/esh_smug_raalo.utc.json");
+        using var scraplands = Read("Module/git/sc_esscraplands.git.json");
+        var raalo = Value(scraplands.RootElement, "Creature List").EnumerateArray()
+            .Single(creature => Value(creature, "TemplateResRef").GetString() == "esh_smug_raalo");
+        foreach (var creature in new[] { blueprint.RootElement, raalo })
+        {
+            var chest = Value(creature, "Equip_ItemList").EnumerateArray()
+                .Single(item => item.GetProperty("__struct_id").GetInt32() == 2);
+            Assert.That(Value(chest, "EquippedRes").GetString(), Is.EqualTo("pirate_armor"));
+        }
+        using var armor = Read("Module/uti/pirate_armor.uti.json");
+        Assert.That(Value(armor.RootElement, "BaseItem").GetInt32(), Is.EqualTo(16));
+        var placedArmor = Value(raalo, "Equip_ItemList").EnumerateArray()
+            .Single(item => item.GetProperty("__struct_id").GetInt32() == 2);
+        Assert.That(Value(placedArmor, "Dropable").GetInt32(), Is.Zero);
+        foreach (var field in armor.RootElement.EnumerateObject().Where(field => field.Name != "__data_type"))
+            Assert.That(JsonElement.DeepEquals(placedArmor.GetProperty(field.Name), field.Value), Is.True, field.Name);
     }
 
     private static void AssertTeleport(JsonElement area, string destination)

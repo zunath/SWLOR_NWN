@@ -393,6 +393,11 @@ After changing the robe or cloak catalog, run
 `python -B SWLOR_Haks/tools/GenerateRobeCloakModels.py --game-data <installed-game-data-directory>`.
 It writes MDLs in place of its existing redirects, so then run
 `ModelLodAssets.py --apply --game-data` and `CloakTintAssets.py --game-data` in that order.
+The manifest records each HAK cloak source's digest and the compiler. `--check` fails
+when a source changes or, for sources still stored as ASCII (the female Cathar
+`pfo0_cloak_001` to `007`), when CleanModels changes, because the generator compiles
+those on every run. Before this guard the Cathar robe cloaks kept their pre-CleanModels
+compile from October 11 until November 2026.
 The build rejects a cloak source recorded as unavailable once a HAK provides it.
 Commit `tools/RobeCloakModels.json`, canonical cloak MDLs and their phenotype-specific
 `.lod` redirects in `SWLOR_Haks/sw_pt_cloak`. They share the exact geometry, materials,
@@ -417,6 +422,11 @@ checked-in redirects again. Overrides of base-game model names stay MDLs and are
 listed as `native_overrides`: an MDL-first lookup would otherwise load the stock model.
 The check fails if one of those MDLs is deleted, or if a redirect's name or target
 is defined by more than one HAK, since HAK priority could then load an unvalidated model.
+`--apply` rebuilds the list from the game data, so it goes stale when models that
+replace base-game ones are added without rerunning it: by November 2026 it lacked
+3,675 of them. `ModelLodAssets.py --check --game-data "<NWN>/data"` also fails until the
+list names exactly the HAK models that share a base-game name. `BuildHaks.cmd` runs the
+check without game data, so run it with game data after adding or removing such models.
 This is an authoring operation. Normal builds validate the checked-in LOD assets
 and package them with `nwn_erf --add-restypes lod:2078`; they never generate MDLs.
 `CheckPackedLods.py` then fails the build if a packer without that option dropped
@@ -525,6 +535,13 @@ The generator writes `model_builds` records only after validation succeeds. Reus
 requires exact generated source, compiler, immediate compiled parent, validation
 code, original inverse-bind source, canonical body, and owned output hashes. An
 edited source, output, compiler, or validator invalidates the corresponding proof.
+For a wearer root, the parent is its bank's skeleton and part IDs without the clips,
+since the compiler copies no clips into the root. An animation release that keeps
+the bank skeleton therefore reuses every root and rebuilds only the banks; the
+whole-chain pose checks below still evaluate every root against the new clips.
+The exception is a bank that gets a new name because something else still inherits
+from it (see below): each active root then names the new bank, so it recompiles, and
+those changed roots must ship with the banks.
 Whole-chain body-pose checks still run during generation even when models are reused.
 Staging `compilations.json` records compilation-only checkpoints for interrupted
 builds. They require matching source, compiler, parent, original binding data,
@@ -536,6 +553,26 @@ must preserve the full ordered animation inventory and common geometry. This
 avoids the legacy exporter's poor performance on very large unsplit banks.
 Each shared bridge source is generated once, then its model-name token is replaced
 for the allocated resource; controller curves are not regenerated a second time.
+
+Each body keeps one bank name across animation changes. When a family's clips change
+(a new or revised body animation), the generator rewrites its installed bank under the
+same name, provided every model that inherits from the bank is a wearer it rebuilds in
+the same run. Those wearers then compile to the same bytes unless the bank's part IDs
+changed, so an animation release ships only the changed banks, and the neck and shoulder
+manifests that record root hashes stay current. The bank may gain or lose tail parts;
+the generator deletes tails the head no longer chains to. If anything else still
+inherits from the bank (a retired phenotype's root, or the unselected wearers of a
+`--model` build), the family gets a new name and the old bank stays unchanged for those
+models until `PruneRobeAnimationBridges.py` removes it. Retired names are never reassigned.
+A family whose older bank is pinned that way can have several banks installed. The
+generator then revises the one installed bank that nothing outside the build inherits
+from, and allocates a new name only when none, or more than one, is free.
+`--update-animation` is the exception: it revises a named clip in the installed bank
+without that check, so every model inheriting from the bank gets the revision, retired
+wearers included.
+The report's `banks_revised_in_place` and `stale_banks` list what happened to changed
+families. `banks_revised_in_place` omits banks revised by `--update-animation`; the
+build log's `Verified in-place motion revision` lines name those.
 The September 2026 corpus measured 4.3 seconds for an unchanged `--apply`, compared
 with approximately 121 minutes for the preceding full rebuild. This is a no-op
 measurement, not a changed-build benchmark. All 3,256 compiled outputs remained
@@ -805,6 +842,12 @@ available clips and are explicitly recorded; they never retain the old unsafe
 robe-as-body inheritance path. Regeneration retains validated roots, empty
 attachments and animation parents for retired phenotypes so saved creatures
 keep their complete dependency chain. Retired bridge names remain reserved.
+A body whose base root (`p<gender><race>0`) exists in neither the HAKs nor the base
+game cannot be worn, so regeneration deletes that body's generated roots,
+attachments and banks. It verifies every one of them, and every dropped tail bank,
+before deleting any file. A robe registered only on such a body takes no phenotype.
+The unused `b` race letter was
+removed this way in November 2026: no `appearance.2da` row used it.
 Bridge identities include the generated hierarchy, bind transforms and animation
 controllers, so removing one member of a shared family cannot overwrite tracks
 still used by a retained root. Legacy names are reused only after their compiled
@@ -1129,7 +1172,10 @@ its frames, lenses and collar to their own materials (`p?h0_n152fr`, `ln`, `nk`:
 Metal 1, Leather 1, Cloth 1), so the old single neck palette must not replace
 them. Their `TintMapSources.json` entries set `explicitMeshMaterial`; the generator
 then keeps each mesh's material and writes one `tintmap.2da` row per material.
-The source conversion preserves the flag.
+The source conversion preserves the flag. The lens materials add `transparency 1`
+and `sample_framebuffer 1` (and keep `twosided 0`) so the partly transparent
+lenses draw after the head; without them, heads with alpha-cutout hair or fur
+showed a white fill through the lenses. The generator keeps both directives.
 
 A surviving stock PLT does not protect a stock part that stays in the KEY/BIF
 layer. Many stock parts name another part's texture as their bitmap (female

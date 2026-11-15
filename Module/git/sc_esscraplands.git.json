@@ -211,17 +211,362 @@
           "value": 0
         },
         "Equip_ItemList": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 4096,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "blaster_bullets"
-        }
-      }
-    ]
-  },
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "pirate_armor"
+              },
+              "Dropable": {
+                "type": "byte",
+                "value": 0
+              },
+              "AddCost": {
+                "type": "dword",
+                "value": 50
+              },
+              "ArmorPart_Belt": {
+                "type": "byte",
+                "value": 154
+              },
+              "ArmorPart_LBicep": {
+                "type": "byte",
+                "value": 182
+              },
+              "ArmorPart_LFArm": {
+                "type": "byte",
+                "value": 157
+              },
+              "ArmorPart_LFoot": {
+                "type": "byte",
+                "value": 248
+              },
+              "ArmorPart_LHand": {
+                "type": "byte",
+                "value": 194
+              },
+              "ArmorPart_LShin": {
+                "type": "byte",
+                "value": 244
+              },
+              "ArmorPart_LShoul": {
+                "type": "byte",
+                "value": 19
+              },
+              "ArmorPart_LThigh": {
+                "type": "byte",
+                "value": 239
+              },
+              "ArmorPart_Neck": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_Pelvis": {
+                "type": "byte",
+                "value": 235
+              },
+              "ArmorPart_RBicep": {
+                "type": "byte",
+                "value": 182
+              },
+              "ArmorPart_RFArm": {
+                "type": "byte",
+                "value": 157
+              },
+              "ArmorPart_RFoot": {
+                "type": "byte",
+                "value": 248
+              },
+              "ArmorPart_RHand": {
+                "type": "byte",
+                "value": 194
+              },
+              "ArmorPart_Robe": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RShin": {
+                "type": "byte",
+                "value": 244
+              },
+              "ArmorPart_RShoul": {
+                "type": "byte",
+                "value": 19
+              },
+              "ArmorPart_RThigh": {
+                "type": "byte",
+                "value": 239
+              },
+              "ArmorPart_Torso": {
+                "type": "byte",
+                "value": 253
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 16
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 74
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 85
+              },
+              "Comment": {
+                "type": "cexostring",
+                "value": ""
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 51
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "This armor has been altered with the resources of a ship's maintenance bench rather than a military depot. Its fittings bear tool marks, and none of the replacement pieces seems especially interested in matching the rest."
+                }
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "This armor has been altered with the resources of a ship's maintenance bench rather than a military depot. Its fittings bear tool marks, and none of the replacement pieces seems especially interested in matching the rest."
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 60
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 117
+              },
+              "LocalizedName": {
+                "id": 12835,
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Pirate Armor"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 5
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 5
+              },
+              "PaletteID": {
+                "type": "byte",
+                "value": 58
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 50
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 117
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 48
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 100
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 131
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  }
+                ]
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "pirate_armor"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "pirate_armor"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
+              },
+              "xArmorPart_Belt": {
+                "type": "word",
+                "value": 154
+              },
+              "xArmorPart_LBice": {
+                "type": "word",
+                "value": 182
+              },
+              "xArmorPart_LFArm": {
+                "type": "word",
+                "value": 157
+              },
+              "xArmorPart_LFoot": {
+                "type": "word",
+                "value": 248
+              },
+              "xArmorPart_LHand": {
+                "type": "word",
+                "value": 194
+              },
+              "xArmorPart_LShin": {
+                "type": "word",
+                "value": 244
+              },
+              "xArmorPart_LShou": {
+                "type": "word",
+                "value": 19
+              },
+              "xArmorPart_LThig": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_Neck": {
+                "type": "word",
+                "value": 1
+              },
+              "xArmorPart_Pelvi": {
+                "type": "word",
+                "value": 235
+              },
+              "xArmorPart_RBice": {
+                "type": "word",
+                "value": 182
+              },
+              "xArmorPart_RFArm": {
+                "type": "word",
+                "value": 157
+              },
+              "xArmorPart_RFoot": {
+                "type": "word",
+                "value": 248
+              },
+              "xArmorPart_RHand": {
+                "type": "word",
+                "value": 194
+              },
+              "xArmorPart_Robe": {
+                "type": "word",
+                "value": 0
+              },
+              "xArmorPart_RShin": {
+                "type": "word",
+                "value": 244
+              },
+              "xArmorPart_RShou": {
+                "type": "word",
+                "value": 19
+              },
+              "xArmorPart_RThig": {
+                "type": "word",
+                "value": 239
+              },
+              "xArmorPart_Torso": {
+                "type": "word",
+                "value": 253
+              }
+            },
+            {
+              "__struct_id": 4096,
+              "EquippedRes": {
+                "type": "resref",
+                "value": "blaster_bullets"
+              }
+            }
+          ]
+        },
         "FactionID": {
           "type": "word",
           "value": 2
@@ -19632,6 +19977,67 @@
         "ZPosition": {
           "type": "float",
           "value": 12.17436981201172
+        }
+      },
+      {
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Stuck - Eshan - Scraplands"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STUCK_WAYPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "wp_stuck"
+        },
+        "__struct_id": 5,
+        "XPosition": {
+          "type": "float",
+          "value": 14.9921989440918
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 47.81373596191406
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 10.00381851196289
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
         }
       }
     ]

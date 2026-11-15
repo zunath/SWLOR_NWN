@@ -47,7 +47,7 @@ public static class NamedAnimation
 
     /// <summary>
     /// Plays immediately using NWN's PlayAnimation semantics. Prefer Queue when existing actions must finish.
-    /// holdMode chooses how the main-hand item's native holding layer is treated (see <see cref="NamedAnimationHold"/>).
+    /// holdMode chooses how native item holding layers are treated (see <see cref="NamedAnimationHold"/>).
     /// </summary>
     public static string Play(uint creature, AnimationClip clip, float? durationSeconds = null,
         AnimationEquipmentRequirement equipmentRequirement = AnimationEquipmentRequirement.Unrestricted,
@@ -55,16 +55,18 @@ public static class NamedAnimation
     {
         var duration = Validate(clip, durationSeconds);
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
-        var nativeHold = holdMode == NamedAnimationHold.Keep ? AnimationWeaponHold.None : AbilityAnimationEquipment.ReadHold(creature);
+        var nativeHold = holdMode is NamedAnimationHold.Auto or NamedAnimationHold.LiftInPlace
+            ? AbilityAnimationEquipment.ReadHold(creature) : AnimationWeaponHold.None;
         var liftInPlace = holdMode == NamedAnimationHold.LiftInPlace && nativeHold == AnimationWeaponHold.Shoulder;
-        var hold = holdMode == NamedAnimationHold.Auto ? nativeHold : AnimationWeaponHold.None;
+        var hold = holdMode == NamedAnimationHold.ClearTorch ? AnimationWeaponHold.Torch :
+            holdMode == NamedAnimationHold.Auto ? nativeHold : AnimationWeaponHold.None;
         var held = hold != AnimationWeaponHold.None;
         var speed = held || fitToDuration ? clip.PlaybackSpeed(duration) : 1f;
         // AssignCommand is a deferred closure in SWLOR. Reserve ownership now so
         // the caller can stop it even before that closure runs (for example on close).
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
         var token = Playback.Begin(creature, clip, duration, completeAtDuration: true, weaponHold: hold, equipmentRequest: request,
-            liftShoulderHoldInPlace: liftInPlace);
+            liftShoulderHoldInPlace: liftInPlace, liftTorchHoldInPlace: holdMode == NamedAnimationHold.LiftTorchInPlace);
         return PlayMapped(creature, token, duration,
             held ? Animation.FireForgetDodgeSide : Animation.PointForward, speed);
     }

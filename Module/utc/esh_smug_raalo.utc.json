@@ -170,6 +170,13 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "pirate_armor"
+        }
+      },
+      {
         "__struct_id": 4096,
         "EquippedRes": {
           "type": "resref",

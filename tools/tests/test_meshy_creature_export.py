@@ -1,12 +1,15 @@
 """MeshyCreatureExport: reference parsing, skinned ASCII output and the paw stance used to spread joints."""
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import MeshyCreatureExport as creature
+
+NL = bytes([10])
 
 REFERENCE = """newmodel c_test
 setsupermodel c_test c_wolf
@@ -102,6 +105,32 @@ class StanceTests(unittest.TestCase):
         self.assertAlmostEqual(width, 0.2)
         self.assertAlmostEqual(length, 1.0)
         self.assertAlmostEqual(middle, 0.0)
+
+
+class PackageTests(unittest.TestCase):
+    def export(self, files):
+        root = Path(tempfile.mkdtemp())
+        for relative, data in files.items():
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        return root
+
+    def test_roles_follow_the_material_slots_not_the_names(self):
+        mtr = b'texture0 beast_n' + NL + b'texture1 beast_x' + NL + b'texture2 beast_s' + NL + b'texture3 beast_r' + NL
+        sources, roles = creature.flatten_resources(self.export({'a/resources/beast_n.mtr': mtr}))
+        self.assertEqual(roles, {'beast_n': 'color', 'beast_x': 'normal', 'beast_s': 'scalar', 'beast_r': 'scalar'})
+
+    def test_shared_names_must_hold_the_same_bytes(self):
+        same = self.export({'a/resources/fur.tga': b'1', 'b/resources/fur.tga': b'1'})
+        self.assertEqual(list(creature.flatten_resources(same)[0]), ['fur.tga'])
+        with self.assertRaises(ValueError):
+            creature.flatten_resources(self.export({'a/resources/fur.tga': b'1', 'b/resources/fur.tga': b'2'}))
+
+    def test_a_texture_bound_to_two_roles_is_rejected(self):
+        mtr = b'texture0 fur' + NL + b'texture1 fur' + NL
+        with self.assertRaises(ValueError):
+            creature.flatten_resources(self.export({'a/resources/a.mtr': mtr}))
 
 
 if __name__ == '__main__':

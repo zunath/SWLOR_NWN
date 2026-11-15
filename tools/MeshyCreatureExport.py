@@ -31,7 +31,7 @@ MTR and DDS only. Verify in the client; nothing here deploys or edits module dat
 """
 from __future__ import annotations
 
-import argparse, hashlib, importlib.util, json, math, shutil, struct, subprocess, sys
+import argparse, hashlib, importlib.util, json, math, re, shutil, struct, subprocess, sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -165,30 +165,41 @@ def import_source(bpy, path):
     return obj
 
 
-def material_images(obj):
-    images = {}
-    for node in obj.data.materials[0].node_tree.nodes:
-        if node.type != 'TEX_IMAGE' or not node.image:
-            continue
-        for link in node.outputs['Color'].links:
-            target = link.to_node
-            socket = link.to_socket.name
-            if target.type == 'BSDF_PRINCIPLED':
-                images['base' if socket == 'Base Color' else socket.lower()] = node.image
-            elif target.type == 'NORMAL_MAP':
-                images['normal'] = node.image
-            elif target.type == 'SEPRGB' or target.type == 'SEPARATE_COLOR':
-                images['metallic_roughness'] = node.image
-    if 'base' not in images:
-        raise ValueError('Source material has no base color image')
-    return images
-
-
-def image_array(np, image):
-    w, h = image.size
-    pixels = np.empty(w * h * 4, np.float32)
-    image.pixels.foreach_get(pixels)
-    return pixels.reshape(h, w, 4)  # Blender row order (bottom first), matching the UVs and save_texture
+def material_maps(weapon, source, cache, texture, limit):
+    """Base color, normal, specularity and roughness maps read from the GLB's own material (factors applied, packed
+    metallic-roughness channels B and G), the same conversion the TRELLIS weapon and placeable exporters use."""
+    np = weapon.np
+    doc, binary = weapon.glb_document(source)
+    if len(doc.get('materials', [])) != 1:
+        raise ValueError('Expected one source material')
+    mat = doc['materials'][0]
+    weapon.validate_material(mat, allow_double_sided=True)
+    if mat.get('occlusionTexture') or mat.get('emissiveTexture'):
+        raise ValueError('Occlusion and emissive source maps need explicit conversion')
+    cache.mkdir(parents=True, exist_ok=True)
+    pbr = mat.get('pbrMetallicRoughness', {})
+    factor = np.asarray(pbr.get('baseColorFactor', [1, 1, 1, 1]))
+    if 'baseColorTexture' not in pbr:
+        raise ValueError('Source material has no base color texture')
+    base = weapon.read_image(doc, binary, pbr['baseColorTexture'], source, cache)
+    maps = {texture: weapon.srgb(weapon.resize(weapon.linear(base[..., :3]) * factor[:3], limit))}
+    if 'normalTexture' in mat:
+        info = mat['normalTexture']
+        raw = weapon.read_image(doc, binary, info, source, cache)
+        maps[texture + '_n'] = weapon.prepare_normal_map(raw, info.get('scale', 1), limit) * .5 + .5
+    else:
+        maps[texture + '_n'] = np.broadcast_to(np.array([.5, .5, 1], np.float32), (4, 4, 3))
+    scalar = limit // 2
+    if 'metallicRoughnessTexture' in pbr:
+        mr = weapon.read_image(doc, binary, pbr['metallicRoughnessTexture'], source, cache)
+        metal = weapon.resize(mr[..., 2:3], scalar)[..., 0] * pbr.get('metallicFactor', 1)
+        rough = weapon.resize(mr[..., 1:2], scalar)[..., 0] * pbr.get('roughnessFactor', 1)
+    else:
+        metal = np.full((4, 4), pbr.get('metallicFactor', 1), np.float32)
+        rough = np.full((4, 4), pbr.get('roughnessFactor', 1), np.float32)
+    maps[texture + '_s'] = weapon.metallic_to_specularity(np.clip(metal, 0, 1))
+    maps[texture + '_r'] = np.clip(rough, 0, 1)
+    return maps
 
 
 def foot_stance(np, points, band=.08):
@@ -235,7 +246,6 @@ def export_creature(item, manifest_dir, out, weapon):
     ref_lo, ref_hi = ref.min(0), ref.max(0)
 
     obj = import_source(bpy, source)
-    images = material_images(obj)
     mesh = obj.data
     mesh.transform(Matrix.Rotation(math.radians(item.get('yaw_degrees', 180)), 4, 'Z'))
     src = np.array([tuple(v.co) for v in mesh.vertices])
@@ -357,20 +367,8 @@ def export_creature(item, manifest_dir, out, weapon):
         write_mdl(item['model'], item['supermodel'], nodes, root_name, (verts, normals, uvs, faces, weights), texture),
         encoding='ascii')
 
-    limit = item['texture_size']
-    base = image_array(np, images['base'])[..., :3]
-    base = weapon.srgb(weapon.resize(weapon.linear(base), limit))
-    maps = {texture: base}
-    if 'normal' in images:
-        maps[texture + '_n'] = weapon.prepare_normal_map(image_array(np, images['normal']), 1, limit) * .5 + .5
-    else:
-        maps[texture + '_n'] = np.broadcast_to(np.array([.5, .5, 1], np.float32), (4, 4, 3))
-    metal = images.get('metallic') or images.get('metallic_roughness')
-    rough = images.get('roughness') or images.get('metallic_roughness')
-    metal_a = image_array(np, metal)[..., 2 if metal is rough else 0] if metal else np.zeros((4, 4), np.float32)
-    rough_a = image_array(np, rough)[..., 1 if metal is rough else 0] if rough else np.ones((4, 4), np.float32)
-    maps[texture + '_s'] = weapon.metallic_to_specularity(np.clip(weapon.resize(metal_a[..., None], limit // 2)[..., 0], 0, 1))
-    maps[texture + '_r'] = weapon.resize(rough_a[..., None], limit // 2)[..., 0]
+    maps = material_maps(weapon, source, out / 'image_cache', texture, item['texture_size'])
+    base = maps[texture]
     emission = item.get('emission')
     if emission:
         placeable = load_module('trellis_placeable_export', REPO / 'tools/TrellisPlaceableExport.py')
@@ -452,12 +450,34 @@ def compiler_path(explicit):
     return Path(os.environ['LOCALAPPDATA']) / 'SWLOR/tools/cleanmodels-qt/1.1.7/cleanmodels-qt/cleanmodels.exe'
 
 
+def flatten_resources(export):
+    """Every exported resource by name, and each texture's role from the MTR slot that binds it."""
+    # Flatten the per-creature folders: a name two creatures share must hold the same bytes, or one would replace the other.
+    sources = {}
+    for path in sorted(export.glob('*/resources/*')):
+        if path.name.lower() in sources and sources[path.name.lower()].read_bytes() != path.read_bytes():
+            raise ValueError(f'{path.name} differs between {sources[path.name.lower()].parent.parent.name} and '
+                             f'{path.parent.parent.name}')
+        sources.setdefault(path.name.lower(), path)
+    # Texture roles come from the MTR slots that bind them, never from the file name.
+    slot_roles = {'0': 'color', '1': 'normal', '2': 'scalar', '3': 'scalar', '5': 'color'}
+    roles = {}
+    for path in sources.values():
+        if path.suffix == '.mtr':
+            for slot, name in re.findall(r'^texture(\d+)\s+(\S+)', path.read_text(), re.M):
+                role = slot_roles.get(slot)
+                if role is None or roles.setdefault(name.lower(), role) != role:
+                    raise ValueError(f'{path.name}: texture{slot} {name} has no single known role')
+    return sources, roles
+
+
 def package(args, out):
     export = args.export.resolve()
     ascii_dir, runtime, logs = out / 'ascii', out / 'runtime_resources', out / 'logs'
     for d in (ascii_dir, runtime, logs):
         d.mkdir(parents=True)
-    for path in sorted(export.glob('*/resources/*')):
+    sources, roles = flatten_resources(export)
+    for path in sources.values():
         if path.suffix in ('.mdl', '.mtr'):
             shutil.copy2(path, ascii_dir / path.name)
             if path.suffix == '.mtr':
@@ -468,7 +488,9 @@ def package(args, out):
         width, height = struct.unpack_from('<HH', path.read_bytes(), 12)
         if width & (width - 1) or height & (height - 1):
             raise ValueError('Power-of-two texture dimensions required: ' + path.name)
-        role = 'normal' if path.stem.endswith('_n') else 'scalar' if path.stem.endswith(('_s', '_r')) else 'color'
+        role = roles.get(path.stem.lower())
+        if role is None:
+            raise ValueError('No material binds ' + path.name)
         target = runtime / (path.stem + '.dds')
         result = subprocess.run([str(args.crunch), '-file', str(path), '-out', str(target), '-fileformat', 'dds', '-unflip',
                                  '-yflip', '-dxtQuality', 'uber'] + CRUNCH_OPTIONS[role], capture_output=True, text=True, timeout=300)
@@ -523,8 +545,12 @@ def main():
         raise ValueError('Unsupported manifest schema')
     weapon = load_module('trellis_weapon_export', REPO / 'tools/TrellisWeaponExport.py')
     weapon.load_blender()
-    reports = []
+    reports, models, textures = [], set(), set()
     for item in manifest['creatures']:
+        if item['model'].lower() in models or item['texture'].lower() in textures:
+            raise ValueError(item['model'] + ': every creature needs its own model and texture name')
+        models.add(item['model'].lower())
+        textures.add(item['texture'].lower())
         if args.only and item['model'] != args.only:
             continue
         if len(item['model']) > 16 or len(item['texture']) > 13 or item['texture_size'] not in (512, 1024):

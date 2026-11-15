@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.TamableBeastDefinition
         {
             _builder.Create(BeastType.ShatterveinWolf)
                 .Name("Shattervein Wolf")
-                .Appearance(AppearanceType.DogWolfFenrisCCCPLUSHHYENAofDOOM)
+                .Appearance(AppearanceType.SWLORShatterveinWolf)
                 .AppearanceScale(1f)
                 .SoundSetId(103)
                 .PortraitId(319)

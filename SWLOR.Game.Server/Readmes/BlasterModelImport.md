@@ -583,6 +583,26 @@ three-quarter view from the side the station faces), and put wide stations (a re
 one placed against a wall is half hidden by it. Capture the old and the new model from the same camera, keep the native
 PNGs, and say that the in-game check with a real server is separate.
 
+### Meshy creatures
+
+`tools/MeshyCreatureExport.py` turns a textured Meshy GLB into a skinned creature that plays a stock animation set. The
+manifest names a reference model (an ASCII decompile, `cleanmodels decompile`, of the segmented creature it replaces or
+of its stock counterpart, such as `c_wolfwint`, `c_direwolf` or `c_yeti`) and that model's supermodel. The new model keeps
+every reference node under its name, drops the rigid body-part meshes and adds one skin weighted to the nearest
+reference segment. Stock creature animation sets (`c_wolf`, `c_direwolf`, `a_da`/`a_ba`) position only the root dummy,
+so the tool scales the source uniformly to the reference height and spreads the joints in X and Y to the mesh instead
+of squeezing the mesh onto the old bounds. Use `spread_from: {"x": "feet", "y": "feet"}` for quadrupeds, whose long
+tails and muzzles throw off the bounds, and a `regions` entry for parts that hang beside the wrong segment (the
+Thornbound Warden's tail beside its hind legs). Read `review_side.png` and `review_front.png` (fitted segments drawn
+over the source) before packaging.
+
+The Eshan creatures (Echa'olm, Thornbound Warden, Gorak Vesh) used one nano-banana-pro concept each (9 credits) in a
+neutral standing pose that matches the reference's bind pose (quadrupeds four-square, bipeds with arms hanging), then
+`meshy-t2.5` smart topology at `target_polycount: 8000` with `texture_model: meshy-7` and `enable_pbr: true` (15
+credits). Each creature gets its own `appearance.2da` row copied from the row it replaces, with only `LABEL` and `RACE`
+changed. Verify the idle, attack and run poses in the client on the real spawn area; clear the hover highlight with
+`SetObjectUiDiscoveryMask` or hostile creatures render red.
+
 ## Import a rigid, opaque GR2 blaster
 
 Use Blender **4.0** and the pinned SWTOR-Slicers GR2 importer **4.2.1**:

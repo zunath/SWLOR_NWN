@@ -2140,5 +2140,10 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SWLORDrexBeast = 10242,
         SWLORLaigrek = 10245,
         SWLORStormBeast = 10246,
+        SWLOREchaolm = 10277,
+        SWLORThornboundWarden = 10278,
+        SWLORGorakVesh = 10279,
+        SWLORShatterveinWolf = 10280,
+        SWLOREshanDireWolfAlpha = 10281,
     }
 }

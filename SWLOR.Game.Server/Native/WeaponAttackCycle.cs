@@ -9,6 +9,7 @@ using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Native
 {

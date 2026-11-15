@@ -656,7 +656,7 @@ internal sealed class SavedCharacter
     /// <summary>Adds or removes every stat an equipped item grants, as <see cref="Feature.EquipmentStats.ApplyItemStats"/> does.</summary>
     public void ApplyItemStats(SavedItem item, bool isAdding)
     {
-        for (var copy = 0; copy < PowerGloveEquipment.GetEquipmentStatCopies(item.BaseItem); copy++)
+        for (var copy = 0; copy < PowerGloveStatCopies.For(item.BaseItem); copy++)
             ApplyOneHandItemStats(item, isAdding);
     }
 
@@ -665,15 +665,15 @@ internal sealed class SavedCharacter
     {
         if (!AppliesRecordEffects) return;
         foreach (var property in item.Properties)
-            SavedEquipmentStats.Apply(this, item, property.Type, property.Subtype, property.CostValue, isAdding);
+            Feature.MigrationDefinition.CharacterMigration.SavedEquipmentStatEffects.Apply(this, item, property.Type, property.Subtype, property.CostValue, isAdding);
     }
 
     /// <summary>Adds or removes one amount of a stat for an equipped item, as <see cref="Feature.EquipmentStats.ApplyStatAmount"/> does.</summary>
     public void ApplyStatAmount(SavedItem item, ItemPropertyType type, int subtype, int amount, bool isAdding)
     {
         if (!AppliesRecordEffects || amount <= 0) return;
-        for (var copy = 0; copy < PowerGloveEquipment.GetEquipmentStatCopies(item.BaseItem); copy++)
-            SavedEquipmentStats.Apply(this, item, type, subtype, amount, isAdding);
+        for (var copy = 0; copy < PowerGloveStatCopies.For(item.BaseItem); copy++)
+            Feature.MigrationDefinition.CharacterMigration.SavedEquipmentStatEffects.Apply(this, item, type, subtype, amount, isAdding);
     }
 
     /// <summary>Saved-data <see cref="Domain.Character.IStatService.RefreshCombatReadinessEquipment"/>: the record holds the equipped total.</summary>
@@ -682,7 +682,7 @@ internal sealed class SavedCharacter
         if (!AppliesRecordEffects) return;
         Record.CombatReadiness = Equipped.Sum(item => item.Properties
             .Where(property => property.Type == ItemPropertyType.CombatReadiness)
-            .Sum(property => property.CostValue) * PowerGloveEquipment.GetEquipmentStatCopies(item.BaseItem));
+            .Sum(property => property.CostValue) * PowerGloveStatCopies.For(item.BaseItem));
     }
 
     /// <summary>

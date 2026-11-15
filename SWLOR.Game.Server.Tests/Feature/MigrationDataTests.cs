@@ -129,7 +129,7 @@ public class MigrationDataTests
     {
         var baseline = Game.Server.Domain.Foundation.MigrationService.RetiredServerMigrationVersion;
         var db = new Tests.Support.InMemoryDBService();
-        var service = new Game.Server.Domain.Foundation.MigrationService(db, new Game.Server.Domain.Items.OverflowStorageService(db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
+        var service = new Game.Server.Domain.Foundation.MigrationService(db);
         ServerConfiguration Resolve(ServerConfiguration stored) => service.ResolveConfiguration(stored!);
 
         baseline.Should().Be(ReleasedServerVersion, "every server migration production has run is retired");

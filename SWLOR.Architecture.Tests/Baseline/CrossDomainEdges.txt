@@ -106,8 +106,9 @@ Feature/StatusEffectDefinition -> Domain/Crafting | 6
 # Character -> Creatures (1 edge)
 Domain/Character -> Domain/Creatures | 4
 
-# Character -> Items (1 edge)
+# Character -> Items (2 edges)
 Domain/Character -> Domain/Items | 22
+Feature/PerkDefinition -> Domain/Items | 4
 
 # Character -> Quests (1 edge)
 Domain/Character -> Domain/Quests | 5
@@ -268,8 +269,7 @@ Domain/Economy -> Domain/UI | 11
 # Economy -> World (1 edge)
 Domain/Economy -> Domain/World | 7
 
-# Foundation -> Abilities (2 edges)
-Domain/Foundation -> Domain/Abilities | 1
+# Foundation -> Abilities (1 edge)
 Feature/MigrationDefinition -> Domain/Abilities | 4
 
 # Foundation -> Administration (2 edges)
@@ -351,7 +351,7 @@ Feature.Jukebox -> Domain/Administration | 1
 Feature.RoleplayXP -> Domain/Administration | 1
 Feature.ServerTasks -> Domain/Administration | 1
 
-# Gameplay -> Character (25 edges)
+# Gameplay -> Character (24 edges)
 Domain/Gameplay -> Domain/Character | 1
 Feature.AchievementProgression -> Domain/Character | 6
 Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
@@ -361,7 +361,6 @@ Feature.CivilianPatrol -> Domain/Character | 1
 Feature.EchaniTempleMonks -> Domain/Character | 1
 Feature.EquipmentRestrictions -> Domain/Character | 2
 Feature.EquipmentStats -> Domain/Character | 27
-Feature.KatarAnimationRemap -> Domain/Character | 1
 Feature.NaturalRegeneration -> Domain/Character | 2
 Feature.OrdinaryAttackCombatLifecycle -> Domain/Character | 1
 Feature.PlaceableScripts -> Domain/Character | 4

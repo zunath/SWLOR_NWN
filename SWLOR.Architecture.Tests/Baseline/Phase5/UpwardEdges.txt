@@ -29,8 +29,6 @@ SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs: Administration -> 
 SWLOR.Game.Server/Domain/Character/AchievementService.cs: Character -> UI | 5
 SWLOR.Game.Server/Domain/Character/DisguiseService.cs: Character -> Administration | 3
 SWLOR.Game.Server/Domain/Character/DisguiseService.cs: Character -> UI | 4
-SWLOR.Game.Server/Domain/Character/EquipmentPredicates.cs: Character -> Combat | 3
-SWLOR.Game.Server/Domain/Character/EquipmentPredicates.cs: Character -> Items | 17
 SWLOR.Game.Server/Domain/Character/EquipmentStatTotals.cs: Character -> Combat | 1
 SWLOR.Game.Server/Domain/Character/EquipmentStatTotals.cs: Character -> Items | 1
 SWLOR.Game.Server/Domain/Character/EspionageInfiltrationService.cs: Character -> Combat | 9
@@ -91,9 +89,6 @@ SWLOR.Game.Server/Domain/Crafting/CraftService.cs: Crafting -> World | 3
 SWLOR.Game.Server/Domain/Creatures/AIService.cs: Creatures -> Companions | 4
 SWLOR.Game.Server/Domain/Creatures/AIService.cs: Creatures -> Social | 3
 SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs: Creatures -> Companions | 5
-SWLOR.Game.Server/Domain/Foundation/AbilityAnimationBinding.cs: Foundation -> Character | 9
-SWLOR.Game.Server/Domain/Foundation/AnimationPreviewCatalog.cs: Foundation -> Abilities | 1
-SWLOR.Game.Server/Domain/Foundation/AnimationPreviewCatalog.cs: Foundation -> Character | 2
 SWLOR.Game.Server/Domain/Foundation/CacheService.cs: Foundation -> Items | 3
 SWLOR.Game.Server/Domain/Foundation/CombatRecordAttributionScope.cs: Foundation -> Combat | 1
 SWLOR.Game.Server/Domain/Foundation/CombatRecordHealingReactionScope.cs: Foundation -> Combat | 1
@@ -105,17 +100,9 @@ SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs: Foundation -> World
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> Character | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> UI | 6
 SWLOR.Game.Server/Domain/Foundation/MessagingService.cs: Foundation -> Combat | 3
-SWLOR.Game.Server/Domain/Foundation/MigrationService.cs: Foundation -> Character | 8
-SWLOR.Game.Server/Domain/Foundation/MigrationService.cs: Foundation -> Items | 3
 SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs: Foundation -> Character | 3
-SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs: Foundation -> Combat | 3
-SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs: Foundation -> Character | 1
-SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs: Foundation -> Combat | 1
-SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs: Foundation -> Items | 1
-SWLOR.Game.Server/Domain/Foundation/SavedEquipmentStats.cs: Foundation -> Character | 1
-SWLOR.Game.Server/Domain/Foundation/SavedEquipmentStats.cs: Foundation -> Combat | 1
-SWLOR.Game.Server/Domain/Foundation/SavedEquipmentStats.cs: Foundation -> Items | 1
 SWLOR.Game.Server/Domain/Foundation/WalkmeshService.cs: Foundation -> Creatures | 2
+SWLOR.Game.Server/Domain/Items/EquipmentPredicates.cs: Items -> Combat | 3
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Combat | 9
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Companions | 6
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Crafting | 3
@@ -233,7 +220,7 @@ SWLOR.Game.Server/Native/ResolvedCombatDamage.cs: Platform -> Combat | 1
 SWLOR.Game.Server/Native/ResolvedCombatDamage.cs: Platform -> Foundation | 1
 SWLOR.Game.Server/Native/WeaponAttackAnimation.cs: Platform -> Combat | 2
 SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Abilities | 1
-SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Character | 5
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Character | 4
 SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Combat | 3
-SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Items | 1
+SWLOR.Game.Server/Native/WeaponAttackCycle.cs: Platform -> Items | 3
 SWLOR.Game.Server/Native/WeaponDamageProfile.cs: Platform -> Foundation | 2

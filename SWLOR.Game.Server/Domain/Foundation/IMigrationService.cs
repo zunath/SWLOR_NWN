@@ -28,9 +28,10 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         /// <summary>
         /// Character migrations run on saved characters at boot. A character still behind the latest version was not
-        /// upgraded, so it is refused instead of played in an outdated state.
+        /// upgraded, so it is refused instead of played in an outdated state. True when the entering player may log in
+        /// (its upgrade notices are delivered); false for staff, a non-player and a refused character.
         /// </summary>
-        void AfterCharacterInitialization();
+        bool AdmitLogin(uint player);
 
         /// <summary>
         /// A new database starts at the retired version, so removed migrations never run; a database below it

@@ -42,6 +42,8 @@ internal static class BindingCheck
                 continue; // an edit replaced it (a qualifier segment)
 
             var bindingBefore = Binding.Of(before, name);
+            if (bindingBefore.IsUnreliable)
+                continue; // the stand-ins made it an error: nothing it meant to keep
             var meant = Meant(bindingBefore, context);
             if (meant == null)
                 continue; // bound to nothing before: nothing to keep

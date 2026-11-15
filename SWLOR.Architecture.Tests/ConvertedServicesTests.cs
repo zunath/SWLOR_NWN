@@ -63,7 +63,7 @@ public class ConvertedServicesTests
         "SWLOR.Game.Server.Domain.Character.OOCMessageScorer",
         "SWLOR.Game.Server.Domain.Character.RoleplayMessageClassifier",
         "SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog",
-        "SWLOR.Game.Server.Domain.Foundation.AnimationPreviewCatalog"
+        "SWLOR.Game.Server.Domain.Abilities.AnimationPreviewCatalog"
     ];
 
     /// <summary>

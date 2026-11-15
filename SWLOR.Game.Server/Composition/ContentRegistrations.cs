@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Composition
     {
         internal static void Register(IServiceCollection services)
         {
+            services.AddSingleton<SWLOR.Game.Server.Feature.MigrationDefinition.CharacterLoginRestoration>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlaceableScripts>();
         }
 

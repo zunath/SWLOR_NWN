@@ -155,7 +155,10 @@
     { "type": "ResearchExperimentPayload", "from": "SWLOR.Game.Server.Feature.GuiDefinition.Payload", "to": "SWLOR.Game.Server.Domain.UI" },
     { "type": "ShipManagementPayload", "from": "SWLOR.Game.Server.Feature.GuiDefinition.Payload", "to": "SWLOR.Game.Server.Domain.UI" },
     { "type": "TargetDescriptionPayload", "from": "SWLOR.Game.Server.Feature.GuiDefinition.Payload", "to": "SWLOR.Game.Server.Domain.UI" },
-    { "type": "TechniquesPayload", "from": "SWLOR.Game.Server.Feature.GuiDefinition.Payload", "to": "SWLOR.Game.Server.Domain.UI" }
+    { "type": "TechniquesPayload", "from": "SWLOR.Game.Server.Feature.GuiDefinition.Payload", "to": "SWLOR.Game.Server.Domain.UI" },
+    { "type": "EquipmentPredicates", "from": "SWLOR.Game.Server.Domain.Character", "to": "SWLOR.Game.Server.Domain.Items" },
+    { "type": "AbilityAnimationBinding", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Abilities" },
+    { "type": "AnimationPreviewCatalog", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Abilities" }
   ],
   "textExcludes": [
     "SWLOR.Game.Server/Readmes/Maintainability*",

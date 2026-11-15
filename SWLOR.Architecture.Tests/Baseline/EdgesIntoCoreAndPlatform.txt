@@ -2,16 +2,18 @@
 # Recorded for information only: the guard never fails on these, and warns when this file is out of date.
 # Same format as CrossDomainEdges.txt. Regenerate with SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build.
 
-# Abilities -> Foundation (4 edges)
+# Abilities -> Foundation (5 edges)
 Domain/Abilities -> Domain/Foundation | 176
 Domain/Abilities -> Platform/Entity | 46
+Domain/Abilities -> Platform/Enumeration | 1
 Feature/AbilityDefinition -> Domain/Foundation | 88
 Feature/AbilityDefinition -> Platform/Entity | 6
 
-# Abilities -> Platform (6 edges)
+# Abilities -> Platform (7 edges)
 Domain/Abilities -> Platform/Composition | 12
 Domain/Abilities -> Platform/Core | 52
 Domain/Abilities -> Platform/Extension | 1
+Domain/Abilities -> Platform/Root | 1
 Feature/AbilityDefinition -> Platform/Composition | 411
 Feature/AbilityDefinition -> Platform/Core | 19
 Feature/AbilityDefinition -> Platform/Native | 1

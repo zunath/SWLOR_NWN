@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Combat;
@@ -486,7 +487,7 @@ public class PowerGloveEquipmentServiceTests
         public uint DroidMaster;
 
         public TestGlove(IItemService item, ItemWorld world)
-            : base(item, FacadeForwarder.LazyFor<IDroidService>())
+            : base(item, ScriptedProxy.Create<ICompanionLookup>(out _))
         {
             _itemWorld = world;
         }

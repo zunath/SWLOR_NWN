@@ -56,7 +56,7 @@ public class WalkModeTests
             {
                 public static void SetAlwaysWalk(uint creature, bool value) => AlwaysWalk = value;
             }
-            public static class BeastMastery { public static bool IsPlayerBeast(uint creature) => false; }
+            public static class BeastMastery { public static bool IsPlayerBeast(uint creature) => false; public static bool IsDroid(uint creature) => false; }
             public static class World
             {
                 public static bool IsDM, IsPossessed, AlwaysWalk;

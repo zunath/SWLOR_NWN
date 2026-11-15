@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
@@ -26,7 +25,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IActivityService _activity;
         private readonly IPartyService _party;
         private readonly IHoloComService _holoCom;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly ICompanionLookup _companions;
         private readonly Lazy<IStatService> _stat;
         private readonly IStealthService _stealth;
         private readonly ICompanionControlService _companionControl;
@@ -35,29 +34,25 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Lazy<ICombatAttackTimingService> _attackTiming;
         private readonly Lazy<ICombatQueriesService> _queries;
 
-        private readonly Lazy<IDroidService> _droid;
-
         public EnmityService(
             IAIService ai,
             IActivityService activity,
             IPartyService party,
             IHoloComService holoCom,
-            IBeastMasteryService beastMastery,
+            ICompanionLookup companions,
             Lazy<IStatService> stat,
             IStealthService stealth,
             ICompanionControlService companionControl,
             IStatusEffectService statusEffect,
             Lazy<ICombatActivityService> combatActivity,
             Lazy<ICombatAttackTimingService> attackTiming,
-            Lazy<ICombatQueriesService> queries,
-            Lazy<IDroidService> droid)
+            Lazy<ICombatQueriesService> queries)
         {
-            _droid = droid;
             _ai = ai;
             _activity = activity;
             _party = party;
             _holoCom = holoCom;
-            _beastMastery = beastMastery;
+            _companions = companions;
             _stat = stat;
             _stealth = stealth;
             _companionControl = companionControl;
@@ -448,7 +443,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             if (bonus <= 0 || !GetIsObjectValid(creature) || !GetIsObjectValid(enemy) ||
                 GetIsDead(creature) || GetIsDead(enemy) || GetIsPC(enemy) ||
-                GetIsObjectValid(GetMaster(enemy)) || _beastMastery.IsPlayerBeast(enemy) || IsDroid(enemy) ||
+                GetIsObjectValid(GetMaster(enemy)) || _companions.IsPlayerBeast(enemy) || IsDroid(enemy) ||
                 GetArea(creature) != GetArea(enemy) || !GetIsReactionTypeHostile(enemy, creature) ||
                 !LineOfSightObject(creature, enemy) || _ai.IsLeashEvading(enemy) ||
                 _ai.TryStartCombatLeashEvade(enemy, creature))
@@ -1203,7 +1198,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual bool IsHiddenFrom(uint observer, uint target) => _stealth.IsHiddenFrom(observer, target);
 
         /// <summary>The unconverted <c>Droid</c> service.</summary>
-        protected virtual bool IsDroid(uint creature) => _droid.Value.IsDroid(creature);
+        protected virtual bool IsDroid(uint creature) => _companions.IsDroid(creature);
 
         /// <summary>The companion-control service.</summary>
         protected virtual bool IsRegisteredCompanion(uint creature) => _companionControl.IsRegisteredCompanion(creature);

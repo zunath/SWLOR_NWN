@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Domain.UI
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     public interface IGuiRefreshEvent
     {

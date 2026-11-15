@@ -52,6 +52,7 @@ public class SkillXPAwardTests
             using SWLOR.Game.Server.Domain.Character;
             using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
             using SkillAttribute = SWLOR.Game.Server.Domain.Foundation.SkillAttribute;
+            using SkillXPRefreshEvent = SWLOR.Game.Server.Domain.Foundation.SkillXPRefreshEvent;
             using SWLOR.NWN.API.NWScript.Enum;
             using RuntimeSkill = SWLOR.Game.Server.Domain.Character.SkillService;
 

@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Feature;
@@ -41,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private const string LeashEvadeReturnQueuedVariable = "AI_LEASH_EVADE_RETURN_QUEUED";
 
         private readonly IPartyService _party;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly ICompanionLookup _companions;
         private readonly IDMPresenceService _dmPresence;
         private readonly Lazy<IAbilityService> _ability;
         private readonly IActivityService _activity;
@@ -62,11 +61,9 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Dictionary<uint, AIState> _states = new();
         private readonly Dictionary<FeatType, AITargetSelector> _defaultTargetSelectors = new();
 
-        private readonly Lazy<IDroidService> _droid;
-
         public AIService(
             IPartyService party,
-            IBeastMasteryService beastMastery,
+            ICompanionLookup companions,
             IDMPresenceService dmPresence,
             Lazy<IAbilityService> ability,
             IActivityService activity,
@@ -78,12 +75,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             Lazy<IPerkService> perk,
             Lazy<IStatService> stat,
             Lazy<IStatusEffectService> statusEffect,
-            Lazy<IStealthService> stealth,
-            Lazy<IDroidService> droid)
+            Lazy<IStealthService> stealth)
         {
-            _droid = droid;
             _party = party;
-            _beastMastery = beastMastery;
+            _companions = companions;
             _dmPresence = dmPresence;
             _ability = ability;
             _activity = activity;
@@ -1136,10 +1131,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             if (profileId > 0 && Enum.IsDefined(typeof(AIProfileType), profileId))
                 return (AIProfileType)profileId;
 
-            if (_beastMastery.IsPlayerBeast(creature))
+            if (_companions.IsPlayerBeast(creature))
                 return AIProfileType.BeastCompanion;
 
-            if (_droid.Value.IsDroid(creature))
+            if (_companions.IsDroid(creature))
                 return AIProfileType.DroidCompanion;
 
             return AIProfileType.Generic;

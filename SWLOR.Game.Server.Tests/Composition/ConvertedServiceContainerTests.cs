@@ -108,6 +108,11 @@ public class ConvertedServiceContainerTests
         var expected = ConvertedServiceFixtures.Load().Where(service => service.AccessorProperty is not null)
             .Select(service => $"{service.Contract.Name} {service.AccessorProperty}")
             .Append("IContentFactory Content")
+            // The accessors of the interfaces a lower domain owns (P5-1g): static code below the services reaches them.
+            .Append("ICombatRecording CombatRecording")
+            .Append("ICharacterRecording CharacterRecording")
+            .Append("ICombatRecordingState CombatRecordingState")
+            .Append("ICompanionLookup CompanionQuery")
             .OrderBy(text => text, StringComparer.Ordinal);
 
         typeof(GameServices).GetProperties(Declared).Select(property => $"{property.PropertyType.Name} {property.Name}")
@@ -120,7 +125,8 @@ public class ConvertedServiceContainerTests
     [Test]
     public void Every_domain_service_in_the_container_is_listed_as_converted()
     {
-        var notServices = Array.Empty<string>();
+        // The interfaces a lower domain owns and a higher service implements (P5-1g): the same instance as the service behind them.
+        var notServices = new[] { "ICompanionLookup", "ICombatRecording", "ICharacterRecording", "IGuiRefreshPublisher" };
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);
 

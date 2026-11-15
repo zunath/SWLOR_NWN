@@ -160,13 +160,9 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         // stuck at the minimum Gadget DMG.
         Enum.GetNames(typeof(DroidStatSubType)).Should().NotContain("Devices");
 
-        var droid = _facades.Get<IDroidService>();
-        var cacheDroidLevels = typeof(DroidService).GetMethod("CacheDroidLevels", BindingFlags.NonPublic | BindingFlags.Instance);
-        cacheDroidLevels.Should().NotBeNull();
-        cacheDroidLevels!.Invoke(droid, null);
-        var levelsByTier = (Dictionary<int, int>)typeof(DroidService)
+        var levelsByTier = (Dictionary<int, int>)typeof(DroidControllerReader)
             .GetField("_levelsByTier", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .GetValue(droid)!;
+            .GetValue(new DroidControllerReader())!;
 
         var gadgetDMGByTier = levelsByTier.OrderBy(tier => tier.Key).ToDictionary(
             tier => tier.Key,

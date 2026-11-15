@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Core;
+
 namespace SWLOR.Game.Server.Composition
 {
     /// <summary>
@@ -17,5 +19,8 @@ namespace SWLOR.Game.Server.Composition
     /// </remarks>
     public static partial class GameServices
     {
+        /// <summary>Whether a combat recording runs, as the platform sees it (<c>ICombatRecordingState</c>, P5-1g).</summary>
+        public static ICombatRecordingState CombatRecordingState => FacadeAccessor.Resolve<ICombatRecordingState>();
+
     }
 }

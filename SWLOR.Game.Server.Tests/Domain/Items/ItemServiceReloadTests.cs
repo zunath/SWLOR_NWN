@@ -41,7 +41,7 @@ public class ItemServiceReloadTests
     private sealed class ReloadItemService : ItemService
     {
         public ReloadItemService(IActivityService activity)
-            : base(null!, null!, activity, null!, null!, null!, null!, null!, null!, null!)
+            : base(null!, null!, activity, null!, null!, null!, null!, null!, null!)
         {
         }
 

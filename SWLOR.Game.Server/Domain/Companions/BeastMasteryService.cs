@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         public const string LyaseResrefPrefix = "lyase_";
         public const string IsomeraseResrefPrefix = "isomerase_";
         public const string ExtractCorpseObjectResref = "extract_corpse";
-        public const string BeastTypeVariable = "BEAST_TYPE";
+        public const string BeastTypeVariable = CompanionLookup.BeastTypeVariable;
         public const string BeastLevelVariable = "BEAST_LEVEL";
 
         private readonly IDBService _db;
@@ -57,31 +57,31 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly ConcurrentDictionary<string, DayOfWeek> _incubationDayOverrides = new();
         private readonly IIncubationFieldNoteService _incubationFieldNotes;
         private readonly IPropertyService _property;
-        private readonly Lazy<IAIService> _ai;
+        private readonly IAIService _ai;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly Lazy<ICompanionControlService> _companionControl;
         private readonly IGuiService _gui;
-        private readonly Lazy<IItemService> _item;
+        private readonly IItemService _item;
         private readonly Lazy<IPerkService> _perk;
-        private readonly Lazy<IResistanceService> _resistance;
+        private readonly IResistanceService _resistance;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<IStatusEffectService> _statusEffect;
-        private readonly Lazy<ICombatDamageCatalogService> _damageCatalog;
+        private readonly ICombatDamageCatalogService _damageCatalog;
 
         public BeastMasteryService(
             IDBService db,
             IIncubationFieldNoteService incubationFieldNotes,
             IPropertyService property,
-            Lazy<IAIService> ai,
+            IAIService ai,
             ICombatRecorderService combatRecorder,
             Lazy<ICompanionControlService> companionControl,
             IGuiService gui,
-            Lazy<IItemService> item,
+            IItemService item,
             Lazy<IPerkService> perk,
-            Lazy<IResistanceService> resistance,
+            IResistanceService resistance,
             Lazy<IStatService> stat,
             Lazy<IStatusEffectService> statusEffect,
-            Lazy<ICombatDamageCatalogService> damageCatalog)
+            ICombatDamageCatalogService damageCatalog)
         {
             _db = db;
             _incubationFieldNotes = incubationFieldNotes;
@@ -192,17 +192,17 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public string GetBeastId(uint beast)
         {
-            return GetLocalString(beast, "BEAST_ID");
+            return GetLocalString(beast, CompanionLookup.BeastIdVariable);
         }
 
         public void SetBeastId(uint beast, string beastId)
         {
-            SetLocalString(beast, "BEAST_ID", beastId);
+            SetLocalString(beast, CompanionLookup.BeastIdVariable, beastId);
         }
 
         public BeastType GetBeastType(uint beast)
         {
-            return (BeastType)GetLocalInt(beast, "BEAST_TYPE");
+            return (BeastType)GetLocalInt(beast, BeastTypeVariable);
         }
 
         public bool IsPlayerBeast(uint beast)
@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public void SetBeastType(uint beast, BeastType type)
         {
-            SetLocalInt(beast, "BEAST_TYPE", (int)type);
+            SetLocalInt(beast, BeastTypeVariable, (int)type);
         }
 
         public void GiveBeastXP(uint beast, int xp, bool ignoreBonuses)
@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             SetSoundset(beast, dbBeast.SoundSetId > -1 ? dbBeast.SoundSetId : beastDetail.SoundSetId);
 
             ApplyStats(beast);
-            _ai.Value.SetAIProfile(beast, AIProfileType.BeastCompanion);
+            _ai.SetAIProfile(beast, AIProfileType.BeastCompanion);
 
             AddHenchman(player, beast);
 
@@ -523,13 +523,13 @@ namespace SWLOR.Game.Server.Domain.Companions
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, accuracyBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Evasion, -1, evasionBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
-            foreach (var damageType in _damageCatalog.Value.GetDefenseDamageTypes())
+            foreach (var damageType in _damageCatalog.GetDefenseDamageTypes())
             {
                 var defenseBonus = BeastResistanceCalculator.CalculateDefenseBonus(level, dbBeast, damageType);
                 BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.Defense, (int)damageType, defenseBonus), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             }
 
-            foreach (var resistanceType in _resistance.Value.GetAllResistanceTypes())
+            foreach (var resistanceType in _resistance.GetAllResistanceTypes())
             {
                 var resistanceBonus = BeastResistanceCalculator.CalculateResistanceBonus(level, dbBeast, resistanceType);
                 BiowareXP2.IPSafeAddItemProperty(
@@ -537,7 +537,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                     ItemPropertyCustom(
                         ItemPropertyType.Resistance,
                         (int)resistanceType,
-                        _resistance.Value.EncodeItemPropertyCostTableValue(resistanceBonus)),
+                        _resistance.EncodeItemPropertyCostTableValue(resistanceBonus)),
                     0f,
                     AddItemPropertyPolicy.ReplaceExisting,
                     false,
@@ -656,7 +656,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual void ReturnItem(uint owner, uint item)
         {
-            _item.Value.ReturnItem(owner, item);
+            _item.ReturnItem(owner, item);
         }
 
         [NWNEventHandler(ScriptName.OnBeastBlocked)]
@@ -1102,7 +1102,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.LearningPurity, job.LearningPurity),
             };
 
-            foreach (var damageType in _damageCatalog.Value.GetDefenseDamageTypes())
+            foreach (var damageType in _damageCatalog.GetDefenseDamageTypes())
             {
                 if (!BeastResistanceCalculator.TryGetDefensePurityIncubationStatType(damageType, out var statType))
                     continue;
@@ -1110,7 +1110,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 itemProperties.Add(ItemPropertyCustom(ItemPropertyType.Incubation, (int)statType, BeastResistanceCalculator.GetDefensePurity(job, damageType)));
             }
 
-            foreach (var resistanceType in _resistance.Value.GetAllResistanceTypes())
+            foreach (var resistanceType in _resistance.GetAllResistanceTypes())
             {
                 if (!BeastResistanceCalculator.TryGetResistancePurityIncubationStatType(resistanceType, out var statType))
                     continue;
@@ -1154,8 +1154,8 @@ namespace SWLOR.Game.Server.Domain.Companions
                 job.LearningPurity,
             };
 
-            purities.AddRange(_damageCatalog.Value.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
-            purities.AddRange(_resistance.Value.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
+            purities.AddRange(_damageCatalog.GetDefenseDamageTypes().Select(type => BeastResistanceCalculator.GetDefensePurity(job, type)));
+            purities.AddRange(_resistance.GetAllResistanceTypes().Select(type => GetResistancePurity(job, type)));
 
             var averagePurity = purities.Average();
             var qualityPercent = averagePurity / maxPurityValue;

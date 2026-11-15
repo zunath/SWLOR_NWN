@@ -18,6 +18,6 @@ internal static class StatHarnessSource
         .Replace("_db.", "DB.")
         .Replace("_combatRecorder.", "CombatRecorder.")
         .Replace("_playerFeedback.", "PlayerFeedback.")
-        .Replace("_beastMastery.", "BeastMastery.")
+        .Replace("_companions.", "BeastMastery.")
         .Replace("_powerGloveEquipment.", "PowerGloveEquipment.");
 }

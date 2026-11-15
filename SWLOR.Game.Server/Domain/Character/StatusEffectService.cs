@@ -196,10 +196,10 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IPvpCombatService _pvpCombat;
         private readonly IStealthService _stealth;
         private readonly IMeleeTechniqueService _meleeTechnique;
-        private readonly ICombatRecorderService _combatRecorder;
+        private readonly ICharacterRecording _combatRecorder;
         private readonly IMessagingService _messaging;
         private readonly IPlayerNameService _playerName;
-        private readonly IGuiService _gui;
+        private readonly IGuiRefreshPublisher _gui;
         private readonly ICapstoneProofService _capstoneProof;
         private readonly IDBService _db;
         private readonly IQuickCastService _quickCast;
@@ -213,10 +213,10 @@ namespace SWLOR.Game.Server.Domain.Character
             IPvpCombatService pvpCombat,
             IStealthService stealth,
             IMeleeTechniqueService meleeTechnique,
-            ICombatRecorderService combatRecorder,
+            ICharacterRecording combatRecorder,
             IMessagingService messaging,
             IPlayerNameService playerName,
-            IGuiService gui,
+            IGuiRefreshPublisher gui,
             ICapstoneProofService capstoneProof,
             IDBService db,
             IQuickCastService quickCast,

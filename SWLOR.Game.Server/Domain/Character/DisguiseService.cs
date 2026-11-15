@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly IDBService _db;
         private readonly ICacheService _cache;
-        private readonly IGuiService _gui;
+        private readonly IGuiRefreshPublisher _gui;
         private readonly IDMPresenceService _dmPresence;
         private readonly IPlayerNameService _playerName;
         private readonly IPlayerDescriptorService _playerDescriptor;
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Domain.Character
         public DisguiseService(
             IDBService db,
             ICacheService cache,
-            IGuiService gui,
+            IGuiRefreshPublisher gui,
             IDMPresenceService dmPresence,
             IPlayerNameService playerName,
             IPlayerDescriptorService playerDescriptor,

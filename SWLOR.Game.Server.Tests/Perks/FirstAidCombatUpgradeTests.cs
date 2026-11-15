@@ -307,7 +307,7 @@ public class FirstAidCombatUpgradeTests
 
         var statSource = File.ReadAllText(
             (root / "SWLOR.Game.Server" / "Domain" / "Character" / "StatService.cs").FullName);
-        statSource.Should().Contain("_beastMastery.IsPlayerBeast(source)");
+        statSource.Should().Contain("_companions.IsPlayerBeast(source)");
         statSource.Should().Contain("GetMaster(source)");
 
         var excludedSources = new[]

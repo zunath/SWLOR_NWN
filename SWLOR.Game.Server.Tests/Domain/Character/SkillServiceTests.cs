@@ -882,7 +882,7 @@ public class SkillServiceTests
     {
         var plain = new SkillService(new LoggingDB(_store, Mark), ScriptedProxy.Create<IGuiService>(out _),
             ScriptedProxy.Create<IPlayerFeedbackService>(out _), ScriptedProxy.Create<ITwinPistolEquipmentService>(out _),
-            FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IDroidService>());
+            FacadeForwarder.LazyFor<IStatService>(), ScriptedProxy.Create<ICompanionLookup>(out _));
 
         // A DM answers 0 before any seam is reached, and a creature that is not a droid falls through to the player lookup.
         _engine.SetReturn("GetIsDM", true);
@@ -894,7 +894,7 @@ public class SkillServiceTests
     private sealed class TestSkillService : SkillService
     {
         public TestSkillService(IDBService db, IGuiService gui, IPlayerFeedbackService feedback, ITwinPistolEquipmentService twin)
-            : base(db, gui, feedback, twin, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IDroidService>())
+            : base(db, gui, feedback, twin, FacadeForwarder.LazyFor<IStatService>(), ScriptedProxy.Create<ICompanionLookup>(out _))
         {
         }
 

@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.Space;
@@ -27,7 +26,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IDBService _db;
         private readonly IEnmityService _enmity;
         private readonly IPartyService _party;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly ICompanionLookup _companions;
         private readonly ISkillService _skill;
         private readonly IStatService _stat;
 
@@ -37,7 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IDBService db,
             IEnmityService enmity,
             IPartyService party,
-            IBeastMasteryService beastMastery,
+            ICompanionLookup companions,
             ISkillService skill,
             IStatService stat,
             Lazy<ISpaceService> space)
@@ -45,7 +44,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _db = db;
             _enmity = enmity;
             _party = party;
-            _beastMastery = beastMastery;
+            _companions = companions;
             _skill = skill;
             _stat = stat;
             _space = space;
@@ -100,7 +99,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             // If player has a beast active, add a combat point for Beast Mastery.
             var associate = GetAssociate(AssociateType.Henchman, actor);
-            if (_beastMastery.IsPlayerBeast(associate))
+            if (_companions.IsPlayerBeast(associate))
             {
                 AddCombatPoint(actor, target, SkillType.BeastMastery);
             }

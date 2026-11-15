@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Core
 {
@@ -11,16 +10,16 @@ namespace SWLOR.Game.Server.Core
     /// </remarks>
     public sealed class ServerTeardown : IServerTeardown
     {
-        private readonly ICombatRecorderService _combatRecorder;
+        private readonly IEnumerable<IShutdownStep> _shutdownSteps;
         private readonly IProcessEventSubscriptions _processEvents;
         private readonly IServerStaticState _staticState;
 
         public ServerTeardown(
-            ICombatRecorderService combatRecorder,
+            IEnumerable<IShutdownStep> shutdownSteps,
             IProcessEventSubscriptions processEvents,
             IServerStaticState staticState)
         {
-            _combatRecorder = combatRecorder ?? throw new ArgumentNullException(nameof(combatRecorder));
+            _shutdownSteps = shutdownSteps ?? throw new ArgumentNullException(nameof(shutdownSteps));
             _processEvents = processEvents ?? throw new ArgumentNullException(nameof(processEvents));
             _staticState = staticState ?? throw new ArgumentNullException(nameof(staticState));
         }
@@ -33,7 +32,8 @@ namespace SWLOR.Game.Server.Core
             Step(_staticState.ClearNwTaskQueue, failures);
 
             // The app_shutdown clean-up, in the order of the handlers in ScriptHandlerOrder.txt.
-            Step(_combatRecorder.StopOnShutdown, failures);
+            foreach (var shutdownStep in _shutdownSteps)
+                Step(shutdownStep.StopOnShutdown, failures);
             Step(_staticState.FlushLogs, failures);
 
             Step(_processEvents.UnsubscribeAll, failures);

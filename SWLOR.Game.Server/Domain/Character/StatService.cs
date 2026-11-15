@@ -4,7 +4,6 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -68,7 +67,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly Dictionary<ItemPropertyType, StatEquipmentAction> _equipmentStatActions = new();
 
         private readonly IDBService _db;
-        private readonly ICombatRecorderService _combatRecorder;
+        private readonly ICharacterRecording _combatRecorder;
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly IStatusEffectService _statusEffect;
         private readonly IMimicryService _mimicry;
@@ -76,7 +75,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IPowerGloveEquipmentService _powerGloveEquipment;
         private readonly IItemService _item;
         private readonly IRecastService _recast;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly ICompanionLookup _companions;
         private readonly IEnmityService _enmity;
         private readonly IResistanceService _resistance;
         private readonly IPvpCombatService _pvpCombat;
@@ -90,11 +89,9 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly Lazy<ICombatQueriesService> _queries;
         private readonly Lazy<ICombatResourcesService> _resources;
 
-        private readonly Lazy<IDroidService> _droid;
-
         public StatService(
             IDBService db,
-            ICombatRecorderService combatRecorder,
+            ICharacterRecording combatRecorder,
             IPlayerFeedbackService playerFeedback,
             IStatusEffectService statusEffect,
             IMimicryService mimicry,
@@ -102,7 +99,7 @@ namespace SWLOR.Game.Server.Domain.Character
             IPowerGloveEquipmentService powerGloveEquipment,
             IItemService item,
             IRecastService recast,
-            IBeastMasteryService beastMastery,
+            ICompanionLookup companions,
             IEnmityService enmity,
             IResistanceService resistance,
             IPvpCombatService pvpCombat,
@@ -114,10 +111,8 @@ namespace SWLOR.Game.Server.Domain.Character
             Lazy<ICombatDamageModifiersService> damageModifiers,
             Lazy<ICombatDamageTakenService> damageTaken,
             Lazy<ICombatQueriesService> queries,
-            Lazy<ICombatResourcesService> resources,
-            Lazy<IDroidService> droid)
+            Lazy<ICombatResourcesService> resources)
         {
-            _droid = droid;
             _db = db;
             _combatRecorder = combatRecorder;
             _playerFeedback = playerFeedback;
@@ -127,7 +122,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _powerGloveEquipment = powerGloveEquipment;
             _item = item;
             _recast = recast;
-            _beastMastery = beastMastery;
+            _companions = companions;
             _enmity = enmity;
             _resistance = resistance;
             _pvpCombat = pvpCombat;
@@ -589,7 +584,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
                 SetLocalInt(creature, "STAMINA", stamina);
 
-                if (stamina < currentStamina && _beastMastery.IsPlayerBeast(creature))
+                if (stamina < currentStamina && _companions.IsPlayerBeast(creature))
                 {
                     var availableAt = Clock.UtcNow.AddSeconds(BeastNaturalStaminaRegenDelaySeconds);
                     SetLocalString(
@@ -1133,7 +1128,7 @@ namespace SWLOR.Game.Server.Domain.Character
             if (isPlayer)
                 return DefaultPlayerMovementSpeedIncrease;
 
-            if (IsDroid(creature) || _beastMastery.IsPlayerBeast(creature))
+            if (IsDroid(creature) || _companions.IsPlayerBeast(creature))
                 return DefaultCompanionMovementSpeedIncrease;
 
             return DefaultNPCMovementSpeedIncrease;
@@ -2704,7 +2699,7 @@ namespace SWLOR.Game.Server.Domain.Character
             if (amount <= 0 || !GetIsObjectValid(source))
                 return amount;
 
-            var statSource = _beastMastery.IsPlayerBeast(source)
+            var statSource = _companions.IsPlayerBeast(source)
                 ? GetMaster(source)
                 : source;
             var adjustment = GetStatAdjustment(
@@ -3317,7 +3312,7 @@ namespace SWLOR.Game.Server.Domain.Character
         protected virtual void ScheduleTemporaryHitPointLimitCheck(uint creature) =>
             TemporaryHitPointEffects.ScheduleLimitCheck(creature);
 
-        protected virtual bool IsDroid(uint creature) => _droid.Value.IsDroid(creature);
+        protected virtual bool IsDroid(uint creature) => _companions.IsDroid(creature);
 
         protected virtual SkillType GetSkillTypeByBaseItem(BaseItem baseItem) => _skill.GetSkillTypeByBaseItem(baseItem);
 

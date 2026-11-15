@@ -45,7 +45,7 @@ public class StatServiceDefaultSeamsTests
             _facades.Get<IDBService>(), _facades.Get<ICombatRecorderService>(), _facades.Get<IPlayerFeedbackService>(),
             _facades.Get<IStatusEffectService>(), _facades.Get<IMimicryService>(), _facades.Get<ITwinPistolEquipmentService>(),
             _facades.Get<IPowerGloveEquipmentService>(), _facades.Get<IItemService>(), _facades.Get<IRecastService>(),
-            _facades.Get<IBeastMasteryService>(), _facades.Get<IEnmityService>(), _facades.Get<IResistanceService>(),
+            _facades.Get<ICompanionLookup>(), _facades.Get<IEnmityService>(), _facades.Get<IResistanceService>(),
             _facades.Get<IPvpCombatService>());
     }
 
@@ -155,12 +155,12 @@ public class StatServiceDefaultSeamsTests
             IPowerGloveEquipmentService powerGloveEquipment,
             IItemService item,
             IRecastService recast,
-            IBeastMasteryService beastMastery,
+            ICompanionLookup beastMastery,
             IEnmityService enmity,
             IResistanceService resistance,
             IPvpCombatService pvpCombat)
             : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat,
-                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>(), FacadeForwarder.LazyFor<IDroidService>())
+                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
         {
         }
 

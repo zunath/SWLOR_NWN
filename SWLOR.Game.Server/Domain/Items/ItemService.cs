@@ -5,7 +5,6 @@ using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Entity;
@@ -30,32 +29,28 @@ namespace SWLOR.Game.Server.Domain.Items
     /// </summary>
     public class ItemService : IItemService
     {
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly ICompanionLookup _companions;
         private readonly IDBService _db;
         private readonly IActivityService _activity;
-        private readonly ICombatRecorderService _combatRecorder;
+        private readonly ICombatRecording _combatRecorder;
         private readonly ICraftMinigameRoutingService _craftMinigameRouting;
         private readonly Lazy<IPerkService> _perk;
         private readonly IRecastService _recast;
         private readonly Lazy<ISkillService> _skill;
         private readonly Lazy<ITwinPistolEquipmentService> _twinPistolEquipment;
 
-        private readonly Lazy<IDroidService> _droid;
-
         public ItemService(
-            IBeastMasteryService beastMastery,
+            ICompanionLookup companions,
             IDBService db,
             IActivityService activity,
-            ICombatRecorderService combatRecorder,
+            ICombatRecording combatRecorder,
             ICraftMinigameRoutingService craftMinigameRouting,
             Lazy<IPerkService> perk,
             IRecastService recast,
             Lazy<ISkillService> skill,
-            Lazy<ITwinPistolEquipmentService> twinPistolEquipment,
-            Lazy<IDroidService> droid)
+            Lazy<ITwinPistolEquipmentService> twinPistolEquipment)
         {
-            _droid = droid;
-            _beastMastery = beastMastery;
+            _companions = companions;
             _db = db;
             _activity = activity;
             _combatRecorder = combatRecorder;
@@ -632,7 +627,7 @@ namespace SWLOR.Game.Server.Domain.Items
         public string CanEquip(uint creature, uint item, InventorySlot? prospectiveSlot = null)
         {
             var isPlayer = GetIsPC(creature);
-            var isDroid = _droid.Value.IsDroid(creature);
+            var isDroid = _companions.IsDroid(creature);
             var itemType = GetBaseItemType(item);
             var hands = prospectiveSlot.HasValue
                 ? _twinPistolEquipment.Value.GetProspectiveHands(creature, item, prospectiveSlot.Value)
@@ -729,8 +724,8 @@ namespace SWLOR.Game.Server.Domain.Items
             if (GetIsDM(creature) || GetIsDMPossessed(creature))
                 return true;
 
-            if (_droid.Value.IsDroid(creature) ||
-                _beastMastery.GetBeastType(creature) != BeastType.Invalid)
+            if (_companions.IsDroid(creature) ||
+                _companions.GetBeastType(creature) != BeastType.Invalid)
             {
                 return false;
             }
@@ -1455,7 +1450,7 @@ namespace SWLOR.Game.Server.Domain.Items
         public string CanBePersistentlyStored(uint player, uint item)
         {
             var resref = GetResRef(item);
-            string[] disallowedResrefs = { DroidService.DroidControlItemResref };
+            string[] disallowedResrefs = { ICompanionLookup.DroidControlItemResref };
 
             if (GetItemPossessor(item) != player)
             {

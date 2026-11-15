@@ -4,7 +4,6 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -95,28 +94,24 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly IDBService _db;
         private readonly IQuickCastService _quickCast;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly ICompanionLookup _companions;
         private readonly IStatusEffectService _statusEffect;
         private readonly Lazy<IAbilityService> _ability;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<ICombatService> _combat;
 
-        private readonly Lazy<IDroidService> _droid;
-
         public PerkService(
             IDBService db,
             IQuickCastService quickCast,
-            IBeastMasteryService beastMastery,
+            ICompanionLookup companions,
             IStatusEffectService statusEffect,
             Lazy<IAbilityService> ability,
             Lazy<IStatService> stat,
-            Lazy<ICombatService> combat,
-            Lazy<IDroidService> droid)
+            Lazy<ICombatService> combat)
         {
-            _droid = droid;
             _db = db;
             _quickCast = quickCast;
-            _beastMastery = beastMastery;
+            _companions = companions;
             _statusEffect = statusEffect;
             _ability = ability;
             _stat = stat;
@@ -814,7 +809,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             if (GetIsPC(creature) && !GetIsDMPossessed(creature) ||
                 IsDroid(creature) ||
-                _beastMastery.IsPlayerBeast(creature))
+                _companions.IsPlayerBeast(creature))
             {
                 return GetPerkLevel(creature, perkType);
             }
@@ -974,15 +969,10 @@ namespace SWLOR.Game.Server.Domain.Character
             // Droids
             else if (IsDroid(creature))
             {
-                var controller = GetDroidControllerItem(creature);
-                var droidDetails = LoadDroidItemPropertyDetails(controller);
-
-                return droidDetails.Perks.TryGetValue(perkType, out var droidPerkLevel)
-                    ? droidPerkLevel
-                    : 0;
+                return GetDroidPerkLevel(creature, perkType);
             }
             // Beasts
-            else if (_beastMastery.IsPlayerBeast(creature))
+            else if (_companions.IsPlayerBeast(creature))
             {
                 return GetBeastPerkLevel(creature, perkType);
             }
@@ -1140,7 +1130,7 @@ namespace SWLOR.Game.Server.Domain.Character
             if (GetIsPC(creature) && !GetIsDMPossessed(creature))
                 return true;
 
-            if (IsDroid(creature) || _beastMastery.IsPlayerBeast(creature))
+            if (IsDroid(creature) || _companions.IsPlayerBeast(creature))
                 return true;
 
             return GetLocalInt(creature, $"PERK_LEVEL_{(int)perkType}") > 0;
@@ -1327,7 +1317,7 @@ namespace SWLOR.Game.Server.Domain.Character
         {
 
             // todo: merge with player branch
-            var beastId = _beastMastery.GetBeastId(beast);
+            var beastId = _companions.GetBeastId(beast);
             var dbBeast = _db.Get<Beast>(beastId);
 
             if (dbBeast == null)
@@ -1480,17 +1470,12 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual bool IsDroid(uint creature)
         {
-            return _droid.Value.IsDroid(creature);
+            return _companions.IsDroid(creature);
         }
 
-        protected virtual uint GetDroidControllerItem(uint droid)
+        protected virtual int GetDroidPerkLevel(uint droid, PerkType perkType)
         {
-            return _droid.Value.GetControllerItem(droid);
-        }
-
-        protected virtual DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller)
-        {
-            return _droid.Value.LoadDroidItemPropertyDetails(controller);
+            return _companions.GetDroidPerkLevel(droid, perkType);
         }
 
         protected virtual void RefreshStatDrivenTrackerEffects(uint creature)

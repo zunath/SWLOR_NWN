@@ -141,7 +141,7 @@ public class EnmityServiceTests
         partyScript.On("IsInParty", args => _partyPairs.Contains(((uint)args[0]!, (uint)args[1]!)));
         var holoCom = ScriptedProxy.Create<IHoloComService>(out var holoScript);
         holoScript.On("IsHologram", args => _holograms.Contains((uint)args[0]!));
-        var beast = ScriptedProxy.Create<IBeastMasteryService>(out var beastScript);
+        var beast = ScriptedProxy.Create<ICompanionLookup>(out var beastScript);
         beastScript.On("IsPlayerBeast", args => _playerBeasts.Contains((uint)args[0]!));
 
         _enmity = new TestEnmity(ai, activity, party, holoCom, beast);
@@ -1063,9 +1063,9 @@ public class EnmityServiceTests
             IActivityService activity,
             IPartyService party,
             IHoloComService holoCom,
-            IBeastMasteryService beastMastery)
+            ICompanionLookup beastMastery)
             : base(ai, activity, party, holoCom, beastMastery, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IStealthService>(),
-                FacadeForwarder.For<ICompanionControlService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<IDroidService>())
+                FacadeForwarder.For<ICompanionControlService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
         {
         }
 

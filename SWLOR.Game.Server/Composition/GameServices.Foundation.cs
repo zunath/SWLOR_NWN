@@ -4,6 +4,9 @@ namespace SWLOR.Game.Server.Composition
 {
     public static partial class GameServices
     {
+        /// <summary>The combat recorder as the domains below combat see it (<c>ICombatRecording</c>, P5-1g).</summary>
+        public static ICombatRecording CombatRecording => FacadeAccessor.Resolve<ICombatRecording>();
+
         /// <summary>Plays the visual effect an object carries for an animation event (the static facade <c>AnimationPlayer</c> until P2-ZI).</summary>
         public static IAnimationPlayerService AnimationPlayer => FacadeAccessor.Resolve<IAnimationPlayerService>();
 

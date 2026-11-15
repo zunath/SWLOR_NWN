@@ -109,7 +109,7 @@ public class CombatPointServiceTests
         enmityScript.On("HasNonProximityEnmity", args => _nonProximity.Contains(((uint)args[0]!, (uint)args[1]!)));
         var party = ScriptedProxy.Create<IPartyService>(out var partyScript);
         partyScript.On("GetAllPartyMembersWithinRange", _ => _partyMembers);
-        var beast = ScriptedProxy.Create<IBeastMasteryService>(out var beastScript);
+        var beast = ScriptedProxy.Create<ICompanionLookup>(out var beastScript);
         beastScript.On("IsPlayerBeast", args => _playerBeasts.Contains((uint)args[0]!));
 
         _points = new TestCombatPoint(_db, enmity, party, beast);
@@ -536,7 +536,7 @@ public class CombatPointServiceTests
 
     private sealed class TestCombatPoint : CombatPointService
     {
-        public TestCombatPoint(IDBService db, IEnmityService enmity, IPartyService party, IBeastMasteryService beastMastery)
+        public TestCombatPoint(IDBService db, IEnmityService enmity, IPartyService party, ICompanionLookup beastMastery)
             : base(db, enmity, party, beastMastery, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.LazyFor<ISpaceService>())
         {
         }

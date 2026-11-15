@@ -246,7 +246,7 @@ public class StatFacadeAllocationTests
             IPowerGloveEquipmentService powerGloveEquipment,
             IItemService item,
             IRecastService recast,
-            IBeastMasteryService beastMastery,
+            ICompanionLookup beastMastery,
             IEnmityService enmity,
             IResistanceService resistance,
             IPvpCombatService pvpCombat,
@@ -254,7 +254,7 @@ public class StatFacadeAllocationTests
             ISkillService skill,
             ITemporaryStatModifierService temporaryStatModifier)
             : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat,
-                perk, skill, temporaryStatModifier, FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>(), FacadeForwarder.LazyFor<IDroidService>())
+                perk, skill, temporaryStatModifier, FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
         {
         }
 

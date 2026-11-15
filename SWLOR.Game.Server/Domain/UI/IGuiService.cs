@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.UI
     /// The NUI window registry and the per-player window state. One member per public member of the old static
     /// <c>Service.Gui</c>.
     /// </summary>
-    public interface IGuiService
+    public interface IGuiService : IGuiRefreshPublisher
     {
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
@@ -108,25 +108,6 @@ namespace SWLOR.Game.Server.Domain.UI
         /// The client window is destroyed before callbacks or persistence can fail.
         /// </summary>
         void ClosePlayerWindow(uint player, GuiWindowType type, uint uiTarget = OBJECT_INVALID);
-
-        /// <summary>
-        /// Publishes a refresh event. All subscribed view models will be refreshed for this particular player.
-        /// This can be useful for pushing updates to a window based on external circumstances.
-        /// For example: Refreshing the XP bar when a player gains XP.
-        /// If the player does not have the window open on-screen, nothing will happen.
-        /// </summary>
-        /// <param name="player">The player to refresh.</param>
-        /// <param name="payload">The refresh payload.</param>
-        /// <param name="uiTarget">Where the windows are shown, when that is not the player, such as a creature a DM possesses.</param>
-        void PublishRefreshEvent<T>(uint player, T payload, uint uiTarget = OBJECT_INVALID)
-            where T : IGuiRefreshEvent;
-
-        /// <summary>
-        /// Refreshes every open character sheet currently displaying the supplied target.
-        /// This includes sheets opened by another player, such as DM-inspected creatures.
-        /// </summary>
-        void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)
-            where T : IGuiRefreshEvent;
 
         /// <summary>
         /// Skips the default NWN window open events and shows the SWLOR windows instead.

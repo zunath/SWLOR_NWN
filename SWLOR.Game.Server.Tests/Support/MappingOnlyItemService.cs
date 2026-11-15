@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// </summary>
 public sealed class MappingOnlyItemService : ItemService
 {
-    public MappingOnlyItemService(IBeastMasteryService beastMastery, IDBService db)
-        : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>(), FacadeForwarder.LazyFor<IDroidService>())
+    public MappingOnlyItemService(ICompanionLookup beastMastery, IDBService db)
+        : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>())
     {
     }
 

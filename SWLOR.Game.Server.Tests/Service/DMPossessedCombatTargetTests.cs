@@ -91,7 +91,7 @@ public class DMPossessedCombatTargetTests
                     public static T Get<T>(string id) { Reads++; return (T)(object)Saved; }
                     public static void Set(Player player) { Saved = player; Writes++; }
                 }
-                private static class BeastMastery { public static bool IsPlayerBeast(uint creature) => false; }
+                private static class BeastMastery { public static bool IsPlayerBeast(uint creature) => false; public static bool IsDroid(uint creature) => false; }
                 private static class Clock { public static DateTime UtcNow => DateTime.UtcNow; }
                 private static class CombatRecorder
                 {

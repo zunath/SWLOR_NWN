@@ -1,0 +1,1539 @@
+{
+  "Id": "tat_broker",
+  "Title": "tat_broker",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00002",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "tat_thing_beneath",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00009",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "tat_pearl_wager",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00016",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "tat_dead_alive",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Ah, a new face, and an armed one. I am Dreeko Vant, and I take large wagers on things most people will not go near.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00011",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "tat_thing_beneath",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00021",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "tat_pearl_wager",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00031",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "tat_dead_alive",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00009",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "tat_thing_beneath"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00019",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "tat_pearl_wager"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00029",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "tat_dead_alive"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00001": {
+      "Id": "entry-00001",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I pay with pleasure, because I made three times this on my other wager. Here are your winnings. Tell people that Dreeko always pays.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00002": {
+      "Id": "entry-00002",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and the Flatlands did not shake last night. Every pilot in the cantina noticed. Is the Sand Worm dead?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00002",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00003",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00003": {
+      "Id": "entry-00003",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "My wagers are simple. I say a thing cannot be done, you do it, and I pay. The Sand Worm lives under the Flatlands and comes up for anything heavy, and four people have died trying. I need you to kill the Sand Worm. Come back to me here at the spaceport when it is dead and I will pay out.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00007",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00008",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00004": {
+      "Id": "entry-00004",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Excellent. Kill the Sand Worm, which surfaces in the Flatlands and the Southern Pass, then come back to me here at the Anchorhead Spaceport to collect.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00004",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00005": {
+      "Id": "entry-00005",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "None of them came back, and I kept their stakes. I assume the Sand Worm ate them, so go prepared for a hard fight.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00008",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00006": {
+      "Id": "entry-00006",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I do not lose. I have a second wager, with someone richer, that somebody will kill it this season. You are how I win that one.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00007",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00007": {
+      "Id": "entry-00007",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Our wager is that you kill the Sand Worm. It surfaces in the Flatlands and the Southern Pass. Come back to me here when it is dead.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00010",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00008": {
+      "Id": "entry-00008",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Then I am paying, and I have never been so glad to lose. Here are your winnings. Go and tell that story anywhere you like, loudly.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00009": {
+      "Id": "entry-00009",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back. They are saying in the cantina that someone killed a Krayt Dragon, and I said I knew who. Is it dead?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00012",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00013",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00010": {
+      "Id": "entry-00010",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Every pearl hunter who lands here swears a Krayt Dragon can be killed, borrows against the pearl and walks into the dunes. I hold eleven such debts and expect to collect none. I need you to kill one Krayt Dragon out in the desert. Come back to me here when it is dead and I will pay handsomely.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00017",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00018",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00015",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00016",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00011": {
+      "Id": "entry-00011",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Excellent. Kill one Krayt Dragon on the Desert Road, the Flatlands, the Northern Dunes or the Southern Pass, then come back to me here at the Anchorhead Spaceport.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00014",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00012": {
+      "Id": "entry-00012",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "They roam the Desert Road, the Flatlands, the Northern Dunes and the Southern Pass, but not every day. When the banthas refuse to move, look to the ridges.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00018",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00015",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00016",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00013": {
+      "Id": "entry-00013",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The pearl is yours if there is one. I want the story, because a story like that brings a great many new wagers to my table.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00017",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00015",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00016",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00014": {
+      "Id": "entry-00014",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Our wager is that you kill one Krayt Dragon. They roam the Desert Road, the Flatlands, the Northern Dunes and the Southern Pass, though not every day. Come back when it is dead.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00020",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00015": {
+      "Id": "entry-00015",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Then I win, and for once I am glad to pay out. Here is the purse, and keep this Hunter's Vambrace. That hunter was never beaten until you.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00016": {
+      "Id": "entry-00016",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back. I walked to the cantina this morning and nobody followed me, for the first time in a year. Is the Peerless Bounty Hunter dead?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00022",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00023",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00017": {
+      "Id": "entry-00017",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "This one is personal, so I will pay more. A bounty hunter the guild calls Peerless is working the desert, and I am told my name is on that hunter's list. I need you to find the Peerless Bounty Hunter out in the desert and kill that hunter. Come back to me here at the spaceport when it is done.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00027",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00028",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00025",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00026",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00018": {
+      "Id": "entry-00018",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Excellent. Kill the Peerless Bounty Hunter on the Desert Road, the Flatlands, the Northern Dunes or the Southern Pass, then come back to me here at the Anchorhead Spaceport.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00024",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00019": {
+      "Id": "entry-00019",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "A long list of people have lost wagers to me, and any one of them could have paid for it. I prefer not to narrow it down.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00028",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00025",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00026",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00020": {
+      "Id": "entry-00020",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Out in the open desert, watching the roads into town. Try the Desert Road, the Flatlands, the Northern Dunes and the Southern Pass. A good hunter is not always in one place.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00027",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00025",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00026",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00021": {
+      "Id": "entry-00021",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need the Peerless Bounty Hunter killed. The hunter roams the Desert Road, the Flatlands, the Northern Dunes and the Southern Pass, though not every day. Come back when it is done.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00030",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "reply-00000": {
+      "Id": "reply-00000",
+      "Text": {
+        "Text": "Goodbye, Dreeko. Maybe another time.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00001": {
+      "Id": "reply-00001",
+      "Text": {
+        "Text": "What other wagers do you have open?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00000",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00002": {
+      "Id": "reply-00002",
+      "Text": {
+        "Text": "Yes, the Sand Worm is dead. Pay up.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "tat_thing_beneath"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00001",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00003": {
+      "Id": "reply-00003",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00004": {
+      "Id": "reply-00004",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00005": {
+      "Id": "reply-00005",
+      "Text": {
+        "Text": "I'll take that wager. I'll kill the Sand Worm.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "tat_thing_beneath"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00004",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00006": {
+      "Id": "reply-00006",
+      "Text": {
+        "Text": "Not right now. I don't gamble with my life.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00007": {
+      "Id": "reply-00007",
+      "Text": {
+        "Text": "What happened to the four who tried?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00005",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00008": {
+      "Id": "reply-00008",
+      "Text": {
+        "Text": "Why would you want to lose this wager?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00006",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00009": {
+      "Id": "reply-00009",
+      "Text": {
+        "Text": "Do you have a wager about the Sand Worm?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00003",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00010": {
+      "Id": "reply-00010",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00011": {
+      "Id": "reply-00011",
+      "Text": {
+        "Text": "Remind me about the wager on the Sand Worm.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00007",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00012": {
+      "Id": "reply-00012",
+      "Text": {
+        "Text": "Yes, the Krayt Dragon is dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "tat_pearl_wager"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00008",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00013": {
+      "Id": "reply-00013",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00014": {
+      "Id": "reply-00014",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00015": {
+      "Id": "reply-00015",
+      "Text": {
+        "Text": "I'll take the wager. I'll kill a Krayt Dragon.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "tat_pearl_wager"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00011",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00016": {
+      "Id": "reply-00016",
+      "Text": {
+        "Text": "Not right now. Eleven debts is answer enough.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00017": {
+      "Id": "reply-00017",
+      "Text": {
+        "Text": "Where do I find a Krayt Dragon?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00012",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00018": {
+      "Id": "reply-00018",
+      "Text": {
+        "Text": "Do you want the dragon's pearl?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00013",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00019": {
+      "Id": "reply-00019",
+      "Text": {
+        "Text": "Do you have a wager on killing a Krayt Dragon?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00010",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00020": {
+      "Id": "reply-00020",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00021": {
+      "Id": "reply-00021",
+      "Text": {
+        "Text": "Remind me about the wager on the Krayt Dragon.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00014",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00022": {
+      "Id": "reply-00022",
+      "Text": {
+        "Text": "Yes, the Peerless Bounty Hunter is dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "tat_dead_alive"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00015",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00023": {
+      "Id": "reply-00023",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00024": {
+      "Id": "reply-00024",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00025": {
+      "Id": "reply-00025",
+      "Text": {
+        "Text": "I'll do it. I'll kill the Peerless Bounty Hunter.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "tat_dead_alive"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00018",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00026": {
+      "Id": "reply-00026",
+      "Text": {
+        "Text": "Not right now. I don't kill guild hunters.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00027": {
+      "Id": "reply-00027",
+      "Text": {
+        "Text": "Who put the bounty on you?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00019",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00028": {
+      "Id": "reply-00028",
+      "Text": {
+        "Text": "Where is this bounty hunter?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00020",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00029": {
+      "Id": "reply-00029",
+      "Text": {
+        "Text": "Do you have a wager on a bounty hunter?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00017",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00030": {
+      "Id": "reply-00030",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00031": {
+      "Id": "reply-00031",
+      "Text": {
+        "Text": "Remind me about the bounty hunter who is after you.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00021",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

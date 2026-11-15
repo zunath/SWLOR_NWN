@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SetBrowserSource(ids, CurrentPartId(), pictureKey,
                     id => _partIdToIndex.TryGetValue(id, out var index) && names != null && index < names.Count &&
                           names[index] != WeaponAppearanceBaseDefinition.DefaultPartName(id)
-                        ? names[index]
+                        ? AppearancePartNames.TileName(names[index])
                         : AppearancePartNames.Get(pictureKey(id), id.ToString()),
                     SelectPartFromBrowser, frontOnly: true);
             }

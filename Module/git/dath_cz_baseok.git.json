@@ -1186,7 +1186,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": "czerkaranger"
+          "value": "dath_chief"
         },
         "CRAdjust": {
           "type": "int",
@@ -1206,7 +1206,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "The Czerka security chief on Dathomir. He stands with his back to the wall and his eyes on the treeline."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -1221,6 +1223,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -1311,11 +1333,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 111
+                "value": 90
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 107
+                "value": 23
               },
               "Cost": {
                 "type": "dword",
@@ -1328,13 +1350,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                  "0": "Clothing worn by Security Chief Garrik Vane."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A corporate militia outfit with utilitarian seams and the disciplined outline Czerka likes to put between its property and everyone else. The fabric makes no distinction between guarding a warehouse and enforcing the company's idea of order."
+                  "0": "Clothing worn by Security Chief Garrik Vane."
                 }
               },
               "Identified": {
@@ -1343,25 +1365,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 57
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 173
+                "value": 91
               },
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Czerka_Militia_Outfit"
+                  "0": "[NPC] Security Chief Garrik Vane's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 94
+                "value": 2
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 94
+                "value": 24
               },
               "Plot": {
                 "type": "byte",
@@ -1381,11 +1403,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "Czerka_MilitianOutfit"
+                "value": "dath_chief_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "czerka_militia"
+                "value": "dath_chief_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -1462,26 +1504,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 104
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             }
           ]
@@ -1575,7 +1597,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Male Czerka Guard"
+            "0": "Security Chief Garrik"
           }
         },
         "fortbonus": {
@@ -1613,7 +1635,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Vane"
           }
         },
         "LawfulChaotic": {
@@ -1646,7 +1668,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -1935,7 +1957,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "MaleCzerkaGuard"
+          "value": "dath_chief"
         },
         "Tail_New": {
           "type": "dword",
@@ -1947,7 +1969,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "maleczerkaguard"
+          "value": "dath_chief"
         },
         "WalkRate": {
           "type": "int",
@@ -2194,7 +2216,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "dath_engineer"
         },
         "CRAdjust": {
           "type": "int",
@@ -2214,7 +2236,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A Czerka site engineer hung about with cable and splice tools, glaring at a power meter."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -2229,6 +2253,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -2319,11 +2363,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 107
+                "value": 35
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 107
+                "value": 21
               },
               "Cost": {
                 "type": "dword",
@@ -2336,13 +2380,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "This appears to be the uniform of a Czerka Corporation employee."
+                  "0": "Clothing worn by Site Engineer Halv Renner."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": ""
+                  "0": "Clothing worn by Site Engineer Halv Renner."
                 }
               },
               "Identified": {
@@ -2351,25 +2395,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 108
+                "value": 22
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 131
+                "value": 23
               },
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Czerka Uniform"
+                  "0": "[NPC] Site Engineer Halv Renner's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 92
+                "value": 16
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 92
+                "value": 1
               },
               "Plot": {
                 "type": "byte",
@@ -2389,11 +2433,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "CzerkaUniform"
+                "value": "dath_engineer_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "czerkauniform"
+                "value": "dath_engineer_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -2470,26 +2534,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 189
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             }
           ]
@@ -2583,7 +2627,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Male Czerka Employee"
+            "0": "Site Engineer Halv"
           }
         },
         "fortbonus": {
@@ -2621,7 +2665,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Renner"
           }
         },
         "LawfulChaotic": {
@@ -2654,7 +2698,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -2682,7 +2726,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2943,7 +2987,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "MaleCzerkaEmployee"
+          "value": "dath_engineer"
         },
         "Tail_New": {
           "type": "dword",
@@ -2955,7 +2999,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "maleczerkaemploy"
+          "value": "dath_engineer"
         },
         "WalkRate": {
           "type": "int",

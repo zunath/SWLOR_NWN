@@ -18,6 +18,49 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview
         /// <summary>The longest name that fits under a part picture.</summary>
         public const int MaxLength = 13;
 
+        /// <summary>
+        /// The widest name, in pixels of the game's label font at GUI scale 1, that fits under a
+        /// part picture. The label is 106 wide; the margin keeps neighbouring names apart.
+        /// </summary>
+        public const int MaxWidth = 101;
+
+        // Advance widths of the game's label font (fnt_maintext at 16 px): A-Z, then a-z.
+        private static readonly int[] UpperWidths =
+            { 11, 8, 11, 11, 8, 8, 12, 10, 4, 4, 9, 8, 14, 11, 12, 8, 12, 8, 8, 10, 11, 10, 14, 9, 8, 9 };
+        private static readonly int[] LowerWidths =
+            { 7, 8, 7, 9, 8, 6, 7, 8, 3, 3, 7, 3, 12, 8, 8, 8, 9, 5, 5, 7, 8, 7, 11, 7, 7, 7 };
+
+        /// <summary>The drawn width of a name in the game's label font. Other characters count as the widest letter.</summary>
+        public static int Width(string name)
+        {
+            var width = 0;
+            foreach (var character in name ?? string.Empty)
+            {
+                width += character switch
+                {
+                    >= 'A' and <= 'Z' => UpperWidths[character - 'A'],
+                    >= 'a' and <= 'z' => LowerWidths[character - 'a'],
+                    ' ' => 7,
+                    '\'' => 2,
+                    '-' => 5,
+                    _ => 14
+                };
+            }
+            return width;
+        }
+
+        /// <summary>
+        /// A weapon definition's own part name as shown under a picture: a name too wide for the
+        /// tile loses its bracketed note ("Bare Fists (Invisible)" shows as "Bare Fists").
+        /// </summary>
+        public static string TileName(string name)
+        {
+            if (string.IsNullOrEmpty(name) || Width(name) <= MaxWidth)
+                return name;
+            var note = name.IndexOf(" (", StringComparison.Ordinal);
+            return note > 0 ? name[..note] : name;
+        }
+
         private static readonly Regex BodyPart = new("^p[fm][a-z]0_([a-z]+?)([lr]?)(\\d{3})$", RegexOptions.Compiled);
         private static readonly HashSet<string> SidedStems = new(StringComparer.Ordinal)
         {

@@ -1,0 +1,2744 @@
+{
+  "Id": "esh_hunt",
+  "Title": "esh_hunt",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00002",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "esh_deep_silverwood",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00007",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "esh_frost_fangs",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00012",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "esh_pack_leaders",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00018",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "esh_pack_patrol",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00023",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "esh_wolf_meat",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00028",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "esh_ridged_hide",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00033",
+      "Conditions": [
+        {
+          "Key": "condition-on-quest-state",
+          "Arguments": [
+            "esh_hide_tally",
+            "2"
+          ],
+          "IsNegated": false
+        }
+      ]
+    },
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I am Daven Ryl, the huntmaster. The Silverwood feeds this city, and the wolves of the Silverwood know it. I keep the balance between them, and some seasons that takes a rifle.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00009",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "esh_deep_silverwood",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00017",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "esh_frost_fangs",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00025",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "esh_pack_leaders",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00034",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "esh_pack_patrol",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00043",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "esh_wolf_meat",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00052",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "esh_ridged_hide",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00060",
+          "Conditions": [
+            {
+              "Key": "condition-on-quest-state",
+              "Arguments": [
+                "esh_hide_tally",
+                "1"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00007",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "esh_deep_silverwood"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00015",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "esh_frost_fangs"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00023",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "esh_pack_leaders"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00032",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "esh_pack_patrol"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00040",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "esh_wolf_meat"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00049",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "esh_ridged_hide"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00058",
+          "Conditions": [
+            {
+              "Key": "condition-can-accept-quest",
+              "Arguments": [
+                "esh_hide_tally"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00026",
+          "Conditions": [
+            {
+              "Key": "condition-has-quest",
+              "Arguments": [
+                "esh_deep_silverwood"
+              ],
+              "IsNegated": false
+            }
+          ]
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00001": {
+      "Id": "entry-00001",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Here is a hunter's fee from the foresters' guild, and they were glad to pay it. The packs still have leaders, so ask me why the packs keep growing.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00002": {
+      "Id": "entry-00002",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and the foresters reached the old stands yesterday for the first time in three years. Did you kill all twelve Dire Wolves?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00002",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00003",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00003": {
+      "Id": "entry-00003",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "It is badly off. Officer Venn thins the wolf packs near the gate, but nobody thins the deep wood where they breed, and the foresters cannot work there any more. I need you to go well into the Silverwood Expanse and kill twelve Eshan Dire Wolves, then come back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00005",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00006",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00004": {
+      "Id": "entry-00004",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill twelve Eshan Dire Wolves in the Silverwood Expanse on Eshan, then come back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00004",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00005": {
+      "Id": "entry-00005",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You still need to kill twelve Eshan Dire Wolves in the Silverwood Expanse on Eshan. Come back to me when it is done.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00008",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00006": {
+      "Id": "entry-00006",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Here is your fee. If the winter breaks, the rest of them will go home on their own. If it does not, I will have this work again.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00007": {
+      "Id": "entry-00007",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and the white tracks in the snow are thinning out. Did you kill all ten Frost Dire Wolves?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00010",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00011",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00008": {
+      "Id": "entry-00008",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Those are Frost Dire Wolves. They belong higher up, but a hard winter has pushed them down into the Silverwood, and they kill far more than they need to eat. I need you to kill ten Eshan Frost Dire Wolves in the Silverwood Expanse, then come back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00013",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00014",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00009": {
+      "Id": "entry-00009",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill ten Eshan Frost Dire Wolves in the Silverwood Expanse on Eshan, then come back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00012",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00010": {
+      "Id": "entry-00010",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You still need to kill ten Eshan Frost Dire Wolves in the Silverwood Expanse on Eshan. Come back to me when it is done.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00016",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00011": {
+      "Id": "entry-00011",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "That is the balance of the Silverwood restored. Here is the largest fee I pay to any hunter, and you earned all of it.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00012": {
+      "Id": "entry-00012",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and last night the howling came from six directions, so the packs have scattered. Did you kill all three Alphas?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00018",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00019",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00013": {
+      "Id": "entry-00013",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The Alphas are the reason. One Alpha holds a whole pack together, and Officer Venn's bounty on one of them did not end the problem. With three Alphas gone, three packs scatter into pairs that a forester can handle. I need you to kill three Eshan Dire Wolf Alphas in the Silverwood Expanse, then come back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00021",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00022",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00014": {
+      "Id": "entry-00014",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill three Eshan Dire Wolf Alphas in the Silverwood Expanse on Eshan, then come back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00020",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00015": {
+      "Id": "entry-00015",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You still need to kill three Eshan Dire Wolf Alphas in the Silverwood Expanse on Eshan. Come back to me when it is done.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00024",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00016": {
+      "Id": "entry-00016",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "After that, we hunt the Alphas that lead the packs. First finish killing the twelve Eshan Dire Wolves I asked you for in the Silverwood Expanse.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00017": {
+      "Id": "entry-00017",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Here is the hunter's rate. The offer stays open, so come back whenever you want another patrol.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00018": {
+      "Id": "entry-00018",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back, and you smell of wolf. Did you kill ten Dire Wolves and ten Frost Dire Wolves on your patrol?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00027",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00028",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00019": {
+      "Id": "entry-00019",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I do, every week. The wood does not stay balanced by itself, so I pay a hunter's rate for regular patrols. For each patrol I need you to kill ten Eshan Dire Wolves and ten Eshan Frost Dire Wolves in the Silverwood Expanse, then come back to me for your pay.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00030",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00031",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00020": {
+      "Id": "entry-00020",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Kill ten Eshan Dire Wolves and ten Eshan Frost Dire Wolves in the Silverwood Expanse on Eshan, then come back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00029",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00021": {
+      "Id": "entry-00021",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You still need to kill ten Eshan Dire Wolves and ten Eshan Frost Dire Wolves in the Silverwood Expanse on Eshan. Come back to me when it is done.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00033",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00022": {
+      "Id": "entry-00022",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Here is the smokehouse rate for your trouble. Come midwinter, when the city is eating well, you will be glad you did this.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00023": {
+      "Id": "entry-00023",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good, this meat is lean and it will take the smoke well. That is the winter stores filled for now.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00035",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00036",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00024": {
+      "Id": "entry-00024",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Nothing from a hunt is wasted here. Dire Wolf meat cures well in the smokehouse, and the city eats it all winter. I need you to bring me eight cuts of Eshan Dire Wolf Meat for the winter stores. You can take them from the Dire Wolves of the Silverwood Expanse, then bring them back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00038",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00039",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00025": {
+      "Id": "entry-00025",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Bring me eight cuts of Eshan Dire Wolf Meat. You can take them from the Dire Wolves of the Silverwood Expanse.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00037",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00026": {
+      "Id": "entry-00026",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need eight cuts of Eshan Dire Wolf Meat. You can take them from the Dire Wolves of the Silverwood Expanse. Bring them to me when you have all eight.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00041",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00042",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00027": {
+      "Id": "entry-00027",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I pay this gladly. Every hunter on Eshan will ask who took the Icebound's hide, and I will tell them your name.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00028": {
+      "Id": "entry-00028",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Look at those ridges, there is still ice in them. This hide will hang over the lodge door.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00044",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00045",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00029": {
+      "Id": "entry-00029",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "The greatest quarry is Gorak Vesh, the beast we call the Icebound. Officer Venn wants it dead for the city's sake, and I want its hide for the hunting lodge. I need you to hunt Gorak Vesh in the Silverwood Expanse and bring me its Ridged Chiro Hide. It has to come from that beast and no other.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00047",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00048",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00030": {
+      "Id": "entry-00030",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Hunt Gorak Vesh, the Icebound, in the Silverwood Expanse, and bring its Ridged Chiro Hide back to me here.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00046",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00031": {
+      "Id": "entry-00031",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I still need the Ridged Chiro Hide from Gorak Vesh, the Icebound. You will find the beast in the Silverwood Expanse. Bring the hide to me when you have it.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00050",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00051",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00032": {
+      "Id": "entry-00032",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Last year's were cured, mostly. Two hundred hides it is, and I will set the quotas today. Here is something for your trouble.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00033": {
+      "Id": "entry-00033",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You are back from the Quartermaster. How many hides did she say the city wants this winter?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00053",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00054",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00034": {
+      "Id": "entry-00034",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "I need a question carried. Before I set the hunting quotas, I have to know how many hides the city will take this winter. Quartermaster Ysa Morn has the figure, and she will not shout it across the district. I need you to ask her here in the district, then come back and tell me her answer.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00056",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00057",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00035": {
+      "Id": "entry-00035",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Good. Go and speak to Quartermaster Ysa Morn in Eshan City's Silver Gate District, then come back to me with the answer.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00055",
+          "Conditions": []
+        }
+      ]
+    },
+    "entry-00036": {
+      "Id": "entry-00036",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "You still need to speak to Quartermaster Ysa Morn in Eshan City's Silver Gate District. Come back to me once you have.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00059",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "reply-00000": {
+      "Id": "reply-00000",
+      "Text": {
+        "Text": "Goodbye, Huntmaster. Good hunting.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00001": {
+      "Id": "reply-00001",
+      "Text": {
+        "Text": "What other hunting work do you have in the Silverwood?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00000",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00002": {
+      "Id": "reply-00002",
+      "Text": {
+        "Text": "Yes, all twelve Dire Wolves are dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "esh_deep_silverwood"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00001",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00003": {
+      "Id": "reply-00003",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00004": {
+      "Id": "reply-00004",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00005": {
+      "Id": "reply-00005",
+      "Text": {
+        "Text": "I'll take the hunt. Twelve Eshan Dire Wolves.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "esh_deep_silverwood"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00004",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00006": {
+      "Id": "reply-00006",
+      "Text": {
+        "Text": "Not right now. The gate patrols will have to do.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00007": {
+      "Id": "reply-00007",
+      "Text": {
+        "Text": "Is the balance in the Silverwood off right now?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00003",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00008": {
+      "Id": "reply-00008",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00009": {
+      "Id": "reply-00009",
+      "Text": {
+        "Text": "Remind me what you need done in the deep Silverwood.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00005",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00010": {
+      "Id": "reply-00010",
+      "Text": {
+        "Text": "Yes, all ten Frost Dire Wolves are dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "esh_frost_fangs"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00006",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00011": {
+      "Id": "reply-00011",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00012": {
+      "Id": "reply-00012",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00013": {
+      "Id": "reply-00013",
+      "Text": {
+        "Text": "I'll take the hunt. Ten Eshan Frost Dire Wolves.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "esh_frost_fangs"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00009",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00014": {
+      "Id": "reply-00014",
+      "Text": {
+        "Text": "Not right now. Let the winter pass first.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00015": {
+      "Id": "reply-00015",
+      "Text": {
+        "Text": "What about the white wolves in the Silverwood?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00008",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00016": {
+      "Id": "reply-00016",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00017": {
+      "Id": "reply-00017",
+      "Text": {
+        "Text": "Remind me what you need done about the Frost Dire Wolves.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00010",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00018": {
+      "Id": "reply-00018",
+      "Text": {
+        "Text": "Yes, all three Alphas are dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "esh_pack_leaders"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00011",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00019": {
+      "Id": "reply-00019",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00020": {
+      "Id": "reply-00020",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00021": {
+      "Id": "reply-00021",
+      "Text": {
+        "Text": "I'll take the hunt. Three Eshan Dire Wolf Alphas.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "esh_pack_leaders"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00014",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00022": {
+      "Id": "reply-00022",
+      "Text": {
+        "Text": "Not right now. Those Alphas are too much for me.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00023": {
+      "Id": "reply-00023",
+      "Text": {
+        "Text": "Why do the wolf packs keep growing?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00013",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00024": {
+      "Id": "reply-00024",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00025": {
+      "Id": "reply-00025",
+      "Text": {
+        "Text": "Remind me what you need done about the Eshan Dire Wolf Alphas.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00015",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00026": {
+      "Id": "reply-00026",
+      "Text": {
+        "Text": "What comes after thinning the deep wood?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00016",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00027": {
+      "Id": "reply-00027",
+      "Text": {
+        "Text": "Yes, ten Dire Wolves and ten Frost Dire Wolves are dead.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "esh_pack_patrol"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00017",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00028": {
+      "Id": "reply-00028",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00029": {
+      "Id": "reply-00029",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00030": {
+      "Id": "reply-00030",
+      "Text": {
+        "Text": "I'll hunt the Silverwood. Ten Dire Wolves and ten Frost Dire Wolves.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "esh_pack_patrol"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00020",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00031": {
+      "Id": "reply-00031",
+      "Text": {
+        "Text": "Not this week. Maybe another time.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00032": {
+      "Id": "reply-00032",
+      "Text": {
+        "Text": "Do you have regular hunting work in the Silverwood?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00019",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00033": {
+      "Id": "reply-00033",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00034": {
+      "Id": "reply-00034",
+      "Text": {
+        "Text": "Remind me what the Silverwood patrol involves.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00021",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00035": {
+      "Id": "reply-00035",
+      "Text": {
+        "Text": "I am glad it will be useful.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "esh_wolf_meat"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00022",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00036": {
+      "Id": "reply-00036",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00037": {
+      "Id": "reply-00037",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00038": {
+      "Id": "reply-00038",
+      "Text": {
+        "Text": "I'll bring you eight cuts of Dire Wolf Meat.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "esh_wolf_meat"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00025",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00039": {
+      "Id": "reply-00039",
+      "Text": {
+        "Text": "Not right now. I am not a butcher.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00040": {
+      "Id": "reply-00040",
+      "Text": {
+        "Text": "Do you do anything with the wolves that get killed?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00024",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00041": {
+      "Id": "reply-00041",
+      "Text": {
+        "Text": "I have all eight cuts of meat for you.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "esh_wolf_meat"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00042": {
+      "Id": "reply-00042",
+      "Text": {
+        "Text": "I do not have all eight cuts yet.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00043": {
+      "Id": "reply-00043",
+      "Text": {
+        "Text": "Remind me what you need for the winter stores.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00026",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00044": {
+      "Id": "reply-00044",
+      "Text": {
+        "Text": "It was a hard hunt.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "esh_ridged_hide"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00027",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00045": {
+      "Id": "reply-00045",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00046": {
+      "Id": "reply-00046",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00047": {
+      "Id": "reply-00047",
+      "Text": {
+        "Text": "I'll bring you the hide of Gorak Vesh.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "esh_ridged_hide"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00030",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00048": {
+      "Id": "reply-00048",
+      "Text": {
+        "Text": "Not right now. That beast can keep its hide.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00049": {
+      "Id": "reply-00049",
+      "Text": {
+        "Text": "What is the greatest quarry in the Silverwood?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00029",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00050": {
+      "Id": "reply-00050",
+      "Text": {
+        "Text": "I have the Icebound's hide for you.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-request-quest-items",
+          "Arguments": [
+            "esh_ridged_hide"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00051": {
+      "Id": "reply-00051",
+      "Text": {
+        "Text": "I do not have the hide yet.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00052": {
+      "Id": "reply-00052",
+      "Text": {
+        "Text": "Remind me what you want from the Icebound.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00031",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00053": {
+      "Id": "reply-00053",
+      "Text": {
+        "Text": "She wants two hundred hides, properly cured this year.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-advance-quest",
+          "Arguments": [
+            "esh_hide_tally"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00032",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00054": {
+      "Id": "reply-00054",
+      "Text": {
+        "Text": "I will come back.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00055": {
+      "Id": "reply-00055",
+      "Text": {
+        "Text": "On my way.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00056": {
+      "Id": "reply-00056",
+      "Text": {
+        "Text": "I'll ask the Quartermaster for the hide figure.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-accept-quest",
+          "Arguments": [
+            "esh_hide_tally"
+          ]
+        }
+      ],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00035",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00057": {
+      "Id": "reply-00057",
+      "Text": {
+        "Text": "Not right now. You can ask her yourself.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00058": {
+      "Id": "reply-00058",
+      "Text": {
+        "Text": "Do you need a message carried to the Quartermaster?",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00034",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    },
+    "reply-00059": {
+      "Id": "reply-00059",
+      "Text": {
+        "Text": "Still working on it.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00060": {
+      "Id": "reply-00060",
+      "Text": {
+        "Text": "Remind me why you sent me to Quartermaster Ysa Morn.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [
+        {
+          "TargetNodeId": "entry-00036",
+          "Conditions": []
+        }
+      ],
+      "EndsConversation": false,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

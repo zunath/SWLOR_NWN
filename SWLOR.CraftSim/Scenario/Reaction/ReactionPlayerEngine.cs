@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Reaction;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Scenario.Reaction
 {

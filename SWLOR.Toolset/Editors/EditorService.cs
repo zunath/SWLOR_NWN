@@ -2897,8 +2897,8 @@ namespace SWLOR.Toolset.Editors
                 return GuildStoreChoices();
             if (key == Domain.Editors.Creatures.CreatureChoiceKeys.BeastTypes)
             {
-                return Enum.GetValues<SWLOR.Game.Server.Domain.Companions.BeastType>()
-                    .Where(value => value != SWLOR.Game.Server.Domain.Companions.BeastType.Invalid)
+                return Enum.GetValues<SWLOR.Game.Server.Domain.Foundation.BeastType>()
+                    .Where(value => value != SWLOR.Game.Server.Domain.Foundation.BeastType.Invalid)
                     .Select(value => new BehaviorChoice((int)value, $"{Humanize(value.ToString())} ({(int)value})"))
                     .ToList();
             }

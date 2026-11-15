@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

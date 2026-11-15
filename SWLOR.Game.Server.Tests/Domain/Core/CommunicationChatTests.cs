@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
-using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
+using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Core;

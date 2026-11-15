@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Properties;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.Engine;
 using static SWLOR.Game.Server.Composition.GameServices;
 

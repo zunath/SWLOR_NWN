@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Domain.Foundation;
+
 namespace SWLOR.Game.Server.Domain.World
 {
     public class PropertyLoadDiagnostic

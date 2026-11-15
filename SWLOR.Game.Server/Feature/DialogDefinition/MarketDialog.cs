@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

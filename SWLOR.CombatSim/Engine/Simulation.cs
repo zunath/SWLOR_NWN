@@ -4,6 +4,7 @@ using SWLOR.CombatSim.Rules;
 using SWLOR.CombatSim.Scenario;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using DamageType = SWLOR.CombatSim.Scenario.DamageType;
 
@@ -81,7 +82,7 @@ namespace SWLOR.CombatSim.Engine
         private readonly RuleSet _rules;
         private readonly HealFormula _healFormula;
         private readonly AbilityCatalog _catalog;
-        private readonly Random _random;
+        private readonly System.Random _random;
         private readonly List<Combatant> _combatants = new();
         private readonly List<DeathRecord> _deaths = new();
         private readonly Dictionary<AbilityUseSpec, (AbilityInfo Info, AbilityEffect Effect)> _resolvedUses = new();
@@ -97,7 +98,7 @@ namespace SWLOR.CombatSim.Engine
             _rules = rules;
             _healFormula = HealFormula.From(rules);
             _catalog = catalog;
-            _random = new Random(seed);
+            _random = new System.Random(seed);
         }
 
         public double Now

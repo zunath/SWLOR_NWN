@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Quests;
 
 namespace SWLOR.Game.Server.Domain.Quests

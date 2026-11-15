@@ -14,7 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
 using PlayerShip = SWLOR.Game.Server.Entity.PlayerShip;
-using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
+using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 using WorldProperty = SWLOR.Game.Server.Entity.WorldProperty;
 
 namespace SWLOR.Game.Server.Domain.Foundation

@@ -6,6 +6,7 @@ using SWLOR.CraftSim.Legacy.Gathering;
 using SWLOR.CraftSim.Report;
 using SWLOR.CraftSim.Scenario;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Cli
 {

@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -43,6 +44,7 @@ public class ForceConversionStanceTests
             using SWLOR.Game.Server.Domain.Character;
             using SWLOR.Game.Server.Domain.Character;
             using System.Collections.Generic;
+            using SWLOR.Game.Server.Domain.Foundation;
 
             public static class ConversionHarness
             {

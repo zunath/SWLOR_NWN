@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Feature;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -35,7 +36,7 @@ public class AuthoredCombatAnimationTests
     [Test]
     public void NativeAnimationAndOverwriteCallsReplaceAuthoredActivationMetadata()
     {
-        var builder = new AbilityBuilder().Create(FeatType.ShieldWall1, SWLOR.Game.Server.Domain.Character.PerkType.ShieldWall);
+        var builder = new AbilityBuilder().Create(FeatType.ShieldWall1, SWLOR.Game.Server.Domain.Foundation.PerkType.ShieldWall);
         builder.UsesAnimation(AuthoredAnimation.ShieldWall).UsesAnimation(Animation.LoopingPause);
         builder.Build().Values.Single().AuthoredAnimation.Should().BeNull();
         builder.UsesAnimation(AuthoredAnimation.ShieldWall).UsesAnimationOverwrite("pause2");

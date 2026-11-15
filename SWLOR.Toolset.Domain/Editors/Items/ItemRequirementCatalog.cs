@@ -1,5 +1,6 @@
 using System.Reflection;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Toolset.Domain.Editors.Items
 {

@@ -44,7 +44,7 @@ namespace SWLOR.Toolset.Tests
         {
             var index = CreateIndex();
 
-            // From SWLOR.Game.Server/Domain/Creatures/NPCGroupType.cs
+            // From SWLOR.Game.Server/Domain/Foundation/NPCGroupType.cs
             index.NpcGroups.Should().ContainKey(1).WhoseValue.Should().Be("Mynocks");
             index.NpcGroups.Should().ContainKey(22).WhoseValue.Should().Be("Zombie Rancor");
 
@@ -58,7 +58,7 @@ namespace SWLOR.Toolset.Tests
         {
             var index = CreateIndex();
 
-            // From SWLOR.Game.Server/Domain/Items/KeyItemType.cs
+            // From SWLOR.Game.Server/Domain/Foundation/KeyItemType.cs
             index.KeyItems.Should().ContainKey(5).WhoseValue.Should().Be("CZ-220 Shuttle Pass");
             index.KeyItems.Should().ContainKey(20).WhoseValue.Should().Be("Coxxion Base Key");
         }

@@ -3,6 +3,7 @@ using SWLOR.CraftSim.Gates;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Harvesting

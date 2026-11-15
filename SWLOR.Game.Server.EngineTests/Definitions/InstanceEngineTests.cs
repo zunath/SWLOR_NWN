@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.EngineTests.Framework;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions

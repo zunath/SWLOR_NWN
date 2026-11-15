@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using ObjectType = NWN.Native.API.ObjectType;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native

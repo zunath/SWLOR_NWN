@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 

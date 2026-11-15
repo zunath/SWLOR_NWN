@@ -2,6 +2,7 @@ using SWLOR.CraftSim.Data;
 using SWLOR.CraftSim.Legacy.Crafting;
 using SWLOR.CraftSim.Rng;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Progression
 {

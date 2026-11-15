@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript;

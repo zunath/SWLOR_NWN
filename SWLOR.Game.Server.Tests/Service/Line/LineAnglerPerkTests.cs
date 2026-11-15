@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Crafting;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service.Line;

@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;

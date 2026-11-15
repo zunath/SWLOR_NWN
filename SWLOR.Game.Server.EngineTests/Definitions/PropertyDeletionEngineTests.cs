@@ -5,6 +5,7 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 

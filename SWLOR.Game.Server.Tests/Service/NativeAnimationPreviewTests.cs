@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Armor;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -111,7 +112,7 @@ public class NativeAnimationPreviewTests
     [TestCase(float.PositiveInfinity)]
     public void NativePreviewRejectsInvalidSpeed(float speed)
     {
-        var builder = new AbilityBuilder().Create(FeatType.ThrowLightsaber1, SWLOR.Game.Server.Domain.Character.PerkType.ThrowLightsaber);
+        var builder = new AbilityBuilder().Create(FeatType.ThrowLightsaber1, SWLOR.Game.Server.Domain.Foundation.PerkType.ThrowLightsaber);
         Action configure = () => builder.UsesNativeAnimationPreview(Animation.SaberThrow, 3.833f, speed);
         configure.Should().Throw<ArgumentOutOfRangeException>();
         Action preview = () => new NamedAnimationService().PlayNativePreview(0, Animation.SaberThrow, speed);
@@ -199,7 +200,7 @@ public class NativeAnimationPreviewTests
     [TestCase(601f)]
     public void NativePreviewRequiresAValidDuration(float duration)
     {
-        var builder = new AbilityBuilder().Create(FeatType.Provoke1, SWLOR.Game.Server.Domain.Character.PerkType.Provoke);
+        var builder = new AbilityBuilder().Create(FeatType.Provoke1, SWLOR.Game.Server.Domain.Foundation.PerkType.Provoke);
         Action configure = () => builder.UsesNativeAnimationPreview(Animation.FireForgetTaunt, duration);
         configure.Should().Throw<ArgumentOutOfRangeException>();
         var clip = AuthoredAnimation.Provoke;

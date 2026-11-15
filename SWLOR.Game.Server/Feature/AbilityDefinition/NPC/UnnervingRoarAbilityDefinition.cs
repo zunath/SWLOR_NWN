@@ -3,6 +3,8 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using static SWLOR.Game.Server.Composition.GameServices;

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 

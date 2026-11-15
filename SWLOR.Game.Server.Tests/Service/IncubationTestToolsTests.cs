@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Core;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Service;

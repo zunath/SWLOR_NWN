@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Domain.Space;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;

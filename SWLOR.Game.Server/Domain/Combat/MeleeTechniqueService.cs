@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 

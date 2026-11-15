@@ -76,8 +76,6 @@ public class ConvertedServicesTests
     [
         "SWLOR.Game.Server.Domain.Combat.RecastTimestamp",
         "SWLOR.Game.Server.Domain.Foundation.ColorToken",
-        "SWLOR.Game.Server.Domain.Foundation.FrameProfiler",
-        "SWLOR.Game.Server.Domain.Foundation.Log",
         "SWLOR.Game.Server.Domain.Foundation.Random",
         "SWLOR.Game.Server.Domain.Gameplay.ServerRestart"
     ];

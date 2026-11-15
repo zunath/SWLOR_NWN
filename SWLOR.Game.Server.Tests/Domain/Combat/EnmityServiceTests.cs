@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Tests.Support;

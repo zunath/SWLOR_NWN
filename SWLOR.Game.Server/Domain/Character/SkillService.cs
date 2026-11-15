@@ -16,10 +16,10 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Random = SWLOR.Game.Server.Domain.Foundation.Random;
-using SkillCategoryType = SWLOR.Game.Server.Domain.Character.SkillCategoryType;
-using SkillAttribute = SWLOR.Game.Server.Domain.Character.SkillAttribute;
-using SkillCategoryAttribute = SWLOR.Game.Server.Domain.Character.SkillCategoryAttribute;
-using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
+using SkillCategoryType = SWLOR.Game.Server.Domain.Foundation.SkillCategoryType;
+using SkillAttribute = SWLOR.Game.Server.Domain.Foundation.SkillAttribute;
+using SkillCategoryAttribute = SWLOR.Game.Server.Domain.Foundation.SkillCategoryAttribute;
+using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 
 namespace SWLOR.Game.Server.Domain.Character
 {

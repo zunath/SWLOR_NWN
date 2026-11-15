@@ -14,6 +14,13 @@ public class DomainMapTests
 {
     private const string MapName = "SWLOR.Architecture.Tests/DomainMap.json";
 
+    /// <summary>
+    /// Services whose last type moved to a lower domain (P5-1e) but that master still has as a <c>Service.&lt;Name&gt;Service</c>
+    /// folder: <c>Move-SupportNamespaces.ps1</c> reads the map to place master's folder, and the type move then sends the
+    /// types on. They stay listed until the cutover.
+    /// </summary>
+    private static readonly string[] ServicesKeptForMasterSync = ["ExtraHotbar"];
+
     [Test]
     public void Domain_map_file_is_well_formed()
     {
@@ -67,7 +74,7 @@ public class DomainMapTests
         var server = ArchitectureProject.Server;
         var existing = server.Units.ToHashSet();
         var stale = server.Map.ListedUnits
-            .Where(unit => unit.Kind == UnitKind.Service ? !server.NamedServices.Contains(unit.Name) : !existing.Contains(unit))
+            .Where(unit => unit.Kind == UnitKind.Service ? !server.NamedServices.Contains(unit.Name) && !ServicesKeptForMasterSync.Contains(unit.Name) : !existing.Contains(unit))
             .OrderBy(unit => unit.ToString(), StringComparer.Ordinal)
             .ToList();
         if (stale.Count == 0)

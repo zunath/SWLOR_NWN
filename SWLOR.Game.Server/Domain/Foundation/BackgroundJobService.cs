@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Domain.Foundation
 {

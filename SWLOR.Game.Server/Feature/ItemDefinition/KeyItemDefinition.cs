@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {

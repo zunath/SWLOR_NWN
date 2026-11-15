@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EspionageRecipeDefinition;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Perks;

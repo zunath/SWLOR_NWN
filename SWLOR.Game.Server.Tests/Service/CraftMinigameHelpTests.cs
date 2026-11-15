@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Service;
 

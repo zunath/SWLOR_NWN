@@ -2,13 +2,14 @@ using System.Collections;
 using System.Reflection;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Definitions;
 
 /// <summary>
 /// Reaches the internal <c>BlueprintBonuses</c> class by reflection (the production assembly does not expose it to tests)
 /// and presents its bonus tables and weighted pick as plain values. The class has no engine dependencies; the pick uses
-/// the game's global <see cref="Random"/>, so a fixture that draws must seed it and be <c>[NonParallelizable]</c>.
+/// the game's global <see cref="System.Random"/>, so a fixture that draws must seed it and be <c>[NonParallelizable]</c>.
 /// </summary>
 internal sealed class BlueprintBonusSource
 {

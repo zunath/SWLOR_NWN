@@ -3,6 +3,7 @@ using System.Text;
 using SWLOR.CraftSim.Report;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Scenario.Experiment

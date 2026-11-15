@@ -1,6 +1,7 @@
 using SWLOR.CraftSim.Play;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Fishing
 {

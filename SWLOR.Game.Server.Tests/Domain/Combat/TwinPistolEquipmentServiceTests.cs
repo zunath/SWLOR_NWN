@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.API.Testing;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 

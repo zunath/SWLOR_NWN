@@ -12,14 +12,14 @@
 Domain/Abilities -> Domain/Administration | 3
 
 # Abilities -> Character (4 edges)
-Domain/Abilities -> Domain/Character | 189
+Domain/Abilities -> Domain/Character | 304
 Domain/Abilities -> Feature/StatusEffectDefinition | 1
-Feature/AbilityDefinition -> Domain/Character | 285
+Feature/AbilityDefinition -> Domain/Character | 996
 Feature/AbilityDefinition -> Feature/StatusEffectDefinition | 444
 
 # Abilities -> Combat (2 edges)
-Domain/Abilities -> Domain/Combat | 181
-Feature/AbilityDefinition -> Domain/Combat | 147
+Domain/Abilities -> Domain/Combat | 144
+Feature/AbilityDefinition -> Domain/Combat | 188
 
 # Abilities -> Companions (1 edge)
 Feature/AbilityDefinition -> Domain/Companions | 11
@@ -60,9 +60,6 @@ Feature/AbilityDefinition -> Domain/World | 2
 # Administration -> Character (1 edge)
 Domain/Administration -> Domain/Character | 14
 
-# Administration -> Combat (1 edge)
-Domain/Administration -> Domain/Combat | 2
-
 # Administration -> Creatures (1 edge)
 Domain/Administration -> Domain/Creatures | 6
 
@@ -82,24 +79,24 @@ Domain/Administration -> Domain/UI | 13
 Domain/Administration -> Domain/World | 7
 
 # Character -> Abilities (6 edges)
-Domain/Character -> Domain/Abilities | 49
+Domain/Character -> Domain/Abilities | 16
 Domain/Character -> Feature/AbilityDefinition | 2
 Feature/PerkDefinition -> Domain/Abilities | 3
 Feature/PerkDefinition -> Feature/AbilityDefinition | 2
-Feature/StatusEffectDefinition -> Domain/Abilities | 19
-Feature/StatusEffectDefinition -> Feature/AbilityDefinition | 18
+Feature/StatusEffectDefinition -> Domain/Abilities | 15
+Feature/StatusEffectDefinition -> Feature/AbilityDefinition | 14
 
 # Character -> Administration (1 edge)
 Domain/Character -> Domain/Administration | 3
 
 # Character -> Combat (4 edges)
-Domain/Character -> Domain/Combat | 1383
+Domain/Character -> Domain/Combat | 98
 Feature/AppearanceDefinition -> Domain/Combat | 3
 Feature/PerkDefinition -> Domain/Combat | 1
-Feature/StatusEffectDefinition -> Domain/Combat | 143
+Feature/StatusEffectDefinition -> Domain/Combat | 56
 
 # Character -> Companions (3 edges)
-Domain/Character -> Domain/Companions | 26
+Domain/Character -> Domain/Companions | 23
 Feature/AppearanceDefinition -> Domain/Companions | 9
 Feature/StatusEffectDefinition -> Domain/Companions | 4
 
@@ -109,9 +106,6 @@ Feature/StatusEffectDefinition -> Domain/Crafting | 6
 
 # Character -> Creatures (1 edge)
 Domain/Character -> Domain/Creatures | 4
-
-# Character -> Economy (1 edge)
-Domain/Character -> Domain/Economy | 1
 
 # Character -> Items (1 edge)
 Domain/Character -> Domain/Items | 22
@@ -131,14 +125,14 @@ Feature/AppearanceDefinition -> Domain/UI | 41
 Feature/AppearanceDefinition -> Feature/GuiDefinition | 2
 
 # Combat -> Abilities (2 edges)
-Domain/Combat -> Domain/Abilities | 346
+Domain/Combat -> Domain/Abilities | 66
 Domain/Combat -> Feature/AbilityDefinition | 24
 
 # Combat -> Administration (1 edge)
 Domain/Combat -> Domain/Administration | 9
 
 # Combat -> Character (3 edges)
-Domain/Combat -> Domain/Character | 873
+Domain/Combat -> Domain/Character | 837
 Domain/Combat -> Feature/AppearanceDefinition | 3
 Domain/Combat -> Feature/StatusEffectDefinition | 115
 
@@ -176,12 +170,12 @@ Domain/Combat -> Domain/World | 8
 Domain/Companions -> Feature/AbilityDefinition | 1
 
 # Companions -> Character (3 edges)
-Domain/Companions -> Domain/Character | 51
+Domain/Companions -> Domain/Character | 43
 Domain/Companions -> Feature/AppearanceDefinition | 3
 Domain/Companions -> Feature/StatusEffectDefinition | 2
 
 # Companions -> Combat (1 edge)
-Domain/Companions -> Domain/Combat | 56
+Domain/Companions -> Domain/Combat | 26
 
 # Companions -> Creatures (1 edge)
 Domain/Companions -> Domain/Creatures | 24
@@ -190,7 +184,7 @@ Domain/Companions -> Domain/Creatures | 24
 Domain/Companions -> Domain/Gameplay | 1
 
 # Companions -> Items (1 edge)
-Domain/Companions -> Domain/Items | 23
+Domain/Companions -> Domain/Items | 16
 
 # Companions -> Quests (1 edge)
 Domain/Companions -> Feature/QuestDefinition | 3
@@ -203,12 +197,12 @@ Domain/Companions -> Feature/GuiDefinition | 2
 Domain/Companions -> Domain/World | 3
 
 # Crafting -> Character (3 edges)
-Domain/Crafting -> Domain/Character | 206
+Domain/Crafting -> Domain/Character | 87
 Domain/Crafting -> Feature/StatusEffectDefinition | 3
 Feature/RecipeDefinition -> Domain/Character | 3
 
 # Crafting -> Combat (1 edge)
-Domain/Crafting -> Domain/Combat | 15
+Domain/Crafting -> Domain/Combat | 3
 
 # Crafting -> Creatures (1 edge)
 Domain/Crafting -> Domain/Creatures | 4
@@ -226,18 +220,19 @@ Domain/Crafting -> Domain/UI | 40
 Domain/Crafting -> Feature/GuiDefinition | 4
 
 # Crafting -> World (1 edge)
-Domain/Crafting -> Domain/World | 8
+Domain/Crafting -> Domain/World | 3
 
 # Creatures -> Abilities (2 edges)
-Domain/Creatures -> Domain/Abilities | 40
-Feature/AIDefinition -> Domain/Abilities | 5
+Domain/Creatures -> Domain/Abilities | 16
+Feature/AIDefinition -> Domain/Abilities | 1
 
 # Creatures -> Administration (1 edge)
 Domain/Creatures -> Domain/Administration | 3
 
-# Creatures -> Character (2 edges)
-Domain/Creatures -> Domain/Character | 36
+# Creatures -> Character (3 edges)
+Domain/Creatures -> Domain/Character | 60
 Domain/Creatures -> Feature/StatusEffectDefinition | 2
+Feature/AIDefinition -> Domain/Character | 5
 
 # Creatures -> Combat (1 edge)
 Domain/Creatures -> Domain/Combat | 29
@@ -255,7 +250,7 @@ Domain/Creatures -> Domain/Social | 3
 Feature/SpawnDefinition -> Domain/World | 2
 
 # Economy -> Character (1 edge)
-Domain/Economy -> Domain/Character | 15
+Domain/Economy -> Domain/Character | 7
 
 # Economy -> Companions (1 edge)
 Domain/Economy -> Domain/Companions | 3
@@ -279,98 +274,80 @@ Domain/Economy -> Feature/GuiDefinition | 3
 # Economy -> World (1 edge)
 Domain/Economy -> Domain/World | 7
 
-# Foundation -> Abilities (3 edges)
-Domain/Foundation -> Domain/Abilities | 11
+# Foundation -> Abilities (2 edges)
+Domain/Foundation -> Domain/Abilities | 1
 Feature/MigrationDefinition -> Domain/Abilities | 4
-Platform/Entity -> Domain/Abilities | 4
 
 # Foundation -> Administration (2 edges)
 Domain/Foundation -> Domain/Administration | 7
-Platform/Entity -> Domain/Administration | 8
+Platform/Entity -> Domain/Administration | 4
 
-# Foundation -> Character (7 edges)
-Domain/Foundation -> Domain/Character | 30
-Feature/DialogDefinition -> Domain/Character | 17
-Feature/MigrationDefinition -> Domain/Character | 32
+# Foundation -> Character (4 edges)
+Domain/Foundation -> Domain/Character | 36
+Feature/DialogDefinition -> Domain/Character | 19
+Feature/MigrationDefinition -> Domain/Character | 11
 Feature/MigrationDefinition -> Feature/AppearanceDefinition | 17
-Feature/SnippetDefinition -> Domain/Character | 2
-Platform/Entity -> Domain/Character | 40
-Platform/Enumeration -> Domain/Character | 7
 
 # Foundation -> Combat (5 edges)
 Domain/Foundation -> Domain/Combat | 8
-Feature/DialogDefinition -> Domain/Combat | 2
-Feature/MigrationDefinition -> Domain/Combat | 50
+Feature/DialogDefinition -> Domain/Combat | 8
+Feature/MigrationDefinition -> Domain/Combat | 11
 Feature/SnippetDefinition -> Domain/Combat | 1
-Platform/Entity -> Domain/Combat | 21
+Platform/Entity -> Domain/Combat | 3
 
-# Foundation -> Companions (2 edges)
+# Foundation -> Companions (1 edge)
 Feature/MigrationDefinition -> Domain/Companions | 45
-Platform/Entity -> Domain/Companions | 22
 
-# Foundation -> Crafting (2 edges)
+# Foundation -> Crafting (1 edge)
 Feature/MigrationDefinition -> Domain/Crafting | 2
-Platform/Entity -> Domain/Crafting | 11
 
-# Foundation -> Creatures (2 edges)
+# Foundation -> Creatures (1 edge)
 Domain/Foundation -> Domain/Creatures | 2
-Platform/Entity -> Domain/Creatures | 4
 
-# Foundation -> Economy (3 edges)
-Feature/DialogDefinition -> Domain/Economy | 4
-Feature/MigrationDefinition -> Domain/Economy | 15
-Platform/Entity -> Domain/Economy | 10
+# Foundation -> Economy (2 edges)
+Feature/DialogDefinition -> Domain/Economy | 10
+Feature/MigrationDefinition -> Domain/Economy | 2
 
 # Foundation -> Gameplay (5 edges)
 Domain/Foundation -> Feature.PistolAnimationRemap | 1
 Feature/MigrationDefinition -> Feature.BasicVibrobladeCompatibility | 2
 Feature/MigrationDefinition -> Feature.EquipmentStats | 1
 Feature/MigrationDefinition -> Feature.PistolBaseItemCompatibility | 6
-Feature/SnippetDefinition -> Feature.PlaceableScripts | 1
+Feature/SnippetDefinition -> Feature.PlaceableScripts | 4
 
-# Foundation -> Items (5 edges)
+# Foundation -> Items (4 edges)
 Domain/Foundation -> Domain/Items | 8
-Feature/DialogDefinition -> Domain/Items | 8
+Feature/DialogDefinition -> Domain/Items | 26
 Feature/MigrationDefinition -> Domain/Items | 16
 Feature/SnippetDefinition -> Domain/Items | 2
-Platform/Entity -> Domain/Items | 4
 
-# Foundation -> Quests (4 edges)
-Feature/DialogDefinition -> Domain/Quests | 2
-Feature/MigrationDefinition -> Domain/Quests | 2
-Feature/SnippetDefinition -> Domain/Quests | 10
-Platform/Entity -> Domain/Quests | 18
+# Foundation -> Quests (2 edges)
+Feature/DialogDefinition -> Domain/Quests | 5
+Feature/SnippetDefinition -> Domain/Quests | 8
 
-# Foundation -> Social (2 edges)
+# Foundation -> Social (1 edge)
 Domain/Foundation -> Domain/Social | 3
-Platform/Entity -> Domain/Social | 8
 
-# Foundation -> Space (4 edges)
+# Foundation -> Space (2 edges)
 Domain/Foundation -> Domain/Space | 3
-Feature/DialogDefinition -> Domain/Space | 7
-Feature/MigrationDefinition -> Domain/Space | 6
-Platform/Entity -> Domain/Space | 3
+Feature/DialogDefinition -> Domain/Space | 13
 
 # Foundation -> UI (6 edges)
 Domain/Foundation -> Domain/UI | 6
 Domain/Foundation -> Feature/GuiDefinition | 3
-Feature/DialogDefinition -> Domain/UI | 3
+Feature/DialogDefinition -> Domain/UI | 12
 Feature/DialogDefinition -> Feature/GuiDefinition | 3
 Feature/SnippetDefinition -> Feature/GuiDefinition | 2
-Platform/Entity -> Domain/UI | 10
+Platform/Entity -> Domain/UI | 4
 
-# Foundation -> World (4 edges)
-Domain/Foundation -> Domain/World | 11
-Feature/DialogDefinition -> Domain/World | 16
-Feature/MigrationDefinition -> Domain/World | 11
-Platform/Entity -> Domain/World | 42
+# Foundation -> World (2 edges)
+Domain/Foundation -> Domain/World | 9
+Feature/DialogDefinition -> Domain/World | 52
 
-# Gameplay -> Abilities (6 edges)
+# Gameplay -> Abilities (4 edges)
 Feature.NaturalRegeneration -> Feature/AbilityDefinition | 1
 Feature.TlkOverrides -> Domain/Abilities | 2
-Feature.UnarmedMastery -> Domain/Abilities | 3
-Feature.UnarmedTechniqueProfile -> Domain/Abilities | 2
-Feature.UsePerkFeat -> Domain/Abilities | 32
+Feature.UsePerkFeat -> Domain/Abilities | 24
 Feature.UsePerkFeat -> Feature/AbilityDefinition | 1
 
 # Gameplay -> Administration (6 edges)
@@ -381,12 +358,11 @@ Feature.Jukebox -> Domain/Administration | 1
 Feature.RoleplayXP -> Domain/Administration | 1
 Feature.ServerTasks -> Domain/Administration | 1
 
-# Gameplay -> Character (27 edges)
+# Gameplay -> Character (25 edges)
 Domain/Gameplay -> Domain/Character | 1
 Feature.AchievementProgression -> Domain/Character | 6
 Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
 Feature.Auditing -> Domain/Character | 3
-Feature.BasicVibrobladeCompatibility -> Domain/Character | 8
 Feature.BuffTimer -> Domain/Character | 3
 Feature.CivilianPatrol -> Domain/Character | 1
 Feature.EchaniTempleMonks -> Domain/Character | 1
@@ -395,7 +371,7 @@ Feature.EquipmentStats -> Domain/Character | 27
 Feature.KatarAnimationRemap -> Domain/Character | 1
 Feature.NaturalRegeneration -> Domain/Character | 2
 Feature.OrdinaryAttackCombatLifecycle -> Domain/Character | 1
-Feature.PlaceableScripts -> Domain/Character | 1
+Feature.PlaceableScripts -> Domain/Character | 4
 Feature.PlayerInitialization -> Domain/Character | 5
 Feature.PlayerRest -> Domain/Character | 1
 Feature.PlayerRest -> Feature/StatusEffectDefinition | 1
@@ -403,24 +379,23 @@ Feature.PlayerTemporaryEffects -> Domain/Character | 1
 Feature.PlayerTemporaryEffects -> Feature/AppearanceDefinition | 1
 Feature.RoleplayXP -> Domain/Character | 6
 Feature.ScavengePoint -> Domain/Character | 1
-Feature.TlkOverrides -> Domain/Character | 1
-Feature.TwinPistolEquipmentValidation -> Domain/Character | 1
-Feature.UnarmedMastery -> Domain/Character | 2
+Feature.TlkOverrides -> Domain/Character | 2
+Feature.UnarmedMastery -> Domain/Character | 3
 Feature.UnarmedTechniqueProfile -> Domain/Character | 2
 Feature.UnarmedTechniqueProfile -> Feature/StatusEffectDefinition | 1
-Feature.UsePerkFeat -> Domain/Character | 7
+Feature.UsePerkFeat -> Domain/Character | 22
 
 # Gameplay -> Combat (18 edges)
 Feature.CivilianPatrol -> Domain/Combat | 2
 Feature.EchaniTempleMonks -> Domain/Combat | 2
 Feature.EquipmentRestrictions -> Domain/Combat | 3
-Feature.EquipmentStats -> Domain/Combat | 4
+Feature.EquipmentStats -> Domain/Combat | 3
 Feature.KatarAnimationRemap -> Domain/Combat | 2
 Feature.LightsaberAudio -> Domain/Combat | 2
 Feature.NaturalRegeneration -> Domain/Combat | 2
 Feature.OrdinaryAttackCombatLifecycle -> Domain/Combat | 7
 Feature.PistolAnimationRemap -> Domain/Combat | 3
-Feature.PlaceableScripts -> Domain/Combat | 1
+Feature.PlaceableScripts -> Domain/Combat | 4
 Feature.PlayerStatusWindow -> Domain/Combat | 1
 Feature.PowerGlovePairLifecycle -> Domain/Combat | 15
 Feature.TwinPistolCombatLifecycle -> Domain/Combat | 6
@@ -447,9 +422,8 @@ Feature.EchaniTempleMonks -> Domain/Creatures | 1
 Feature.ScavengePoint -> Domain/Creatures | 1
 Feature.UsePerkFeat -> Domain/Creatures | 5
 
-# Gameplay -> Economy (2 edges)
-Feature.PlaceableScripts -> Domain/Economy | 1
-Feature.PlayerInitialization -> Domain/Economy | 1
+# Gameplay -> Economy (1 edge)
+Feature.PlaceableScripts -> Domain/Economy | 4
 
 # Gameplay -> Items (14 edges)
 Feature.EquipmentRestrictions -> Domain/Items | 4
@@ -458,7 +432,7 @@ Feature.KatarAnimationRemap -> Domain/Items | 3
 Feature.MiniMaps -> Domain/Items | 1
 Feature.PersistentMapProgression -> Domain/Items | 1
 Feature.PistolAnimationRemap -> Domain/Items | 1
-Feature.PlaceableScripts -> Domain/Items | 1
+Feature.PlaceableScripts -> Domain/Items | 4
 Feature.PowerGlovePairLifecycle -> Domain/Items | 1
 Feature.ProceduralTreasure -> Domain/Items | 1
 Feature.ScavengePoint -> Domain/Items | 2
@@ -472,7 +446,7 @@ Feature.BeastStableTrials -> Domain/Quests | 1
 Feature.UnarmedMastery -> Domain/Quests | 1
 
 # Gameplay -> Social (3 edges)
-Feature.PlaceableScripts -> Domain/Social | 1
+Feature.PlaceableScripts -> Domain/Social | 4
 Feature.PlayerRest -> Domain/Social | 1
 Feature.UsePerkFeat -> Domain/Social | 1
 
@@ -493,7 +467,7 @@ Feature.EquipmentStats -> Feature/GuiDefinition | 2
 Feature.HolonetTerminal -> Domain/UI | 1
 Feature.Jukebox -> Domain/UI | 1
 Feature.Jukebox -> Feature/GuiDefinition | 1
-Feature.PlaceableScripts -> Domain/UI | 1
+Feature.PlaceableScripts -> Domain/UI | 4
 Feature.PlayerStatusWindow -> Domain/UI | 16
 Feature.PlayerStatusWindow -> Feature/GuiDefinition | 11
 Feature.SlicingTerminal -> Domain/UI | 1
@@ -509,8 +483,7 @@ Feature.PersistentMapPin -> Domain/World | 1
 Feature.PersistentMapProgression -> Domain/World | 1
 Feature.RoleplayXP -> Domain/World | 1
 
-# Items -> Abilities (2 edges)
-Domain/Items -> Domain/Abilities | 5
+# Items -> Abilities (1 edge)
 Feature/ItemDefinition -> Feature/AbilityDefinition | 3
 
 # Items -> Administration (2 edges)
@@ -518,9 +491,9 @@ Domain/Items -> Domain/Administration | 3
 Feature/ItemDefinition -> Domain/Administration | 1
 
 # Items -> Character (4 edges)
-Domain/Items -> Domain/Character | 25
+Domain/Items -> Domain/Character | 21
 Domain/Items -> Feature/AppearanceDefinition | 3
-Feature/ItemDefinition -> Domain/Character | 21
+Feature/ItemDefinition -> Domain/Character | 18
 Feature/ItemDefinition -> Feature/StatusEffectDefinition | 11
 
 # Items -> Combat (2 edges)
@@ -557,17 +530,17 @@ Domain/Items -> Domain/World | 1
 Feature/ItemDefinition -> Domain/World | 3
 
 # Platform -> Abilities (2 edges)
-Platform/Native -> Domain/Abilities | 8
+Platform/Native -> Domain/Abilities | 2
 Platform/Native -> Feature/AbilityDefinition | 1
 
 # Platform -> Character (3 edges)
-Platform/Native -> Domain/Character | 49
+Platform/Native -> Domain/Character | 29
 Platform/Native -> Feature/StatusEffectDefinition | 1
 Platform/Root -> Domain/Character | 1
 
 # Platform -> Combat (2 edges)
 Platform/Core -> Domain/Combat | 4
-Platform/Native -> Domain/Combat | 74
+Platform/Native -> Domain/Combat | 59
 
 # Platform -> Creatures (1 edge)
 Platform/Native -> Domain/Creatures | 1
@@ -578,16 +551,15 @@ Platform/Native -> Feature.UsePerkFeat | 11
 # Platform -> Items (1 edge)
 Platform/Native -> Domain/Items | 4
 
-# Quests -> Abilities (2 edges)
-Domain/Quests -> Domain/Abilities | 15
-Feature/QuestDefinition -> Domain/Abilities | 1
+# Quests -> Abilities (1 edge)
+Domain/Quests -> Domain/Abilities | 4
 
 # Quests -> Administration (1 edge)
 Domain/Quests -> Domain/Administration | 3
 
 # Quests -> Character (3 edges)
-Domain/Quests -> Domain/Character | 12
-Feature/QuestDefinition -> Domain/Character | 48
+Domain/Quests -> Domain/Character | 18
+Feature/QuestDefinition -> Domain/Character | 49
 Feature/QuestDefinition -> Feature/StatusEffectDefinition | 1
 
 # Quests -> Combat (2 edges)
@@ -601,14 +573,14 @@ Domain/Quests -> Domain/Companions | 3
 Domain/Quests -> Domain/Crafting | 1
 
 # Quests -> Creatures (2 edges)
-Domain/Quests -> Domain/Creatures | 26
+Domain/Quests -> Domain/Creatures | 2
 Feature/QuestDefinition -> Domain/Creatures | 1
 
 # Quests -> Economy (1 edge)
 Domain/Quests -> Domain/Economy | 4
 
 # Quests -> Items (2 edges)
-Domain/Quests -> Domain/Items | 37
+Domain/Quests -> Domain/Items | 16
 Feature/QuestDefinition -> Domain/Items | 75
 
 # Quests -> UI (2 edges)
@@ -625,10 +597,10 @@ Domain/Social -> Domain/Administration | 13
 Feature/ChatCommandDefinition -> Domain/Administration | 15
 
 # Social -> Character (5 edges)
-Domain/Social -> Domain/Character | 76
+Domain/Social -> Domain/Character | 71
 Domain/Social -> Feature/AppearanceDefinition | 1
 Domain/Social -> Feature/StatusEffectDefinition | 8
-Feature/ChatCommandDefinition -> Domain/Character | 13
+Feature/ChatCommandDefinition -> Domain/Character | 11
 Feature/ChatCommandDefinition -> Feature/AppearanceDefinition | 1
 
 # Social -> Combat (2 edges)
@@ -636,7 +608,7 @@ Domain/Social -> Domain/Combat | 7
 Feature/ChatCommandDefinition -> Domain/Combat | 4
 
 # Social -> Companions (1 edge)
-Feature/ChatCommandDefinition -> Domain/Companions | 6
+Feature/ChatCommandDefinition -> Domain/Companions | 5
 
 # Social -> Crafting (2 edges)
 Domain/Social -> Domain/Crafting | 5
@@ -668,14 +640,14 @@ Feature/ChatCommandDefinition -> Domain/UI | 26
 Feature/ChatCommandDefinition -> Feature/GuiDefinition | 10
 
 # Social -> World (2 edges)
-Domain/Social -> Domain/World | 20
+Domain/Social -> Domain/World | 24
 Feature/ChatCommandDefinition -> Domain/World | 3
 
 # Space -> Abilities (1 edge)
-Domain/Space -> Domain/Abilities | 9
+Domain/Space -> Domain/Abilities | 5
 
 # Space -> Character (3 edges)
-Domain/Space -> Domain/Character | 32
+Domain/Space -> Domain/Character | 18
 Domain/Space -> Feature/AppearanceDefinition | 1
 Feature/ShipModuleDefinition -> Domain/Character | 8
 
@@ -693,38 +665,38 @@ Feature/ShipModuleDefinition -> Domain/Items | 2
 Domain/Space -> Domain/UI | 4
 
 # Space -> World (1 edge)
-Domain/Space -> Domain/World | 20
+Domain/Space -> Domain/World | 14
 
 # UI -> Abilities (3 edges)
-Domain/UI -> Domain/Abilities | 13
-Feature/GuiDefinition -> Domain/Abilities | 33
+Domain/UI -> Domain/Abilities | 11
+Feature/GuiDefinition -> Domain/Abilities | 28
 Feature/GuiDefinition -> Feature/AbilityDefinition | 4
 
 # UI -> Administration (2 edges)
 Domain/UI -> Domain/Administration | 5
-Feature/GuiDefinition -> Domain/Administration | 117
+Feature/GuiDefinition -> Domain/Administration | 113
 
 # UI -> Character (3 edges)
-Domain/UI -> Domain/Character | 3
-Feature/GuiDefinition -> Domain/Character | 201
+Domain/UI -> Domain/Character | 8
+Feature/GuiDefinition -> Domain/Character | 162
 Feature/GuiDefinition -> Feature/AppearanceDefinition | 89
 
 # UI -> Combat (2 edges)
 Domain/UI -> Domain/Combat | 6
-Feature/GuiDefinition -> Domain/Combat | 66
+Feature/GuiDefinition -> Domain/Combat | 58
 
 # UI -> Companions (1 edge)
-Feature/GuiDefinition -> Domain/Companions | 70
+Feature/GuiDefinition -> Domain/Companions | 57
 
 # UI -> Crafting (2 edges)
 Domain/UI -> Domain/Crafting | 3
-Feature/GuiDefinition -> Domain/Crafting | 220
+Feature/GuiDefinition -> Domain/Crafting | 210
 
 # UI -> Creatures (1 edge)
 Feature/GuiDefinition -> Domain/Creatures | 1
 
 # UI -> Economy (1 edge)
-Feature/GuiDefinition -> Domain/Economy | 46
+Feature/GuiDefinition -> Domain/Economy | 35
 
 # UI -> Gameplay (6 edges)
 Domain/UI -> Feature.UsePerkFeat | 1
@@ -736,20 +708,20 @@ Feature/GuiDefinition -> Feature.PowerGlovePairLifecycle | 1
 
 # UI -> Items (2 edges)
 Domain/UI -> Domain/Items | 4
-Feature/GuiDefinition -> Domain/Items | 72
+Feature/GuiDefinition -> Domain/Items | 67
 
 # UI -> Quests (1 edge)
-Feature/GuiDefinition -> Domain/Quests | 37
+Feature/GuiDefinition -> Domain/Quests | 33
 
 # UI -> Social (2 edges)
 Domain/UI -> Domain/Social | 3
-Feature/GuiDefinition -> Domain/Social | 114
+Feature/GuiDefinition -> Domain/Social | 111
 
 # UI -> Space (1 edge)
-Feature/GuiDefinition -> Domain/Space | 29
+Feature/GuiDefinition -> Domain/Space | 20
 
 # UI -> World (1 edge)
-Feature/GuiDefinition -> Domain/World | 134
+Feature/GuiDefinition -> Domain/World | 105
 
 # World -> Abilities (2 edges)
 Domain/World -> Domain/Abilities | 3
@@ -759,24 +731,24 @@ Domain/World -> Feature/AbilityDefinition | 3
 Domain/World -> Domain/Administration | 11
 
 # World -> Character (3 edges)
-Domain/World -> Domain/Character | 38
+Domain/World -> Domain/Character | 36
 Domain/World -> Feature/StatusEffectDefinition | 2
 Feature/TrapDefinition -> Domain/Character | 1
 
 # World -> Combat (1 edge)
-Domain/World -> Domain/Combat | 22
+Domain/World -> Domain/Combat | 18
 
 # World -> Crafting (1 edge)
-Domain/World -> Domain/Crafting | 26
+Domain/World -> Domain/Crafting | 88
 
 # World -> Economy (1 edge)
 Feature/PropertyLayoutDefinition -> Domain/Economy | 2
 
 # World -> Items (1 edge)
-Domain/World -> Domain/Items | 14
+Domain/World -> Domain/Items | 5
 
 # World -> Social (1 edge)
-Domain/World -> Domain/Social | 11
+Domain/World -> Domain/Social | 9
 
 # World -> Space (2 edges)
 Domain/World -> Domain/Space | 6

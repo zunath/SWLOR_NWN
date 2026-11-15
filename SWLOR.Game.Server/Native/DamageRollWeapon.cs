@@ -5,6 +5,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native

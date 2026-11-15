@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
 

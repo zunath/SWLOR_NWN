@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Entity
 {

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -804,8 +805,8 @@ public class DroidServiceWorldTests
         _world.AddProperty(DroidWorld.Controller, ItemPropertyType.DroidInstruction, 1, 1);
         _world.AddProperty(DroidWorld.Controller, ItemPropertyType.DroidStat, (int)DroidStatSubType.Tier, 2);
         var droid = new ConstructedDroid { Name = "Beepy" };
-        droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Domain.Character.PerkType.Invalid, 2));
-        droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Domain.Character.PerkType.Invalid, 3));
+        droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Domain.Foundation.PerkType.Invalid, 2));
+        droid.ActivePerks.Add(new DroidPerk(SWLOR.Game.Server.Domain.Foundation.PerkType.Invalid, 3));
 
         _service.SaveInstructions(DroidWorld.Controller, droid);
 

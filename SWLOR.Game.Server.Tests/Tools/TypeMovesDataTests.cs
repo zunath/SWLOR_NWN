@@ -27,7 +27,7 @@ public class TypeMovesDataTests
 
         Data.From.Should().Be("SWLOR.Game.Server.Service");
         Data.Moves.Should().HaveCount(20);
-        Data.Moves.Should().OnlyContain(move => domains.Contains(move.To), "each type joins the root namespace of its domain");
+        Data.Moves.Should().OnlyContain(move => domains.Contains(move.To) || move.To == "SWLOR.Game.Server.Core", "each type joins the root namespace of its domain (Log and FrameProfiler: Core, beside Clock)");
         Data.ByName["INamedAnimationRuntime"].File.Should().Be("NamedAnimationPlayback.cs", "it shares its file with NamedAnimationPlayback");
     }
 
@@ -58,8 +58,8 @@ public class TypeMovesDataTests
             .Where(rename => Data.Moves.Any(move => rename.Master.StartsWith(move.OldFullName + ".", StringComparison.Ordinal)))
             .ToList();
 
-        renames.Should().Contain(("SWLOR.Game.Server.Service.Log.OnApplicationShutdown", "SWLOR.Game.Server.Domain.Foundation.Log.OnApplicationShutdown"))
-            .And.Contain(("SWLOR.Game.Server.Service.FrameProfiler.Load", "SWLOR.Game.Server.Domain.Foundation.FrameProfiler.Load"));
+        renames.Should().Contain(("SWLOR.Game.Server.Service.Log.OnApplicationShutdown", "SWLOR.Game.Server.Core.Log.OnApplicationShutdown"))
+            .And.Contain(("SWLOR.Game.Server.Service.FrameProfiler.Load", "SWLOR.Game.Server.Core.FrameProfiler.Load"));
         renames.Should().OnlyContain(rename => manifest.Contains(rename.Branch) && !manifest.Contains(rename.Master));
         manifest.Where(name => Data.Moves.Any(move => name.StartsWith(move.OldFullName + ".", StringComparison.Ordinal)))
             .Should().BeEmpty("no manifest line keeps a moved type's old name");

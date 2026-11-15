@@ -15,6 +15,7 @@ using NWNScriptDamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -268,7 +269,7 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
         var combatSource = CombatSource.Read();
-        var damageTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "CombatDamageType.cs"));
+        var damageTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Foundation", "CombatDamageType.cs"));
         var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");
         var impactWeaponSelection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
 
@@ -940,7 +941,7 @@ public class CombatDamageTests
     public void CombatImpactDamageScaling_IsDeclaredByAbilityImplementationsNotSkillType()
     {
         var root = FindRepositoryRoot();
-        var skillTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "SkillType.cs"));
+        var skillTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Foundation", "SkillType.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "AbilityService.cs"));
 
         skillTypeSource.Should().NotContain("CombatImpactDamageAbility");

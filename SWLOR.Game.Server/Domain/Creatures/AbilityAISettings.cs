@@ -1,5 +1,6 @@
 using System;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Domain.Creatures
 {

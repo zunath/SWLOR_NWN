@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using SWLOR.NWN.Formats.Gff;

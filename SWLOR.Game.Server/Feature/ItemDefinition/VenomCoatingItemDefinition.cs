@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;

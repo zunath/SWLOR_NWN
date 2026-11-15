@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Core;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -131,6 +132,7 @@ public class RoleplayXPLoggingTests
             global using SWLOR.NWN.API.NWScript.Enum;
             global using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
             global using static RoleplayXPLoggingHarness.Native;
+            global using SWLOR.Game.Server.Core;
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator)
             .Append(typeof(Player).Assembly.Location).Append(typeof(SWLOR.NWN.API.NWScript.Enum.AbilityType).Assembly.Location)

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Crafting;
 

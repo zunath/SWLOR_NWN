@@ -804,7 +804,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
 
         /// <summary>Writes a line to the crafting log.</summary>
         protected virtual void WriteLog(string message) =>
-            Domain.Foundation.Log.Write(SWLOR.Game.Server.Domain.Foundation.LogGroup.Crafting, message);
+            Core.Log.Write(SWLOR.Game.Server.Core.LogGroup.Crafting, message);
 
         /// <summary>The current time in Unix seconds, which dates a target's claim.</summary>
         protected virtual int UtcNowSeconds() => (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();

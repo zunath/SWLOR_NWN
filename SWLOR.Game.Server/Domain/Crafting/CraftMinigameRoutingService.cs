@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Crafting;
 

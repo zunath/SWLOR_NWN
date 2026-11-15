@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.EngineTests.Definitions.TwinPistolEquipmentEngineTests;

@@ -14,7 +14,7 @@ public class PropertyOnDemandLoadingTests
             root.FullName,
             "SWLOR.Game.Server",
             "Domain",
-            "World",
+            "Foundation",
             "PropertyType.cs"));
 
         source.Should().Contain("[PropertyType(\"Apartment\", true, PropertyPublicType.AlwaysPrivate, PropertySpawnType.Instance, PropertyLoadType.OnDemand)]");

@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.ItemDefinition;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Tests.Feature;

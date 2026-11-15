@@ -9,6 +9,7 @@ using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using static SWLOR.NWN.API.NWScript.NWScript;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Core;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native

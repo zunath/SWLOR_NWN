@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel

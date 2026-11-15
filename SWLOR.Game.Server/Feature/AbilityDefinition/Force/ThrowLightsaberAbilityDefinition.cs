@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 using NumericsVector3 = System.Numerics.Vector3;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {

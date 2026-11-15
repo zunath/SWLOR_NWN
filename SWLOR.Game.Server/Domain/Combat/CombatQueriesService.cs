@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;

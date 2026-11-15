@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Composition.GameServices;

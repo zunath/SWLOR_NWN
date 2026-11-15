@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Entity
 {

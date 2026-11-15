@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using static SWLOR.Game.Server.Composition.GameServices;

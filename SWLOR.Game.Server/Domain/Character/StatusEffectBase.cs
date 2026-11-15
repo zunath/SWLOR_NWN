@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;

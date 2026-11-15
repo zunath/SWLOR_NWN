@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.NWN.API.NWScript.Enum;

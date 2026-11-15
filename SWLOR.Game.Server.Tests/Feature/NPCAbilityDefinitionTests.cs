@@ -8,6 +8,8 @@ using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
 

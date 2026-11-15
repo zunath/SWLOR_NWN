@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.CombatSim.Data
@@ -9,7 +10,7 @@ namespace SWLOR.CombatSim.Data
     public sealed class AbilityInfo
     {
         public FeatType Feat { get; init; }
-        public SWLOR.Game.Server.Domain.Abilities.MeleeTechniqueDetail Technique { get; init; }
+        public SWLOR.Game.Server.Domain.Character.MeleeTechniqueDetail Technique { get; init; }
         public int? SourceWeaponPower { get; init; }
         public int ImpactStatusDuration { get; init; }
         public Func<SWLOR.Game.Server.Domain.Character.IStatusEffect> ImpactStatusFactory { get; init; }

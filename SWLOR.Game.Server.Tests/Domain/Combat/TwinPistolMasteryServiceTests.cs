@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
 

@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;

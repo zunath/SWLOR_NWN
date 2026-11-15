@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

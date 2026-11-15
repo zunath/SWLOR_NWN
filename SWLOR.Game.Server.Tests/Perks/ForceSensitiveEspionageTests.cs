@@ -198,7 +198,7 @@ public class ForceSensitiveEspionageTests
         var decoy = new DecoyStatusEffect(penalty);
         decoy.StatGroup.Stats[StatType.AccuracyToStatusSourcePercentAdjustment].Should().Be(-penalty);
         ((DecoyStatusEffect)decoy.Clone()).AccuracyPenaltyPercent.Should().Be(penalty);
-        decoy.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Combat.ResistanceType.Mind);
+        decoy.ResistanceType.Should().Be(SWLOR.Game.Server.Domain.Foundation.ResistanceType.Mind);
         decoy.StackingType.Should().Be(SWLOR.Game.Server.Domain.Character.StatusEffectStackType.StackFromMultipleSources,
             "each caster's Decoy only penalizes attacks against that caster");
         new DecoyStatusEffect().AccuracyPenaltyPercent.Should().Be(DecoyStatusEffect.DefaultAccuracyPenaltyPercent);

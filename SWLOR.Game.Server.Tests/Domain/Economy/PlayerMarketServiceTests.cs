@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using MarketCategoryType = SWLOR.Game.Server.Domain.Economy.MarketCategoryType;
+using MarketCategoryType = SWLOR.Game.Server.Domain.Foundation.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Tests.Domain.Economy;
 

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;

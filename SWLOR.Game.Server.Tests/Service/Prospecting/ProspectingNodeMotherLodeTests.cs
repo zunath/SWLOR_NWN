@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Tests.Service.Prospecting.ProspectingTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Prospecting;

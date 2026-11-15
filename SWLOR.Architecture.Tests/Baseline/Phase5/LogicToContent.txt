@@ -35,7 +35,7 @@ SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefi
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/GuiDefinition | 3
 SWLOR.Game.Server/Domain/Character/TintMapStateRevisionScope.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Character/TintMapStateService.cs -> Feature/AppearanceDefinition | 3
-SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/AbilityDefinition | 3
+SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/AbilityDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/StatusEffectDefinition | 12
 SWLOR.Game.Server/Domain/Combat/CombatAbilityBonusService.cs -> Feature/StatusEffectDefinition | 7
 SWLOR.Game.Server/Domain/Combat/CombatAbilityHitService.cs -> Feature/StatusEffectDefinition | 2
@@ -44,7 +44,7 @@ SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs -> Feature/StatusE
 SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Feature/StatusEffectDefinition | 14
 SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature.UsePerkFeat | 1
-SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/AbilityDefinition | 5
+SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/AbilityDefinition | 3
 SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/StatusEffectDefinition | 5
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Feature/StatusEffectDefinition | 17

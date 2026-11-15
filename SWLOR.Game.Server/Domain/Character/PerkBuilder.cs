@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Domain.Character

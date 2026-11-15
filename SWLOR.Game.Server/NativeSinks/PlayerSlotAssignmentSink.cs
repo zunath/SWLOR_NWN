@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using SWLOR.Game.Contracts;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Native;
 using static SWLOR.Game.Server.Native.PlayerSlotAssignment;

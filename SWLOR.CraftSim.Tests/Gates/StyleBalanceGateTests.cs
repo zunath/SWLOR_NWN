@@ -17,8 +17,8 @@ namespace SWLOR.CraftSim.Tests.Gates
         {
             public string Name => "spy";
             public string Title => "Spy";
-            public SWLOR.Game.Server.Domain.Character.SkillType Skill => SWLOR.Game.Server.Domain.Character.SkillType.Smithery;
-            public SWLOR.Game.Server.Domain.Crafting.Minigame.CraftMinigameType Minigame => SWLOR.Game.Server.Domain.Crafting.Minigame.CraftMinigameType.Forge;
+            public SWLOR.Game.Server.Domain.Foundation.SkillType Skill => SWLOR.Game.Server.Domain.Foundation.SkillType.Smithery;
+            public SWLOR.Game.Server.Domain.Foundation.CraftMinigameType Minigame => SWLOR.Game.Server.Domain.Foundation.CraftMinigameType.Forge;
             public double SecondsPerAction => 6;
             public IReadOnlyList<CraftStylePair> StylePairs { get; init; } = Array.Empty<CraftStylePair>();
             public System.Collections.Concurrent.ConcurrentBag<(int Recipe, string Style, int Roll)> FirstRolls { get; } = new();

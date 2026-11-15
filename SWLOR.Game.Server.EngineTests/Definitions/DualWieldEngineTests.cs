@@ -20,6 +20,7 @@ using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
 using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

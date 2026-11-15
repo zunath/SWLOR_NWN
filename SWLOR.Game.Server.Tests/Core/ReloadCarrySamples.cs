@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Core;
 

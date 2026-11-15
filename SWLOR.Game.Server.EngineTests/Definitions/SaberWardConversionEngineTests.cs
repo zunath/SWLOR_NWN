@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using DamageType = SWLOR.NWN.API.NWScript.Enum.DamageType;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 

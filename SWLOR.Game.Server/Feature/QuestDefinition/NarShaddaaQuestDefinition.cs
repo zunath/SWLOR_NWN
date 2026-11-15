@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Quests;
 using System.Collections.Generic;
 using static SWLOR.Game.Server.Composition.GameServices;

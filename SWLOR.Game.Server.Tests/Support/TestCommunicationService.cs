@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Space;
-using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
+using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 
 namespace SWLOR.Game.Server.Tests.Support;
 

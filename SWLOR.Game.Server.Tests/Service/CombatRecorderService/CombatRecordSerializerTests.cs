@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service.CombatRecorderService;

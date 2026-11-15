@@ -2,6 +2,7 @@ using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;

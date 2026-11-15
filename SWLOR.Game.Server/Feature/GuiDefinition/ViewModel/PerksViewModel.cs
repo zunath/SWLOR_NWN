@@ -15,6 +15,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

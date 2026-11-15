@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;

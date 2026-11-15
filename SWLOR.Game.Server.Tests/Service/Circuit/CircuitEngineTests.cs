@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Tests.Service.Circuit.CircuitTestData;
 
 namespace SWLOR.Game.Server.Tests.Service.Circuit;

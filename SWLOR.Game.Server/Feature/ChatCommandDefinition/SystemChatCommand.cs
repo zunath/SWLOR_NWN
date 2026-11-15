@@ -3,6 +3,7 @@ using System.Globalization;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.Social;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
 

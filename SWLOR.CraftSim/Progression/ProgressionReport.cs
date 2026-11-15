@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Domain.Crafting.Research;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 using SWLOR.CraftSim.Report;
 using SWLOR.Game.Server.Domain.Economy;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CraftSim.Progression
 {

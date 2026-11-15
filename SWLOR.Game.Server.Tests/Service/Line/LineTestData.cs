@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
 using SWLOR.Game.Server.Domain.World;

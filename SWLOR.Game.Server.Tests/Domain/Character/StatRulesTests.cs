@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Composition.GameServices;
 

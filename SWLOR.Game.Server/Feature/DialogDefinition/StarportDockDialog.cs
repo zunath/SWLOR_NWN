@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.Engine;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {

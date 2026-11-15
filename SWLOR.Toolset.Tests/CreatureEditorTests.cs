@@ -2381,9 +2381,9 @@ namespace SWLOR.Toolset.Tests
         {
             var catalog = CreaturePerkCatalog.Build();
 
-            catalog[(int)SWLOR.Game.Server.Domain.Character.PerkType.Tame]
+            catalog[(int)SWLOR.Game.Server.Domain.Foundation.PerkType.Tame]
                 .MaximumLevel.Should().Be(5);
-            catalog[(int)SWLOR.Game.Server.Domain.Character.PerkType.CombatAnalyzer]
+            catalog[(int)SWLOR.Game.Server.Domain.Foundation.PerkType.CombatAnalyzer]
                 .MaximumLevel.Should().Be(4);
         }
 

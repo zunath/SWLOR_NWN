@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Domain.World

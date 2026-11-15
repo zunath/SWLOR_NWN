@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Contracts;
 using SWLOR.Game.NativeHooks;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Native;
 using SWLOR.NWN.API.NWScript.Enum;

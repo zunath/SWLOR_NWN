@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Toolset.Domain.GameData.GameCode
 {

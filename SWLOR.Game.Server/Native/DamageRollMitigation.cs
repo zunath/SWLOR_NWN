@@ -2,6 +2,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Domain.Combat;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Native

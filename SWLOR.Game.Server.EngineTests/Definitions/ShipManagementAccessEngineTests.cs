@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Space;
+using SWLOR.Game.Server.Core;
 using Vector3 = System.Numerics.Vector3;
 using Vector4 = System.Numerics.Vector4;
 

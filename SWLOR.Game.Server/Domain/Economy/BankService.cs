@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Domain.Economy

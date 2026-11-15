@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(Music.GetAllSongs().Count > 0, "Songs cached by the module-cache handler");
             ctx.Assert(Weather.GetWeather(OBJECT_INVALID) == SWLOR.NWN.API.NWScript.Enum.Weather.Invalid,
                 "Weather answers through the container");
-            ctx.AssertEqual("Apartment", Property.GetPropertyDetail(SWLOR.Game.Server.Domain.World.PropertyType.Apartment).Name,
+            ctx.AssertEqual("Apartment", Property.GetPropertyDetail(SWLOR.Game.Server.Domain.Foundation.PropertyType.Apartment).Name,
                 "Property definitions cached by the module-cache handler");
             ctx.Assert(Property.GetAllInstanceAreaResrefs().Count > 0, "Property layouts cached by the module-cache handler");
             ctx.AssertEqual("Township", Property.GetCityLevelName(3), "Property city rules answer through the container");

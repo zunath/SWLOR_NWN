@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using System.Reflection;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.CombatSim.Data
 {
@@ -137,7 +138,7 @@ namespace SWLOR.CombatSim.Data
                 WeaponAbilityCadenceOnHit = detail.WeaponAbilityCadenceOnHit,
                 WeaponAbilityCadenceDamagePerCharge = detail.WeaponAbilityCadenceDamagePerCharge,
                 // Mirrors PairedRangedTraits.ChainKey: every rank of one ability shares its key.
-                CadenceChainKey = detail.EffectiveLevelPerkType != SWLOR.Game.Server.Domain.Character.PerkType.Invalid
+                CadenceChainKey = detail.EffectiveLevelPerkType != SWLOR.Game.Server.Domain.Foundation.PerkType.Invalid
                     ? (int)detail.EffectiveLevelPerkType
                     : StringComparer.Ordinal.GetHashCode(detail.Name ?? string.Empty) | int.MinValue
             };

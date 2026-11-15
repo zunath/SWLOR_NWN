@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
@@ -177,7 +178,7 @@ public class ForceLightGuardianTests
         reflectiveBarrier.Should().NotContain("DelayCommand(",
             "an exhausted barrier must be gone before the shared reflection stage reads its stats");
 
-        var temporaryHPKeys = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffectKey.cs").FullName);
+        var temporaryHPKeys = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Combat" / "TemporaryHitPointEffectKey.cs").FullName);
         temporaryHPKeys.Should().Contain("public const string FatalDamageSave = \"FATAL_DAMAGE_SAVE\";");
         temporaryHPKeys.Should().Contain("public const string GuardianWard = \"GUARDIAN_WARD\";");
 

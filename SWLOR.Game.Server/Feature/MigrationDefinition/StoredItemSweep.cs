@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Space;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition;
 

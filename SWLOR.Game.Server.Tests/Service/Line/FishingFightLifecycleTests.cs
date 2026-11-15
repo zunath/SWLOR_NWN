@@ -1,8 +1,10 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Line;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Composition.GameServices;

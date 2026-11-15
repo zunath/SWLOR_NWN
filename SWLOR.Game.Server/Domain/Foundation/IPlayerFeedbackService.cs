@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Domain.Foundation
 {

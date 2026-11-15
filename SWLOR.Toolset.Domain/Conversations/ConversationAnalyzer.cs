@@ -528,8 +528,8 @@ namespace SWLOR.Toolset.Domain.Conversations
 
                         var isKnownKeyItem =
                             (int.TryParse(value, out var keyItemId) && _gameCode.KeyItems.ContainsKey(keyItemId))
-                            || (Enum.TryParse<Game.Server.Domain.Items.KeyItemType>(value, out var keyItemByName)
-                                && keyItemByName != Game.Server.Domain.Items.KeyItemType.Invalid
+                            || (Enum.TryParse<Game.Server.Domain.Foundation.KeyItemType>(value, out var keyItemByName)
+                                && keyItemByName != Game.Server.Domain.Foundation.KeyItemType.Invalid
                                 && _gameCode.KeyItems.ContainsKey((int)keyItemByName));
                         if (!isKnownKeyItem)
                         {

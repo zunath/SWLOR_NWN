@@ -4,6 +4,7 @@ using SWLOR.CraftSim.Progression;
 using SWLOR.CraftSim.Rng;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Prospecting;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 
 namespace SWLOR.CraftSim.Harvesting

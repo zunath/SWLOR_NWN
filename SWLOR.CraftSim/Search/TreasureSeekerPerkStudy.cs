@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Crafting;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Gathering;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Search;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using static SWLOR.CraftSim.Report.MarkdownTable;
 

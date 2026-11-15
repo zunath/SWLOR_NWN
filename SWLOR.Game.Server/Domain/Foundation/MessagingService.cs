@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;

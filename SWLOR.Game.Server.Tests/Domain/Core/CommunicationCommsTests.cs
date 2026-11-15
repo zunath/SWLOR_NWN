@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 using static SWLOR.NWN.API.NWScript.NWScript;
-using SkillType = SWLOR.Game.Server.Domain.Character.SkillType;
+using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 

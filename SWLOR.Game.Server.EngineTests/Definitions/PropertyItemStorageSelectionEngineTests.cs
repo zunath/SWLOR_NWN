@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.EngineTests.Framework.FullInventoryFixture;
 using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
 

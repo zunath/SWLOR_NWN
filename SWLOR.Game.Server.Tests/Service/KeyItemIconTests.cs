@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Tests.Support;
 

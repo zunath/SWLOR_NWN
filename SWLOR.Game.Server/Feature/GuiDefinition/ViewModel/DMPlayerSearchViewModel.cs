@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.NWNX;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {

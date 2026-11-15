@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Core;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition.CharacterMigration;

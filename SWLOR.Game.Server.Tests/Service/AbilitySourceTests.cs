@@ -29,6 +29,8 @@ public class AbilitySourceTests
         "                return _fooState.GetTracked(creature, damage);",
         "            _other.GetTracked(creature);",
         "            var count = _fooState.Count;",
+        "            if (_fooState.Count < 10)",
+        "                Log(\"_fooState.GetTracked(creature) is logged as text\");",
         "            return _fooState.Fallback<int>(creature) + count;",
         "        }",
         "    }",
@@ -52,6 +54,8 @@ public class AbilitySourceTests
 
         text.Should().Contain("            _other.GetTracked(creature);");
         text.Should().Contain("            var count = _fooState.Count;", "a property read is not a call the move rewrote");
+        text.Should().Contain("            if (_fooState.Count < 10)", "a property compared with < is not a generic call");
+        text.Should().Contain("\"_fooState.GetTracked(creature) is logged as text\"", "text inside a string is not code");
         text.Should().Contain("        private readonly IAbilityFooState _fooState;");
     }
 

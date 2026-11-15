@@ -24,6 +24,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 [TestFixture]
 public class ItemTrashDisposalTests
 {
+    private SWLOR.Game.Server.Core.IContentFactory Content => _facades.Content;
+
     private const uint ObjectInvalid = 0x7F000000;
     private const uint Player = 1;
     private const uint PossessedAvatar = 2;
@@ -227,9 +229,9 @@ public class ItemTrashDisposalTests
         _inventories.TryGetValue(container, out var items) && index < items.Count ? items[index] : ObjectInvalid;
 
     /// <summary>Opens the dialog the way the conversation menu service does.</summary>
-    private static ConversationMenuSession StartDestroyItemDialog(uint player)
+    private ConversationMenuSession StartDestroyItemDialog(uint player)
     {
-        var definition = new DestroyItemDialog();
+        var definition = Content.Create<DestroyItemDialog>();
         Invoke(definition, "Bind", player, ObjectInvalid);
         var session = new ConversationMenuSession(definition.Build(), new ConversationContext(player, ObjectInvalid), new NoRuntime());
         Invoke(definition, "Attach", session);

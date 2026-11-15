@@ -6,12 +6,25 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.NWN.API.Engine;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportDockDialog: ConversationMenuDefinition
     {
+        private IDBService DB { get; }
+        private IEnmityService Enmity { get; }
+        private IPropertyService Property { get; }
+        private ISpaceService Space { get; }
+
+        public StarportDockDialog(IDBService db, IEnmityService enmity, IPropertyService property, ISpaceService space)
+        {
+            DB = db;
+            Enmity = enmity;
+            Property = property;
+            Space = space;
+        }
+
         private class Model
         {
             public PlanetType Planet { get; set; }

@@ -1,10 +1,19 @@
 using SWLOR.Game.Server.Domain.Foundation;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.World;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class ShuttleStatusDialog: ConversationMenuDefinition
     {
+        private IPlanetService Planet { get; }
+        private IShuttleService Shuttle { get; }
+
+        public ShuttleStatusDialog(IPlanetService planet, IShuttleService shuttle)
+        {
+            Planet = planet;
+            Shuttle = shuttle;
+        }
+
         private const string MainPageId = "MAIN_PAGE";
 
         public override ConversationMenuSpec Build()

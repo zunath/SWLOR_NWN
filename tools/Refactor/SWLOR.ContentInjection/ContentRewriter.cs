@@ -87,7 +87,13 @@ internal static class ContentRewriter
             foreach (var member in type.Members.Where(member => member.IsStatic && type.InstanceMembers.Contains(member.Name)))
                 RemoveStatic(member.Node.Modifiers, edits, text);
         }
+        else
+        {
+            foreach (var member in type.Members.Where(member => member.IsStatic && type.StaticToInstance.Contains(member.Name)))
+                RemoveStatic(member.Node.Modifiers, edits, text);
+        }
 
+        var becomeInstance = type.IsSingleton ? type.InstanceMembers : type.StaticToInstance;
         foreach (var member in type.Members)
         {
             foreach (var access in member.ExplicitAccesses)
@@ -96,10 +102,7 @@ internal static class ContentRewriter
                     edits.Add(new TextEdit(access.SpanStart, access.Span.Length, type.PropertyName(service)));
             }
 
-            if (!type.IsSingleton)
-                continue;
-
-            foreach (var reference in member.OwnReferences.Where(reference => reference.Qualified && type.InstanceMembers.Contains(reference.Member)))
+            foreach (var reference in member.OwnReferences.Where(reference => reference.Qualified && becomeInstance.Contains(reference.Member)))
                 edits.Add(new TextEdit(reference.Node.SpanStart, reference.Node.Span.Length, reference.Member));
         }
 
@@ -245,21 +248,31 @@ internal static class ContentRewriter
                 refusals.Add(file.Refuse(declaration, $"{declaration.Identifier.ValueText} derives from {baseName}, which takes services: convert it in the same wave (list its file in tools/Refactor/ContentInjection.json)."));
         }
 
+        bool? namesMade = null;
         foreach (var creation in file.Root.DescendantNodes().OfType<BaseObjectCreationExpressionSyntax>())
         {
-            var (typeText, typeName) = creation switch
+            var type = creation switch
             {
-                ObjectCreationExpressionSyntax explicitCreation => (explicitCreation.Type.ToString(), SyntaxHelpers.SimpleName(explicitCreation.Type)),
+                ObjectCreationExpressionSyntax explicitCreation => explicitCreation.Type,
                 ImplicitObjectCreationExpressionSyntax implicitCreation => TargetType(implicitCreation),
-                _ => (null, null)
+                _ => null
             };
 
-            if (typeName == null)
+            if (type == null)
             {
-                if (creation is ImplicitObjectCreationExpressionSyntax && made.Keys.Any(name => text.Contains(name, StringComparison.Ordinal)))
+                // Only a file that names a made type in code can build one with a new() the tool cannot type; a name in a string or a
+                // comment does not count. A creation it misses never compiles: made content has no constructor without its services.
+                namesMade ??= file.Root.DescendantTokens().Any(token => token.IsKind(SyntaxKind.IdentifierToken) && made.ContainsKey(token.ValueText));
+                if (creation is ImplicitObjectCreationExpressionSyntax && namesMade.Value)
                     refusals.Add(file.Refuse(creation, "A target-typed new() whose type the tool cannot tell: if it builds made content with services, write Content.Create by hand."));
                 continue;
             }
+
+            // A generic, array, tuple or predefined type is never made content.
+            var typeName = SyntaxHelpers.SimpleName(type);
+            if (typeName == null)
+                continue;
+            var typeText = type.ToString();
 
             if (!made.TryGetValue(typeName, out var target) || declaredHere.Contains(typeName) && target.File != file)
                 continue;
@@ -455,19 +468,139 @@ internal static class ContentRewriter
         owner.Modifiers.Any(SyntaxKind.StaticKeyword) ||
         site.Ancestors().OfType<MemberDeclarationSyntax>().TakeWhile(member => member != owner).Any(member => member.Modifiers.Any(SyntaxKind.StaticKeyword));
 
-    /// <summary>The declared type a target-typed <c>new(...)</c> builds, when a declaration names it.</summary>
-    private static (string? Text, string? Name) TargetType(ImplicitObjectCreationExpressionSyntax creation)
+    /// <summary>
+    /// The type a target-typed <c>new(...)</c> builds, when the syntax names it: the type of the variable, field or property it
+    /// initializes or is assigned to (the element type when it is stored into a generic collection of the same file), the return type
+    /// of the method, property or local function it is returned from, or the parameter type of a method of the same file it is passed
+    /// to (every overload agreeing). Null when the tool cannot tell; <c>T?</c> is <c>T</c>.
+    /// </summary>
+    private static TypeSyntax? TargetType(ImplicitObjectCreationExpressionSyntax creation)
     {
-        TypeSyntax? type = creation.Parent switch
+        var type = creation.Parent switch
         {
             EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax declaration } } => declaration.Type,
             EqualsValueClauseSyntax { Parent: PropertyDeclarationSyntax property } => property.Type,
+            ArrowExpressionClauseSyntax arrow => ReturnType(arrow.Parent),
+            ReturnStatementSyntax statement => ReturnType(statement.Ancestors().FirstOrDefault(IsFunction)),
+            ArgumentSyntax argument => ParameterType(argument),
+            AssignmentExpressionSyntax assignment when assignment.Right == creation && assignment.IsKind(SyntaxKind.SimpleAssignmentExpression) => AssignedType(assignment.Left),
             _ => null
         };
 
-        if (type == null || type.IsVar)
-            return (null, null);
-        return (type.ToString(), SyntaxHelpers.SimpleName(type));
+        if (type is NullableTypeSyntax nullable)
+            type = nullable.ElementType;
+        return type == null || type.IsVar ? null : type;
+    }
+
+    private static bool IsFunction(SyntaxNode node) =>
+        node is BaseMethodDeclarationSyntax or LocalFunctionStatementSyntax or AccessorDeclarationSyntax or AnonymousFunctionExpressionSyntax;
+
+    /// <summary>The type <paramref name="function"/> returns; null for a lambda, an async function or anything else the tool cannot tell.</summary>
+    private static TypeSyntax? ReturnType(SyntaxNode? function) => function switch
+    {
+        MethodDeclarationSyntax method when !method.Modifiers.Any(SyntaxKind.AsyncKeyword) => method.ReturnType,
+        LocalFunctionStatementSyntax local when !local.Modifiers.Any(SyntaxKind.AsyncKeyword) => local.ReturnType,
+        PropertyDeclarationSyntax property => property.Type,
+        IndexerDeclarationSyntax indexer => indexer.Type,
+        AccessorDeclarationSyntax { Parent.Parent: BasePropertyDeclarationSyntax property } accessor when accessor.IsKind(SyntaxKind.GetAccessorDeclaration) => property.Type,
+        OperatorDeclarationSyntax operatorDeclaration => operatorDeclaration.ReturnType,
+        ConversionOperatorDeclarationSyntax conversion => conversion.Type,
+        _ => null
+    };
+
+    /// <summary>The parameter type at a positional argument of a call to a method the same file declares, when every candidate agrees.</summary>
+    private static TypeSyntax? ParameterType(ArgumentSyntax argument)
+    {
+        if (argument.NameColon != null || argument.Parent is not ArgumentListSyntax { Parent: InvocationExpressionSyntax invocation } list)
+            return null;
+
+        var name = invocation.Expression switch
+        {
+            IdentifierNameSyntax identifier => identifier.Identifier.ValueText,
+            MemberAccessExpressionSyntax { Expression: ThisExpressionSyntax, Name: IdentifierNameSyntax member } => member.Identifier.ValueText,
+            _ => null
+        };
+        if (name == null)
+            return null;
+
+        var index = list.Arguments.IndexOf(argument);
+        var count = list.Arguments.Count;
+        var candidates = argument.SyntaxTree.GetRoot().DescendantNodes()
+            .Select(node => node switch
+            {
+                MethodDeclarationSyntax method when method.Identifier.ValueText == name => method.ParameterList,
+                LocalFunctionStatementSyntax local when local.Identifier.ValueText == name => local.ParameterList,
+                _ => null
+            })
+            .OfType<ParameterListSyntax>()
+            .Where(parameters => parameters.Parameters.Count >= count && parameters.Parameters.Skip(count).All(parameter => parameter.Default != null) &&
+                                 !parameters.Parameters.Any(parameter => parameter.Modifiers.Any(SyntaxKind.ParamsKeyword)))
+            .Select(parameters => parameters.Parameters[index].Type)
+            .ToList();
+
+        if (candidates.Count == 0 || candidates.Any(type => type == null) || candidates.Select(type => type!.ToString()).Distinct(StringComparer.Ordinal).Count() != 1)
+            return null;
+        return candidates[0];
+    }
+
+    /// <summary>The declared type of what <paramref name="left"/> names (a local, parameter, field or property of the file), or its element type when it indexes a generic collection or an array.</summary>
+    private static TypeSyntax? AssignedType(ExpressionSyntax left)
+    {
+        switch (left)
+        {
+            case IdentifierNameSyntax identifier:
+                return DeclaredType(identifier, identifier.Identifier.ValueText);
+            case MemberAccessExpressionSyntax { Expression: ThisExpressionSyntax, Name: IdentifierNameSyntax member }:
+                return DeclaredType(left, member.Identifier.ValueText, membersOnly: true);
+            case ElementAccessExpressionSyntax { Expression: IdentifierNameSyntax collection }:
+                var type = DeclaredType(collection, collection.Identifier.ValueText);
+                if (type is QualifiedNameSyntax qualified)
+                    type = qualified.Right;
+                return type switch
+                {
+                    GenericNameSyntax generic => generic.TypeArgumentList.Arguments[^1],
+                    ArrayTypeSyntax array => array.ElementType,
+                    _ => null
+                };
+            default:
+                return null;
+        }
+    }
+
+    /// <summary>The declared type of <paramref name="name"/> where <paramref name="site"/> is: a local or parameter of the enclosing member, else a field or property of an enclosing class.</summary>
+    private static TypeSyntax? DeclaredType(SyntaxNode site, string name, bool membersOnly = false)
+    {
+        if (!membersOnly && site.Ancestors().OfType<MemberDeclarationSyntax>().FirstOrDefault() is { } member)
+        {
+            var locals = member.DescendantNodes()
+                .Select(node => node switch
+                {
+                    VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax declaration } variable
+                        when variable.Identifier.ValueText == name && variable.Parent.Parent is not FieldDeclarationSyntax => declaration.Type,
+                    ParameterSyntax parameter when parameter.Identifier.ValueText == name => parameter.Type ?? (TypeSyntax)SyntaxFactory.IdentifierName("var"),
+                    _ => null
+                })
+                .OfType<TypeSyntax>()
+                .ToList();
+            if (locals.Count > 0)
+                return locals.Select(type => type.ToString()).Distinct(StringComparer.Ordinal).Count() == 1 && !locals[0].IsVar ? locals[0] : null;
+        }
+
+        foreach (var type in site.Ancestors().OfType<TypeDeclarationSyntax>())
+        {
+            foreach (var declared in type.Members)
+            {
+                switch (declared)
+                {
+                    case FieldDeclarationSyntax field when field.Declaration.Variables.Any(variable => variable.Identifier.ValueText == name):
+                        return field.Declaration.Type;
+                    case PropertyDeclarationSyntax property when property.Identifier.ValueText == name:
+                        return property.Type;
+                }
+            }
+        }
+
+        return null;
     }
 
     /// <summary>

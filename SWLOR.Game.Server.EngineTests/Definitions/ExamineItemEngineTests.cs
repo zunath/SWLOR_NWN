@@ -43,11 +43,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "A description that wraps across multiple lines while keeping the highlighted text in its original color.") +
                 "\n\n" + ColorToken.Green("A second paragraph with a green sentence.") + "\n\n" +
                 ColorToken.Pink(string.Join("\n", Enumerable.Range(1, 15).Select(index => $"Scroll line {index}")));
+            var unidentified = Content.Create<ExamineItemPayload, string, string, string>("Unidentified item", "An ordinary unidentified description.", string.Empty);
+            unidentified.IsIdentified = false;
             var payloads = new[]
             {
-                new ExamineItemPayload(ColorToken.Custom("Veles City Animal License", 99, 120, 32), license, string.Empty),
-                new ExamineItemPayload(ColorToken.Orange("Colored item"), longDescription, ColorToken.Cyan("DMG: ") + "10"),
-                new ExamineItemPayload("Unidentified item", "An ordinary unidentified description.", string.Empty) { IsIdentified = false }
+                Content.Create<ExamineItemPayload, string, string, string>(ColorToken.Custom("Veles City Animal License", 99, 120, 32), license, string.Empty),
+                Content.Create<ExamineItemPayload, string, string, string>(ColorToken.Orange("Colored item"), longDescription, ColorToken.Cyan("DMG: ") + "10"),
+                unidentified
             };
 
             try
@@ -189,7 +191,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 try
                 {
-                    await Open(new ExamineItemPayload(extractor, trackLiveItem: true));
+                    await Open(Content.Create<ExamineItemPayload, uint, bool>(extractor, true));
                     var layout = GetContentLayout();
                     ctx.AssertEqual(1, IconLayers().Count, "a simple item must draw its one icon");
                     ctx.AssertEqual("3", FactValue("Charges: "), "extractor must show its remaining charges");
@@ -203,12 +205,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Gui.ClosePlayerWindow(observer.Creature, GuiWindowType.ExamineItem);
                     await ctx.WaitFrameAsync();
 
-                    await Open(new ExamineItemPayload(cores, trackLiveItem: true));
+                    await Open(Content.Create<ExamineItemPayload, uint, bool>(cores, true));
                     ctx.AssertEqual("25", FactValue("Quantity: "), "stacks must show their quantity");
                     Gui.ClosePlayerWindow(observer.Creature, GuiWindowType.ExamineItem);
                     await ctx.WaitFrameAsync();
 
-                    await Open(new ExamineItemPayload(saber, trackLiveItem: true));
+                    await Open(Content.Create<ExamineItemPayload, uint, bool>(saber, true));
                     var title = JsonGetString(NuiGetBind(observer.Creature, playerWindow.WindowToken, nameof(model.WindowTitle)));
                     ctx.AssertEqual("Lightsaber (Unidentified)", title, "unidentified items must not reveal their name");
                     ctx.AssertEqual(1, IconLayers().Count, "unidentified items still show their icon");

@@ -8,6 +8,8 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public sealed class ConversationHeaderFormattingTests
 {
+    private SWLOR.Game.Server.Core.IContentFactory Content { get; } = SWLOR.Game.Server.Tests.Support.TestContent.WithoutServices;
+
     [Test]
     public void IdentityBrokerSummary_IsPlainContinuousHeaderText()
     {
@@ -40,7 +42,7 @@ public sealed class ConversationHeaderFormattingTests
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         method.Should().NotBeNull();
 
-        var value = (string)method!.Invoke(new CoxxionTerminalDialog(), new object[] { colorId })!;
+        var value = (string)method!.Invoke(Content.Create<CoxxionTerminalDialog>(), new object[] { colorId })!;
         var blocks = ConversationMarkup.ParseLegacyColors(value, ConversationTextStyle.Normal);
 
         blocks.Should().ContainSingle();

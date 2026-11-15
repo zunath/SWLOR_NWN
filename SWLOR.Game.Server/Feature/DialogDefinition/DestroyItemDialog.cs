@@ -1,10 +1,17 @@
 using SWLOR.Game.Server.Domain.Foundation;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class DestroyItemDialog: ConversationMenuDefinition
     {
+        private IItemTrashService ItemTrash { get; }
+
+        public DestroyItemDialog(IItemTrashService itemTrash)
+        {
+            ItemTrash = itemTrash;
+        }
+
         private class Model
         {
             public uint Item { get; set; }

@@ -19,11 +19,13 @@ namespace SWLOR.Game.Server.Domain.Foundation
     public class ConversationMenuService : IConversationMenuService
     {
         private readonly IConversationService _conversation;
+        private readonly IContentFactory _content;
         private readonly Dictionary<string, Type> _definitions = new(StringComparer.Ordinal);
 
-        public ConversationMenuService(IConversationService conversation)
+        public ConversationMenuService(IConversationService conversation, IContentFactory content)
         {
             _conversation = conversation;
+            _content = content;
         }
 
         [BootPhase(BootReload.Rerun)]
@@ -154,7 +156,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
             try
             {
-                var definition = (ConversationMenuDefinition)Activator.CreateInstance(type);
+                var definition = _content.Create<ConversationMenuDefinition>(type);
                 definition.Bind(player, owner);
                 var menu = definition.Build();
                 var session = new ConversationMenuSession(

@@ -392,3 +392,4 @@ SWLOR.Game.Server.Service.Log.OnApplicationShutdown SWLOR.Game.Server.Domain.Fou
 SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload SWLOR.Game.Server.Feature.EventRegistration.StartServerEvents SWLOR.Game.Server.Feature.EventRegistration.OnModulePreload
 SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp SWLOR.Game.Server.Feature.ServerTasks.ProcessBootUp SWLOR.Game.Server.Feature.ServerTasks.StartRestartReminders
 SWLOR.Game.Server.Feature.StoreManagement.ProcessStores SWLOR.Game.Server.Feature.StoreManagement.LoadStores SWLOR.Game.Server.Feature.StoreManagement.ProcessStores
+SWLOR.Game.Server.Feature.DialogDefinition.CoxxionTerminalDialog.LoadDoors SWLOR.Game.Server.Domain.World.CoxxionBaseDoorsService.LoadDoors

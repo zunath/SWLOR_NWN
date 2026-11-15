@@ -3,12 +3,26 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.World;
-using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class StarportFlightsDialog: ConversationMenuDefinition
     {
+        private IDBService DB { get; }
+        private IKeyItemService KeyItem { get; }
+        private IPlanetService Planet { get; }
+        private IPropertyService Property { get; }
+        private IShuttleService Shuttle { get; }
+
+        public StarportFlightsDialog(IDBService db, IKeyItemService keyItem, IPlanetService planet, IPropertyService property, IShuttleService shuttle)
+        {
+            DB = db;
+            KeyItem = keyItem;
+            Planet = planet;
+            Property = property;
+            Shuttle = shuttle;
+        }
+
         private class Model
         {
             public PlanetType Origin { get; set; }

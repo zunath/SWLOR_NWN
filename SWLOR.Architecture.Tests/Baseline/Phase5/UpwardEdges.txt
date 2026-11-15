@@ -301,7 +301,7 @@ SWLOR.Game.Server/Feature/PerkDefinition/TwinPistolPerkDefinition.cs: Character 
 SWLOR.Game.Server/Feature/PerkDefinition/UnarmedPerkDefinition.cs: Character content -> Quests content | 2
 SWLOR.Game.Server/Feature/PerkDefinition/VibrobladePerkDefinition.cs: Character content -> Quests content | 2
 SWLOR.Game.Server/Feature/PerkDefinition/VibroknifePerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs: Foundation content -> Gameplay content | 1
+SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs: Foundation content -> Gameplay content | 3
 SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs: Foundation content -> UI content | 2
 SWLOR.Game.Server/Feature/StatusEffectDefinition/CleanseOrder1StatusEffect.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/StatusEffectDefinition/CleanseOrder2StatusEffect.cs: Character content -> Abilities content | 1

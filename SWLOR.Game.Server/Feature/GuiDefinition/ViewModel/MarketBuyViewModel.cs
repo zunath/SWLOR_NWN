@@ -305,7 +305,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbItem = DB.Get<MarketItem>(itemId);
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
-            var payload = new ExamineItemPayload(item);
+            var payload = Content.Create<ExamineItemPayload, uint>(item);
             Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
             DestroyObject(item);
         };

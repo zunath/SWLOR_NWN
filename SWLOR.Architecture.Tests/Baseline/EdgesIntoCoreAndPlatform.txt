@@ -98,18 +98,16 @@ Domain/Economy -> Platform/Enumeration | 31
 Domain/Economy -> Platform/Core | 12
 Domain/Economy -> Platform/Extension | 7
 
-# Foundation -> Platform (12 edges)
+# Foundation -> Platform (10 edges)
 Domain/Foundation -> Platform/Composition | 21
-Domain/Foundation -> Platform/Core | 58
+Domain/Foundation -> Platform/Core | 63
 Domain/Foundation -> Platform/Extension | 8
 Domain/Foundation -> Platform/Native | 1
 Domain/Foundation -> Platform/Root | 9
-Feature/DialogDefinition -> Platform/Composition | 29
-Feature/DialogDefinition -> Platform/Core | 1
 Feature/MigrationDefinition -> Platform/Composition | 61
 Feature/MigrationDefinition -> Platform/Core | 2
 Feature/MigrationDefinition -> Platform/Native | 1
-Feature/SnippetDefinition -> Platform/Composition | 23
+Feature/SnippetDefinition -> Platform/Composition | 20
 Platform/Entity -> Platform/Core | 1
 
 # Gameplay -> Foundation (56 edges)
@@ -149,7 +147,7 @@ Feature.PersistentMapPin -> Platform/Entity | 6
 Feature.PersistentMapProgression -> Domain/Foundation | 2
 Feature.PersistentMapProgression -> Platform/Entity | 2
 Feature.PistolAnimationRemap -> Domain/Foundation | 3
-Feature.PlaceableScripts -> Domain/Foundation | 2
+Feature.PlaceableScripts -> Domain/Foundation | 7
 Feature.PlayerAccountRecord -> Domain/Foundation | 1
 Feature.PlayerAccountRecord -> Platform/Entity | 1
 Feature.PlayerInitialization -> Domain/Foundation | 3
@@ -170,7 +168,7 @@ Feature.TwinPistolEquipmentValidation -> Domain/Foundation | 2
 Feature.TwinPistolEquipmentValidation -> Feature/MigrationDefinition | 1
 Feature.UsePerkFeat -> Domain/Foundation | 6
 
-# Gameplay -> Platform (125 edges)
+# Gameplay -> Platform (124 edges)
 Domain/Gameplay -> Platform/Composition | 1
 Domain/Gameplay -> Platform/Root | 4
 Feature.AchievementProgression -> Platform/Composition | 7
@@ -244,7 +242,6 @@ Feature.PistolAnimationRemap -> Platform/Composition | 5
 Feature.PistolAnimationRemap -> Platform/Core | 5
 Feature.PistolAnimationRemap -> Platform/Native | 1
 Feature.PistolBaseItemCompatibility -> Platform/Core | 1
-Feature.PlaceableScripts -> Platform/Composition | 5
 Feature.PlaceableScripts -> Platform/Core | 6
 Feature.PlayerAccountRecord -> Platform/Composition | 1
 Feature.PlayerAccountRecord -> Platform/Core | 1
@@ -367,17 +364,17 @@ Domain/UI -> Domain/Foundation | 27
 Domain/UI -> Feature/MigrationDefinition | 1
 Domain/UI -> Platform/Entity | 29
 Domain/UI -> Platform/Enumeration | 1
-Feature/GuiDefinition -> Domain/Foundation | 363
+Feature/GuiDefinition -> Domain/Foundation | 366
 Feature/GuiDefinition -> Platform/Entity | 378
 Feature/GuiDefinition -> Platform/Enumeration | 21
 
 # UI -> Platform (8 edges)
 Domain/UI -> Platform/Composition | 5
-Domain/UI -> Platform/Core | 134
+Domain/UI -> Platform/Core | 137
 Domain/UI -> Platform/Properties | 1
 Domain/UI -> Platform/Root | 1
-Feature/GuiDefinition -> Platform/Composition | 713
-Feature/GuiDefinition -> Platform/Core | 237
+Feature/GuiDefinition -> Platform/Composition | 709
+Feature/GuiDefinition -> Platform/Core | 242
 Feature/GuiDefinition -> Platform/Extension | 3
 Feature/GuiDefinition -> Platform/Root | 9
 
@@ -393,7 +390,7 @@ Feature/TrapDefinition -> Domain/Foundation | 1
 
 # World -> Platform (8 edges)
 Domain/World -> Platform/Composition | 13
-Domain/World -> Platform/Core | 89
+Domain/World -> Platform/Core | 90
 Domain/World -> Platform/Extension | 10
 Domain/World -> Platform/Root | 2
 Feature/PropertyLayoutDefinition -> Platform/Composition | 7

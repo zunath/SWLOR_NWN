@@ -7,6 +7,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The area cache and the players in each area (the static class <c>Area</c> until P2-ZL).</summary>
         public static IAreaService Area => FacadeAccessor.Resolve<IAreaService>();
 
+        /// <summary>The color doors of the Coxxion Base dungeon (static on the Coxxion terminal's menu until P5-13).</summary>
+        public static ICoxxionBaseDoorsService CoxxionBaseDoors => FacadeAccessor.Resolve<ICoxxionBaseDoorsService>();
+
         /// <summary>Fishing rods, bait, fish tables and the cast-and-reel flow (the static class <c>Fishing</c> until P2-ZL).</summary>
         public static IFishingService Fishing => FacadeAccessor.Resolve<IFishingService>();
 

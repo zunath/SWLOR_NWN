@@ -19,13 +19,39 @@ namespace SWLOR.Game.Server.EngineTests.Definitions;
 /// <summary>
 /// Docks a ship through the real space dock menus and runs the module-load cleanup a restart performs.
 /// </summary>
-public static class StarshipDockReturnEngineTests
+public sealed class StarshipDockReturnEngineTests
 {
     private const string DockMenu = "StarportDockDialog";
     private static readonly string[] StationAreas = { "zomb_abanstation", "zomb_abanstatio2", "zomb_abanstatio3" };
 
+    public StarshipDockReturnEngineTests(IAreaService area, IConversationMenuService conversationMenu, IDBService db, IGuiService gui,
+        IPlanetService planet, IPropertyService property, ISpaceService space)
+    {
+        Area = area;
+        ConversationMenu = conversationMenu;
+        DB = db;
+        Gui = gui;
+        Planet = planet;
+        Property = property;
+        Space = space;
+    }
+
+    private IAreaService Area { get; }
+
+    private IConversationMenuService ConversationMenu { get; }
+
+    private IDBService DB { get; }
+
+    private IGuiService Gui { get; }
+
+    private IPlanetService Planet { get; }
+
+    private IPropertyService Property { get; }
+
+    private ISpaceService Space { get; }
+
     [EngineTest("A restart returns a ship left at the Abandoned Station to its last regular starport", Category = "StarshipDockReturn", TimeoutSeconds = 90f)]
-    public static async Task RestartReturnsShipFromStation(EngineTestContext ctx)
+    public async Task RestartReturnsShipFromStation(EngineTestContext ctx)
     {
         var planet = Planet.GetPlanetByType(PlanetType.Viscara);
         var viscaraOrbit = GetWaypointByTag(planet.SpaceOrbitWaypointTag);
@@ -141,7 +167,7 @@ public static class StarshipDockReturnEngineTests
     }
 
     [EngineTest("A restart recovers ships whose safe dock was recorded at the station or that have no dock", Category = "StarshipDockReturn", TimeoutSeconds = 30f)]
-    public static async Task RestartRecoversLegacyShips(EngineTestContext ctx)
+    public async Task RestartRecoversLegacyShips(EngineTestContext ctx)
     {
         var planet = Planet.GetPlanetByType(PlanetType.Viscara);
         var velesLanding = GetWaypointByTag(planet.LandingWaypointTag);
@@ -210,7 +236,7 @@ public static class StarshipDockReturnEngineTests
         ctx.SetResultDetail("The module-load cleanup resolved the station's planet through the live area data, returned a ship stranded with a station safe dock to Veles, repaired a station safe dock on a ship elsewhere, restored a missing dock, and kept going past a ship with no dock data, across two restarts.");
     }
 
-    private static WorldProperty CreateShip(Dictionary<PropertyLocationType, PropertyLocation> positions)
+    private WorldProperty CreateShip(Dictionary<PropertyLocationType, PropertyLocation> positions)
     {
         var property = new WorldProperty
         {
@@ -242,7 +268,7 @@ public static class StarshipDockReturnEngineTests
         return OBJECT_INVALID;
     }
 
-    private static async Task Dock(EngineTestContext ctx, PlayerAbilityFixture actor, PlayerShip ship, uint dock, string response)
+    private async Task Dock(EngineTestContext ctx, PlayerAbilityFixture actor, PlayerShip ship, uint dock, string response)
     {
         // Players dock while piloting the ship in space; docking exits space mode and clears the active ship.
         var dbPlayer = DB.Get<Player>(actor.Id);
@@ -260,7 +286,7 @@ public static class StarshipDockReturnEngineTests
         });
     }
 
-    private static async Task AssertShipWindow(EngineTestContext ctx, PlayerAbilityFixture actor, uint orbit, Location landing, string expectedLocation, bool expectBoardable, string label)
+    private async Task AssertShipWindow(EngineTestContext ctx, PlayerAbilityFixture actor, uint orbit, Location landing, string expectedLocation, bool expectBoardable, string label)
     {
         Gui.ClosePlayerWindow(actor.Creature, GuiWindowType.ShipManagement);
         ShipManagementViewModel model = null;
@@ -278,7 +304,7 @@ public static class StarshipDockReturnEngineTests
         Gui.ClosePlayerWindow(actor.Creature, GuiWindowType.ShipManagement);
     }
 
-    private static Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> InstallWindows(PlayerAbilityFixture actor)
+    private Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> InstallWindows(PlayerAbilityFixture actor)
     {
         var windows = GuiInternals.PlayerWindows();
         windows.Add(actor.Id, new Dictionary<GuiWindowType, GuiPlayerWindow>());

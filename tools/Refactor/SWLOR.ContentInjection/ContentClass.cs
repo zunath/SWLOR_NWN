@@ -51,6 +51,9 @@ internal sealed class ContentClass
     /// <summary>For a singleton: the members that are, or become, instance members.</summary>
     public HashSet<string> InstanceMembers { get; } = new(StringComparer.Ordinal);
 
+    /// <summary>For made content: the private static methods that reach a service, which only the class calls, so they just lose <c>static</c>.</summary>
+    public HashSet<string> StaticToInstance { get; } = new(StringComparer.Ordinal);
+
     /// <summary>The services the constructor takes, in order: the base's, then the class's own.</summary>
     public List<ServiceName> CtorServices { get; } = new();
 

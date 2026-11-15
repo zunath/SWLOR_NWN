@@ -10,6 +10,12 @@ namespace SWLOR.Game.Server.Domain.UI
         public string WindowId { get; set; }
         public Json Window { get; set; }
         public CreatePlayerWindowDelegate CreatePlayerWindowAction { get; set; }
+
+        /// <summary>
+        /// The view model type of a window <see cref="GuiWindowBuilder{T}"/> built. <see cref="GuiService"/> builds each player's
+        /// view model of it with the content factory, through <see cref="CreatePlayerWindowAction"/>, which it sets when it caches the window.
+        /// </summary>
+        public Type ViewModelType { get; set; }
         public GuiRectangle InitialGeometry { get; set; }
         public Dictionary<string, Json> PartialViews { get; set; }
         public IReadOnlyList<string> LayoutFindings { get; set; }

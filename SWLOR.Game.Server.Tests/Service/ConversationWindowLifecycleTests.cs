@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class ConversationWindowLifecycleTests
 {
+    private IContentFactory Content { get; } = SWLOR.Game.Server.Tests.Support.TestContent.WithoutServices;
+
     [Test]
     public void RuntimeAreaCreation_CannotBypassTheSharedEventRegistration()
     {
@@ -47,7 +49,7 @@ public class ConversationWindowLifecycleTests
         var cleanupCount = 0;
         var responseCount = 0;
         var session = CreateMenu(() => cleanupCount++, () => responseCount++);
-        var model = new ConversationViewModel();
+        var model = Content.Create<ConversationViewModel>();
         Attach(model, session);
 
         model.OnWindowClosed()();
@@ -82,7 +84,7 @@ public class ConversationWindowLifecycleTests
         session.Start().Should().BeTrue();
         if (alreadyCompleted)
             session.End(ConversationEndReason.Completed);
-        var model = new ConversationViewModel();
+        var model = Content.Create<ConversationViewModel>();
         Attach(model, session);
 
         model.OnWindowClosed()();
@@ -98,7 +100,7 @@ public class ConversationWindowLifecycleTests
     [Test]
     public void FailingCleanup_DetachesTheSessionAndRejectsStaleClicks()
     {
-        var model = new ConversationViewModel();
+        var model = Content.Create<ConversationViewModel>();
         var session = CreateMenu(() => throw new InvalidOperationException("Cleanup failed."));
         Attach(model, session);
 
@@ -114,7 +116,7 @@ public class ConversationWindowLifecycleTests
     [Test]
     public void CleanupThatStartsAnotherConversation_DoesNotDiscardTheReplacement()
     {
-        var model = new ConversationViewModel();
+        var model = Content.Create<ConversationViewModel>();
         var replacement = CreateMenu();
         var original = CreateMenu(() => Attach(model, replacement));
         Attach(model, original);

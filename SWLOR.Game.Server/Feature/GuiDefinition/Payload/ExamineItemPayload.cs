@@ -1,11 +1,13 @@
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using static SWLOR.Game.Server.Composition.GameServices;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
 {
     public class ExamineItemPayload: GuiPayloadBase
     {
+        private IItemService Item { get; }
+
         public string ItemName { get; set; }
         public string Description { get; set; }
         public string ItemProperties { get; set; }
@@ -23,27 +25,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Payload
         public int StackSize { get; set; } = 1;
         public int Charges { get; set; }
 
-        public ExamineItemPayload(uint item, bool trackLiveItem = false)
+        public ExamineItemPayload(IItemService item, uint itemObject, bool trackLiveItem = false)
         {
-            var type = GetBaseItemType(item);
+            Item = item;
+            var type = GetBaseItemType(itemObject);
             ItemType = type;
-            IsIdentified = GetIdentified(item);
+            IsIdentified = GetIdentified(itemObject);
             BaseItemName = GetBaseItemName(type);
-            ItemName = IsIdentified ? GetName(item) : ExamineItemSheet.UnidentifiedTitle(BaseItemName);
-            Description = GetDescription(item, false, IsIdentified);
-            IconResref = Item.GetIconResref(item);
+            ItemName = IsIdentified ? GetName(itemObject) : ExamineItemSheet.UnidentifiedTitle(BaseItemName);
+            Description = GetDescription(itemObject, false, IsIdentified);
+            IconResref = Item.GetIconResref(itemObject);
             IconSlotWidth = GetBaseItemSlots(type, "InvSlotWidth");
             IconSlotHeight = GetBaseItemSlots(type, "InvSlotHeight");
             if (trackLiveItem)
             {
-                ItemObject = item;
-                ItemId = GetObjectUUID(item);
+                ItemObject = itemObject;
+                ItemId = GetObjectUUID(itemObject);
             }
-            Capture(item);
+            Capture(itemObject);
         }
 
-        public ExamineItemPayload(string itemName, string description, string itemProperties)
+        public ExamineItemPayload(IItemService item, string itemName, string description, string itemProperties)
         {
+            Item = item;
             ItemName = itemName;
             Description = description;
             ItemProperties = ExamineItemSheet.SortProperties(itemProperties);

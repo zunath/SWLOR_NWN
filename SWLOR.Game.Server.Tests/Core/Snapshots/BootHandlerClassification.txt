@@ -127,7 +127,7 @@ mod_load (46)
   BootOnly    SWLOR.Game.Server.Feature.TlkOverrides.OverrideTlks
   Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances
   Rerun       SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel.LoadCategories
-  Rerun       SWLOR.Game.Server.Feature.DialogDefinition.CoxxionTerminalDialog.LoadDoors
+  Rerun       SWLOR.Game.Server.Domain.World.CoxxionBaseDoorsService.LoadDoors
 
 app_shutdown (2)
   Retire      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.StopOnShutdown

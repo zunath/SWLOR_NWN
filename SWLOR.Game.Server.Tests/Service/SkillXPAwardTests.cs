@@ -47,6 +47,7 @@ public class SkillXPAwardTests
             using SWLOR.Game.Server.Entity;
             using SWLOR.Game.Server.Extension;
             using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+            using SWLOR.Game.Server.Domain.UI;
             using SWLOR.Game.Server.Domain.Character;
             using SWLOR.Game.Server.Domain.Character;
             using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;

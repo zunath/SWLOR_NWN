@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var accuracyPurity = 0;
                     var evasionPurity = 0;
                     var learningPurity = 0;
-                    var defensePurities = CombatRules.CreateDefaultDefenseValues();
+                    var defensePurities = DamageTableDefaults.CreateDefaultDefenseValues();
                     var resistancePurities = Resistance.CreateDefaultResistanceValues();
                     var xpPenalty = 0;
 

@@ -12,27 +12,20 @@
 # SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
-SWLOR.Game.Server/Domain/Abilities/AbilityCooldownVisualService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature.PistolAnimationRemap | 1
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature.TwinPistolEquipmentValidation | 1
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature/StatusEffectDefinition | 1
-SWLOR.Game.Server/Domain/Abilities/FieldEngineerPulseEmittersService.cs -> Feature/AbilityDefinition | 2
-SWLOR.Game.Server/Domain/Abilities/IFieldEngineerPulseEmittersService.cs -> Feature/AbilityDefinition | 2
-SWLOR.Game.Server/Domain/Abilities/MimicryService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Feature.DMActions | 1
 SWLOR.Game.Server/Domain/Character/AppearanceRenderStateService.cs -> Feature/AppearanceDefinition | 4
-SWLOR.Game.Server/Domain/Character/DisguiseService.cs -> Feature/GuiDefinition | 2
 SWLOR.Game.Server/Domain/Character/IAppearanceRenderStateService.cs -> Feature/AppearanceDefinition | 4
 SWLOR.Game.Server/Domain/Character/ITintMapStateService.cs -> Feature/AppearanceDefinition | 2
-SWLOR.Game.Server/Domain/Character/SkillService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefinition | 1
-SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/GuiDefinition | 3
 SWLOR.Game.Server/Domain/Character/TintMapStateRevisionScope.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Character/TintMapStateService.cs -> Feature/AppearanceDefinition | 3
 SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/AbilityDefinition | 2
@@ -67,13 +60,11 @@ SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs -> Feature/Migrati
 SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs -> Feature/StatusEffectDefinition | 6
 SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Feature.LightsaberAudio | 1
 SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Feature/StatusEffectDefinition | 2
-SWLOR.Game.Server/Domain/Combat/TemporaryStatModifierService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolAbilityService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs -> Feature/QuestDefinition | 1
 SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Feature/AbilityDefinition | 1
-SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Feature/GuiDefinition | 2
 SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Companions/BeastStableCapacity.cs -> Feature/QuestDefinition | 1
 SWLOR.Game.Server/Domain/Companions/DroidService.cs -> Feature/AppearanceDefinition | 2
@@ -89,21 +80,15 @@ SWLOR.Game.Server/Domain/Crafting/NwnScavengeWorld.cs -> Feature/GuiDefinition |
 SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Creatures/CompanionControlService.cs -> Feature/StatusEffectDefinition | 1
-SWLOR.Game.Server/Domain/Economy/CasinoSlotService.cs -> Feature/GuiDefinition | 1
-SWLOR.Game.Server/Domain/Economy/CurrencyService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Foundation/CharacterFileUpgrade.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs -> Feature/GuiDefinition | 2
 SWLOR.Game.Server/Domain/Foundation/NamedAnimationService.cs -> Feature.PistolAnimationRemap | 1
 SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs -> Feature/MigrationDefinition | 3
 SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Feature/MigrationDefinition | 4
 SWLOR.Game.Server/Domain/Foundation/SavedItem.cs -> Feature/MigrationDefinition | 3
-SWLOR.Game.Server/Domain/Items/KeyItemService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Items/WardrobeService.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Quests/CapstoneProofService.cs -> Feature/QuestDefinition | 1
-SWLOR.Game.Server/Domain/Quests/QuestContractBoardService.cs -> Feature/GuiDefinition | 1
-SWLOR.Game.Server/Domain/Quests/QuestContractReward.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Quests/QuestDetail.cs -> Feature/DialogDefinition | 1
-SWLOR.Game.Server/Domain/Quests/QuestDetail.cs -> Feature/GuiDefinition | 4
 SWLOR.Game.Server/Domain/Social/PerformanceAudienceService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceInspiredService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceService.cs -> Feature/AppearanceDefinition | 1
@@ -113,9 +98,9 @@ SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs -> Feature/GuiDefin
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Space/SpaceService.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Feature.UsePerkFeat | 1
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Feature/GuiDefinition | 3
+SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Feature/MigrationDefinition | 1
-SWLOR.Game.Server/Domain/UI/GuiService.cs -> Feature/GuiDefinition | 5
+SWLOR.Game.Server/Domain/UI/GuiService.cs -> Feature/GuiDefinition | 2
 SWLOR.Game.Server/Domain/World/NwnFishingFightWorld.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/World/PropertyService.cs -> Feature/DialogDefinition | 1
 SWLOR.Game.Server/Domain/World/TrapsService.cs -> Feature/AbilityDefinition | 2

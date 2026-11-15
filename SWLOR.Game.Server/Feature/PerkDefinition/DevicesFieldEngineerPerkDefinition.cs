@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -193,7 +192,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.KillzoneBeacon1)
-                .RequirementQuest(DevicesCapstoneQuestDefinition.KillzoneBeaconMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.KillzoneBeaconMasteryQuestId);
         }
 
     }

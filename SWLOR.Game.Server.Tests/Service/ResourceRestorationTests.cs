@@ -40,6 +40,7 @@ public class ResourceRestorationTests
         var source = $$"""
             using System;
             using SWLOR.Game.Server.Domain.Combat;
+            using SWLOR.Game.Server.Domain.Foundation;
             using SWLOR.Game.Server.Domain.Character;
             using SWLOR.NWN.API.NWScript.Enum;
             using Stat = ResourceHarness;

@@ -17,23 +17,16 @@ namespace SWLOR.Game.Server.Domain.Combat
         public const int MaximumResistance = 100;
         public const int VulnerabilityCostTableOffset = MaximumResistance;
 
-        /// <summary>
-        /// Every resistance type in enum order, without Invalid. The one place that decides which types exist: the
-        /// resistance service builds its tables from it, and so do callers that have no container.
-        /// </summary>
+        /// <summary>Every resistance type in enum order, without Invalid. Forwards to <see cref="DamageTableDefaults"/>.</summary>
         public static IEnumerable<ResistanceType> EnumerateResistanceTypes()
         {
-            foreach (var type in Enum.GetValues<ResistanceType>())
-            {
-                if (type != ResistanceType.Invalid)
-                    yield return type;
-            }
+            return DamageTableDefaults.EnumerateResistanceTypes();
         }
 
-        /// <summary>A new table holding <paramref name="defaultValue"/> for every resistance type.</summary>
+        /// <summary>A new table holding <paramref name="defaultValue"/> for every resistance type. Forwards to <see cref="DamageTableDefaults"/>, which master's code reaches through here.</summary>
         public static Dictionary<ResistanceType, int> CreateDefaultResistanceValues(int defaultValue = 0)
         {
-            return EnumerateResistanceTypes().ToDictionary(type => type, _ => defaultValue);
+            return DamageTableDefaults.CreateDefaultResistanceValues(defaultValue);
         }
 
         public static int ClampResistance(int resistance)

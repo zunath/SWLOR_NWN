@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Domain.Crafting.Minigame.Experiment;
 using SWLOR.Game.Server.Domain.Crafting.Research;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {

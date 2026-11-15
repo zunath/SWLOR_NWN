@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string AbsoluteDefenseMeasureQuestId = "absolute_defense_measure";
         internal const string AbsoluteDefenseBreachQuestId = "absolute_defense_breach";
         internal const string AbsoluteDefenseCircleQuestId = "absolute_defense_circle";
-        internal const string AbsoluteDefenseMasteryQuestId = "absolute_defense_mastery";
+        internal const string AbsoluteDefenseMasteryQuestId = CapstoneQuestIds.AbsoluteDefenseMasteryQuestId;
         internal const string AbsoluteDefenseAdeptResref = "cp_absdef_ad";
         internal const string AbsoluteDefenseSpecialistResref = "cp_absdef_sp";
         internal const string AbsoluteDefenseInnerCircleResref = "cp_absdef_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string SoulAscensionMeasureQuestId = "soul_ascension_measure";
         internal const string SoulAscensionBreachQuestId = "soul_ascension_breach";
         internal const string SoulAscensionCircleQuestId = "soul_ascension_circle";
-        internal const string SoulAscensionMasteryQuestId = "soul_ascension_mastery";
+        internal const string SoulAscensionMasteryQuestId = CapstoneQuestIds.SoulAscensionMasteryQuestId;
         internal const string SoulAscensionAdeptResref = "cp_soulasc_ad";
         internal const string SoulAscensionSpecialistResref = "cp_soulasc_sp";
         internal const string SoulAscensionInnerCircleResref = "cp_soulasc_ic";

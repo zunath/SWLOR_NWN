@@ -30,7 +30,7 @@ placeholder value — window structure first, data wiring is a separate task.
 
 ## Important Files
 
-- `SWLOR.Game.Server/Domain/UI/GuiWindowType.cs` — window id enum (debug windows: 900 range)
+- `SWLOR.Game.Server/Domain/Foundation/GuiWindowType.cs` — window id enum (debug windows: 900 range)
 - `SWLOR.Game.Server/Feature/GuiDefinition/` — window definitions (reflection-registered)
 - `SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/` — view models
 - `SWLOR.Game.Server/Domain/UI/Component/GuiStandardLayout.cs` — the root-layout helper

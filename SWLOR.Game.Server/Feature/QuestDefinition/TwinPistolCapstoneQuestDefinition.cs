@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public sealed class TwinPistolCapstoneQuestDefinition : IQuestListDefinition
     {
-        internal const string TwinSunsMasteryQuestId = "twin_suns_mastery";
-        internal const string FinalSalvoMasteryQuestId = "final_salvo_mastery";
+        internal const string TwinSunsMasteryQuestId = CapstoneQuestIds.TwinSunsMasteryQuestId;
+        internal const string FinalSalvoMasteryQuestId = CapstoneQuestIds.FinalSalvoMasteryQuestId;
         internal const string TrialAreaResref = "pw_sc_canyonrng";
         private readonly QuestBuilder _builder = new();
 

@@ -45,9 +45,8 @@ SWLOR.Game.Server/Domain/Character/PlayerNameService.cs: Character -> Social | 8
 SWLOR.Game.Server/Domain/Character/SkillService.cs: Character -> Combat | 3
 SWLOR.Game.Server/Domain/Character/SkillService.cs: Character -> Companions | 4
 SWLOR.Game.Server/Domain/Character/SkillService.cs: Character -> UI | 3
-SWLOR.Game.Server/Domain/Character/StatGroup.cs: Character -> Combat | 1
 SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Abilities | 4
-SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Combat | 47
+SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Combat | 46
 SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Companions | 7
 SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Items | 4
 SWLOR.Game.Server/Domain/Character/StatusEffectBase.cs: Character -> Combat | 6
@@ -96,6 +95,8 @@ SWLOR.Game.Server/Domain/Foundation/AbilityAnimationBinding.cs: Foundation -> Ch
 SWLOR.Game.Server/Domain/Foundation/AnimationPreviewCatalog.cs: Foundation -> Abilities | 1
 SWLOR.Game.Server/Domain/Foundation/AnimationPreviewCatalog.cs: Foundation -> Character | 2
 SWLOR.Game.Server/Domain/Foundation/CacheService.cs: Foundation -> Items | 3
+SWLOR.Game.Server/Domain/Foundation/CombatRecordAttributionScope.cs: Foundation -> Combat | 1
+SWLOR.Game.Server/Domain/Foundation/CombatRecordHealingReactionScope.cs: Foundation -> Combat | 1
 SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs: Foundation -> Administration | 7
 SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs: Foundation -> Character | 9
 SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs: Foundation -> Social | 3
@@ -135,16 +136,10 @@ SWLOR.Game.Server/Domain/World/HoloComService.cs: World -> Social | 6
 SWLOR.Game.Server/Domain/World/HoloComService.cs: World -> Space | 5
 SWLOR.Game.Server/Domain/World/MusicService.cs: World -> Social | 3
 SWLOR.Game.Server/Domain/World/StructureChangedAction.cs: World -> Space | 1
-SWLOR.Game.Server/Entity/Beast.cs: Foundation -> Combat | 1
 SWLOR.Game.Server/Entity/DMCreatorFavorites.cs: Foundation -> Administration | 2
-SWLOR.Game.Server/Entity/IncubationJob.cs: Foundation -> Combat | 1
-SWLOR.Game.Server/Entity/Player.cs: Foundation -> Combat | 1
 SWLOR.Game.Server/Entity/Player.cs: Foundation -> UI | 2
-SWLOR.Game.Server/Feature/AppearanceDefinition/TintMap/TintMapService.cs: Character content -> UI content | 2
 SWLOR.Game.Server/Feature/BeastStableTrials.cs: Gameplay content -> Quests content | 1
-SWLOR.Game.Server/Feature/DialogDefinition/GuildMasterDialog.cs: Foundation content -> UI content | 1
 SWLOR.Game.Server/Feature/DialogDefinition/MarketDialog.cs: Foundation content -> UI content | 1
-SWLOR.Game.Server/Feature/DialogDefinition/StarportDialog.cs: Foundation content -> UI content | 1
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs: UI content -> Gameplay content | 3
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs: UI content -> Gameplay content | 1
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs: UI content -> Abilities content | 2
@@ -171,38 +166,8 @@ SWLOR.Game.Server/Feature/MigrationDefinition/SerializedItemWeaponDamageTypeMigr
 SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.FurnitureRenames.cs: Foundation content -> UI content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.Pelvis.cs: Foundation content -> Character content | 1
 SWLOR.Game.Server/Feature/NaturalRegeneration.cs: Gameplay content -> Abilities content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastBalancedPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastBruiserPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastDamagePerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastEvasionPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastForcePerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/BeastPerks/BeastTankPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/DevicesAssaultGadgetsPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/DevicesFieldEngineerPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/DevicesFieldSupportPerkDefinition.cs: Character content -> Quests content | 1
 SWLOR.Game.Server/Feature/PerkDefinition/DevicesGrenadierPerkDefinition.cs: Character content -> Abilities content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/DevicesGrenadierPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/FirstAidCombatPharmacologyPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/ForceDarkManipulatorPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/ForceDarkRavagerPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/ForceLightGuardianPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/HeavyVibrobladePerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/KatarPerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/LeadershipFieldStewardPerkDefinition.cs: Character content -> Quests content | 1
 SWLOR.Game.Server/Feature/PerkDefinition/LeadershipVanguardCommandPerkDefinition.cs: Character content -> Abilities content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/LeadershipVanguardCommandPerkDefinition.cs: Character content -> Quests content | 1
-SWLOR.Game.Server/Feature/PerkDefinition/LightsaberPerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/PistolPerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/RiflePerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/SaberstaffPerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/SpearPerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/StaffPerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/ThrowingPerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/TwinBladePerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/TwinPistolPerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/UnarmedPerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/VibrobladePerkDefinition.cs: Character content -> Quests content | 2
-SWLOR.Game.Server/Feature/PerkDefinition/VibroknifePerkDefinition.cs: Character content -> Quests content | 2
 SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs: Foundation content -> Gameplay content | 3
 SWLOR.Game.Server/Feature/SnippetDefinition/ConversationStateSnippetDefinition.cs: Foundation content -> UI content | 2
 SWLOR.Game.Server/Feature/StatusEffectDefinition/CleanseOrder1StatusEffect.cs: Character content -> Abilities content | 1

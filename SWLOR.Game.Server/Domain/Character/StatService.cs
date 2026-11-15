@@ -866,7 +866,7 @@ namespace SWLOR.Game.Server.Domain.Character
             if (stats.HasFlag(EquipmentRecordStats.Resistance))
             {
                 entity.Resistances ??= new Dictionary<ResistanceType, int>();
-                foreach (var type in ResistanceRules.EnumerateResistanceTypes())
+                foreach (var type in DamageTableDefaults.EnumerateResistanceTypes())
                 {
                     var amount = totals.GetResistance(type);
                     if ((entity.Resistances.TryGetValue(type, out var current) ? current : 0) == amount)

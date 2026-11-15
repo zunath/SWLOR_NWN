@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The damage type tables of <c>Combat</c>, as this instance's own fields, and the login step that adds missing defense
-    /// and resistance entries to a player. <c>CreateDefaultDefenseValues</c> is pure, so it is in <see cref="CombatRules"/>.
+    /// and resistance entries to a player. <c>CreateDefaultDefenseValues</c> is pure, so it is in <see cref="DamageTableDefaults"/>.
     /// </summary>
     public class CombatDamageCatalogService : ICombatDamageCatalogService
     {
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (dbPlayer.Defenses == null)
             {
                 foundNewType = true;
-                dbPlayer.Defenses = CreateDefaultDefenseValues();
+                dbPlayer.Defenses = DamageTableDefaults.CreateDefaultDefenseValues();
             }
 
             if (dbPlayer.Resistances == null)

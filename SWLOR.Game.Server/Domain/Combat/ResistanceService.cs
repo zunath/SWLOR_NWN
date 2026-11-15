@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _allResistanceTypes.Clear();
             _validResistanceTypes.Clear();
 
-            foreach (var type in ResistanceRules.EnumerateResistanceTypes())
+            foreach (var type in DamageTableDefaults.EnumerateResistanceTypes())
             {
                 _allResistanceTypes.Add(type);
                 _validResistanceTypes.Add(type);

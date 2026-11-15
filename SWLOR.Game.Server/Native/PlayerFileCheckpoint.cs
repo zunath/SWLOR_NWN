@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Native
     /// </summary>
     public static class PlayerFileCheckpoint
     {
-        internal const string FieldName = "PlayerFileVer";
-        internal const string CraftSequenceFieldName = "CraftFileSeq";
+        internal const string FieldName = PlayerFileFieldNames.FileVersion;
+        internal const string CraftSequenceFieldName = PlayerFileFieldNames.CraftSequence;
 
         [BootPhase(BootReload.NativeHook)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]

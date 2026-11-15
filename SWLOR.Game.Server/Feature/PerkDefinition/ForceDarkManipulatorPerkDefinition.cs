@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.Game.Server.Feature.QuestDefinition;
 using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
@@ -148,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.EclipseOfResolve1)
-                .RequirementQuest(ForceCapstoneQuestDefinition.EclipseOfResolveMasteryQuestId);
+                .RequirementQuest(CapstoneQuestIds.EclipseOfResolveMasteryQuestId);
         }
 
     }

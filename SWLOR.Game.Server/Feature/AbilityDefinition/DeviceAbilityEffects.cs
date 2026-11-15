@@ -23,92 +23,48 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string FieldEngineerPulseMarkerTag = "field_engineer_pulse_marker";
         private const string BeaconShotSound = "cb_sh_blstrfire1";
 
-        public sealed class FieldEngineerPulseEmitter
+        private static FieldEngineerPulseEmitter CreateFieldEngineerPulseEmitter(
+            uint activator,
+            Location location,
+            SkillType skillType,
+            int baseDamage,
+            int statusDuration,
+            Type statusEffect,
+            float radius,
+            float durationSeconds,
+            CombatDamageType damageType,
+            VisualEffect targetVisualEffect,
+            VisualEffect areaVisualEffect,
+            VisualEffect markerVisualEffect,
+            float markerVisualEffectScale,
+            bool isAreaPulse,
+            bool appliesBeaconPulseBonuses,
+            bool showAreaIndicator,
+            VisualEffect projectileVisualEffect = VisualEffect.None,
+            VisualEffect beamVisualEffect = VisualEffect.None)
         {
-            public FieldEngineerPulseEmitter(
-                uint activator,
-                Location location,
-                SkillType skillType,
-                int baseDamage,
-                int statusDuration,
-                Type statusEffect,
-                float radius,
-                float durationSeconds,
-                CombatDamageType damageType,
-                VisualEffect targetVisualEffect,
-                VisualEffect areaVisualEffect,
-                VisualEffect markerVisualEffect,
-                float markerVisualEffectScale,
-                bool isAreaPulse,
-                bool appliesBeaconPulseBonuses,
-                bool showAreaIndicator,
-                VisualEffect projectileVisualEffect = VisualEffect.None,
-                VisualEffect beamVisualEffect = VisualEffect.None)
+            var emitter = new FieldEngineerPulseEmitter(
+                activator, location, skillType, baseDamage, statusDuration, statusEffect, radius, durationSeconds, damageType,
+                targetVisualEffect, areaVisualEffect, markerVisualEffect, markerVisualEffectScale, isAreaPulse,
+                appliesBeaconPulseBonuses, showAreaIndicator, projectileVisualEffect, beamVisualEffect);
+            if (emitter.IsAreaPulse && !emitter.HasShotVisual)
             {
-                Activator = activator;
-                Location = location;
-                SkillType = skillType;
-                BaseDamage = baseDamage;
-                StatusDuration = statusDuration;
-                StatusEffect = statusEffect;
-                Radius = radius;
-                RemainingSeconds = durationSeconds;
-                DamageType = damageType;
-                TargetVisualEffect = targetVisualEffect;
-                AreaVisualEffect = areaVisualEffect;
-                MarkerVisualEffect = markerVisualEffect;
-                MarkerVisualEffectScale = markerVisualEffectScale;
-                IsAreaPulse = isAreaPulse;
-                AppliesBeaconPulseBonuses = appliesBeaconPulseBonuses;
-                ShowAreaIndicator = showAreaIndicator;
-                ProjectileVisualEffect = projectileVisualEffect;
-                BeamVisualEffect = beamVisualEffect;
-                MarkerObject = OBJECT_INVALID;
-                AreaIndicatorId = string.Empty;
-                if (IsAreaPulse && !HasShotVisual)
-                {
-                    ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
-                        () => ApplyAreaHostilePulse(this), baseDamage: baseDamage);
-                }
-                else if (IsAreaPulse)
-                {
-                    CreateAreaImpactBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
-                        target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
-                    ApplyPulse = () => ApplyAreaHostileShots(this);
-                }
-                else
-                {
-                    ApplyTargetImpact = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
-                        target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
-                    ApplyPulse = () => ApplySingleHostilePulse(this);
-                }
+                emitter.ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
+                    () => ApplyAreaHostilePulse(emitter), baseDamage: baseDamage);
             }
-
-            public uint Activator { get; }
-            public Location Location { get; }
-            public SkillType SkillType { get; }
-            public int BaseDamage { get; }
-            public int StatusDuration { get; }
-            public Type StatusEffect { get; }
-            public float Radius { get; }
-            public float RemainingSeconds { get; set; }
-            public CombatDamageType DamageType { get; }
-            public VisualEffect TargetVisualEffect { get; }
-            public VisualEffect AreaVisualEffect { get; }
-            public VisualEffect MarkerVisualEffect { get; }
-            public float MarkerVisualEffectScale { get; }
-            public bool IsAreaPulse { get; }
-            public bool AppliesBeaconPulseBonuses { get; }
-            public bool ShowAreaIndicator { get; }
-            public VisualEffect ProjectileVisualEffect { get; }
-            public VisualEffect BeamVisualEffect { get; }
-            public bool HasShotVisual => ProjectileVisualEffect != VisualEffect.None || BeamVisualEffect != VisualEffect.None;
-            public uint MarkerObject { get; set; }
-            public string AreaIndicatorId { get; set; }
-            public Action ApplyPulse { get; }
-            public Action<uint> ApplyTargetImpact { get; }
-            public Func<int, Action<uint>> CreateAreaImpactBatch { get; }
-            public int PendingProjectileImpacts { get; set; }
+            else if (emitter.IsAreaPulse)
+            {
+                emitter.CreateAreaImpactBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
+                    target => ApplySingleHostilePulseImpact(emitter, target), baseDamage: baseDamage);
+                emitter.ApplyPulse = () => ApplyAreaHostileShots(emitter);
+            }
+            else
+            {
+                emitter.ApplyTargetImpact = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
+                    target => ApplySingleHostilePulseImpact(emitter, target), baseDamage: baseDamage);
+                emitter.ApplyPulse = () => ApplySingleHostilePulse(emitter);
+            }
+            return emitter;
         }
 
         public static void ApplyPowerSurge(uint activator, uint target)
@@ -370,7 +326,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect projectileVisualEffect = VisualEffect.None,
             VisualEffect beamVisualEffect = VisualEffect.None)
         {
-            TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
+            TrackFieldEngineerPulseEmitter(CreateFieldEngineerPulseEmitter(
                 activator,
                 location,
                 skillType,
@@ -410,7 +366,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect projectileVisualEffect = VisualEffect.None,
             VisualEffect beamVisualEffect = VisualEffect.None)
         {
-            TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
+            TrackFieldEngineerPulseEmitter(CreateFieldEngineerPulseEmitter(
                 activator,
                 location,
                 skillType,

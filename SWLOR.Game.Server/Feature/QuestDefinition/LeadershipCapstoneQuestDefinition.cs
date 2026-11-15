@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string HoldTheLineMeasureQuestId = "hold_the_line_measure";
         internal const string HoldTheLineBreachQuestId = "hold_the_line_breach";
         internal const string HoldTheLineCircleQuestId = "hold_the_line_circle";
-        internal const string HoldTheLineMasteryQuestId = "hold_the_line_mastery";
+        internal const string HoldTheLineMasteryQuestId = CapstoneQuestIds.HoldTheLineMasteryQuestId;
         internal const string HoldTheLineAdeptResref = "cp_holdline_ad";
         internal const string HoldTheLineSpecialistResref = "cp_holdline_sp";
         internal const string HoldTheLineInnerCircleResref = "cp_holdline_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string DecisiveCommandMeasureQuestId = "decisive_command_measure";
         internal const string DecisiveCommandBreachQuestId = "decisive_command_breach";
         internal const string DecisiveCommandCircleQuestId = "decisive_command_circle";
-        internal const string DecisiveCommandMasteryQuestId = "decisive_command_mastery";
+        internal const string DecisiveCommandMasteryQuestId = CapstoneQuestIds.DecisiveCommandMasteryQuestId;
         internal const string DecisiveCommandAdeptResref = "cp_deccommand_ad";
         internal const string DecisiveCommandSpecialistResref = "cp_deccommand_sp";
         internal const string DecisiveCommandInnerCircleResref = "cp_deccommand_ic";

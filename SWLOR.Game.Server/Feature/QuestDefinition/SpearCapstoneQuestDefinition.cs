@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string ForcebaneMeasureQuestId = "forcebane_measure";
         internal const string ForcebaneBreachQuestId = "forcebane_breach";
         internal const string ForcebaneCircleQuestId = "forcebane_circle";
-        internal const string ForcebaneMasteryQuestId = "forcebane_mastery";
+        internal const string ForcebaneMasteryQuestId = CapstoneQuestIds.ForcebaneMasteryQuestId;
         internal const string ForcebaneAdeptResref = "cp_forcebane_ad";
         internal const string ForcebaneSpecialistResref = "cp_forcebane_sp";
         internal const string ForcebaneInnerCircleResref = "cp_forcebane_ic";
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string CripplingDefenseMeasureQuestId = "crippling_defense_measure";
         internal const string CripplingDefenseBreachQuestId = "crippling_defense_breach";
         internal const string CripplingDefenseCircleQuestId = "crippling_defense_circle";
-        internal const string CripplingDefenseMasteryQuestId = "crippling_defense_mastery";
+        internal const string CripplingDefenseMasteryQuestId = CapstoneQuestIds.CripplingDefenseMasteryQuestId;
         internal const string CripplingDefenseAdeptResref = "cp_cripdef_ad";
         internal const string CripplingDefenseSpecialistResref = "cp_cripdef_sp";
         internal const string CripplingDefenseInnerCircleResref = "cp_cripdef_ic";

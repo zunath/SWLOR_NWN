@@ -43,6 +43,7 @@ public class AppearanceEditorSettingsTests
             using System.Linq.Expressions;
             using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
             using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+            using SWLOR.Game.Server.Domain.UI;
             using SWLOR.NWN.API.NWScript.Enum;
             using DMPreferences = SWLOR.Game.Server.Entity.DMPreferences;
             using Player = SWLOR.Game.Server.Entity.Player;

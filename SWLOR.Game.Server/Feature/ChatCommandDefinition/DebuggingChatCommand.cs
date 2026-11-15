@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.CasinoSlot,
-                        new SWLOR.Game.Server.Feature.GuiDefinition.Payload.CasinoSlotPayload(OBJECT_INVALID));
+                        new SWLOR.Game.Server.Domain.UI.CasinoSlotPayload(OBJECT_INVALID));
                 });
         }
 

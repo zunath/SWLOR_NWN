@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public sealed class UnarmedMasteryQuestDefinition : IQuestListDefinition
     {
-        internal const string PerfectFormMasteryQuestId = "perfect_form_mastery";
-        internal const string HaymakerMasteryQuestId = "haymaker_mastery";
+        internal const string PerfectFormMasteryQuestId = CapstoneQuestIds.PerfectFormMasteryQuestId;
+        internal const string HaymakerMasteryQuestId = CapstoneQuestIds.HaymakerMasteryQuestId;
         internal const string OpeningSpentObjective = "unarmed_opening_spent";
         internal const string FinishSpentObjective = "unarmed_finish_spent";
         internal const string DistractionSpentObjective = "unarmed_distraction_spent";

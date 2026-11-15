@@ -468,8 +468,6 @@ SWLOR.Game.Server/Domain/Character/PerkRequirementUnlock.cs | 2
 SWLOR.Game.Server/Domain/Character/StatusEffectBase.cs | 11
 SWLOR.Game.Server/Domain/Character/StatusEffectSelectors.cs | 2
 SWLOR.Game.Server/Domain/Combat/CombatRecordAbilityCostScope.cs | 2
-SWLOR.Game.Server/Domain/Combat/CombatRecordAttributionScope.cs | 2
-SWLOR.Game.Server/Domain/Combat/CombatRecordHealingReactionScope.cs | 2
 SWLOR.Game.Server/Domain/Combat/WeaponAttackTiming.cs | 13
 SWLOR.Game.Server/Domain/Combat/WeaponDamage.cs | 10
 SWLOR.Game.Server/Domain/Combat/WeaponImpactProfile.cs | 4
@@ -502,6 +500,8 @@ SWLOR.Game.Server/Domain/Creatures/AIContext.cs | 8
 SWLOR.Game.Server/Domain/Creatures/AIScore.cs | 7
 SWLOR.Game.Server/Domain/Creatures/AITarget.cs | 4
 SWLOR.Game.Server/Domain/Foundation/AnimationPreviewCatalog.cs | 6
+SWLOR.Game.Server/Domain/Foundation/CombatRecordAttributionScope.cs | 2
+SWLOR.Game.Server/Domain/Foundation/CombatRecordHealingReactionScope.cs | 2
 SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs | 4
 SWLOR.Game.Server/Domain/Foundation/SavedCharacterData.cs | 13
 SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs | 6

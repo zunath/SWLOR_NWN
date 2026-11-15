@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         internal const string InvincibleMeasureQuestId = "invincible_measure";
         internal const string InvincibleBreachQuestId = "invincible_breach";
         internal const string InvincibleCircleQuestId = "invincible_circle";
-        internal const string InvincibleMasteryQuestId = "invincible_mastery";
+        internal const string InvincibleMasteryQuestId = CapstoneQuestIds.InvincibleMasteryQuestId;
         internal const string InvincibleAdeptResref = "cp_invinc_ad";
         internal const string InvincibleSpecialistResref = "cp_invinc_sp";
         internal const string InvincibleInnerCircleResref = "cp_invinc_ic";

@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Foundation;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel

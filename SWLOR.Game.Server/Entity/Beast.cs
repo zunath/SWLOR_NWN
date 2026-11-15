@@ -52,9 +52,9 @@ namespace SWLOR.Game.Server.Entity
             PortraitId = -1;
             SoundSetId = -1;
 
-            DefensePurities = CombatRules.CreateDefaultDefenseValues();
+            DefensePurities = DamageTableDefaults.CreateDefaultDefenseValues();
 
-            ResistancePurities = ResistanceRules.CreateDefaultResistanceValues();
+            ResistancePurities = DamageTableDefaults.CreateDefaultResistanceValues();
         }
 
     }

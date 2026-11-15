@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Domain.Combat

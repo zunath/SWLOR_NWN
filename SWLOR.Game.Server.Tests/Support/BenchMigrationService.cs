@@ -1,24 +1,22 @@
 #nullable enable
-using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
 /// A <see cref="MigrationService"/> whose seams answer for a test: the server migrations it finds are
-/// <see cref="Definitions"/>, the character upgrade of the server vault and the login restoration only record
-/// themselves in <see cref="Steps"/> (with the server migrations, in the order they run), and the engine's character
+/// <see cref="Definitions"/>, the character upgrade of the server vault only records
+/// itself in <see cref="Steps"/> (with the server migrations, in the order they run), and the engine's character
 /// save answers <see cref="CanSave"/>.
 /// </summary>
 public sealed class BenchMigrationService : MigrationService
 {
     public BenchMigrationService(InMemoryDBService db)
-        : base(db, new OverflowStorageService(db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
+        : base(db)
     {
     }
 
-    /// <summary>What happened, in order: the migrations the stand-ins record, then <c>vault</c> and the login steps.</summary>
+    /// <summary>What happened, in order: the migrations the stand-ins record, then <c>vault</c>, and the login steps when a <see cref="BenchCharacterLoginRestoration"/> shares the list.</summary>
     public List<string> Steps { get; } = new();
 
     /// <summary>The server migrations the service finds.</summary>
@@ -57,14 +55,4 @@ public sealed class BenchMigrationService : MigrationService
             throw SaveFailure;
         return CanSave;
     }
-
-    protected override void RestorePlayerAttributes(uint player) => Steps.Add("attributes");
-
-    protected override void RestorePlayerFeats(uint player) => Steps.Add("feats");
-
-    protected override void RefreshCombatReadinessEquipment(uint player) => Steps.Add("readiness");
-
-    protected override void RefreshPlayerMaxHP(uint player) => Steps.Add("maxhp");
-
-    protected override void RefreshPlayerEquipmentStats(uint player) => Steps.Add("equipment");
 }

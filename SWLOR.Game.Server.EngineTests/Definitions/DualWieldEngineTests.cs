@@ -21,6 +21,7 @@ using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

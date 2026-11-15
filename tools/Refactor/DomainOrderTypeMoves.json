@@ -100,7 +100,10 @@
     { "type": "FrameCaptureSummary", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Core" },
     { "type": "FrameCounters", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Core" },
     { "type": "LogGroupAttribute", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Core", "file": "LogGroup.cs" },
-    { "type": "PlayerListCallState", "from": "SWLOR.Game.Server.Domain.Social", "to": "SWLOR.Game.Server.Domain.World" }
+    { "type": "PlayerListCallState", "from": "SWLOR.Game.Server.Domain.Social", "to": "SWLOR.Game.Server.Domain.World" },
+    { "type": "EquipmentPredicates", "from": "SWLOR.Game.Server.Domain.Character", "to": "SWLOR.Game.Server.Domain.Items" },
+    { "type": "AbilityAnimationBinding", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Abilities" },
+    { "type": "AnimationPreviewCatalog", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Abilities" }
   ],
   "textExcludes": [
     "SWLOR.Game.Server/Readmes/Maintainability*",

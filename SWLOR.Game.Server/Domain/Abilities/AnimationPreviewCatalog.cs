@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
 
-namespace SWLOR.Game.Server.Domain.Foundation;
+namespace SWLOR.Game.Server.Domain.Abilities;
 
 public static class AnimationPreviewCatalog
 {

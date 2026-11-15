@@ -31,6 +31,7 @@ public class MigrationServiceTests
     private FakeAdministrationPlugin _admin = null!;
     private IDisposable _adminScope = null!;
     private BenchMigrationService _service = null!;
+    private BenchCharacterLoginRestoration _login = null!;
     private LocalVariables _locals = null!;
 
     [SetUp]
@@ -43,6 +44,7 @@ public class MigrationServiceTests
         _locals = new LocalVariables(_world.Engine);
         _world.Engine.SetReturn("GetEnteringObject", PlayerObject);
         _service = new BenchMigrationService(_db);
+        _login = new BenchCharacterLoginRestoration(_service, _db, _service.Steps);
     }
 
     [TearDown]
@@ -218,7 +220,7 @@ public class MigrationServiceTests
         Environment.SetEnvironmentVariable("SWLOR_SERVERVAULT_DIRECTORY", Path.Combine(Path.GetTempPath(), "mr-p2-c6-missing-vault-" + Guid.NewGuid()));
         try
         {
-            new MigrationService(_db, new OverflowStorageService(_db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()).UpgradeServerVault().Should().BeTrue();
+            new MigrationService(_db).UpgradeServerVault().Should().BeTrue();
         }
         finally
         {
@@ -231,7 +233,7 @@ public class MigrationServiceTests
     {
         _db.With(new ServerConfiguration { CharacterFileVersion = CharacterMigrations.LatestVersion });
 
-        new MigrationService(_db, new OverflowStorageService(_db), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()).UpgradeServerVault().Should().BeTrue();
+        new MigrationService(_db).UpgradeServerVault().Should().BeTrue();
 
         _db.Saved.Should().BeEmpty();
     }
@@ -301,10 +303,10 @@ public class MigrationServiceTests
     public void Non_players_and_DMs_are_left_alone()
     {
         _world.Engine.SetReturn("GetIsPC", false);
-        _service.AfterCharacterInitialization();
+        _login.AfterCharacterInitialization();
         _world.Engine.SetReturn("GetIsPC", true);
         _world.Engine.SetReturn("GetIsDM", true);
-        _service.AfterCharacterInitialization();
+        _login.AfterCharacterInitialization();
 
         _db.Reads.Should().BeEmpty();
         _service.Steps.Should().BeEmpty();
@@ -316,7 +318,7 @@ public class MigrationServiceTests
     {
         SetCheckpoint(5);
 
-        _service.AfterCharacterInitialization();
+        _login.AfterCharacterInitialization();
 
         _world.Engine.CallsTo("BootPC").Should().ContainSingle().Which.Arguments[0].Should().Be(PlayerObject);
         _service.Steps.Should().BeEmpty("none of the login restoration runs for a refused character");
@@ -330,7 +332,7 @@ public class MigrationServiceTests
         _db.With(new PlayerRecord(PlayerEngine.PlayerId) { Version = latest - 1 });
         SetCheckpoint(latest);
 
-        _service.AfterCharacterInitialization();
+        _login.AfterCharacterInitialization();
 
         _world.Engine.CallsTo("BootPC").Should().ContainSingle();
         _service.Steps.Should().BeEmpty();
@@ -344,7 +346,7 @@ public class MigrationServiceTests
         _db.With(new PlayerRecord(PlayerEngine.PlayerId) { Version = latest });
         SetCheckpoint(latest - 1);
 
-        _service.AfterCharacterInitialization();
+        _login.AfterCharacterInitialization();
 
         _world.Engine.CallsTo("BootPC").Should().ContainSingle();
         _service.Steps.Should().BeEmpty();
@@ -361,7 +363,7 @@ public class MigrationServiceTests
         _db.With(new OverflowItem { Id = "overflow-1", PlayerId = PlayerEngine.PlayerId, Name = "Blaster" });
         SetCheckpoint(latest);
 
-        _service.AfterCharacterInitialization();
+        _login.AfterCharacterInitialization();
 
         _world.Engine.CallsTo("BootPC").Should().BeEmpty();
         _world.Messages().Take(2).Should().Equal("First notice", "Second notice");
@@ -379,7 +381,7 @@ public class MigrationServiceTests
         _db.With(new PlayerRecord(PlayerEngine.PlayerId) { Version = latest });
         SetCheckpoint(latest);
 
-        _service.AfterCharacterInitialization();
+        _login.AfterCharacterInitialization();
 
         _db.Saved.Should().BeEmpty();
         _world.Messages().Should().BeEmpty();

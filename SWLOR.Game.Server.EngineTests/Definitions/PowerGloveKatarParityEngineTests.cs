@@ -11,6 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 using static SWLOR.Game.Server.EngineTests.Definitions.PowerGlovePairEngineTests;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 

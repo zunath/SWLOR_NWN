@@ -232,6 +232,27 @@ public class TypeMovesDomainOrderRunnerTests
         Run(RunMode.Check).Should().Be(TypeMoveRunner.Ok);
     }
 
+    [Test]
+    public void A_later_move_is_not_stopped_by_a_name_a_file_reaches_through_both_namespaces_of_an_earlier_move()
+    {
+        Run(RunMode.Apply).Should().Be(TypeMoveRunner.Ok);
+
+        // The file keeps the using of the old namespace and has the new one: beside the stand-in of the moved type, the name is
+        // ambiguous in the analysis, and a property named like the type (read through its own type) binds to the property there.
+        // That says nothing about what the name meant, so it must not block the move that follows.
+        Write("SWLOR.Game.Server/Feature/Holder.cs", "using SWLOR.Game.Server.Domain.Crafting;\nusing SWLOR.Game.Server.Domain.Foundation;\n\n"
+            + "namespace SWLOR.Game.Server.Feature\n{\n    public class Holder\n    {\n"
+            + "        public virtual Recipe Recipe => Recipe.Invalid;\n\n        public static int Count => Keep.Count + System.Math.Min(1, 2);\n    }\n}\n");
+        Write("tools/Refactor/DomainOrderTypeMoves.json", Data.Replace("{ \"type\": \"LogText\"",
+            "{ \"type\": \"Keep\", \"from\": \"SWLOR.Game.Server.Domain.Foundation\", \"to\": \"SWLOR.Game.Server.Core\" },\n    { \"type\": \"LogText\""));
+
+        var log = new StringWriter();
+        Run(RunMode.Apply, log).Should().Be(TypeMoveRunner.Ok, log.ToString());
+
+        Text("SWLOR.Game.Server/Core/Keep.cs").Should().Contain("namespace SWLOR.Game.Server.Core");
+        Text("SWLOR.Game.Server/Feature/Holder.cs").Should().Contain("using SWLOR.Game.Server.Core;");
+    }
+
     private int Run(RunMode mode, TextWriter? log = null) =>
         TypeMoveRunner.Run(new RunOptions(mode, _root, Full("tools/Refactor/DomainOrderTypeMoves.json")), log ?? TextWriter.Null);
 

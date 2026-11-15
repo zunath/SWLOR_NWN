@@ -94,8 +94,8 @@ SWLOR.Game.Server/Domain/Economy/CurrencyService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Foundation/CharacterFileUpgrade.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs -> Feature/GuiDefinition | 2
 SWLOR.Game.Server/Domain/Foundation/NamedAnimationService.cs -> Feature.PistolAnimationRemap | 1
-SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs -> Feature/MigrationDefinition | 3
-SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Feature/MigrationDefinition | 4
+SWLOR.Game.Server/Domain/Foundation/SavedCharacter.cs -> Feature/MigrationDefinition | 4
+SWLOR.Game.Server/Domain/Foundation/SavedCharacterDataStore.cs -> Feature/MigrationDefinition | 5
 SWLOR.Game.Server/Domain/Foundation/SavedItem.cs -> Feature/MigrationDefinition | 3
 SWLOR.Game.Server/Domain/Items/KeyItemService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Items/WardrobeService.cs -> Feature/AppearanceDefinition | 2

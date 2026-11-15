@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.IntegrationTests.Support;
 
@@ -14,7 +13,7 @@ public class IntegrationMigrationService : MigrationService
 
     /// <param name="migrations">The server migrations to run instead of the ones the assemblies hold.</param>
     public IntegrationMigrationService(IDBService db, IEnumerable<IServerMigration>? migrations = null)
-        : base(db, new OverflowStorageService(db), null!, null!)
+        : base(db)
     {
         _migrations = migrations;
     }
@@ -31,24 +30,4 @@ public class IntegrationMigrationService : MigrationService
     protected override bool RunVaultUpgrade() => true;
 
     protected override bool SaveServerCharacter(uint player) => true;
-
-    protected override void RestorePlayerAttributes(uint player)
-    {
-    }
-
-    protected override void RestorePlayerFeats(uint player)
-    {
-    }
-
-    protected override void RefreshCombatReadinessEquipment(uint player)
-    {
-    }
-
-    protected override void RefreshPlayerMaxHP(uint player)
-    {
-    }
-
-    protected override void RefreshPlayerEquipmentStats(uint player)
-    {
-    }
 }

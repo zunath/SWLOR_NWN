@@ -14,6 +14,7 @@ using NWNXLib = NWN.Native.API.NWNXLib;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions;
 

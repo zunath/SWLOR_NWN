@@ -4,6 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.Game.Server.Composition.GameServices;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Domain.Combat
 {

@@ -61,10 +61,7 @@ public sealed class SavedCharacterDataStore
                 ParseTable(Get2DAString("itempropdef", "Param1ResRef", row)));
         }
         // These caches fill on first use; fill them before worker threads read them.
-        Resistance.IsValidResistanceType(ResistanceType.Fire);
-        Resistance.GetAllResistanceTypes();
-        GameServices.CombatDamageCatalog.GetDefenseDamageTypes();
-        Perk.GetAllActiveAbilityFeats(PerkType.Invalid);
+        Feature.MigrationDefinition.CharacterMigration.SavedCharacterGameRules.FillCaches();
 
         var packages = new Dictionary<int, int>();
         var hitDice = new Dictionary<int, int>();
@@ -107,44 +104,10 @@ public sealed class SavedCharacterDataStore
             DestroyObject(item);
         }
         Load(sizes, definitions, blueprints);
-        _weaponIcons = LoadWeaponIcons(sizes.Keys);
+        _weaponIcons = Feature.MigrationDefinition.CharacterMigration.SavedCharacterGameRules.LoadWeaponIcons(sizes.Keys);
         Feature.MigrationDefinition.CharacterMigration.SavedItemResistanceMigration.Load();
         Feature.MigrationDefinition.CharacterMigration.SavedDroidBoostItemMigration.Load();
     }
-
-    /// <summary>
-    /// <see cref="Item.HasInventoryIcon"/> for every attack weapon base item and simple model: whether
-    /// <c>Item.ResolveIconResref</c> finds a real icon, which <see cref="Item.IsEconomyRestricted(uint)"/> reads.
-    /// Weapons are neither cloaks nor scrolls, so the simple-model and default-icon rules decide it.
-    /// </summary>
-    private static IReadOnlyDictionary<(int BaseItem, int Model), bool> LoadWeaponIcons(IEnumerable<int> baseItems)
-    {
-        static bool Exists(string resref) => !string.IsNullOrWhiteSpace(resref) &&
-            (ResManGetAliasFor(resref, ResType.TGA) != string.Empty || ResManGetAliasFor(resref, ResType.DDS) != string.Empty);
-        var icons = new Dictionary<(int, int), bool>();
-        foreach (var row in baseItems)
-        {
-            if (!Item.IsAttackWeaponType((BaseItem)row))
-                continue;
-            var defaultIcon = Get2DAString("baseitems", "DefaultIcon", row);
-            var hasDefaultIcon = !defaultIcon.StartsWith("iinvalid") && (Exists(defaultIcon) || Exists(defaultIcon + "_001"));
-            if (Get2DAString("baseitems", "ModelType", row) != "0")
-            {
-                icons[(row, -1)] = hasDefaultIcon;
-                continue;
-            }
-            var itemClass = Get2DAString("baseitems", "ItemClass", row);
-            var stripped = defaultIcon.Length >= 4 && defaultIcon[^4] == '_' ? defaultIcon[..^4] : defaultIcon;
-            for (var model = 0; model < MaximumSimpleModel; model++)
-            {
-                var id = model.ToString().PadLeft(3, '0');
-                icons[(row, model)] = Exists(("i" + itemClass + "_" + id).ToLower()) || Exists(stripped + "_" + id) || hasDefaultIcon;
-            }
-        }
-        return icons;
-    }
-
-    private const int MaximumSimpleModel = 1024;
 
     /// <summary>The dice an iprp_damagecost row rolls, for rows with both columns set.</summary>
     public bool TryGetDamageCost(int row, out (int Dice, int Die) cost)
@@ -172,7 +135,7 @@ public sealed class SavedCharacterDataStore
         return _classPackages.TryGetValue((int)@class, out package);
     }
 
-    /// <summary>Saved-data <see cref="Item.HasInventoryIcon"/> for an attack weapon.</summary>
+    /// <summary>Saved-data <c>Item.HasInventoryIcon</c> for an attack weapon.</summary>
     public bool WeaponHasInventoryIcon(BaseItem baseItem, int simpleModel)
     {
         if (_weaponIcons == null)

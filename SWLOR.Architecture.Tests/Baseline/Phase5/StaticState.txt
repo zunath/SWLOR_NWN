@@ -23,13 +23,13 @@ SWLOR.Game.Server.Core.ScriptHandlerManifest | 1
 SWLOR.Game.Server.Core.ServerFrame | 1
 SWLOR.Game.Server.Core.ServerManager | 5
 SWLOR.Game.Server.Core.ValidationOnlyBuildContext | 1
+SWLOR.Game.Server.Domain.Abilities.AnimationPreviewCatalog | 1
 SWLOR.Game.Server.Domain.Administration.DMSearchText | 1
 SWLOR.Game.Server.Domain.Character.OOCDetectionModel | 1
 SWLOR.Game.Server.Domain.Character.OOCMessageScorer | 1
 SWLOR.Game.Server.Domain.Character.RoleplayMessageClassifier | 6
 SWLOR.Game.Server.Domain.Combat.RecastTimestamp | 1
 SWLOR.Game.Server.Domain.Foundation.ActiveAbilityAnimationCatalog | 1
-SWLOR.Game.Server.Domain.Foundation.AnimationPreviewCatalog | 1
 SWLOR.Game.Server.Domain.Foundation.ColorToken | 1
 SWLOR.Game.Server.Domain.Gameplay.ServerRestart | 1
 SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbilityProfile | 8

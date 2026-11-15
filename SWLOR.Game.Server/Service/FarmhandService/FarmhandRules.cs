@@ -83,7 +83,8 @@ namespace SWLOR.Game.Server.Service.FarmhandService
             return hopper
                 .Where(pair => pair.Value > 0)
                 .Select(pair => (Crop: pair.Key, Count: pair.Value, Definition: getCrop(pair.Key)))
-                .Where(entry => entry.Definition != null && LivestockRules.CanEat(animalTier, entry.Definition.Tier))
+                // A sapling's harvest is wood, which no animal eats.
+                .Where(entry => entry.Definition is { IsSapling: false } && LivestockRules.CanEat(animalTier, entry.Definition.Tier))
                 .OrderBy(entry => entry.Definition.Tier)
                 .ThenBy(entry => (int)entry.Crop)
                 .Select(entry => (entry.Crop, entry.Count))

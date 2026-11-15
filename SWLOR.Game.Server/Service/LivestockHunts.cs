@@ -187,8 +187,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// At server start, a hunt whose time ran out while the server was down gets its full time again from now: its wave could
         /// not be fought, and ending it with no outcome would let a hunt called before a restart dodge both the fight and the
-        /// penalty for ignoring the predators. One that is still on is picked up again when its corrals spawn, with a new wave and
-        /// the time that is left.
+        /// penalty for ignoring the predators. One that is still on keeps the time that is left. Either way its wave stands at the
+        /// corrals already in the world and is judged from now on, so a hunt whose corrals spawn late, or never, still ends; the
+        /// rest of its wave stands when their corrals spawn.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void ProcessAtServerStart()
@@ -200,9 +201,6 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var hunt in DB.Search(new DBQuery<LivestockHunt>().AddPaging(count, 0)).ToList())
             {
-                if (hunt.EndsUtc > now)
-                    continue;
-
                 var city = DB.Get<WorldProperty>(hunt.CityId);
                 if (city == null)
                 {
@@ -210,12 +208,16 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                hunt.EndsUtc = LivestockRules.GetHuntEndUtc(now);
-                DB.Set(hunt);
-                Log.Write(LogGroup.Property, $"The hunt at the corrals of city {hunt.CityId} ran out while the server was down; it goes on until {hunt.EndsUtc:u}.");
+                if (hunt.EndsUtc <= now)
+                {
+                    hunt.EndsUtc = LivestockRules.GetHuntEndUtc(now);
+                    DB.Set(hunt);
+                    Log.Write(LogGroup.Property, $"The hunt at the corrals of city {hunt.CityId} ran out while the server was down; it goes on until {hunt.EndsUtc:u}.");
+                }
 
-                // Corrals already in the world get their wave now; the rest get theirs when they spawn.
-                Begin(hunt, city);
+                // A corral that spawned first already stood its wave up and judges it.
+                if (!_waves.ContainsKey(hunt.Id))
+                    Begin(hunt, city);
             }
         }
     }

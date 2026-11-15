@@ -1065,14 +1065,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
-    "Line": 111,
+    "Line": 113,
     "Member": "SendAwayPageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/DialogDefinition/CorralDialog.cs",
-    "Line": 142,
+    "Line": 144,
     "Member": "PlacePageInit",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, result.Succeeded ? ColorToken.Green(result.Message) : ColorToken.Red(result.Message))"
@@ -4649,7 +4649,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CityBounties.cs",
-    "Line": 462,
+    "Line": 463,
     "Member": "TellTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(BountyText.BuildTargetNotice(city.CustomName, bounty.Reward, bounty.ExpiresUtc)))"
@@ -4712,21 +4712,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CivicExchange.cs",
-    "Line": 102,
+    "Line": 104,
     "Member": "BuyBuff",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You buy the {item.Name} for {item.PriceXp:N0} Available XP. {CivicExchangeCatalog.BuffSummary}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CivicExchange.cs",
-    "Line": 133,
+    "Line": 135,
     "Member": "BuyCrate",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You open the {item.Name} and find: {DescribeContents(contents)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/CivicExchange.cs",
-    "Line": 135,
+    "Line": 137,
     "Member": "BuyCrate",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{overflow} of the items did not fit in your inventory. Claim them with /overflow.\")"
@@ -5048,14 +5048,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 743,
+    "Line": 787,
     "Member": "Notify",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(text))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Corrals.cs",
-    "Line": 773,
+    "Line": 817,
     "Member": "DeliverNotices",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(notice.Text))"
@@ -5111,14 +5111,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnCraftSessionWorld.cs",
-    "Line": 506,
+    "Line": 522,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/CraftService/Minigame/NwnQuickCraftWorld.cs",
-    "Line": 217,
+    "Line": 215,
     "Member": "Message",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
@@ -5615,7 +5615,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Farming.cs",
-    "Line": 460,
+    "Line": 463,
     "Member": "OnPlotRetrieved",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(planter, inOverflow\n                    ? $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed is in your overflow storage; use /overflow to claim it.\"\n                    : $\"The {crop.Name} you planted was lost when its garden plot was picked up. Its seed came back to you.\")"
@@ -6728,182 +6728,182 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3017,
+    "Line": 3051,
     "Member": "CreateStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your station stands at the anchor site in {anchor.SystemName}. Use its docking point to dock at its Starport and go aboard.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3497,
+    "Line": 3531,
     "Member": "ShowPropertyDescription",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3540,
+    "Line": 3574,
     "Member": "EnterProperty",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have permission to access that property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3629,
+    "Line": 3663,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This menu can only be accessed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3659,
+    "Line": 3693,
     "Member": "PropertyMenu",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to access this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3723,
+    "Line": 3757,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Cities cannot be founded here.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3740,
+    "Line": 3774,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Structures may only be placed within player properties.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3753,
+    "Line": 3787,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You do not have permission to place structures within this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3760,
+    "Line": 3794,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This ship is listed for sale. Its furniture cannot change until the listing ends.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3813,
+    "Line": 3847,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Unable to place structure in this property. Notify an admin.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3821,
+    "Line": 3855,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"{fixtureName} limit reached for this property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3828,
+    "Line": 3862,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This {fixtureName} cannot be placed within this type of property.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3840,
+    "Line": 3874,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(stallError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3851,
+    "Line": 3885,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"This property holds at most {plotLimit} garden plots.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3862,
+    "Line": 3896,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(lodgeError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3874,
+    "Line": 3908,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(corralError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3885,
+    "Line": 3919,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(stationBuildingError, player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3899,
+    "Line": 3933,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(StationDeckRules.DescribeRefusal(placement), player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3931,
+    "Line": 3965,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{FurnitureStorageRules.DescribeFurniture(structureCount + 1, structureLimit)}. \" +\n                                        $\"Item storage: {placedIn?.ItemStorageCount ?? 0} items.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 3936,
+    "Line": 3970,
     "Member": "PlaceStructure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{fixtureName} Limit: {structureCount+1} / {structureLimit}\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4075,
+    "Line": 4109,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4082,
+    "Line": 4116,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This building is not ready yet. Please try again shortly.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4115,
+    "Line": 4149,
     "Member": "EnterBuilding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You do not have permission to enter.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4153,
+    "Line": 4187,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Only players may use this terminal.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4172,
+    "Line": 4206,
     "Member": "OpenCitizenshipMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You are a citizen of another city. You cannot manage citizenship here unless you revoke your citizenship first. You can read this city's Gazette.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Property.cs",
-    "Line": 4205,
+    "Line": 4239,
     "Member": "OpenCityManagementMenu",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to access this terminal.\"))"
@@ -7603,105 +7603,105 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 412,
+    "Line": 414,
     "Member": "SendBoardingCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"Now boarding: shuttle to {destinationName} departs in {wait}. Be within {(int)BoardingRangeMeters} meters of the flights terminal!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 426,
+    "Line": 428,
     "Member": "NotifyMissedBoarding",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You missed your shuttle to {destinationName}! Your ticket remains valid. The next shuttle departs in {wait} - be within {(int)BoardingRangeMeters} meters of the flights terminal. You can refund your ticket at any flights terminal before boarding.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 508,
+    "Line": 510,
     "Member": "ProcessArrival",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"The shuttle touches down at {destinationName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 517,
+    "Line": 519,
     "Member": "ProcessArrival",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"The shuttle touches down at {destinationName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 649,
+    "Line": 651,
     "Member": "ProcessTransitBroadcasts",
     "Delivery": "Retained",
     "Call": "SpeakString($\"Now arriving at {destinationName} in {remaining}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 926,
+    "Line": 928,
     "Member": "CanPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(homePortRefusal))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 932,
+    "Line": 934,
     "Member": "CanPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You already have a shuttle ticket.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 940,
+    "Line": 942,
     "Member": "CanPurchaseTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have enough credits to purchase this flight!\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 973,
+    "Line": 975,
     "Member": "CompleteTicketPurchase",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so no ticket was bought.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 985,
+    "Line": 987,
     "Member": "CompleteTicketPurchase",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Ticket purchased! Your shuttle to {Station.GetStopName(route.Destination)} departs in {countdown}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 1057,
+    "Line": 1059,
     "Member": "RefundTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Your character could not be saved, so your ticket was not refunded.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 1066,
+    "Line": 1068,
     "Member": "RefundTicket",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your shuttle ticket has been refunded for {ride.FarePaid} credits. Taxes are non-refundable.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 1122,
+    "Line": 1124,
     "Member": "CompleteRideOnLogin",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Your shuttle has arrived at {Station.GetStopName(route.Destination)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 1152,
+    "Line": 1154,
     "Member": "RestoreTicketedSession",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Yellow($\"You still have a shuttle ticket from {originName} to {destinationName}. Automatic boarding resumes in {wait} if you are within {(int)BoardingRangeMeters} meters of a flights terminal at {originName}. You can refund your ticket at any flights terminal before boarding.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Shuttle.cs",
-    "Line": 1207,
+    "Line": 1209,
     "Member": "EnterServer",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(current, $\"You resume your shuttle flight to {Station.GetStopName(GetRideRoute(ride).Destination)}. Estimated arrival: {remaining}.\")"
@@ -8247,168 +8247,168 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 250,
+    "Line": 256,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You must be piloting a starship to dock with another ship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 264,
+    "Line": 270,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Target a player's Large or Capital ship in flight to dock with it.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 285,
+    "Line": 291,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(ShipDockingRules.DescribeRefusal(refusal, request.HostSize)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 294,
+    "Line": 300,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"That ship's interior is not ready. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 338,
+    "Line": 344,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You dock {visitorName} aboard {hostName}. To undock, use {hostName}'s computer or type /undock aboard it.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 339,
+    "Line": 345,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, $\"{PlayerName.GetDisplayName(target, player)} docks {visitorName} aboard your ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 341,
+    "Line": 347,
     "Member": "DockWithTarget",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(passenger, $\"{visitorName} docks aboard {hostName}, and you go aboard with it.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 362,
+    "Line": 368,
     "Member": "UndockFromInterior",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"No ship you may pilot is docked aboard this ship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 380,
+    "Line": 386,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"Leave the controls or your station before undocking.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 388,
+    "Line": 394,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"That ship is not docked aboard this one.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 394,
+    "Line": 400,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"You do not have permission to pilot this starship.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 400,
+    "Line": 406,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(\"This ship's controls are in use.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 416,
+    "Line": 422,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{hostName} is not in space or at a dock, so {visitorName} cannot undock. Notify an admin.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 419,
+    "Line": 425,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{ShipAccessRules.DescribeStarportRefusal(dockRefusal, ShipSize.Invalid)} {visitorName} stays aboard until {hostName} is in space or at a dock that takes it.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 424,
+    "Line": 430,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{visitorName} undocks from {hostName} and is now docked at this starport.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 432,
+    "Line": 438,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{hostName} is between systems. Please try again shortly.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 440,
+    "Line": 446,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"{visitorName} is not part of this Rift Run, so it cannot undock in the pocket. It stays aboard until {hostName} leaves.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 454,
+    "Line": 460,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(string.IsNullOrEmpty(skillError)\n                    ? \"You do not have the ability to pilot this ship.\"\n                    : skillError))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 465,
+    "Line": 471,
     "Member": "UndockShip",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You undock {visitorName} from {hostName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 489,
+    "Line": 495,
     "Member": "CompleteUndockLaunch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(hostPilot, $\"{visitorName} undocks from your ship.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 505,
+    "Line": 511,
     "Member": "CompleteUndockLaunch",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(member, $\"{visitorName} undocks from {hostName}, and you return aboard it.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 621,
+    "Line": 627,
     "Member": "UndockAllToStarport",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, $\"{visitorName} was docked aboard {hostName}, which {reason}. It undocks and is now docked at a starport.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 729,
+    "Line": 735,
     "Member": "DetachDockedShips",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(member, ColorToken.Red($\"{hostName} is breaking apart! You get back to {visitorName} and take its controls.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceDocking.cs",
-    "Line": 734,
+    "Line": 740,
     "Member": "DetachDockedShips",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(member, ColorToken.Red($\"{hostName} is breaking apart! You get back aboard {visitorName}.\"))"

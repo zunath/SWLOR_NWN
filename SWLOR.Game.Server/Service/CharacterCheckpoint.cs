@@ -9,9 +9,24 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class CharacterCheckpoint
     {
+        private static Func<uint, bool> _saveOverride;
+
+        /// <summary>
+        /// Intended solely for the in-engine test harness: a headless player fixture has no client whose character file can be
+        /// saved, so every journaled action would be refused. Pass null to restore normal saving, and always restore it when the
+        /// test ends.
+        /// </summary>
+        public static void SetSaveOverride(Func<uint, bool> save)
+        {
+            _saveOverride = save;
+        }
+
         /// <summary>Saves the player's character file. False when it could not be saved.</summary>
         public static bool Save(uint player)
         {
+            if (_saveOverride != null)
+                return _saveOverride(player);
+
             try
             {
                 var client = NWNXLib.g_pAppManager.m_pServerExoApp.GetClientObjectByObjectId(player);

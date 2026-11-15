@@ -43,6 +43,13 @@ namespace SWLOR.Game.Server.Service.FarmingService
         /// <summary>No limit besides the city's own structure limit.</summary>
         public const int NoPlotLimit = int.MaxValue;
 
+        // The plant a garden plot shows at each stage, from the existing placeable models (placeables.2da). An empty plot shows only
+        // its own grass tuft.
+        public const int GrowingCropAppearance = 31879;
+        public const int RipeCropAppearance = 31883;
+        public const int WitheredCropAppearance = 6959;
+        public const int SaplingAppearance = 20911;
+
         private static readonly int[] TierLevels = { 5, 15, 25, 35, 45 };
         private static readonly int[] TierGrowHours = { 12, 16, 20, 24, 24 };
         private static readonly int[] SeedSaverPercents = { 0, 15, 30 };
@@ -87,6 +94,50 @@ namespace SWLOR.Game.Server.Service.FarmingService
         }
 
         /// <summary>Where the plot's crop is at <paramref name="now"/>. A missing record is an empty plot.</summary>
+        /// <summary>The plant model a plot shows at a stage, or 0 for none (an empty plot). A sapling looks the same until it is felled.</summary>
+        public static int GetCropAppearance(GardenPlotStage stage, bool isSapling)
+        {
+            return stage switch
+            {
+                GardenPlotStage.Empty => 0,
+                GardenPlotStage.Withered => WitheredCropAppearance,
+                _ when isSapling => SaplingAppearance,
+                GardenPlotStage.Ripe => RipeCropAppearance,
+                _ => GrowingCropAppearance
+            };
+        }
+
+        /// <summary>
+        /// When the plot's stage next changes on its own (ready to tend, ripe, withered), or null when it never will: an empty or
+        /// withered plot waits for a player.
+        /// </summary>
+        public static DateTime? GetNextStageChangeUtc(GardenPlot plot, DateTime now)
+        {
+            if (plot == null || plot.Crop == CropType.Invalid)
+                return null;
+
+            return new[] { plot.TendReadyUtc, plot.RipeUtc, plot.WitherUtc }
+                .Where(time => time > now)
+                .Select(time => (DateTime?)time)
+                .DefaultIfEmpty(null)
+                .Min();
+        }
+
+        /// <summary>The name a plot shows: its crop, and the stage when it needs the planter (ready to tend, ripe, withered).</summary>
+        public static string DescribePlotName(string plotName, string cropName, GardenPlotStage stage)
+        {
+            if (string.IsNullOrEmpty(cropName))
+                return plotName;
+
+            return stage switch
+            {
+                GardenPlotStage.ReadyToTend => $"{plotName} ({cropName}, ready to tend)",
+                GardenPlotStage.Ripe => $"{plotName} ({cropName}, ripe)",
+                GardenPlotStage.Withered => $"{plotName} ({cropName}, withered)",
+                _ => $"{plotName} ({cropName})"
+            };
+        }
+
         public static GardenPlotStage GetStage(GardenPlot plot, DateTime now)
         {
             if (plot == null || plot.Crop == CropType.Invalid)

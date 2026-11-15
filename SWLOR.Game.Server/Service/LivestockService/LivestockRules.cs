@@ -219,7 +219,12 @@ namespace SWLOR.Game.Server.Service.LivestockService
         }
 
         /// <summary>Why a character cannot butcher the animal, or <see cref="LivestockRefusal.None"/>. Only an adult.</summary>
-        public static LivestockRefusal CheckButcher(bool isPlayer, Livestock animal, DateTime now, bool isOwner)
+        /// <summary>
+        /// Why a character cannot butcher the animal, or <see cref="LivestockRefusal.None"/>. Meat is a product, so the predator
+        /// penalty stops butchering as it stops collecting, and while predators are at the corrals
+        /// (<paramref name="predatorsAtCorrals"/>) an animal cannot be butchered ahead of the penalty.
+        /// </summary>
+        public static LivestockRefusal CheckButcher(bool isPlayer, Livestock animal, DateTime now, bool isOwner, bool predatorsAtCorrals = false)
         {
             if (!isPlayer)
                 return LivestockRefusal.NotAPlayer;
@@ -229,11 +234,18 @@ namespace SWLOR.Game.Server.Service.LivestockService
                 return LivestockRefusal.NotTheOwner;
             if (!IsAdult(animal, now))
                 return LivestockRefusal.StillYoung;
+            if (HasPenalty(animal, now))
+                return LivestockRefusal.PredatorPenalty;
+            if (predatorsAtCorrals)
+                return LivestockRefusal.PredatorsAtCorrals;
             return LivestockRefusal.None;
         }
 
-        /// <summary>Why a character cannot crate the animal, or <see cref="LivestockRefusal.None"/>. Any animal, young or adult.</summary>
-        public static LivestockRefusal CheckCrate(bool isPlayer, Livestock animal, DateTime now, bool isOwner)
+        /// <summary>
+        /// Why a character cannot crate the animal, or <see cref="LivestockRefusal.None"/>. Any animal, young or adult. While
+        /// predators are at the corrals (<paramref name="predatorsAtCorrals"/>) an animal cannot be crated away from the penalty.
+        /// </summary>
+        public static LivestockRefusal CheckCrate(bool isPlayer, Livestock animal, DateTime now, bool isOwner, bool predatorsAtCorrals = false)
         {
             if (!isPlayer)
                 return LivestockRefusal.NotAPlayer;
@@ -241,6 +253,8 @@ namespace SWLOR.Game.Server.Service.LivestockService
                 return LivestockRefusal.NoAnimal;
             if (!isOwner)
                 return LivestockRefusal.NotTheOwner;
+            if (predatorsAtCorrals)
+                return LivestockRefusal.PredatorsAtCorrals;
             return LivestockRefusal.None;
         }
 
@@ -402,6 +416,7 @@ namespace SWLOR.Game.Server.Service.LivestockService
                 LivestockRefusal.NoAccess => "Only the city's citizens can add animals to its corrals.",
                 LivestockRefusal.NotAnAnimal => "That is not an animal.",
                 LivestockRefusal.NotSaved => TransferJournalRules.NotSavedText,
+                LivestockRefusal.PredatorsAtCorrals => "Predators are at the city's corrals. Its animals cannot be crated or butchered until the city deals with them.",
                 _ => string.Empty
             };
         }

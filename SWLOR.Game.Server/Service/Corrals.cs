@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service.CityAffairsService;
 using SWLOR.Game.Server.Service.ClerkRecoveryService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.FarmingService;
@@ -100,10 +101,45 @@ namespace SWLOR.Game.Server.Service
         /// <summary>The animals a CD key has placed, across every character on it. Without a CD key, the character's own.</summary>
         public static int CountPlaced(string cdKey, string playerId)
         {
-            var query = string.IsNullOrWhiteSpace(cdKey)
+            return checked((int)DB.SearchCount(PlacedBy(cdKey, playerId)));
+        }
+
+        private static DBQuery<Livestock> PlacedBy(string cdKey, string playerId) =>
+            string.IsNullOrWhiteSpace(cdKey)
                 ? new DBQuery<Livestock>().AddFieldSearch(nameof(Livestock.OwnerPlayerId), playerId, false)
                 : new DBQuery<Livestock>().AddFieldSearch(nameof(Livestock.OwnerCdKey), cdKey, false);
-            return checked((int)DB.SearchCount(query));
+
+        /// <summary>
+        /// Removes the animals that wandered off among a CD key's and a corral's, so they stop holding a place before the CD key's
+        /// six or the corral's three are counted. A corral nobody has visited still has them on record until this or a restart.
+        /// </summary>
+        public static void ClearWanderedOff(string cdKey, string playerId, string corralId, DateTime now)
+        {
+            var count = checked((int)DB.SearchCount(PlacedBy(cdKey, playerId)));
+            var owned = count <= 0 ? new List<Livestock>() : DB.Search(PlacedBy(cdKey, playerId).AddPaging(count, 0)).ToList();
+            foreach (var animalId in owned.Concat(GetAnimalsInCorral(corralId))
+                         .Where(animal => LivestockRules.HasWanderedOff(animal, now))
+                         .Select(animal => animal.Id)
+                         .Distinct()
+                         .ToList())
+            {
+                LoadAnimal(animalId, now);
+            }
+        }
+
+        /// <summary>
+        /// Whether predators are at the corrals of the animal's city: a Predators at the Corrals situation waits for a decision, or
+        /// a hunt is on. Crating or butchering then would dodge the penalty a lost or ignored threat brings.
+        /// </summary>
+        public static bool ArePredatorsAtCorrals(Livestock animal)
+        {
+            var cityId = GetCorral(animal.CorralId)?.ParentPropertyId;
+            if (string.IsNullOrWhiteSpace(cityId))
+                return false;
+
+            return LivestockHunts.GetActive(cityId) != null ||
+                   CityAffairs.LoadSituations(cityId).Any(situation =>
+                       situation.Type == SituationType.PredatorsAtTheCorrals && situation.State == CitySituationState.Open);
         }
 
         /// <summary>The corral structure with the id, or null when it is not a corral.</summary>
@@ -261,6 +297,8 @@ namespace SWLOR.Game.Server.Service
                 return null;
             }
 
+            // An animal that grew up since its name was last set shows it now.
+            RefreshName(animal);
             return animal;
         }
 
@@ -294,6 +332,9 @@ namespace SWLOR.Game.Server.Service
 
             var playerId = isPlayer ? GetObjectUUID(player) : string.Empty;
             var cdKey = isPlayer ? GetPCPublicCDKey(player) : string.Empty;
+            if (isPlayer)
+                ClearWanderedOff(cdKey, playerId, corralId, now);
+
             var city = corral == null ? null : DB.Get<WorldProperty>(corral.ParentPropertyId);
             var refusal = LivestockRules.CheckPlace(
                 isPlayer,
@@ -342,7 +383,8 @@ namespace SWLOR.Game.Server.Service
                 return LivestockResult.Refused(LivestockRefusal.NoAnimal);
 
             var definition = GetDefinition(animal.Species);
-            if (definition == null || crop == null)
+            // A sapling's harvest is wood, which no animal eats.
+            if (definition == null || crop == null || crop.IsSapling)
                 return LivestockResult.Refused(LivestockRefusal.NotAnAnimal);
 
             var refusal = LivestockRules.CheckFeed(
@@ -405,7 +447,8 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             var isPlayer = IsFarmer(player);
             var animal = LoadAnimal(animalId, now);
-            var refusal = LivestockRules.CheckButcher(isPlayer, animal, now, isPlayer && animal != null && animal.OwnerPlayerId == GetObjectUUID(player));
+            var refusal = LivestockRules.CheckButcher(isPlayer, animal, now, isPlayer && animal != null && animal.OwnerPlayerId == GetObjectUUID(player),
+                animal != null && ArePredatorsAtCorrals(animal));
             if (refusal != LivestockRefusal.None)
                 return RefusedFor(refusal, animal, now);
 
@@ -432,7 +475,8 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             var isPlayer = IsFarmer(player);
             var animal = LoadAnimal(animalId, now);
-            var refusal = LivestockRules.CheckCrate(isPlayer, animal, now, isPlayer && animal != null && animal.OwnerPlayerId == GetObjectUUID(player));
+            var refusal = LivestockRules.CheckCrate(isPlayer, animal, now, isPlayer && animal != null && animal.OwnerPlayerId == GetObjectUUID(player),
+                animal != null && ArePredatorsAtCorrals(animal));
             if (refusal != LivestockRefusal.None)
                 return RefusedFor(refusal, animal, now);
 
@@ -809,6 +853,10 @@ namespace SWLOR.Game.Server.Service
             foreach (var script in StillScripts)
                 SetEventScript(creature, script, string.Empty);
 
+            // A penned animal never fights, even the predators of a hunt: the wave is the players' to drive off.
+            AssignCommand(creature, () => ClearAllActions(true));
+            SetCommandable(false, creature);
+
             _creatures[animal.Id] = creature;
             RefreshName(animal);
             return creature;
@@ -833,15 +881,34 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(creature);
         }
 
-        /// <summary>Names the creature for its kind and stage.</summary>
+        /// <summary>
+        /// Names the creature for its kind and stage. A fed young animal grows up on its own once its 72 hours are up, so its name is
+        /// refreshed again then.
+        /// </summary>
         public static void RefreshName(Livestock animal)
         {
             if (!_creatures.TryGetValue(animal.Id, out var creature) || !GetIsObjectValid(creature))
                 return;
 
             var definition = GetDefinition(animal.Species);
-            if (definition != null)
-                SetName(creature, $"{definition.Name} ({LivestockRules.DescribeStage(LivestockRules.GetStage(animal, DateTime.UtcNow)).ToLowerInvariant()})");
+            if (definition == null)
+                return;
+
+            var now = DateTime.UtcNow;
+            var stage = LivestockRules.GetStage(animal, now);
+            SetName(creature, $"{definition.Name} ({LivestockRules.DescribeStage(stage).ToLowerInvariant()})");
+
+            if (stage == LivestockStage.Young && animal.Feedings >= LivestockRules.MaturityFeedings)
+            {
+                var animalId = animal.Id;
+                var seconds = (float)Math.Max(1, (LivestockRules.GetMaturityUtc(animal) - now).TotalSeconds + 1);
+                AssignCommand(creature, () => DelayCommand(seconds, () =>
+                {
+                    var current = GetAnimal(animalId);
+                    if (current != null)
+                        RefreshName(current);
+                }));
+            }
         }
 
         private static int GetFreeSlot(uint corralPlaceable)

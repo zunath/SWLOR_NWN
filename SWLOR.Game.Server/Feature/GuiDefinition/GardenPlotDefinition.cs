@@ -22,10 +22,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float FertilizerComboWidth = 320f;
         private const float FertilizerComboHeight = 32f;
 
+        // Four actions share the panel's width, so the row never runs past the window.
+        private const float ActionButtonWidth = 100f;
+
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.GardenPlot)
-                .SetInitialGeometry(0, 0, 480f, 500f)
+                .SetInitialGeometry(0, 0, 480f, 600f)
                 .SetTitle("Garden Plot")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -66,21 +69,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 line.AddButton()
                                     .SetText("Plant")
+                                    .SetWidth(ActionButtonWidth)
                                     .BindIsEnabled(model => model.CanPlant)
                                     .BindDisabledTooltip(model => model.PlantTooltip)
                                     .BindOnClicked(model => model.OnClickPlant());
                                 line.AddButton()
                                     .SetText("Tend")
+                                    .SetWidth(ActionButtonWidth)
                                     .BindIsEnabled(model => model.CanTend)
                                     .BindDisabledTooltip(model => model.TendTooltip)
                                     .BindOnClicked(model => model.OnClickTend());
                                 line.AddButton()
                                     .SetText("Harvest")
+                                    .SetWidth(ActionButtonWidth)
                                     .BindIsEnabled(model => model.CanHarvest)
                                     .BindDisabledTooltip(model => model.HarvestTooltip)
                                     .BindOnClicked(model => model.OnClickHarvest());
                                 line.AddButton()
                                     .SetText("Clear")
+                                    .SetWidth(ActionButtonWidth)
                                     .BindIsEnabled(model => model.CanClear)
                                     .BindDisabledTooltip(model => model.ClearTooltip)
                                     .BindOnClicked(model => model.OnClickClear());

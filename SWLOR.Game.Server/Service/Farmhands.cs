@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Service
                 return FarmhandRefusal.NotTheOwner;
             if (FarmhandRules.GetFeedRoom(farmhand.FeedHopper) <= 0)
                 return FarmhandRefusal.FeedHopperFull;
-            if (crop == null)
+            if (crop == null || crop.IsSapling)
                 return FarmhandRefusal.NoCrops;
 
             var carried = FarmItems.Count(player, crop.HarvestResref);

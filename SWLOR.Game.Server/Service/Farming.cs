@@ -411,6 +411,9 @@ namespace SWLOR.Game.Server.Service
         {
             SetUseableFlag(placeable, true);
             SetEventScript(placeable, EventScript.Placeable_OnUsed, ScriptName.OnGardenPlotUsed);
+
+            // A moved plot stands its plant up again where it now is.
+            DestroyCropModel(placeable);
             RefreshName(placeable, GetPlot(plot.Id));
         }
 
@@ -487,8 +490,15 @@ namespace SWLOR.Game.Server.Service
             if (!IsFarmer(player))
                 return;
 
+            // The plant standing on a plot opens the plot's window as well.
             var plot = OBJECT_SELF;
             var plotId = Property.GetPropertyId(plot);
+            if (string.IsNullOrEmpty(plotId))
+            {
+                plot = GetLocalObject(OBJECT_SELF, CropModelPlotVariable);
+                plotId = Property.GetPropertyId(plot);
+            }
+
             if (GetPlotStructure(plotId) == null)
                 return;
 
@@ -594,8 +604,87 @@ namespace SWLOR.Game.Server.Service
 
         private static void RefreshName(uint placeable, GardenPlot record)
         {
+            var now = DateTime.UtcNow;
             var crop = record == null ? null : GetCrop(record.Crop);
-            SetName(placeable, crop == null ? PlotName : $"{PlotName} ({crop.Name})");
+            var stage = crop == null ? GardenPlotStage.Empty : FarmingRules.GetStage(record, now);
+            SetName(placeable, FarmingRules.DescribePlotName(PlotName, crop?.Name, stage));
+            RefreshCropModel(placeable, record, FarmingRules.GetCropAppearance(stage, crop?.IsSapling == true), now);
+        }
+
+        // The plant on a plot
+
+        private const string CropModelResref = "growing_plant";
+        private const string CropModelTag = "garden_plot_crop";
+        private const string CropModelVariable = "GARDEN_PLOT_CROP_MODEL";
+        private const string CropModelAppearanceVariable = "GARDEN_PLOT_CROP_APPEARANCE";
+        private const string CropModelPlotVariable = "GARDEN_PLOT_PLACEABLE";
+        private const string CropModelNextChangeVariable = "GARDEN_PLOT_CROP_NEXT_CHANGE";
+
+        /// <summary>
+        /// Shows the crop's stage as a plant standing on the plot. A placeable's appearance does not change for players already in the
+        /// area, so each stage is its own plant: the old one goes and a new one is created. The plant opens the plot's window when used,
+        /// and its heartbeat brings it up to date when the crop's stage changes on its own and removes it when the plot is gone.
+        /// </summary>
+        private static void RefreshCropModel(uint placeable, GardenPlot record, int appearance, DateTime now)
+        {
+            var model = GetLocalObject(placeable, CropModelVariable);
+            if (appearance == 0)
+            {
+                DestroyCropModel(placeable);
+                return;
+            }
+
+            if (!GetIsObjectValid(model) || GetLocalInt(placeable, CropModelAppearanceVariable) != appearance)
+            {
+                DestroyCropModel(placeable);
+                model = CreateObject(ObjectType.Placeable, CropModelResref, GetLocation(placeable));
+                if (!GetIsObjectValid(model))
+                    return;
+
+                ObjectPlugin.SetAppearance(model, appearance);
+                SetTag(model, CropModelTag);
+                SetPlotFlag(model, true);
+                SetUseableFlag(model, true);
+                SetEventScript(model, EventScript.Placeable_OnUsed, ScriptName.OnGardenPlotUsed);
+                SetEventScript(model, EventScript.Placeable_OnHeartbeat, ScriptName.OnGardenPlotCropHeartbeat);
+                SetLocalObject(model, CropModelPlotVariable, placeable);
+                SetLocalObject(placeable, CropModelVariable, model);
+                SetLocalInt(placeable, CropModelAppearanceVariable, appearance);
+            }
+
+            SetName(model, GetName(placeable));
+            var next = FarmingRules.GetNextStageChangeUtc(record, now);
+            SetLocalString(model, CropModelNextChangeVariable, next?.ToString("O") ?? string.Empty);
+        }
+
+        private static void DestroyCropModel(uint placeable)
+        {
+            var model = GetLocalObject(placeable, CropModelVariable);
+            if (GetIsObjectValid(model))
+                DestroyObject(model);
+
+            DeleteLocalObject(placeable, CropModelVariable);
+            DeleteLocalInt(placeable, CropModelAppearanceVariable);
+        }
+
+        /// <summary>A plot's plant: gone with its plot, and brought up to date once the crop's stage changes on its own.</summary>
+        [NWNEventHandler(ScriptName.OnGardenPlotCropHeartbeat)]
+        public static void CropModelHeartbeat()
+        {
+            var model = OBJECT_SELF;
+            var plot = GetLocalObject(model, CropModelPlotVariable);
+            if (!GetIsObjectValid(plot) || GetLocalObject(plot, CropModelVariable) != model)
+            {
+                DestroyObject(model);
+                return;
+            }
+
+            var next = GetLocalString(model, CropModelNextChangeVariable);
+            if (string.IsNullOrEmpty(next) ||
+                DateTime.UtcNow < DateTime.Parse(next, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind))
+                return;
+
+            RefreshName(plot, GetPlot(Property.GetPropertyId(plot)));
         }
 
         // Transfers

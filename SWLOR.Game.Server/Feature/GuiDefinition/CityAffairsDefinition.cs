@@ -169,10 +169,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 content.AddRow(row =>
                 {
                     row.BindIsVisible(model => model.IsSituationSelected);
+                    // A long situation text scrolls rather than being cut off at the box's three lines.
                     row.AddText()
                         .BindText(model => model.SelectedText)
                         .SetShowBorder(false)
-                        .SetScrollbars(NuiScrollbars.None)
+                        .SetScrollbars(NuiScrollbars.Y)
                         .SetHeight(DescriptionHeight);
                 });
 

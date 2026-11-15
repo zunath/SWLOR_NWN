@@ -58,5 +58,8 @@ namespace SWLOR.Game.Server.Service.LivestockService
 
         /// <summary>The character file could not be saved, so nothing was changed.</summary>
         NotSaved = 18,
+
+        /// <summary>Predators are at the city's corrals (an open situation or a hunt), so its animals cannot leave or be butchered.</summary>
+        PredatorsAtCorrals = 19,
     }
 }

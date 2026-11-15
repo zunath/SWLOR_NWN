@@ -42,6 +42,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
 
             var now = DateTime.UtcNow;
+            // Animals that wandered off leave before anything is counted, so they do not hold a place.
+            Corrals.ClearWanderedOff(GetPCPublicCDKey(Player), GetObjectUUID(Player), corral.Id, now);
             var animals = Corrals.GetAnimalsInCorral(corral.Id);
             var city = DB.Get<Entity.WorldProperty>(corral.ParentPropertyId);
             var cityLevel = city == null ? 1 : CityOfficers.GetCityLevel(city);

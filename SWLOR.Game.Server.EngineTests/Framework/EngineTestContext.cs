@@ -380,11 +380,32 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             Service.Log.Write(LogGroup.EngineTest, $"[{TestName}] {message}", true);
         }
 
+        private readonly List<Action> _cleanupActions = new();
+
+        /// <summary>Runs an action when the test ends, pass or fail, before the tracked objects are destroyed. Use it to restore a global override.</summary>
+        public void AddCleanup(Action action)
+        {
+            _cleanupActions.Add(action);
+        }
+
         /// <summary>
         /// Destroys all tracked objects and instanced areas. Called by the runner after each test.
         /// </summary>
         public void Cleanup()
         {
+            for (var index = _cleanupActions.Count - 1; index >= 0; index--)
+            {
+                try
+                {
+                    _cleanupActions[index]();
+                }
+                catch (Exception ex)
+                {
+                    Log($"Cleanup action failed: {ex.Message}");
+                }
+            }
+            _cleanupActions.Clear();
+
             if (_seededRandom)
             {
                 Service.Random.ResetSeed();

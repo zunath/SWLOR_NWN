@@ -6,23 +6,23 @@ namespace SWLOR.Game.Server.Service.AttributeService
             "Improves melee weapon damage, maximum STM, STM regeneration, and carrying capacity.";
 
         public const string PerceptionSummary =
-            "Improves melee accuracy, ranged weapon damage, critical hit chance, and detection.";
+            "Improves melee accuracy, ranged weapon damage, ship combat damage, critical hit chance, and detection.";
 
         public const string VitalitySummary =
-            "Improves maximum HP, HP regeneration, Physical Defense, and resistance to critical hits.";
+            "Improves maximum HP, HP regeneration, physical defense, and resistance to critical hits.";
 
         public const string WillpowerSummary =
-            "Improves Force attack, Force Defense, maximum FP, FP regeneration, First Aid, and detection.";
+            "Improves Force attack, Force defense, maximum FP, FP regeneration, First Aid, and detection.";
 
         public const string AgilitySummary =
-            "Improves ranged accuracy, Evasion, Stealth, and ship combat effectiveness.";
+            "Improves evasion, stealth, ranged weapon accuracy, and ship combat accuracy.";
 
         public const string SocialSummary =
-            "Improves XP gain and Leadership capabilities.";
+            "Improves leadership capabilities, companion beast power, and experience gains.";
 
         public const string MightDetails =
             "Might: " + MightSummary + "\n\n" +
-            "Primary Skills: Vibroblade, Heavy Vibroblade, Spear, Twin Blade, Katar, Unarmed, Staff, Smithery, Gathering\n\n" +
+            "Primary Skills: Vibroknife, Vibroblade, Heavy Vibroblade, Spear, Twin Blade, Katar, Unarmed, Staff, Lightsaber, Saberstaff, Gathering\n\n" +
             "Other Notes:\n\n" +
             "Improves damage dealt by melee weapons.\n" +
             "Increases maximum STM.\n" +
@@ -32,19 +32,22 @@ namespace SWLOR.Game.Server.Service.AttributeService
 
         public const string PerceptionDetails =
             "Perception: " + PerceptionSummary + "\n\n" +
-            "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Unarmed, Pistol, Rifle, Fabrication, Devices\n\n" +
+            "Primary Skills:  Devices, Piloting, Vibroknife, Vibroblade, Heavy Vibroblade, Spear, Twin Blade, Katar, Unarmed, Staff, Lightsaber, Saberstaff, "+
+            "Pistol, Twin Pistol, Rifle, Throwing, Espionage\n\n" +
             "Other Notes:\n\n" +
             "Improves accuracy of melee weapons.\n" +
             "Improves damage dealt by ranged weapons, including throwing weapons.\n" +
-            "Improves physical ability damage for pistols, rifles, throwing, and Devices.\n" +
+            "Improves damage for pistols, rifles, throwing, and Devices.\n" +
+            "Improves damage of ship combat modules.\n" +
             "Improves critical hit chance.\n" +
-            "Improves detection.";
+            "Improves detection.\n" +
+            "Improves slicing trace bonus.";
 
         public const string VitalityDetails =
             "Vitality: " + VitalitySummary + "\n\n" +
-            "Primary Skills: Armor, Smithery, Engineering\n\n" +
+            "Primary Skills: none\n\n" +
             "Other Notes:\n\n" +
-            "Increases maximum HP through NWN base mechanics.\n" +
+            "Increases maximum HP.\n" +
             "Improves Physical Defense.\n" +
             "Reduces incoming physical damage.\n" +
             "Improves natural HP regeneration.\n" +
@@ -53,28 +56,28 @@ namespace SWLOR.Game.Server.Service.AttributeService
 
         public const string WillpowerDetails =
             "Willpower: " + WillpowerSummary + "\n\n" +
-            "Primary Skills: Force, Fabrication, Agriculture, First Aid\n\n" +
+            "Primary Skills: Force, First Aid, Agriculture\n\n" +
             "Other Notes:\n\n" +
             "Increases maximum FP.\n" +
             "Improves natural FP regeneration.\n" +
             "Improves FP recovery while resting.\n" +
             "Improves Force Defense.\n" +
             "Improves Force and First Aid ability effectiveness.\n" +
-            "Improves effectiveness of ship combat modules.\n" +
+            "Improves fishing outcomes.\n" +
             "Improves detection.";
 
         public const string AgilityDetails =
             "Agility: " + AgilitySummary + "\n\n" +
-            "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Throwing, Engineering\n\n" +
+            "Primary Skills: Pistol, Twin Pistol, Rifle, Throwing, Piloting, Espionage\n\n" +
             "Other Notes:\n\n" +
             "Improves Evasion.\n" +
             "Improves accuracy of ranged and throwing weapons.\n" +
-            "Improves Stealth.\n" +
-            "Improves effectiveness of ship combat modules.";
+            "Improves accuracy of ship combat modules.\n" +
+            "Improves Stealth.";
 
         public const string SocialDetails =
             "Social: " + SocialSummary + "\n\n" +
-            "Primary Skills: Leadership, Agriculture\n\n" +
+            "Primary Skills: Leadership, Beast Mastery\n\n" +
             "Other Notes:\n\n" +
             "Improves guild point acquisition.\n" +
             "Improves quest credit rewards.\n" +
@@ -85,11 +88,11 @@ namespace SWLOR.Game.Server.Service.AttributeService
         public static string BuildOverview()
         {
             return "Your character is guided by six core attributes: Might, Vitality, Perception, Willpower, Agility, and Social.\n\n" +
-                   "Might: " + MightSummary + "\n" +
-                   "Vitality: " + VitalitySummary + "\n" +
-                   "Perception: " + PerceptionSummary + "\n" +
-                   "Willpower: " + WillpowerSummary + "\n" +
-                   "Agility: " + AgilitySummary + "\n" +
+                   "Might: " + MightSummary + "\n\n" +
+                   "Vitality: " + VitalitySummary + "\n\n" +
+                   "Perception: " + PerceptionSummary + "\n\n" +
+                   "Willpower: " + WillpowerSummary + "\n\n" +
+                   "Agility: " + AgilitySummary + "\n\n" +
                    "Social: " + SocialSummary + "\n\n";
         }
     }

@@ -47,10 +47,10 @@ python GenerateRobeRgbModels.py --check --game-data "<NWN>\data"
 
 ## Reviewing and changing a move
 
-`tools/WeaponGripFit.py` works from the compiled models, without the client. It needs numpy, scipy and Pillow, and the hak folders `sw_pt_rhand sw_pt_lhand sw_weapon sw_pt_root` (`git -C SWLOR_Haks sparse-checkout add ...`).
+`tools/WeaponGripFit.py` works from the compiled models, without the client. It needs numpy, scipy and Pillow, and the hak folders `sw_pt_rhand sw_pt_lhand sw_weapon sw_pt_root tools` (`git -C SWLOR_Haks sparse-checkout add ...`). Without `tools`, `check` cannot compare the rifle bank table and says so.
 
 ```powershell
-python tools/WeaponGripFit.py derive --body pfd0                               # derived catalog lines for a body
+python tools/WeaponGripFit.py derive --body pfd0                               # derived catalog lines for a body, both sides
 python tools/WeaponGripFit.py check                                            # names, limits, rifle banks
 python tools/WeaponGripFit.py check --derived                                  # also every hand against its derived move (minutes)
 python tools/WeaponGripFit.py sheet --output C:\Temp\grip                      # default hand of every body

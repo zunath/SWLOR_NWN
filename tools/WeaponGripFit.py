@@ -19,7 +19,7 @@ rifle hold banks in SWLOR_Haks place the support hand for that move; `check` com
 two tables.
 
 Commands (run from the repository root; needs numpy, scipy and Pillow, and the hak folders
-`sw_pt_rhand sw_pt_lhand sw_weapon sw_pt_root`):
+`sw_pt_rhand sw_pt_lhand sw_weapon sw_pt_root tools`):
 
     python tools/WeaponGripFit.py derive --body pfd0                      # derived catalog lines
     python tools/WeaponGripFit.py check                                   # names, limits, rifle banks
@@ -700,10 +700,13 @@ def main() -> int:
         if args.derived:
             problems += check_derived(args.body or BODIES, args.side or ("r", "l"))
         print("\n".join(problems) if problems else "Weapon hand fit check passed.")
+        if rifle_bank_moves() is None:
+            print(f"Not checked: the rifle hold banks' move table ({RIFLE_BANKS.relative_to(ROOT).as_posix()} is not "
+                  "checked out; add `tools` to the SWLOR_Haks sparse checkout).")
         return 1 if problems else 0
 
     if args.command == "derive":
-        for line in derive(args.body or BODIES, args.side or ("r",)):
+        for line in derive(args.body or BODIES, args.side or ("r", "l")):
             print(line)
         return 0
 

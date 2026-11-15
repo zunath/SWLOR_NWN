@@ -198,7 +198,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "dan_sergeant"
         },
         "CRAdjust": {
           "type": "int",
@@ -218,7 +218,9 @@
         },
         "Description": {
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "A Republic garrison sergeant with grass stains on his greaves and a ration ledger under his arm."
+          }
         },
         "Dex": {
           "type": "byte",
@@ -350,6 +352,26 @@
             },
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -440,11 +462,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 102
+                "value": 56
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 23
+                "value": 90
               },
               "Cost": {
                 "type": "dword",
@@ -457,13 +479,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "This Republic soldier's armor follows a practical service pattern with readily maintained fittings. Its modest wear belongs to duties that continue long after the formal inspection has moved on."
+                  "0": "Clothing worn by Sergeant Halden Prax."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "This Republic soldier's armor follows a practical service pattern with readily maintained fittings. Its modest wear belongs to duties that continue long after the formal inspection has moved on."
+                  "0": "Clothing worn by Sergeant Halden Prax."
                 }
               },
               "Identified": {
@@ -472,26 +494,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 89
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 102
+                "value": 62
               },
               "LocalizedName": {
-                "id": 12835,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Republic Soldier Armor"
+                  "0": "[NPC] Sergeant Halden Prax's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 60
+                "value": 0
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 60
+                "value": 24
               },
               "Plot": {
                 "type": "byte",
@@ -511,11 +532,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "RepublicSoldierArmor"
+                "value": "dan_sergeant_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "vrepnpctrooparm"
+                "value": "dan_sergeant_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -592,26 +633,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 249
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             },
             {
@@ -1119,7 +1140,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Republic Soldier"
+            "0": "Sergeant Halden"
           }
         },
         "fortbonus": {
@@ -1342,7 +1363,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Prax"
           }
         },
         "LawfulChaotic": {
@@ -1375,7 +1396,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -1403,7 +1424,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -1664,7 +1685,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "RepublicSoldier"
+          "value": "dan_sergeant"
         },
         "Tail_New": {
           "type": "dword",
@@ -1676,7 +1697,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "vrepnpctroop1"
+          "value": "dan_sergeant"
         },
         "WalkRate": {
           "type": "int",

@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         public Dictionary<string, LootTable> BuildLootTables()
         {
             Byysk();
+            FoundryMemoryCores();
             QionSlugs();
             QionTigers();
             QionHiveLoot();
@@ -471,6 +472,13 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_wisushi", 10)
                 .AddItem("recipe_tesushi", 10)
                 .AddItem("recipe_dosushi", 10);
+        }
+
+        /// <summary>The memory cores foundry droids carry for the Foundry quest line.</summary>
+        private void FoundryMemoryCores()
+        {
+            _builder.Create("HUTLAR_FOUNDRY_MEMORY_CORES")
+                .AddItem("fdy_memory_core", 1);
         }
     }
 }

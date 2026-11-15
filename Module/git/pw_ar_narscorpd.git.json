@@ -11404,7 +11404,7 @@
         },
         "Conversation": {
           "type": "resref",
-          "value": ""
+          "value": "ns_fixer"
         },
         "CRAdjust": {
           "type": "int",
@@ -11425,7 +11425,7 @@
         "Description": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nar Shaddaa, nicknamed the \"Smuggler's Moon,\" was the notorious moon of the planet Nal Hutta, homeworld of the Hutt species. It was home to a large criminal underworld dominated by bounty hunters and Hutt crime lords. An ecumenopolis, the entire surface of Nar Shaddaa was covered in urban sprawl. "
+            "0": "A well-dressed denizen of the Corporate District who never quite looks at the person he is talking to."
           }
         },
         "Dex": {
@@ -11441,6 +11441,26 @@
           "value": [
             {
               "__struct_id": 2,
+              "XOrientation": {
+                "type": "float",
+                "value": 0.0
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              },
               "AddCost": {
                 "type": "dword",
                 "value": 0
@@ -11531,11 +11551,11 @@
               },
               "Cloth1Color": {
                 "type": "byte",
-                "value": 115
+                "value": 143
               },
               "Cloth2Color": {
                 "type": "byte",
-                "value": 115
+                "value": 93
               },
               "Cost": {
                 "type": "dword",
@@ -11548,13 +11568,13 @@
               "DescIdentified": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                  "0": "Clothing worn by Vex Tarro."
                 }
               },
               "Description": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "A colonist's practical outfit, made for the days between arrival and the comfortable life promised in a recruitment notice. In Veles, clothes like these belong as readily to an established worker as to someone still looking for their first room."
+                  "0": "Clothing worn by Vex Tarro."
                 }
               },
               "Identified": {
@@ -11563,25 +11583,25 @@
               },
               "Leather1Color": {
                 "type": "byte",
-                "value": 23
+                "value": 142
               },
               "Leather2Color": {
                 "type": "byte",
-                "value": 127
+                "value": 23
               },
               "LocalizedName": {
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Colonist Garbs"
+                  "0": "[NPC] Vex Tarro's Outfit"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 60
+                "value": 9
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 60
+                "value": 37
               },
               "Plot": {
                 "type": "byte",
@@ -11601,11 +11621,31 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "cologarb"
+                "value": "ns_fixer_o"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "cologarb"
+                "value": "ns_fixer_o"
+              },
+              "VarTable": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Name": {
+                      "type": "cexostring",
+                      "value": "NO_ECONOMY"
+                    },
+                    "Type": {
+                      "type": "dword",
+                      "value": 1
+                    },
+                    "Value": {
+                      "type": "int",
+                      "value": 1
+                    }
+                  }
+                ]
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -11682,26 +11722,6 @@
               "xArmorPart_Torso": {
                 "type": "word",
                 "value": 101
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
               }
             }
           ]
@@ -11795,7 +11815,7 @@
         "FirstName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Nar Shaddaa Denizen"
+            "0": "Vex"
           }
         },
         "fortbonus": {
@@ -11833,7 +11853,7 @@
         "LastName": {
           "type": "cexolocstring",
           "value": {
-            "0": ""
+            "0": "Tarro"
           }
         },
         "LawfulChaotic": {
@@ -11866,7 +11886,7 @@
         },
         "Plot": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "PortraitId": {
           "type": "word",
@@ -11894,7 +11914,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -12155,7 +12175,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "ColonistBith"
+          "value": "ns_fixer"
         },
         "Tail_New": {
           "type": "dword",
@@ -12167,7 +12187,7 @@
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "colonistbith"
+          "value": "ns_fixer"
         },
         "WalkRate": {
           "type": "int",

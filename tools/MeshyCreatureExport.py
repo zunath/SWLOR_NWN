@@ -545,16 +545,19 @@ def main():
         raise ValueError('Unsupported manifest schema')
     weapon = load_module('trellis_weapon_export', REPO / 'tools/TrellisWeaponExport.py')
     weapon.load_blender()
-    reports, models, textures = [], set(), set()
+    # Check every entry before exporting any, so a bad entry never leaves a half-written output.
+    models, textures = set(), set()
     for item in manifest['creatures']:
         if item['model'].lower() in models or item['texture'].lower() in textures:
             raise ValueError(item['model'] + ': every creature needs its own model and texture name')
         models.add(item['model'].lower())
         textures.add(item['texture'].lower())
-        if args.only and item['model'] != args.only:
-            continue
         if len(item['model']) > 16 or len(item['texture']) > 13 or item['texture_size'] not in (512, 1024):
             raise ValueError(item['model'] + ': model <= 16, texture <= 13 characters, texture_size 512 or 1024')
+    reports = []
+    for item in manifest['creatures']:
+        if args.only and item['model'] != args.only:
+            continue
         reports.append(export_creature(item, args.manifest.resolve().parent, out / item['model'], weapon))
     (out / 'reports.json').write_text(json.dumps(reports, indent=2) + '\n')
     print('CREATURE_EXPORT_COMPLETE ' + str(out))

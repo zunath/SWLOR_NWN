@@ -10,7 +10,7 @@ using Turn = System.Numerics.Quaternion;
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 
 /// <summary>
-/// Seats a held weapon in the wearer's hand. Weapons are fitted to the male human body; other bodies and
+/// Seats a held pistol or rifle in the wearer's hand. Both are fitted to the male human body; other bodies and
 /// hand models hold the handle somewhere else, so the weapon is moved by the amount recorded in
 /// <see cref="WeaponHandFitCatalog"/>. The move depends only on the hand, never on the weapon or the player.
 /// </summary>
@@ -46,7 +46,7 @@ public static class WeaponHandFit
     [NWNEventHandler(ScriptName.OnModuleUnacquire)]
     public static void OnModuleUnacquire() => Release(GetModuleItemLost());
 
-    /// <summary>Moves the held weapons to suit the hands the creature shows now.</summary>
+    /// <summary>Moves the held pistols or rifle to suit the hands the creature shows now.</summary>
     public static void Apply(uint creature)
     {
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
@@ -60,39 +60,13 @@ public static class WeaponHandFit
         ApplyHand(creature, left, CreaturePart.LeftHand, "l", HeldLeftVariable);
     }
 
-    /// <summary>
-    /// Whether an item of this type hangs from the hand's weapon hook and takes the hand's move. Power Gloves
-    /// have their own fit (<see cref="PowerGloveFit"/>) and shields are strapped to the forearm.
-    /// </summary>
-    public static bool IsHeld(BaseItem type) =>
-        type is not (BaseItem.Invalid or BaseItem.PowerGlove or BaseItem.CompanionPowerGlove or
-            BaseItem.SmallShield or BaseItem.LargeShield or BaseItem.TowerShield);
-
     public static bool IsPistol(BaseItem type) =>
         type is BaseItem.Pistol or BaseItem.Sling or BaseItem.LegacyPistol or BaseItem.CompanionPistol;
 
     public static bool IsRifle(BaseItem type) => type is BaseItem.Rifle or BaseItem.Cannon;
 
     /// <summary>
-    /// The move for a weapon of this type in a hand whose catalog move is <paramref name="move"/>. The catalog
-    /// seats a pistol's handle; a rifle and a hilt each take the part of it that suits how they are held.
-    /// </summary>
-    public static FitVector MoveFor(BaseItem type, FitVector move, string handModel)
-    {
-        if (IsPistol(type)) return move;
-        return IsRifle(type) ? RifleMove(move, handModel) : HiltMove(move);
-    }
-
-    /// <summary>
-    /// The move for a hilted weapon: a sword, saber, staff, knife or anything else that is not a gun. Its hilt
-    /// runs along the fist (weapon-space Y), and each body's weapon hook already puts the guard against the
-    /// fist, so sliding it along the hilt would push the guard into the hand. Only the part of the move across
-    /// the hilt applies; it brings the hilt into the palm.
-    /// </summary>
-    public static FitVector HiltMove(FitVector move) => new(move.X, 0f, move.Z);
-
-    /// <summary>
-    /// The move for a rifle held in a hand whose move is <paramref name="move"/>. A held item takes one
+    /// The move for a rifle held in a hand whose pistol move is <paramref name="move"/>. A held item takes one
     /// fixed move, but the ready and attack clips turn the rifle against the hand, so the same hand needs a
     /// different move there than in the idle clip. This is the midpoint: the part of the move along the turn's
     /// axis is exact in every clip and the rest is half off in each, instead of right in one and wrong in the other.
@@ -141,7 +115,7 @@ public static class WeaponHandFit
         SetLocalObject(creature, variable, item);
         var hand = PowerGloveFit.GetHandModels(creature, part, side).Worn;
         var move = WeaponHandFitCatalog.Get(hand);
-        SetMove(item, MoveFor(GetBaseItemType(item), move, hand));
+        SetMove(item, IsRifle(GetBaseItemType(item)) ? RifleMove(move, hand) : move);
     }
 
     /// <summary>A weapon on the ground or in a pack carries no move.</summary>
@@ -161,7 +135,8 @@ public static class WeaponHandFit
     {
         if (!GetIsObjectValid(item) || GetObjectType(item) != ObjectType.Item)
             return false;
-        return IsHeld(GetBaseItemType(item));
+        var type = GetBaseItemType(item);
+        return IsPistol(type) || IsRifle(type);
     }
 
     private static void SetMove(uint item, FitVector move)

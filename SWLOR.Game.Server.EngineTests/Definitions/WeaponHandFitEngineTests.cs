@@ -75,28 +75,6 @@ public static class WeaponHandFitEngineTests
         AssertMove(ctx, rifle, FitVector.Zero, "A rifle that left the hand carries no move");
     }
 
-    [EngineTest("A held melee weapon takes its wearer's hand move and loses it when unequipped", Category = "WeaponHandFit", TimeoutSeconds = 60f)]
-    public static async Task HeldSwordTakesTheHandsMove(EngineTestContext ctx)
-    {
-        var droid = ctx.SpawnCreature("civilian");
-        await ctx.ExecuteInCreatureContextAsync(droid, () => SetBody(droid, AppearanceType.Droid, 1));
-
-        var sword = await ctx.EquipItemAsync(droid, "b_longsword", InventorySlot.RightHand);
-        await ctx.ExecuteInCreatureContextAsync(droid, () => WeaponHandFit.Apply(droid));
-        var move = WeaponHandFit.HiltMove(WeaponHandFitCatalog.Get("pmz0_handr001"));
-        ctx.Assert(move != FitVector.Zero, "The droid frame moves a hilt across the fist");
-        AssertMove(ctx, sword, move, "The droid's held sword takes the part of the droid frame's move across the hilt");
-
-        await ctx.ExecuteInCreatureContextAsync(droid, () =>
-        {
-            ClearAllActions();
-            ActionUnequipItem(sword);
-        });
-        await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, droid) != sword, 10f, "the sword to leave the hand");
-        await ctx.ExecuteInCreatureContextAsync(droid, () => WeaponHandFit.Apply(droid));
-        AssertMove(ctx, sword, FitVector.Zero, "A sword that left the hand carries no move");
-    }
-
     [EngineTest("A copy of a fitted pistol takes its own wearer's hand move", Category = "WeaponHandFit", TimeoutSeconds = 60f)]
     public static async Task CopiedPistolTakesItsOwnWearersMove(EngineTestContext ctx)
     {

@@ -94,6 +94,7 @@ public class QuestLifecycleTests
             global using SWLOR.Game.Server.Domain.Foundation;
             global using SWLOR.NWN.API.NWNX;
             global using static QuestLifecycleHarness.Native;
+            global using SWLOR.Game.Server.Core;
             """;
         var references = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")!).Split(Path.PathSeparator)
             .Append(typeof(QuestDetail).Assembly.Location).Append(typeof(SWLOR.NWN.API.NWNX.JournalEntry).Assembly.Location)

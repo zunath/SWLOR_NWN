@@ -26,6 +26,7 @@ public class QuestKillCreditTests
             using System.Collections.Generic;
             using SWLOR.Game.Server.Entity;
             using SWLOR.Game.Server.Domain.Creatures;
+            using SWLOR.Game.Server.Domain.Foundation;
             namespace KillCreditHarness;
             public enum CreatureType { PlayerCharacter }
             public static class Quest

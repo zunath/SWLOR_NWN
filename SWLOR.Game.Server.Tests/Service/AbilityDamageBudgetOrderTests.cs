@@ -31,6 +31,7 @@ public class AbilityDamageBudgetOrderTests
             using SWLOR.Game.Server.Domain.Combat;
             using SWLOR.Game.Server.Domain.Character;
             using RuntimeCombat = SWLOR.Game.Server.Domain.Combat.CombatRules;
+            using SWLOR.Game.Server.Domain.Foundation;
 
             public sealed class ImpactHarness
             {

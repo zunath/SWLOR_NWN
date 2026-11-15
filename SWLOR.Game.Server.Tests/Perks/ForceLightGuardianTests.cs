@@ -178,7 +178,7 @@ public class ForceLightGuardianTests
         reflectiveBarrier.Should().NotContain("DelayCommand(",
             "an exhausted barrier must be gone before the shared reflection stage reads its stats");
 
-        var temporaryHPKeys = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffectKey.cs").FullName);
+        var temporaryHPKeys = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Combat" / "TemporaryHitPointEffectKey.cs").FullName);
         temporaryHPKeys.Should().Contain("public const string FatalDamageSave = \"FATAL_DAMAGE_SAVE\";");
         temporaryHPKeys.Should().Contain("public const string GuardianWard = \"GUARDIAN_WARD\";");
 

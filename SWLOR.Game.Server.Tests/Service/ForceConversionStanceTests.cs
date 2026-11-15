@@ -44,6 +44,7 @@ public class ForceConversionStanceTests
             using SWLOR.Game.Server.Domain.Character;
             using SWLOR.Game.Server.Domain.Character;
             using System.Collections.Generic;
+            using SWLOR.Game.Server.Domain.Foundation;
 
             public static class ConversionHarness
             {

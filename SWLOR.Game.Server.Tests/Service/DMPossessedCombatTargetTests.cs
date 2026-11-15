@@ -58,6 +58,7 @@ public class DMPossessedCombatTargetTests
             using SWLOR.Game.Server.Domain.Character;
             using SWLOR.NWN.API.NWScript.Enum;
             using Stat = TargetHarness;
+            using SWLOR.Game.Server.Domain.Foundation;
             public static class TargetHarness
             {
                 {{string.Join(Environment.NewLine, constants)}}

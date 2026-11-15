@@ -27,7 +27,7 @@ public class TypeMovesDataTests
 
         Data.From.Should().Be("SWLOR.Game.Server.Service");
         Data.Moves.Should().HaveCount(20);
-        Data.Moves.Should().OnlyContain(move => domains.Contains(move.To), "each type joins the root namespace of its domain");
+        Data.Moves.Should().OnlyContain(move => domains.Contains(move.To) || move.To == "SWLOR.Game.Server.Core", "each type joins the root namespace of its domain (Log and FrameProfiler: Core, beside Clock)");
         Data.ByName["INamedAnimationRuntime"].File.Should().Be("NamedAnimationPlayback.cs", "it shares its file with NamedAnimationPlayback");
     }
 

@@ -122,12 +122,27 @@ public static class AbilitySource
         var injected = InjectedField.Matches(text)
             .Where(match => partInterfaces.Contains(match.Groups["type"].Value))
             .Select(match => match.Groups["name"].Value)
-            .Distinct()
-            .ToArray();
-        foreach (var field in injected)
-            text = Regex.Replace(text, $@"(?<![\w.]){Regex.Escape(field)}\.(?=[A-Za-z_]\w*\s*[<(])", string.Empty);
+            .ToHashSet(StringComparer.Ordinal);
+        if (injected.Count == 0)
+            return text;
 
-        return text;
+        // Only the receiver of a call is removed (_fooState.GetFoo(x) and _fooState.GetFoo<T>(x)); a property read
+        // (_fooState.Count), a method group and text inside a string or comment keep it. The syntax tree finds the calls.
+        var receivers = CSharpSyntaxTree.ParseText(text).GetRoot()
+            .DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(invocation => invocation.Expression)
+            .OfType<MemberAccessExpressionSyntax>()
+            .Where(access => access.Expression is IdentifierNameSyntax receiver && injected.Contains(receiver.Identifier.ValueText))
+            .Select(access => (Start: access.Expression.SpanStart, End: access.OperatorToken.Span.End))
+            .OrderByDescending(span => span.Start)
+            .ToArray();
+
+        var builder = new StringBuilder(text);
+        foreach (var (start, end) in receivers)
+            builder.Remove(start, end - start);
+
+        return builder.ToString();
     }
 
     private static string FindRepositoryRoot()

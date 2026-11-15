@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         public void Dispose()
         {
             if (_restoreDepthPlusOne > 0)
-                CombatRecorder.RestoreAttributionDepth(_restoreDepthPlusOne - 1);
+                CombatRecording.RestoreAttributionDepth(_restoreDepthPlusOne - 1);
         }
     }
 }

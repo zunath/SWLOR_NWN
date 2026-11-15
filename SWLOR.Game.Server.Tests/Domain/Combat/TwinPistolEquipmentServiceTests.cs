@@ -445,7 +445,7 @@ public class TwinPistolEquipmentServiceTests
         public uint DroidOwner;
 
         public TestEquipment(IItemService item, ItemWorld world)
-            : base(item, FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<IDroidService>())
+            : base(item, FacadeForwarder.LazyFor<ISkillService>(), ScriptedProxy.Create<ICompanionLookup>(out _))
         {
             _itemWorld = world;
         }

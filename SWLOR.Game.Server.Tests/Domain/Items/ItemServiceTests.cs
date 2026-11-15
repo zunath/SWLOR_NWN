@@ -116,7 +116,7 @@ public class ItemServiceTests
 
         _world.Add(User);
         _players.Add(User);
-        _service = new TestItemService(new BeastMasteryService(_db, null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatDamageCatalogService>()), _db);
+        _service = new TestItemService(new CompanionLookup(), _db);
         _container = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton<IItemService>(_service)));
         _scopes.Add(_container.Install());
     }
@@ -146,7 +146,7 @@ public class ItemServiceTests
         _service.TwoHandedMeleeItemTypes.Should().Contain(BaseItem.GreatSword);
         _service.OneHandedMeleeItemTypes.Should().Contain(BaseItem.Longsword);
 
-        var other = new TestItemService(new BeastMasteryService(_db, null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatDamageCatalogService>()), _db);
+        var other = new TestItemService(new CompanionLookup(), _db);
         other.WeaponBaseItemTypes.Should().NotBeSameAs(_service.WeaponBaseItemTypes, "each instance owns its lists");
         _service.WeaponBaseItemTypes.Should().BeSameAs(_service.WeaponBaseItemTypes, "an instance hands out the same list every time");
     }
@@ -226,7 +226,7 @@ public class ItemServiceTests
     [Test]
     public void TheDefaultDefinitionSearchFindsTheServersItemLists()
     {
-        var types = new ProbingItemService(new BeastMasteryService(_db, null!, null!, FacadeForwarder.LazyFor<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.LazyFor<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.LazyFor<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatDamageCatalogService>()), _db).Search().ToList();
+        var types = new ProbingItemService(new CompanionLookup(), _db).Search().ToList();
 
         types.Should().NotBeEmpty();
         types.Should().OnlyContain(type => typeof(IItemListDefinition).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface);
@@ -1430,8 +1430,8 @@ public class ItemServiceTests
     /// <summary>The item instance with every call that needs the database, the static catalogs or the native engine answered by the test.</summary>
     private sealed class TestItemService : ItemService
     {
-        public TestItemService(IBeastMasteryService beastMastery, IDBService db)
-            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>(), FacadeForwarder.LazyFor<IDroidService>())
+        public TestItemService(ICompanionLookup beastMastery, IDBService db)
+            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>())
         {
         }
 
@@ -1459,8 +1459,8 @@ public class ItemServiceTests
     /// <summary>The instance with the default definition search, which a test can run.</summary>
     private sealed class ProbingItemService : ItemService
     {
-        public ProbingItemService(IBeastMasteryService beastMastery, IDBService db)
-            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>(), FacadeForwarder.LazyFor<IDroidService>())
+        public ProbingItemService(ICompanionLookup beastMastery, IDBService db)
+            : base(beastMastery, db, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IRecastService>(), FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<ITwinPistolEquipmentService>())
         {
         }
 

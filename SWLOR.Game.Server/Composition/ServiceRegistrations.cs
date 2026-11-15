@@ -134,6 +134,11 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatQueriesService, CombatQueriesService>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
+            // The same instance, seen through the interfaces the lower domains and the platform own (P5-1g).
+            services.AddSingleton<ICombatRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());
+            services.AddSingleton<ICharacterRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());
+            services.AddSingleton<ICombatRecordingState>(provider => provider.GetRequiredService<ICombatRecorderService>());
+            services.AddSingleton<IShutdownStep>(provider => provider.GetRequiredService<ICombatRecorderService>());
             services.AddSingleton<ICombatResourcesService, CombatResourcesService>();
             services.AddSingleton<ICombatService, CombatService>();
             services.AddSingleton<ICombatSuppressionService, CombatSuppressionService>();
@@ -162,6 +167,8 @@ namespace SWLOR.Game.Server.Composition
         private static void RegisterCompanionsToItems(IServiceCollection services)
         {
             // Companions
+            // The companion questions Character, Items, Creatures and Combat ask; the lookup takes no service (P5-1g).
+            services.AddSingleton<ICompanionLookup, CompanionLookup>();
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
             services.AddSingleton<IDroidService, DroidService>();
             services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
@@ -238,6 +245,8 @@ namespace SWLOR.Game.Server.Composition
             // UI
             services.AddSingleton<IExtraHotbarsService, ExtraHotbarsService>();
             services.AddSingleton<IGuiService, GuiService>();
+            // The same instance, seen through the interface Foundation owns for the domains below the UI (P5-1g).
+            services.AddSingleton<IGuiRefreshPublisher>(provider => provider.GetRequiredService<IGuiService>());
 
             // World
             services.AddSingleton<IAreaService, AreaService>();

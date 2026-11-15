@@ -4,6 +4,12 @@ namespace SWLOR.Game.Server.Composition
 {
     public static partial class GameServices
     {
+        /// <summary>The companion questions the lower domains ask (<c>ICompanionLookup</c>, P5-1g).</summary>
+        public static ICompanionLookup CompanionQuery => FacadeAccessor.Resolve<ICompanionLookup>();
+
+        /// <summary>The combat recorder as the character services see it (<c>ICharacterRecording</c>, P5-1g).</summary>
+        public static ICharacterRecording CharacterRecording => FacadeAccessor.Resolve<ICharacterRecording>();
+
         /// <summary>Achievements: the catalog and granting them to an account (the static facade <c>Achievement</c> until P2-ZE).</summary>
         public static IAchievementService Achievement => FacadeAccessor.Resolve<IAchievementService>();
 

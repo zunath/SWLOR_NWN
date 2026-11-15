@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 [TestFixture]
 public class TwinPistolEquipmentValidationStateTests
 {
-    private static TwinPistolEquipmentService Create() => new(null!, FacadeForwarder.LazyFor<ISkillService>(), FacadeForwarder.LazyFor<IDroidService>());
+    private static TwinPistolEquipmentService Create() => new(null!, FacadeForwarder.LazyFor<ISkillService>(), ScriptedProxy.Create<ICompanionLookup>(out _));
 
     [Test]
     public void Revalidation_DoesNotNestAndEndsPerCreature()

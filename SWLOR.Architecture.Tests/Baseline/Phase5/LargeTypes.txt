@@ -12,10 +12,10 @@
 
 SWLOR.Game.Server.Domain.Abilities.AbilityService | 4572
 SWLOR.Game.Server.Domain.Abilities.MimicryService | 1434
-SWLOR.Game.Server.Domain.Character.PerkService | 1501
+SWLOR.Game.Server.Domain.Character.PerkService | 1486
 SWLOR.Game.Server.Domain.Character.PlayerNameService | 1039
-SWLOR.Game.Server.Domain.Character.SkillService | 1148
-SWLOR.Game.Server.Domain.Character.StatService | 3363
+SWLOR.Game.Server.Domain.Character.SkillService | 1142
+SWLOR.Game.Server.Domain.Character.StatService | 3358
 SWLOR.Game.Server.Domain.Character.StatusEffectService | 2801
 SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 1200
 SWLOR.Game.Server.Domain.Combat.CombatAbilityBonusService | 1061
@@ -24,16 +24,16 @@ SWLOR.Game.Server.Domain.Combat.CombatDamageModifiersService | 1433
 SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService | 1640
 SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 1707
 SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1689
-SWLOR.Game.Server.Domain.Combat.EnmityService | 1249
+SWLOR.Game.Server.Domain.Combat.EnmityService | 1244
 SWLOR.Game.Server.Domain.Companions.BeastMasteryService | 1232
-SWLOR.Game.Server.Domain.Companions.DroidService | 1366
+SWLOR.Game.Server.Domain.Companions.DroidService | 1195
 SWLOR.Game.Server.Domain.Crafting.BlueprintBonuses | 1002
 SWLOR.Game.Server.Domain.Crafting.CraftService | 1319
-SWLOR.Game.Server.Domain.Creatures.AIService | 1876
-SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1092
+SWLOR.Game.Server.Domain.Creatures.AIService | 1871
+SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1087
 SWLOR.Game.Server.Domain.Creatures.SpawnService | 1208
 SWLOR.Game.Server.Domain.Foundation.CommunicationService | 1096
-SWLOR.Game.Server.Domain.Items.ItemService | 1610
+SWLOR.Game.Server.Domain.Items.ItemService | 1605
 SWLOR.Game.Server.Domain.Social.PerformanceAudienceService | 1054
 SWLOR.Game.Server.Domain.Social.PerformanceService | 1001
 SWLOR.Game.Server.Domain.Space.SpaceService | 2762

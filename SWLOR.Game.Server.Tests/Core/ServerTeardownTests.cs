@@ -27,7 +27,7 @@ public class ServerTeardownTests
     private List<string> _log = null!;
     private StaticStateDouble _staticState = null!;
     private ProcessEventsDouble _processEvents = null!;
-    private ICombatRecorderService _recorder = null!;
+    private IShutdownStep _recorder = null!;
 
     [SetUp]
     public void SetUp()
@@ -38,7 +38,7 @@ public class ServerTeardownTests
         _recorder = RecorderProxy.Create(_log);
     }
 
-    private ServerTeardown Teardown() => new(_recorder, _processEvents, _staticState);
+    private ServerTeardown Teardown() => new(new[] { _recorder }, _processEvents, _staticState);
 
     [Test]
     public void The_steps_run_in_the_order_of_the_shutdown_they_replace()
@@ -146,15 +146,15 @@ public class ServerTeardownTests
         public void UnsubscribeAll() => _log.Add("UnsubscribeProcessEvents");
     }
 
-    /// <summary>An <see cref="ICombatRecorderService"/> that logs <c>StopOnShutdown</c> and answers every other member with its default.</summary>
+    /// <summary>An <see cref="IShutdownStep"/> that logs <c>StopOnShutdown</c> and answers every other member with its default (the step the combat recorder registers).</summary>
     public class RecorderProxy : DispatchProxy
     {
         private List<string> _log = null!;
         private Exception? _failure;
 
-        public static ICombatRecorderService Create(List<string> log, Exception? failure = null)
+        public static IShutdownStep Create(List<string> log, Exception? failure = null)
         {
-            var proxy = Create<ICombatRecorderService, RecorderProxy>();
+            var proxy = Create<IShutdownStep, RecorderProxy>();
             var recorder = (RecorderProxy)(object)proxy;
             recorder._log = log;
             recorder._failure = failure;
@@ -163,7 +163,7 @@ public class ServerTeardownTests
 
         protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
         {
-            if (targetMethod?.Name == nameof(ICombatRecorderService.StopOnShutdown))
+            if (targetMethod?.Name == nameof(IShutdownStep.StopOnShutdown))
             {
                 _log.Add("StopCombatRecorder");
                 if (_failure != null)

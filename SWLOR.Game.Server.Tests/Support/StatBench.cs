@@ -146,7 +146,7 @@ public sealed class StatBench : IDisposable
                 return null;
             });
 
-        var beastMastery = ScriptedProxy.Create<IBeastMasteryService>(out var beastProxy);
+        var beastMastery = ScriptedProxy.Create<ICompanionLookup>(out var beastProxy);
         beastProxy.On("IsPlayerBeast", args => Beasts.Contains((uint)args[0]!));
 
         var enmity = ScriptedProxy.Create<IEnmityService>(out var enmityProxy);
@@ -310,12 +310,12 @@ public sealed class TestStatService : StatService
         IPowerGloveEquipmentService powerGloveEquipment,
         IItemService item,
         IRecastService recast,
-        IBeastMasteryService beastMastery,
+        ICompanionLookup beastMastery,
         IEnmityService enmity,
         IResistanceService resistance,
         IPvpCombatService pvpCombat)
         : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat,
-            FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>(), FacadeForwarder.LazyFor<IDroidService>())
+            FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
     {
         _bench = bench;
     }

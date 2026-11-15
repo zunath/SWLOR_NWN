@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         public static bool ReceivesNaturalSingleWeaponBonus(uint creature) =>
             GetIsPC(creature) && !GetIsDM(creature) ||
-            Droid.IsDroid(creature) && GetIsPC(GetMaster(creature)) && !GetIsDM(GetMaster(creature));
+            CompanionQuery.IsDroid(creature) && GetIsPC(GetMaster(creature)) && !GetIsDM(GetMaster(creature));
 
         public static int GetNaturalSingleWeaponPercent(uint creature) =>
             ReceivesNaturalSingleWeaponBonus(creature) ? NaturalSingleWeaponPercent : 0;

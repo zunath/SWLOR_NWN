@@ -1260,8 +1260,8 @@ public class CompanionControlServiceTests
 /// </summary>
 public sealed class TestCompanionControl : CompanionControlService
 {
-    public TestCompanionControl(IAIService ai, IBeastMasteryService beastMastery)
-        : base(ai, beastMastery, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<IDroidService>())
+    public TestCompanionControl(IAIService ai, ICompanionLookup beastMastery)
+        : base(ai, beastMastery, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
     {
     }
 

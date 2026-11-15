@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Creatures;
@@ -55,7 +54,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Dictionary<uint, CompanionControlState> _states = new();
 
         private readonly IAIService _ai;
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly ICompanionLookup _companions;
         private readonly Lazy<IAbilityService> _ability;
         private readonly IActivityService _activity;
         private readonly IPerkService _perk;
@@ -64,23 +63,19 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Lazy<ICombatActivityService> _combatActivity;
         private readonly Lazy<ICombatQueriesService> _queries;
 
-        private readonly Lazy<IDroidService> _droid;
-
         public CompanionControlService(
             IAIService ai,
-            IBeastMasteryService beastMastery,
+            ICompanionLookup companions,
             Lazy<IAbilityService> ability,
             IActivityService activity,
             IPerkService perk,
             IPlayerNameService playerName,
             IStatusEffectService statusEffect,
             Lazy<ICombatActivityService> combatActivity,
-            Lazy<ICombatQueriesService> queries,
-            Lazy<IDroidService> droid)
+            Lazy<ICombatQueriesService> queries)
         {
-            _droid = droid;
             _ai = ai;
-            _beastMastery = beastMastery;
+            _companions = companions;
             _ability = ability;
             _activity = activity;
             _perk = perk;
@@ -103,7 +98,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             var master = GetMaster(creature);
             return GetIsObjectValid(master) &&
                    GetIsPC(master) &&
-                   (IsDroid(creature) || _beastMastery.IsPlayerBeast(creature));
+                   (IsDroid(creature) || _companions.IsPlayerBeast(creature));
         }
 
         public void Initialize(uint companion, bool preserveActionQueue = false)
@@ -1042,7 +1037,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual DateTime UtcNow() => DateTime.UtcNow;
 
-        protected virtual bool IsDroid(uint creature) => _droid.Value.IsDroid(creature);
+        protected virtual bool IsDroid(uint creature) => _companions.IsDroid(creature);
 
         protected virtual bool IsBusy(uint target) => _activity.IsBusy(target);
 

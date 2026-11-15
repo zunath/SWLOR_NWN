@@ -80,10 +80,10 @@ namespace SWLOR.Game.Server.Domain.Character
         {
             RestartDuration(durationTicks, durationSeconds, tickAnchor);
             Source = source;
-            if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordStatusApplied(source, creature, this, GetRemainingDurationSeconds(Clock.UtcNow), _isPermanent, false);
+            if (CharacterRecording.IsRecording)
+                CharacterRecording.RecordStatusApplied(source, creature, this, GetRemainingDurationSeconds(Clock.UtcNow), _isPermanent, false);
 
-            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(source, creature, this);
+            using var recorderAttribution = CharacterRecording.BeginStatusEffectAttribution(source, creature, this);
             Apply(creature, durationTicks);
         }
 
@@ -170,11 +170,11 @@ namespace SWLOR.Game.Server.Domain.Character
         protected virtual void Remove(uint creature) { }
         public void RemoveEffect(uint creature, bool isReplacement = false)
         {
-            if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordStatusRemoved(creature, this, isReplacement);
+            if (CharacterRecording.IsRecording)
+                CharacterRecording.RecordStatusRemoved(creature, this, isReplacement);
 
             IsBeingReplaced = isReplacement;
-            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, creature, this);
+            using var recorderAttribution = CharacterRecording.BeginStatusEffectAttribution(Source, creature, this);
             try
             {
                 Remove(creature);
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 SecondsSinceNaturalExpiration = 0f;
             }
 
-            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, creature, this);
+            using var recorderAttribution = CharacterRecording.BeginStatusEffectAttribution(Source, creature, this);
             Tick(creature);
         }
 
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Domain.Character
         protected virtual void OnHit(uint creature, uint target, int damage) { }
         public void OnHitEffect(uint creature, uint target, int damage)
         {
-            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, creature, this);
+            using var recorderAttribution = CharacterRecording.BeginStatusEffectAttribution(Source, creature, this);
             OnHit(creature, target, damage);
         }
 
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Domain.Character
             CombatDamageType damageType,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
-            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, attacker, this);
+            using var recorderAttribution = CharacterRecording.BeginStatusEffectAttribution(Source, attacker, this);
             OnDamageDealt(attacker, defender, damage, damageType, deliveryType);
         }
 
@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Domain.Character
             CombatDamageType damageType,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
-            using var recorderAttribution = CombatRecorder.BeginStatusEffectAttribution(Source, defender, this);
+            using var recorderAttribution = CharacterRecording.BeginStatusEffectAttribution(Source, defender, this);
             OnDamageTaken(defender, attacker, damage, damageType, deliveryType);
         }
 

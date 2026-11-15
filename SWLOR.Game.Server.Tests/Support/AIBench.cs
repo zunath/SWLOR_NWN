@@ -1,4 +1,5 @@
 #nullable enable
+using SWLOR.Game.Server.Domain.Character;
 using System.Numerics;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Companions;
@@ -44,8 +45,10 @@ public sealed class AIBench : IDisposable
         Profiler = new FakeProfilerPlugin();
         Party = ScriptedProxy.Create<IPartyService>(out var party);
         PartyScript = party.On("GetAllPartyMembers", arguments => PartyMembers(Convert.ToUInt32(arguments[0])));
-        BeastMastery = ScriptedProxy.Create<IBeastMasteryService>(out var beasts);
-        BeastMasteryScript = beasts.On("IsPlayerBeast", arguments => PlayerBeasts.Contains(Convert.ToUInt32(arguments[0])));
+        BeastMastery = ScriptedProxy.Create<ICompanionLookup>(out var beasts);
+        BeastMasteryScript = beasts
+            .On("IsPlayerBeast", arguments => PlayerBeasts.Contains(Convert.ToUInt32(arguments[0])))
+            .On("IsDroid", arguments => Sim(arguments[0])?.ResRef == "pc_droid");
         DMPresence = ScriptedProxy.Create<IDMPresenceService>(out var presence);
         DMPresenceScript = presence.On("IsControlledByDM", arguments => DMControlled.Contains(Convert.ToUInt32(arguments[0])));
         Service = new TestAIService(this, Party, BeastMastery, DMPresence);
@@ -65,7 +68,7 @@ public sealed class AIBench : IDisposable
 
     public IPartyService Party { get; }
     public ScriptedProxy PartyScript { get; }
-    public IBeastMasteryService BeastMastery { get; }
+    public ICompanionLookup BeastMastery { get; }
     public ScriptedProxy BeastMasteryScript { get; }
     public IDMPresenceService DMPresence { get; }
     public ScriptedProxy DMPresenceScript { get; }

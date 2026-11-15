@@ -46,7 +46,7 @@ public class PerkStatBonusTests
 
         statBonusLevel.Should().Contain("return GetPerkLevel(creature, perkType);");
         statBonusLevel.Should().Contain("IsDroid(creature)");
-        statBonusLevel.Should().Contain("_beastMastery.IsPlayerBeast(creature)");
+        statBonusLevel.Should().Contain("_companions.IsPlayerBeast(creature)");
         statBonusLevel.Should().Contain("return GetLocalInt(creature, $\"PERK_LEVEL_{(int)perkType}\");");
         statBonusLevel.Should().NotContain("perkMaxLevel");
 

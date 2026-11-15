@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         public void Dispose()
         {
             if (_isActive)
-                CombatRecorder.EndHealingReaction();
+                CombatRecording.EndHealingReaction();
         }
     }
 }

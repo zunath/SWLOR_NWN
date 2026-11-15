@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 
 namespace SWLOR.Game.Server.Tests.Feature;

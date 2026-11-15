@@ -297,14 +297,6 @@ public class DroidServiceTests
     }
 
     [Test]
-    public void LoadDroidPartItemPropertyDetails_BeforeTheTierTableIsCached_HasNoLevel()
-    {
-        _properties.Add((ItemPropertyType.DroidStat, (int)DroidStatSubType.Tier, 3));
-
-        _service.LoadDroidPartItemPropertyDetails(Disc).Level.Should().Be(0);
-    }
-
-    [Test]
     public void LoadDroidPartItemPropertyDetails_IgnoresTheSaberSkillsDroidsCannotUse()
     {
         _service.CacheData();

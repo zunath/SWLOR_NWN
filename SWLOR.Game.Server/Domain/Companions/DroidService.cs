@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly ICombatRecorderService _combatRecorder;
         private readonly ICompanionControlService _companionControl;
         private readonly IDroidEquipmentDiagnosticsService _diagnostics;
+        private readonly DroidControllerReader _reader = new();
         private readonly IGuiService _gui;
         private readonly IItemService _item;
         private readonly IPerkService _perk;
@@ -75,14 +76,13 @@ namespace SWLOR.Game.Server.Domain.Companions
             _twinPistolEquipment = twinPistolEquipment;
         }
 
-        private readonly Dictionary<int, int> _levelsByTier = new();
         private readonly Dictionary<DroidPersonalityType, IDroidPersonality> _droidPersonalities = new();
 
         public const string DroidResref = "pc_droid";
-        public const string DroidControlItemResref = "droid_control";
+        public const string DroidControlItemResref = ICompanionLookup.DroidControlItemResref;
         private const string DroidObjectVariable = "ACTIVE_DROID";
-        private const string DroidControlItemVariable = "ACTIVE_DROID_ITEM";
-        private const string ConstructedDroidVariable = "CONSTRUCTED_DROID";
+        private const string DroidControlItemVariable = DroidControllerReader.DroidControlItemVariable;
+        private const string ConstructedDroidVariable = DroidControllerReader.ConstructedDroidVariable;
         private const string DroidIsSpawning = "DROID_IS_SPAWNING";
         private const string DroidItemId = "DROID_ITEM_ID";
         // Keep undeliverable returns in the existing inventory payloads so item migrations still visit them.
@@ -114,18 +114,9 @@ namespace SWLOR.Game.Server.Domain.Companions
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public void CacheData()
         {
-            CacheDroidLevels();
             CachePersonalities();
         }
 
-        private void CacheDroidLevels()
-        {
-            _levelsByTier[1] = 5;
-            _levelsByTier[2] = 15;
-            _levelsByTier[3] = 25;
-            _levelsByTier[4] = 35;
-            _levelsByTier[5] = 45;
-        }
 
         private void CachePersonalities()
         {
@@ -175,7 +166,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <returns>The controller item or OBJECT_INVALID.</returns>
         public uint GetControllerItem(uint droid)
         {
-            return GetLocalObject(droid, DroidControlItemVariable);
+            return _reader.GetControllerItem(droid);
         }
 
         /// <summary>
@@ -359,155 +350,10 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         /// <param name="controller">The controller item to read from.</param>
         /// <returns>Droid item property details.</returns>
-        public DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller)
-        {
-            var details = new DroidItemPropertyDetails();
-            for (var ip = GetFirstItemProperty(controller); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(controller))
-            {
-                var type = GetItemPropertyType(ip);
+        public DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller) => _reader.LoadDroidItemPropertyDetails(controller);
 
-                if (type == ItemPropertyType.DroidStat)
-                {
-                    var subType = (DroidStatSubType)GetItemPropertySubType(ip);
-                    var value = GetItemPropertyCostTableValue(ip);
-
-                    switch (subType)
-                    {
-                        case DroidStatSubType.Tier:
-                            details.Tier = Math.Clamp(value, 1, 5);
-                            break;
-                        case DroidStatSubType.AISlots:
-                            details.AISlots += value;
-                            break;
-                        case DroidStatSubType.HP:
-                            details.HP += value;
-                            break;
-                        case DroidStatSubType.STM:
-                            details.STM += value;
-                            break;
-                        case DroidStatSubType.MGT:
-                            details.MGT += value;
-                            break;
-                        case DroidStatSubType.PER:
-                            details.PER += value;
-                            break;
-                        case DroidStatSubType.VIT:
-                            details.VIT += value;
-                            break;
-                        case DroidStatSubType.WIL:
-                            details.WIL += value;
-                            break;
-                        case DroidStatSubType.AGI:
-                            details.AGI += value;
-                            break;
-                        case DroidStatSubType.SOC:
-                            details.SOC += value;
-                            break;
-                        case DroidStatSubType.Armor:
-                            AddSkillBonus(details.Skills, SkillType.Armor, value);
-                            break;
-                        case DroidStatSubType.ResistanceFire:
-                            AddResistanceBonus(details.Resistances, ResistanceType.Fire, value);
-                            break;
-                        case DroidStatSubType.ResistancePoison:
-                            AddResistanceBonus(details.Resistances, ResistanceType.Poison, value);
-                            break;
-                        case DroidStatSubType.ResistanceElectrical:
-                            AddResistanceBonus(details.Resistances, ResistanceType.Electrical, value);
-                            break;
-                        case DroidStatSubType.ResistanceIce:
-                            AddResistanceBonus(details.Resistances, ResistanceType.Ice, value);
-                            break;
-                        case DroidStatSubType.ResistanceMind:
-                            AddResistanceBonus(details.Resistances, ResistanceType.Mind, value);
-                            break;
-                        case DroidStatSubType.ResistanceMobility:
-                            AddResistanceBonus(details.Resistances, ResistanceType.Mobility, value);
-                            break;
-                        case DroidStatSubType.ResistanceTrauma:
-                            AddResistanceBonus(details.Resistances, ResistanceType.Trauma, value);
-                            break;
-                        case DroidStatSubType.ResistanceDisruption:
-                            AddResistanceBonus(details.Resistances, ResistanceType.Disruption, value);
-                            break;
-                        case DroidStatSubType.Vibroblade:
-                            AddSkillBonus(details.Skills, SkillType.Vibroblade, value);
-                            break;
-                        case DroidStatSubType.Vibroknife:
-                            AddSkillBonus(details.Skills, SkillType.Vibroknife, value);
-                            break;
-                        // Droids cannot use saber weapons. Items built before the skills were removed may still carry them.
-                        case DroidStatSubType.Lightsaber:
-                        case DroidStatSubType.Saberstaff:
-                            break;
-                        case DroidStatSubType.HeavyVibroblade:
-                            AddSkillBonus(details.Skills, SkillType.HeavyVibroblade, value);
-                            break;
-                        case DroidStatSubType.Spear:
-                            AddSkillBonus(details.Skills, SkillType.Spear, value);
-                            break;
-                        case DroidStatSubType.TwinBlade:
-                            AddSkillBonus(details.Skills, SkillType.TwinBlade, value);
-                            break;
-                        case DroidStatSubType.Katar:
-                            AddSkillBonus(details.Skills, SkillType.Katar, value);
-                            break;
-                        case DroidStatSubType.Staff:
-                            AddSkillBonus(details.Skills, SkillType.Staff, value);
-                            break;
-                        case DroidStatSubType.Pistol:
-                            AddSkillBonus(details.Skills, SkillType.Pistol, value);
-                            break;
-                        case DroidStatSubType.Rifle:
-                            AddSkillBonus(details.Skills, SkillType.Rifle, value);
-                            break;
-                        case DroidStatSubType.Throwing:
-                            AddSkillBonus(details.Skills, SkillType.Throwing, value);
-                            break;
-                        case DroidStatSubType.Unarmed:
-                            AddSkillBonus(details.Skills, SkillType.Unarmed, value);
-                            break;
-                        case DroidStatSubType.TwinPistol:
-                            AddSkillBonus(details.Skills, SkillType.TwinPistol, value);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-
-                else if (type == ItemPropertyType.DroidPersonality)
-                {
-                    var personalityType = (DroidPersonalityType)GetItemPropertySubType(ip);
-                    details.PersonalityType = personalityType;
-                }
-            }
-
-
-            details.Level = _levelsByTier[details.Tier];
-
-            var constructedDroid = LoadConstructedDroid(controller);
-            details.CustomName = constructedDroid.Name;
-            details.Perks = DroidInstructions.SelectActive(constructedDroid.ActivePerks, details.Tier, details.AISlots)
-                .ToDictionary(instruction => instruction.Perk, instruction => instruction.Level);
-
-            return details;
-        }
-
-        private void AddSkillBonus(IDictionary<SkillType, int> skills, SkillType skill, int value)
-        {
-            if (!skills.ContainsKey(skill))
-                skills[skill] = value;
-            else
-                skills[skill] += value;
-        }
-
-        private void AddResistanceBonus(IDictionary<ResistanceType, int> resistances, ResistanceType type, int value)
-        {
-            if (!resistances.ContainsKey(type))
-                resistances[type] = value;
-            else
-                resistances[type] += value;
-        }
+        private static void AddResistanceBonus(IDictionary<ResistanceType, int> resistances, ResistanceType type, int value) =>
+            DroidControllerReader.AddResistanceBonus(resistances, type, value);
 
         /// <summary>
         /// Loads item property details from a droid part item.
@@ -635,7 +481,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                     details.PartType = (DroidPartItemPropertySubType)GetItemPropertySubType(ip);
                 }
             }
-            details.Level = _levelsByTier.GetValueOrDefault(details.Tier);
+            details.Level = _reader.GetLevelOfTier(details.Tier);
 
             return details;
         }
@@ -1199,24 +1045,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         /// <param name="controller">The controller item to read from.</param>
         /// <returns>A ConstructedDroid object.</returns>
-        public ConstructedDroid LoadConstructedDroid(uint controller)
-        {
-            var constructedDroid = new ConstructedDroid();
-            var serialized = GetLocalString(controller, ConstructedDroidVariable);
-            if (!string.IsNullOrWhiteSpace(serialized))
-            {
-                constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serialized) ?? new ConstructedDroid();
-            }
-
-            constructedDroid.LearnedPerks ??= new List<DroidPerk>();
-            constructedDroid.ActivePerks ??= new List<DroidPerk>();
-            constructedDroid.EquippedItems ??= new Dictionary<InventorySlot, string>();
-            constructedDroid.Inventory ??= new Dictionary<string, string>();
-            constructedDroid.AppearanceParts ??= new Dictionary<CreaturePart, int>();
-            constructedDroid.TintOverrides ??= new Dictionary<string, int>();
-
-            return constructedDroid;
-        }
+        public ConstructedDroid LoadConstructedDroid(uint controller) => _reader.LoadConstructedDroid(controller);
 
         /// <summary>
         /// Saves constructed droid information onto a local variable on the controller item.

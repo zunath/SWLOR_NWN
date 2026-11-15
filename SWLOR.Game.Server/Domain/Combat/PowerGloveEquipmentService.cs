@@ -1,6 +1,6 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
@@ -42,11 +42,11 @@ public class PowerGloveEquipmentService : IPowerGloveEquipmentService
 
     private readonly IItemService _item;
 
-    private readonly Lazy<IDroidService> _droid;
+    private readonly ICompanionLookup _companions;
 
-    public PowerGloveEquipmentService(IItemService item, Lazy<IDroidService> droid)
+    public PowerGloveEquipmentService(IItemService item, ICompanionLookup companions)
     {
-        _droid = droid;
+        _companions = companions;
         _item = item;
     }
 
@@ -420,7 +420,7 @@ public class PowerGloveEquipmentService : IPowerGloveEquipmentService
     }
 
     /// <summary>The unconverted <c>Droid</c> service.</summary>
-    protected virtual bool IsDroid(uint creature) => _droid.Value.IsDroid(creature);
+    protected virtual bool IsDroid(uint creature) => _companions.IsDroid(creature);
 
     /// <summary>The equipment storage that returns an item to the owner's inventory.</summary>
     protected virtual bool TryUnequip(uint creature, uint item, InventorySlot slot, bool allowRecoveryBag) =>

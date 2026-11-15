@@ -75,10 +75,12 @@ public sealed class PerkBench : IDisposable
                 return null;
             });
 
-        BeastMastery = ScriptedProxy.Create<IBeastMasteryService>(out var beastScript);
+        BeastMastery = ScriptedProxy.Create<ICompanionLookup>(out var beastScript);
         beastScript
             .On("IsPlayerBeast", args => (uint)args[0]! == BeastCreature)
-            .On("GetBeastId", args => $"beast-{(uint)args[0]!}");
+            .On("GetBeastId", args => $"beast-{(uint)args[0]!}")
+            .On("IsDroid", args => Droids.Contains((uint)args[0]!))
+            .On("GetDroidPerkLevel", args => 9);
 
         StatusEffects = ScriptedProxy.Create<IStatusEffectService>(out var statusScript);
         statusScript
@@ -110,7 +112,7 @@ public sealed class PerkBench : IDisposable
 
     public IQuickCastService QuickCast { get; }
 
-    public IBeastMasteryService BeastMastery { get; }
+    public ICompanionLookup BeastMastery { get; }
 
     public IStatusEffectService StatusEffects { get; }
 
@@ -196,9 +198,9 @@ public sealed class TestPerkService : PerkService
         PerkBench bench,
         IDBService db,
         IQuickCastService quickCast,
-        IBeastMasteryService beastMastery,
+        ICompanionLookup beastMastery,
         IStatusEffectService statusEffect)
-        : base(db, quickCast, beastMastery, statusEffect, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatService>(), FacadeForwarder.LazyFor<IDroidService>())
+        : base(db, quickCast, beastMastery, statusEffect, FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatService>())
     {
         _bench = bench;
     }
@@ -214,10 +216,7 @@ public sealed class TestPerkService : PerkService
 
     protected override bool IsDroid(uint creature) => _bench.Droids.Contains(creature);
 
-    protected override uint GetDroidControllerItem(uint droid) => PerkBench.DroidController;
-
-    protected override DroidItemPropertyDetails LoadDroidItemPropertyDetails(uint controller) =>
-        new() { Perks = new Dictionary<PerkType, int>(_bench.DroidPerks) };
+    protected override int GetDroidPerkLevel(uint droid, PerkType perkType) => _bench.DroidPerks.GetValueOrDefault(perkType);
 
     protected override void RefreshStatDrivenTrackerEffects(uint creature) =>
         _bench.Engine.Note($"GameServices.Combat.RefreshStatDrivenTrackerEffects:{creature}:saved={_bench.Db.Saved.Count}");
@@ -232,7 +231,7 @@ public sealed class TestPerkService : PerkService
 
     public bool DefaultIsDroid(uint creature) => base.IsDroid(creature);
 
-    public uint DefaultDroidControllerItem(uint droid) => base.GetDroidControllerItem(droid);
+    public int DefaultDroidPerkLevel(uint droid, PerkType perkType) => base.GetDroidPerkLevel(droid, perkType);
 }
 
 /// <summary>A requirement that answers a scripted message.</summary>

@@ -134,9 +134,6 @@ Domain/Combat -> Domain/Character | 837
 Domain/Combat -> Feature/AppearanceDefinition | 3
 Domain/Combat -> Feature/StatusEffectDefinition | 115
 
-# Combat -> Companions (1 edge)
-Domain/Combat -> Domain/Companions | 15
-
 # Combat -> Creatures (1 edge)
 Domain/Combat -> Domain/Creatures | 17
 
@@ -232,9 +229,6 @@ Feature/AIDefinition -> Domain/Character | 5
 
 # Creatures -> Combat (1 edge)
 Domain/Creatures -> Domain/Combat | 29
-
-# Creatures -> Companions (1 edge)
-Domain/Creatures -> Domain/Companions | 9
 
 # Creatures -> Gameplay (1 edge)
 Domain/Creatures -> Feature.UsePerkFeat | 3
@@ -445,10 +439,9 @@ Feature.UsePerkFeat -> Domain/Social | 1
 # Gameplay -> Space (1 edge)
 Feature.PlayerStatusWindow -> Domain/Space | 1
 
-# Gameplay -> UI (13 edges)
+# Gameplay -> UI (12 edges)
 Feature.ArmorDisplay -> Domain/UI | 1
 Feature.CivilianPatrol -> Domain/UI | 1
-Feature.DMActions -> Domain/UI | 1
 Feature.DMToolbarWindow -> Domain/UI | 3
 Feature.EchaniTempleMonks -> Domain/UI | 1
 Feature.EquipmentStats -> Domain/UI | 2
@@ -524,8 +517,7 @@ Platform/Native -> Domain/Character | 29
 Platform/Native -> Feature/StatusEffectDefinition | 1
 Platform/Root -> Domain/Character | 1
 
-# Platform -> Combat (2 edges)
-Platform/Core -> Domain/Combat | 4
+# Platform -> Combat (1 edge)
 Platform/Native -> Domain/Combat | 59
 
 # Platform -> Creatures (1 edge)

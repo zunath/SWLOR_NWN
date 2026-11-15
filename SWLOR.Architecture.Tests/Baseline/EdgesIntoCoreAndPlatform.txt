@@ -115,7 +115,7 @@ Feature/SnippetDefinition -> Platform/Composition | 20
 Feature/SnippetDefinition -> Platform/Core | 26
 Platform/Entity -> Platform/Core | 1
 
-# Gameplay -> Foundation (53 edges)
+# Gameplay -> Foundation (54 edges)
 Feature.AchievementProgression -> Domain/Foundation | 7
 Feature.AchievementProgression -> Platform/Entity | 6
 Feature.AreaConfiguration -> Domain/Foundation | 1
@@ -130,6 +130,7 @@ Feature.DMActions -> Domain/Foundation | 1
 Feature.DMActions -> Platform/Entity | 1
 Feature.DMAuthorization -> Domain/Foundation | 1
 Feature.DMAuthorization -> Platform/Enumeration | 1
+Feature.DMToolbarWindow -> Domain/Foundation | 2
 Feature.EquipmentRestrictions -> Domain/Foundation | 3
 Feature.EquipmentStats -> Domain/Foundation | 20
 Feature.EquipmentStats -> Platform/Entity | 20

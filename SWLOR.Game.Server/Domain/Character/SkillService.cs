@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
@@ -36,22 +35,22 @@ namespace SWLOR.Game.Server.Domain.Character
             .ToFrozenSet();
 
         private readonly IDBService _db;
-        private readonly IGuiService _gui;
+        private readonly IGuiRefreshPublisher _gui;
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly ITwinPistolEquipmentService _twinPistolEquipment;
         private readonly Lazy<IStatService> _stat;
 
-        private readonly Lazy<IDroidService> _droid;
+        private readonly ICompanionLookup _companions;
 
         public SkillService(
             IDBService db,
-            IGuiService gui,
+            IGuiRefreshPublisher gui,
             IPlayerFeedbackService playerFeedback,
             ITwinPistolEquipmentService twinPistolEquipment,
             Lazy<IStatService> stat,
-            Lazy<IDroidService> droid)
+            ICompanionLookup companions)
         {
-            _droid = droid;
+            _companions = companions;
             _db = db;
             _gui = gui;
             _playerFeedback = playerFeedback;
@@ -1125,18 +1124,13 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>Whether the creature is a droid (the unconverted <c>Droid</c>).</summary>
         protected virtual bool IsDroid(uint creature)
         {
-            return _droid.Value.IsDroid(creature);
+            return _companions.IsDroid(creature);
         }
 
         /// <summary>The rank a droid's controller item gives in a skill, 0 when it has none (the unconverted <c>Droid</c>).</summary>
         protected virtual int GetDroidSkillRank(uint creature, SkillType skillType)
         {
-            var controller = _droid.Value.GetControllerItem(creature);
-            var droidDetails = _droid.Value.LoadDroidItemPropertyDetails(controller);
-
-            return droidDetails.Skills.TryGetValue(skillType, out var droidSkillRank)
-                ? droidSkillRank
-                : 0;
+            return _companions.GetDroidSkillRank(creature, skillType);
         }
 
         /// <summary>Queues a callback for the next frame (the scheduler, which runs on the real clock).</summary>

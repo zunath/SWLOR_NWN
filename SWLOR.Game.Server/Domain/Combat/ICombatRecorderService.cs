@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
@@ -13,13 +14,8 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// summary. Static callers reach the container's instance through <c>GameServices.CombatRecorder</c>; the hooks in the game code check
     /// <see cref="IsRecording"/> first, so nothing else runs while no recording does.
     /// </summary>
-    public interface ICombatRecorderService
+    public interface ICombatRecorderService : ICharacterRecording, IShutdownStep
     {
-        /// <summary>
-        /// True while a recording runs. Hooks check this before doing any work.
-        /// </summary>
-        bool IsRecording { get; }
-
         /// <summary>
         /// The writer of the current or most recent recording. Its Completion task finishes once
         /// the summary has been written.
@@ -43,30 +39,10 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         string GetStatus();
 
-        void StopOnShutdown();
-
-        void RestoreAttributionDepth(int depth);
-
-        /// <summary>
-        /// Attributes changes made inside the returned scope to an actor and source.
-        /// </summary>
-        CombatRecordAttributionScope BeginAttribution(
-            uint actor,
-            CombatRecordSourceKind kind,
-            string name = null,
-            int code = 0,
-            int rank = 0);
-
         CombatRecordAttributionScope BeginAbilityAttribution(
             uint activator,
             AbilityDetail ability,
             FeatType feat = FeatType.Invalid);
-
-        CombatRecordAttributionScope BeginStatusEffectAttribution(uint source, uint creature, IStatusEffect statusEffect);
-
-        CombatRecordAttributionScope BeginItemAttribution(uint user, uint item);
-
-        CombatRecordAttributionScope BeginStatTriggerAttribution(uint creature, StatType stat);
 
         /// <summary>
         /// Starts a rider scope (lifesteal, damage share) that keeps the enclosing ability's name.
@@ -91,14 +67,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// healing and is not recorded.
         /// </summary>
         CombatRecordAttributionScope BeginSetupAttribution(uint creature);
-
-        /// <summary>
-        /// Starts the reactions to a heal on <paramref name="creature"/> that is applied right after
-        /// them (a stamina restore on healing received). Their events are written after that heal.
-        /// </summary>
-        CombatRecordHealingReactionScope BeginHealingReaction(uint creature);
-
-        void EndHealingReaction();
 
         /// <summary>
         /// Attributes a respawn's own recovery, so it is not counted as anyone's healing.
@@ -287,38 +255,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         void RecordTemporaryHitPointsGranted(uint source, uint target, string effectKey, int amount, float durationSeconds);
 
-        /// <summary>
-        /// Records an FP or STM change that already happened.
-        /// </summary>
-        void RecordResourceChange(uint creature, CombatRecordResource resource, int delta, int valueAfter);
-
-        /// <summary>
-        /// Records an FP or STM reduction that is about to clamp the pool at zero.
-        /// </summary>
-        void RecordResourceReduction(uint creature, CombatRecordResource resource, int reduceBy, int currentValue);
-
-        /// <summary>
-        /// Records a stack reduction made by combat activity (an item use, an ability's cost).
-        /// Reductions outside any scope, such as quest turn-ins, are not combat events.
-        /// </summary>
-        void RecordItemStackReduced(uint item, int quantity);
-
-        /// <summary>
-        /// Records a charge an activated item spent, attributed to that item.
-        /// </summary>
-        void RecordItemChargeUsed(uint user, uint item);
-
         void RecordItemConsumed(uint creature, string itemResref, int quantity);
-
-        void RecordStatusApplied(
-            uint source,
-            uint creature,
-            IStatusEffect statusEffect,
-            float durationSeconds,
-            bool isPermanent,
-            bool isRefresh);
-
-        void RecordStatusRemoved(uint creature, IStatusEffect statusEffect, bool isReplacement);
 
         void RecordCreatureDeath();
 

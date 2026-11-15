@@ -13,7 +13,7 @@ public class WeaponHandFitTests
 {
     [TestCase("pmh0_handr001")]
     [TestCase("pmh0_handl001")]
-    [TestCase("pmh0_handr204")]
+    [TestCase("pmh0_handr009")]
     [TestCase("")]
     [TestCase(null)]
     [TestCase("hand")]
@@ -24,7 +24,7 @@ public class WeaponHandFitTests
 
     [TestCase("pmz0_handr001", "pmz0_handr")]
     [TestCase("PMZ0_HANDR204", "pmz0_handr")]
-    [TestCase("pfh0_handl001", "pfh0_handl")]
+    [TestCase("pfz0_handl204", "pfz0_handl")]
     public void AHandStyleWithoutItsOwnEntryTakesItsBodysMove(string hand, string body)
     {
         WeaponHandFitCatalog.Hands.Should().NotContainKey(hand);
@@ -38,6 +38,15 @@ public class WeaponHandFitTests
     {
         WeaponHandFitCatalog.Get(hand).Should().Be(WeaponHandFitCatalog.Hands[hand])
             .And.NotBe(WeaponHandFitCatalog.Bodies[body]);
+    }
+
+    [Test]
+    public void AReferenceBodyHandThatHoldsTheHandleBadlyHasAReviewedMove()
+    {
+        // The male human body has no body move, but the Mon Calamari hand holds the handle below the fist.
+        WeaponHandFitCatalog.Bodies.Should().NotContainKey("pmh0_handr");
+        WeaponHandFitCatalog.Get("pmh0_handr204").Should().Be(WeaponHandFitCatalog.Hands["pmh0_handr204"])
+            .And.NotBe(FitVector.Zero);
     }
 
     [Test]

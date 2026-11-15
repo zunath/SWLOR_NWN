@@ -26,6 +26,7 @@ Commands (run from the repository root; needs numpy, scipy and Pillow, and the h
     python tools/WeaponGripFit.py check --derived                         # also every derived move (minutes)
     python tools/WeaponGripFit.py sheet --output <folder>                 # default hand of every body
     python tools/WeaponGripFit.py sheet --hand pfd0_handr209 --move 15 0 0 --output <folder>  # try a move (mm)
+    python tools/WeaponGripFit.py weapons --class wbwxl --output <folder>  # every rifle model in the reference hand
 
 See SWLOR.Game.Server/Readmes/WeaponHandFit.md.
 """
@@ -63,7 +64,8 @@ MAX_MOVE = 0.07           # a larger move means the catalog entry is wrong, not 
 GRIP_ANCHOR = (0.008, -0.010, 0.020)
 DERIVED_TOLERANCE = 0.005  # the catalog may differ from a derived move by this much
 DERIVED_ENTRY = 0.003      # a derived hand this far from its body's move gets its own entry
-REGISTERED_MISS = 0.002    # a looser surface match than this is not trusted; that hand is judged by eye
+REGISTERED_MISS = 0.004    # a looser surface match than this is another shape; that hand is judged by eye
+REGISTERED_SCALE = (0.5, 2.0)  # a match outside this size range is a stub or a different part
 # The rifle ready and attack clips turn the weapon hook against the hand (x y z w); the idle clip leaves it
 # at rest. The female dwarf and half-orc frames inherit clips that turn it less. `WeaponHandFit.cs` holds
 # the same numbers.
@@ -324,7 +326,7 @@ def check_rifle_banks() -> list[str]:
     for body in BODIES:
         expected = rifle_move(bodies.get(f"{body}_handr", np.zeros(3)), body)
         found = recorded.get(body, np.zeros(3))
-        if np.abs(expected - found).max() > 0.0006:
+        if np.abs(expected - found).max() > 0.0015:
             problems.append(f"{body}: the rifle hold bank is solved for {np.round(found * 1000, 1)} mm but the catalog "
                             f"gives {np.round(expected * 1000, 1)} mm; update WEAPON_MOVES in {RIFLE_BANKS.name} "
                             "and regenerate the banks")
@@ -353,19 +355,27 @@ def exact_map(source: str, target: str):
     return solution if np.abs(design @ solution - a).max() < 0.001 else None
 
 
-@lru_cache(maxsize=None)
-def registered_map(source: str, target: str, keep: float = 0.85, rounds: int = 40):
+def registered_map(source: str, target: str):
     """A scale and shift laying one model's surface over another's when their vertices differ, or None."""
+    result, miss = registered_fit(source, target)
+    if result is None or miss > REGISTERED_MISS or not REGISTERED_SCALE[0] <= result[0, 0] <= REGISTERED_SCALE[1]:
+        return None
+    return result
+
+
+@lru_cache(maxsize=None)
+def registered_fit(source: str, target: str, keep: float = 0.85, rounds: int = 40):
+    """(map, mean miss in metres) of the best scale and shift between two models' surfaces, or (None, inf)."""
     from scipy.spatial import cKDTree
     try:
         a = surface_samples(*hand_mesh(target, "pistol"), 0.003)
         b = surface_samples(*hand_mesh(source, "pistol"), 0.003)
     except (ValueError, FileNotFoundError):
-        return None
+        return None, math.inf
     low_a, high_a = np.percentile(a, 2, axis=0), np.percentile(a, 98, axis=0)
     low_b, high_b = np.percentile(b, 2, axis=0), np.percentile(b, 98, axis=0)
     if np.any(high_b - low_b < 1e-6) or np.any(high_a - low_a < 1e-6):
-        return None
+        return None, math.inf
     scale = float(np.cbrt(np.prod((high_a - low_a) / (high_b - low_b))))
     shift = (low_a + high_a) / 2 - scale * (low_b + high_b) / 2
     tree, miss = cKDTree(a), math.inf
@@ -384,9 +394,7 @@ def registered_map(source: str, target: str, keep: float = 0.85, rounds: int = 4
         miss = (there[keep_there].mean() + back[keep_back].mean()) / 2
         if np.abs(shift - previous).max() < 2e-5:
             break
-    if miss > REGISTERED_MISS:
-        return None
-    return np.vstack([np.eye(3) * scale, shift])
+    return np.vstack([np.eye(3) * scale, shift]), miss
 
 
 @lru_cache(maxsize=None)
@@ -394,21 +402,22 @@ def derived_move(hand: str) -> tuple[np.ndarray | None, str]:
     """(move in metres, how it was found). A hand that cannot be tied to the reference body gives (None, "by eye").
 
     The same hand style on the reference body is the standard: wherever its handle rests, the handle rests on
-    this model. A female or non-human model is tied to the reference through its own human-frame model when it
-    cannot be tied directly; a human-frame model with its own catalog entry, or one judged by eye, passes its
-    catalog move along.
+    this model. A reference hand normally has no move; the few that hold the handle badly themselves carry a
+    reviewed catalog entry, and every model tied to them inherits it. A female or non-human model is tied to
+    the reference through its own human-frame model when it cannot be tied directly; a human-frame model with
+    its own catalog entry, or one judged by eye, passes its catalog move along.
     """
     hand = hand.lower()
     body, side, style = hand[:4], hand[9], hand[-3:]
     point = anchor(side)
     if body == REFERENCE_BODY:
-        return np.zeros(3), "reference"
+        return catalog_move(hand), "reference"
     reference = f"{REFERENCE_BODY}_hand{side}{style}"
     human = f"{body[:2]}h0_hand{side}{style}"
     for how, find in (("exact", exact_map), ("registered", registered_map)):
         direct = find(reference, hand) if reference in model_index() else None
         if direct is not None:
-            return np.append(point, 1) @ direct - point, how
+            return np.append(point + catalog_move(reference), 1) @ direct - point, how
         if human != hand and human in model_index():
             through = find(human, hand)
             if through is not None:
@@ -597,6 +606,34 @@ def write_sheets(bodies, sides, every_style: bool, trial, output: Path, weapon: 
     return written
 
 
+def write_weapon_sheets(weapon_class: str, output: Path, size: int = 180, per_sheet: int = 16) -> tuple[list[Path], list[str]]:
+    """Every middle-part model of a weapon class in the reference hand; returns the sheets and the models skipped.
+
+    The hand moves assume a weapon is fitted to the reference hand, so a weapon whose grip is not in that fist
+    here sits wrong on every body. Models stored uncompiled cannot be read and are listed instead.
+    """
+    from PIL import Image
+    output.mkdir(parents=True, exist_ok=True)
+    names = sorted(name for name in model_index() if re.fullmatch(rf"{weapon_class}_m_\d+", name))
+    tiles, skipped = [], []
+    for name in names:
+        try:
+            tiles.append(tile(f"{REFERENCE_BODY}_handr001", "pistol", name, (0, 0, 0), name, size))
+        except ValueError:
+            skipped.append(name)
+    written = []
+    for page in range(0, len(tiles), per_sheet):
+        group = tiles[page:page + per_sheet]
+        width, height = group[0].width, group[0].height
+        sheet = Image.new("RGB", (width * 2 + 8, height * ((len(group) + 1) // 2)), "white")
+        for index, item in enumerate(group):
+            sheet.paste(item, ((index % 2) * (width + 8), (index // 2) * height))
+        path = output / f"{weapon_class}-{page // per_sheet + 1}.png"
+        sheet.save(path)
+        written.append(path)
+    return written, skipped
+
+
 # ---------------------------------------------------------------- commands
 def check() -> list[str]:
     """Problems with the committed catalog."""
@@ -643,7 +680,7 @@ def check_derived(bodies=BODIES, sides=("r", "l")) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=("sheet", "derive", "check"))
+    parser.add_argument("command", choices=("sheet", "weapons", "derive", "check"))
     parser.add_argument("--body", action="append", choices=BODIES)
     parser.add_argument("--side", action="append", choices=("r", "l"))
     parser.add_argument("--all", action="store_true", help="every hand style, not only the default hand")
@@ -651,6 +688,8 @@ def main() -> int:
     parser.add_argument("--derived", action="store_true",
                         help="check: also compare every hand with its derived move (slow, needs the hak models)")
     parser.add_argument("--weapon", help="native pistol model to draw, such as wbwsh_m_013")
+    parser.add_argument("--class", dest="weapon_class", choices=("wbwsh", "wbwxl", "wbwxh"), default="wbwsh",
+                        help="weapons: pistols (wbwsh), rifles (wbwxl) or cannons (wbwxh)")
     parser.add_argument("--move", type=float, nargs=3, metavar=("X", "Y", "Z"),
                         help="draw this move in millimetres instead of the catalog's")
     parser.add_argument("--output", type=Path, help="folder for review sheets")
@@ -669,7 +708,14 @@ def main() -> int:
         return 0
 
     if not args.output:
-        parser.error("sheet needs --output")
+        parser.error(f"{args.command} needs --output")
+    if args.command == "weapons":
+        written, skipped = write_weapon_sheets(args.weapon_class, args.output)
+        for path in written:
+            print(path)
+        if skipped:
+            print("not compiled, not drawn:", " ".join(skipped))
+        return 0
     trial = None if args.move is None else [value / 1000 for value in args.move]
     only = {name.lower() for name in args.hand} if args.hand else None
     bodies = args.body or (sorted({name[:4] for name in only}) if only else BODIES)

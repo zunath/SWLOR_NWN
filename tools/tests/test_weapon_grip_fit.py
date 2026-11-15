@@ -50,6 +50,11 @@ class DerivedMoveTests(unittest.TestCase):
         np.testing.assert_allclose(move, np.zeros(3))
         self.assertEqual("reference", how)
 
+    def test_a_reviewed_reference_hand_keeps_its_catalog_move(self):
+        move, how = fit.derived_move("pmh0_handr204")
+        np.testing.assert_allclose(move, fit.read_catalog()[1]["pmh0_handr204"])
+        self.assertEqual("reference", how)
+
     def test_the_left_anchor_mirrors_the_right(self):
         np.testing.assert_allclose(fit.anchor("l"), fit.anchor("r") * [-1, 1, 1])
 
@@ -71,6 +76,17 @@ class DerivedMoveTests(unittest.TestCase):
     @unittest.skipUnless(HAKS_READY, "needs the hand, weapon and body root hak folders")
     def test_a_hand_with_no_model_on_the_reference_body_is_left_to_the_eye(self):
         self.assertEqual((None, "by eye"), fit.derived_move("pmo0_handr201"))
+
+
+class WeaponSheetTests(unittest.TestCase):
+    @unittest.skipUnless(HAKS_READY, "needs the hand, weapon and body root hak folders")
+    def test_every_compiled_cannon_is_drawn_in_the_reference_hand_and_the_rest_are_listed(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            written, skipped = fit.write_weapon_sheets("wbwxh", Path(folder))
+            self.assertTrue(written)
+            self.assertTrue(all(path.is_file() for path in written))
+        self.assertTrue(all(name.startswith("wbwxh_m_") for name in skipped))
 
 
 class RifleMoveTests(unittest.TestCase):

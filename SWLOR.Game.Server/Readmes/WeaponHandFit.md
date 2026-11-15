@@ -15,11 +15,11 @@ Playable bodies: `h` human frame (most species), `e` elf frame (Bothan, Rodian, 
 
 ## Where the moves come from
 
-The standard is the same hand style on the male human: wherever the handle rests on `pmh0_handr009`, it should rest on every other body's hand 009.
+The standard is the same hand style on the male human: wherever the handle rests on `pmh0_handr009`, it should rest on every other body's hand 009. A male human hand normally has no move. The exception is a hand that holds the handle badly on the male human itself (the Mon Calamari hand holds it below the fist): it carries a reviewed `Hands` entry, and every model derived from it inherits that.
 
-- **Derived.** Almost every hand model on another body is the male human's model, scaled and shifted for that body. `tools/WeaponGripFit.py` finds that scale and shift (exactly when both models share their vertices, otherwise by laying one surface over the other) and carries one point across it: the place where the back of the handle rests against the heel of the hand. The move is how far that point travels. Female and non-human models that cannot be tied to the male human directly are tied to it through their own human-frame model.
+- **Derived.** Almost every hand model on another body is the male human's model, scaled and shifted for that body. `tools/WeaponGripFit.py` finds that scale and shift (exactly when both models share their vertices, otherwise by laying one surface over the other, which it trusts while the surfaces stay within 4 mm on average) and carries one point across it: the place where the back of the handle rests against the heel of the hand. The move is how far that point travels. Female and non-human models that cannot be tied to the male human directly are tied to it through their own human-frame model.
 - **Body move.** `Bodies` holds the median derived move of a body and side. Hands whose derived move is more than 3 mm from it get a `Hands` entry.
-- **By eye.** A hand with no model on the male human to compare with (the Cathar, Wookiee and droid hands, and a few remodelled gloves) cannot be derived. It takes its body's move unless a review sheet shows it needs its own. The entries judged this way are commented in the catalog.
+- **By eye.** A hand with no model on the male human to compare with (the Cathar, Wookiee and droid hands, and a few odd parts) cannot be derived. It takes its body's move unless the client shows it needs its own. The entries judged this way are commented in the catalog. Judge them in the client, not on a sheet: a drawing resolves about a centimetre and several of these were off by two or three.
 - **Which wins.** A move derived from shared vertices is exact; the check holds the catalog to it. A move found by laying surfaces over each other is an estimate, so an entry reviewed in the client outranks it (the Mon Calamari female hand is one).
 - **Left hands** are derived on their own. Several left hooks are not mirror images of the right ones, so a left move is not always the right move with X negated.
 
@@ -56,7 +56,10 @@ python tools/WeaponGripFit.py check --derived                                  #
 python tools/WeaponGripFit.py sheet --output C:\Temp\grip                      # default hand of every body
 python tools/WeaponGripFit.py sheet --hand pfd0_handr209 --output C:\Temp\grip # one hand
 python tools/WeaponGripFit.py sheet --hand pfd0_handr209 --move 15 0 0 --output C:\Temp\grip   # try a move (mm)
+python tools/WeaponGripFit.py weapons --class wbwxl --output C:\Temp\grip                    # every rifle model in the reference hand
 ```
+
+The moves assume each weapon is fitted to the male human. `weapons` draws every model of a class (`wbwsh` pistols, `wbwxl` rifles, `wbwxh` cannons) in that hand, so a model whose grip is not in the fist stands out. Run it when weapon models are added.
 
 A sheet tile shows the side view, the view from below, and two cuts across the handle (hand outline in brown, pistol in blue), once without a move and once with it. In the cuts, +X is to the right and the barrel side is up. A drawing resolves about a centimetre; use it to catch a weapon that sits outside the hand, not to tune a derived move.
 

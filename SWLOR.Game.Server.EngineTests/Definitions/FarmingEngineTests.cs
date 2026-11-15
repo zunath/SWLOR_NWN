@@ -137,6 +137,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(GetIsObjectValid(model), "a growing crop stands as its own bed");
                     ctx.AssertEqual(FarmingRules.GrowingCropAppearance, GetLocalInt(placeable, "GARDEN_PLOT_CROP_APPEARANCE"), "the bed is the sprouting bed");
                     ctx.AssertEqual(VisibilityType.Hidden, VisibilityPlugin.GetVisibilityOverride(OBJECT_INVALID, placeable), "the plot's own bed hides behind it");
+
+                    // Manage Structures nudges and turns only the plot; the bed standing in for it follows.
+                    var moved = GetPosition(placeable);
+                    moved.X += 0.5f;
+                    ObjectPlugin.SetPosition(placeable, moved);
+                    AssignCommand(placeable, () => SetFacing(135f));
+                    AssignCommand(placeable, () => Farming.MatchCropModel(placeable));
+                });
+                await ctx.DelaySecondsAsync(1f);
+                await Run(ctx, farmer.Creature, () =>
+                {
+                    var model = Farming.GetCropModel(placeable);
+                    ctx.Assert(GetDistanceBetweenLocations(GetLocation(model), GetLocation(placeable)) < 0.01f, "the crop's bed moves with its plot");
+                    ctx.Assert(System.Math.Abs(GetFacing(model) - GetFacing(placeable)) < 0.5f, $"the crop's bed turns with its plot ({GetFacing(model)} vs {GetFacing(placeable)})");
                 });
 
                 ShiftPlot(plot.Id, TimeSpan.FromHours(crop.GrowHours));

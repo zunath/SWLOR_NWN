@@ -678,6 +678,21 @@ namespace SWLOR.Game.Server.Service
             return GetLocalObject(placeable, CropModelVariable);
         }
 
+        /// <summary>
+        /// Stands a plot's crop where the plot now is. Moving a structure in Manage Structures moves only the plot, and a planted plot is
+        /// hidden behind its crop's bed, so the bed follows each nudge and turn; saving the move stands the crop up again for good.
+        /// </summary>
+        public static void MatchCropModel(uint placeable)
+        {
+            var model = GetCropModel(placeable);
+            if (!GetIsObjectValid(model))
+                return;
+
+            ObjectPlugin.SetPosition(model, GetPosition(placeable));
+            var facing = GetFacing(placeable);
+            AssignCommand(model, () => SetFacing(facing));
+        }
+
         /// <summary>A plot's plant: gone with its plot, and brought up to date once the crop's stage changes on its own.</summary>
         [NWNEventHandler(ScriptName.OnGardenPlotCropHeartbeat)]
         public static void CropModelHeartbeat()

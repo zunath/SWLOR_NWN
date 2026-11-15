@@ -630,6 +630,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SetFacing(facing);
                 ObjectPlugin.SetPosition(placeable, position);
             });
+            FollowStructure(placeable);
+        }
+
+        /// <summary>
+        /// A planted garden plot is hidden behind its crop's bed, so the bed takes each change of position or facing with it. The
+        /// facing changes run as the placeable's own commands, so this is queued after them.
+        /// </summary>
+        private static void FollowStructure(uint placeable)
+        {
+            AssignCommand(placeable, () => Farming.MatchCropModel(placeable));
         }
 
         public Action OnDiscardChanges() => () =>
@@ -649,6 +659,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             facing = GameMath.NormalizeDegrees(facing);
 
             AssignCommand(placeable, () => SetFacing(facing));
+            FollowStructure(placeable);
         };
 
         public Action OnRotateCounterClockwise() => () =>
@@ -663,6 +674,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             facing = GameMath.NormalizeDegrees(facing);
 
             AssignCommand(placeable, () => SetFacing(facing));
+            FollowStructure(placeable);
         };
 
         private void AdjustFacing(float facing)
@@ -673,6 +685,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var placeable = Property.GetPlaceableByPropertyId(structure.Id);
             AssignCommand(placeable, () => SetFacing(facing));
+            FollowStructure(placeable);
         }
 
         public Action OnSetFacingNorth() => () =>
@@ -708,6 +721,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             position.Z += z;
 
             ObjectPlugin.SetPosition(placeable, position);
+            FollowStructure(placeable);
         }
 
         public Action OnYAxisUp() => () =>
@@ -757,6 +771,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             position.Z = z;
             ObjectPlugin.SetPosition(placeable, position);
+            FollowStructure(placeable);
         };
     }
 }

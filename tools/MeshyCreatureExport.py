@@ -545,17 +545,28 @@ def main():
         raise ValueError('Unsupported manifest schema')
     weapon = load_module('trellis_weapon_export', REPO / 'tools/TrellisWeaponExport.py')
     weapon.load_blender()
-    reports, models, textures = [], set(), set()
+    # Check every entry, source hashes included, before exporting any.
+    manifest_dir = args.manifest.resolve().parent
+    models, textures = set(), set()
     for item in manifest['creatures']:
         if item['model'].lower() in models or item['texture'].lower() in textures:
             raise ValueError(item['model'] + ': every creature needs its own model and texture name')
         models.add(item['model'].lower())
         textures.add(item['texture'].lower())
-        if args.only and item['model'] != args.only:
-            continue
         if len(item['model']) > 16 or len(item['texture']) > 13 or item['texture_size'] not in (512, 1024):
             raise ValueError(item['model'] + ': model <= 16, texture <= 13 characters, texture_size 512 or 1024')
-        reports.append(export_creature(item, args.manifest.resolve().parent, out / item['model'], weapon))
+        if hashlib.sha256((manifest_dir / item['source']).read_bytes()).hexdigest() != item['sha256']:
+            raise ValueError(item['model'] + ': source GLB does not match its sha256')
+    # Any later failure removes the whole output (it started empty), so a retry never finds a half-written folder.
+    reports = []
+    try:
+        for item in manifest['creatures']:
+            if args.only and item['model'] != args.only:
+                continue
+            reports.append(export_creature(item, manifest_dir, out / item['model'], weapon))
+    except BaseException:
+        shutil.rmtree(out, ignore_errors=True)
+        raise
     (out / 'reports.json').write_text(json.dumps(reports, indent=2) + '\n')
     print('CREATURE_EXPORT_COMPLETE ' + str(out))
 

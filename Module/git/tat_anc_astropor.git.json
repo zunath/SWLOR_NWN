@@ -21012,7 +21012,7 @@
         },
         "Appearance_Type": {
           "type": "word",
-          "value": 10000
+          "value": 10095
         },
         "ArmorPart_RFoot": {
           "type": "byte",
@@ -22027,11 +22027,11 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3568
+          "value": 4378
         },
         "Race": {
           "type": "byte",
-          "value": 152
+          "value": 165
         },
         "refbonus": {
           "type": "short",

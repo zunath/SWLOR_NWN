@@ -816,11 +816,13 @@ namespace SWLOR.Game.Server.Service
         /// Whether the ship is docked at one of these Starports, with nobody flying it. A ship docked aboard a host or at a
         /// derelict keeps its last dock but is away from it, and so is a ship whose pilot is launching it. A ship with a
         /// cargo sale a restart interrupted waits for its owner's login, as it does at the controls: a jump would spend
-        /// sold fuel.
+        /// sold fuel. A ship listed for sale stays where its listing says it is, as at the controls, so a buyer never pays
+        /// for a ship that jumped to another station.
         /// </summary>
         private static bool IsDockedAt(WorldProperty ship, PlayerShip record, ICollection<string> starportInteriorIds)
         {
             return record != null &&
+                   !ShipTransfer.IsListedForSale(record.Id) &&
                    !Space.IsDockedAboardHost(record, out _) &&
                    !Space.IsDockedAtDerelict(record, out _) &&
                    !Space.IsShipLaunchPending(record.Id) &&

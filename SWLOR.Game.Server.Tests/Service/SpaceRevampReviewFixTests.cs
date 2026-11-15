@@ -288,4 +288,15 @@ public class SpaceRevampReviewFixTests
         var transfer = Between(property, "void TransferPermissions(string winnerPlayerId)", "CityOfficers.EndAllOnNewMayor(city, winnerPlayerId);");
         transfer.Should().NotContain(".Single();", "a restart after the delete finds the old mayor's permission already gone");
     }
+
+    [Test]
+    public void AShipListedForSale_CannotTakeAJumpBeacon()
+    {
+        var buildings = ReadSource("Service", "StationBuildings.cs");
+        Between(buildings, "private static bool IsDockedAt(", "public static List<(WorldProperty Ship, PlayerShip Record)> GetJumpableShips(")
+            .Should().Contain("!ShipTransfer.IsListedForSale(record.Id)", "a buyer pays for a ship at the station its listing shows");
+        Between(buildings, "public static List<(WorldProperty Ship, PlayerShip Record)> GetJumpableShips(", "return")
+            .Should().Contain("IsDockedAt(ship, record, interiors)", "beacon selection offers only ships at the dock");
+        buildings.Should().Contain("ShipDocked = ship != null && IsDockedAt(ship, record, GetStarportInteriorIds(origin.Id)),", "the jump itself checks the same");
+    }
 }

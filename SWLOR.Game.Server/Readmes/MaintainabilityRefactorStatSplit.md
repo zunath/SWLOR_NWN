@@ -21,8 +21,9 @@ the ranges through the diff.
   and their upward dependencies are Combat services, which become plain inside-Combat parameters. The alternative was rule 1:
   keep them in Character and have about ten Combat services push what they read into Character-owned stores.
 - **Accepted growth** (coordinator, 2026-11-16): `CombatDamageTakenService`, `CombatAbilityHitService`, `AbilityDamageInputService`
-  (10 -> 11), `SpaceService` and `CharacterSheetViewModel` may gain services. The pull request that causes each records it and
-  names the item that removes it (Holders, below). No holder gains a `Lazy<>`.
+  (10 -> 11), `SpaceService` and `CharacterSheetViewModel` may gain services, and `BeastMasteryService` may go 13 -> 14 in
+  P5-4e, traded for its `Lazy<>` going 3 -> 2 through the `CapstoneProofService` `ICompanionLookup` swap. The pull request that
+  causes each records it and names the item that removes it (Holders, below). No holder gains a `Lazy<>`.
 - The Mimicry stat bonus follows the approved rule 1 rows; healing joins `CombatResourcesService`; the content static
   `TemporaryHitPointEffects.ScheduleLimitCheck` stays behind its seam for P5-12 (as P5-3 answer 3).
 
@@ -252,7 +253,7 @@ count that grows is one the coordinator accepted (or below the limit), recorded 
 | `AbilityDamageInputService` (10) | 1, 5 | 10 -> 11, a new line, accepted; recorded in c; removed by P5-16 |
 | `SpaceService` (16) | 1, 2 | +1, accepted; recorded in e; removed by P5-6 |
 | `CharacterSheetViewModel` (19, lookups) | 1, 2, 5 | 19 -> 21, accepted; recorded in c and e; removed by P5-14 and P5-16 |
-| `BeastMasteryService` (13, 3 down `Lazy<>`) | 1, 2 | both plain once `CapstoneProofService` takes `ICompanionLookup` (e): `Lazy<>` 3 -> 2, services 13 -> 14 (not on the accepted list) |
+| `BeastMasteryService` (13, 3 down `Lazy<>`) | 1, 2 | both plain once `CapstoneProofService` takes `ICompanionLookup` (e): `Lazy<>` 3 -> 2, services 13 -> 14, accepted; recorded in e; removed by P5-10 |
 
 ## Callers
 

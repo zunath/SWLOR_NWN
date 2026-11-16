@@ -87,7 +87,7 @@ public class ShieldDeflectionTests
 
         using (var engine = new PlayerEngine())
         {
-            CraftServices.Create().BuildItemPropertyForEnhancement(EnhancementSubType.ShieldDeflection, 9);
+            CraftServices.CreateEnhancementProperties().BuildItemPropertyForEnhancement(EnhancementSubType.ShieldDeflection, 9);
 
             var custom = engine.Engine.CallsTo("ItemPropertyCustom").Should().ContainSingle().Subject;
             custom.Arguments.Should().Equal(ItemPropertyType.ShieldDeflection, -1, 9, -1);

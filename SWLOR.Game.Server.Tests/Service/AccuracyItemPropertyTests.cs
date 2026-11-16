@@ -83,7 +83,7 @@ public class AccuracyItemPropertyTests
 
         using (var engine = new PlayerEngine())
         {
-            CraftServices.Create().BuildItemPropertyForEnhancement(EnhancementSubType.Accuracy, 7);
+            CraftServices.CreateEnhancementProperties().BuildItemPropertyForEnhancement(EnhancementSubType.Accuracy, 7);
 
             engine.Engine.CountOf("ItemPropertyAttackBonus").Should().Be(0);
             var custom = engine.Engine.CallsTo("ItemPropertyCustom").Should().ContainSingle().Subject;

@@ -805,6 +805,63 @@ out.append(f"Sustained Fire stacks belong to each weapon, and a ship firing thre
            f"{band('R', 'Ace within 15% of the fastest other style at T5 (Fighter, Interceptor, Bomber)', f'{ace_worst:.0%}', ace_worst <= 0.15)}) "
            f"and never the slowest style ({band('R', 'Ace is not the slowest style at T5', ', '.join(ace_slower) or 'none slower', not ace_slower)}).\n")
 
+# S. The astromech socket: a pilot and an astromech in one Small or Medium combat hull against two of that hull
+# (Readmes/AstromechPlayableSpeciesPlan.md, Ship role). The socket adds no slot and no weapon: the astromech routes power
+# and works the hull's repair modules on its own Engineering, here rank 50 at the crew cap, the most it can ever add.
+out.append("## S. Astromech socket: pilot plus astromech vs two separate ships\n")
+SOCKET_ROLES = ("Fighter", "Interceptor", "Bomber", "Gunship")
+
+
+def socketed(ship, mode):
+    """The hull with an astromech in its socket: Engineering 50 routing and repairs, the repairs at the crew cap."""
+    q = engineered(ship, mode)
+    q["repairers"] = [dict(r, amountPerCycle=round_cap(r["amountPerCycle"])) for r in q["repairers"]]
+    return q
+
+
+def round_cap(amount):
+    return max(1, int(amount * m.CREW_CAP + 0.5)) if amount else 0
+
+
+def repair_fit(role):
+    """The role's standard fit with its Shield Booster traded for a Shield Repairer, so every socket hull has a repair
+    module for the astromech to work (the Gunship's standard fit already carries one)."""
+    fit = dict(m.FIT[role])
+    if "Shield Repairer" not in fit and "Shield Booster" in fit:
+        fit = {("Shield Repairer" if k == "Shield Booster" else k): v for k, v in fit.items()}
+    return fit
+
+
+rows, socket_fastest, socket_job = [], 0.0, 0.0
+for L in (15, 35, 45):
+    for role in SOCKET_ROLES:
+        rank = best_rank("Medium" if role == "Gunship" else "Small", L)
+        for fit_label, fit in (("standard", m.FIT[role]), ("repairer", repair_fit(role))):
+            if fit_label == "repairer" and fit == m.FIT[role]:
+                continue
+            ship = m.player_ship(role, rank, fit)
+            for enemy, label in ((lambda: m.npc_ship("Fighter", L, "Elite"), "Elite"), (lambda: m.npc_ship("Fighter", L, "Boss"), "Boss (Large)")):
+                two = fight([dict(ship, count=2)], [enemy()])
+                best = None
+                for mode in m.POWER_ROUTING:
+                    r = fight([socketed(ship, mode)], [enemy()])
+                    if best is None or job(r) > job(best[1]):
+                        best = (mode, r)
+                    if r["win"] > 0 and two["win"] > 0:
+                        socket_fastest = max(socket_fastest, two["mean"] / r["mean"])
+                mode, r = best
+                ratio = job(r) / job(two) if job(two) > 0 else 0.0
+                socket_job = max(socket_job, ratio)
+                rows.append([f"R{L}", role, fit_label, label, f"{mode}: {cell(r)}", cell(two), f"{ratio:.0%}"])
+table(["Rank", "Hull", "Fit", "Enemy", "Pilot + astromech (best routing)", "Two ships", "Job score vs two ships"], rows)
+out.append(f"A pilot with an astromech in the socket never kills as fast as two of the same hull (fastest two-ship / socket "
+           f"kill-time ratio {socket_fastest:.2f}: "
+           f"{band('S', 'pilot + astromech kills no faster than two separate ships', f'{socket_fastest:.2f}', socket_fastest <= 1.0)}) "
+           f"and its best routing does at most {socket_job:.0%} of the two ships' job "
+           f"({band('S', 'pilot + astromech job score <= two separate ships', f'{socket_job:.0%}', socket_job <= 1.0)}). The socket "
+           "adds staying power and capacitor, never a weapon, so the second player is always worth more in a second ship; "
+           "what the socket buys is a seat for a player who would rather crew than fly.\n")
+
 Path(m.HERE / "checks.md").write_text("\n".join(out))
 print("\n".join(out))
 

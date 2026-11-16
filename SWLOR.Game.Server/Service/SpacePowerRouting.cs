@@ -36,9 +36,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static bool SetPowerRouting(uint player, ShipPowerRouting mode)
         {
-            if (!TryGetCrewStation(player, out var ship, out var seat) || seat != ShipCrewSeat.Engineer)
+            if (!TryGetCrewStation(player, out var ship, out var seat) || !ShipCrewSeats.RoutesPower(seat))
             {
-                SendMessageToPC(player, ColorToken.Red("Only the crew member at the Engineer station can route power."));
+                SendMessageToPC(player, ColorToken.Red("Only the crew member at the Engineer station or the astromech socket can route power."));
                 return false;
             }
 

@@ -15,6 +15,12 @@ namespace SWLOR.Game.Server.Service.AstromechService
         /// <summary>The pose an astromech holds while resting: powered down on the floor.</summary>
         public const Animation Rest = Animation.LoopingDeadBack;
 
+        /// <summary>
+        /// The pose the stand-in of an astromech holds at a ship's controls, a crew station or the astromech socket:
+        /// plugged in with its tool arm out, never seated.
+        /// </summary>
+        public const Animation Station = Animation.LoopingConjure1;
+
         private static readonly HashSet<Animation> Supported = new()
         {
             Animation.LoopingPause,

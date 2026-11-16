@@ -66,7 +66,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
 
             var status = Space.GetShipStatus(pilot);
-            var stations = ShipCrewSeats.GetStationSeats(status?.Size ?? ShipSize.Small);
+            var stations = Space.GetStationSeats(status);
+            var socketOnly = stations.Count == 1 && stations[0] == ShipCrewSeat.AstromechSocket;
             var header = $"Captain: {PlayerName.GetDisplayName(player, pilot)}";
 
             if (stations.Count == 0)
@@ -82,7 +83,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     header += $"\n{ShipCrewSeats.GetSeatName(seat)} ({skill}): {DescribeOccupant(player, pilot, seat)}";
                 }
 
-                header += "\nYour rank in the station's skill decides which of its modules you can switch on. A player who takes a droid's station sends the droid back to its owner.";
+                header += socketOnly
+                    ? "\nOnly an astromech fits the socket. It routes the ship's power and works its repair and capacitor modules beside the pilot, on Engineering."
+                    : "\nYour rank in the station's skill decides which of its modules you can switch on. A player who takes a droid's station sends the droid back to its owner.";
             }
 
             page.Header = header;
@@ -94,9 +97,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                 var chosen = seat;
                 var droid = SpaceCrew.GetSeatDroid(pilot, seat);
-                var text = droid == null
-                    ? $"Take the {ShipCrewSeats.GetSeatName(seat)} station"
-                    : $"Take the {ShipCrewSeats.GetSeatName(seat)} station from {droid.Name}";
+                var text = seat == ShipCrewSeat.AstromechSocket
+                    ? "Plug into the astromech socket"
+                    : droid == null
+                        ? $"Take the {ShipCrewSeats.GetSeatName(seat)} station"
+                        : $"Take the {ShipCrewSeats.GetSeatName(seat)} station from {droid.Name}";
                 page.AddResponse(text, () =>
                 {
                     Close();

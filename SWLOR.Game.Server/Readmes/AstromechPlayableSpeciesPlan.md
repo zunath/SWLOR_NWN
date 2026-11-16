@@ -1,6 +1,6 @@
 # Astromech Playable Species Plan
 
-**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 (go verdict), Phase 1 (chassis, animation, tools, dyes, voice set) and Phase 2 (the playable species itself) are done; see their results sections. The astromech has no skills or gear of its own yet.** No balance numbers are proposed here: they are set in the Design Bible in Phase 3 and approved there.
+**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 (go verdict), Phase 1 (chassis, animation, tools, dyes, voice set), Phase 2 (the playable species itself), Phase 3 (skills, perks, modules and tools) and Phase 4 (ship role) are done; see their results sections.** No new balance numbers were introduced: every astromech skill is a number-for-number copy of an existing humanoid skill family (Phase 3 results).
 
 **Base: this builds on the space revamp** (`feature/space-revamp`, read at `0e2bc7231`, and its `Readmes/SpaceRevampPlan.md`). It assumes crew stations, droid crew, power routing and the space jobs of Engineering, Espionage and Leadership exist. It ships as its own release after space, so it never delays the space release.
 
@@ -30,7 +30,7 @@ Checked in the working tree on 2026-11-15.
 | Creature appearance on a PC | Only the space system does it (`Space.cs:804`, restored at `:992-1001`). No PC lives in a creature appearance on the ground. |
 | Astromech models | `appearance.2da` rows 2175-2184 (`C_DrdAstro01-10`) and 2185 (`L_Astromech`). The `C_DrdAstro` models name a supermodel (`P_T3M3`) that is not in the haks and carry no animations of their own, so they almost certainly do not animate. Rows 2175-2184 are used by utility droid NPC blueprints. |
 | Companion droids | `Service/Droid.cs` and `Service/DroidService/` (player-built pets with CPU, parts, AI slots). Separate system; untouched by this plan. |
-| Space (master) | No crew or co-pilot roles in code. `ShipDetail.HasDroidBay` exists but is never set or read. |
+| Space (master) | No crew or co-pilot roles in code. `ShipDetail.HasDroidBay` exists but is never set or read (on the revamp branch it marks the droid bay of industry hulls). |
 | Space (revamp branch) | Piloting stays the only space skill, by an owner decision backed by production data. Large hulls seat a Pilot, Gunner and Engineer; Capital hulls add a second Gunner and Sensors; **Small and Medium hulls are solo**. Seats check Piloting (pilot, gunner), Engineering (Engineer) and Espionage (Sensors); Leadership raises crew effectiveness. Player-built droids can be posted to a seat at 25% to 75% effect. Mining Barge, Industrial and Logistics hulls get a droid bay. Only Piloting abilities can be used at a station (`SpaceCrewAbilityRules`). Rule: a ship crewed by N players must not beat N separate ships. |
 | Meshy | Creature pipeline exists: `tools/MeshyCreatureExport.py`, documented in `Readmes/BlasterModelImport.md:586-604`. It skins the generated mesh onto a **stock reference creature skeleton** and inherits that creature's animations. Meshy's own auto-rig and motion tools are humanoid-only. |
 | Animation tooling | `SWLOR.Toolset.Domain/Animation` (`AnimationProject`, `AnimationMdl`, `AnimationInstall`) is generic over named joints. The authoring front-ends (`MotionAuthor` and friends) are humanoid-only. |
@@ -360,7 +360,7 @@ Built on the Phase 1 branch and checked on 2026-11-16 in the real client, creati
 - **Chassis Workshop:** a new window that replaces the appearance editor for astromechs (`/customize` and the character sheet button): chassis list, size, and a color picker per paint zone. Every change applies at once.
 - **Locks:** skills carry a body-frame restriction; the locked list is closed to astromechs in the skills window, RP XP distribution, the full rebuild, DM examine and XP awards. A perk behind a closed skill cannot be bought (the skill requirement refuses it); the eight humanoid-only perks that had no skill requirement gained a rank 0 one, as Mimicry already had.
 - **Speech:** astromechs speak only Droidspeak, through the same rule as Wookiees.
-- **Gear:** an astromech player equips only items limited to astromechs (none exist until Phase 3), and nobody else can equip those. The starter kit is the credits alone.
+- **Gear:** an astromech player equips only items limited to astromechs (added in Phase 3), and nobody else can equip those. The Phase 2 starter kit was the credits alone; Phase 3 adds a Basic Shock Prod.
 - **Humanoid systems:** rest uses a powered-down pose, chairs refuse an astromech (including the stock chair script most area chairs use), emotes the chassis has no clip for are refused and hidden from the emote window, the voice list offers only the astromech voice, the stranger descriptor reads "Astromech", and ion and mind effects use one shared machine check.
 - **Portraits:** `tools/BuildAstromechPortraits.py` builds them from two client captures per chassis (with the chassis and with it hidden), so a portrait is the game's own render. Eight portraits ship, one per chassis in its default paint.
 - **Dye masks:** the exporter now centres every dye layer on the palette midtone and all eight chassis were regenerated. Before this a chosen color rendered much lighter than picked.
@@ -387,10 +387,76 @@ Built on the Phase 1 branch and checked on 2026-11-16 in the real client, creati
 
 **Not done or not verified**
 
-- Entering and leaving space as an astromech was not run in the client (it needs a ship; it is covered with the crew work in Phase 4). The restore path uses the stored appearance, which is the chosen chassis.
+- Entering and leaving space as an astromech was not run in the client in this phase; Phase 4 ran it (the chosen chassis is restored).
 - The last workshop layout change (a taller chassis list so all eight names show without scrolling) was made after the final client pass.
 - Work animations (crafting, gathering, item use) have no clip on the chassis; the action runs and the model idles.
-- The perks window still lists humanoid-only lines to an astromech, each perk marked as closed. Hiding lines by body frame comes with the astromech lines in Phase 3.
+- The perks window listed humanoid-only lines to an astromech at the end of Phase 2; Phase 3 filters lines by body frame.
+
+## Phase 3 results
+
+Built on 2026-11-16 on the same branch. The owner asked for the work to be finished without further check-ins, so the Bible-first approval step was replaced by a rule that needs no new balance decision: **every astromech number is an existing humanoid number.** Each astromech skill is a generated copy of a humanoid skill family with new names, and tests hold each copy to its source. The choices below were made without the owner and are listed for review in the pull request.
+
+**Delivered**
+
+- **Chassis (skill 61):** the astromech's Armor. Its rank stands wherever Armor rank is read for an astromech: defense, evasion, combat XP, the General perks and the gear that ask for Armor (`SkillBodyFrames`). It has no perk lines of its own. Dual Wield and Doublehand stay humanoid-only, which is what keeps astromech weapon damage below the humanoid weapon band.
+- **Utility Systems (skill 62):** two lines, Repair and Augments, copies of the First Aid Trauma Medic and Combat Pharmacology lines. They share First Aid's status effects, supplies and capstone quest, so a mirrored effect and its source never stack.
+- **Armaments (skill 63):** two lines, Shock Prod (a copy of Staff Crusher) and Blaster Mount (a copy of Rifle Pacification). The tools are two new small base items, because the engine refuses a weapon two sizes larger than a small creature. In combat a shock prod is a staff and a blaster mount is a rifle, so every staff and rifle rule applies unchanged; the rank behind them and the XP they earn are Armaments (`SkillBodyFrames.GetTrainedSkill`). The Staff and Rifle capstone quests accept Armaments.
+- **Generator:** `tools/GenerateAstromechSkillMirrors.py` writes the perk and ability definitions, enum values, 2DA rows, strings and engine-test cases from `tools/AstromechSkillMirrors.json`, with a `--check` mode. Abilities play the chassis's tool clip in place of humanoid authored animations.
+- **Gear:** 160 modules (stat copies of the armor ladders, `tools/GenerateAstromechModules.py`) and 20 tools (stat copies of the staff and rifle ladders, `tools/GenerateAstromechTools.py`), each limited to astromechs and to its astromech skill, with Engineering recipes that mirror the Smithery ones and the first tier sold by the CZ-220 merchant. A new astromech starts with a Basic Shock Prod, as others start with a knife.
+- **Perks window:** lines are filtered by body frame, so an astromech sees its own lines and no humanoid weapon, Force, First Aid, Mimicry, Beast Mastery or Performance line, and nobody else sees the astromech lines.
+- **Design Bible:** an `Astromech Skills` tab (the three skills and one row per mirrored perk level with its source), and the module and tool rows on the recipe and equipment tabs.
+
+**Verified in the client** (evidence in `C:\Temp\astro-spike\phase3\evidence`)
+
+| Check | Result |
+|---|---|
+| Modules | Chassis Plating Mk III equips at Chassis 20 and raises HP and defense; Mk VIII is refused |
+| Utility Systems | Field Repair II heals and spends supplies; Deflector Field and Power Transfer apply their effects |
+| Starter kit | A new astromech holds a Basic Shock Prod and equips it |
+| Shock prod | Attacks land; Shock Jab I hits for 18 against 5 to 7 for a plain attack; the kill gives Armaments XP and no Staff XP |
+| Blaster mount | Ranged attacks land; Suppressive Burst and Hobbling Bolt fire, and Hobbling Bolt applies Hamstring; no Rifle XP |
+| Tier gate | A Delta Shock Prod is refused at Armaments 10 with "This item requires Armaments rank 20 to use." |
+| Perks window | Lists Armaments - Shock Prod and Armaments - Blaster Mount with Armaments rank requirements |
+
+**Known gaps**
+
+- Mirrored abilities and perks reuse their source's icons, and shared status effects show the source's name (a Repair effect reads as its First Aid name).
+- Recipes and the store entries were checked by tests and module data, not crafted or bought in the client.
+- No CombatSim run was made for the astromech: every number is its source's, and the parity tests hold that.
+
+## Phase 4 results
+
+Built and checked on 2026-11-16 with two real clients against one private server: a human pilot flying a Striker and an astromech aboard it. Evidence is in `C:\Temp\astro-spike\phase4\evidence`. The hull list and the socket's exact functions were open decisions in this plan; they were settled here without the owner and are listed for review in the pull request.
+
+**Delivered**
+
+- **Crew seats:** nothing new was needed. An astromech takes the Gunner, Engineer or Sensors seat of a Large or Capital hull like any player.
+- **Astromech socket:** a new seat, `ShipCrewSeat.AstromechSocket`, on the Small and Medium combat hulls: Fighter, Interceptor, Bomber and Gunship (17 hulls). Industry hulls keep their droid bay; haulers and explorers have neither. Only an astromech player can take it, from the ship's computer aboard while the pilot flies, in the pilot's party and with the Crew Station permission, as for any station. Every Small and Medium interior already has that computer, so no boarding flow was added.
+- **What the socket does:** it owns no slots, so a socket hull flies exactly as before with the socket empty and no fitted module goes dark. An astromech in it routes the ship's power as the Engineer does, and works the pilot's Hull Repairer, Shield Repairer, Repair Field Generator and Hypermatter Injector beside the pilot, on its own Engineering rank. It never works a weapon. A repair module that is on runs its cycles as the astromech while it is plugged in and as the pilot again when it leaves. Droids cannot be posted at the socket.
+- **Pose:** the stand-in an astromech leaves at a ship's controls, a crew station or the socket holds the chassis's tool clip instead of sitting.
+- **Space plan:** the socket is recorded in `SpaceRevampPlan.md` section 10.
+
+**Simulator** (`tools/SpaceRevampBalance/checks.py` section S, 24 of 24 bands met)
+
+A pilot plus an astromech at Engineering 50 and the crew cap, on its best routing, against two of the same hull, for all four socket roles at ranks 15, 35 and 45: the socketed ship never kills as fast as the two ships (fastest two-ship to socket kill-time ratio 0.49) and does at most 40% of their job score. The second player is always worth more in a second ship; the socket is a seat for a player who would rather crew than fly.
+
+**Verified in the client**
+
+| Check | Result | Evidence |
+|---|---|---|
+| Socket offered | The ship's computer of a flying Striker lists "Astromech Socket (Engineering): open" and offers "Plug into the astromech socket" to an astromech in the pilot's party | `astromech_socket_dialog2.png` |
+| Party rule | The same dialog offers only the viewport to an astromech outside the pilot's party | `astromech_socket_dialog.png` |
+| Plugged in | The astromech's view follows the ship; its hotbar holds the hull's Shield Repairer and the four routing modes | `astromech_socket_seated.png` |
+| Power routing | Routing to Shields and Weapons from the socket changes the ship's routing and tells the pilot; at Engineering 50 the gain is 25% larger ("weapons use 31% less capacitor") | `astromech_socket_routing_weapons.png`, `pilot_client_chat.txt` |
+| Repairs | The astromech switches the pilot's Shield Repairer on. A rank 45 repairer restores 12 per cycle for the pilot alone and 13 with the astromech (Engineering 50) plugged in | `pilot_client_chat.txt` |
+| Leaving | `/exit` returns the astromech to the computer with its own hotbar; the pilot is told, the routing returns to Balanced and the repairer stays on as the pilot's | `astromech_socket_left.png` |
+| Astromech as pilot | An astromech flies the Striker; its stand-in at the controls holds the tool-arm pose; leaving space restores the chosen chassis | `pilot_astro_pilot_standin2.png`, `astromech_astro_pilot_space.png`, `astromech_astro_after_space.png` |
+
+**Not done or not verified**
+
+- A Large hull seat (Gunner, Engineer, Sensors) was not crewed by an astromech in the client; that path has no astromech-specific code beyond the stand-in pose, which was seen on the pilot's stand-in.
+- The socket was run on the Striker only, and the Repair Field Generator and Hypermatter Injector were not fired from it.
+- Ship registration, the party and the Crew Station permission were set up by a test driver, not through their windows. The test also left space through the driver, which is why the astromech is seen in orbit after the chassis restore.
 
 ## Phases
 
@@ -409,9 +475,9 @@ Each phase is its own pull request into a `feature/astromech` branch cut from `f
 
 **Phase 2 - Species plumbing. Done 2026-11-16; see Phase 2 results.** Race, body frame, creation flow, starter kit, speech rule, all humanoid-system guards, Chassis Workshop, portraits. *Exit:* a new astromech character can be made and played end to end with no skills or gear of its own yet, and no humanoid system misbehaves for it.
 
-**Phase 3 - Skills, perks, abilities, modules.** Bible tabs written and **approved by the owner before any code**, then implementation, icons, recipes and CombatSim evidence. *Exit:* parity evidence at entry, middle and endgame.
+**Phase 3 - Skills, perks, abilities, modules. Done 2026-11-16; see Phase 3 results.** Planned as Bible tabs approved by the owner before any code; built instead as copies of existing humanoid families at the owner's instruction to finish without check-ins. *Exit:* parity with the source families, held by tests.
 
-**Phase 4 - Ship role.** Crew seat pose and checks; the astromech socket, with its simulator evidence. *Exit:* an astromech crews a Large hull seat and a fighter socket in the client, and the pilot-plus-astromech run stays at or below two separate ships.
+**Phase 4 - Ship role. Done 2026-11-16; see Phase 4 results.** Crew seat pose and checks; the astromech socket, with its simulator evidence. *Exit:* an astromech crews a Large hull seat and a fighter socket in the client, and the pilot-plus-astromech run stays at or below two separate ships.
 
 **Phase 5 - Content and polish.** Remaining chassis and paint, tutorial and quest audit for humanoid-only steps and rewards, Player Guide, release notes, a play test on the test server.
 

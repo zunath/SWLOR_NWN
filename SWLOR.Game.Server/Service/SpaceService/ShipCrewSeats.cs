@@ -36,6 +36,51 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public static bool HasSeat(ShipSize size, ShipCrewSeat seat) => GetSeats(size).Contains(seat);
 
         /// <summary>
+        /// Whether a hull carries an astromech socket: the Small and Medium combat hulls (Fighter, Interceptor, Bomber
+        /// and Gunship). Industry hulls have the droid bay instead, and haulers and explorers have neither.
+        /// </summary>
+        public static bool HasAstromechSocket(ShipSize size, ShipRole role) =>
+            (size == ShipSize.Small || size == ShipSize.Medium) &&
+            (role == ShipRole.Fighter || role == ShipRole.Interceptor || role == ShipRole.Bomber || role == ShipRole.Gunship);
+
+        /// <summary>
+        /// The crew stations a player can take aboard a hull: those of its size, then the astromech socket when the
+        /// hull carries one. Droids are posted from <see cref="GetStationSeats(ShipSize)"/>, so never at the socket.
+        /// </summary>
+        public static IReadOnlyList<ShipCrewSeat> GetStationSeats(ShipSize size, bool astromechSocket)
+        {
+            var seats = GetStationSeats(size).ToList();
+            if (astromechSocket)
+                seats.Add(ShipCrewSeat.AstromechSocket);
+            return seats;
+        }
+
+        /// <summary>Whether a hull of this size, with or without an astromech socket, has the seat.</summary>
+        public static bool HasSeat(ShipSize size, ShipCrewSeat seat, bool astromechSocket) =>
+            seat == ShipCrewSeat.AstromechSocket ? astromechSocket : HasSeat(size, seat);
+
+        /// <summary>
+        /// Whether the astromech socket works a module type: the repairers and the capacitor transfer, never a weapon.
+        /// </summary>
+        public static bool IsSocketModule(ShipModuleType type) =>
+            type is ShipModuleType.HullRepairer or ShipModuleType.ShieldRepairer or ShipModuleType.RepairFieldGenerator
+                or ShipModuleType.HypermatterInjector;
+
+        /// <summary>
+        /// Whether a crew member at a seat works a slot: a station seat works the slots it owns; the astromech
+        /// socket owns none and works the Pilot's socket modules (<see cref="IsSocketModule"/>), which the Pilot
+        /// keeps working too, so a socket hull flies the same with the socket empty.
+        /// </summary>
+        public static bool SeatWorksSlot(ShipCrewSeat seat, ShipCrewSeat slotSeat, ShipModuleType moduleType) =>
+            seat == ShipCrewSeat.AstromechSocket
+                ? slotSeat == ShipCrewSeat.Pilot && IsSocketModule(moduleType)
+                : seat == slotSeat;
+
+        /// <summary>Whether a seat routes the ship's power: the Engineer station and the astromech socket.</summary>
+        public static bool RoutesPower(ShipCrewSeat seat) =>
+            seat is ShipCrewSeat.Engineer or ShipCrewSeat.AstromechSocket;
+
+        /// <summary>
         /// The seat that works a hotbar slot (1-30). A slot with no tag, or a Helm tag, is the Pilot's.
         /// </summary>
         public static ShipCrewSeat GetSeatForSlot(ShipSize size, IReadOnlyDictionary<int, ShipSlotTag> tags, int slot)
@@ -77,7 +122,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         public static SkillType GetSeatSkill(ShipCrewSeat seat) => seat switch
         {
-            ShipCrewSeat.Engineer => SkillType.Engineering,
+            ShipCrewSeat.Engineer or ShipCrewSeat.AstromechSocket => SkillType.Engineering,
             ShipCrewSeat.Sensors => SkillType.Espionage,
             _ => SkillType.Piloting,
         };
@@ -90,12 +135,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
             ShipCrewSeat.Engineer => "Engineer",
             ShipCrewSeat.Sensors => "Sensors",
             ShipCrewSeat.DroidBay => "Droid Bay",
+            ShipCrewSeat.AstromechSocket => "Astromech Socket",
             _ => "Pilot",
         };
 
         /// <summary>A seat as a place to work, for messages: "the Gunner station", or "the droid bay".</summary>
-        public static string GetPostName(ShipCrewSeat seat) =>
-            seat == ShipCrewSeat.DroidBay ? "the droid bay" : $"the {GetSeatName(seat)} station";
+        public static string GetPostName(ShipCrewSeat seat) => seat switch
+        {
+            ShipCrewSeat.DroidBay => "the droid bay",
+            ShipCrewSeat.AstromechSocket => "the astromech socket",
+            _ => $"the {GetSeatName(seat)} station",
+        };
 
         /// <summary>The Czerka Armored Transport's tag: its signature makes crew stations 10% and droid crew 20% more effective.</summary>
         public const string CzerkaArmoredTransportTag = "sd_czerkaarmored";

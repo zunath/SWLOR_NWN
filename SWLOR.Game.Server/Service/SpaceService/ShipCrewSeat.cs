@@ -4,7 +4,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
     /// A seat aboard a ship (plan section 10). Large hulls have the Pilot, a Gunner and the Engineer; Capital hulls
     /// add a second Gunner and Sensors. Small and Medium hulls have the Pilot only. Seats are held in memory while a
     /// ship flies and are never saved. The droid bay (plan section 27) is a droid-only post on Mining Barge,
-    /// Industrial and Logistics hulls, never a player's seat.
+    /// Industrial and Logistics hulls, never a player's seat. The astromech socket is a seat on the Small and Medium
+    /// combat hulls (<see cref="ShipCrewSeats.HasAstromechSocket"/>) that only an astromech player can take; it
+    /// owns no slots and works the Pilot's repair and capacitor modules and the power routing alongside the Pilot.
     /// </summary>
     public enum ShipCrewSeat
     {
@@ -15,5 +17,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         Engineer = 4,
         Sensors = 5,
         DroidBay = 6,
+        AstromechSocket = 7,
     }
 }

@@ -40,7 +40,9 @@ public class DisguiseAuditTests
         var source = $$"""
             using System;
             using System.Collections.Generic;
+            using System.Globalization;
             using System.Linq;
+            using System.Text;
             using Newtonsoft.Json;
             using static World;
 
@@ -54,6 +56,7 @@ public class DisguiseAuditTests
             {{ReadSource("Service/DisguiseService/DeleteRetiredDisguiseResult.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
             {{ReadSource("Service/DisguiseService/DisguisePaymentMethod.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
             {{ReadSource("Service/PvpCombatService/PvpCombatChangeOutcome.cs").DescendantNodes().OfType<EnumDeclarationSyntax>().Single()}}
+            {{ReadSource("Service/PastedText.cs").DescendantNodes().OfType<ClassDeclarationSyntax>().Single()}}
 
             public sealed class Player : EntityBase
             {

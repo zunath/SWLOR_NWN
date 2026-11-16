@@ -55,9 +55,6 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ActivatedAction((activator, _, target, _, moduleBonus) =>
                 {
                     SetLocalBool(target, Mined, true);
-                    // The asteroid can be gone by the time mining finishes, so read what it yields now.
-                    var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
-                    var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
 
                     ApplyEffectToObject(DurationType.Temporary, EffectEntangle(), activator, 18f);
 
@@ -69,22 +66,22 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
                     DelayCommand(18f, () =>
                     {
-                        if (!GetIsObjectValid(activator))
+                        // The asteroid can be destroyed or despawn while it is mined; a missing asteroid yields nothing.
+                        if (!GetIsObjectValid(activator) || !GetIsObjectValid(target))
                             return;
 
+                        var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
+                        var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
                         var industrialBonus = Space.GetShipStatus(activator).Industrial;
 
                         var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6);
 
-                        if (GetIsObjectValid(target))
-                        {
-                            SetPlotFlag(target, false);
-                            ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
+                        SetPlotFlag(target, false);
+                        ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
 
-                            SendMessageToPC(activator, $"{GetName(target)} has been depleted by your strip miner.");
+                        SendMessageToPC(activator, $"{GetName(target)} has been depleted by your strip miner.");
 
-                            Loot.SpawnLoot(target, activator, "LOOT_TABLE_");
-                        }
+                        Loot.SpawnLoot(target, activator, "LOOT_TABLE_");
 
                         var lootTable = Loot.GetLootTableByName(lootTableId);
 

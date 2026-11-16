@@ -202,6 +202,8 @@ namespace SWLOR.Game.Server.Composition
 
             // Crafting
             services.AddSingleton<ICraftService, CraftService>();
+            services.AddSingleton<ICraftEnhancementPropertyService, CraftEnhancementPropertyService>();
+            services.AddSingleton<ICraftDeviceService, CraftDeviceService>();
             services.AddSingleton<ICraftMinigameRoutingService, CraftMinigameRoutingService>();
             services.AddSingleton<ICraftQuickCraftService, CraftQuickCraftService>();
             services.AddSingleton<ICraftResearchExperimentService, CraftResearchExperimentService>();

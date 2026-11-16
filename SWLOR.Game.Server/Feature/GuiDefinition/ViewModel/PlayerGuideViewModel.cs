@@ -1214,6 +1214,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[] { "Housing & Markets", "Travel & Navigation", "Perks", "Combat Basics", "Useful Windows" }),
 
                 new(
+                    "Astromechs",
+                    "Character",
+                    "The astromech species: its chassis, speech, skills, modules, tools, and its socket aboard small ships.",
+                    "Playable droids",
+                    new[]
+                    {
+                        new ArticleBlock("A Different Body",
+                            "An astromech is a playable species with a droid chassis in place of a humanoid body. It has no hands, clothes, or head to customize, and it cannot be Force Sensitive. Pick it at character creation like any other species."),
+                        new ArticleBlock("Chassis Workshop",
+                            "Use /customize or the Appearance action on the Character Sheet to open the Chassis Workshop. Choose a chassis, set its size, and paint its primary, secondary, and trim colors. Every change applies at once, and the portrait follows the chassis."),
+                        new ArticleBlock("Speech and Emotes",
+                            "An astromech speaks only Droidspeak. Others understand it as far as their own Droidspeak allows, the same way Shyriiwook works for Wookiees. Emotes stay free, but the chassis can only play the emotes it has a motion for, and it cannot sit in chairs. Resting powers the chassis down on the floor."),
+                        new ArticleBlock("Skills",
+                            "Astromechs train three skills of their own. Chassis is their defensive skill and stands wherever Armor would count. Utility Systems repairs and reinforces allies in the field. Armaments fights with the tools built into the chassis. The Force, Armor, First Aid, the humanoid weapon skills, Mimicry, Beast Mastery, and Performance are closed to them. Every other skill, including crafting, gathering, Piloting, Devices, Espionage, and Leadership, is open."),
+                        new ArticleBlock("Modules and Tools",
+                            "An astromech equips only gear made for astromechs. Modules fill its equipment slots and need Chassis ranks. The shock prod is its melee tool and the blaster mount is its ranged tool; both need Armaments ranks. Engineering crafts them, and the CZ-220 merchant sells the first tier. A new astromech starts with a Basic Shock Prod."),
+                        new ArticleBlock("Astromech Socket",
+                            "Fighters, Interceptors, Bombers, and Gunships carry one astromech socket. While the ship flies, an astromech aboard in the pilot's party, with the Crew Station permission, can use the ship's computer to plug in. From the socket it routes the ship's power and works the ship's repair and capacitor modules on its own Engineering rank, beside the pilot. It never fires weapons. Use /exit to unplug. Astromechs can also fly ships and take any crew station a larger ship offers."),
+                    },
+                    new[]
+                    {
+                        new QuestionAnswer("How do I change how my astromech looks?", "Use /customize to open the Chassis Workshop. Pick a chassis, a size, and three paint colors."),
+                        new QuestionAnswer("Why can't I equip this item?", "Astromechs equip only astromech modules and tools, and each needs enough Chassis or Armaments rank."),
+                        new QuestionAnswer("Why can't I train this skill?", "The Force, Armor, First Aid, humanoid weapon skills, Mimicry, Beast Mastery, and Performance are closed to astromechs. Chassis, Utility Systems, and Armaments take their place."),
+                        new QuestionAnswer("Why does nobody understand me?", "Astromechs speak only Droidspeak. Listeners understand more as their own Droidspeak improves."),
+                        new QuestionAnswer("How do I use the astromech socket?", "Board a Fighter, Interceptor, Bomber, or Gunship, join the pilot's party, and use the ship's computer once the ship is flying."),
+                        new QuestionAnswer("Can anyone else use astromech gear or the socket?", "No. Astromech modules, tools, and the socket are for astromechs only."),
+                    },
+                    new[] { "Skills", "Perks", "Ships & Space", "Communication", "Crafting", "Useful Windows" }),
+
+                new(
                     "Useful Windows",
                     "Interface",
                     "The main windows and shortcuts new players commonly need.",

@@ -242,6 +242,7 @@ namespace SWLOR.Game.Server.Service
             var windowType = _windowTypesByKey[windowId];
             var playerWindow = _playerWindows[playerId][windowType];
             var viewModel = playerWindow.ViewModel;
+            viewModel.FollowClientIfTargetDestroyed(uiTarget);
 
             // NUI fires "click" on the press, so a click handler that changes the layout would replace the
             // pressed control before the release and lock the window. Track the press for every element,
@@ -323,6 +324,7 @@ namespace SWLOR.Game.Server.Service
             var windowType = _windowTypesByKey[windowId];
             var playerWindow = playerWindows[windowType];
 
+            playerWindow.ViewModel.FollowClientIfTargetDestroyed(uiTarget);
             playerWindow.ViewModel.UpdatePropertyFromClient(propertyName);
 
             // Geometry changes are persisted as they happen (debounced) so window
@@ -421,9 +423,14 @@ namespace SWLOR.Game.Server.Service
             if (uiTarget == OBJECT_INVALID)
                 uiTarget = player;
 
-            var playerId = GetObjectUUID(player);
+            // A creature a DM possesses, or one destroyed while a window stayed open on it, has no windows of its own.
+            var owner = GetWindowOwner(player);
+            var playerId = GetObjectUUID(owner);
+            if (!_playerWindows.TryGetValue(playerId, out var windows) ||
+                !windows.TryGetValue(type, out var playerWindow))
+                return;
+
             var template = _windowTemplates[type];
-            var playerWindow = _playerWindows[playerId][type];
             var windowId = BuildWindowId(type);
 
             // If the window is closed, open it.
@@ -437,8 +444,18 @@ namespace SWLOR.Game.Server.Service
             // Otherwise the window must already be open. Close it.
             else
             {
-                ClosePlayerWindow(player, type, uiTarget);
+                ClosePlayerWindow(owner, type, uiTarget);
             }
+        }
+
+        /// <summary>
+        /// Returns the object whose window instances serve a player: the DM's avatar for a creature the DM possesses,
+        /// otherwise the player. Windows are created for each player's own character when they enter the server.
+        /// </summary>
+        /// <param name="player">A player, a DM avatar, or a creature a DM possesses.</param>
+        private static uint GetWindowOwner(uint player)
+        {
+            return GetIsDMPossessed(player) ? GetMaster(player) : player;
         }
 
         /// <summary>
@@ -456,7 +473,7 @@ namespace SWLOR.Game.Server.Service
 
             NuiDestroy(uiTarget, windowToken);
 
-            var playerId = GetObjectUUID(player);
+            var playerId = GetObjectUUID(GetWindowOwner(player));
             if (!_playerWindows.TryGetValue(playerId, out var windows) ||
                 !windows.TryGetValue(type, out var playerWindow))
                 return;

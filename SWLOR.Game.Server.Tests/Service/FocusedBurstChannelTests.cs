@@ -62,8 +62,8 @@ public class FocusedBurstChannelTests
     [TestCase(-20)]
     public void HostileAbilityThreat_IsOneBudgetAcrossTheChannel(int bonus)
     {
-        Enumerable.Range(0, 3).Sum(index => Ability.CalculateHostileAbilityEnmity(bonus, index, 3))
-            .Should().Be(Ability.CalculateHostileAbilityEnmity(bonus));
+        Enumerable.Range(0, 3).Sum(index => AbilityHostileImpact.CalculateHostileAbilityEnmity(bonus, index, 3))
+            .Should().Be(AbilityHostileImpact.CalculateHostileAbilityEnmity(bonus));
     }
 
     [TestCase(-1, 3)]
@@ -103,7 +103,7 @@ public class FocusedBurstChannelTests
         // A droid dismissed mid-channel never reaches FinishChannel, so ForgetDestroyed must release
         // the deferred stamina-cost context that BeginChannel took.
         var source = File.ReadAllText(Path.Combine(FindRepositoryRoot().FullName,
-            "SWLOR.Game.Server", "Domain", "Combat", "TwinPistolAbilityService.cs")).Replace("\r\n", "\n");
+            "SWLOR.Game.Server", "Domain", "Abilities", "TwinPistolAbilityService.cs")).Replace("\r\n", "\n");
         var start = source.IndexOf("public void ForgetDestroyed(", StringComparison.Ordinal);
         var body = source.Substring(start, source.IndexOf("public void InterruptChannel(", start, StringComparison.Ordinal) - start);
 

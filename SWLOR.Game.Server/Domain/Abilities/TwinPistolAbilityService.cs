@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
@@ -11,12 +10,13 @@ using SWLOR.NWN.API.NWScript.Enum;
 using NumericsVector3 = System.Numerics.Vector3;
 using Activation = SWLOR.Game.Server.Domain.Combat.TwinPistolAbilityActivation;
 
-namespace SWLOR.Game.Server.Domain.Combat
+namespace SWLOR.Game.Server.Domain.Abilities
 {
     /// <summary>
     /// One paid activation and result across captured weapon impacts. The logic that used to be static in
     /// <c>Service.TwinPistolAbility</c> is moved here unchanged; the per-actor activations and channels are this
-    /// instance's own. The paired ranged traits and mastery services are injected; calls into the unconverted
+    /// instance's own. It applies ability impacts, so it is an Abilities service (moved from Combat in P5-3f,
+    /// Readmes/MaintainabilityRefactorAbilitySplit.md). The paired ranged traits and mastery services are injected; calls into the unconverted
     /// <c>Combat</c>, <c>Ability</c>, <c>StatusEffect</c> and <c>UsePerkFeat</c> code and the native attack cycles sit
     /// behind one-line <c>protected virtual</c> methods whose bodies are the original calls.
     /// </summary>
@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IPairedRangedTraitsService _traits;
         private readonly ITwinPistolMasteryService _mastery;
         private readonly IAbilityService _ability;
+        private readonly IAbilityImpactLifecycleService _lifecycle;
         private readonly IAbilityImpactState _impactState;
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatQueriesService _queries;
@@ -40,7 +41,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatusEffectService statusEffect,
             ICombatQueriesService queries,
             ICombatResourcesService resources,
-            IAbilityImpactState impactState)
+            IAbilityImpactState impactState,
+            IAbilityImpactLifecycleService lifecycle)
         {
             _traits = traits;
             _mastery = mastery;
@@ -49,6 +51,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _queries = queries;
             _resources = resources;
             _impactState = impactState;
+            _lifecycle = lifecycle;
         }
 
         public bool HasActiveActivation(uint actor) =>
@@ -293,7 +296,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The unconverted <c>Ability</c> service.</summary>
         protected virtual Action<int> CaptureRepeatedAbilityImpact(uint actor, Action<int> impactAction, int baseDamage) =>
-            _ability.CaptureRepeatedAbilityImpact<int>(actor, impactAction, baseDamage, retainCapturedBonuses: true);
+            _lifecycle.CaptureRepeatedAbilityImpact<int>(actor, impactAction, baseDamage, retainCapturedBonuses: true);
 
         /// <summary>The unconverted <c>Ability</c> service.</summary>
         protected virtual void PlayAbilityImpactAnimation(uint actor) => _ability.PlayAbilityImpactAnimation(actor);

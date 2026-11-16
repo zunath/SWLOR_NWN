@@ -26,13 +26,16 @@ public sealed class TestAbilityDamageInputService : AbilityDamageInputService
 
     private void Log(string entry) => _bench.Log.Add(entry);
 
-    // The same reads answer the same in the other doubles: the weapon damage in TestAbilityService.Shared.cs (the impact
-    // lifecycle), the stat adjustment and the weapon skills in TestAbilityActivationService, the stat adjustment in
+    // The same reads answer the same in the other doubles: the weapon damage and its type in TestAbilityImpactLifecycleService, the stat adjustment and the weapon skills in TestAbilityActivationService, the stat adjustment in
     // TestAbilityDarkForceService and TestAbilityAuraService.
     protected override int GetStatAdjustment(uint creature, StatType stat) => _bench.Stats.GetValueOrDefault((creature, stat));
 
     protected override int GetCombatImpactWeaponDamage(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon = false, int? triggeringWeaponDamage = null, bool abilityImpact = false) =>
         triggeringWeaponDamage ?? _bench.WeaponDamage;
+
+    protected override CombatDamageType GetCombatImpactWeaponDamageType(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon) => _bench.WeaponDamageType;
+
+    protected override bool IncludesCombatImpactWeaponDamage(SkillType skillType, bool usesQueuedNaturalWeapon) => _bench.IncludesWeaponDamage;
 
     protected override bool IsWeaponSkillType(SkillType skillType) => _bench.WeaponSkills.Contains(skillType);
 

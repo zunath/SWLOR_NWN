@@ -314,7 +314,7 @@ public class ForceSensitiveEspionageTests
         }
 
         ReadSource("Feature", "AbilityDefinition", "Espionage", "CloudMindAbilityDefinition.cs")
-            .Should().Contain("Ability.ShowVisualEffectToPlayer(activator, target, VisualEffect.Vfx_Imp_Confusion_S);");
+            .Should().Contain("AbilityImpactVisual.ShowVisualEffectToPlayer(activator, target, VisualEffect.Vfx_Imp_Confusion_S);");
         new CloudedMindStatusEffect().SendsWornOffMessage.Should().BeFalse("its expiry would hint at a hidden caster");
         ReadSource("Domain", "World", "HoloComService.cs").Should().Contain("FloatingTextStringOnCreature(message, receiver, !IsConcealed(receiver));");
         var saber = ReadSource("Feature", "LightsaberAudio.cs");

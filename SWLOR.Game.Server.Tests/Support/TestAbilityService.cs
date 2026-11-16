@@ -1,58 +1,45 @@
-using System.Numerics;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Quests;
-using SWLOR.Game.Server.Domain.Social;
-using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Domain.Space;
-using SWLOR.NWN.API.Engine;
-using SWLOR.NWN.API.NWScript;
-using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.NWN.API.Testing;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// The instance with its calls into unconverted code answered by the bench. The overrides are grouped in partial files by
-/// the part of the ability split (<c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>) whose code makes the call, so each
-/// part can take its own double when it moves; every answer is a property of <see cref="AbilityBench"/>.
+/// The part of the ability split that keeps the combat impacts content calls (<c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>,
+/// part 9), over the bench's impact state store, its lifecycle, per-target, message and visual parts and the geometry, telegraph
+/// and animation stand-ins, with its calls into the combat services answered by the bench. Every other part has its own double
+/// (<c>TestAbility*Service</c>); the answers are properties of <see cref="AbilityBench"/>, so the tests that set them do not change.
 /// </summary>
-public sealed partial class TestAbilityService : AbilityService
+public sealed class TestAbilityService : AbilityService
 {
     private readonly AbilityBench _bench;
 
     public TestAbilityService(
         AbilityBench bench,
-        IStatusEffectService statusEffect,
-        IEnmityService enmity,
-        ICombatPointService combatPoint,
-        ITelegraphService telegraph,
-        IMusicService music,
-        INamedAnimationService namedAnimation,
-        ICombatRecorderService combatRecorder,
-        IMeleeTechniqueService meleeTechnique,
-        ICapstoneProofService capstoneProof,
-        IStealthService stealth,
         IAbilityImpactState impactState,
-        ICombatImpactGeometryService geometry,
+        IAbilityImpactLifecycleService lifecycle,
+        IAbilityTargetImpactService targetImpact,
         IAbilityImpactMessageService impactMessage,
-        IAbilityDarkForceService darkForce,
-        IAbilityDamageDeliveryService damageDelivery,
-        IAbilityStatusApplicationService statusApplication,
-        IAbilityDamageInputService damageInput,
-        IAbilityDamageStageService damageStage)
-        : base(statusEffect, enmity, combatPoint, telegraph, music, namedAnimation, combatRecorder, meleeTechnique, capstoneProof, stealth,
-            impactState, geometry, FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(),
-            FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatHitEffectsService>(),
-            FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), impactMessage, darkForce, damageDelivery,
-            statusApplication, damageInput, damageStage)
+        IAbilityImpactVisualService impactVisual,
+        ICombatImpactGeometryService geometry,
+        ITelegraphService telegraph,
+        INamedAnimationService namedAnimation)
+        : base(impactState, lifecycle, targetImpact, impactMessage, impactVisual, geometry, telegraph, namedAnimation,
+            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>())
     {
         _bench = bench;
     }
 
     private void Log(string entry) => _bench.Log.Add(entry);
+
+    // The impact lifecycle answers the same through its own (TestAbilityImpactLifecycleService).
+    protected override void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) =>
+        Log($"ApplyAbilityImpactEffects:{activator}:{summary.ImpactedTargetCount}");
+
+    protected override void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability) =>
+        Log($"DeferStamina:{creature}:{ability?.Name}");
+
+    protected override void CompleteDeferredAbilityStaminaCostContext(uint creature, AbilityDetail ability) =>
+        Log($"CompleteDeferredStamina:{creature}:{ability?.Name}");
 }

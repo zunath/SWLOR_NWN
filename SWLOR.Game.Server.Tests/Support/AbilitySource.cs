@@ -50,6 +50,12 @@ public static class AbilitySource
         "SWLOR.Game.Server/Domain/Abilities/AbilityStatusApplicationService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityDamageInputService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityDamageStageService.cs",
+        // P5-3f: the impact lifecycle, the per-target hit roll, resolution and hostile impact, and the success visual.
+        "SWLOR.Game.Server/Domain/Abilities/AbilityImpactLifecycleService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityHitRollService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityTargetImpactService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityHostileImpactService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityImpactVisualService.cs",
     };
 
     /// <summary>
@@ -61,7 +67,8 @@ public static class AbilitySource
         "IAbilityCatalog", "IAbilityCatalogService", "IAbilityImpactState", "ICombatImpactGeometryService", "ICombatAbilityMagnitudeService",
         "IAbilityAuraService", "IAbilityImmunityService", "IAbilityActivationStateService", "IAbilityActivationService",
         "IAbilityTargetCheckService", "IAbilityImpactMessageService", "IAbilityDarkForceService", "IAbilityDamageDeliveryService",
-        "IAbilityStatusApplicationService", "IAbilityDamageInputService", "IAbilityDamageStageService"
+        "IAbilityStatusApplicationService", "IAbilityDamageInputService", "IAbilityDamageStageService", "IAbilityImpactLifecycleService",
+        "IAbilityHitRollService", "IAbilityTargetImpactService", "IAbilityHostileImpactService", "IAbilityImpactVisualService"
     };
 
     private static readonly Lazy<IReadOnlyList<SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));
@@ -93,6 +100,18 @@ public static class AbilitySource
             .Where(method => method.Identifier.Text == name)
             .OrderByDescending(method => method.FullSpan.Length)
             .First();
+
+    /// <summary>
+    /// The text of the method of this name that <paramref name="typeName"/> declares (the longest, when it has overloads), for a
+    /// name two parts declare (the per-target and the hostile <c>ApplyHostileCombatImpact</c>).
+    /// </summary>
+    public static string Member(string typeName, string methodName) =>
+        Nodes<MethodDeclarationSyntax>()
+            .Where(method => method.Identifier.Text == methodName &&
+                method.Parent is TypeDeclarationSyntax type && type.Identifier.Text == typeName)
+            .OrderByDescending(method => method.FullSpan.Length)
+            .First()
+            .ToString();
 
     /// <summary>The text of every method with one of these names (all overloads), in the order the names are given.</summary>
     public static string Members(params string[] names) =>

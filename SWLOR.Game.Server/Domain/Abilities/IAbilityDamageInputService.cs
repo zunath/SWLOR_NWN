@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// The damage inputs of an ability hit (part 16 of the ability split, Readmes/MaintainabilityRefactorAbilitySplit.md): the
     /// weapon damage and flat bonuses, the attack and the defense of the player and NPC damage formulas, which hand them to
     /// their stages (<see cref="IAbilityDamageStageService"/>), the unscaled damage formula, and the two rules the per-target
-    /// resolution reads to pick a formula and a damage type.
+    /// resolution reads to pick a formula and a damage type, with the damage type itself.
     /// </summary>
     public interface IAbilityDamageInputService
     {
@@ -17,6 +17,22 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         /// <summary>Whether a Beast Mastery weapon ability hits with the activator's natural weapon.</summary>
         bool UsesQueuedNaturalWeapon(AbilityImpactTracker trackedImpact, SkillType skillType);
+
+        /// <summary>
+        /// An impact that adds weapon DMG also takes that weapon's element, matching auto-attacks.
+        /// Like native weapon resolution, an element only replaces Physical; authored non-Physical types stay.
+        /// </summary>
+        CombatDamageType GetWeaponAbilityDamageType(uint activator, SkillType skillType, CombatDamageType damageType);
+
+        /// <summary>
+        /// <see cref="GetWeaponAbilityDamageType"/> for the impact the caller already read: the explicit weapon profile's element,
+        /// otherwise the authored type unless it is Physical and the impact adds weapon DMG, then the triggering weapon's element.
+        /// </summary>
+        CombatDamageType ResolveWeaponAbilityDamageType(
+            uint activator,
+            SkillType skillType,
+            CombatDamageType damageType,
+            AbilityImpactTracker trackedImpact);
 
         /// <summary>
         /// The damage of an impact that skips the attack and defense formula: its base damage and captured bonus, through the

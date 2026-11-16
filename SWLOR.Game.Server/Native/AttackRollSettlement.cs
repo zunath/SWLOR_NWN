@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Native
             if (!IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
                 GameServices.CombatAbilityBonus.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);
 
-            // A landed queued weapon ability is finalized through Ability.EndAbilityImpact,
+            // A landed queued weapon ability is finalized through AbilityImpactLifecycle.EndAbilityImpact,
             // which sends the single attempt notification for that originating swing. A miss
             // or deflection never starts the queued ability, so notify it here instead.
             var queuedWeaponAbilityWillResolve =

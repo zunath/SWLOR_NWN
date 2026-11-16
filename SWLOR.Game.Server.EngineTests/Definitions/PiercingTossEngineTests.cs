@@ -56,14 +56,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         var label = $"{feat} (extension {extensionSeconds}s)";
                         var ability = abilities[feat];
                         var appliedAt = DateTime.UtcNow;
-                        Ability.BeginAbilityImpact(source, ability);
+                        AbilityImpactLifecycle.BeginAbilityImpact(source, ability);
                         try
                         {
                             ability.ImpactAction(source, target, rank, GetLocation(target));
                         }
                         finally
                         {
-                            Ability.EndAbilityImpact(source);
+                            AbilityImpactLifecycle.EndAbilityImpact(source);
                         }
 
                         var bleed = StatusEffect.GetStatusEffect(target, typeof(BleedStatusEffect)) as BleedStatusEffect;

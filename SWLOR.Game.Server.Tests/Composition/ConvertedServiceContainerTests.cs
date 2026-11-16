@@ -137,6 +137,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IPartyRoster", "ICreatureRevivedListener" })
             // The ability split (P5-3d): the space mode read the activation checks own, which Space answers.
             .Concat(new[] { "ISpaceModeQuery" })
+            // The ability split (P5-3f): the music and capstone proof services as the hostile impact's observers.
+            .Concat(new[] { "IAbilityImpactObserver" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

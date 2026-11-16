@@ -10,7 +10,6 @@
 # SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
-SWLOR.Game.Server.Domain.Abilities.AbilityService | 1645
 SWLOR.Game.Server.Domain.Abilities.MimicryService | 1434
 SWLOR.Game.Server.Domain.Character.PerkService | 1486
 SWLOR.Game.Server.Domain.Character.PlayerNameService | 1039

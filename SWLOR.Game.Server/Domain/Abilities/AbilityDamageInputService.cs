@@ -12,7 +12,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
     /// services between them, so each was split where its inputs end (the defense ignore) and its stages begin (the critical
     /// rating): the inputs are here and hand their values over in an <see cref="AbilityDamageInputs"/>, and
     /// <see cref="IAbilityDamageStageService"/> runs each formula, asking for its inputs first and then running its stages, in
-    /// the original order. The unscaled formula, the NPC scaling helpers and the weapon trait damage bonus are here unchanged.
+    /// the original order. The unscaled formula, the NPC scaling helpers, the weapon trait damage bonus and the weapon ability
+    /// damage type (which the hit roll resolves before the damage) are here unchanged.
     /// Calls into other services sit behind <c>protected virtual</c> methods whose bodies are the original calls, so a unit
     /// test can answer them.
     /// </summary>
@@ -67,6 +68,32 @@ namespace SWLOR.Game.Server.Domain.Abilities
         {
             return trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
                    skillType == SkillType.BeastMastery;
+        }
+
+        /// <summary>
+        /// An impact that adds weapon DMG also takes that weapon's element, matching auto-attacks.
+        /// Like native weapon resolution, an element only replaces Physical; authored non-Physical types stay.
+        /// </summary>
+        public CombatDamageType GetWeaponAbilityDamageType(uint activator, SkillType skillType, CombatDamageType damageType)
+        {
+            return ResolveWeaponAbilityDamageType(activator, skillType, damageType, _impactState.GetTrackedAbilityImpact(activator));
+        }
+
+        public CombatDamageType ResolveWeaponAbilityDamageType(
+            uint activator,
+            SkillType skillType,
+            CombatDamageType damageType,
+            AbilityImpactTracker trackedImpact)
+        {
+            if (WeaponImpactProfile.Get(activator) is { } explicitProfile)
+                return explicitProfile.Weapon.DamageType;
+            var usesQueuedNaturalWeapon = UsesQueuedNaturalWeapon(trackedImpact, skillType);
+            if (damageType != CombatDamageType.Physical ||
+                !IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon))
+                return damageType;
+
+            return trackedImpact?.TriggeringWeaponDamageType ??
+                   GetCombatImpactWeaponDamageType(activator, skillType, usesQueuedNaturalWeapon);
         }
 
         private int ScaleImpactWeaponDamage(int damage, AbilityImpactTracker impact)
@@ -426,6 +453,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual int GetCombatImpactWeaponDamage(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon = false, int? triggeringWeaponDamage = null, bool abilityImpact = false) =>
             _queries.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon, triggeringWeaponDamage: triggeringWeaponDamage, abilityImpact: abilityImpact);
+
+        protected virtual CombatDamageType GetCombatImpactWeaponDamageType(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon) =>
+            _queries.GetCombatImpactWeaponDamageType(activator, skillType, usesQueuedNaturalWeapon);
+
+        protected virtual bool IncludesCombatImpactWeaponDamage(SkillType skillType, bool usesQueuedNaturalWeapon) => _queries.IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon);
 
         protected virtual bool IsWeaponSkillType(SkillType skillType) => CombatRules.IsWeaponSkillType(skillType);
 

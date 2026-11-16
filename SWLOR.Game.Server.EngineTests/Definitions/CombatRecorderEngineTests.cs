@@ -399,11 +399,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // Bleed ticks every 6 seconds on the shared status interval.
                 await ctx.DelaySecondsAsync(13f);
 
-                Ability.BeginAbilityImpact(brawler, AbilityCatalog.GetAbilityDetail(FeatType.ForceLightning1));
-                var pulse = Ability.CaptureRepeatedAbilityImpact(brawler, () => Ability.ApplyCombatImpact(
+                AbilityImpactLifecycle.BeginAbilityImpact(brawler, AbilityCatalog.GetAbilityDetail(FeatType.ForceLightning1));
+                var pulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(brawler, () => Ability.ApplyCombatImpact(
                     brawler, dummy, GetLocation(dummy), SkillType.Force, 10, 0, null, false,
                     resolvesHit: false, canCritical: false, useUnscaledDamage: true), baseDamage: 10);
-                Ability.EndAbilityImpact(brawler);
+                AbilityImpactLifecycle.EndAbilityImpact(brawler);
                 await ctx.ExecuteInCreatureContextAsync(brawler, pulse);
                 await ctx.DelaySecondsAsync(1f);
                 dummyMaxHitPoints = GetMaxHitPoints(dummy);
@@ -425,10 +425,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // that impact, so it registers nothing; outside an impact it is registered.
                 await ctx.ExecuteInCreatureContextAsync(pyro, () =>
                 {
-                    Ability.BeginAbilityImpact(pyro, AbilityCatalog.GetAbilityDetail(FeatType.CreepingTerror1));
+                    AbilityImpactLifecycle.BeginAbilityImpact(pyro, AbilityCatalog.GetAbilityDetail(FeatType.CreepingTerror1));
                     GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
                     registeredInsideImpact = CombatRecorder.HasPendingDamage(pyro, dummy);
-                    Ability.EndAbilityImpact(pyro);
+                    AbilityImpactLifecycle.EndAbilityImpact(pyro);
                     GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(dummy, 7, pyro, CombatDamageType.Force, deliveryType: CombatDamageDeliveryType.DamageOverTime);
                     registeredOutsideImpact = CombatRecorder.HasPendingDamage(pyro, dummy);
                 });

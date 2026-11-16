@@ -118,9 +118,6 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Timed stat modifiers a creature carries (the facade <c>Service.TemporaryStatModifier</c> until P2-ZG).</summary>
         public static ITemporaryStatModifierService TemporaryStatModifier => FacadeAccessor.Resolve<ITemporaryStatModifierService>();
 
-        /// <summary>Twin pistol weapon abilities (the facade <c>Service.TwinPistolAbility</c> until P2-ZH).</summary>
-        public static ITwinPistolAbilityService TwinPistolAbility => FacadeAccessor.Resolve<ITwinPistolAbilityService>();
-
         /// <summary>Twin pistol pair equipment (the facade <c>Service.TwinPistolEquipment</c> until P2-ZH).</summary>
         public static ITwinPistolEquipmentService TwinPistolEquipment => FacadeAccessor.Resolve<ITwinPistolEquipmentService>();
 

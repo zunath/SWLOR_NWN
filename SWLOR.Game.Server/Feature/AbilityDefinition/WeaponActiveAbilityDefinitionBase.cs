@@ -1675,13 +1675,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 beforeImpact: captureSpreadPrerequisites,
                                 afterSuccessfulHit: impactedTarget =>
                                 {
-                                    profile.AfterSuccessfulHit(activator, impactedTarget, Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
+                                    profile.AfterSuccessfulHit(activator, impactedTarget, AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
                                     GameServices.CombatAbilityHit.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                                 },
                                 beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(
                                     activator,
                                     impactedTarget,
-                                    Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType)),
+                                    AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType)),
                                 hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                                 criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(
                                     activator,
@@ -1730,13 +1730,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             beforeImpact: captureSpreadPrerequisites,
                             afterSuccessfulHit: impactedTarget =>
                             {
-                                profile.AfterSuccessfulHit(activator, impactedTarget, Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
+                                profile.AfterSuccessfulHit(activator, impactedTarget, AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType), spreadSnapshot);
                                 GameServices.CombatAbilityHit.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                             },
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(
                                 activator,
                                 impactedTarget,
-                                Ability.GetWeaponAbilityDamageType(activator, skill, profile.DamageType)),
+                                AbilityDamageInput.GetWeaponAbilityDamageType(activator, skill, profile.DamageType)),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(
                                 activator,
@@ -2115,7 +2115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 {
                     if (StatusEffect.ApplyStatusEffect(activator, target, type, duration, CombatDamageType.Physical))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, target);
-                    Ability.ApplyHostileAbilityEnmity(activator, target);
+                    AbilityHostileImpact.ApplyHostileAbilityEnmity(activator, target);
                 })
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -2253,7 +2253,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     if (StatusEffect.ApplyStatusEffect(activator, creature, type, duration, CombatDamageType.Physical))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, creature);
-                    Ability.ApplyHostileAbilityEnmity(activator, creature);
+                    AbilityHostileImpact.ApplyHostileAbilityEnmity(activator, creature);
                     if (fpDrainPercent > 0)
                     {
                         var fpDrain = GameMath.PercentOf(Stat.GetCurrentFP(creature), fpDrainPercent);
@@ -2299,7 +2299,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (GetIsObjectValid(enemy))
             {
                 StatusEffect.ApplyStatusEffect(activator, enemy, mirroredDebuff, mirroredDuration);
-                Ability.ApplyHostileAbilityEnmity(activator, enemy);
+                AbilityHostileImpact.ApplyHostileAbilityEnmity(activator, enemy);
             }
         }
 

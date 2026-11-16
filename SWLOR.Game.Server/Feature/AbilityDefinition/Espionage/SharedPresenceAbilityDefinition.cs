@@ -69,11 +69,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                     continue;
 
                 // Each member sees only their own smoke; it would mark them for everyone else.
-                Ability.ShowVisualEffectToPlayer(member, member, VisualEffect.Vfx_Dur_Ghost_Smoke);
+                AbilityImpactVisual.ShowVisualEffectToPlayer(member, member, VisualEffect.Vfx_Dur_Ghost_Smoke);
                 SendMessageToPC(member, $"{PlayerName.GetDisplayName(member, activator)}'s Shared Presence hides you for up to {(int)StealthWindowSeconds} seconds.");
             }
 
-            Ability.ShowVisualEffectToPlayer(activator, activator, Ability.GetSuccessfulImpactVisualEffect(activator));
+            AbilityImpactVisual.ShowVisualEffectToPlayer(activator, activator, Ability.GetSuccessfulImpactVisualEffect(activator));
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             {
                 SetActionMode(activator, ActionMode.Stealth, true);
             });
-            Ability.ShowVisualEffectToPlayer(activator, activator, VisualEffect.Vfx_Dur_Ghost_Smoke);
+            AbilityImpactVisual.ShowVisualEffectToPlayer(activator, activator, VisualEffect.Vfx_Dur_Ghost_Smoke);
         }
     }
 }

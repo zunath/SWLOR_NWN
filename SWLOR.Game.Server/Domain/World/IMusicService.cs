@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.World;
@@ -9,9 +10,10 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// The music of the module: the songs of the ambientmusic.2da file, the collectible songs players own as key items,
     /// each player's personal track and battle theme, and the music of an area. Static callers reach the container's
-    /// instance through <c>GameServices.Music</c>; the event handlers are on <see cref="MusicService"/>.
+    /// instance through <c>GameServices.Music</c>; the event handlers are on <see cref="MusicService"/>. As an
+    /// <see cref="IAbilityImpactObserver"/> it starts the battle theme when a hostile ability engages a target.
     /// </summary>
-    public interface IMusicService
+    public interface IMusicService : IAbilityImpactObserver
     {
         /// <summary>
         /// When the module loads, read the ambientmusic.2da file for all active songs.

@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 true);
             ApplyEffectAtLocation(DurationType.Temporary, EffectAreaOfEffect(areaOfEffect), location, durationSeconds);
 
-            var applyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
+            var applyPulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(activator,
                 () => ApplyCreepingTerrorPulse(activator, location, scaledPulseDamage, radius),
                 baseDamage: scaledPulseDamage);
 
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyCreepingTerrorDamage(uint activator, uint target, int scaledPulseDamage)
         {
-            var damage = Ability.ApplyCapturedAbilityDamageBonus(activator, scaledPulseDamage);
+            var damage = AbilityHostileImpact.ApplyCapturedAbilityDamageBonus(activator, scaledPulseDamage);
             damage = Resistance.ApplyResistanceToDamage(target, ResistanceType.Disruption, damage);
             damage = GameServices.CombatDamageTaken.ApplyDamageOverTimeTakenModifiers(target, damage, CombatDamageType.Force, out var targetStatusDamageAdjustment);
             damage = GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(target, damage, activator, CombatDamageType.Force,
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (damage < 0)
                 damage = 0;
 
-            Ability.ApplyHostileCombatImpact(
+            AbilityHostileImpact.ApplyHostileCombatImpact(
                 activator,
                 target,
                 SkillType.Force,

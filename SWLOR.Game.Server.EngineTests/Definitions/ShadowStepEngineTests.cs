@@ -55,14 +55,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
                 ClearAllActions(true);
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     ability.ImpactAction(caster, target, ability.AbilityLevel, GetLocation(target));
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
 
@@ -146,14 +146,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     if (!attacking)
                         ClearAllActions(true);
-                    Ability.BeginAbilityImpact(caster, ability);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                     try
                     {
                         ability.ImpactAction(caster, target, ability.AbilityLevel, GetLocation(target));
                     }
                     finally
                     {
-                        Ability.EndAbilityImpact(caster);
+                        AbilityImpactLifecycle.EndAbilityImpact(caster);
                     }
                 });
 

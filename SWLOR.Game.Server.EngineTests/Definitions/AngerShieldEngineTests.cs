@@ -19,14 +19,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), enemy, 60f);
 
             var anger = AbilityCatalog.GetAbilityDetail(FeatType.Anger2);
-            Ability.BeginAbilityImpact(beast, anger);
+            AbilityImpactLifecycle.BeginAbilityImpact(beast, anger);
             try
             {
                 anger.ImpactAction(beast, enemy, 2, GetLocation(enemy));
             }
             finally
             {
-                Ability.EndAbilityImpact(beast);
+                AbilityImpactLifecycle.EndAbilityImpact(beast);
             }
 
             // 68 HP plus 3.75% of 1000 = 105.5, rounded up.

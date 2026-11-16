@@ -449,15 +449,15 @@ public class AbilityServiceImpactTrackingTests : AbilityServiceTestBase
     {
         var shot = new WeaponShotProfile(900, SkillType.Pistol, 10, CombatDamageType.Fire, 0, 0, AbilityType.Perception, string.Empty);
         using (new WeaponImpactProfile(Caster, shot, new WeaponImpactActivation()))
-            HostileImpact.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Physical).Should().Be(CombatDamageType.Fire);
+            DamageInput.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Physical).Should().Be(CombatDamageType.Fire);
 
         Bench.IncludesWeaponDamage = true;
         Bench.WeaponDamageType = CombatDamageType.Electrical;
-        HostileImpact.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Ice).Should().Be(CombatDamageType.Ice);
-        HostileImpact.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Physical).Should().Be(CombatDamageType.Electrical);
+        DamageInput.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Ice).Should().Be(CombatDamageType.Ice);
+        DamageInput.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Physical).Should().Be(CombatDamageType.Electrical);
 
         Bench.IncludesWeaponDamage = false;
-        HostileImpact.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Physical).Should().Be(CombatDamageType.Physical);
+        DamageInput.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Physical).Should().Be(CombatDamageType.Physical);
     }
 
     [Test]
@@ -467,7 +467,7 @@ public class AbilityServiceImpactTrackingTests : AbilityServiceTestBase
         Lifecycle.BeginAbilityImpact(Caster, Hostile(skill: SkillType.Pistol), triggeringWeaponDamage: 3, triggeringWeaponDamageType: CombatDamageType.Fire);
         Bench.WeaponDamageType = CombatDamageType.Electrical;
 
-        HostileImpact.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Physical).Should().Be(CombatDamageType.Fire);
+        DamageInput.GetWeaponAbilityDamageType(Caster, SkillType.Pistol, CombatDamageType.Physical).Should().Be(CombatDamageType.Fire);
     }
 
     // ----- Visual effects -----
@@ -523,13 +523,13 @@ public class AbilityServiceImpactTrackingTests : AbilityServiceTestBase
         Bench.Players.Add(Other);
         Bench.Invalid.Add(600);
 
-        Service.ShowVisualEffectToPlayer(Caster, Target, VisualEffect.None);
-        Service.ShowVisualEffectToPlayer(Caster, 600, VisualEffect.Vfx_Fnf_Sound_Burst);
-        Service.ShowVisualEffectToPlayer(Target, Target, VisualEffect.Vfx_Fnf_Sound_Burst);
-        Service.ShowVisualEffectToPlayer(Other, Target, VisualEffect.Vfx_Fnf_Sound_Burst);
+        ImpactVisual.ShowVisualEffectToPlayer(Caster, Target, VisualEffect.None);
+        ImpactVisual.ShowVisualEffectToPlayer(Caster, 600, VisualEffect.Vfx_Fnf_Sound_Burst);
+        ImpactVisual.ShowVisualEffectToPlayer(Target, Target, VisualEffect.Vfx_Fnf_Sound_Burst);
+        ImpactVisual.ShowVisualEffectToPlayer(Other, Target, VisualEffect.Vfx_Fnf_Sound_Burst);
         plugin.CallsTo("ApplyInstantVisualEffectToObject").Should().BeEmpty();
 
-        Service.ShowVisualEffectToPlayer(Caster, Target, VisualEffect.Vfx_Fnf_Sound_Burst);
+        ImpactVisual.ShowVisualEffectToPlayer(Caster, Target, VisualEffect.Vfx_Fnf_Sound_Burst);
         plugin.CallsTo("ApplyInstantVisualEffectToObject").Should().ContainSingle();
     }
 

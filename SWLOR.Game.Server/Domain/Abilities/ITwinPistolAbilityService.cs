@@ -1,6 +1,6 @@
 using SWLOR.Game.Server.Domain.Combat;
 
-namespace SWLOR.Game.Server.Domain.Combat
+namespace SWLOR.Game.Server.Domain.Abilities
 {
     /// <summary>One paid activation and result across captured weapon impacts.</summary>
     public interface ITwinPistolAbilityService

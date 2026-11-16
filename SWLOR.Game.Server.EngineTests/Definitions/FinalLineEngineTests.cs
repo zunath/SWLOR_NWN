@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         }
                         field.SetValue(closure, pass == 0 ? null : ramp);
                         ctx.SeedRandom(49123);
-                        Ability.BeginAbilityImpact(caster, ability);
+                        AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                         try
                         {
                             await ctx.ExecuteInCreatureContextAsync(caster, () =>
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         }
                         finally
                         {
-                            ctx.AssertEqual(2, Ability.EndAbilityImpact(caster).ImpactedTargetCount, "both line targets hit");
+                            ctx.AssertEqual(2, AbilityImpactLifecycle.EndAbilityImpact(caster).ImpactedTargetCount, "both line targets hit");
                         }
                         await ctx.WaitFrameAsync();
                         for (var i = 0; i < targets.Length; i++)

@@ -41,9 +41,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
-                    Ability.BeginAbilityImpact(caster, bloom);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, bloom);
                     try { bloom.ImpactAction(caster, first, 1, GetLocation(caster)); }
-                    finally { Ability.EndAbilityImpact(caster); }
+                    finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                 });
             }
             finally { GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null); }
@@ -53,16 +53,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ability = new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true, SkillType = SkillType.Force };
             var startingHP = creatures.ToDictionary(creature => creature, GetCurrentHitPoints);
             var sequence = new AbilityImpactSequence();
-            Ability.BeginAbilityImpact(caster, ability, sequence: sequence);
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, ability, sequence: sequence);
             try
             {
                 // Zero direct damage isolates the rider and also covers landed control-only areas.
-                Ability.ApplyHostileCombatImpact(caster, first, SkillType.Force, 0, CombatDamageType.Force, awardsCombatPoints: false);
-                Ability.ApplyHostileCombatImpact(caster, nearby, SkillType.Force, 0, CombatDamageType.Force, awardsCombatPoints: false);
+                AbilityHostileImpact.ApplyHostileCombatImpact(caster, first, SkillType.Force, 0, CombatDamageType.Force, awardsCombatPoints: false);
+                AbilityHostileImpact.ApplyHostileCombatImpact(caster, nearby, SkillType.Force, 0, CombatDamageType.Force, awardsCombatPoints: false);
             }
             finally
             {
-                Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.EndAbilityImpact(caster);
             }
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(first) < startingHP[first], 5f, "the immediate pulse to deal damage");
             ctx.AssertEqual(8, startingHP[first] - GetCurrentHitPoints(first), "pulse includes its first struck target");
@@ -72,28 +72,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(startingHP[caster], GetCurrentHitPoints(caster), "pulse excludes the source");
 
             // Persistent fields and delayed shapes retain this sequence across separate impacts.
-            Ability.BeginAbilityImpact(caster, ability, countsAsAttackAttempt: false, sequence: sequence);
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, ability, countsAsAttackAttempt: false, sequence: sequence);
             try
             {
-                Ability.ApplyHostileCombatImpact(caster, nearby, SkillType.Force, 0, CombatDamageType.Force, awardsCombatPoints: false);
+                AbilityHostileImpact.ApplyHostileCombatImpact(caster, nearby, SkillType.Force, 0, CombatDamageType.Force, awardsCombatPoints: false);
             }
             finally
             {
-                Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.EndAbilityImpact(caster);
             }
             await ctx.WaitFrameAsync();
             ctx.AssertEqual(8, startingHP[nearby] - GetCurrentHitPoints(nearby), "later impacts of the same cast do not pulse again");
 
             // A separately cast ability receives a new pulse, independent of the source skill.
             ability.SkillType = SkillType.TwinBlade;
-            Ability.BeginAbilityImpact(caster, ability);
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
             try
             {
-                Ability.ApplyHostileCombatImpact(caster, first, SkillType.TwinBlade, 0, CombatDamageType.Physical, awardsCombatPoints: false);
+                AbilityHostileImpact.ApplyHostileCombatImpact(caster, first, SkillType.TwinBlade, 0, CombatDamageType.Physical, awardsCombatPoints: false);
             }
             finally
             {
-                Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.EndAbilityImpact(caster);
             }
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(first) == startingHP[first] - 16, 5f, "the next cast to produce its own pulse");
             ctx.AssertEqual(16, startingHP[nearby] - GetCurrentHitPoints(nearby), "second cast pulses once");
@@ -121,14 +121,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var allyHP = GetCurrentHitPoints(ally);
             var outsiderHP = GetCurrentHitPoints(outsider);
             var ability = AbilityCatalog.GetAbilityDetail(FeatType.WardenOrderTechnique);
-            Ability.BeginAbilityImpact(caster, ability);
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
             try
             {
                 ability.ImpactAction(caster, caster, 1, GetLocation(caster));
             }
             finally
             {
-                Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.EndAbilityImpact(caster);
             }
             await ctx.WaitFrameAsync();
             // 68 HP + 3.75% of 1000 = 106; +20% outgoing = 128; +10% readiness = 141; -50% received = 70.
@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     TemporaryStatModifier.Replace(target, StatType.PhysicalDamageImmunity, scenario.Immune ? 1 : 0, 30f);
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     {
-                        Ability.BeginAbilityImpact(caster, ability);
+                        AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                         try
                         {
                             // Prepare the deficit after entering the assigned creature context;
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             if (scenario.Immune)
                                 ctx.AssertEqual(0, summary.AttributedDamage, "physical immunity makes the impact deal zero damage");
                         }
-                        finally { Ability.EndAbilityImpact(caster); }
+                        finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                     });
                 }
             }
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var ability = ImpactModifierTestAbility.Build(isArea);
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     {
-                        Ability.BeginAbilityImpact(caster, ability);
+                        AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                         try
                         {
                             ability.ImpactAction(caster, target, 1, GetLocation(caster));
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             if (scenario.Immune)
                                 ctx.AssertEqual(0, summary.AttributedDamage, "immunity exercises a landed zero-damage impact");
                         }
-                        finally { Ability.EndAbilityImpact(caster); }
+                        finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                     });
                     await ctx.WaitFrameAsync();
                     foreach (var recipient in new[] { caster, ally })
@@ -375,20 +375,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 Stat.ReduceStamina(caster, 50);
                 stamina = Stat.GetCurrentStamina(caster);
-                Ability.BeginAbilityImpact(caster, area);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, area);
                 try
                 {
                     ScheduleChannel(CombatDamageType.Physical, 6f);
                     ScheduleChannel(CombatDamageType.Electrical, 6f);
                 }
-                finally { Ability.EndAbilityImpact(caster); }
+                finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
             });
             GameServices.CombatAbilityBonus.GrantNextAbilityDamageBonus(caster, (int)PerkType.KillzoneBeacon, 100, 30);
 
             // A pulse can also be forced while a different ability is being resolved.
             // Keep that tracker alive across the timer to verify that it is restored.
             var otherAbility = new AbilityDetail { IsSingleTargetAbility = true, SkillType = SkillType.Mimicry };
-            Ability.BeginAbilityImpact(caster, otherAbility);
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, otherAbility);
             var otherSummary = AbilityImpactState.GetActiveAbilityImpactSummary(caster);
             var otherSequence = AbilityImpactState.GetAbilityImpactSequence(caster);
             try
@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(ReferenceEquals(otherSequence, AbilityImpactState.GetAbilityImpactSequence(caster)), "the surrounding cast sequence survives");
                 ctx.Assert(otherSummary.IsSingleTargetAbility && !otherSummary.IsAreaAbility, "field hits are not attributed to the other ability");
             }
-            finally { Ability.EndAbilityImpact(caster); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
 
             await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(caster) >= stamina + 16, 8f, "the second scheduled pulse of each channel");
             await ctx.WaitFrameAsync();
@@ -411,9 +411,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
-                Ability.BeginAbilityImpact(caster, area);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, area);
                 try { ScheduleChannel(CombatDamageType.Physical, 3f); }
-                finally { Ability.EndAbilityImpact(caster); }
+                finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
             });
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(first) == firstHP - 16, 8f, "a new cast to receive its own bonus pulse");
         }
@@ -431,9 +431,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             AbilityImpactSummary Cast(SkillType skill)
             {
-                Ability.BeginAbilityImpact(caster, new AbilityDetail { IsHostileAbility = true, IsSingleTargetAbility = true, SkillType = skill });
-                Ability.ApplyHostileCombatImpact(caster, target, skill, 0, CombatDamageType.Physical, awardsCombatPoints: false);
-                return Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, new AbilityDetail { IsHostileAbility = true, IsSingleTargetAbility = true, SkillType = skill });
+                AbilityHostileImpact.ApplyHostileCombatImpact(caster, target, skill, 0, CombatDamageType.Physical, awardsCombatPoints: false);
+                return AbilityImpactLifecycle.EndAbilityImpact(caster);
             }
 
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
@@ -477,7 +477,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonus, 7, 45f, "third-resource-source");
             TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80, 45f, "third-resource-source");
             StatusEffect.ApplyStatusEffect(caster, caster, new InfiniteConduitStatusEffect(), 45f);
-            Ability.BeginAbilityImpact(caster, new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true });
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true });
             // The impact state store reads the sources it has not cached through the caller's stat service (P5-3b).
             var stat = Stat;
             try
@@ -492,7 +492,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         "resource thresholds are evaluated per target while source descriptions are reused");
                 }
             }
-            finally { Ability.EndAbilityImpact(caster); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
         }
 
         [EngineTest("Evasive Challenge refunds stamina once while retaining its evasion and timer", Category = "PerkTracker", TimeoutSeconds = 30f)]
@@ -542,14 +542,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), ordinary, 3f);
             var maul = AbilityCatalog.GetAbilityDetail(FeatType.WardenMaulTechnique);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
-            Ability.BeginAbilityImpact(caster, maul);
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, maul);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(caster, () => maul.ImpactAction(caster, beast, 1, GetLocation(beast)));
             }
             finally
             {
-                Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.EndAbilityImpact(caster);
                 GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
             await ctx.DelaySecondsAsync(1f);
@@ -580,7 +580,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 .GetField("afterSuccessfulHit", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic)
                 .GetValue(closure);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
-            Ability.BeginAbilityImpact(caster, burst);
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, burst);
             try
             {
                 ChangeToStandardFaction(targets[1], StandardFaction.Defender);
@@ -593,7 +593,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             finally
             {
-                Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.EndAbilityImpact(caster);
                 GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
             await ctx.WaitUntilAsync(() => targets.Any(target => GetCurrentHitPoints(target) < initialHP[target]), 5f, "the chain damage to resolve");
@@ -670,11 +670,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var before = Stat.GetCurrentStamina(caster);
                     var hp = GetCurrentHitPoints(target);
                     GameServices.CombatResources.ApplyAbilityStaminaCostFPRestore(caster, ability, 9);
-                    Ability.BeginAbilityImpact(caster, ability);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                     try { await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, target, 1, GetLocation(caster))); }
                     finally
                     {
-                        Ability.EndAbilityImpact(caster);
+                        AbilityImpactLifecycle.EndAbilityImpact(caster);
                         GameServices.CombatResources.CompleteAbilityStaminaCostContext(caster, ability);
                     }
                     await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < hp, 5f, "the area impact to land");
@@ -776,9 +776,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var ability = AbilityCatalog.GetAbilityDetail(feat);
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     {
-                        Ability.BeginAbilityImpact(caster, ability);
+                        AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                         try { ability.ImpactAction(caster, target, ability.AbilityLevel, GetLocation(caster)); }
-                        finally { Ability.EndAbilityImpact(caster); }
+                        finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                     });
                     ctx.Assert(StatusEffect.HasStatusEffect<KnockdownStatusEffect>(target), $"{feat} converts existing Dazed");
                     ctx.Assert(!StatusEffect.HasStatusEffect<DazedStatusEffect>(target), "conversion replaces the previous control");

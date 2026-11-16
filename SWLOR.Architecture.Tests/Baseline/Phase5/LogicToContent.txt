@@ -87,14 +87,14 @@ SWLOR.Game.Server/Domain/Foundation/SavedItem.cs -> Feature/MigrationDefinition 
 SWLOR.Game.Server/Domain/Items/WardrobeService.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Quests/CapstoneProofService.cs -> Feature/QuestDefinition | 1
 SWLOR.Game.Server/Domain/Quests/QuestDetail.cs -> Feature/DialogDefinition | 1
+SWLOR.Game.Server/Domain/Social/ExtraHotbarsEquipService.cs -> Feature/MigrationDefinition | 1
+SWLOR.Game.Server/Domain/Social/ExtraHotbarsService.cs -> Feature.UsePerkFeat | 1
+SWLOR.Game.Server/Domain/Social/ExtraHotbarsWindowService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceInspiredService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceService.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Space/SpaceService.cs -> Feature/AppearanceDefinition | 2
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Feature.UsePerkFeat | 1
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Feature/GuiDefinition | 1
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/UI/GuiService.cs -> Feature/GuiDefinition | 2
 SWLOR.Game.Server/Domain/World/NwnFishingFightWorld.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/World/PropertyService.cs -> Feature/DialogDefinition | 1

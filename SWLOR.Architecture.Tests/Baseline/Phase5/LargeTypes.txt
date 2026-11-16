@@ -33,7 +33,6 @@ SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1090
 SWLOR.Game.Server.Domain.Creatures.SpawnService | 1208
 SWLOR.Game.Server.Domain.Items.ItemService | 1605
 SWLOR.Game.Server.Domain.Space.SpaceService | 2762
-SWLOR.Game.Server.Domain.UI.ExtraHotbarsService | 1020
 SWLOR.Game.Server.Domain.World.PropertyLoaderService | 1435
 SWLOR.Game.Server.Domain.World.PropertyService | 1637
 SWLOR.Game.Server.Domain.World.ShuttleService | 1314

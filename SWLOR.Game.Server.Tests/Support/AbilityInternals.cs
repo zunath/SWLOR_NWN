@@ -23,16 +23,13 @@ public static class AbilityInternals
     public static Type TrackedImpactType { get; } = typeof(AbilityImpactTracker);
 
     /// <summary>An instance with no neighbours.</summary>
-    public static AbilityService NoNeighbours() => WithParty(null!);
-
-    /// <summary>An instance whose only neighbour is the party, for a test of party changes that reach the aura code.</summary>
-    public static AbilityService WithParty(IPartyService party)
+    public static AbilityService NoNeighbours()
     {
         var impactState = new AbilityImpactStore();
-        return new(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, party, null!, null!, null!, null!, null!, null!,
+        return new(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!,
             FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IAbilityCatalog>(), impactState, Geometry(),
             new CombatAbilityMagnitudeService(impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()),
-            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.LazyFor<ISpaceService>());
+            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ISpaceService>());
     }
 
     /// <summary>A geometry part with no telegraph service, for a test of the shape tests that resolve no marker.</summary>

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already immobilized.";
 
-            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Immobilized)
+            return AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Immobilized)
                 ? "Target is temporarily immune to immobilization."
                 : string.Empty;
         }
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 Enmity.AttackHighestEnmityTarget(creature);
             }
 
-            Ability.ApplyPostControlImmunity(
+            AbilityImmunity.ApplyPostControlImmunity(
                 creature,
                 SecondsSinceNaturalExpiration,
                 ImmunityType.Immobilized);

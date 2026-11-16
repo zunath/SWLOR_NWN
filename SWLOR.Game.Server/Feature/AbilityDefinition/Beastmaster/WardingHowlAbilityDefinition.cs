@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void WardingHowl1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(WardingHowl1StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void WardingHowl2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(WardingHowl2StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void WardingHowl3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(WardingHowl3StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);

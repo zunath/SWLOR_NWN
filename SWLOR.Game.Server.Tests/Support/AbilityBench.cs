@@ -100,8 +100,13 @@ public sealed partial class AbilityBench : IDisposable
         ImpactState = new AbilityImpactStore();
         Geometry = new CombatImpactGeometryService(telegraph);
         Magnitude = new TestCombatAbilityMagnitudeService(this, ImpactState);
-        Service = new TestAbilityService(this, StatusEffects(), Enmity(), CombatPoints(), Recast(), telegraph, Messaging(), Music(),
-            NamedAnimation(), Mimicry(), Activity(), Party(), PlayerFeedback(), CombatRecorder, MeleeTechnique(), CapstoneProof(),
+        var statusEffects = StatusEffects();
+        var combatPoints = CombatPoints();
+        Aura = new TestAbilityAuraService(this, statusEffects, Party(), combatPoints);
+        Immunity = new AbilityImmunityService(statusEffects);
+        ActivationState = new AbilityActivationStateService();
+        Service = new TestAbilityService(this, statusEffects, Enmity(), combatPoints, Recast(), telegraph, Messaging(), Music(),
+            NamedAnimation(), Mimicry(), Activity(), PlayerFeedback(), CombatRecorder, MeleeTechnique(), CapstoneProof(),
             Resistance(), Stealth(), Catalog, ImpactState, Geometry, Magnitude);
     }
 
@@ -138,8 +143,8 @@ public sealed partial class AbilityBench : IDisposable
     /// <summary>The activation checks (part 6, <c>IAbilityActivationService</c>).</summary>
     public TestAbilityService Activation => Service;
 
-    /// <summary>The auras and the Leadership combat point (part 8, <c>IAbilityAuraService</c>).</summary>
-    public TestAbilityService Aura => Service;
+    /// <summary>The auras and the Leadership combat point (part 8, <c>IAbilityAuraService</c>), with the party roster stand-in.</summary>
+    public TestAbilityAuraService Aura { get; }
 
     /// <summary>The hostile impact (part 12, <c>IAbilityHostileImpactService</c>).</summary>
     public TestAbilityService HostileImpact => Service;
@@ -150,11 +155,11 @@ public sealed partial class AbilityBench : IDisposable
     /// <summary>The status application (part 18, <c>IAbilityStatusApplicationService</c>).</summary>
     public TestAbilityService StatusApplication => Service;
 
-    /// <summary>The temporary immunities (part 19, <c>IAbilityImmunityService</c>).</summary>
-    public TestAbilityService Immunity => Service;
+    /// <summary>The temporary immunities (part 19, <c>IAbilityImmunityService</c>): the real part over the status effect stand-in.</summary>
+    public AbilityImmunityService Immunity { get; }
 
-    /// <summary>The activation and queued-attack state (part 20, <c>IAbilityActivationStateService</c>).</summary>
-    public TestAbilityService ActivationState => Service;
+    /// <summary>The activation and queued-attack state (part 20, <c>IAbilityActivationStateService</c>): the real part, which takes no service.</summary>
+    public AbilityActivationStateService ActivationState { get; }
 
     /// <summary>Everything the service did outside itself, in order.</summary>
     public List<string> Log { get; } = new();

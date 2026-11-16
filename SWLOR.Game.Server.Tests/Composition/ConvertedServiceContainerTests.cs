@@ -115,6 +115,8 @@ public class ConvertedServiceContainerTests
             .Append("ICompanionLookup CompanionQuery")
             // The ability impact state store Combat owns (P5-3b): a store, not a service, reached by the content that reads an impact.
             .Append("IAbilityImpactState AbilityImpactState")
+            // The party roster reads Combat owns (P5-3c): an interface of the roster, reached by the ability target queries in Combat.
+            .Append("IPartyRoster PartyRoster")
             .OrderBy(text => text, StringComparer.Ordinal);
 
         typeof(GameServices).GetProperties(Declared).Select(property => $"{property.PropertyType.Name} {property.Name}")
@@ -131,6 +133,8 @@ public class ConvertedServiceContainerTests
         var notServices = new[] { "ICompanionLookup", "ICombatRecording", "ICharacterRecording", "IGuiRefreshPublisher" }
             // The ability split (P5-3b): the catalog as Character reads it, and the impact state store with its Character read.
             .Concat(new[] { "IAbilityCatalog", "IAbilityImpactState", "IActiveAbilityImpact" })
+            // The ability split (P5-3c): the party roster as Combat reads it, and the aura part as the death service's revive listener.
+            .Concat(new[] { "IPartyRoster", "ICreatureRevivedListener" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

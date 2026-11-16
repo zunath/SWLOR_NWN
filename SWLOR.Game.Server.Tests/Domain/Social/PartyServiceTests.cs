@@ -31,6 +31,7 @@ public class PartyServiceTests
     private FakeNWScript _engine = null!;
     private FakeEventsPlugin _events = null!;
     private PartyService _service = null!;
+    private PartyRosterService _roster = null!;
     private readonly Dictionary<string, uint> _eventObjects = new();
     private readonly Dictionary<uint, int> _factions = new();
     private readonly Dictionary<uint, uint> _areas = new();
@@ -58,14 +59,15 @@ public class PartyServiceTests
         _events = new FakeEventsPlugin();
         _events.SetReturnHandler("GetEventData", arguments => _eventObjects[(string)arguments[0]!].ToString("x"));
 
-        _service = new PartyService(FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<ITelegraphService>());
-        // Aura code that runs when the party changes asks the Party facade, which resolves this instance.
+        _roster = new PartyRosterService();
+        _service = new PartyService(_roster, FacadeForwarder.LazyFor<IAbilityAuraService>(), FacadeForwarder.LazyFor<ITelegraphService>());
+        // Aura code that runs when the party changes reads this roster (P5-3c); with no aura active it reaches nothing else.
         // A party change refreshes the telegraph colors; what these tests prove is the party cache, so that is a stand-in.
         var telegraph = ScriptedProxy.Create<ITelegraphService>(out var telegraphScript);
         telegraphScript.On("UpdateShadersForPlayers", _ => null);
         _provider = ContainerHost.Create(new ServiceCollection()
             .AddSingleton<IPartyService>(_service)
-            .AddSingleton<IAbilityService>(AbilityInternals.WithParty(_service))
+            .AddSingleton<IAbilityAuraService>(new AbilityAuraService(null!, _roster, null!, null!))
             .AddSingleton(telegraph));
         _containerScope = CompositionRoot.InstallForTests(_provider);
         _engineScope = NWScriptRuntime.Override(_engine);
@@ -91,14 +93,9 @@ public class PartyServiceTests
         _service.JoinParty();
     }
 
-    private Dictionary<Guid, uint> Leaders() =>
-        (Dictionary<Guid, uint>)typeof(PartyService).GetField("_partyLeaders", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_service)!;
+    private Dictionary<Guid, uint> Leaders() => _roster.PartyLeaders;
 
-    private uint LeaderOf(uint member)
-    {
-        var parties = (Dictionary<uint, Guid>)typeof(PartyService).GetField("_creatureToParty", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_service)!;
-        return Leaders()[parties[member]];
-    }
+    private uint LeaderOf(uint member) => Leaders()[_roster.CreatureToParty[member]];
 
     // ---- joining by invitation
 
@@ -393,7 +390,7 @@ public class PartyServiceTests
     public void Each_instance_keeps_its_own_caches()
     {
         Accept(Second, Leader);
-        var other = new PartyService(FacadeForwarder.LazyFor<IAbilityService>(), FacadeForwarder.LazyFor<ITelegraphService>());
+        var other = new PartyService(new PartyRosterService(), FacadeForwarder.LazyFor<IAbilityAuraService>(), FacadeForwarder.LazyFor<ITelegraphService>());
 
         other.GetAllPartyMembers(Leader).Should().Equal(Leader);
     }

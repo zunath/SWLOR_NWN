@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already blind.";
 
-            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Blindness)
+            return AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Blindness)
                 ? "Target is temporarily immune to blindness."
                 : string.Empty;
         }
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyPostControlImmunity(
+            AbilityImmunity.ApplyPostControlImmunity(
                 creature,
                 SecondsSinceNaturalExpiration,
                 ImmunityType.Blindness);

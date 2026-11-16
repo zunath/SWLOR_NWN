@@ -12,7 +12,7 @@ using static SWLOR.Game.Server.Composition.GameServices;
 namespace SWLOR.Game.Server.Tests.Domain.Abilities;
 
 /// <summary>
-/// The activation and queued-attack state of <c>UsePerkFeat</c> lives on the ability service: one table per subject, each
+/// The activation and queued-attack state of <c>UsePerkFeat</c> lives on the ability activation state part: one table per subject, each
 /// keyed by creature, and the static feature class reads and writes it through the facade.
 /// </summary>
 [TestFixture]
@@ -25,7 +25,7 @@ public class AbilityActivationStateTests
     private IDisposable _scope = null!;
     private IDisposable _engineScope = null!;
     private FakeNWScript _engine = null!;
-    private IAbilityService _service = null!;
+    private IAbilityActivationStateService _service = null!;
 
     private static WeaponAbilityTraitActivation Traits(int accuracy = 4, bool committed = true) =>
         new(new PairedRangedAbilityTraitsSnapshot(Guid.Empty, true, false, 0, accuracy), 0) { IsCommitted = committed };
@@ -35,7 +35,7 @@ public class AbilityActivationStateTests
     {
         _facades = new FacadeContainer();
         _scope = _facades.Install();
-        _service = _facades.Get<IAbilityService>();
+        _service = _facades.Get<IAbilityActivationStateService>();
         _engine = new FakeNWScript();
         _engineScope = NWScriptRuntime.Override(_engine);
     }
@@ -119,7 +119,7 @@ public class AbilityActivationStateTests
 
         UsePerkFeat.GetActiveWeaponTraits(Actor).Should().BeNull();
 
-        Ability.SetActiveAbilityActivation(Actor, new AbilityActiveActivation { WeaponTraits = traits });
+        AbilityActivationState.SetActiveAbilityActivation(Actor, new AbilityActiveActivation { WeaponTraits = traits });
 
         UsePerkFeat.GetActiveWeaponTraits(Actor).Should().BeSameAs(traits);
     }
@@ -129,10 +129,10 @@ public class AbilityActivationStateTests
     {
         UsePerkFeat.GetQueuedWeaponTraitAccuracy(Actor).Should().Be(0);
 
-        Ability.SetQueuedWeaponTraits(Actor, Traits(accuracy: 4, committed: false));
+        AbilityActivationState.SetQueuedWeaponTraits(Actor, Traits(accuracy: 4, committed: false));
         UsePerkFeat.GetQueuedWeaponTraitAccuracy(Actor).Should().Be(0);
 
-        Ability.SetQueuedWeaponTraits(Actor, Traits(accuracy: 4));
+        AbilityActivationState.SetQueuedWeaponTraits(Actor, Traits(accuracy: 4));
         UsePerkFeat.GetQueuedWeaponTraitAccuracy(Actor).Should().Be(4);
     }
 
@@ -140,7 +140,7 @@ public class AbilityActivationStateTests
     public void The_next_attack_roll_ends_the_reservation_of_the_current_one()
     {
         var reservation = new AbilityQueuedWeaponAttack { AttackIndex = 1 };
-        Ability.TryAddQueuedWeaponAttack(Actor, reservation);
+        AbilityActivationState.TryAddQueuedWeaponAttack(Actor, reservation);
 
         UsePerkFeat.BeginWeaponAttackRoll(Bystander);
         reservation.IsCurrentAttack.Should().BeTrue();
@@ -152,16 +152,16 @@ public class AbilityActivationStateTests
     [Test]
     public void A_destroyed_creature_forgets_its_trait_snapshot_and_reservation_without_touching_its_activation()
     {
-        Ability.SetActiveAbilityActivation(Actor, new AbilityActiveActivation { ActivationId = "cast" });
-        Ability.SetQueuedWeaponTraits(Actor, Traits());
-        Ability.TryAddQueuedWeaponAttack(Actor, new AbilityQueuedWeaponAttack());
+        AbilityActivationState.SetActiveAbilityActivation(Actor, new AbilityActiveActivation { ActivationId = "cast" });
+        AbilityActivationState.SetQueuedWeaponTraits(Actor, Traits());
+        AbilityActivationState.TryAddQueuedWeaponAttack(Actor, new AbilityQueuedWeaponAttack());
         _engine.SetReturn("OBJECT_SELF", Actor);
 
         UsePerkFeat.ForgetDestroyedQueuedWeaponAbility();
 
-        Ability.TryGetQueuedWeaponTraits(Actor, out _).Should().BeFalse();
-        Ability.TryGetQueuedWeaponAttack(Actor, out _).Should().BeFalse();
-        Ability.TryGetActiveAbilityActivation(Actor, out _).Should().BeTrue();
+        AbilityActivationState.TryGetQueuedWeaponTraits(Actor, out _).Should().BeFalse();
+        AbilityActivationState.TryGetQueuedWeaponAttack(Actor, out _).Should().BeFalse();
+        AbilityActivationState.TryGetActiveAbilityActivation(Actor, out _).Should().BeTrue();
     }
 
     [Test]
@@ -171,7 +171,7 @@ public class AbilityActivationStateTests
 
         UsePerkFeat.CaptureQueuedWeaponAbilityHit(Actor, Bystander, 900).Should().BeNull("nothing is reserved");
 
-        Ability.TryAddQueuedWeaponAttack(Actor, new AbilityQueuedWeaponAttack { Weapon = 900 });
+        AbilityActivationState.TryAddQueuedWeaponAttack(Actor, new AbilityQueuedWeaponAttack { Weapon = 900 });
         UsePerkFeat.CaptureQueuedWeaponAbilityHit(Actor, Bystander, 900).Should().BeNull("no ability is queued");
 
         _engine.SetReturn("GetLocalString", "queued");
@@ -184,32 +184,32 @@ public class AbilityActivationStateTests
         _engine.SetReturn("GetIsObjectValid", true);
         _engine.SetReturn("GetLocalString", "queued");
         var reservation = new AbilityQueuedWeaponAttack { Weapon = 900 };
-        Ability.TryAddQueuedWeaponAttack(Actor, reservation);
+        AbilityActivationState.TryAddQueuedWeaponAttack(Actor, reservation);
         var hit = UsePerkFeat.CaptureQueuedWeaponAbilityHit(Actor, Bystander, 900)!;
 
-        Ability.RemoveQueuedWeaponAttack(Actor);
-        Ability.TryAddQueuedWeaponAttack(Actor, new AbilityQueuedWeaponAttack { Weapon = 901 });
+        AbilityActivationState.RemoveQueuedWeaponAttack(Actor);
+        AbilityActivationState.TryAddQueuedWeaponAttack(Actor, new AbilityQueuedWeaponAttack { Weapon = 901 });
         hit();
-        Ability.TryGetQueuedWeaponAttack(Actor, out var kept).Should().BeTrue();
+        AbilityActivationState.TryGetQueuedWeaponAttack(Actor, out var kept).Should().BeTrue();
         kept!.Weapon.Should().Be(901u, "the callback belonged to the old launcher");
 
-        Ability.RemoveQueuedWeaponAttack(Actor);
-        Ability.TryAddQueuedWeaponAttack(Actor, reservation);
+        AbilityActivationState.RemoveQueuedWeaponAttack(Actor);
+        AbilityActivationState.TryAddQueuedWeaponAttack(Actor, reservation);
         _engine.SetReturn("GetIsObjectValid", false);
         hit();
-        Ability.TryGetQueuedWeaponAttack(Actor, out _).Should().BeFalse();
+        AbilityActivationState.TryGetQueuedWeaponAttack(Actor, out _).Should().BeFalse();
     }
 
     [Test]
     public void Clearing_a_queued_ability_drops_the_reservation_and_the_traits_first()
     {
-        Ability.SetQueuedWeaponTraits(Actor, Traits());
-        Ability.TryAddQueuedWeaponAttack(Actor, new AbilityQueuedWeaponAttack());
+        AbilityActivationState.SetQueuedWeaponTraits(Actor, Traits());
+        AbilityActivationState.TryAddQueuedWeaponAttack(Actor, new AbilityQueuedWeaponAttack());
 
         UsePerkFeat.ClearQueuedAbility(Actor);
 
-        Ability.TryGetQueuedWeaponTraits(Actor, out _).Should().BeFalse();
-        Ability.TryGetQueuedWeaponAttack(Actor, out _).Should().BeFalse();
+        AbilityActivationState.TryGetQueuedWeaponTraits(Actor, out _).Should().BeFalse();
+        AbilityActivationState.TryGetQueuedWeaponAttack(Actor, out _).Should().BeFalse();
     }
 
     [Test]

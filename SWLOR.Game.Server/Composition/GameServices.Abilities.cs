@@ -7,11 +7,20 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Ability definitions, activation checks, impact tracking, auras and immunities (the facade <c>Service.Ability</c> until P2-ZF).</summary>
         public static IAbilityService Ability => FacadeAccessor.Resolve<IAbilityService>();
 
+        /// <summary>The activation and queued-attack state <c>UsePerkFeat</c> runs on, a part of the ability service (P5-3c).</summary>
+        public static IAbilityActivationStateService AbilityActivationState => FacadeAccessor.Resolve<IAbilityActivationStateService>();
+
+        /// <summary>Player auras and the Leadership combat point, a part of the ability service (P5-3c).</summary>
+        public static IAbilityAuraService AbilityAura => FacadeAccessor.Resolve<IAbilityAuraService>();
+
         /// <summary>The catalog of ability definitions, a part of the ability service (P5-3b).</summary>
         public static IAbilityCatalogService AbilityCatalog => FacadeAccessor.Resolve<IAbilityCatalogService>();
 
         /// <summary>Elapsed recharge on ability icons (the facade <c>Service.AbilityCooldownVisual</c> until P2-ZF).</summary>
         public static IAbilityCooldownVisualService AbilityCooldownVisual => FacadeAccessor.Resolve<IAbilityCooldownVisualService>();
+
+        /// <summary>Temporary immunities after a control effect, a part of the ability service (P5-3c).</summary>
+        public static IAbilityImmunityService AbilityImmunity => FacadeAccessor.Resolve<IAbilityImmunityService>();
 
         /// <summary>The targeting overrides that update the client's targeting data (the facade <c>Service.AbilityTargetingCache</c> until P2-ZF).</summary>
         public static IAbilityTargetingCacheService AbilityTargetingCache => FacadeAccessor.Resolve<IAbilityTargetingCacheService>();

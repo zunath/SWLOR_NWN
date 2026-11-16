@@ -36,6 +36,10 @@ public static class AbilitySource
         "SWLOR.Game.Server/Domain/Combat/PendingDamageEffect.cs",
         "SWLOR.Game.Server/Domain/Combat/CombatImpactGeometryService.cs",
         "SWLOR.Game.Server/Domain/Combat/CombatAbilityMagnitudeService.cs",
+        // P5-3c: the auras, the temporary immunities and the activation state.
+        "SWLOR.Game.Server/Domain/Abilities/AbilityAuraService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityImmunityService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityActivationStateService.cs",
     };
 
     /// <summary>
@@ -44,7 +48,8 @@ public static class AbilitySource
     /// </summary>
     public static readonly IReadOnlySet<string> PartInterfaces = new HashSet<string>(StringComparer.Ordinal)
     {
-        "IAbilityCatalog", "IAbilityCatalogService", "IAbilityImpactState", "ICombatImpactGeometryService", "ICombatAbilityMagnitudeService"
+        "IAbilityCatalog", "IAbilityCatalogService", "IAbilityImpactState", "ICombatImpactGeometryService", "ICombatAbilityMagnitudeService",
+        "IAbilityAuraService", "IAbilityImmunityService", "IAbilityActivationStateService"
     };
 
     private static readonly Lazy<IReadOnlyList<SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));

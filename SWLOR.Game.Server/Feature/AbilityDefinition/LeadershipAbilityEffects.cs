@@ -117,16 +117,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var statusEffectType = statusEffectTypes[Math.Clamp(auraLevel, 1, statusEffectTypes.Length) - 1];
 
-            if (!Ability.ToggleAura(activator, statusEffectType))
+            if (!AbilityAura.ToggleAura(activator, statusEffectType))
                 return false;
 
             foreach (var auraType in statusEffectTypes)
             {
                 if (auraType != statusEffectType)
-                    Ability.RemoveAura(activator, auraType);
+                    AbilityAura.RemoveAura(activator, auraType);
             }
 
-            Ability.ApplyAura(activator, statusEffectType, true, true, false,
+            AbilityAura.ApplyAura(activator, statusEffectType, true, true, false,
                 Ability.GetSuccessfulImpactVisualEffect(activator));
             return true;
         }

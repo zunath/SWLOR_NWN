@@ -30,8 +30,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private PerkBuilder CreateGrenadierPerk(PerkType perkType)
         {
             return _builder.Create(PerkCategoryType.DevicesGrenadier, perkType)
-                .TriggerPurchase(AbilityTargeting.RefreshClientTargeting)
-                .TriggerRefund(AbilityTargeting.RefreshClientTargeting);
+                .TriggerPurchase(AbilityClientTargeting.RefreshClientTargeting)
+                .TriggerRefund(AbilityClientTargeting.RefreshClientTargeting);
         }
 
         private void FragGrenade()

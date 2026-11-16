@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 180f);
             var treated = new List<uint>();
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding1StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 180f);
             var treated = new List<uint>();
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding2StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var duration = FirstAidTreatmentAdjustments.ApplyStimDurationBonus(activator, 180f);
             var treated = new List<uint>();
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding3StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);

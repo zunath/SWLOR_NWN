@@ -193,7 +193,7 @@ public class AbilityActivationPathTests
             "RecastDelay",
             "ActivationAction",
             "SetBusy");
-        Ability.TryGetActiveAbilityActivation(Caster, out var active).Should().BeTrue();
+        AbilityActivationState.TryGetActiveAbilityActivation(Caster, out var active).Should().BeTrue();
         active.Ability.Should().BeSameAs(_catalog[Feat]);
         UsePerkFeat.GetActiveAbilityActivationId(Caster).Should().Be(active.ActivationId);
         _log.Clear();
@@ -208,7 +208,7 @@ public class AbilityActivationPathTests
             "Requirement.Pay",
             "Impact",
             "ApplyRecastDelay:12");
-        Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse("the completed activation is released");
+        AbilityActivationState.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse("the completed activation is released");
         AbilityImpactState.GetLastCompletedAbilityImpactSummary(Caster).Should().NotBeNull();
     }
 
@@ -225,7 +225,7 @@ public class AbilityActivationPathTests
 
         _log.Should().Equal("ClearBusy", "Requirement.Check");
         Ability.GetLastActivationDenialReason().Should().Be("Not any more.");
-        Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
+        AbilityActivationState.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
     }
 
     [Test]
@@ -242,7 +242,7 @@ public class AbilityActivationPathTests
         UsePerkFeat.TryUseAbility(Caster, Target, Feat, Nowhere()).Should().BeTrue();
 
         _log.Should().EndWith("ActivationAction");
-        Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
+        AbilityActivationState.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
     }
 
     [Test]
@@ -270,7 +270,7 @@ public class AbilityActivationPathTests
         RunDelayed(3f);
 
         _log.Should().Equal("ClearBusy");
-        Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
+        AbilityActivationState.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
     }
 
     [Test]
@@ -299,10 +299,10 @@ public class AbilityActivationPathTests
         UsePerkFeat.TryUseAbility(Caster, Target, Feat, Nowhere()).Should().BeTrue();
         _log.Clear();
 
-        ((SWLOR.Game.Server.Domain.Abilities.AbilityService)Ability).QuiesceForReload(Array.Empty<uint>());
+        ((SWLOR.Game.Server.Domain.Abilities.AbilityActivationStateService)AbilityActivationState).QuiesceForReload(Array.Empty<uint>());
 
         _log.Should().Equal("ClearBusy");
-        Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse("the new build has no activation to finish or interrupt");
+        AbilityActivationState.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse("the new build has no activation to finish or interrupt");
     }
 
     [Test]
@@ -316,10 +316,10 @@ public class AbilityActivationPathTests
         _log.Should().EndWith("SetBusy", "the caster waits on the impact");
         _log.Clear();
 
-        ((SWLOR.Game.Server.Domain.Abilities.AbilityService)Ability).QuiesceForReload(Array.Empty<uint>());
+        ((SWLOR.Game.Server.Domain.Abilities.AbilityActivationStateService)AbilityActivationState).QuiesceForReload(Array.Empty<uint>());
 
         _log.Should().Contain("ClearBusy");
-        Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
+        AbilityActivationState.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
         _log.Clear();
         RunDelayed(1.5f);
         _log.Should().NotContain("Impact", "an interrupted impact never lands");
@@ -331,7 +331,7 @@ public class AbilityActivationPathTests
         _catalog[Feat] = Ability_(AbilityActivationType.Casted, delay: 2f);
         _log.Clear();
 
-        ((SWLOR.Game.Server.Domain.Abilities.AbilityService)Ability).QuiesceForReload(new[] { Caster });
+        ((SWLOR.Game.Server.Domain.Abilities.AbilityActivationStateService)AbilityActivationState).QuiesceForReload(new[] { Caster });
 
         _log.Should().BeEmpty("only a cast clears a busy flag; any other activity keeps its own");
     }
@@ -360,7 +360,7 @@ public class AbilityActivationPathTests
         RunDelayed(1.5f);
 
         _log.Should().Equal("Impact", "ClearBusy");
-        Ability.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
+        AbilityActivationState.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
     }
 
     [Test]
@@ -383,10 +383,10 @@ public class AbilityActivationPathTests
         _log.Clear();
 
         UsePerkFeat.ReserveQueuedWeaponAbilityAttack(Caster, 0, Weapon);
-        Ability.TryGetQueuedWeaponAttack(Caster, out var reservation).Should().BeTrue();
+        AbilityActivationState.TryGetQueuedWeaponAttack(Caster, out var reservation).Should().BeTrue();
         reservation.Weapon.Should().Be(Weapon);
         UsePerkFeat.ReserveQueuedWeaponAbilityAttack(Caster, 1, Weapon + 1);
-        Ability.TryGetQueuedWeaponAttack(Caster, out reservation).Should().BeTrue();
+        AbilityActivationState.TryGetQueuedWeaponAttack(Caster, out reservation).Should().BeTrue();
         reservation.AttackIndex.Should().Be(0, "the first landed roll keeps its reservation");
 
         UsePerkFeat.ResolveQueuedWeaponAbilityHit(Caster, Target, Weapon + 1);
@@ -396,7 +396,7 @@ public class AbilityActivationPathTests
 
         _log.Should().Equal("Impact");
         UsePerkFeat.IsWeaponAbilityQueued(Caster, Feat).Should().BeFalse();
-        Ability.TryGetQueuedWeaponAttack(Caster, out _).Should().BeFalse();
+        AbilityActivationState.TryGetQueuedWeaponAttack(Caster, out _).Should().BeFalse();
     }
 
     private static Location Nowhere() => EngineStructures.Create<Location>(0);

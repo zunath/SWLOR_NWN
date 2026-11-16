@@ -282,7 +282,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             "landed impacts grant the nearby party status, including the source");
                     ctx.Assert(!StatusEffect.HasStatusEffect<ShelterCircleStatusEffect>(target), "the party buff excludes enemies");
                     foreach (var immunity in new[] { ImmunityType.Knockdown, ImmunityType.Dazed })
-                        ctx.AssertEqual(scenario.Lands, Ability.HasTemporaryImmunity(caster, immunity),
+                        ctx.AssertEqual(scenario.Lands, AbilityImmunity.HasTemporaryImmunity(caster, immunity),
                             "landed impacts grant self immunity, including when damage is zero; misses grant none");
                     foreach (var creature in new[] { caster, ally, target })
                         DestroyObject(creature);
@@ -337,8 +337,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(20, Stat.GetStatAdjustment(recipient, StatType.PhysicalDefensePercentAdjustment), "Shelter Circle protects the nearby party");
             ctx.Assert(!StatusEffect.HasStatusEffect<ShelterCircleStatusEffect>(outsider), "Shelter Circle excludes nonparty neighbors");
             ctx.AssertEqual(20, Stat.GetStatAdjustment(caster, StatType.MeleeDeflection), "Unmoving Center retains its self status");
-            ctx.Assert(Ability.HasTemporaryImmunity(caster, ImmunityType.Knockdown), "Unmoving Center grants knockdown immunity");
-            ctx.Assert(Ability.HasTemporaryImmunity(caster, ImmunityType.Dazed), "Unmoving Center grants daze immunity");
+            ctx.Assert(AbilityImmunity.HasTemporaryImmunity(caster, ImmunityType.Knockdown), "Unmoving Center grants knockdown immunity");
+            ctx.Assert(AbilityImmunity.HasTemporaryImmunity(caster, ImmunityType.Dazed), "Unmoving Center grants daze immunity");
         }
 
         [EngineTest("Scheduled device channels retain area rewards and share one pulse per cast", Category = "PerkTracker", TimeoutSeconds = 30f)]

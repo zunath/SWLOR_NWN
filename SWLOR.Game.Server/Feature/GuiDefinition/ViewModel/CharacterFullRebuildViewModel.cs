@@ -533,7 +533,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Return the player to a clean state before refunding: drop every stance/status effect and
                 // deactivate all toggled auras so nothing granted by a soon-to-be-refunded perk lingers.
                 StatusEffect.RemoveAllStatusEffects(Player, includeCraftingStyles: true);
-                Ability.ClearAllPlayerAuras(Player);
+                AbilityAura.ClearAllPlayerAuras(Player);
 
                 UnequipAllItems();
                 RefundAllPerks();

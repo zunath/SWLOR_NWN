@@ -11,9 +11,8 @@
 # Abilities -> Administration (1 edge)
 Domain/Abilities -> Domain/Administration | 3
 
-# Abilities -> Character (4 edges)
+# Abilities -> Character (3 edges)
 Domain/Abilities -> Domain/Character | 304
-Domain/Abilities -> Feature/StatusEffectDefinition | 1
 Feature/AbilityDefinition -> Domain/Character | 996
 Feature/AbilityDefinition -> Feature/StatusEffectDefinition | 444
 
@@ -42,8 +41,7 @@ Feature/AbilityDefinition -> Domain/Items | 2
 Domain/Abilities -> Domain/Quests | 3
 Feature/AbilityDefinition -> Domain/Quests | 1
 
-# Abilities -> Social (2 edges)
-Domain/Abilities -> Domain/Social | 10
+# Abilities -> Social (1 edge)
 Feature/AbilityDefinition -> Domain/Social | 11
 
 # Abilities -> Space (1 edge)

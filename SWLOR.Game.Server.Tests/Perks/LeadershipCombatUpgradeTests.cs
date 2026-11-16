@@ -152,8 +152,8 @@ public class LeadershipCombatUpgradeTests
         var leadershipPerks = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "LeadershipVanguardCommandPerkDefinition.cs").FullName);
         var commandPresence = leadershipPerks[leadershipPerks.IndexOf("private void CommandPresence()", StringComparison.Ordinal)..];
         commandPresence = commandPresence[..commandPresence.IndexOf("private void ", 1, StringComparison.Ordinal)];
-        (commandPresence.Split(".TriggerPurchase(AbilityTargeting.RefreshClientTargeting)").Length - 1).Should().Be(2);
-        (commandPresence.Split(".TriggerRefund(AbilityTargeting.RefreshClientTargeting)").Length - 1).Should().Be(2);
+        (commandPresence.Split(".TriggerPurchase(AbilityClientTargeting.RefreshClientTargeting)").Length - 1).Should().Be(2);
+        (commandPresence.Split(".TriggerRefund(AbilityClientTargeting.RefreshClientTargeting)").Length - 1).Should().Be(2);
 
         var cleanseOrder = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "CleanseOrderAbilityDefinition.cs").FullName);
         cleanseOrder.Should().Contain("AbilityEffectScaling.ScaleHealBySourceSocial(activator, new HealAmount(54, 3f), new HealAmount(68, 3.75f))");

@@ -368,7 +368,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                 ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Ice));
             CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
             TemporaryStatModifier.Add(actor, StatType.RareItemFindChance, 42, 30f);
-            Ability.ApplyAura(actor, typeof(DeflectingAuraStatusEffect), true, false, false);
+            AbilityAura.ApplyAura(actor, typeof(DeflectingAuraStatusEffect), true, false, false);
             AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
             ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The fixture uses a real generated companion pair");
         });
@@ -494,7 +494,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             PairedRangedAttackCycle.Cancel(actor);
             PairedRangedTraits.ClearActor(actor);
             OrdinaryAttackTraits.ClearActor(actor);
-            Ability.RemoveAura(actor, typeof(DeflectingAuraStatusEffect));
+            AbilityAura.RemoveAura(actor, typeof(DeflectingAuraStatusEffect));
             StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
             TemporaryStatModifier.Clear(actor);
             HostileAbilityDelay.EndForTesting(actor);

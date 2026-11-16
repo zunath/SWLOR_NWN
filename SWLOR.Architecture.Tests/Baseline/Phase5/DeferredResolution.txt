@@ -11,7 +11,6 @@
 # SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
-SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Space (up) | 1
 SWLOR.Game.Server/Domain/Abilities/MimicryService.cs -> Character (down) | 3
 SWLOR.Game.Server/Domain/Abilities/MimicryService.cs -> Combat (down) | 1
 SWLOR.Game.Server/Domain/Administration/DMPresenceService.cs -> Administration (inside) | 1

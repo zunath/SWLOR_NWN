@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void GuardianWard1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, new HealAmount(6, 1.5f), 30f);
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void GuardianWard2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, new HealAmount(22, 2.25f), 30f);
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void GuardianWard3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, new HealAmount(44, 3f), 30f);
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void GuardianWard4ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, false))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 AbilityEffectScaling.ApplyTemporaryHP(activator, friendly, TemporaryHitPointEffectKey.GuardianWard, new HealAmount(68, 3.75f), 30f);
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);

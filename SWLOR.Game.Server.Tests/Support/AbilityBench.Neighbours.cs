@@ -185,9 +185,9 @@ public sealed partial class AbilityBench
         return service;
     }
 
-    private IPartyService Party()
+    private IPartyRoster Party()
     {
-        var service = ScriptedProxy.Create<IPartyService>(out var proxy);
+        var service = ScriptedProxy.Create<IPartyRoster>(out var proxy);
         proxy.On("IsInParty", args => PartyPairs.Contains(((uint)args[0]!, (uint)args[1]!)));
         return service;
     }

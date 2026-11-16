@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
             var affected = new List<uint>();
 
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
+            foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 ApplyTemporaryHP(
                     friendly,

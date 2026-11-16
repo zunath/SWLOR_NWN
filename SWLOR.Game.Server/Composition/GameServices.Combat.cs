@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The ability impacts in progress and the last completed summary of each activator (<c>IAbilityImpactState</c>, P5-3b).</summary>
         public static IAbilityImpactState AbilityImpactState => FacadeAccessor.Resolve<IAbilityImpactState>();
 
+        /// <summary>Who is in whose party, as the domains below Social read it (<c>IPartyRoster</c>, implemented by the party roster, P5-3c).</summary>
+        public static IPartyRoster PartyRoster => FacadeAccessor.Resolve<IPartyRoster>();
+
         /// <summary>What is left of combat once its parts are split out: the damage roll and the stat-driven tracker refresh (the facade <c>Service.Combat</c> until P2-ZP). Combat has one property per part below, because its members live on the parts; no call goes through another service first.</summary>
         public static ICombatService Combat => FacadeAccessor.Resolve<ICombatService>();
 

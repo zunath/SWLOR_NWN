@@ -42,7 +42,7 @@ public class AbilityFacadeAllocationTests
     private IDisposable _installed = null!;
 
     /// <summary>
-    /// The container's ability service and its parts (catalog, impact state store, magnitude) are the bench's, whose calls into unconverted code answer from its own
+    /// The container's ability service and its parts (catalog, impact state store, magnitude, aura, immunity, activation state) are the bench's, whose calls into unconverted code answer from its own
     /// tables without allocating, so a count here is the accessor and the instance and nothing behind them.
     /// </summary>
     [SetUp]
@@ -55,6 +55,9 @@ public class AbilityFacadeAllocationTests
             services.Replace(ServiceDescriptor.Singleton<IAbilityCatalogService>(_world.Catalog));
             services.Replace(ServiceDescriptor.Singleton<IAbilityImpactState>(_world.ImpactState));
             services.Replace(ServiceDescriptor.Singleton<ICombatAbilityMagnitudeService>(_world.Magnitude));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityAuraService>(_world.Aura));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityImmunityService>(_world.Immunity));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityActivationStateService>(_world.ActivationState));
         });
         _installed = _container.Install();
         _world.Catalog.Register(Registered, Force);
@@ -192,24 +195,24 @@ public class AbilityFacadeAllocationTests
         var active = new AbilityActiveActivation { ActivationId = "id", Ability = Force };
         var traits = new WeaponAbilityTraitActivation(new PairedRangedAbilityTraitsSnapshot(Guid.Empty, true, true, 1, 3), 5) { IsCommitted = true };
         var reservation = new AbilityQueuedWeaponAttack { AttackIndex = 1, Weapon = 800 };
-        Ability.SetActiveAbilityActivation(Tracked, active);
-        Ability.SetQueuedWeaponTraits(Tracked, traits);
-        Ability.TryAddQueuedWeaponAttack(Tracked, reservation);
+        AbilityActivationState.SetActiveAbilityActivation(Tracked, active);
+        AbilityActivationState.SetQueuedWeaponTraits(Tracked, traits);
+        AbilityActivationState.TryAddQueuedWeaponAttack(Tracked, reservation);
         var sink = 0;
 
         foreach (var creature in new[] { Tracked, Untracked })
         {
-            Allocated(() => sink += Ability.TryGetActiveAbilityActivation(creature, out _) ? 1 : 0).Should().Be(0);
-            Allocated(() => sink += Ability.TryGetQueuedWeaponTraits(creature, out _) ? 1 : 0).Should().Be(0);
-            Allocated(() => sink += Ability.TryGetQueuedWeaponAttack(creature, out _) ? 1 : 0).Should().Be(0);
+            Allocated(() => sink += AbilityActivationState.TryGetActiveAbilityActivation(creature, out _) ? 1 : 0).Should().Be(0);
+            Allocated(() => sink += AbilityActivationState.TryGetQueuedWeaponTraits(creature, out _) ? 1 : 0).Should().Be(0);
+            Allocated(() => sink += AbilityActivationState.TryGetQueuedWeaponAttack(creature, out _) ? 1 : 0).Should().Be(0);
             Allocated(() => sink += UsePerkFeat.GetActiveWeaponTraits(creature) == null ? 1 : 0).Should().Be(0);
             Allocated(() => sink += UsePerkFeat.GetQueuedWeaponTraitAccuracy(creature)).Should().Be(0);
             Allocated(() => UsePerkFeat.BeginWeaponAttackRoll(creature)).Should().Be(0);
         }
 
-        Ability.RemoveActiveAbilityActivation(Tracked);
-        Ability.RemoveQueuedWeaponTraits(Tracked);
-        Ability.RemoveQueuedWeaponAttack(Tracked);
+        AbilityActivationState.RemoveActiveAbilityActivation(Tracked);
+        AbilityActivationState.RemoveQueuedWeaponTraits(Tracked);
+        AbilityActivationState.RemoveQueuedWeaponAttack(Tracked);
         GC.KeepAlive(sink);
     }
 

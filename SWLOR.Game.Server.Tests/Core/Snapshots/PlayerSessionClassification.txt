@@ -6,8 +6,8 @@
 # Regenerate (build first so the handlers are current): SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Game.Server.Tests --no-build --filter "FullyQualifiedName~PlayerSessionClassificationTests"   (PowerShell: $env:SWLOR_UPDATE_SNAPSHOTS='1'; dotnet test ...; Remove-Item Env:SWLOR_UPDATE_SNAPSHOTS)   (build SWLOR.Game.Server.Tests first so the generator sees your handler)
 
 mod_enter (57)
-  LoginOnly   SWLOR.Game.Server.Domain.Abilities.AbilityService.ApplyAuraAOE
-              The aura's area of effect stays on the player; the aura lists are carried (AbilityService._playerAuras).
+  LoginOnly   SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ApplyAuraAOE
+              The aura's area of effect stays on the player; the aura lists are carried (AbilityAuraService._playerAuras).
   Restore     SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.RestoreCooldownVisuals -> RestoreCooldownVisualsFor
               Rebuilds the hotbar cooldown overlays and their tick timers from Player.RecastTimes; both lived in the old build's memory and closures.
   LoginOnly   SWLOR.Game.Server.Domain.Character.ActivityService.WipeStatusOnEntry
@@ -118,11 +118,11 @@ mod_enter (57)
               The horn fit stays in the engine.
   LoginOnly   SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEnter
               The glove fit stays in the engine.
-  LoginOnly   SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnEnter
+  LoginOnly   SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnEnter
               The client targeting data stays in the engine.
 
 mod_exit (45)
-  LogoutOnly  SWLOR.Game.Server.Domain.Abilities.AbilityService.ClearAurasOnExit
+  LogoutOnly  SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ClearAurasOnExit
               Takes the player's auras off everyone; the aura lists are carried.
   Quiesce     SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.ClearCooldownVisualsOnExit -> ClearAllRecastDelays
               Resets every recharge icon the old build drew: the closure that would reset one whose cooldown ends during the reload is dropped, so the restore step only redraws the cooldowns still running.

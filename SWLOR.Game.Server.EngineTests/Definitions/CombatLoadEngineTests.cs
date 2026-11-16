@@ -166,10 +166,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Players get their aura area on module entry, which headless players never fire. It is applied
             // after the parties form, as when a party walks into range, so members enter as party members.
             foreach (var player in players)
-                Ability.ReapplyPlayerAuraAOE(player);
+                AbilityAura.ReapplyPlayerAuraAOE(player);
             var playerParties = parties.Where(party => GetIsPC(party[0])).ToList();
             await ctx.WaitUntilAsync(() => playerParties.All(party => party.All(member =>
-                    Ability.GetSelfAndPartyAuraRecipients(party[0]).Contains(member))), 10f,
+                    AbilityAura.GetSelfAndPartyAuraRecipients(party[0]).Contains(member))), 10f,
                 "every player party member to enter its leader's aura");
             if (playerParties.Count > 0)
                 await AssertPartySupportReachesMemberAsync(ctx, playerParties[0]);

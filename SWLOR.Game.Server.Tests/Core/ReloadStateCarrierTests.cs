@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Tests.Core.CarriedFrom;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -38,7 +39,7 @@ public class ReloadStateCarrierTests
     {
         ReloadStateCarrier.CarriedClasses(Game).Select(entry => entry.Type.Name).Should().Contain(new[]
         {
-            nameof(StatusEffectService), nameof(PartyService), nameof(AbilityService), "CombatActivityService", "CombatPointService",
+            nameof(StatusEffectService), nameof(PartyRosterService), nameof(AbilityAuraService), "CombatActivityService", "CombatPointService",
             "EnmityService", nameof(PlayerNameService), "PvpCombatService", "TemporaryStatModifierService", nameof(ShuttleService),
         });
     }
@@ -210,12 +211,12 @@ public class ReloadStateCarrierTests
     public void AClassThatFailsIsNamedAndTheOthersStillCarry()
     {
         var store = new Dictionary<string, string>();
-        object Resolve(Type type) => type == typeof(PartyService) ? null : ReloadCarrySamples.Owner(type, FieldsOf(type));
+        object Resolve(Type type) => type == typeof(PartyRosterService) ? null : ReloadCarrySamples.Owner(type, FieldsOf(type));
 
         Carrier().Invoking(carrier => carrier.CarryAll(Resolve, (key, text) => store[key] = text))
-            .Should().Throw<InvalidOperationException>().WithMessage("*PartyService*");
+            .Should().Throw<InvalidOperationException>().WithMessage("*PartyRosterService*");
         store.Should().ContainKey(ReloadStateCarrier.KeyPrefix + typeof(MusicService).FullName);
-        store.Should().NotContainKey(ReloadStateCarrier.KeyPrefix + typeof(PartyService).FullName);
+        store.Should().NotContainKey(ReloadStateCarrier.KeyPrefix + typeof(PartyRosterService).FullName);
     }
 
     [Test]
@@ -242,6 +243,83 @@ public class ReloadStateCarrierTests
         Carrier().Invoking(carrier => carrier.AdoptAll(type => type == typeof(MusicService) ? music : Resolve(type),
             key => store.TryGetValue(key, out var text) ? text : null)).Should().NotThrow();
         kept.Should().ContainKey(3u);
+    }
+
+    [Test]
+    public void AReloadFromTheParentBuildReadsThePartiesAndAurasFromTheirFormerOwners()
+    {
+        // The parent build carried the party caches in PartyService and the auras in AbilityService, the same fields by name and type.
+        const string formerParty = ReloadStateCarrier.KeyPrefix + "SWLOR.Game.Server.Domain.Social.PartyService";
+        const string formerAbility = ReloadStateCarrier.KeyPrefix + "SWLOR.Game.Server.Domain.Abilities.AbilityService";
+        var party = Guid.NewGuid();
+        var roster = new PartyRosterService();
+        roster.Parties[party] = new List<uint> { 11u, 12u };
+        roster.CreatureToParty[11u] = party;
+        roster.CreatureToParty[12u] = party;
+        roster.PartyLeaders[party] = 11u;
+        var auraFields = FieldsOf(typeof(AbilityAuraService));
+        var auras = ReloadCarrySamples.Owner(typeof(AbilityAuraService), auraFields);
+        SetField(auras, "_playerAuras", ReloadCarrySamples.Create(FieldOf(typeof(AbilityAuraService), "_playerAuras").FieldType));
+        var hasher = new ReloadDigestHasher(Game);
+        var aurasBefore = hasher.Hash(FieldOf(typeof(AbilityAuraService), "_playerAuras").GetValue(auras));
+        var store = new Dictionary<string, string>
+        {
+            [formerParty] = Carrier().Write(FieldsOf(typeof(PartyRosterService)), roster),
+            [formerAbility] = Carrier().Write(auraFields, auras),
+        };
+
+        var freshRoster = new PartyRosterService();
+        var freshAuras = ReloadCarrySamples.Owner(typeof(AbilityAuraService), auraFields);
+        SetField(freshAuras, "_playerAuras", ReloadCarrySamples.EmptyCollection(FieldOf(typeof(AbilityAuraService), "_playerAuras").FieldType));
+        var taken = new List<string>();
+        Carrier().Invoking(carrier => carrier.AdoptAll(
+            type => type == typeof(PartyRosterService) ? freshRoster : type == typeof(AbilityAuraService) ? freshAuras : null,
+            key =>
+            {
+                taken.Add(key);
+                return store.Remove(key, out var text) ? text : null;
+            })).Should().NotThrow("every other class finds nothing and starts empty, as from any build that did not carry it");
+
+        freshRoster.Parties.Should().ContainKey(party).WhoseValue.Should().Equal(11u, 12u);
+        freshRoster.CreatureToParty.Should().Equal(new Dictionary<uint, Guid> { [11u] = party, [12u] = party });
+        freshRoster.PartyLeaders.Should().Equal(new Dictionary<Guid, uint> { [party] = 11u });
+        hasher.Hash(FieldOf(typeof(AbilityAuraService), "_playerAuras").GetValue(freshAuras)).Should().Be(aurasBefore, "the auras are carried as they were");
+        taken.Should().OnlyHaveUniqueItems().And.Contain(new[] { formerParty, formerAbility });
+        store.Should().BeEmpty("both former texts were read");
+    }
+
+    [Test]
+    public void AFormerOwnersTextFeedsEveryClassItsFieldsMovedToAndIsTakenOnce()
+    {
+        // The earlier build carried RetiredWholeService (since split into the left and right parts, and _oldRight renamed _right),
+        // and CarriedFromKeeper with a _moved field the right part holds now. Take removes a key, as ReloadCarry.Take does.
+        const string retired = ReloadStateCarrier.KeyPrefix + "SWLOR.Game.Server.Tests.Core.CarriedFrom.RetiredWholeService";
+        var keeperKey = ReloadStateCarrier.KeyPrefix + typeof(CarriedFromKeeper).FullName;
+        var store = new Dictionary<string, string>
+        {
+            [retired] = "{\"_left\":{\"1\":10},\"_oldRight\":{\"2\":20},\"_dropped\":{\"3\":30}}",
+            [keeperKey] = "{\"_kept\":{\"4\":40},\"_moved\":{\"5\":50}}",
+        };
+        var keeper = new CarriedFromKeeper();
+        var left = new CarriedFromLeftPart();
+        var right = new CarriedFromRightPart();
+        var owners = new Dictionary<Type, object> { [typeof(CarriedFromKeeper)] = keeper, [typeof(CarriedFromLeftPart)] = left, [typeof(CarriedFromRightPart)] = right };
+        var taken = new List<string>();
+
+        new ReloadStateCarrier(typeof(CarriedFromKeeper).Assembly).Invoking(carrier => carrier.AdoptAll(
+            type => owners.TryGetValue(type, out var owner) ? owner : null,
+            key =>
+            {
+                taken.Add(key);
+                return store.Remove(key, out var text) ? text : null;
+            })).Should().NotThrow();
+
+        keeper.Kept.Should().Equal(new Dictionary<uint, int> { [4u] = 40 }, "the keeper reads its own text and skips the field that moved");
+        left.Left.Should().Equal(new Dictionary<uint, int> { [1u] = 10 });
+        right.Right.Should().Equal(new Dictionary<uint, int> { [2u] = 20 }, "a renamed field is read under its former name");
+        right.Moved.Should().Equal(new Dictionary<uint, int> { [5u] = 50 }, "the keeper's own text also feeds the field that moved from it");
+        right.Adoptions.Should().Be(1, "the adopter hook runs once, after both former texts are read");
+        taken.Should().OnlyHaveUniqueItems().And.Contain(new[] { retired, keeperKey });
     }
 
     [Test]

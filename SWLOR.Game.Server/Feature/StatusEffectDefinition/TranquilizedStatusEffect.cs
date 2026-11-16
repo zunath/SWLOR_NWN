@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already tranquilized.";
 
-            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Sleep)
+            return AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Sleep)
                 ? "Target is temporarily immune to tranquilization."
                 : string.Empty;
         }
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyPostControlImmunity(
+            AbilityImmunity.ApplyPostControlImmunity(
                 creature,
                 SecondsSinceNaturalExpiration,
                 ImmunityType.Sleep);

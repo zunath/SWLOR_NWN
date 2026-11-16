@@ -85,14 +85,23 @@ public class CombatAbilityImpactServiceTests
     [OneTimeSetUp]
     public void BuildFacades()
     {
-        // The friendly target search of the party buff asks the party facade; the instance takes the same scripted service.
+        // The friendly target search of the party buff asks the party roster (GameServices.PartyRoster, P5-3c); the instance
+        // takes a party service that answers the same.
         _partyProxy = ScriptedProxy.Create<IPartyService>(out var partyCalls);
         partyCalls.On(nameof(IPartyService.IsInParty), args =>
         {
             _log.Add($"InParty {args[0]} {args[1]}");
             return _partyMembers.Contains((uint)args[1]!);
         });
-        _facades = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton(_partyProxy)));
+        var roster = ScriptedProxy.Create<IPartyRoster>(out var rosterCalls);
+        rosterCalls.On(nameof(IPartyRoster.IsInParty), args =>
+        {
+            _log.Add($"InParty {args[0]} {args[1]}");
+            return _partyMembers.Contains((uint)args[1]!);
+        });
+        _facades = new FacadeContainer(services => services
+            .Replace(ServiceDescriptor.Singleton(_partyProxy))
+            .Replace(ServiceDescriptor.Singleton(roster)));
     }
 
     [OneTimeTearDown]

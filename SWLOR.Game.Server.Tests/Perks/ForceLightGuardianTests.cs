@@ -79,10 +79,10 @@ public class ForceLightGuardianTests
         var root = FindRepositoryRoot();
         var knockdown = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "KnockdownStatusEffect.cs").FullName);
         knockdown.Should().Contain("StatusEffect.HasStatusEffect(creature, GetType())");
-        knockdown.Should().Contain("Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Knockdown)");
+        knockdown.Should().Contain("AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Knockdown)");
         knockdown.Should().Contain("ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);");
         knockdown.Should().Contain("protected override void Remove(uint creature)");
-        knockdown.Should().Contain("Ability.ApplyPostControlImmunity(");
+        knockdown.Should().Contain("AbilityImmunity.ApplyPostControlImmunity(");
         knockdown.Should().Contain("SecondsSinceNaturalExpiration");
         knockdown.Should().Contain("ImmunityType.Knockdown);");
     }

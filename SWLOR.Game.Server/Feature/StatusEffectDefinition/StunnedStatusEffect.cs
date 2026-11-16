@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already stunned.";
 
-            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Stun)
+            return AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Stun)
                 ? "Target is temporarily immune to stun."
                 : string.Empty;
         }
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyPostControlImmunity(
+            AbilityImmunity.ApplyPostControlImmunity(
                 creature,
                 SecondsSinceNaturalExpiration,
                 ImmunityType.Stun);

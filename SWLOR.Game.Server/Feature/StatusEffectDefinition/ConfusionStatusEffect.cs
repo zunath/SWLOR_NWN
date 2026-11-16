@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already confused.";
 
-            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)
+            return AbilityImmunity.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)
                 ? "Target is temporarily immune to confusion."
                 : string.Empty;
         }
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (IsBeingReplaced)
                 return;
 
-            Ability.ApplyPostControlImmunity(
+            AbilityImmunity.ApplyPostControlImmunity(
                 creature,
                 SecondsSinceNaturalExpiration,
                 ImmunityType.Confused);

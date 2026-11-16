@@ -316,6 +316,13 @@ ringing goes on ringing: its next ring is scheduled again from the attempt's eng
 effect's own checks (a resting creature's movement check), settles a status whose native effect ended, recomputes movement rates,
 polls each pending ship launch, runs each quest encounter's idle check and applies every online player's name overrides again.
 
+The old build writes each class's carried fields under its own class name, so a field that moves to another class or is renamed
+names where it lived with `[ReloadCarriedFrom("<former class>", "<former field>")]` (the field name only when it changed): when
+the old build left nothing under the new class's name, `ReloadStateCarrier.AdoptAll` reads the field from the former class's text
+(each key is taken once, so one former class can feed several new ones). `Snapshots/ReloadCarryHistory.txt` lists every key some
+build has carried; `ReloadCarryHistoryTests` fails until a key the build no longer carries is named by a `ReloadCarriedFrom` or
+ends with `  dropped: <reason>`.
+
 Lost, with the reason:
 
 - Closures the old build scheduled (`DelayCommand`, `AssignCommand`, `ActionDoCommand`; required): each is code of the old build. Running

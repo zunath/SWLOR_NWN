@@ -532,6 +532,8 @@ implements Character's `IAuraStatusEffect`. Where the pull request differs from 
   (`AbilityImmunity.`, `AbilityActivationState.`, `_roster.Parties`, `PartyRoster.IsInParty`), and the Combat part tests answer
   the target queries' party reads through an `IPartyRoster` stand-in.
 - **CombatSim** reads `TemporaryImmunityBaseDurationSeconds` from `AbilityImmunityService`.
+- **The moved carried fields name their former owner** (`[ReloadCarriedFrom]`: the roster's three caches from `PartyService`,
+  `_playerAuras` from `AbilityService`), so a hot reload from the parent build keeps parties and auras.
 
 ## Risks
 

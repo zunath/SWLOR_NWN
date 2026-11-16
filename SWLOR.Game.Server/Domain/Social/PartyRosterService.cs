@@ -13,10 +13,13 @@ namespace SWLOR.Game.Server.Domain.Social
     public class PartyRosterService : IPartyRosterService
     {
         [ReloadState(ReloadStateKind.Carried)]
+        [ReloadCarriedFrom("SWLOR.Game.Server.Domain.Social.PartyService")]
         private readonly Dictionary<Guid, List<uint>> _parties = new();
         [ReloadState(ReloadStateKind.Carried)]
+        [ReloadCarriedFrom("SWLOR.Game.Server.Domain.Social.PartyService")]
         private readonly Dictionary<uint, Guid> _creatureToParty = new();
         [ReloadState(ReloadStateKind.Carried)]
+        [ReloadCarriedFrom("SWLOR.Game.Server.Domain.Social.PartyService")]
         private readonly Dictionary<Guid, uint> _partyLeaders = new();
 
         public Dictionary<Guid, List<uint>> Parties => _parties;

@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         }
 
         [ReloadState(ReloadStateKind.Carried)]
+        [ReloadCarriedFrom("SWLOR.Game.Server.Domain.Abilities.AbilityService")]
         private readonly Dictionary<uint, PlayerAura> _playerAuras = new();
 
         private const int MaxNumberOfAuras = 4;

@@ -10,7 +10,6 @@
 # SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
-SWLOR.Game.Server.Domain.Abilities.AbilityService | 1645
 SWLOR.Game.Server.Domain.Abilities.MimicryService | 1434
 SWLOR.Game.Server.Domain.Character.PerkService | 1486
 SWLOR.Game.Server.Domain.Character.PlayerNameService | 1039
@@ -32,7 +31,6 @@ SWLOR.Game.Server.Domain.Crafting.CraftService | 1319
 SWLOR.Game.Server.Domain.Creatures.AIService | 1874
 SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1090
 SWLOR.Game.Server.Domain.Creatures.SpawnService | 1208
-SWLOR.Game.Server.Domain.Foundation.CommunicationService | 1096
 SWLOR.Game.Server.Domain.Items.ItemService | 1605
 SWLOR.Game.Server.Domain.Space.SpaceService | 2765
 SWLOR.Game.Server.Domain.UI.ExtraHotbarsService | 1020

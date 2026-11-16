@@ -12,7 +12,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
     public interface IAbilityDamageDeliveryService
     {
         /// <summary>
-        /// Applies or queues the damage of one hostile hit, then runs what the hit's damage triggers: the Dark Force conversion,
+        /// Consumes the status-applied next-attack bonus the impact captured (once per impact), applies or queues the damage of
+        /// one hostile hit, then runs what the hit's damage triggers: the Dark Force conversion,
         /// the same-target pressure bonus, the damage-dealt effects, the status effects' damage notice and, for an untracked
         /// hit, the damage reflection. The caller checks that the hit deals damage.
         /// </summary>

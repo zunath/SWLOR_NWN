@@ -194,6 +194,10 @@
     { "type": "ShoulderModelRenderer", "from": "SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap", "to": "SWLOR.Game.Server.Domain.Companions" },
     { "type": "ModelResource", "from": "SWLOR.Game.Server.Feature.AppearanceDefinition", "to": "SWLOR.Game.Server.Domain.Companions" },
     { "type": "ArmorColorIndexCalculator", "from": "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance", "to": "SWLOR.Game.Server.Domain.Companions" },
+    { "type": "TwinPistolAbilityService", "from": "SWLOR.Game.Server.Domain.Combat", "to": "SWLOR.Game.Server.Domain.Abilities" },
+    { "type": "ITwinPistolAbilityService", "from": "SWLOR.Game.Server.Domain.Combat", "to": "SWLOR.Game.Server.Domain.Abilities" },
+    { "type": "CommunicationService", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Social" },
+    { "type": "ICommunicationService", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Social" },
   ],
   "textExcludes": [
     "SWLOR.Game.Server/Readmes/Maintainability*",

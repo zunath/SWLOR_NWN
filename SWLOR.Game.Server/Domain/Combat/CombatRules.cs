@@ -489,6 +489,16 @@ namespace SWLOR.Game.Server.Domain.Combat
             return Math.Max(0, defense - (int)Math.Ceiling(defense * (Math.Min(100, defenseIgnorePercent) / 100f)));
         }
 
+        /// <summary>
+        /// Whether an ability impact can deal damage, so it resolves its damage bonuses: base damage, a queued weapon ability, or
+        /// an ability that declares damage it deals later. Control-only impacts must not consume bonuses.
+        /// </summary>
+        public static bool CanDealCombatImpactDamage(int baseDamage, AbilityDetail ability)
+        {
+            return baseDamage > 0 || ability?.ActivationType == AbilityActivationType.Weapon ||
+                   ability?.DealsDeferredDamage == true;
+        }
+
         public static bool CanConsumeNextAbilityNoDelay(AbilityDetail ability)
         {
             return ability?.IsHostileAbility == true &&

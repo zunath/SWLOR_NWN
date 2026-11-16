@@ -62,7 +62,6 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IBackgroundJobService, BackgroundJobService>();
             services.AddSingleton<ICacheService, CacheService>();
-            services.AddSingleton<ICommunicationService, CommunicationService>();
             services.AddSingleton<IConversationMenuService, ConversationMenuService>();
             services.AddSingleton<IConversationService, ConversationService>();
             services.AddSingleton<IMessagingService, MessagingService>();
@@ -92,16 +91,22 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAbilityDamageInputService, AbilityDamageInputService>();
             services.AddSingleton<IAbilityDamageStageService, AbilityDamageStageService>();
             services.AddSingleton<IAbilityDarkForceService, AbilityDarkForceService>();
+            services.AddSingleton<IAbilityHitRollService, AbilityHitRollService>();
+            services.AddSingleton<IAbilityHostileImpactService, AbilityHostileImpactService>();
             services.AddSingleton<IAbilityImmunityService, AbilityImmunityService>();
+            services.AddSingleton<IAbilityImpactLifecycleService, AbilityImpactLifecycleService>();
             services.AddSingleton<IAbilityImpactMessageService, AbilityImpactMessageService>();
+            services.AddSingleton<IAbilityImpactVisualService, AbilityImpactVisualService>();
             services.AddSingleton<IAbilityStatusApplicationService, AbilityStatusApplicationService>();
             services.AddSingleton<IAbilityTargetCheckService, AbilityTargetCheckService>();
+            services.AddSingleton<IAbilityTargetImpactService, AbilityTargetImpactService>();
             services.AddSingleton<IAbilityTargetingCacheService, AbilityTargetingCacheService>();
             services.AddSingleton<IFieldEngineerPulseEmittersService, FieldEngineerPulseEmittersService>();
             services.AddSingleton<IForceControlCooldownsService, ForceControlCooldownsService>();
             services.AddSingleton<IMimicryService, MimicryService>();
             services.AddSingleton<IQuickCastService, QuickCastService>();
             services.AddSingleton<IReviveHistoryService, ReviveHistoryService>();
+            services.AddSingleton<ITwinPistolAbilityService, TwinPistolAbilityService>();
 
             // Administration
             services.AddSingleton<IDMBlueprintCatalogService, DMBlueprintCatalogService>();
@@ -179,7 +184,6 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
             services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
-            services.AddSingleton<ITwinPistolAbilityService, TwinPistolAbilityService>();
             services.AddSingleton<ITwinPistolEquipmentService, TwinPistolEquipmentService>();
             services.AddSingleton<ITwinPistolMasteryService, TwinPistolMasteryService>();
             services.AddSingleton<IWeaponAttackEligibilityService, WeaponAttackEligibilityService>();
@@ -249,6 +253,8 @@ namespace SWLOR.Game.Server.Composition
         {
             // Quests
             services.AddSingleton<ICapstoneProofService, CapstoneProofService>();
+            // The same instance, seen through the interface Abilities owns for what a hostile ability does to a target (P5-3f).
+            services.AddSingleton<IAbilityImpactObserver>(provider => provider.GetRequiredService<ICapstoneProofService>());
             services.AddSingleton<IFactionService, FactionService>();
             services.AddSingleton<IQuestService, QuestService>();
             services.AddSingleton<IQuestContractBoardService, QuestContractBoardService>();
@@ -261,6 +267,9 @@ namespace SWLOR.Game.Server.Composition
 
             // Social
             services.AddSingleton<IChatCommandService, ChatCommandService>();
+            services.AddSingleton<ICommunicationService, CommunicationService>();
+            services.AddSingleton<ICommunicationAudienceService, CommunicationAudienceService>();
+            services.AddSingleton<ICommunicationMessageSplitService, CommunicationMessageSplitService>();
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
             services.AddSingleton<IPartyService, PartyService>();
             services.AddSingleton<IPartyRosterService, PartyRosterService>();
@@ -296,6 +305,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IFishingFightsService, FishingFightsService>();
             services.AddSingleton<IHoloComService, HoloComService>();
             services.AddSingleton<IMusicService, MusicService>();
+            // The same instance, seen through the interface Abilities owns for what a hostile ability does to a target (P5-3f).
+            services.AddSingleton<IAbilityImpactObserver>(provider => provider.GetRequiredService<IMusicService>());
             services.AddSingleton<INotesService, NotesService>();
             services.AddSingleton<IPlanetService, PlanetService>();
             services.AddSingleton<IPropertyCatalogService, PropertyCatalogService>();

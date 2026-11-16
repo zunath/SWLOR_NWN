@@ -14,7 +14,7 @@
   "domains": {
     "Foundation": {
       "services": [
-        "DB", "Cache", "Messaging", "Communication", "BackgroundJob", "Migration", "Authorization",
+        "DB", "Cache", "Messaging", "BackgroundJob", "Migration", "Authorization",
         "Conversation", "ConversationMenu", "Snippet", "PlayerFeedback", "ObjectVisibility",
         "Walkmesh", "TileMagic", "AnimationPlayer", "NamedAnimation", "Animation", "Attribute"
       ],
@@ -35,7 +35,7 @@
         "Combat", "CombatPoint", "CombatRecorder", "Enmity", "PvpCombat", "Resistance", "Recast",
         "Telegraph", "Targeting", "QueuedAttackAnimation",
         "WeaponAttackEligibility", "WeaponDelay", "OrdinaryAttackTraits",
-        "PairedRangedTraits", "MeleeTechnique", "TwinPistolAbility", "TwinPistolEquipment",
+        "PairedRangedTraits", "MeleeTechnique", "TwinPistolEquipment",
         "TwinPistolMastery", "PowerGloveEquipment", "Stealth", "Death", "Poisons", "BattleGrid",
         "TemporaryStatModifier"
       ],
@@ -44,7 +44,7 @@
     "Abilities": {
       "services": [
         "Ability", "AbilityCooldownVisual", "AbilityTargetingCache", "FieldEngineerPulseEmitters", "ForceControlCooldowns",
-        "QuickCast", "ReviveHistory", "Mimicry"
+        "QuickCast", "ReviveHistory", "Mimicry", "TwinPistolAbility"
       ],
       "featureFolders": [
         "AbilityDefinition"
@@ -126,7 +126,7 @@
     },
     "Social": {
       "services": [
-        "ChatCommand", "ChatPortraitTells", "Party", "PlayerList", "ChatPortraitTell", "Performance"
+        "ChatCommand", "ChatPortraitTells", "Communication", "Party", "PlayerList", "ChatPortraitTell", "Performance"
       ],
       "featureFolders": [
         "ChatCommandDefinition"

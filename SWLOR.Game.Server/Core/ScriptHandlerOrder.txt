@@ -443,7 +443,7 @@ dm_limbo_bef
   action      SWLOR.Game.Server.Domain.Combat.EnmityService.CreatureLimbo
 
 dm_poss_bef
-  action      SWLOR.Game.Server.Domain.Foundation.CommunicationService.OnDMPossess
+  action      SWLOR.Game.Server.Domain.Social.CommunicationService.OnDMPossess
   action      SWLOR.Game.Server.Domain.Social.PlayerListService.MoveWindowOnPossession
   action      SWLOR.Game.Server.Domain.Character.StatService.ClearWalkModeBeforeDMPossessionChange
   action      SWLOR.Game.Server.Domain.Combat.TelegraphService.ResendShaderStateOnDMPossess
@@ -454,7 +454,7 @@ dm_poss_bef
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnDMPossess
 
 dm_possfull_bef
-  action      SWLOR.Game.Server.Domain.Foundation.CommunicationService.OnDMPossess
+  action      SWLOR.Game.Server.Domain.Social.CommunicationService.OnDMPossess
   action      SWLOR.Game.Server.Domain.Social.PlayerListService.MoveWindowOnPossession
   action      SWLOR.Game.Server.Domain.Character.StatService.ClearWalkModeBeforeDMPossessionChange
   action      SWLOR.Game.Server.Domain.Combat.TelegraphService.ResendShaderStateOnDMPossess
@@ -698,7 +698,7 @@ mod_acquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnAcquire
 
 mod_chat
-  action      SWLOR.Game.Server.Domain.Foundation.CommunicationService.ProcessNativeChatMessage
+  action      SWLOR.Game.Server.Domain.Social.CommunicationService.ProcessNativeChatMessage
   action      SWLOR.Game.Server.Domain.World.HoloComService.OnModuleChat
 
 mod_death
@@ -737,8 +737,8 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.RememberEnteringPlayer
   action      SWLOR.Game.Server.Domain.Combat.CombatDamageCatalogService.AddDamageTypeResistances
   action      SWLOR.Game.Server.Domain.Combat.CombatActivityService.RestoreIdleReadinessOnPlayerEnter
-  action      SWLOR.Game.Server.Domain.Foundation.CommunicationService.ApplyCommsChannelName
-  action      SWLOR.Game.Server.Domain.Foundation.CommunicationService.ApplyShoutChannelName
+  action      SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyCommsChannelName
+  action      SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyShoutChannelName
   action      SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
   action      SWLOR.Game.Server.Domain.Character.DisguiseService.ApplyActiveDisguiseOnEnter
   action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnEnter
@@ -852,7 +852,7 @@ mod_exit
 
 mod_gui_event
   action      SWLOR.Game.Server.Domain.Social.ChatPortraitTellsService.CheckPortraitClick
-  action      SWLOR.Game.Server.Domain.Foundation.CommunicationService.TypingIndicator
+  action      SWLOR.Game.Server.Domain.Social.CommunicationService.TypingIndicator
   action      SWLOR.Game.Server.Domain.UI.GuiService.ReplaceNWNGuis
   action      SWLOR.Game.Server.Feature.BuffTimer.DisplayBuffInfo
   action      SWLOR.Game.Server.Feature.MiniMaps.MiniMapGui
@@ -922,7 +922,7 @@ object_destroyed
 
 on_nwnx_chat
   action      SWLOR.Game.Server.Domain.Social.ChatCommandService.HandleChatMessage
-  action      SWLOR.Game.Server.Domain.Foundation.CommunicationService.ProcessChatMessage
+  action      SWLOR.Game.Server.Domain.Social.CommunicationService.ProcessChatMessage
   action      SWLOR.Game.Server.Domain.Social.PerformanceService.KeepRoleplayGoing
   action      SWLOR.Game.Server.Domain.Character.PlayerNameService.PreventAmbiguousTellTargets
   action      SWLOR.Game.Server.Feature.Auditing.AuditChatMessages

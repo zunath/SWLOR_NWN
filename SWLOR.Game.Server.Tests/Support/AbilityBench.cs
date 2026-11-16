@@ -109,15 +109,24 @@ public sealed partial class AbilityBench : IDisposable
         TargetCheck = new AbilityTargetCheckService(Geometry, meleeTechnique, Recast(), PlayerFeedback());
         Activation = new TestAbilityActivationService(this, Catalog, Mimicry(), Activity(), TargetCheck);
         var resistance = Resistance();
+        var enmity = Enmity();
+        // In the container's order: the capstone proof service registers before the music service.
+        var observers = new IAbilityImpactObserver[] { CapstoneProof(), Music() };
         ImpactMessage = new TestAbilityImpactMessageService(Messaging(), CombatRecorder);
+        ImpactVisual = new AbilityImpactVisualService(Stealth());
         DarkForce = new TestAbilityDarkForceService(this, ImpactState, CombatRecorder);
         DamageDelivery = new TestAbilityDamageDeliveryService(this, statusEffects, CombatRecorder, DarkForce);
         StatusApplication = new TestAbilityStatusApplicationService(this, statusEffects, resistance, ImpactState);
         DamageInput = new TestAbilityDamageInputService(this, ImpactState, Magnitude, resistance);
         DamageStage = new TestAbilityDamageStageService(this, DamageInput, ImpactState, Magnitude, resistance);
-        Service = new TestAbilityService(this, statusEffects, Enmity(), combatPoints, telegraph, Music(), NamedAnimation(),
-            CombatRecorder, meleeTechnique, CapstoneProof(), Stealth(), ImpactState, Geometry, ImpactMessage, DarkForce,
-            DamageDelivery, StatusApplication, DamageInput, DamageStage);
+        Lifecycle = new TestAbilityImpactLifecycleService(this, ImpactState, meleeTechnique, CombatRecorder, DamageDelivery, statusEffects);
+        HostileImpact = new TestAbilityHostileImpactService(this, ImpactState, observers, combatPoints, enmity, DamageDelivery,
+            StatusApplication, DarkForce, ImpactVisual);
+        HitRoll = new TestAbilityHitRollService(this, observers, meleeTechnique, DamageInput, StatusApplication, ImpactMessage,
+            combatPoints, enmity);
+        TargetImpact = new TestAbilityTargetImpactService(this, ImpactState, HitRoll, HostileImpact, DarkForce, DamageInput, DamageStage);
+        Service = new TestAbilityService(this, ImpactState, Lifecycle, TargetImpact, ImpactMessage, ImpactVisual, Geometry, telegraph,
+            NamedAnimation());
     }
 
     public AbilityEngine Engine { get; }
@@ -148,7 +157,7 @@ public sealed partial class AbilityBench : IDisposable
     public TestCombatAbilityMagnitudeService Magnitude { get; }
 
     /// <summary>The impact lifecycle (part 5, <c>IAbilityImpactLifecycleService</c>).</summary>
-    public TestAbilityService Lifecycle => Service;
+    public TestAbilityImpactLifecycleService Lifecycle { get; }
 
     /// <summary>The activation checks (part 6, <c>IAbilityActivationService</c>), over the target checks (part 7).</summary>
     public TestAbilityActivationService Activation { get; }
@@ -159,8 +168,14 @@ public sealed partial class AbilityBench : IDisposable
     /// <summary>The auras and the Leadership combat point (part 8, <c>IAbilityAuraService</c>), with the party roster stand-in.</summary>
     public TestAbilityAuraService Aura { get; }
 
+    /// <summary>The hit roll (part 10, <c>IAbilityHitRollService</c>).</summary>
+    public TestAbilityHitRollService HitRoll { get; }
+
+    /// <summary>The per-target resolution (part 11, <c>IAbilityTargetImpactService</c>), over the hit roll and the hostile impact.</summary>
+    public TestAbilityTargetImpactService TargetImpact { get; }
+
     /// <summary>The hostile impact (part 12, <c>IAbilityHostileImpactService</c>).</summary>
-    public TestAbilityService HostileImpact => Service;
+    public TestAbilityHostileImpactService HostileImpact { get; }
 
     /// <summary>The damage delivery (part 13, <c>IAbilityDamageDeliveryService</c>), over the Dark Force part.</summary>
     public TestAbilityDamageDeliveryService DamageDelivery { get; }
@@ -170,6 +185,9 @@ public sealed partial class AbilityBench : IDisposable
 
     /// <summary>The impact messages (part 15, <c>IAbilityImpactMessageService</c>), over the messaging and recorder stand-ins.</summary>
     public TestAbilityImpactMessageService ImpactMessage { get; }
+
+    /// <summary>The success visual playback (<c>IAbilityImpactVisualService</c>): the real part over the stealth stand-in.</summary>
+    public AbilityImpactVisualService ImpactVisual { get; }
 
     /// <summary>The damage inputs and the unscaled damage formula (part 16, <c>IAbilityDamageInputService</c>).</summary>
     public TestAbilityDamageInputService DamageInput { get; }

@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCPerkLevel(caster, PerkType.PathogenStrike, 1);
             await ObserveImpact(ctx, target, async () =>
             {
-                Ability.BeginAbilityImpact(caster, ability, triggeringWeapon: off);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability, triggeringWeapon: off);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
             AssertOnlyDamageType(ctx, CombatDamageType.Ice, "Pathogen Strike delivered by the Cold off-hand knife");
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ability = AbilityCatalog.GetAbilityDetail(FeatType.DoubleShot1);
             await ObserveImpact(ctx, target, async () =>
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     // The weapon's element changes after registration, as a weapon swap during a telegraph would.
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
             AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Double Shot registered while the pistol dealt Fire");
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var bite = AbilityCatalog.GetAbilityDetail(FeatType.Bite1);
             await ObserveImpact(ctx, target, async () =>
             {
-                Ability.BeginAbilityImpact(beast, bite, triggeringWeapon: claw);
+                AbilityImpactLifecycle.BeginAbilityImpact(beast, bite, triggeringWeapon: claw);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(beast,
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(beast);
+                    AbilityImpactLifecycle.EndAbilityImpact(beast);
                 }
             });
             AssertOnlyDamageType(ctx, CombatDamageType.Fire, "Bite delivered by a Fire natural weapon");
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ability = AbilityCatalog.GetAbilityDetail(feat);
             await ObserveImpact(ctx, target, async () =>
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
         }

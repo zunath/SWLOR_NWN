@@ -141,9 +141,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
                     ctx.SeedRandom(20260908);
-                    Ability.BeginAbilityImpact(caster, ability);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                     try { ability.ImpactAction(caster, targets[0], 1, GetLocation(targets[0])); }
-                    finally { Ability.EndAbilityImpact(caster); }
+                    finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                 });
                 ctx.Log($"{feat}: impact dispatched; waiting up to 3 seconds for all immediate or delayed direct hits.");
                 await ctx.WaitUntilAsync(() => targets.Select((target, index) =>

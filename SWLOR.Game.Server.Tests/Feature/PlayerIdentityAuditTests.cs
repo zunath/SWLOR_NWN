@@ -175,7 +175,7 @@ public class PlayerIdentityAuditTests
                 public static ChatChannel GetChannel() => Channel;
                 public static string GetMessage() => Message;
             }
-            public static class CommunicationService { public const string SuppressChatAuditVariable = "suppress"; }
+            public static class ChatVariables { public const string SuppressChatAuditVariable = "suppress"; }
             public static class DMPresence
             {
                 public static readonly Dictionary<uint, uint> Masters = new();

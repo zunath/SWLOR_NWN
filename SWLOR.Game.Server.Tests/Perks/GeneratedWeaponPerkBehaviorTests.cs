@@ -614,7 +614,7 @@ public class GeneratedWeaponPerkBehaviorTests
             StringComparison.Ordinal);
         var placeableBranch = nativeSource[placeableBranchIndex..placeableReturnIndex];
         placeableBranch.Should().Contain("UsePerkFeat.ReserveQueuedWeaponAbilityAttack(",
-            "queued placeable hits are finalized by Ability.EndAbilityImpact and must not spend two charges");
+            "queued placeable hits are finalized by AbilityImpactLifecycle.EndAbilityImpact and must not spend two charges");
         placeableNotificationIndex.Should().BeGreaterThan(placeableBranchIndex);
         placeableNotificationIndex.Should().BeLessThan(placeableReturnIndex,
             "automatic hits against destructible placeables must spend attack charges");
@@ -631,7 +631,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "AbilityDefinition",
             "Force",
             "CreepingTerrorAbilityDefinition.cs"));
-        creepingTerrorSource.Should().Contain("Ability.CaptureRepeatedAbilityImpact(activator,",
+        creepingTerrorSource.Should().Contain("AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(activator,",
             "periodic field pulses are effects, not new attack attempts");
         abilitySource.Should().Contain("BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,",
             "recurring impacts must not consume a new activation's pending attack bonuses");
@@ -1710,15 +1710,9 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().BeGreaterThan(defensiveEffectsIndex,
                 "concealment can convert a provisional hit into an avoided attack");
 
-        var hostileCombatImpactStart = abilitySource.IndexOf(
-            "private int ApplyHostileCombatImpact(",
-            StringComparison.Ordinal);
-        var hostileCombatImpactEnd = abilitySource.IndexOf(
-            "private bool ShouldResolveCombatImpactHit(",
-            hostileCombatImpactStart,
-            StringComparison.Ordinal);
-        hostileCombatImpactEnd.Should().BeGreaterThan(hostileCombatImpactStart);
-        var hostileCombatImpactSource = abilitySource[hostileCombatImpactStart..hostileCombatImpactEnd];
+        // The per-target resolution and its hit roll are parts of their own since the ability split (P5-3f).
+        var hostileCombatImpactSource = AbilitySource.Member("AbilityHitRollService", "TryResolveHostileImpactHit") +
+            AbilitySource.Member("AbilityTargetImpactService", "ApplyHostileCombatImpact");
         hostileCombatImpactSource.Should().Contain("TrackHostileAbilityActivity(activator);");
         hostileCombatImpactSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(target, activator);");
         hostileCombatImpactSource.IndexOf("TrackHostileAbilityActivity(activator);", StringComparison.Ordinal)

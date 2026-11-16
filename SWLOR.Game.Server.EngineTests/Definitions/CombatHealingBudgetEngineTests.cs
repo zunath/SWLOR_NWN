@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 var definition = new ForceDrainAbilityDefinition().BuildAbilities()[FeatType.ForceDrain3];
-                Ability.BeginAbilityImpact(source, definition);
+                AbilityImpactLifecycle.BeginAbilityImpact(source, definition);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(source,
@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(source);
+                    AbilityImpactLifecycle.EndAbilityImpact(source);
                 }
                 await ctx.DelaySecondsAsync(0.5f);
                 var damage = 1000 - GetCurrentHitPoints(target);
@@ -298,16 +298,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Prepare(ctx, target, 1000, 1000);
             TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 12, 30f);
             var definition = AbilityCatalog.GetAbilityDetail(FeatType.ForceDrain3);
-            Ability.BeginAbilityImpact(source, definition);
+            AbilityImpactLifecycle.BeginAbilityImpact(source, definition);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(source, () =>
                 {
                     foreach (var target in targets)
-                        Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 200, CombatDamageType.Force);
+                        AbilityHostileImpact.ApplyHostileCombatImpact(source, target, SkillType.Force, 200, CombatDamageType.Force);
                 });
             }
-            finally { Ability.EndAbilityImpact(source); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(source); }
             ctx.AssertEqual(241, GetCurrentHitPoints(source), "twenty targets share 240 HP of passive healing");
         }
 
@@ -321,16 +321,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, target, 1000, 20);
             TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 8, 30f);
             var definition = AbilityCatalog.GetAbilityDetail(FeatType.ForceDrain3);
-            Ability.BeginAbilityImpact(source, definition);
+            AbilityImpactLifecycle.BeginAbilityImpact(source, definition);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(source, () =>
                 {
-                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 200, CombatDamageType.Force);
-                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 200, CombatDamageType.Force);
+                    AbilityHostileImpact.ApplyHostileCombatImpact(source, target, SkillType.Force, 200, CombatDamageType.Force);
+                    AbilityHostileImpact.ApplyHostileCombatImpact(source, target, SkillType.Force, 200, CombatDamageType.Force);
                 });
             }
-            finally { Ability.EndAbilityImpact(source); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(source); }
             ctx.AssertEqual(3, GetCurrentHitPoints(source), "only the first impact can draw 8% of the target's 20 remaining HP");
         }
 
@@ -372,23 +372,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryHitPointEffects.ApplyFlat(target, "LIFESTEAL_TARGET_SECOND", 50, 30f);
             TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 8, 30f);
             var definition = AbilityCatalog.GetAbilityDetail(FeatType.ForceDrain3);
-            Ability.BeginAbilityImpact(source, definition);
+            AbilityImpactLifecycle.BeginAbilityImpact(source, definition);
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(source, () =>
                 {
                     ctx.AssertEqual(151, AbilityImpactState.GetRemainingDamageTargetHP(source, target),
                         "both temporary pools and underlying HP are counted once");
-                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
+                    AbilityHostileImpact.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
                     ctx.AssertEqual(51, AbilityImpactState.GetRemainingDamageTargetHP(source, target),
                         "the first queued hit reserves 100 HP from the combined pool");
-                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
+                    AbilityHostileImpact.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
                     ctx.AssertEqual(0, AbilityImpactState.GetRemainingDamageTargetHP(source, target),
                         "the second queued hit claims the last 51 HP and excludes overkill");
-                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
+                    AbilityHostileImpact.ApplyHostileCombatImpact(source, target, SkillType.Force, 100, CombatDamageType.Force);
                 });
             }
-            finally { Ability.EndAbilityImpact(source); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(source); }
             ctx.AssertEqual(14, GetCurrentHitPoints(source), "8% lifesteal heals 8 HP, then 5 HP, then zero");
         }
 
@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(target);
             ctx.Assert(GetIsReactionTypeHostile(target, source), "the ability target is hostile");
             TemporaryStatModifier.Add(source, StatType.DamageDealtHPPercentRestore, 8, 30f);
-            Ability.BeginAbilityImpact(source, AbilityCatalog.GetAbilityDetail(FeatType.ForceDrain3));
+            AbilityImpactLifecycle.BeginAbilityImpact(source, AbilityCatalog.GetAbilityDetail(FeatType.ForceDrain3));
             try
             {
                 await ctx.ExecuteInCreatureContextAsync(source, () =>
@@ -482,14 +482,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                     ctx.AssertEqual(600 - damage, AbilityImpactState.GetRemainingDamageTargetHP(source, target),
                         "the queued hit is subtracted from base HP plus the new shield exactly once");
-                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 400, CombatDamageType.Force);
+                    AbilityHostileImpact.ApplyHostileCombatImpact(source, target, SkillType.Force, 400, CombatDamageType.Force);
                     var expected = 1 + 150 + GameMath.PercentOf(damage, 8) + GameMath.PercentOf(600 - damage, 8);
                     ctx.AssertEqual(expected, ObjectPlugin.GetCurrentHitPoints(source), "the second hit only draws from unclaimed shield and base HP");
-                    Ability.ApplyHostileCombatImpact(source, target, SkillType.Force, 400, CombatDamageType.Force);
+                    AbilityHostileImpact.ApplyHostileCombatImpact(source, target, SkillType.Force, 400, CombatDamageType.Force);
                     ctx.AssertEqual(expected, ObjectPlugin.GetCurrentHitPoints(source), "the third hit cannot heal from shield overkill");
                 });
             }
-            finally { Ability.EndAbilityImpact(source); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(source); }
         }
 
         [EngineTest("Critical lifesteal sees shields granted by damage-taken modifiers", Category = "CombatHealing", TimeoutSeconds = 20f)]

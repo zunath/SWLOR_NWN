@@ -9,10 +9,11 @@ Domain/Abilities -> Platform/Enumeration | 1
 Feature/AbilityDefinition -> Domain/Foundation | 88
 Feature/AbilityDefinition -> Platform/Entity | 6
 
-# Abilities -> Platform (7 edges)
+# Abilities -> Platform (8 edges)
 Domain/Abilities -> Platform/Composition | 12
 Domain/Abilities -> Platform/Core | 52
 Domain/Abilities -> Platform/Extension | 1
+Domain/Abilities -> Platform/Native | 3
 Domain/Abilities -> Platform/Root | 1
 Feature/AbilityDefinition -> Platform/Composition | 411
 Feature/AbilityDefinition -> Platform/Core | 19

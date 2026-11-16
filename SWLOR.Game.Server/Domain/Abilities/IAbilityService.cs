@@ -11,54 +11,15 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 namespace SWLOR.Game.Server.Domain.Abilities
 {
     /// <summary>
-    /// Abilities: the lifecycle of each impact while it resolves, and the combat impacts content applies. The catalog, the
-    /// impact state, the activation and target checks, the auras, the temporary immunities, the activation state, the impact
-    /// messages, Dark Force, the damage delivery, the status application and the damage formulas have interfaces of their own (Readmes/MaintainabilityRefactorAbilitySplit.md). Static callers reach the container's instance through <c>GameServices.Ability</c>; the event handlers are on
-    /// <see cref="AbilityService"/>.
+    /// Abilities: the combat impacts content applies, and an ability's success visual and impact gesture (part 9 of the ability
+    /// split, Readmes/MaintainabilityRefactorAbilitySplit.md). The catalog, the impact state, the impact lifecycle, the
+    /// activation and target checks, the auras, the temporary immunities, the activation state, the per-target hit roll,
+    /// resolution and hostile impact, the impact messages and visuals, Dark Force, the damage delivery, the status application
+    /// and the damage formulas have interfaces of their own. Static callers reach the container's instance through
+    /// <c>GameServices.Ability</c>.
     /// </summary>
     public interface IAbilityService
     {
-
-        /// <summary>
-        /// Starts impact tracking and defers pending damage bonuses until a damaging payload,
-        /// retaining activation-marker snapshots for the impact footprint and flash decision.
-        /// </summary>
-        void BeginAbilityImpact(
-            uint activator,
-            AbilityDetail ability,
-            bool countsAsAttackAttempt = true,
-            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
-            AbilityImpactSequence sequence = null,
-            uint triggeringWeapon = OBJECT_INVALID,
-            int? triggeringWeaponDamage = null,
-            CombatDamageType? triggeringWeaponDamageType = null,
-            WeaponAbilityTraitActivation weaponTraits = null);
-
-        /// <summary>
-        /// Retains the originating ability and cast sequence for recurring impacts without
-        /// consuming another activation's pending bonuses or replacing its impact tracker.
-        /// </summary>
-        Action CaptureRepeatedAbilityImpact(
-            uint activator, Action impactAction, int baseDamage = 0, bool requiresLivingActivator = true);
-
-        /// <summary>
-        /// Captures one cast's recurring impact context while allowing each delayed impact
-        /// to retain its own target or payload. Bonuses are consumed only when an impact lands.
-        /// </summary>
-        Action<T> CaptureRepeatedAbilityImpact<T>(
-            uint activator, Action<T> impactAction, int baseDamage = 0, bool requiresLivingActivator = true,
-            bool retainCapturedBonuses = false);
-
-        Func<int, Action<T>> CaptureRepeatedAbilityImpactBatch<T>(
-            uint activator, Action<T> impactAction, int baseDamage = 0);
-
-        AbilityImpactSummary EndAbilityImpact(uint activator);
-
-        /// <summary>
-        /// Discards an incomplete tracked impact without applying its queued damage effects.
-        /// </summary>
-        void AbortAbilityImpact(uint activator);
-
         /// <summary>
         /// Plays the definition's finite receipt burst after a heal, buff, or other noncombat
         /// action succeeds. Call for the actual recipient while its ability impact is active.
@@ -72,18 +33,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// </summary>
         Action<uint> CaptureSuccessfulImpactVisualEffect(uint activator);
 
-        /// <summary>
-        /// Shows an instant visual effect on <paramref name="target"/> to one player only, so feedback
-        /// for a hidden creature never marks its position for anyone else.
-        /// </summary>
-        void ShowVisualEffectToPlayer(uint player, uint target, VisualEffect visualEffect);
-
         /// <summary>Returns the current impact's visual reference for a later independent combat event.</summary>
         VisualEffect GetSuccessfulImpactVisualEffect(uint activator);
-
-        void ApplyHostileAbilityEnmity(uint activator, uint target, int bonus = 0);
-
-        int CalculateHostileAbilityEnmity(int bonus, int volleyIndex = 0, int volleyCount = 1);
 
         /// <summary>
         /// Applies the standard hostile combat impact used by weapon and martial abilities.
@@ -170,36 +121,5 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         /// <summary>Plays the current ability's declared impact gesture independently of target outcomes.</summary>
         void PlayAbilityImpactAnimation(uint activator);
-
-        int ApplyHostileCombatImpact(
-            uint activator,
-            uint target,
-            SkillType skillType,
-            int damage,
-            CombatDamageType damageType,
-            Type statusEffect = null,
-            int duration = 0,
-            IEnumerable<Type> additionalStatusEffects = null,
-            Func<IStatusEffect> statusEffectFactory = null,
-            ResistanceType statusResistanceType = ResistanceType.Invalid,
-            VisualEffect targetVisualEffect = VisualEffect.None,
-            int enmityBonus = 0,
-            Action<uint> afterSuccessfulHit = null,
-            Func<uint, StatusEffectCategory?> beforeSuccessfulImpactRiders = null,
-            bool awardsCombatPoints = true,
-            DamageType? effectDamageType = null,
-            bool firstHostileAbilityHitDamageBonusApplied = false);
-
-        /// <summary>
-        /// An impact that adds weapon DMG also takes that weapon's element, matching auto-attacks.
-        /// Like native weapon resolution, an element only replaces Physical; authored non-Physical types stay.
-        /// </summary>
-        CombatDamageType GetWeaponAbilityDamageType(uint activator, SkillType skillType, CombatDamageType damageType);
-
-        /// <summary>
-        /// Adds this impact's captured flat bonus to an already-scaled damage payload before
-        /// target mitigation. Control-only payloads remain zero.
-        /// </summary>
-        int ApplyCapturedAbilityDamageBonus(uint activator, int damage);
     }
 }

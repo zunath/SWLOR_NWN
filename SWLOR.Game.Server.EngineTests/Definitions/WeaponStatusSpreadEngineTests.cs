@@ -46,14 +46,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, source, 1, GetLocation(source)));
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             }
             finally
@@ -138,14 +138,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var feat = feats[rank - 1];
                     var ability = abilities[feat];
                     var impactedTargetCount = 0;
-                    Ability.BeginAbilityImpact(caster, ability);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                     try
                     {
                         await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, sources[0], rank, GetLocation(sources[0])));
                     }
                     finally
                     {
-                        impactedTargetCount = Ability.EndAbilityImpact(caster).ImpactedTargetCount;
+                        impactedTargetCount = AbilityImpactLifecycle.EndAbilityImpact(caster).ImpactedTargetCount;
                     }
 
                     ctx.AssertEqual(expectedImpacts, impactedTargetCount, $"{feat}: primary area targets");

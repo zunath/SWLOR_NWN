@@ -81,8 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 
             // The caster is vanishing: its smoke and burst would show everyone where it went, so only
             // the caster sees them.
-            Ability.ShowVisualEffectToPlayer(activator, activator, VisualEffect.Vfx_Dur_Ghost_Smoke);
-            Ability.ShowVisualEffectToPlayer(activator, activator, Ability.GetSuccessfulImpactVisualEffect(activator));
+            AbilityImpactVisual.ShowVisualEffectToPlayer(activator, activator, VisualEffect.Vfx_Dur_Ghost_Smoke);
+            AbilityImpactVisual.ShowVisualEffectToPlayer(activator, activator, Ability.GetSuccessfulImpactVisualEffect(activator));
         }
     }
 }

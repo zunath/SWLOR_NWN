@@ -78,8 +78,8 @@ public class AbilityImpactDamageBonusTests
     }
 
     private static readonly Func<int, AbilityDetail, Func<int>, (int BaseDamage, bool DealsDamage)> Apply =
-        AbilityInternals.Delegate<Func<int, AbilityDetail, Func<int>, (int, bool)>>(
-            AbilityInternals.NoNeighbours(), "ResolveCombatImpactBaseDamage");
+        AbilityInternals.PartDelegate<Func<int, AbilityDetail, Func<int>, (int, bool)>>(
+            AbilityInternals.TargetImpact(AbilityInternals.NoNeighbours()), "ResolveCombatImpactBaseDamage");
 
     [TestCase(20)]
     [TestCase(75)]
@@ -154,12 +154,13 @@ public class AbilityImpactDamageBonusTests
         var impactType = AbilityInternals.TrackedImpactType;
         var flash = new FlashAbilityDefinition().BuildAbilities()[FeatType.Flash1];
         var service = AbilityInternals.NoNeighbours();
+        var lifecycle = AbilityInternals.Lifecycle(service);
         var impact = AbilityInternals.NewTrackedImpact(
             flash, 0, 0, 0, 0, 0, true, 0, Array.Empty<TelegraphGeometry>(), null);
         var calls = 0;
         impactType.GetProperty("ResolveDamageBonuses")!.SetValue(impact, (Action)(() => calls++));
         var impacts = AbilityInternals.TrackedImpacts(service);
-        var prepare = AbilityInternals.Delegate<Action<uint, int>>(service, "PrepareCombatImpactDamageBonuses");
+        Action<uint, int> prepare = lifecycle.PrepareCombatImpactDamageBonuses;
         const uint caster = 0xFFFFFFFE;
         impacts.Add(caster, impact);
         try
@@ -167,9 +168,9 @@ public class AbilityImpactDamageBonusTests
             void DeclareDamage(int damage)
             {
                 if (delivery == 2)
-                    service.CaptureRepeatedAbilityImpact<uint>(caster, _ => { }, baseDamage: damage);
+                    lifecycle.CaptureRepeatedAbilityImpact<uint>(caster, _ => { }, baseDamage: damage);
                 else if (delivery == 1)
-                    service.CaptureRepeatedAbilityImpact(caster, () => { }, baseDamage: damage);
+                    lifecycle.CaptureRepeatedAbilityImpact(caster, () => { }, baseDamage: damage);
                 else
                     prepare(caster, damage);
             }

@@ -16,12 +16,18 @@ public sealed class TestAbilityDamageDeliveryService : AbilityDamageDeliveryServ
 
     public TestAbilityDamageDeliveryService(AbilityBench bench, IStatusEffectService statusEffect, ICombatRecorderService combatRecorder, IAbilityDarkForceService darkForce)
         : base(statusEffect, combatRecorder, darkForce, FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatDamageModifiersService>(),
-            FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageTakenService>())
+            FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatAbilityBonusService>())
     {
         _bench = bench;
     }
 
     private void Log(string entry) => _bench.Log.Add(entry);
+
+    protected override int ConsumeStatusAppliedNextAttackDamageBonus(uint creature)
+    {
+        Log("ConsumeStatusAppliedBonus");
+        return _bench.StatusAppliedBonus;
+    }
 
     protected override void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage) =>
         Log($"TempHpFeedback:{attacker}:{defender}:{damage}");

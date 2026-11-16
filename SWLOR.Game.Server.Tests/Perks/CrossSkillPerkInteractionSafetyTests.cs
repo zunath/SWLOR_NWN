@@ -120,9 +120,13 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         beginAbilityImpact.Should().NotContain("ConsumeStatusAppliedNextAttackDamageBonus",
             "a miss or zero-damage hostile ability must preserve Charged Blows");
         beginAbilityImpact.Should().Contain("ability.IsHostileAbility");
-        var hostileImpact = ExtractMethod(ability, "public int ApplyHostileCombatImpact(");
+        // The hostile impact is its part's since the ability split (P5-3f): it hands a damaging hit to the delivery part, which
+        // consumes the bonus first.
+        var hostileImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact");
         hostileImpact.Should().Contain("if (damage > 0)");
-        hostileImpact.Should().Contain("ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);");
+        hostileImpact.Should().Contain("DeliverHostileImpactDamage(");
+        AbilitySource.Member("AbilityDamageDeliveryService", "DeliverHostileImpactDamage")
+            .Should().Contain("ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);");
         hostileImpact.IndexOf(
                 "ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);",
                 StringComparison.Ordinal)
@@ -283,8 +287,9 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         bleedingRestore.Should().Contain(
             "SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds");
 
-        // The damage block of the hostile impact is the delivery part's since the ability split (P5-3e).
-        var hostileImpact = ExtractMethod(ability, "public int ApplyHostileCombatImpact(");
+        // The damage block of the hostile impact is the delivery part's since the ability split (P5-3e), the hostile impact its
+        // own part's since P5-3f.
+        var hostileImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact");
         hostileImpact.Should().Contain("DeliverHostileImpactDamage(");
         var delivery = ExtractMethod(ability, "public void DeliverHostileImpactDamage(");
         delivery.Should().Contain("isAbilityDamage: true",
@@ -481,10 +486,15 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         weaponScope.Should().BeLessThan(nativeDamage.IndexOf("GameServices.CombatHitEffects.ApplyCriticalHitEffects", weaponScope, StringComparison.Ordinal));
         weaponScope.Should().BeLessThan(nativeDamage.IndexOf("PublishDamageDealtEvent", weaponScope, StringComparison.Ordinal));
 
-        var abilityScope = ability.IndexOf("using var damageDerivedHealing = BeginDamageDerivedHealing", StringComparison.Ordinal);
+        // The hostile impact opens the scope before it hands the damage to the delivery part, which converts Dark Force and
+        // applies the damage-dealt effects (the ability split, P5-3e and P5-3f).
+        var hostileImpact = AbilitySource.Member("AbilityHostileImpactService", "ApplyHostileCombatImpact");
+        var abilityScope = hostileImpact.IndexOf("using var damageDerivedHealing = BeginDamageDerivedHealing", StringComparison.Ordinal);
         abilityScope.Should().BeGreaterThanOrEqualTo(0);
-        abilityScope.Should().BeLessThan(ability.IndexOf("ApplyDarkForceConversion", abilityScope, StringComparison.Ordinal));
-        abilityScope.Should().BeLessThan(ability.IndexOf("ApplyDamageDealtEffects(", abilityScope, StringComparison.Ordinal));
+        abilityScope.Should().BeLessThan(hostileImpact.IndexOf("DeliverHostileImpactDamage(", abilityScope, StringComparison.Ordinal));
+        var delivery = AbilitySource.Member("AbilityDamageDeliveryService", "DeliverHostileImpactDamage");
+        delivery.Should().Contain("ApplyDarkForceConversion").And.Contain("ApplyDamageDealtEffects(");
+        ability.Should().Contain("using var damageDerivedHealing = BeginDamageDerivedHealing");
     }
 
     [Test]
@@ -579,7 +589,10 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         beginAbilityImpact.Should().Contain("guardedHitBonuses.CriticalRatePercentAdjustment");
         beginAbilityImpact.Should().Contain("guardedHitBonuses.EnmityBonus");
         abilitySource.Should().Contain("trackedImpact?.NextAttackEnmityBonus");
-        var telegraphedImpact = ExtractMethod(abilitySource, "public int ApplyTelegraphedCombatImpact(");
+        // The delayed half of the telegraphed impact is its own method, and the delayed action begins the impact through the
+        // lifecycle's telegraphed begin, since the ability split (P5-3f).
+        var telegraphedImpact = ExtractMethod(abilitySource, "public int ApplyTelegraphedCombatImpact(") +
+            ExtractMethod(abilitySource, "private int ScheduleTelegraphedCombatImpact(");
         telegraphedImpact.Should().Contain("trackedImpact?.NextAttackEnmityBonus ?? 0",
             "a telegraphed hostile ability must carry Retaliatory Flow's consumed Enmity into its delayed impact");
         var delayedImpact = ExtractMethod(
@@ -588,8 +601,9 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         delayedImpact.Should().Contain("int nextAttackEnmityBonus");
         delayedImpact.Should().Contain("nextAttackEnmityBonus,",
             "the reconstructed tracked impact must retain the guarded-hit Enmity bonus");
-        delayedImpact.Should().Contain("GetStatusAppliedNextAttackDamageBonus(creator)",
+        ExtractMethod(abilitySource, "public void BeginTelegraphedAbilityImpact(").Should().Contain("GetStatusAppliedNextAttackDamageBonus(creator)",
             "a delayed impact must resolve the live Charged Blows proc when it lands");
+        delayedImpact.Should().Contain("BeginTelegraphedAbilityImpact(");
         telegraphedImpact.Should().Contain("deferredNextAbilityDamageBonus");
         telegraphedImpact.Should().Contain(
             "(trackedImpact?.StatusAppliedNextAttackDamageBonus ?? 0)",

@@ -211,217 +211,217 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 98,
+    "Line": 99,
     "Member": "Char",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 110,
+    "Line": 111,
     "Member": "CDKey",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your public CD Key is: \" + cdKey)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 134,
+    "Line": 135,
     "Member": "EndCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You don't have any active calls or outgoing call attempts to end.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 148,
+    "Line": 149,
     "Member": "AnswerCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You don't have an incoming HoloCom call.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 165,
+    "Line": 166,
     "Member": "DeclineCall",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You don't have an incoming HoloCom call.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 281,
+    "Line": 282,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, commands.Aggregate((a, b) => a + '\\n' + b))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 290,
+    "Line": 292,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(user, ColorToken.Red(\"Wookiees can only speak Shyriiwook.\"))"
+    "Call": "SendMessageToPC(user, ColorToken.Red(Language.GetOnlySpokenLanguageMessage(race)))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 300,
+    "Line": 302,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Set active language to {language.ProperName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 305,
+    "Line": 307,
     "Member": "LanguageCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red($\"Unknown language {command}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 356,
+    "Line": 358,
     "Member": "DeleteCommand",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please confirm your deletion by entering another \\\"/delete <CD Key>\\\" command within 30 seconds.\", user, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 388,
+    "Line": 390,
     "Member": "ToggleEmoteStyle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"Your emote style could not be saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 392,
+    "Line": 394,
     "Member": "ToggleEmoteStyle",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Toggled emote style to {newStyle}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 415,
+    "Line": 417,
     "Member": "ToggleArmorVisibility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red($\"Your {item} setting could not be saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 419,
+    "Line": 421,
     "Member": "ToggleArmorVisibility",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, shown ? $\"Your {item} is now shown.\" : $\"Your {item} is now hidden.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 488,
+    "Line": 499,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your appearance type does not support head scaling.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 501,
+    "Line": 512,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Head Size: {current:0.##} (range {minScale}-{maxScale}). Use /headscale <value>, /headscale +, or /headscale -.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 523,
+    "Line": 534,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, newScale >= maxScale\n                            ? \"You cannot increase your head size any further.\"\n                            : \"You cannot decrease your head size any further.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 534,
+    "Line": 545,
     "Member": "HeadScale",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Head Size: {newScale:0.##}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 547,
+    "Line": 558,
     "Member": "AlwaysWalk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Walk mode {status}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 581,
+    "Line": 592,
     "Member": "AssociateCommands",
     "Delivery": "Retained",
     "Call": "SpeakString(message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 611,
+    "Line": 622,
     "Member": "Afk",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, isAfk\n                        ? ColorToken.Purple(\"You are now AFK. Move or use /afk again when you return.\")\n                        : \"You are no longer AFK.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 632,
+    "Line": 643,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You may only name player characters.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 640,
+    "Line": 651,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(validationError))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 648,
+    "Line": 659,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 655,
+    "Line": 666,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(validationError))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 676,
+    "Line": 687,
     "Member": "SetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green($\"Private label saved as '{name}'. Only you can see this label.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 704,
+    "Line": 715,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You may only forget names for player characters.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 710,
+    "Line": 721,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Red(\"You cannot forget your own name.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 730,
+    "Line": 741,
     "Member": "ForgetKnownName",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green(\"Private label removed. This changes only what you see.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 785,
+    "Line": 796,
     "Member": "ChangeDescription",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You can only change descriptions of items in your inventory with this command.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterChatCommand.cs",
-    "Line": 873,
+    "Line": 884,
     "Member": "ResetWindows",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, ColorToken.Green(\"All window positions and sizes have been reset to their default values.\"))"
@@ -1681,77 +1681,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 550,
+    "Line": 554,
     "Member": "OnClickResetEverything",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Character reset successfully!\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 770,
+    "Line": 774,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Please distribute all ability points and skill points first. Resize the window if needed.\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 777,
+    "Line": 781,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"One or more selected skills are unavailable to this character type.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 783,
+    "Line": 787,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This race cannot select that character type.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 826,
+    "Line": 830,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Character rebuild complete!\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 626,
+    "Line": 630,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Stats cannot be upgraded in this area.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 640,
+    "Line": 644,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 650,
+    "Line": 654,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 656,
+    "Line": 660,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 662,
+    "Line": 666,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"You do not have enough AP to purchase this upgrade.\", _target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs",
-    "Line": 673,
+    "Line": 677,
     "Member": "UpgradeAttribute",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {abilityName} attribute has increased!\", _target, false)"
@@ -1797,6 +1797,34 @@
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Character stat rebuild complete!\"), Player, false)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ChassisWorkshopViewModel.cs",
+    "Line": 67,
+    "Member": "Initialize",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, AstromechWorkshop.NotAstromechMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ChassisWorkshopViewModel.cs",
+    "Line": 74,
+    "Member": "Initialize",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, AstromechWorkshop.InSpaceMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ChassisWorkshopViewModel.cs",
+    "Line": 147,
+    "Member": "CanChange",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, AstromechWorkshop.NotAstromechMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ChassisWorkshopViewModel.cs",
+    "Line": 153,
+    "Member": "CanChange",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(Player, AstromechWorkshop.InSpaceMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ConversationViewModel.cs",
@@ -3697,49 +3725,63 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 28,
+    "Line": 29,
     "Member": "UseTeleportDevice",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"You are in combat.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 52,
+    "Line": 53,
     "Member": "UseTeleportDevice",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, missingKeyItemMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 71,
+    "Line": 72,
     "Member": "UseTeleportDevice",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Cannot locate waypoint. Inform an admin this teleporter is broken.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 111,
+    "Line": 112,
     "Member": "UseTeleportDevice",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(partyMember, $\"You ventured forth with {userName}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 214,
+    "Line": 194,
+    "Member": "SitOnStockChair",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, AstromechAnimations.SitRefusal)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
+    "Line": 212,
+    "Member": "Sit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, AstromechAnimations.SitRefusal)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
+    "Line": 241,
     "Member": "PurchaseRebuild",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Only players may use this terminal.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 220,
+    "Line": 247,
     "Member": "PurchaseRebuild",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"You do not have any rebuild tokens.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/PlaceableScripts.cs",
-    "Line": 231,
+    "Line": 258,
     "Member": "PurchaseRebuild",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Remaining rebuild tokens: {Currency.GetCurrency(player, CurrencyType.RebuildToken)}\")"
@@ -4494,6 +4536,13 @@
     "Call": "SendMessageToPC(player, ColorToken.Purple(prefix + message))"
   },
   {
+    "File": "SWLOR.Game.Server/Service/AstromechService/AstromechWorkshop.cs",
+    "Line": 30,
+    "Member": "TryOpenInsteadOfAppearanceEditor",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, InSpaceMessage)"
+  },
+  {
     "File": "SWLOR.Game.Server/Service/BeastMastery.cs",
     "Line": 268,
     "Member": "AddXP",
@@ -4625,6 +4674,13 @@
     "Member": "ProcessChatCommand",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(sender, ColorToken.Red(InvalidChatCommandMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/ChatCommandService/ChatCommandBuilder.cs",
+    "Line": 109,
+    "Member": "CanPlayEmote",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(user, AstromechAnimations.EmoteRefusal)"
   },
   {
     "File": "SWLOR.Game.Server/Service/ChatPortraitTells.cs",
@@ -5006,14 +5062,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Communication.cs",
-    "Line": 500,
+    "Line": 501,
     "Member": "SendProcessedChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Communication.cs",
-    "Line": 516,
+    "Line": 517,
     "Member": "SendProcessedChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)"
@@ -7057,77 +7113,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 468,
+    "Line": 482,
     "Member": "OpenItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This quest collector is not available to you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 472,
+    "Line": 486,
     "Member": "OpenItemCollector",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"Please place the items you would like to turn in for this quest into the container. If you want to cancel this process, move away from the container.\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 483,
+    "Line": 497,
     "Member": "OpenItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, text)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 546,
+    "Line": 560,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This quest collector is no longer available to you.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 555,
+    "Line": 569,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"That item is not required for this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 566,
+    "Line": 580,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"This quest is no longer available.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 581,
+    "Line": 595,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, rejection)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 632,
+    "Line": 646,
     "Member": "DisturbItemCollector",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You need {dbPlayer.Quests[questId].ItemProgresses[resref]}x {itemName} to complete this quest.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 699,
+    "Line": 713,
     "Member": "TriggerAndPlaceableProgression",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"QUEST_ID variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 705,
+    "Line": 719,
     "Member": "TriggerAndPlaceableProgression",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"QUEST_STATE variable not set on object. Please inform admin this quest is bugged. (QuestID: \" + questId + \")\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Quest.cs",
-    "Line": 725,
+    "Line": 739,
     "Member": "TriggerAndPlaceableProgression",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, questMessage)"
@@ -7708,56 +7764,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 269,
+    "Line": 274,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Your XP debt has been cleared.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 271,
+    "Line": 276,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 295,
+    "Line": 300,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_LIMIT\", ColorToken.Red($\"{details.Name} is at your limit of {rankCeiling}. Raise it in the Skills window.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 318,
+    "Line": 323,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Unlock a skill or change a limit in the Skills menu to resume gaining {details.Name} XP.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 323,
+    "Line": 328,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"You earned {details.Name} skill experience. ({xp})\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 347,
+    "Line": 352,
     "Member": "GiveSkillXP",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Your {details.Name} skill level increased to rank {pcSkill.Rank}!\", player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 382,
+    "Line": 387,
     "Member": "GiveSkillXP",
     "Delivery": "Rate limited in Production",
     "Call": "PlayerFeedback.SendWarningToPlayer(player, \"SKILL_CAP\", ColorToken.Red($\"You have reached the skill cap of {SkillCap} and all of your other skills are locked or at their limits. Excess {details.Name} XP was lost.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/Skill.cs",
-    "Line": 447,
+    "Line": 452,
     "Member": "ApplyAbilityPoint",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green(\"You acquired 1 ability point!\"))"
@@ -9206,21 +9262,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 931,
+    "Line": 933,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(StationBuildingRules.DescribeJumpRefusal(refusal, request)))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 957,
+    "Line": 959,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red(message))"
   },
   {
     "File": "SWLOR.Game.Server/Service/StationBuildings.cs",
-    "Line": 997,
+    "Line": 999,
     "Member": "Jump",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"{ship.CustomName} jumped to {destination.CustomName}, burning {fuel} Station Fuel.\"))"

@@ -94,6 +94,13 @@ public class AstromechSpeciesTests
     {
         foreach (var skill in Enum.GetValues<SkillType>().Where(skill => skill != SkillType.Invalid))
         {
+            if (Details(skill).BodyFrameRestriction == BodyFrameRestriction.AstromechOnly)
+            {
+                Details(skill).IsAvailableTo(CharacterType.Standard, BodyFrame.Humanoid)
+                    .Should().BeFalse($"{skill} belongs to astromechs");
+                continue;
+            }
+
             Details(skill).IsAvailableTo(CharacterType.Standard, BodyFrame.Humanoid)
                 .Should().Be(Details(skill).IsAvailableToCharacterType(CharacterType.Standard), $"{skill} is unchanged");
         }
@@ -125,9 +132,12 @@ public class AstromechSpeciesTests
         {
             var category = detail.Category.GetAttribute<PerkCategoryType, PerkCategoryAttribute>().Name;
             var family = category.Split(" - ")[0];
+            // A requirement the astromech's own equivalent skill can meet (Chassis for Armor) does not close a perk.
             var gatedBySkill = detail.PerkLevels.Values.SelectMany(level => level.Requirements)
                 .OfType<PerkRequirementSkill>()
-                .Any(requirement => HumanoidOnlySkills.Contains(requirement.Type));
+                .Any(requirement => HumanoidOnlySkills.Contains(requirement.Type) &&
+                                    !(requirement.AcceptsFrameEquivalent &&
+                                      SkillBodyFrames.GetFrameEquivalent(requirement.Type, BodyFrame.Astromech) != requirement.Type));
             if (!closedNames.Contains(family) && !gatedBySkill)
                 continue;
 
@@ -140,6 +150,50 @@ public class AstromechSpeciesTests
         }
 
         string.Join(", ", open).Should().BeEmpty("an astromech with every rank must still be refused each humanoid-only perk");
+    }
+
+    [Test]
+    public void ChassisStandsInForArmorOnAnAstromech()
+    {
+        Details(SkillType.Chassis).BodyFrameRestriction.Should().Be(BodyFrameRestriction.AstromechOnly);
+        Details(SkillType.Chassis).ContributesToSkillCap.Should().BeTrue();
+        Details(SkillType.Chassis).CombatPointCategory.Should().Be(Details(SkillType.Armor).CombatPointCategory);
+        Details(SkillType.Chassis).MaxRank.Should().Be(Details(SkillType.Armor).MaxRank);
+
+        SkillBodyFrames.GetDefenseSkill(BodyFrame.Humanoid).Should().Be(SkillType.Armor);
+        SkillBodyFrames.GetDefenseSkill(BodyFrame.Astromech).Should().Be(SkillType.Chassis);
+        SkillBodyFrames.GetFrameEquivalent(SkillType.Armor, BodyFrame.Humanoid).Should().Be(SkillType.Armor);
+        SkillBodyFrames.GetFrameEquivalent(SkillType.Pistol, BodyFrame.Astromech).Should().Be(SkillType.Pistol);
+    }
+
+    [Test]
+    public void ArmorPerksOpenToChassisRankExceptTheOnesThatNeedHands()
+    {
+        using var perks = new DroidPerkCacheScope();
+        var astromech = MaxedAstromech();
+        astromech.Skills[SkillType.Chassis] = new PlayerSkill { Rank = 4 };
+        astromech.Skills[SkillType.Armor] = new PlayerSkill { Rank = 50 };
+
+        string FirstLevel(PerkType perk) => string.Join("|", Perk.GetAllPerks()[perk].PerkLevels
+            .OrderBy(level => level.Key).First().Value.Requirements
+            .Select(requirement => requirement.CheckRequirements(astromech, null))
+            .Where(error => !string.IsNullOrWhiteSpace(error)));
+
+        // Armor rank on the record is ignored: the astromech's Chassis rank is what counts.
+        FirstLevel(PerkType.Alertness).Should().Contain("rank is 4");
+        astromech.Skills[SkillType.Chassis].Rank = 50;
+        foreach (var perk in new[] { PerkType.Provoke, PerkType.Alertness, PerkType.TreasureHunter, PerkType.CreditFinder })
+            FirstLevel(perk).Should().BeEmpty($"{perk} asks for Armor rank, which Chassis rank meets");
+        foreach (var perk in new[] { PerkType.DualWield, PerkType.Doublehand })
+            FirstLevel(perk).Should().Contain("cannot be trained by your species", $"{perk} needs hands");
+
+        var humanoid = MaxedAstromech();
+        humanoid.BodyFrame = BodyFrame.Humanoid;
+        humanoid.Skills[SkillType.Chassis] = new PlayerSkill { Rank = 0 };
+        Perk.GetAllPerks()[PerkType.Doublehand].PerkLevels.Values
+            .SelectMany(level => level.Requirements)
+            .Select(requirement => requirement.CheckRequirements(humanoid, null))
+            .Should().OnlyContain(error => string.IsNullOrWhiteSpace(error));
     }
 
     [Test]
@@ -304,6 +358,9 @@ public class AstromechSpeciesTests
 
         var soundset = Row(Path.Combine(haks, "soundset.2da"), Astromech.SoundSetId);
         soundset[1].Should().Be("Astromech");
+
+        // The item property that asks for a skill rank picks the skill from this table.
+        Row(Path.Combine(haks, "iprp_skill.2da"), (int)SkillType.Chassis)[2].Should().Be("Chassis");
     }
 
     private static List<string[]> Rows(string path)

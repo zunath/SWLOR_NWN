@@ -1,0 +1,312 @@
+{
+ "mirrors": [
+  {
+   "skill": "UtilitySystems",
+   "skill_name": "Utility Systems",
+   "skill_description": "Ability of an astromech to repair, restore, and reinforce itself and its allies in the field.",
+   "source_skill": "FirstAid",
+   "source_skill_name": "First Aid",
+   "ids": {
+    "skill": 62,
+    "perk": 1103,
+    "recast": 604,
+    "feat": 3452,
+    "spell": 1841
+   },
+   "words": {
+    "Augments stim effects": "Stim effects from your Augments perks"
+   },
+   "lines": [
+    {
+     "source_category": "FirstAidTraumaMedic",
+     "source_name": "Trauma Medic",
+     "category": "UtilitySystemsRepair",
+     "category_id": 77,
+     "name": "Repair",
+     "perks": {
+      "MedKit": {
+       "id": "FieldRepair",
+       "source_name": "Med Kit",
+       "name": "Field Repair"
+      },
+      "TreatmentKit": {
+       "id": "SystemPurge",
+       "source_name": "Treatment Kit",
+       "name": "System Purge"
+      },
+      "MedicalInjectorRig": {
+       "id": "PrecisionTooling",
+       "source_name": "Medical Injector Rig",
+       "name": "Precision Tooling",
+       "short": "Prec. Tooling"
+      },
+      "EmergencySealant": {
+       "id": "SealantFoam",
+       "source_name": "Emergency Sealant",
+       "name": "Sealant Foam"
+      },
+      "KoltoMist": {
+       "id": "NaniteCloud",
+       "source_name": "Kolto Mist",
+       "name": "Nanite Cloud"
+      },
+      "Resuscitation": {
+       "id": "JumpStart",
+       "source_name": "Resuscitation",
+       "name": "Jump Start"
+      },
+      "Infusion": {
+       "id": "MaintenanceRoutine",
+       "source_name": "Infusion",
+       "name": "Maintenance Routine",
+       "short": "Maintenance"
+      },
+      "EmergencyTriage": {
+       "id": "EmergencyOverride",
+       "source_name": "Emergency Triage",
+       "name": "Emergency Override",
+       "short": "Emerg Override"
+      }
+     }
+    },
+    {
+     "source_category": "FirstAidCombatPharmacology",
+     "source_name": "Combat Pharmacology",
+     "category": "UtilitySystemsAugments",
+     "category_id": 78,
+     "name": "Augments",
+     "perks": {
+      "AdrenalStim": {
+       "id": "PowerTransfer",
+       "source_name": "Adrenal Stim",
+       "name": "Power Transfer"
+      },
+      "Shielding": {
+       "id": "DeflectorField",
+       "source_name": "Shielding",
+       "name": "Deflector Field",
+       "short": "Deflector Fld"
+      },
+      "Coagulant": {
+       "id": "HardenedBuffers",
+       "source_name": "Coagulant",
+       "name": "Hardened Buffers",
+       "short": "Hard. Buffers"
+      },
+      "PainSuppressant": {
+       "id": "DamperField",
+       "source_name": "Pain Suppressant",
+       "name": "Damper Field"
+      },
+      "Antitoxin": {
+       "id": "FilterFlush",
+       "source_name": "Antitoxin",
+       "name": "Filter Flush"
+      },
+      "FieldPharmacist": {
+       "id": "EfficientDispenser",
+       "source_name": "Field Pharmacist",
+       "name": "Efficient Dispenser",
+       "short": "Eff. Dispenser"
+      },
+      "FocusStim": {
+       "id": "TargetingUplink",
+       "source_name": "Focus Stim",
+       "name": "Targeting Uplink",
+       "short": "Target Uplink"
+      },
+      "EmergencyCocktail": {
+       "id": "FullOverride",
+       "source_name": "Emergency Cocktail",
+       "name": "Full Override"
+      }
+     }
+    }
+   ],
+   "animation": "LoopingConjure1"
+  }
+ ],
+ "ledger": {
+  "UtilitySystems": {
+   "HardenedBuffersTrait": {
+    "feat": 3452,
+    "name": 193157,
+    "description": 193158
+   },
+   "EfficientDispenserTrait": {
+    "feat": 3453,
+    "name": 193159,
+    "description": 193160
+   },
+   "PrecisionToolingTrait": {
+    "feat": 3454,
+    "name": 193161,
+    "description": 193162
+   },
+   "SealantFoamTrait": {
+    "feat": 3455,
+    "name": 193163,
+    "description": 193164
+   },
+   "NaniteCloud1": {
+    "feat": 3456,
+    "name": 193165,
+    "description": 193166,
+    "spell": 1841
+   },
+   "JumpStart1": {
+    "feat": 3457,
+    "name": 193167,
+    "description": 193168,
+    "spell": 1842
+   },
+   "SystemPurge2": {
+    "feat": 3458,
+    "name": 193169,
+    "description": 193170,
+    "spell": 1843
+   },
+   "FieldRepair2": {
+    "feat": 3459,
+    "name": 193171,
+    "description": 193172,
+    "spell": 1844
+   },
+   "MaintenanceRoutine1": {
+    "feat": 3460,
+    "name": 193173,
+    "description": 193174,
+    "spell": 1845
+   },
+   "NaniteCloud2": {
+    "feat": 3461,
+    "name": 193175,
+    "description": 193176,
+    "spell": 1846
+   },
+   "JumpStart2": {
+    "feat": 3462,
+    "name": 193177,
+    "description": 193178,
+    "spell": 1847
+   },
+   "FieldRepair3": {
+    "feat": 3463,
+    "name": 193179,
+    "description": 193180,
+    "spell": 1848
+   },
+   "SystemPurge3": {
+    "feat": 3464,
+    "name": 193181,
+    "description": 193182,
+    "spell": 1849
+   },
+   "EmergencyOverride1": {
+    "feat": 3465,
+    "name": 193183,
+    "description": 193184,
+    "spell": 1850
+   },
+   "MaintenanceRoutine2": {
+    "feat": 3466,
+    "name": 193185,
+    "description": 193186,
+    "spell": 1851
+   },
+   "FieldRepair4": {
+    "feat": 3467,
+    "name": 193187,
+    "description": 193188,
+    "spell": 1852
+   },
+   "PowerTransfer1": {
+    "feat": 3468,
+    "name": 193189,
+    "description": 193190,
+    "spell": 1853
+   },
+   "DeflectorField1": {
+    "feat": 3469,
+    "name": 193191,
+    "description": 193192,
+    "spell": 1854
+   },
+   "PowerTransfer2": {
+    "feat": 3470,
+    "name": 193193,
+    "description": 193194,
+    "spell": 1855
+   },
+   "DamperField1": {
+    "feat": 3471,
+    "name": 193195,
+    "description": 193196,
+    "spell": 1856
+   },
+   "FilterFlush1": {
+    "feat": 3472,
+    "name": 193197,
+    "description": 193198,
+    "spell": 1857
+   },
+   "DeflectorField2": {
+    "feat": 3473,
+    "name": 193199,
+    "description": 193200,
+    "spell": 1858
+   },
+   "TargetingUplink1": {
+    "feat": 3474,
+    "name": 193201,
+    "description": 193202,
+    "spell": 1859
+   },
+   "PowerTransfer3": {
+    "feat": 3475,
+    "name": 193203,
+    "description": 193204,
+    "spell": 1860
+   },
+   "DamperField2": {
+    "feat": 3476,
+    "name": 193205,
+    "description": 193206,
+    "spell": 1861
+   },
+   "DeflectorField3": {
+    "feat": 3477,
+    "name": 193207,
+    "description": 193208,
+    "spell": 1862
+   },
+   "TargetingUplink2": {
+    "feat": 3478,
+    "name": 193209,
+    "description": 193210,
+    "spell": 1863
+   },
+   "FullOverride1": {
+    "feat": 3479,
+    "name": 193211,
+    "description": 193212,
+    "spell": 1864
+   },
+   "FieldRepair1": {
+    "feat": 3480,
+    "name": 193213,
+    "description": 193214,
+    "spell": 1865
+   },
+   "SystemPurge1": {
+    "feat": 3481,
+    "name": 193215,
+    "description": 193216,
+    "spell": 1866
+   },
+   "#skill": {
+    "name": 193217
+   }
+  }
+ }
+}

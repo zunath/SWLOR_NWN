@@ -955,6 +955,22 @@ namespace SWLOR.Game.Server.Service.PerkService
         CropManagement = 1100,
         BountifulHarvest = 1101,
         SeedSaver = 1102,
+        FieldRepair = 1103,
+        SystemPurge = 1104,
+        PrecisionTooling = 1105,
+        SealantFoam = 1106,
+        NaniteCloud = 1107,
+        JumpStart = 1108,
+        MaintenanceRoutine = 1109,
+        EmergencyOverride = 1110,
+        PowerTransfer = 1111,
+        DeflectorField = 1112,
+        HardenedBuffers = 1113,
+        DamperField = 1114,
+        FilterFlush = 1115,
+        EfficientDispenser = 1116,
+        TargetingUplink = 1117,
+        FullOverride = 1118,
 
         // IDs 650, 860-863, 882-883, 902-903, 919-923, 941-949, 973-999, 1045-1055, 1060-1099 and 1103+ are free.
     }

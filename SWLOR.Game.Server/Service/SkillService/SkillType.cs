@@ -547,6 +547,28 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             BodyFrameRestriction = BodyFrameRestriction.HumanoidOnly)]
         Performance = 60,
+
+        [Skill(SkillCategoryType.Combat,
+            "Chassis",
+            50,
+            true,
+            "Ability of an astromech to withstand attacks through its frame, plating, and internal modules.",
+            true,
+            false,
+            false,
+            BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
+        Chassis = 61,
+
+        [Skill(SkillCategoryType.Utility,
+            "Utility Systems",
+            50,
+            true,
+            "Ability of an astromech to repair, restore, and reinforce itself and its allies in the field.",
+            true,
+            false,
+            false,
+            BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
+        UtilitySystems = 62,
     }
 
     public class SkillAttribute : Attribute

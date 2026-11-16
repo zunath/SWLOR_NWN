@@ -59,10 +59,12 @@ namespace SWLOR.Game.Server.Service.QuestService
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            if (!dbPlayer.Skills.ContainsKey(SkillType))
+            // An astromech proves a quest's skill with the skill that mirrors it (Utility Systems for First Aid).
+            var skillType = SkillBodyFrames.GetMirror(SkillType, dbPlayer.BodyFrame);
+            if (!dbPlayer.Skills.ContainsKey(skillType))
                 return false;
 
-            return dbPlayer.Skills[SkillType].Rank >= RequiredRank;
+            return dbPlayer.Skills[skillType].Rank >= RequiredRank;
         }
     }
 

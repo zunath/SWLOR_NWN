@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     skillLevel = rank;
             }
 
-            skillLevel += dbPlayer.Skills[SkillType.Armor].Rank;
+            skillLevel += dbPlayer.Skills[SkillBodyFrames.GetDefenseSkill(dbPlayer.BodyFrame)].Rank;
 
             return (int)(skillLevel / 2f);
         }

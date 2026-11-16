@@ -991,7 +991,30 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
         [RecastGroup("Cloud Mind", "Cloud Mind", true)]
         CloudMind = 586,
-
+        [RecastGroup("Field Repair", "Field Repair", true)]
+        FieldRepair = 604,
+        [RecastGroup("System Purge", "System Purge", true)]
+        SystemPurge = 605,
+        [RecastGroup("Nanite Cloud", "Nanite Cloud", true)]
+        NaniteCloud = 606,
+        [RecastGroup("Jump Start", "Jump Start", true)]
+        JumpStart = 607,
+        [RecastGroup("Maintenance Routine", "Maintenance", true)]
+        MaintenanceRoutine = 608,
+        [RecastGroup("Emergency Override", "Emerg Override", true)]
+        EmergencyOverride = 609,
+        [RecastGroup("Power Transfer", "Power Transfer", true)]
+        PowerTransfer = 610,
+        [RecastGroup("Deflector Field", "Deflector Fld", true)]
+        DeflectorField = 611,
+        [RecastGroup("Damper Field", "Damper Field", true)]
+        DamperField = 612,
+        [RecastGroup("Filter Flush", "Filter Flush", true)]
+        FilterFlush = 613,
+        [RecastGroup("Targeting Uplink", "Target Uplink", true)]
+        TargetingUplink = 614,
+        [RecastGroup("Full Override", "Full Override", true)]
+        FullOverride = 615,
     }
 
     public class RecastGroupAttribute : Attribute

@@ -1229,14 +1229,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Skills",
                             "Astromechs train three skills of their own. Chassis is their defensive skill and stands wherever Armor would count. Utility Systems repairs and reinforces allies in the field. Armaments fights with the tools built into the chassis. The Force, Armor, First Aid, the humanoid weapon skills, Mimicry, Beast Mastery, and Performance are closed to them. Every other skill, including crafting, gathering, Piloting, Devices, Espionage, and Leadership, is open."),
                         new ArticleBlock("Modules and Tools",
-                            "An astromech equips only gear made for astromechs. Modules fill its equipment slots and need Chassis ranks. The shock prod is its melee tool and the blaster mount is its ranged tool; both need Armaments ranks. Engineering crafts them, and the CZ-220 merchant sells the first tier. A new astromech starts with a Basic Shock Prod."),
+                            "An astromech equips only gear made for astromechs, and a fishing rod. Modules fill its equipment slots and need Chassis ranks. The shock prod is its melee tool and the blaster mount is its ranged tool; both need Armaments ranks. Engineering crafts them, and the CZ-220 merchant sells the first tier. A new astromech starts with a Basic Shock Prod."),
                         new ArticleBlock("Astromech Socket",
                             "Fighters, Interceptors, Bombers, and Gunships carry one astromech socket. While the ship flies, an astromech aboard in the pilot's party, with the Crew Station permission, can use the ship's computer to plug in. From the socket it routes the ship's power and works the ship's repair and capacitor modules on its own Engineering rank, beside the pilot. It never fires weapons. Use /exit to unplug. Astromechs can also fly ships and take any crew station a larger ship offers."),
                     },
                     new[]
                     {
                         new QuestionAnswer("How do I change how my astromech looks?", "Use /customize to open the Chassis Workshop. Pick a chassis, a size, and three paint colors."),
-                        new QuestionAnswer("Why can't I equip this item?", "Astromechs equip only astromech modules and tools, and each needs enough Chassis or Armaments rank."),
+                        new QuestionAnswer("Why can't I equip this item?", "Astromechs equip only astromech modules and tools, plus fishing rods, and each module or tool needs enough Chassis or Armaments rank."),
                         new QuestionAnswer("Why can't I train this skill?", "The Force, Armor, First Aid, humanoid weapon skills, Mimicry, Beast Mastery, and Performance are closed to astromechs. Chassis, Utility Systems, and Armaments take their place."),
                         new QuestionAnswer("Why does nobody understand me?", "Astromechs speak only Droidspeak. Listeners understand more as their own Droidspeak improves."),
                         new QuestionAnswer("How do I use the astromech socket?", "Board a Fighter, Interceptor, Bomber, or Gunship, join the pilot's party, and use the ship's computer once the ship is flying."),

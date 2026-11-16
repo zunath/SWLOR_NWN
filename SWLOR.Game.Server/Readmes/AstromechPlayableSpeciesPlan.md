@@ -1,6 +1,6 @@
 # Astromech Playable Species Plan
 
-**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 (go verdict), Phase 1 (chassis, animation, tools, dyes, voice set), Phase 2 (the playable species itself), Phase 3 (skills, perks, modules and tools) and Phase 4 (ship role) are done; see their results sections.** No new balance numbers were introduced: every astromech skill is a number-for-number copy of an existing humanoid skill family (Phase 3 results).
+**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 (go verdict), Phase 1 (chassis, animation, tools, dyes, voice set), Phase 2 (the playable species itself), Phase 3 (skills, perks, modules and tools), Phase 4 (ship role) and Phase 5 (Player Guide and the quest audit) are done; see their results sections. What remains is the owner's: review of the choices made without check-ins, the release notes once it merges, and a play test.** No new balance numbers were introduced: every astromech skill is a number-for-number copy of an existing humanoid skill family (Phase 3 results).
 
 **Base: this builds on the space revamp** (`feature/space-revamp`, read at `0e2bc7231`, and its `Readmes/SpaceRevampPlan.md`). It assumes crew stations, droid crew, power routing and the space jobs of Engineering, Espionage and Leadership exist. It ships as its own release after space, so it never delays the space release.
 
@@ -458,6 +458,33 @@ A pilot plus an astromech at Engineering 50 and the crew cap, on its best routin
 - The socket was run on the Striker only, and the Repair Field Generator and Hypermatter Injector were not fired from it.
 - Ship registration, the party and the Crew Station permission were set up by a test driver, not through their windows. The test also left space through the driver, which is why the astromech is seen in orbit after the chassis restore.
 
+## Phase 5 results
+
+Done on 2026-11-16. Evidence is in `C:\Temp\astro-spike\phase5\evidence`.
+
+**Delivered**
+
+- **Player Guide:** an `Astromechs` topic (body, Chassis Workshop, speech and emotes, skills, modules and tools, the socket), seen in the client.
+- **Quest and tutorial audit:** the CZ-220 orientation to the shuttle pass was walked through in code and has no step an astromech cannot do; no mandatory quest gives an item reward. Four defects found by the audit were fixed:
+  - Armaments 50 opened the Staff Sentinel (Unmoving Center) and Rifle Marksman (One Shot) capstone quests, whose proofs need abilities the astromech has no copy of. Those ten quests now ask for the skill itself (`QuestBuilder.PrerequisiteOwnSkill`). The Worldbreaker and Kill Box lines, which Armaments does copy, still accept it.
+  - A quest skill prerequisite now refuses a skill the character's body cannot train, so the Mimicry introduction (which only teaches Mimicry) is closed to astromechs.
+  - XP tomes listed every skill and were destroyed even when the chosen skill took no XP, for any species. The tome now lists only skills the reader can train and is kept if nothing can be gained.
+  - An astromech could not hold a fishing rod, which closed fishing (Agriculture) and the Mon Cala rod quests. A fishing rod is now the one ordinary item an astromech equips. The rod equips in the client; a fishing attempt was not run.
+- **Engine tests:** the generated ability cases ran in the engine for the first time: Armaments 22 of 22 and Utility Systems 26 of 26 passed. A new socket test (`AstromechSocketEngineTests`) passes beside the existing crew station test.
+
+**Known gaps left for review** (optional content, none blocks play)
+
+- Quest rewards and guild stores that are humanoid equipment are still given or sold to an astromech as they are: about 30 optional quest item rewards (including the all-weapon choice of one Viscara quest) and the Hunters Guild stores. The quests' XP and credits are unaffected.
+- Ordinary stores, the shuttle's starting-items merchant and its dialogue are not filtered for astromechs.
+- A disguise can still put a humanoid portrait or voice on a chassis.
+- The CZ-220 crafting step can make a knife the astromech cannot use; the other options are unaffected.
+- Humanoid capstone quests of closed skills are unreachable for an astromech, as intended.
+
+**Not done**
+
+- Release notes: the release-notes process covers changes merged into the default branch, and this branch is not merged. The Player Guide topic and the pull request description hold the player-facing text until then.
+- The play test on the test server is the owner's step.
+
 ## Phases
 
 Each phase is its own pull request into a `feature/astromech` branch cut from `feature/space-revamp`; the owner decides when it merges. It releases after the space revamp, with its own migration versions if any turn out to be needed.
@@ -479,7 +506,7 @@ Each phase is its own pull request into a `feature/astromech` branch cut from `f
 
 **Phase 4 - Ship role. Done 2026-11-16; see Phase 4 results.** Crew seat pose and checks; the astromech socket, with its simulator evidence. *Exit:* an astromech crews a Large hull seat and a fighter socket in the client, and the pilot-plus-astromech run stays at or below two separate ships.
 
-**Phase 5 - Content and polish.** Remaining chassis and paint, tutorial and quest audit for humanoid-only steps and rewards, Player Guide, release notes, a play test on the test server.
+**Phase 5 - Content and polish. Done 2026-11-16 except the release notes and the test server play test; see Phase 5 results.** Remaining chassis and paint, tutorial and quest audit for humanoid-only steps and rewards, Player Guide, release notes, a play test on the test server.
 
 ## Risks
 

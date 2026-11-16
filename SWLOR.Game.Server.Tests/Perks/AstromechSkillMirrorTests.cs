@@ -249,6 +249,44 @@ public class AstromechSkillMirrorTests
     }
 
     [Test]
+    public void QuestSkillPrerequisites_TakeTheMirrorWhereItsLineExists_AndNeverAClosedSkill()
+    {
+        var astromech = new Player { BodyFrame = BodyFrame.Astromech };
+        var humanoid = new Player { BodyFrame = BodyFrame.Humanoid };
+        foreach (var skill in Enum.GetValues<SkillType>())
+        {
+            astromech.Skills[skill] = new PlayerSkill { Rank = 50 };
+            humanoid.Skills[skill] = new PlayerSkill { Rank = 50 };
+        }
+
+        // A mirrored capstone line (Worldbreaker, Kill Box) accepts Armaments.
+        new RequiredSkillRankPrerequisite(SkillType.Staff, 50).MeetsPrerequisite(astromech).Should().BeTrue();
+        new RequiredSkillRankPrerequisite(SkillType.Rifle, 50).MeetsPrerequisite(astromech).Should().BeTrue();
+
+        // A line the mirror does not copy (Unmoving Center, One Shot) asks for the skill itself, which is closed.
+        new RequiredSkillRankPrerequisite(SkillType.Staff, 50, false).MeetsPrerequisite(astromech).Should().BeFalse();
+        new RequiredSkillRankPrerequisite(SkillType.Rifle, 50, false).MeetsPrerequisite(astromech).Should().BeFalse();
+        new RequiredSkillRankPrerequisite(SkillType.Staff, 50, false).MeetsPrerequisite(humanoid).Should().BeTrue();
+
+        // A closed skill with no mirror never qualifies, even at rank 0 and whatever an old record holds.
+        new RequiredSkillRankPrerequisite(SkillType.Mimicry, 0).MeetsPrerequisite(astromech).Should().BeFalse();
+        new RequiredSkillRankPrerequisite(SkillType.Pistol, 50).MeetsPrerequisite(astromech).Should().BeFalse();
+        new RequiredSkillRankPrerequisite(SkillType.Mimicry, 0).MeetsPrerequisite(humanoid).Should().BeTrue();
+        new RequiredSkillRankPrerequisite(SkillType.Piloting, 50).MeetsPrerequisite(astromech).Should().BeTrue();
+        new RequiredSkillRankPrerequisite(SkillType.Armaments, 0).MeetsPrerequisite(humanoid).Should().BeFalse();
+
+        // The capstone files mark exactly the unmirrored lines.
+        var staff = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Feature", "QuestDefinition", "StaffCapstoneQuestDefinition.cs"));
+        var rifle = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Feature", "QuestDefinition", "RifleCapstoneQuestDefinition.cs"));
+        Count(staff, ".PrerequisiteOwnSkill(SkillType.Staff, 50)").Should().Be(5);
+        Count(staff, ".PrerequisiteSkill(SkillType.Staff, 50)").Should().Be(5);
+        Count(rifle, ".PrerequisiteOwnSkill(SkillType.Rifle, 50)").Should().Be(5);
+        Count(rifle, ".PrerequisiteSkill(SkillType.Rifle, 50)").Should().Be(5);
+    }
+
+    private static int Count(string text, string value) => text.Split(value).Length - 1;
+
+    [Test]
     public void AstromechLinesAreMarkedSoOtherBodiesNeverSeeThem()
     {
         foreach (var pair in Pairs())

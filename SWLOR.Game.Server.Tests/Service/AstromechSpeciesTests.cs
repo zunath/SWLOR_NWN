@@ -216,6 +216,8 @@ public class AstromechSpeciesTests
 
         Item.GetRacialEquipError(RacialType.Astromech, true, BaseItem.Armor, none).Should().NotBeEmpty();
         Item.GetRacialEquipError(RacialType.Astromech, true, BaseItem.Pistol, none).Should().NotBeEmpty();
+        // A fishing rod is the one ordinary item an astromech holds: Agriculture is open to it.
+        Item.GetRacialEquipError(RacialType.Astromech, true, Item.FishingRodBaseItem, none).Should().BeEmpty();
         Item.GetRacialEquipError(RacialType.Astromech, true, BaseItem.Armor, droidOnly).Should().NotBeEmpty();
         Item.GetRacialEquipError(RacialType.Astromech, true, BaseItem.Armor, astromechOnly).Should().BeEmpty();
         Item.GetRacialEquipError(RacialType.Astromech, false, BaseItem.Pistol, none)

@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void OneShotFoundation()
         {
             _builder.Create(OneShotFoundationQuestId, "Dry Fire")
-                .PrerequisiteSkill(SkillType.Rifle, 50)
+                .PrerequisiteOwnSkill(SkillType.Rifle, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.CapstoneCzerkaArmsTestRangeKey);
@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create(OneShotMeasureQuestId, "Wind Call")
                 .PrerequisiteQuest(OneShotFoundationQuestId)
-                .PrerequisiteSkill(SkillType.Rifle, 50)
+                .PrerequisiteOwnSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOneShotBlastCellRegulator)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneOneShotBlastCellRegulator)
 
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create(OneShotBreachQuestId, "Send It")
                 .PrerequisiteQuest(OneShotMeasureQuestId)
-                .PrerequisiteSkill(SkillType.Rifle, 50)
+                .PrerequisiteOwnSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOneShotScoredRangeCrest)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneOneShotScoredRangeCrest)
 
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create(OneShotCircleQuestId, "Reacquire")
                 .PrerequisiteQuest(OneShotBreachQuestId)
-                .PrerequisiteSkill(SkillType.Rifle, 50)
+                .PrerequisiteOwnSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOneShotCzerkaClearanceChit)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneOneShotCzerkaClearanceChit)
 
@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create(OneShotMasteryQuestId, "One Answer")
                 .PrerequisiteQuest(OneShotCircleQuestId)
-                .PrerequisiteSkill(SkillType.Rifle, 50)
+                .PrerequisiteOwnSkill(SkillType.Rifle, 50)
 
                 .AddState()
                 .SetStateJournalText(

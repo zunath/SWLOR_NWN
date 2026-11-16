@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void UnmovingCenterFoundation()
         {
             _builder.Create(UnmovingCenterFoundationQuestId, "Root Before Wind")
-                .PrerequisiteSkill(SkillType.Staff, 50)
+                .PrerequisiteOwnSkill(SkillType.Staff, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     KeyItem.GiveKeyItem(player, KeyItemType.CapstoneAnchorheadCanyonRangeKey);
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create(UnmovingCenterMeasureQuestId, "The Windless Ground")
                 .PrerequisiteQuest(UnmovingCenterFoundationQuestId)
-                .PrerequisiteSkill(SkillType.Staff, 50)
+                .PrerequisiteOwnSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUnmovingCenterSightlineCalibrator)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneUnmovingCenterSightlineCalibrator)
 
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create(UnmovingCenterBreachQuestId, "Where the Warden Stopped")
                 .PrerequisiteQuest(UnmovingCenterMeasureQuestId)
-                .PrerequisiteSkill(SkillType.Staff, 50)
+                .PrerequisiteOwnSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUnmovingCenterShatteredRangeCrest)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneUnmovingCenterShatteredRangeCrest)
 
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create(UnmovingCenterCircleQuestId, "Four Who Never Moved")
                 .PrerequisiteQuest(UnmovingCenterBreachQuestId)
-                .PrerequisiteSkill(SkillType.Staff, 50)
+                .PrerequisiteOwnSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUnmovingCenterMarshalsChallengeChit)
                 .RemoveKeyItemOnComplete(KeyItemType.CapstoneUnmovingCenterMarshalsChallengeChit)
 
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             _builder.Create(UnmovingCenterMasteryQuestId, "The One Who Stopped Moving")
                 .PrerequisiteQuest(UnmovingCenterCircleQuestId)
-                .PrerequisiteSkill(SkillType.Staff, 50)
+                .PrerequisiteOwnSkill(SkillType.Staff, 50)
 
                 .AddState()
                 .SetStateJournalText(

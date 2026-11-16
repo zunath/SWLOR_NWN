@@ -669,9 +669,13 @@ namespace SWLOR.Game.Server.Service
             return GetRacialEquipError(race, GetIsPC(creature), GetBaseItemType(item), limitations);
         }
 
+        /// <summary>The base item of every fishing rod (baseitems.2da row 45, "fishingrod").</summary>
+        public const BaseItem FishingRodBaseItem = BaseItem.MagicStaff;
+
         /// <summary>
         /// The racial equip rules, apart from the engine: Droid gear is for Droids and Droids wear nothing else in
-        /// the armor slots; astromech modules are for astromechs, and an astromech player equips nothing else at all.
+        /// the armor slots; astromech modules are for astromechs, and an astromech player equips nothing else but a
+        /// fishing rod.
         /// </summary>
         public static string GetRacialEquipError(
             RacialType race,
@@ -685,8 +689,11 @@ namespace SWLOR.Game.Server.Service
             if (isAstromechItem && race != RacialType.Astromech)
                 return "This item may only be equipped by Astromechs.";
 
+            // A fishing rod is a working tool of an open skill (Agriculture), so an astromech holds one too.
             if (race == RacialType.Astromech)
-                return isAstromechItem || !isPlayer ? string.Empty : "Astromechs may only equip astromech modules.";
+                return isAstromechItem || !isPlayer || baseItem == FishingRodBaseItem
+                    ? string.Empty
+                    : "Astromechs may only equip astromech modules.";
 
             if (isDroidItem && race != RacialType.Droid)
                 return "This item may only be equipped by Droids.";

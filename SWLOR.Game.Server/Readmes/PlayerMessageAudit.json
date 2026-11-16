@@ -1421,6 +1421,13 @@
     "Call": "SendMessageToPC(player, \"This location has not been registered yet.\")"
   },
   {
+    "File": "SWLOR.Game.Server/Feature/DialogDefinition/XPTomeDialog.cs",
+    "Line": 88,
+    "Member": "ConfirmationPageInit",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(player, SkillBodyFrames.GetRefusal(model.Skill))"
+  },
+  {
     "File": "SWLOR.Game.Server/Feature/DMActions.cs",
     "Line": 75,
     "Member": "GrantRPXPViaDMCommand",
@@ -3851,7 +3858,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/QuestDefinition/MimicryQuestDefinition.cs",
-    "Line": 41,
+    "Line": 43,
     "Member": "SalvagedIntelligence",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player,\n                        \"Renna calibrates the prototype and copies its schematics for you. Invest in the Combat Analyzer perk to record techniques from enemies you defeat, then review, equip, and manage them with the /techniques window.\")"

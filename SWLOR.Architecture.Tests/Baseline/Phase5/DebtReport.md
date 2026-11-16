@@ -8,7 +8,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,078 | 13,394 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 43 | 70,762 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 43 | 70,761 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 28 | 6,781 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 21 | 343 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 54 | 79 parameters | none |
@@ -58,7 +58,7 @@ Largest 15 of 1,078 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 43 types over 1,000 lines, 70,762 lines in all.
+- 43 types over 1,000 lines, 70,761 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 

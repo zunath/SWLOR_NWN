@@ -9,7 +9,6 @@ using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 using static SWLOR.NWN.API.NWScript.NWScript;
 using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Social;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Core;

@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

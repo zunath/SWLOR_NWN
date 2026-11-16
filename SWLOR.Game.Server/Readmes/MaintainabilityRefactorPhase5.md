@@ -250,7 +250,7 @@ smaller.
 | P5-1h | Misplaced code moves | P5-1b | Sonnet build, Opus review |
 | P5-2 | Remove the logic-to-content references the splits leave | P5-7 | Sonnet build, Opus review |
 | P5-3 | Split `AbilityService` (master freeze; part map [MaintainabilityRefactorAbilitySplit.md](MaintainabilityRefactorAbilitySplit.md)) | P5-1e | Opus |
-| P5-4 | Split `StatService` (master freeze) | P5-3 | Opus |
+| P5-4 | Split `StatService` (master freeze; part map [MaintainabilityRefactorStatSplit.md](MaintainabilityRefactorStatSplit.md)) | P5-3 | Opus |
 | P5-5 | Split `StatusEffectService` (master freeze) | P5-4 | Opus |
 | P5-6 | Split `SpaceService` | the other splits (owner decision 5) | Sonnet build, Opus review |
 | P5-7 | Combat services over the limits: `CombatHitEffects`, `CombatDamageTaken`, `CombatAbilityImpact`, `CombatRecorder` (and `CombatRecordSerializer.Write`), `CombatDamageModifiers`, `CombatAbilityActivation`, `CombatAbilityBonus`, `CombatAbilityHit`, `CombatService`, `Enmity` | P5-5 | Opus |

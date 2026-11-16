@@ -21,9 +21,9 @@ public class StatServiceHealingTests : StatServiceTestBase
     public void GetStatAdjustment_SumsAdditiveStatsFromEverySource()
     {
         SetStat(Npc, StatType.Attack, 1);
-        Service.PerkStats[(Npc, StatType.Attack)] = 2;
+        Bench.PerkStats[(Npc, StatType.Attack)] = 2;
         Bench.MimicryStats[(Npc, StatType.Attack)] = 4;
-        Service.TemporaryStats[(Npc, StatType.Attack)] = 8;
+        Bench.TemporaryStats[(Npc, StatType.Attack)] = 8;
 
         Service.GetStatAdjustmentExcludingTemporaryModifiers(Npc, StatType.Attack).Should().Be(7);
         Service.GetStatAdjustment(Npc, StatType.Attack).Should().Be(15);
@@ -33,9 +33,9 @@ public class StatServiceHealingTests : StatServiceTestBase
     public void GetStatAdjustment_TakesTheHighestOfAMaximumStat()
     {
         SetStat(Npc, StatType.OpeningAutoAttackIdleSeconds, 1);
-        Service.PerkStats[(Npc, StatType.OpeningAutoAttackIdleSeconds)] = 9;
+        Bench.PerkStats[(Npc, StatType.OpeningAutoAttackIdleSeconds)] = 9;
         Bench.MimicryStats[(Npc, StatType.OpeningAutoAttackIdleSeconds)] = 4;
-        Service.TemporaryStats[(Npc, StatType.OpeningAutoAttackIdleSeconds)] = 8;
+        Bench.TemporaryStats[(Npc, StatType.OpeningAutoAttackIdleSeconds)] = 8;
 
         Service.GetStatAdjustment(Npc, StatType.OpeningAutoAttackIdleSeconds).Should().Be(9);
     }
@@ -44,9 +44,9 @@ public class StatServiceHealingTests : StatServiceTestBase
     public void GetStatAdjustment_CombinesTheBitsOfABitwiseStat()
     {
         SetStat(Npc, StatType.StatusAppliedRequiredCategory, 1);
-        Service.PerkStats[(Npc, StatType.StatusAppliedRequiredCategory)] = 2;
+        Bench.PerkStats[(Npc, StatType.StatusAppliedRequiredCategory)] = 2;
         Bench.MimicryStats[(Npc, StatType.StatusAppliedRequiredCategory)] = 4;
-        Service.TemporaryStats[(Npc, StatType.StatusAppliedRequiredCategory)] = 1;
+        Bench.TemporaryStats[(Npc, StatType.StatusAppliedRequiredCategory)] = 1;
 
         Service.GetStatAdjustment(Npc, StatType.StatusAppliedRequiredCategory).Should().Be(7);
     }
@@ -60,17 +60,17 @@ public class StatServiceHealingTests : StatServiceTestBase
     {
         IReadOnlyList<StatAdjustmentSource> list = new[] { Source("a", StatType.Attack, 1) };
 
-        Service.PerkSources[StatType.Attack] = list;
+        Bench.PerkSources[StatType.Attack] = list;
         Service.GetStatSources(Npc, StatType.Attack).Should().BeSameAs(list);
-        Service.PerkSources.Clear();
+        Bench.PerkSources.Clear();
 
         Bench.StatusSources[StatType.Attack] = list;
         Service.GetStatSources(Npc, StatType.Attack).Should().BeSameAs(list);
         Bench.StatusSources.Clear();
 
-        Service.TemporarySources[StatType.Attack] = list;
+        Bench.TemporarySources[StatType.Attack] = list;
         Service.GetStatSources(Npc, StatType.Attack).Should().BeSameAs(list);
-        Service.TemporarySources.Clear();
+        Bench.TemporarySources.Clear();
 
         Bench.MimicrySources[StatType.Attack] = list;
         Service.GetStatSources(Npc, StatType.Attack).Should().BeSameAs(list);
@@ -80,9 +80,9 @@ public class StatServiceHealingTests : StatServiceTestBase
     public void GetStatSources_OfSeveralKindsListsPerksThenEffectsThenTemporaryThenTraits()
     {
         Bench.MimicrySources[StatType.Attack] = new[] { Source("trait", StatType.Attack, 1) };
-        Service.TemporarySources[StatType.Attack] = new[] { Source("temporary", StatType.Attack, 1) };
+        Bench.TemporarySources[StatType.Attack] = new[] { Source("temporary", StatType.Attack, 1) };
         Bench.StatusSources[StatType.Attack] = new[] { Source("effect", StatType.Attack, 1) };
-        Service.PerkSources[StatType.Attack] = new[] { Source("perk", StatType.Attack, 1) };
+        Bench.PerkSources[StatType.Attack] = new[] { Source("perk", StatType.Attack, 1) };
 
         Service.GetStatSources(Npc, StatType.Attack).Select(source => source.Key)
             .Should().Equal("perk", "effect", "temporary", "trait");
@@ -94,27 +94,27 @@ public class StatServiceHealingTests : StatServiceTestBase
     [TestCase(10, -20, 10)]
     [TestCase(10, 25, 13)]
     public void CalculateOutgoingAbilityHealingAmount_OnlyRaisesAPositiveHealRoundedUp(int amount, int adjustment, int expected) =>
-        Service.CalculateOutgoingAbilityHealingAmount(amount, adjustment).Should().Be(expected);
+        Healing.CalculateOutgoingAbilityHealingAmount(amount, adjustment).Should().Be(expected);
 
     [Test]
     public void ApplyOutgoingAbilityHealingAdjustment_ReadsTheSourceOrABeastsMaster()
     {
         Bench.AddNpc();
         SetStat(Npc, StatType.OutgoingAbilityHealingPercentAdjustment, 50);
-        Service.ApplyOutgoingAbilityHealingAdjustment(Npc, 10).Should().Be(15);
+        Healing.ApplyOutgoingAbilityHealingAdjustment(Npc, 10).Should().Be(15);
 
         const uint Beast = 300;
         Bench.AddNpc(Beast);
         Bench.Beasts.Add(Beast);
         Bench.Masters[Beast] = Npc;
-        Service.ApplyOutgoingAbilityHealingAdjustment(Beast, 10).Should().Be(15);
+        Healing.ApplyOutgoingAbilityHealingAdjustment(Beast, 10).Should().Be(15);
     }
 
     [Test]
     public void ApplyOutgoingAbilityHealingAdjustment_LeavesAnEmptyHealOrAnInvalidSourceAlone()
     {
-        Service.ApplyOutgoingAbilityHealingAdjustment(Npc, 0).Should().Be(0);
-        Service.ApplyOutgoingAbilityHealingAdjustment(ObjectInvalid, 10).Should().Be(10);
+        Healing.ApplyOutgoingAbilityHealingAdjustment(Npc, 0).Should().Be(0);
+        Healing.ApplyOutgoingAbilityHealingAdjustment(ObjectInvalid, 10).Should().Be(10);
     }
 
     [TestCase(10, 100, 50, 10)]
@@ -124,19 +124,19 @@ public class StatServiceHealingTests : StatServiceTestBase
     [TestCase(-5, 100, 50, 0)]
     [TestCase(10, 100, 0, 0)]
     public void CalculateEffectiveHealingAmount_IsWhatFitsUnderTheMaximum(int amount, int maxHP, int currentHP, int expected) =>
-        Service.CalculateEffectiveHealingAmount(amount, currentHP, maxHP).Should().Be(expected);
+        Healing.CalculateEffectiveHealingAmount(amount, currentHP, maxHP).Should().Be(expected);
 
     [Test]
     public void ApplyHealingReceivedAdjustment_AppliesThePercentAndNeverGivesLessThanOne()
     {
         SetStat(Npc, StatType.HealingReceivedPercentAdjustment, 50);
-        Service.ApplyHealingReceivedAdjustment(Npc, 10, false).Should().Be(15);
+        Healing.ApplyHealingReceivedAdjustment(Npc, 10, false).Should().Be(15);
 
         SetStat(Npc, StatType.HealingReceivedPercentAdjustment, -500);
-        Service.ApplyHealingReceivedAdjustment(Npc, 10, false).Should().Be(1);
+        Healing.ApplyHealingReceivedAdjustment(Npc, 10, false).Should().Be(1);
 
-        Service.ApplyHealingReceivedAdjustment(Npc, 0).Should().Be(0);
-        Service.ApplyHealingReceivedAdjustment(Npc, -3).Should().Be(-3);
+        Healing.ApplyHealingReceivedAdjustment(Npc, 0).Should().Be(0);
+        Healing.ApplyHealingReceivedAdjustment(Npc, -3).Should().Be(-3);
     }
 
     [Test]
@@ -145,11 +145,11 @@ public class StatServiceHealingTests : StatServiceTestBase
         Bench.CurrentHitPoints[Npc] = 50;
         Bench.MaxHitPoints[Npc] = () => 100;
 
-        Service.ApplyHealingReceivedAdjustment(Npc, 10);
+        Healing.ApplyHealingReceivedAdjustment(Npc, 10);
         Bench.Log.Should().Equal("HealingReaction:200");
 
         Bench.Log.Clear();
-        Service.ApplyHealingReceivedAdjustment(Npc, 10, false);
+        Healing.ApplyHealingReceivedAdjustment(Npc, 10, false);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -162,11 +162,11 @@ public class StatServiceHealingTests : StatServiceTestBase
         SetStat(Npc, StatType.HealingReceivedAttackDurationSeconds, 6);
 
         Bench.PvpHealingReduction = 100;
-        Service.ApplyHealingReceivedEffects(Npc, 10);
+        Healing.ApplyHealingReceivedEffects(Npc, 10);
         Bench.Log.Should().BeEmpty("nothing of the heal lands");
 
         Bench.PvpHealingReduction = 0;
-        Service.ApplyHealingReceivedEffects(Npc, 10);
+        Healing.ApplyHealingReceivedEffects(Npc, 10);
         Bench.Log.Should().Equal(
             "HealingReaction:200",
             "Temporary:AttackPercentAdjustment:5:6:HealingReceivedAttackPercentAdjustment");
@@ -178,7 +178,7 @@ public class StatServiceHealingTests : StatServiceTestBase
         Bench.CurrentHitPoints[Npc] = 100;
         Bench.MaxHitPoints[Npc] = () => 100;
 
-        Service.ApplyHealingReceivedEffects(Npc, 10);
+        Healing.ApplyHealingReceivedEffects(Npc, 10);
 
         Bench.Log.Should().BeEmpty();
     }
@@ -192,7 +192,7 @@ public class StatServiceHealingTests : StatServiceTestBase
         SetStat(Npc, StatType.HealingReceivedAttackPercentAdjustment, percent);
         SetStat(Npc, StatType.HealingReceivedAttackDurationSeconds, duration);
 
-        Service.ApplyHealingReceivedEffects(Npc, 10);
+        Healing.ApplyHealingReceivedEffects(Npc, 10);
 
         Bench.Log.Should().Equal("HealingReaction:200");
     }
@@ -213,11 +213,11 @@ public class StatServiceHealingTests : StatServiceTestBase
     {
         GiveStaminaRestore(100, 5);
 
-        Service.ApplyHealingReceivedEffects(Npc, 10);
+        Healing.ApplyHealingReceivedEffects(Npc, 10);
         Bench.Log.Should().Equal(new[] { "HealingReaction:200" }, "a heal over time never restores Stamina");
 
         Bench.Log.Clear();
-        Service.ApplyHealingReceivedEffects(Npc, 10, true);
+        Healing.ApplyHealingReceivedEffects(Npc, 10, true);
         Bench.Log.Should().Equal(
             "HealingReaction:200",
             "TryTrigger:HealingReceivedStaminaRestore:12",
@@ -232,9 +232,9 @@ public class StatServiceHealingTests : StatServiceTestBase
     public void TheStaminaRestore_StopsAtAClosedGate()
     {
         GiveStaminaRestore(100, 5);
-        Service.StatTriggerAvailable = false;
+        Bench.StatTriggerAvailable = false;
 
-        Service.ApplyHealingReceivedEffects(Npc, 10, true);
+        Healing.ApplyHealingReceivedEffects(Npc, 10, true);
 
         Bench.Log.Should().Equal("HealingReaction:200", "TryTrigger:HealingReceivedStaminaRestore:12");
     }
@@ -245,7 +245,7 @@ public class StatServiceHealingTests : StatServiceTestBase
     {
         GiveStaminaRestore(chance, stamina);
 
-        Service.ApplyHealingReceivedEffects(Npc, 10, true);
+        Healing.ApplyHealingReceivedEffects(Npc, 10, true);
 
         Bench.Log.Should().Equal("HealingReaction:200");
     }
@@ -257,7 +257,7 @@ public class StatServiceHealingTests : StatServiceTestBase
         // The first percentile roll of this seed is above 1.
         ServiceRandom.SetSeed(11);
 
-        Service.ApplyHealingReceivedEffects(Npc, 10, true);
+        Healing.ApplyHealingReceivedEffects(Npc, 10, true);
 
         Bench.Log.Should().Equal("HealingReaction:200");
     }
@@ -271,7 +271,7 @@ public class StatServiceHealingTests : StatServiceTestBase
         SetStat(Npc, StatType.HealingReceivedStaminaRestoreChanceScalingAbility, (int)AbilityType.Vitality + 1);
         Bench.Abilities[(Npc, AbilityType.Vitality)] = 500;
 
-        Service.ApplyHealingReceivedEffects(Npc, 10, true);
+        Healing.ApplyHealingReceivedEffects(Npc, 10, true);
 
         Bench.Log.Should().Contain("TryTrigger:HealingReceivedStaminaRestore:12", "the chance rose to 100");
     }
@@ -284,7 +284,7 @@ public class StatServiceHealingTests : StatServiceTestBase
         SetStat(Npc, StatType.HealingReceivedStaminaRestoreChanceScalingAbility, 9999);
         ServiceRandom.SetSeed(11);
 
-        Service.ApplyHealingReceivedEffects(Npc, 10, true);
+        Healing.ApplyHealingReceivedEffects(Npc, 10, true);
 
         Bench.Log.Should().Equal("HealingReaction:200");
     }

@@ -129,13 +129,13 @@ public class PerformanceAudienceCostTests
         {
             SourcePath("Domain", "Combat", "DeathService.cs"),
             SourcePath("Domain", "World", "FishingService.cs"),
-            SourcePath("Domain", "Character", "StatService.cs"),
             SourcePath("Domain", "Character", "StatusEffectService.cs")
         };
 
-        // Combat is one shared system however many files hold it.
+        // Combat and the stat service are one shared system each, however many files hold them.
         var sources = shared.ToDictionary(file => Path.GetFileName(file), file => File.ReadAllText(file));
         sources["Combat"] = CombatSource.Read();
+        sources["StatService.cs"] = StatSource.Read();
 
         foreach (var (name, source) in sources)
         {
@@ -146,8 +146,7 @@ public class PerformanceAudienceCostTests
             source.Should().NotContain("PerkType.AnglersLullaby");
         }
 
-        File.ReadAllText(SourcePath("Domain", "Character", "StatService.cs"))
-            .Should().Contain("StatType.OutOfCombatMovementSpeedPercentAdjustment");
+        StatSource.Read().Should().Contain("StatType.OutOfCombatMovementSpeedPercentAdjustment");
         File.ReadAllText(SourcePath("Domain", "Crafting", "Minigame", "Line", "LineAnglerEffects.cs"))
             .Should().Contain("StatType.AnglerTensionCap");
         File.ReadAllText(SourcePath("Domain", "Combat", "DeathService.cs")).Should().Contain("IDeathDebtWaiverStatusEffect");

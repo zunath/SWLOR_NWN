@@ -26,18 +26,11 @@ public class DMPossessedCombatTargetTests
     [OneTimeSetUp]
     public void CompileProductionTargetStatsWithControlledActorsAndStorage()
     {
-        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
-            root = root.Parent;
-        root.Should().NotBeNull();
-        var stat = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
-            "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"))).GetRoot();
         var methods = StatHarnessSource.Methods(method => StatMethods.Contains(method.Identifier.ValueText) &&
                              (method.Identifier.ValueText != "GetEvasion" ||
                               method.ParameterList.Parameters[0].Identifier.ValueText == "creature"));
-        var constants = stat.DescendantNodes().OfType<FieldDeclarationSyntax>()
-            .Where(field => field.Declaration.Variables.Any(variable => variable.Identifier.ValueText is
-                "BeastNaturalStaminaRegenDelaySeconds" or "BeastNaturalStaminaRegenAvailableAtVariable"));
+        var constants = StatHarnessSource.Fields(name => name is
+            "BeastNaturalStaminaRegenDelaySeconds" or "BeastNaturalStaminaRegenAvailableAtVariable");
         // The resistance logic is the instance class of the converted service; its injected database and mimicry
         // service and the shared clamp are replaced by this harness's stand-ins.
         var resistance = new[] { "GetStoredResistance", "CalculateTotalResistance" }

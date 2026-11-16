@@ -12,13 +12,7 @@ public class ShieldDeflectionTests
     [Test]
     public void ShieldDeflectionChance_UsesShieldItemPropertyAndPerkBonusesOnly()
     {
-        var root = FindRepositoryRoot();
-        var statSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "StatService.cs"));
+        var statSource = StatSource.Read();
 
         // Shield Deflection is perk/item-driven only. There is no inherent baseline: the Bulwark package
         // caps at +35 total per the combat-upgrade deflection budget, so adding a flat +10 for every shield

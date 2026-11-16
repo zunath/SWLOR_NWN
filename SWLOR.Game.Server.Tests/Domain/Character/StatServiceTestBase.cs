@@ -20,7 +20,20 @@ public abstract class StatServiceTestBase
 
     protected StatBench Bench { get; private set; } = null!;
 
+    // One accessor per part of the stat split, as on the bench (Readmes/MaintainabilityRefactorStatSplit.md): a test calls
+    // each member through its part's accessor, so a part that moves changes the bench, not the tests.
+
     protected TestStatService Service => Bench.Service;
+
+    protected TestStatService CreatureStat => Bench.CreatureStat;
+
+    protected TestStatService Record => Bench.Record;
+
+    protected TestStatService CombatRating => Bench.CombatRating;
+
+    protected TestStatService DeflectionReaction => Bench.DeflectionReaction;
+
+    protected TestStatService Healing => Bench.Healing;
 
     [OneTimeSetUp]
     public void BuildFacades() => _facades = new FacadeContainer();

@@ -386,7 +386,7 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var attackSource = NativeCombatSource.AttackRoll();
-        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var statSource = StatSource.Read();
         attackSource.Should().Contain("GameServices.CombatQueries.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
         attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility)");
         attackSource.Should().Contain("GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType)");
@@ -454,7 +454,7 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
-        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var statSource = StatSource.Read();
         var applyDeflectionEffects = ExtractMethod(statSource, "public void ApplyDeflectionEffectsNative");
         var grantNextSkillBonuses = ExtractMethod(
             combatSource.Replace("\r\n", "\n"),

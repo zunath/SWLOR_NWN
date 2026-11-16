@@ -43,6 +43,13 @@ public static class AbilitySource
         // P5-3d: the activation checks and the target checks.
         "SWLOR.Game.Server/Domain/Abilities/AbilityActivationService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityTargetCheckService.cs",
+        // P5-3e: the impact messages, Dark Force, the damage delivery, the status application and the damage inputs and stages.
+        "SWLOR.Game.Server/Domain/Abilities/AbilityImpactMessageService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityDarkForceService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityDamageDeliveryService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityStatusApplicationService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityDamageInputService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityDamageStageService.cs",
     };
 
     /// <summary>
@@ -53,7 +60,8 @@ public static class AbilitySource
     {
         "IAbilityCatalog", "IAbilityCatalogService", "IAbilityImpactState", "ICombatImpactGeometryService", "ICombatAbilityMagnitudeService",
         "IAbilityAuraService", "IAbilityImmunityService", "IAbilityActivationStateService", "IAbilityActivationService",
-        "IAbilityTargetCheckService"
+        "IAbilityTargetCheckService", "IAbilityImpactMessageService", "IAbilityDarkForceService", "IAbilityDamageDeliveryService",
+        "IAbilityStatusApplicationService", "IAbilityDamageInputService", "IAbilityDamageStageService"
     };
 
     private static readonly Lazy<IReadOnlyList<SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));

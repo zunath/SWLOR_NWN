@@ -22,8 +22,26 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Elapsed recharge on ability icons (the facade <c>Service.AbilityCooldownVisual</c> until P2-ZF).</summary>
         public static IAbilityCooldownVisualService AbilityCooldownVisual => FacadeAccessor.Resolve<IAbilityCooldownVisualService>();
 
+        /// <summary>How a hostile ability's damage reaches its target, applied or queued, a part of the ability service (P5-3e).</summary>
+        public static IAbilityDamageDeliveryService AbilityDamageDelivery => FacadeAccessor.Resolve<IAbilityDamageDeliveryService>();
+
+        /// <summary>The damage inputs of an ability hit and the unscaled damage formula, a part of the ability service (P5-3e).</summary>
+        public static IAbilityDamageInputService AbilityDamageInput => FacadeAccessor.Resolve<IAbilityDamageInputService>();
+
+        /// <summary>The player and NPC damage formulas of an ability hit, a part of the ability service (P5-3e).</summary>
+        public static IAbilityDamageStageService AbilityDamageStage => FacadeAccessor.Resolve<IAbilityDamageStageService>();
+
+        /// <summary>The Dark Force conversion and restoration of an ability impact, a part of the ability service (P5-3e).</summary>
+        public static IAbilityDarkForceService AbilityDarkForce => FacadeAccessor.Resolve<IAbilityDarkForceService>();
+
         /// <summary>Temporary immunities after a control effect, a part of the ability service (P5-3c).</summary>
         public static IAbilityImmunityService AbilityImmunity => FacadeAccessor.Resolve<IAbilityImmunityService>();
+
+        /// <summary>The combat log lines of an ability impact, a part of the ability service (P5-3e).</summary>
+        public static IAbilityImpactMessageService AbilityImpactMessage => FacadeAccessor.Resolve<IAbilityImpactMessageService>();
+
+        /// <summary>The status effects of an ability impact, a part of the ability service (P5-3e).</summary>
+        public static IAbilityStatusApplicationService AbilityStatusApplication => FacadeAccessor.Resolve<IAbilityStatusApplicationService>();
 
         /// <summary>The checks of an activation's target, a part of the ability service (P5-3d).</summary>
         public static IAbilityTargetCheckService AbilityTargetCheck => FacadeAccessor.Resolve<IAbilityTargetCheckService>();

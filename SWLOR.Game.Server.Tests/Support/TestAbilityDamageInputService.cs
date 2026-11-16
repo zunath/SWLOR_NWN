@@ -1,28 +1,41 @@
-using System.Numerics;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Quests;
-using SWLOR.Game.Server.Domain.Social;
-using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Domain.Space;
-using SWLOR.NWN.API.Engine;
-using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
-using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
-using SWLOR.NWN.API.Testing;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// The answers of <see cref="TestAbilityService"/> for the damage inputs and stages (parts 16 and 17). When the ability split
-/// (<c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>) moves the part, these overrides become its own double; the
-/// answers come from the bench, so the tests that set them do not change.
+/// The damage inputs of the ability split (<c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>, part 16) over the bench's
+/// impact state store, magnitude part and resistance stand-in, with its calls into the stat and combat services answered by
+/// the bench, as <see cref="TestAbilityService"/> answered them before the move. The unscaled formula's damage-dealt and
+/// damage-taken stages answer as the stage part's double does (<see cref="TestAbilityDamageStageService"/>).
 /// </summary>
-public sealed partial class TestAbilityService
+public sealed class TestAbilityDamageInputService : AbilityDamageInputService
 {
+    private readonly AbilityBench _bench;
+
+    public TestAbilityDamageInputService(AbilityBench bench, IAbilityImpactState impactState, ICombatAbilityMagnitudeService magnitude, IResistanceService resistance)
+        : base(impactState, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatQueriesService>(),
+            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatDamageModifiersService>(),
+            FacadeForwarder.For<ICombatDamageTakenService>(), magnitude, resistance)
+    {
+        _bench = bench;
+    }
+
+    private void Log(string entry) => _bench.Log.Add(entry);
+
+    // The same reads answer the same in the other doubles: the weapon damage in TestAbilityService.Shared.cs (the impact
+    // lifecycle), the stat adjustment and the weapon skills in TestAbilityActivationService, the stat adjustment in
+    // TestAbilityDarkForceService and TestAbilityAuraService.
+    protected override int GetStatAdjustment(uint creature, StatType stat) => _bench.Stats.GetValueOrDefault((creature, stat));
+
+    protected override int GetCombatImpactWeaponDamage(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon = false, int? triggeringWeaponDamage = null, bool abilityImpact = false) =>
+        triggeringWeaponDamage ?? _bench.WeaponDamage;
+
+    protected override bool IsWeaponSkillType(SkillType skillType) => _bench.WeaponSkills.Contains(skillType);
+
     protected override int GetAttack(uint creature, AbilityType abilityType, SkillType skillType)
     {
         Log($"GetAttack:{creature}:{abilityType}:{skillType}");
@@ -99,28 +112,6 @@ public sealed partial class TestAbilityService
         Log($"DefenseIgnore:{defense}:{defenseIgnorePercent}");
         return defense;
     }
-
-    protected override int CalculateAbilityCriticalRating(uint attacker, SkillType skillType, bool isAreaAbility, int criticalRateAdjustment, uint defender)
-    {
-        Log($"CriticalRating:{isAreaAbility}:{criticalRateAdjustment}");
-        return _bench.CriticalRating;
-    }
-
-    protected override (int Damage, int CriticalRating, bool WasCriticalDowngraded) CalculateDamageWithCriticalMitigation(uint defender, int attackerAttack, int attackerDMG, int attackerStat, int defenderDefense, int defenderStat, int critical)
-    {
-        Log($"DamageRoll:{attackerAttack}:{attackerDMG}:{attackerStat}:{defenderDefense}:{defenderStat}:{critical}");
-        return (attackerDMG, critical, _bench.CriticalDowngraded);
-    }
-
-    protected override void SendIncomingCriticalHitDowngradeFeedback(uint attacker, uint defender) => Log("CriticalDowngradeFeedback");
-
-    protected override int ApplyCriticalDamageModifier(uint attacker, int damage, int criticalRating, SkillType skillType, uint defender, int criticalDamagePercentAdjustment)
-    {
-        Log($"CriticalDamage:{damage}:{criticalRating}:{criticalDamagePercentAdjustment}");
-        return damage;
-    }
-
-    protected override void SendAbilityCriticalHitFeedback(uint attacker, uint defender, string abilityName) => Log($"CriticalFeedback:{abilityName}");
 
     protected override int GetNearbyStatusTargetAttackAdjustment(uint creature) => 0;
 

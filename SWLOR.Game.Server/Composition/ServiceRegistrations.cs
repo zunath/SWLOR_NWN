@@ -88,7 +88,13 @@ namespace SWLOR.Game.Server.Composition
             // The same instance, seen through the interface Character owns for the domains below Abilities (P5-3b).
             services.AddSingleton<IAbilityCatalog>(provider => provider.GetRequiredService<IAbilityCatalogService>());
             services.AddSingleton<IAbilityCooldownVisualService, AbilityCooldownVisualService>();
+            services.AddSingleton<IAbilityDamageDeliveryService, AbilityDamageDeliveryService>();
+            services.AddSingleton<IAbilityDamageInputService, AbilityDamageInputService>();
+            services.AddSingleton<IAbilityDamageStageService, AbilityDamageStageService>();
+            services.AddSingleton<IAbilityDarkForceService, AbilityDarkForceService>();
             services.AddSingleton<IAbilityImmunityService, AbilityImmunityService>();
+            services.AddSingleton<IAbilityImpactMessageService, AbilityImpactMessageService>();
+            services.AddSingleton<IAbilityStatusApplicationService, AbilityStatusApplicationService>();
             services.AddSingleton<IAbilityTargetCheckService, AbilityTargetCheckService>();
             services.AddSingleton<IAbilityTargetingCacheService, AbilityTargetingCacheService>();
             services.AddSingleton<IFieldEngineerPulseEmittersService, FieldEngineerPulseEmittersService>();

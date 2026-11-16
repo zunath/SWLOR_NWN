@@ -44,11 +44,11 @@ public static class CraftEnhancementReader
                      type == ItemPropertyType.ModuleEnhancement && recipe.EnhancementType == RecipeEnhancementType.Module ||
                      type == ItemPropertyType.DroidEnhancement && recipe.EnhancementType == RecipeEnhancementType.Droid)
             {
-                reading.Properties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount));
+                reading.Properties.AddRange(CraftEnhancementProperty.BuildItemPropertiesForEnhancement(subType, amount));
             }
             else if (type == ItemPropertyType.WeaponEnhancement && recipe.EnhancementType == RecipeEnhancementType.Weapon)
             {
-                reading.Properties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount, weaponDamageType));
+                reading.Properties.AddRange(CraftEnhancementProperty.BuildItemPropertiesForEnhancement(subType, amount, weaponDamageType));
             }
         }
 

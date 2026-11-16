@@ -355,7 +355,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var subType = (EnhancementSubType)GetItemPropertySubType(ip);
                 var amount = GetItemPropertyCostTableValue(ip);
-                itemProperties.AddRange(Craft.BuildItemPropertiesForEnhancement(subType, amount, weaponDamageType));
+                itemProperties.AddRange(CraftEnhancementProperty.BuildItemPropertiesForEnhancement(subType, amount, weaponDamageType));
             }
         }
 
@@ -616,7 +616,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var property in _enhancementProperties.SelectMany(x => x))
             {
-                Craft.ApplyCraftedItemProperty(item, property);
+                CraftEnhancementProperty.ApplyCraftedItemProperty(item, property);
             }
 
             // Transfer the Weapon Submission Token's crafted stats onto the saber through
@@ -637,7 +637,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         if (!LightsaberWorkbench.ShouldTransferSubmissionProperty(GetItemPropertyType(ip), GetItemPropertySubType(ip)))
                             continue;
 
-                        Craft.ApplyCraftedItemProperty(item, ip);
+                        CraftEnhancementProperty.ApplyCraftedItemProperty(item, ip);
                     }
 
                     Item.ReduceItemStack(submissionToken, 1);

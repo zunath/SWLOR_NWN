@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         if (GetItemPropertyType(property) != ItemPropertyType.DroidEnhancement)
                             continue;
                         count++;
-                        var properties = Craft.BuildItemPropertiesForEnhancement((EnhancementSubType)GetItemPropertySubType(property), GetItemPropertyCostTableValue(property)).ToList();
+                        var properties = CraftEnhancementProperty.BuildItemPropertiesForEnhancement((EnhancementSubType)GetItemPropertySubType(property), GetItemPropertyCostTableValue(property)).ToList();
                         ctx.Assert(properties.Count > 0, $"{recipe.Resref} creates part bonuses");
                         foreach (var bonus in properties)
                         {

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using SWLOR.Game.Server.Domain.Character;
 
-namespace SWLOR.Game.Server.Domain.Combat
+namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>Timed stat modifiers a creature carries, grouped so a buff can replace, refresh or consume its own stacks.</summary>
     public interface ITemporaryStatModifierService

@@ -26,13 +26,13 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IPartyService _party;
         private readonly IHoloComService _holoCom;
         private readonly ICompanionLookup _companions;
-        private readonly Lazy<IStatService> _stat;
+        private readonly IStatService _stat;
         private readonly IStealthService _stealth;
         private readonly ICompanionControlService _companionControl;
         private readonly IStatusEffectService _statusEffect;
-        private readonly Lazy<ICombatActivityService> _combatActivity;
-        private readonly Lazy<ICombatAttackTimingService> _attackTiming;
-        private readonly Lazy<ICombatQueriesService> _queries;
+        private readonly ICombatActivityService _combatActivity;
+        private readonly ICombatAttackTimingService _attackTiming;
+        private readonly ICombatQueriesService _queries;
 
         public EnmityService(
             IAIService ai,
@@ -40,13 +40,13 @@ namespace SWLOR.Game.Server.Domain.Combat
             IPartyService party,
             IHoloComService holoCom,
             ICompanionLookup companions,
-            Lazy<IStatService> stat,
+            IStatService stat,
             IStealthService stealth,
             ICompanionControlService companionControl,
             IStatusEffectService statusEffect,
-            Lazy<ICombatActivityService> combatActivity,
-            Lazy<ICombatAttackTimingService> attackTiming,
-            Lazy<ICombatQueriesService> queries)
+            ICombatActivityService combatActivity,
+            ICombatAttackTimingService attackTiming,
+            ICombatQueriesService queries)
         {
             _ai = ai;
             _activity = activity;
@@ -1192,7 +1192,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         /// <summary>The unconverted <c>Stat</c> pipeline.</summary>
-        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
+        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
 
         /// <summary>The unconverted <c>Stealth</c> service.</summary>
         protected virtual bool IsHiddenFrom(uint observer, uint target) => _stealth.IsHiddenFrom(observer, target);
@@ -1211,7 +1211,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _companionControl.CanIssueAttackCommand(companion, target);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
-        protected virtual SkillType GetEquippedWeaponSkillType(uint creature) => _queries.Value.GetEquippedWeaponSkillType(creature);
+        protected virtual SkillType GetEquippedWeaponSkillType(uint creature) => _queries.GetEquippedWeaponSkillType(creature);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual float GetWeaponEngagementRange(SkillType skillType) => CombatRules.GetWeaponEngagementRange(skillType);
@@ -1221,10 +1221,10 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual bool HasRecentAttackActivity(uint creature, float windowSeconds) =>
-            _combatActivity.Value.HasRecentAttackActivity(creature, windowSeconds);
+            _combatActivity.HasRecentAttackActivity(creature, windowSeconds);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
-        protected virtual int CalculateAttackDelay(uint attacker) => _attackTiming.Value.CalculateAttackDelay(attacker);
+        protected virtual int CalculateAttackDelay(uint attacker) => _attackTiming.CalculateAttackDelay(attacker);
 
         /// <summary>The unconverted <c>Combat</c> service.</summary>
         protected virtual int CalculateEffectiveAttackDelay(int attackerDelayMilliseconds) =>

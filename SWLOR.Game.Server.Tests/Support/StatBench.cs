@@ -115,7 +115,7 @@ public sealed partial class StatBench : IDisposable
             .On("GetStatusEffect", _ => ActiveFoodEffect)
             .On("GetCreatureStatusEffects", _ => CreatureEffects);
 
-        var mimicry = ScriptedProxy.Create<IMimicryService>(out var mimicryProxy);
+        var mimicryTraitStats = ScriptedProxy.Create<IMimicryTraitStatsService>(out var mimicryProxy);
         mimicryProxy
             .On("GetStatBonus", args => MimicryStats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)))
             .On("GetStatSources", args => MimicrySources.GetValueOrDefault((StatType)args[1]!, Array.Empty<StatAdjustmentSource>()));
@@ -124,9 +124,6 @@ public sealed partial class StatBench : IDisposable
         twinPistolProxy
             .On("IsActivePair", _ => false)
             .On("ResolveSkill", _ => SkillType.Pistol);
-
-        var powerGlove = ScriptedProxy.Create<IPowerGloveEquipmentService>(out var powerGloveProxy);
-        powerGloveProxy.On("GetEquipmentStatCopies", args => (BaseItem)args[0]! == BaseItem.PowerGlove ? 2 : 1);
 
         var item = ScriptedProxy.Create<IItemService>(out var itemProxy);
         itemProxy
@@ -149,16 +146,13 @@ public sealed partial class StatBench : IDisposable
         var beastMastery = ScriptedProxy.Create<ICompanionLookup>(out var beastProxy);
         beastProxy.On("IsPlayerBeast", args => Beasts.Contains((uint)args[0]!));
 
-        var enmity = ScriptedProxy.Create<IEnmityService>(out var enmityProxy);
+        Enmity = ScriptedProxy.Create<IEnmityTargetQuery>(out var enmityProxy);
         enmityProxy.On("GetHighestEnmityTarget", _ => HighestEnmityTarget);
-
-        var resistance = ScriptedProxy.Create<IResistanceService>(out var resistanceProxy);
-        resistanceProxy.On("DecodeItemPropertyCostTableValue", args => (int)args[0]! * 10);
 
         var pvp = ScriptedProxy.Create<IPvpCombatService>(out var pvpProxy);
         pvpProxy.On("GetHealingReductionPercent", _ => PvpHealingReduction);
 
-        Service = new TestStatService(this, db, recorder, feedback, statusEffect, mimicry, twinPistol, powerGlove, item, recast, beastMastery, enmity, resistance, pvp);
+        Service = new TestStatService(this, db, recorder, feedback, statusEffect, mimicryTraitStats, twinPistol, item, recast, beastMastery, pvp);
     }
 
     public StatEngine Engine { get; }
@@ -172,6 +166,11 @@ public sealed partial class StatBench : IDisposable
     public FakeObjectPlugin NativeObject { get; }
 
     public FakePlayerPlugin PlayerPlugin { get; }
+
+    /// <summary>
+    /// What the AI heartbeat hands the NPC regeneration as its enmity service: it answers <see cref="HighestEnmityTarget"/>.
+    /// </summary>
+    public IEnmityTargetQuery Enmity { get; }
 
     /// <summary>
     /// Part 1 of the stat split, <c>StatService</c> (stays): the stat adjustment read and metadata, the FP and Stamina pools, the

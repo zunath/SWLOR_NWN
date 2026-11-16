@@ -86,7 +86,7 @@ lines: `ApplyDeflectionEffectsNative` (2251-2417, 167).
 - Two handlers are added, each as a split of an existing master handler, so they stand together with it in the manifest and
   the parity handler map accepts them (renames lines take several branch names for a split, `RefactorCommon.ps1`
   `Read-HandlerRenames`):
-  - `MimicryTraitStatStore.CacheData` (`OnModuleCacheAfter`, `[BootPhase(BootReload.Rerun)]`) after
+  - `MimicryTraitStatsService.CacheData` (`OnModuleCacheAfter`, `[BootPhase(BootReload.Rerun)]`) after
     `MimicryService.CacheData` (renames line 112);
   - `CreatureStatService.RegisterStatEffectListener` (`OnModuleCacheBefore`, `[BootPhase(BootReload.Rerun)]`) after
     `StatService.CacheData` (renames line 313, manifest line 54).
@@ -102,7 +102,7 @@ moved members plus seams, constants, constructor and fields, to about 10%.
 | 1 | `StatService` (stays) | Character | 950 | 10 | **`CacheData`**; every stat read and resource change |
 | 2 | `CreatureStatService` | Character | 600 | 5 | **6 handlers** (7 lines); `_outOfCombatMovementCombatState` |
 | 3 | `StatRecordService` | Character | 520 | 2 | per equip and login |
-| 4 | `MimicryTraitStatStore` (`IMimicryTraitStats`) | Character | 150 | 2 | **cache handler**; per read of a trait stat |
+| 4 | `MimicryTraitStatsService` | Character | 150 | 2 | **cache handler**; per read of a trait stat |
 | 5 | `CombatRatingService` | Combat | 915 | 7 | per attack roll |
 | 6 | `CombatDeflectionReactionService` | Combat | 285 | 7 | per deflection |
 | 7 | healing adjustments into `CombatResourcesService` | Combat | +101 (735) | 8 | per heal |
@@ -190,7 +190,7 @@ Part 1 is at the limit (10 services) and has about 50 lines of headroom; master'
   dependencies) has the same body over the same `BEAST_TYPE` variable. P5-4e switches `CapstoneProofService` to
   `ICompanionLookup`; a scan of the constructor graph then finds no plain path from parts 1 and 2 to `BeastMasteryService`, which
   takes both as plain parameters, and its stat `Lazy<>` goes (3 -> 2). `LazyDependencyCycleTests` confirms it in the pull request.
-- **4. Mimicry traits, a Character store (rule 1),** as the approved rows say (domain order 361, 365, 385, 491-492; Ability split
+- **4. Mimicry traits, a Character store (rule 1), named as a service** (P5-4b, below), as the approved rows say (domain order 361, 365, 385, 491-492; Ability split
   245). `MimicryService.GetStatBonus` and `GetStatSources` are called only by the stat read. The store holds the trait tables,
   `GetStatBonus`, `GetStatSources` and `GetSetBonusPotency`, and reads `Player.EquippedTechniques` and `AbilityDetail`, both at
   or below Character. Its reads take the stat reader as an argument (`StatService` passes `this`), so they use the live
@@ -305,6 +305,65 @@ and a moved part calls the members still in `StatService` through `IStatService`
 P5-4b repoints every caller of the moved Mimicry members to `GameServices.MimicryTraitStats`: the engine tests
 `MimicryTraitPotencyEngineTests.cs` (59-81), `AbilityBehaviorExecutor.cs` (212-217) and `MimicryTraitAbilityBehaviors.cs` (18,
 41), and the unit tests `MimicryTests.cs` (616, 1206-1216) and `MimicryServiceTests`.
+
+## Progress
+
+### P5-4b (the trait stats, the moves down and the inversions)
+
+Part 4 moved, `TemporaryStatModifierService` and `ResistanceRules` moved to Character, and the four services that only fed
+helpers or one argument left `StatService`: 22 -> 18 services (`IPowerGloveEquipmentService`, `IResistanceService`,
+`ICombatDamageCatalogService` and `IEnmityService` gone; `IMimicryService` became `IMimicryTraitStatsService`), 3,358 -> 3,348
+lines, the 5 up `Lazy<>` unchanged. `MimicryService` lost the trait stat reads (1,434 -> 1,307 lines) and keeps 11 services.
+Where the pull request differs from the map:
+
+- **Part 4 is `MimicryTraitStatsService` behind `IMimicryTraitStatsService`,** a converted service of Character
+  (`ConvertedServices.json`, `DomainMap.json`) with the `GameServices` property `MimicryTraitStats`, not a store named
+  `MimicryTraitStatStore`. The architecture rules count every type of `Domain.Character` as part of the domain's converted
+  services, and their handlers must be on a `<Name>Service` instance class
+  (`Event_handlers_of_converted_services_are_on_their_instance_classes`); part 4 has a cache handler. It holds the technique
+  and trait stat tables, `GetStatBonus`, `GetStatSources` and `GetSetBonusPotency`, verbatim, with the stat reader as their last
+  argument (`statReader`; `StatService` passes `this`). Its handler is a split of master's `Mimicry.CacheData` (renames line 112)
+  and stands right after `MimicryService.CacheData` in the manifest.
+- **The defense damage types are an `ImmutableArray`.** `DamageTableDefaults.GetDefenseDamageTypes()` returns the array it already
+  held, and the `GetDefenseDamageTypes` seam returns `ImmutableArray<CombatDamageType>`: a static `IReadOnlyList` field is state
+  the converted-service rule refuses, and boxing the array on each read would allocate. The record rebuild's `foreach` no longer
+  boxes the list's enumerator, so it allocates one object less per rebuild; the list and its order are the catalog's (a test).
+- **`IEnmityTargetQuery`** declares `GetHighestEnmityTarget`, which left `IEnmityService` (it extends the query).
+  `RestoreNPCStats(bool, IEnmityTargetQuery)`: `AIService`'s seam passes `_enmity.Value`, `DroidService` and the beast
+  regeneration pass `null` (the query is read only when `outOfCombatRegen` is true). The edges
+  `Feature.CivilianPatrol -> Domain/Combat` and `Feature.EchaniTempleMonks -> Domain/Combat` went with it: that call was their
+  only Combat member.
+- **Seven down and inside `Lazy<>` went.** With `IEnmityService` gone from `StatService`, `LazyDependencyCycleTests` found
+  needless: `EnmityService`'s four (`IStatService`, `ICombatActivityService`, `ICombatAttackTimingService`,
+  `ICombatQueriesService`) and `CompanionControlService`'s three (`IAbilityActivationService`, `ICombatActivityService`,
+  `ICombatQueriesService`); each cycle ran `... -> StatService -> EnmityService -> CompanionControlService`. They are plain
+  parameters now (a Lazy is built once and its `Value` read per call, so a call is the same interface call without the read).
+  `EnmityService` leaves the `Lazy<>` holders of the holder table (37 types, 10 of them lazy), and the P5-3d note that
+  `CompanionControlService` keeps its `Lazy<IAbilityActivationService>` until P5-7 and P5-8 no longer holds: the stat half of its
+  cycle was the enmity parameter.
+- **Part 8 stays in P5-4d,** as the order table says. In b it would add `IResourceRestoredListener` while
+  `Lazy<ICombatResourcesService>` still serves `TryUseStatTrigger` (19 services, not 18).
+- **The type moves** are three `DomainOrderTypeMoves.json` entries (`SWLOR.TypeMoves` moved the files, added the usings and
+  renamed handler lines 90 and 91, `ScriptHandlerOrder.txt`, `ClockSeamFiles.txt` and the reload snapshots in place).
+  `ReloadCarryHistory.txt` joined the tool's `textExcludes`: its keys name what earlier builds carried, so a move must not
+  rewrite them. The carried `_modifiers` names its former owner, and the moved service publishes through `IGuiRefreshPublisher`,
+  so `Combat <-> UI` is no longer a domain cycle. Its two test files moved to `Tests/Domain/Character`.
+- **Tests:** `StatBench` lost the power glove, resistance and enmity stand-ins: the NPC skin read decodes resistances with
+  `ResistanceRules` (the test reads 30 and 104, a vulnerability of 4), and the regeneration tests pass `StatBench.Enmity`.
+  `MimicryServiceTests` builds the new service over the same ability details and a stat reader that answers Trait Potency. The
+  engine tests read the trait stats through a `TraitStatBonus` helper per file, so the stat reader argument adds no static lookup.
+- **Baselines:** `ServicesPerType.txt` (`StatService` 22 -> 18), `LargeTypes.txt` (`StatService` 3,348, `MimicryService` 1,307),
+  `UpwardEdges.txt` (`StatService.cs` Character -> Combat 40 -> 25 members, Character -> Abilities gone), `LogicToContent.txt`
+  (`StatService.cs -> Feature/StatusEffectDefinition` gone), `DomainCycles.txt` (`Combat <-> UI` gone), `StaticLookups.txt`
+  (`MimicryTraitPotencyEngineTests.cs` 32 -> 30, the moved allocation test re-keyed), `DeferredResolution.txt` 51 -> 47 lines
+  (76 -> 69 parameters: the `EnmityService` and `CompanionControlService` lines; `StatService.cs -> Combat (up) | 5` unchanged);
+  `CrossDomainEdges.txt` loses `Domain/Combat -> Domain/UI` and the two Gameplay edges (counts kept). No accepted growth: no
+  holder gained a service or a `Lazy<>`.
+- **Readings:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs) and its
+  ability table are byte-identical to the base's (`10862bf90`). The filtered engine run (`Stat|Mimicry|Temporary|Modifier|Regen|Food`,
+  134 tests, the same packed module and haks on both sides) failed 3 on the branch, all failing on the base too (Piercing Toss
+  Bleed ticks, Toxin and Shock damage reduction, the Foundry loot migration); the base also failed the companion stamina delay
+  test, which passed on the branch.
 
 ## Test plan
 

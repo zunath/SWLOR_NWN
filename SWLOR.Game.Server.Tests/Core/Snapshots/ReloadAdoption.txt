@@ -104,6 +104,7 @@ SWLOR.Game.Server.Domain.Character.PlayerIntroductionService._inbox
 SWLOR.Game.Server.Domain.Character.PlayerNameService.AfkPlayers
 SWLOR.Game.Server.Domain.Character.StatusEffectService._creatureEffects
 SWLOR.Game.Server.Domain.Character.StatusEffectService._loggedOutPlayerEffects
+SWLOR.Game.Server.Domain.Character.TemporaryStatModifierService._modifiers
 SWLOR.Game.Server.Domain.Combat.CombatActivityService._firstCombatAttackConsumed
 SWLOR.Game.Server.Domain.Combat.CombatActivityService._firstHostileAbilityHitCounts
 SWLOR.Game.Server.Domain.Combat.CombatActivityService._lastAttackActivity
@@ -123,7 +124,6 @@ SWLOR.Game.Server.Domain.Combat.OrdinaryAttackTraitsService._states
 SWLOR.Game.Server.Domain.Combat.PowerGloveEquipmentService._pairs
 SWLOR.Game.Server.Domain.Combat.PvpCombatService._states
 SWLOR.Game.Server.Domain.Combat.StealthService._lastTimedExitGeneration
-SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService._modifiers
 SWLOR.Game.Server.Domain.Combat.TwinPistolEquipmentService._pairs
 SWLOR.Game.Server.Domain.Quests.QuestEncounterService._activeCreaturesByEncounterId
 SWLOR.Game.Server.Domain.Quests.QuestEncounterService._lastActivityByCreature

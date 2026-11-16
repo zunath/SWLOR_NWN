@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Tests.Domain.Abilities;
 
 /// <summary>
 /// The Mimicry instance: the technique cache, the trait bonuses, witnessing and learning, the slot budget, equipping, the
-/// saved builds and the handlers. The engine and the NWNX plugins are recording fakes, the database an in-memory one,
+/// saved builds and the handlers. The trait stat bonuses and the elemental resonance are read from the Character service
+/// (<c>MimicryTraitStatsService</c>, P5-4b), built here from the same ability details over a stat reader that answers Trait Potency. The engine and the NWNX plugins are recording fakes, the database an in-memory one,
 /// the quick-cast, DM presence and feedback services scripted stand-ins, and the unconverted statics (Ability, Perk,
 /// Stat, Skill, StatusEffect, CombatPoint, Gui, Scheduler) are answered by a subclass.
 /// </summary>
@@ -52,6 +53,8 @@ public class MimicryServiceTests
     private ScriptedProxy _presenceScript = null!;
     private ScriptedProxy _feedbackScript = null!;
     private TestMimicry _mimicry = null!;
+    private MimicryTraitStatsService _traitStats = null!;
+    private IStatService _statReader = null!;
     private readonly List<uint> _nearby = new();
     private readonly List<string> _quickCastCalls = new();
     private readonly List<string> _warnings = new();
@@ -175,6 +178,12 @@ public class MimicryServiceTests
             return null;
         });
         _mimicry = new TestMimicry(_db, quickCast, presence, feedback, gui);
+
+        var catalog = ScriptedProxy.Create<IAbilityCatalog>(out var catalogScript);
+        catalogScript.On("GetAllAbilityDetails", _ => _mimicry.Abilities);
+        _traitStats = new MimicryTraitStatsService(_db, catalog);
+        _statReader = ScriptedProxy.Create<IStatService>(out var statScript);
+        statScript.On("GetStatAdjustment", args => _mimicry.StatAdjustments.GetValueOrDefault((StatType)args[1]!));
     }
 
     [TearDown]
@@ -333,6 +342,7 @@ public class MimicryServiceTests
     {
         Record.EquippedTechniques = feats.ToList();
         _mimicry.CacheData();
+        _traitStats.CacheData();
     }
 
     [Test]
@@ -342,7 +352,7 @@ public class MimicryServiceTests
         Trait(Trait2, new Dictionary<StatType, int> { [StatType.StaffMightModifierDamageMultiplier] = 0 });
         EquipForBonuses(Trait1, Trait2);
 
-        var sources = _mimicry.GetStatSources(Player, StatType.StaffMightModifierDamageMultiplier);
+        var sources = _traitStats.GetStatSources(Player, StatType.StaffMightModifierDamageMultiplier, _statReader);
 
         sources.Should().ContainSingle();
         sources[0].Key.Should().Be($"trait:{(int)Trait1}");
@@ -356,7 +366,7 @@ public class MimicryServiceTests
         EquipForBonuses(Trait1);
         _mimicry.StatAdjustments[StatType.MimicryTraitPotencyPercent] = 50;
 
-        var sources = _mimicry.GetStatSources(Player, StatType.StaffMightModifierDamageMultiplier);
+        var sources = _traitStats.GetStatSources(Player, StatType.StaffMightModifierDamageMultiplier, _statReader);
 
         sources[0][StatType.StaffMightModifierDamageMultiplier].Should().Be(15);
     }
@@ -367,13 +377,13 @@ public class MimicryServiceTests
         Trait(Trait1, new Dictionary<StatType, int> { [StatType.StaffMightModifierDamageMultiplier] = 10 });
         EquipForBonuses(Trait1);
 
-        _mimicry.GetStatSources(Player, StatType.MimicryPotencyPercent).Should().BeEmpty("no trait adjusts that stat");
-        _mimicry.GetStatSources(Npc, StatType.StaffMightModifierDamageMultiplier).Should().BeEmpty("an NPC has no loadout");
+        _traitStats.GetStatSources(Player, StatType.MimicryPotencyPercent, _statReader).Should().BeEmpty("no trait adjusts that stat");
+        _traitStats.GetStatSources(Npc, StatType.StaffMightModifierDamageMultiplier, _statReader).Should().BeEmpty("an NPC has no loadout");
         _isDm = true;
-        _mimicry.GetStatSources(Player, StatType.StaffMightModifierDamageMultiplier).Should().BeEmpty("a DM has no loadout");
+        _traitStats.GetStatSources(Player, StatType.StaffMightModifierDamageMultiplier, _statReader).Should().BeEmpty("a DM has no loadout");
         _isDm = false;
         _engine.SetReturnHandler("GetObjectUUID", _ => "nobody");
-        _mimicry.GetStatSources(Player, StatType.StaffMightModifierDamageMultiplier).Should().BeEmpty("there is no record");
+        _traitStats.GetStatSources(Player, StatType.StaffMightModifierDamageMultiplier, _statReader).Should().BeEmpty("there is no record");
     }
 
     [Test]
@@ -383,10 +393,10 @@ public class MimicryServiceTests
         Trait(Trait2, new Dictionary<StatType, int> { [StatType.StaffMightModifierDamageMultiplier] = 3 });
         EquipForBonuses(Trait1, Trait2);
 
-        _mimicry.GetStatBonus(Player, StatType.StaffMightModifierDamageMultiplier).Should().Be(13);
+        _traitStats.GetStatBonus(Player, StatType.StaffMightModifierDamageMultiplier, _statReader).Should().Be(13);
 
         _mimicry.StatAdjustments[StatType.MimicryTraitPotencyPercent] = 50;
-        _mimicry.GetStatBonus(Player, StatType.StaffMightModifierDamageMultiplier).Should().Be(15 + 5, "each amount is raised and rounded up");
+        _traitStats.GetStatBonus(Player, StatType.StaffMightModifierDamageMultiplier, _statReader).Should().Be(15 + 5, "each amount is raised and rounded up");
     }
 
     [Test]
@@ -396,7 +406,7 @@ public class MimicryServiceTests
         EquipForBonuses(Trait1);
         _mimicry.StatAdjustments[StatType.MimicryTraitPotencyPercent] = 100;
 
-        _mimicry.GetStatBonus(Player, StatType.MimicryTraitPotencyPercent).Should().Be(10);
+        _traitStats.GetStatBonus(Player, StatType.MimicryTraitPotencyPercent, _statReader).Should().Be(10);
     }
 
     [Test]
@@ -407,7 +417,7 @@ public class MimicryServiceTests
         Trait(Trait1, new Dictionary<StatType, int> { [StatType.MimicryPotencyPercent] = 2 });
         EquipForBonuses(Fire1, Fire2, Trait1);
 
-        _mimicry.GetStatBonus(Player, StatType.MimicryPotencyPercent).Should().Be(5 + 2);
+        _traitStats.GetStatBonus(Player, StatType.MimicryPotencyPercent, _statReader).Should().Be(5 + 2);
     }
 
     [Test]
@@ -417,7 +427,7 @@ public class MimicryServiceTests
         Technique(Fire2, element: CombatDamageType.Fire);
         EquipForBonuses(Fire1, Fire2);
 
-        _mimicry.GetStatBonus(Player, StatType.MimicryPotencyPercent).Should().Be(5);
+        _traitStats.GetStatBonus(Player, StatType.MimicryPotencyPercent, _statReader).Should().Be(5);
     }
 
     [Test]
@@ -426,10 +436,10 @@ public class MimicryServiceTests
         Trait(Trait1, new Dictionary<StatType, int> { [StatType.StaffMightModifierDamageMultiplier] = 10 });
         EquipForBonuses(Trait1);
 
-        _mimicry.GetStatBonus(Player, StatType.MimicryTraitPotencyPercent).Should().Be(0, "no trait adjusts that stat");
-        _mimicry.GetStatBonus(Npc, StatType.StaffMightModifierDamageMultiplier).Should().Be(0);
+        _traitStats.GetStatBonus(Player, StatType.MimicryTraitPotencyPercent, _statReader).Should().Be(0, "no trait adjusts that stat");
+        _traitStats.GetStatBonus(Npc, StatType.StaffMightModifierDamageMultiplier, _statReader).Should().Be(0);
         _engine.SetReturnHandler("GetObjectUUID", _ => "nobody");
-        _mimicry.GetStatBonus(Player, StatType.StaffMightModifierDamageMultiplier).Should().Be(0);
+        _traitStats.GetStatBonus(Player, StatType.StaffMightModifierDamageMultiplier, _statReader).Should().Be(0);
     }
 
     [Test]
@@ -838,22 +848,22 @@ public class MimicryServiceTests
         Technique((FeatType)3010, element: CombatDamageType.Ice);
         Technique((FeatType)3011, element: CombatDamageType.Ice);
         Technique((FeatType)3012, element: CombatDamageType.Invalid);
-        _mimicry.CacheData();
+        _traitStats.CacheData();
         var player = NewPlayer(10, 1);
 
-        _mimicry.GetSetBonusPotency(null!).Should().Be(0);
+        _traitStats.GetSetBonusPotency(null!).Should().Be(0);
         player.EquippedTechniques = new List<FeatType> { Fire1, Ice1, (FeatType)3012, Plain };
-        _mimicry.GetSetBonusPotency(player).Should().Be(0);
+        _traitStats.GetSetBonusPotency(player).Should().Be(0);
         player.EquippedTechniques = new List<FeatType> { Fire1, Fire2 };
-        _mimicry.GetSetBonusPotency(player).Should().Be(5);
+        _traitStats.GetSetBonusPotency(player).Should().Be(5);
         player.EquippedTechniques = new List<FeatType> { Fire1, Fire2, Ice1, (FeatType)3010, (FeatType)3011 };
-        _mimicry.GetSetBonusPotency(player).Should().Be(5 + 10);
+        _traitStats.GetSetBonusPotency(player).Should().Be(5 + 10);
 
         for (var i = 0; i < 6; i++)
             Technique((FeatType)(3020 + i), element: CombatDamageType.Fire);
-        _mimicry.CacheData();
+        _traitStats.CacheData();
         player.EquippedTechniques = Enumerable.Range(3020, 6).Select(i => (FeatType)i).Concat(new[] { Fire1, Fire2 }).ToList();
-        _mimicry.GetSetBonusPotency(player).Should().Be(20, "the bonus is capped");
+        _traitStats.GetSetBonusPotency(player).Should().Be(20, "the bonus is capped");
     }
 
     [Test]

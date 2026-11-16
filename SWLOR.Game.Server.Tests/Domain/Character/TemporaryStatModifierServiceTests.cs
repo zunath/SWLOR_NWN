@@ -2,13 +2,13 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
 
-namespace SWLOR.Game.Server.Tests.Domain.Combat;
+namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
 /// Unit tests of the temporary stat modifier instance: the engine is replaced by a recording fake and the clock by a
@@ -45,7 +45,7 @@ public class TemporaryStatModifierServiceTests
         _engineScope = NWScriptRuntime.Override(_engine);
         _now = new DateTime(2026, 11, 7, 12, 0, 0, DateTimeKind.Utc);
         _clockScope = Clock.OverrideForTests(() => _now);
-        _service = new TemporaryStatModifierService(FacadeForwarder.For<IGuiService>());
+        _service = new TemporaryStatModifierService(FacadeForwarder.For<IGuiRefreshPublisher>());
     }
 
     [TearDown]
@@ -480,7 +480,7 @@ public class TemporaryStatModifierServiceTests
     [Test]
     public void The_state_belongs_to_the_instance()
     {
-        var second = new TemporaryStatModifierService(FacadeForwarder.For<IGuiService>());
+        var second = new TemporaryStatModifierService(FacadeForwarder.For<IGuiRefreshPublisher>());
         _service.Add(Npc, StatType.Attack, 5, 30f);
 
         second.GetStatAdjustment(Npc, StatType.Attack).Should().Be(0);

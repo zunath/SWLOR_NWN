@@ -17,6 +17,12 @@ namespace SWLOR.Game.Server.Domain.Foundation
         private static readonly ImmutableArray<CombatDamageType> DefenseDamageTypes =
             Enum.GetValues<CombatDamageType>().Where(type => type.IsDefenseDamageType()).ToImmutableArray();
 
+        /// <summary>
+        /// Every damage type that uses a defense rating, in enum order: the list <c>CombatDamageCatalogService</c> caches at
+        /// boot, for code below Combat that has no catalog (the stat records, P5-4b). A <c>foreach</c> over it allocates nothing.
+        /// </summary>
+        public static ImmutableArray<CombatDamageType> GetDefenseDamageTypes() => DefenseDamageTypes;
+
         /// <summary>A new table holding <paramref name="defaultValue"/> for every defense damage type, in enum order.</summary>
         public static Dictionary<CombatDamageType, int> CreateDefaultDefenseValues(int defaultValue = 0)
         {

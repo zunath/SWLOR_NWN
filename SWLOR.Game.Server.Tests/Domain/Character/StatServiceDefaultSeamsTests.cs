@@ -43,9 +43,8 @@ public class StatServiceDefaultSeamsTests
         _engineScope = NWScriptRuntime.Override(_engine);
         _seams = new DefaultSeams(
             _facades.Get<IDBService>(), _facades.Get<ICombatRecorderService>(), _facades.Get<IPlayerFeedbackService>(),
-            _facades.Get<IStatusEffectService>(), _facades.Get<IMimicryService>(), _facades.Get<ITwinPistolEquipmentService>(),
-            _facades.Get<IPowerGloveEquipmentService>(), _facades.Get<IItemService>(), _facades.Get<IRecastService>(),
-            _facades.Get<ICompanionLookup>(), _facades.Get<IEnmityService>(), _facades.Get<IResistanceService>(),
+            _facades.Get<IStatusEffectService>(), _facades.Get<IMimicryTraitStatsService>(), _facades.Get<ITwinPistolEquipmentService>(),
+            _facades.Get<IItemService>(), _facades.Get<IRecastService>(), _facades.Get<ICompanionLookup>(),
             _facades.Get<IPvpCombatService>());
     }
 
@@ -150,17 +149,14 @@ public class StatServiceDefaultSeamsTests
             ICombatRecorderService combatRecorder,
             IPlayerFeedbackService playerFeedback,
             IStatusEffectService statusEffect,
-            IMimicryService mimicry,
+            IMimicryTraitStatsService mimicryTraitStats,
             ITwinPistolEquipmentService twinPistolEquipment,
-            IPowerGloveEquipmentService powerGloveEquipment,
             IItemService item,
             IRecastService recast,
             ICompanionLookup beastMastery,
-            IEnmityService enmity,
-            IResistanceService resistance,
             IPvpCombatService pvpCombat)
-            : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat,
-                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
+            : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, twinPistolEquipment, item, recast, beastMastery, pvpCombat,
+                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
         {
         }
 

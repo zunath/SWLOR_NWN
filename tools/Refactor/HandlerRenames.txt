@@ -87,8 +87,8 @@ SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnEquipped SWLOR.Game.Server
 SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnUnequipped SWLOR.Game.Server.Domain.Companions.DroidEquipmentDiagnosticsService.OnUnequipped
 SWLOR.Game.Server.Service.DroidEquipmentDiagnostics.OnUnequipping SWLOR.Game.Server.Domain.Companions.DroidEquipmentDiagnosticsService.OnUnequipping
 SWLOR.Game.Server.Service.IncubationFieldNote.LoadDisplayText SWLOR.Game.Server.Domain.Companions.IncubationFieldNoteService.LoadDisplayText
-SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.ClearExitingObject SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.ClearExitingObject
-SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.PurgeAllExpired SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.PurgeAllExpired
+SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.ClearExitingObject SWLOR.Game.Server.Domain.Character.TemporaryStatModifierService.ClearExitingObject
+SWLOR.Game.Server.Service.CombatService.TemporaryStatModifier.PurgeAllExpired SWLOR.Game.Server.Domain.Character.TemporaryStatModifierService.PurgeAllExpired
 SWLOR.Game.Server.Service.Ability.AddLeadershipCombatPoint SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.AddLeadershipCombatPoint
 SWLOR.Game.Server.Service.Ability.ApplyAuraAOE SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.ApplyAuraAOE
 SWLOR.Game.Server.Service.Ability.AuraEnter SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.AuraEnter
@@ -109,7 +109,7 @@ SWLOR.Game.Server.Service.MeleeTechnique.OnPlayerDeath SWLOR.Game.Server.Domain.
 SWLOR.Game.Server.Service.MeleeTechnique.OnUnequip SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnUnequip
 SWLOR.Game.Server.Service.MeleeTechnique.RefreshAll SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RefreshAll
 SWLOR.Game.Server.Service.MeleeTechnique.ResetProfiles SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.ResetProfiles
-SWLOR.Game.Server.Service.Mimicry.CacheData SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
+SWLOR.Game.Server.Service.Mimicry.CacheData SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData SWLOR.Game.Server.Domain.Character.MimicryTraitStatsService.CacheData
 SWLOR.Game.Server.Service.Mimicry.ClearAnalysisOnPlayerExit SWLOR.Game.Server.Domain.Abilities.MimicryService.ClearAnalysisOnPlayerExit
 SWLOR.Game.Server.Service.Mimicry.CombatPointXPDistributed SWLOR.Game.Server.Domain.Abilities.MimicryService.CombatPointXPDistributed
 SWLOR.Game.Server.Service.Mimicry.OnCreatureDeath SWLOR.Game.Server.Domain.Abilities.MimicryService.OnCreatureDeath

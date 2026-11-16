@@ -40,7 +40,6 @@ Combat <-> Platform | 6
 Combat <-> Quests | 2
 Combat <-> Social | 2
 Combat <-> Space | 2
-Combat <-> UI | 2
 Combat <-> World | 2
 Companions <-> Items | 2
 Crafting <-> Items | 2

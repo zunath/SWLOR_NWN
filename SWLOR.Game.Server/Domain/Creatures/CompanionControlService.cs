@@ -55,26 +55,26 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         private readonly IAIService _ai;
         private readonly ICompanionLookup _companions;
-        private readonly Lazy<IAbilityActivationService> _activation;
+        private readonly IAbilityActivationService _activation;
         private readonly IAbilityCatalog _catalog;
         private readonly IActivityService _activity;
         private readonly IPerkService _perk;
         private readonly IPlayerNameService _playerName;
         private readonly IStatusEffectService _statusEffect;
-        private readonly Lazy<ICombatActivityService> _combatActivity;
-        private readonly Lazy<ICombatQueriesService> _queries;
+        private readonly ICombatActivityService _combatActivity;
+        private readonly ICombatQueriesService _queries;
 
         public CompanionControlService(
             IAIService ai,
             ICompanionLookup companions,
-            Lazy<IAbilityActivationService> activation,
+            IAbilityActivationService activation,
             IAbilityCatalog catalog,
             IActivityService activity,
             IPerkService perk,
             IPlayerNameService playerName,
             IStatusEffectService statusEffect,
-            Lazy<ICombatActivityService> combatActivity,
-            Lazy<ICombatQueriesService> queries)
+            ICombatActivityService combatActivity,
+            ICombatQueriesService queries)
         {
             _ai = ai;
             _companions = companions;
@@ -1064,10 +1064,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _playerName.GetDisplayName(observer, target);
 
         protected virtual DateTime GetLastOffensiveActivityAt(uint creature) =>
-            _combatActivity.Value.GetLastOffensiveActivityAt(creature);
+            _combatActivity.GetLastOffensiveActivityAt(creature);
 
         protected virtual SkillType GetEquippedWeaponSkillType(uint creature) =>
-            _queries.Value.GetEquippedWeaponSkillType(creature);
+            _queries.GetEquippedWeaponSkillType(creature);
 
         protected virtual float GetWeaponEngagementRange(SkillType skill) =>
             CombatRules.GetWeaponEngagementRange(skill);
@@ -1085,6 +1085,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
             FeatType feat,
             int effectiveLevel,
             Location targetLocation) =>
-            _activation.Value.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
+            _activation.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
     }
 }

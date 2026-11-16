@@ -51,7 +51,7 @@ Domain/Combat/WeaponShotProfile.cs
 Service/CombatPoint.cs  # master-only (P2-ZG)
 Domain/Combat/OrdinaryAttackTraitsService.cs
 Domain/Combat/PairedRangedTraitsService.cs
-Domain/Combat/TemporaryStatModifierService.cs
+Domain/Character/TemporaryStatModifierService.cs
 Service/StatusEffect.cs  # master-only (P2-ZD)
 Domain/Character/StatusEffectService.cs
 Domain/Character/CraftSkillBonusType.cs

@@ -23,17 +23,14 @@ public sealed partial class TestStatService : StatService
         ICombatRecorderService combatRecorder,
         IPlayerFeedbackService playerFeedback,
         IStatusEffectService statusEffect,
-        IMimicryService mimicry,
+        IMimicryTraitStatsService mimicryTraitStats,
         ITwinPistolEquipmentService twinPistolEquipment,
-        IPowerGloveEquipmentService powerGloveEquipment,
         IItemService item,
         IRecastService recast,
         ICompanionLookup beastMastery,
-        IEnmityService enmity,
-        IResistanceService resistance,
         IPvpCombatService pvpCombat)
-        : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat,
-            FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
+        : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, twinPistolEquipment, item, recast, beastMastery, pvpCombat,
+            FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
     {
         _bench = bench;
     }

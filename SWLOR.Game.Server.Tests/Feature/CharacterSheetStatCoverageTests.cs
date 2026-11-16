@@ -89,7 +89,7 @@ public class CharacterSheetStatCoverageTests
             FindRepositoryRoot().FullName,
             "SWLOR.Game.Server",
             "Domain",
-            "Combat",
+            "Character",
             "TemporaryStatModifierService.cs"));
 
         viewModel.Should().Contain("IGuiRefreshable<StatAdjustmentRefreshEvent>");

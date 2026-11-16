@@ -18,6 +18,7 @@ SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature.PistolAnimationR
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Feature.DMActions | 1
+SWLOR.Game.Server/Domain/Character/RobeModelRenderer.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefinition | 1
@@ -63,7 +64,6 @@ SWLOR.Game.Server/Domain/Companions/BeastStableCapacity.cs -> Feature/QuestDefin
 SWLOR.Game.Server/Domain/Companions/DroidService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Companions/NeckModelRenderer.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Companions/PartSkinModelRenderer.cs -> Feature/AppearanceDefinition | 2
-SWLOR.Game.Server/Domain/Companions/RobeModelRenderer.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Companions/ShoulderModelRenderer.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Companions/TintMapApplyService.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Companions/TintMapModelResolver.cs -> Feature/AppearanceDefinition | 1

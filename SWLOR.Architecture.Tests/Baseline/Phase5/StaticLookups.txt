@@ -467,6 +467,7 @@ SWLOR.Game.Server/Domain/Character/PerkRequirementMustHavePerk.cs | 6
 SWLOR.Game.Server/Domain/Character/PerkRequirementQuest.cs | 4
 SWLOR.Game.Server/Domain/Character/PerkRequirementSkill.cs | 3
 SWLOR.Game.Server/Domain/Character/PerkRequirementUnlock.cs | 2
+SWLOR.Game.Server/Domain/Character/RobeModelRenderer.cs | 2
 SWLOR.Game.Server/Domain/Character/StatusEffectBase.cs | 11
 SWLOR.Game.Server/Domain/Character/StatusEffectSelectors.cs | 2
 SWLOR.Game.Server/Domain/Combat/AbilityEffectScaling.cs | 10
@@ -484,7 +485,6 @@ SWLOR.Game.Server/Domain/Companions/HelmetModelRenderer.cs | 9
 SWLOR.Game.Server/Domain/Companions/MutationRequirementDayOfWeek.cs | 2
 SWLOR.Game.Server/Domain/Companions/NeckModelRenderer.cs | 6
 SWLOR.Game.Server/Domain/Companions/PartSkinModelRenderer.cs | 8
-SWLOR.Game.Server/Domain/Companions/RobeModelRenderer.cs | 2
 SWLOR.Game.Server/Domain/Companions/ShoulderModelRenderer.cs | 7
 SWLOR.Game.Server/Domain/Companions/TintMapMaterialRegistry.cs | 5
 SWLOR.Game.Server/Domain/Crafting/CraftRankMilestones.cs | 6

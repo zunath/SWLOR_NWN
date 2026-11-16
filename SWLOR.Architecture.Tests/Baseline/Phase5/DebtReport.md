@@ -8,7 +8,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,079 | 13,436 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 41 | 66,887 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 41 | 66,888 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 28 | 6,925 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 21 | 342 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 51 | 76 parameters | none |
@@ -58,7 +58,7 @@ Largest 15 of 1,079 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 41 types over 1,000 lines, 66,887 lines in all.
+- 41 types over 1,000 lines, 66,888 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -66,7 +66,7 @@ Largest 15 of 41 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
-| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel` | 6,182 | AppearanceEditorViewModel.ColorBindings.cs, AppearanceEditorViewModel.ColorSelection.cs, AppearanceEditorViewModel.ColorSwatches.cs, AppearanceEditorViewModel.Outfits.cs, AppearanceEditorViewModel.PartBrowser.cs, AppearanceEditorViewModel.cs |
+| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel` | 6,183 | AppearanceEditorViewModel.ColorBindings.cs, AppearanceEditorViewModel.ColorSelection.cs, AppearanceEditorViewModel.ColorSwatches.cs, AppearanceEditorViewModel.Outfits.cs, AppearanceEditorViewModel.PartBrowser.cs, AppearanceEditorViewModel.cs |
 | `SWLOR.Game.Server.Domain.Character.StatService` | 3,358 | StatService.cs |
 | `SWLOR.Game.Server.Domain.Character.StatusEffectService` | 2,804 | StatusEffectService.cs |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 2,765 | SpaceService.cs |
@@ -161,9 +161,9 @@ Largest 15 of 51 (all in `DeferredResolution.txt`):
 
 ## 6. Logic referencing content
 
-- 82 logic files name content: 103 file-to-content-unit lines, 225 named content types, 48 unit edges.
+- 82 logic files name content: 103 file-to-content-unit lines, 225 named content types, 49 unit edges.
 - Unit edges from Domain/ into another domain's content: 36. From Platform/Native and Platform/NativeSinks: 7. From other Platform areas: 0.
-- Domain/ files that name their own domain's content: 9.
+- Domain/ files that name their own domain's content: 10.
 
 Largest 15 of 103 (all in `LogicToContent.txt`):
 
@@ -189,7 +189,7 @@ Largest 15 of 103 (all in `LogicToContent.txt`):
 
 - 53 pairs of domains depend on each other: 49 between logic (15 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 10 domains, Platform with 6.
-- Members both ways: 5,910.
+- Members both ways: 5,908.
 
 Largest 15 of 53 (all in `DomainCycles.txt`):
 
@@ -198,7 +198,7 @@ Largest 15 of 53 (all in `DomainCycles.txt`):
 | `Foundation <-> Platform` | 9 | Foundation -> Platform: 6 edge(s), 102 member(s); Platform -> Foundation: 3 edge(s), 36 member(s) |
 | `Gameplay content <-> UI content` | 8 | Gameplay content -> UI content: 2 edge(s), 2 member(s); UI content -> Gameplay content: 6 edge(s), 9 member(s) |
 | `Foundation content <-> Gameplay content` | 7 | Foundation content -> Gameplay content: 4 edge(s), 12 member(s); Gameplay content -> Foundation content: 3 edge(s), 3 member(s) |
-| `Character <-> Platform` | 6 | Character -> Platform: 4 edge(s), 122 member(s); Platform -> Character: 2 edge(s), 29 member(s) |
+| `Character <-> Platform` | 6 | Character -> Platform: 4 edge(s), 123 member(s); Platform -> Character: 2 edge(s), 29 member(s) |
 | `Combat <-> Platform` | 6 | Combat -> Platform: 5 edge(s), 241 member(s); Platform -> Combat: 1 edge(s), 50 member(s) |
 | `Abilities <-> Platform` | 5 | Abilities -> Platform: 4 edge(s), 72 member(s); Platform -> Abilities: 1 edge(s), 2 member(s) |
 | `Creatures <-> Platform` | 5 | Creatures -> Platform: 4 edge(s), 72 member(s); Platform -> Creatures: 1 edge(s), 1 member(s) |

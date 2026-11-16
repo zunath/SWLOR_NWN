@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Domain.World
                         // Returns the ship to its last NPC dock and that dock's orbit, so it launches from the
                         // starport it is docked at rather than from the retrieved starport's orbit.
                         // A ship with no safe dock goes to the starport of the planet the city is on.
-                        Property.ReturnStarshipToSafeDock(dbStarship, dbInterior.Id, dbCity?.ParentPropertyId ?? string.Empty);
+                        PropertyMaintenance.ReturnStarshipToSafeDock(dbStarship, dbInterior.Id, dbCity?.ParentPropertyId ?? string.Empty);
 
                         DB.Set(dbStarship);
                     }

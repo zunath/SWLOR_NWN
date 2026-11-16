@@ -241,6 +241,7 @@ public class ReloadDigestTests
             "SWLOR.Game.Server.Domain.Economy.GuildService",
             "SWLOR.Game.Server.Domain.Space.SpaceService",
             "SWLOR.Game.Server.Domain.World.PropertyLoaderService",
+            "SWLOR.Game.Server.Domain.World.PropertyLoadRegistryService",
             "SWLOR.Game.Server.Domain.World.ShuttleService",
             "SWLOR.Game.Server.Domain.World.WeatherService",
             "SWLOR.Game.Server.Feature.StoreManagement",

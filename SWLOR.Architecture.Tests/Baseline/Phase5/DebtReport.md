@@ -8,8 +8,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,078 | 13,394 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 40 | 66,068 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 26 | 6,433 lines | none over 150 lines (400 for layout) |
+| 2. Large types | `LargeTypes.txt` | 38 | 62,996 lines | none over 1,000 lines |
+| 3. Long methods | `LongMethods.txt` | 25 | 6,218 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 19 | 306 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 51 | 76 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 104 | 232 types | none |
@@ -58,11 +58,11 @@ Largest 15 of 1,078 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 40 types over 1,000 lines, 66,068 lines in all.
+- 38 types over 1,000 lines, 62,996 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 40 (all in `LargeTypes.txt`):
+Largest 15 of 38 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -79,15 +79,15 @@ Largest 15 of 40 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 1,689 | CombatAbilityImpactService.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 1,640 | CombatDamageTakenService.cs |
-| `SWLOR.Game.Server.Domain.World.PropertyService` | 1,637 | PropertyService.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService` | 1,605 | ItemService.cs |
+| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerksViewModel` | 1,544 | PerksViewModel.cs |
 
 ## 3. Long methods
 
-- 24 methods over 150 lines and 2 GUI layout methods over 400.
+- 23 methods over 150 lines and 2 GUI layout methods over 400.
 - Exempt and over the limit: 80 (content data 76, data catalog member 4).
 
-Largest 15 of 26 (all in `LongMethods.txt`):
+Largest 15 of 25 (all in `LongMethods.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -101,11 +101,11 @@ Largest 15 of 26 (all in `LongMethods.txt`):
 | `SWLOR.Game.Server.Domain.Character.SkillService.GiveSkillXP` | 237 | SkillService.cs |
 | `SWLOR.Game.Server.Domain.Character.StatusEffectService.ApplyStatusEffectInternal` | 234 | StatusEffectService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CombatStyleGuideTopics.Create` | 224 | CombatStyleGuideTopics.cs |
-| `SWLOR.Game.Server.Domain.World.PropertyCityGovernanceService.ProcessCityElections` | 215 | PropertyCityGovernanceService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecordSerializer.Write` | 198 | CombatRecordSerializer.cs |
 | `SWLOR.Game.Server.Domain.UI.GuiWindowBuilder<T>.Build` | 192 | GuiWindowBuilder.cs |
 | `SWLOR.Game.Server.Domain.Items.ItemService.UseItem` | 189 | ItemService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.RegisterColorMappings` | 188 | AppearanceEditorViewModel.ColorBindings.cs |
+| `SWLOR.Game.Server.Feature.DialogDefinition.StarportDockDialog.MainPageInit` | 186 | StarportDockDialog.cs |
 
 ## 4. Services per type
 

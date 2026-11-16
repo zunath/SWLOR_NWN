@@ -229,6 +229,8 @@ namespace SWLOR.Game.Server.Core
         public const string OnPlaceablePermanentVfx = "permanent_vfx";
         public const string OnPlaceableGenericConversation = "generic_convo";
         public const string OnPlaceableSit = "sit";
+        // The stock chair script most area chairs name; handled here so a body that cannot sit is refused.
+        public const string OnPlaceableStockSit = "x2_plc_used_sit";
         public const string OnPlaceableBuyRebuild = "buy_rebuild";
 
         // Property events

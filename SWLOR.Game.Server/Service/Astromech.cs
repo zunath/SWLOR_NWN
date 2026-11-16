@@ -77,6 +77,10 @@ namespace SWLOR.Game.Server.Service
             foreach (var variable in AstromechChassisCatalog.BuildPaintVariables(previous, null).Keys)
                 DeleteLocalInt(player, variable);
 
+            // The portrait follows the chassis unless the player has picked a portrait of their own.
+            if (GetPortraitResRef(player) == previous.Portrait)
+                SetPortraitResRef(player, GetChassis(dbPlayer).Portrait);
+
             // In space the ship model is showing; the chassis is put back when the player leaves it.
             if (Space.IsPlayerInSpaceMode(player))
                 return;
@@ -95,7 +99,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             dbPlayer.AstromechPaint ??= new Dictionary<AstromechPaintZone, int>();
-            dbPlayer.AstromechPaint[zone] = color.ToStoredValue();
+            dbPlayer.AstromechPaint[zone] = AstromechChassisCatalog.NormalizePaint(color).ToStoredValue();
             DB.Set(dbPlayer);
             ApplyPaint(player, dbPlayer, true);
         }

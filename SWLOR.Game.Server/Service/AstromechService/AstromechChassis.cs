@@ -31,6 +31,10 @@ namespace SWLOR.Game.Server.Service.AstromechService
         public string Model { get; }
 
         public string Name { get; }
+
+        /// <summary>The portrait of this chassis in the paint it comes with: the resref without its size letter.</summary>
+        public string Portrait => "po_" + Model.Replace("c_astro_", "astro") + "_";
+
         public TintMapColor DefaultPrimary { get; }
         public TintMapColor DefaultSecondary { get; }
         public TintMapColor DefaultTrim { get; }

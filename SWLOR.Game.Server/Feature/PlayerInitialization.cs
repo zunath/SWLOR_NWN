@@ -384,8 +384,9 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.BodyFrame = Race.GetBodyFrame(player);
             if (dbPlayer.BodyFrame == BodyFrame.Astromech)
             {
-                // Character creation offers every voice; an astromech always gets its own.
+                // Character creation offers every voice and portrait; an astromech starts with its own.
                 SetSoundset(player, Astromech.SoundSetId);
+                SetPortraitResRef(player, Astromech.GetChassis(dbPlayer).Portrait);
                 Astromech.ApplyPaint(player, dbPlayer, true);
             }
         }

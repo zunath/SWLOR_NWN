@@ -645,12 +645,19 @@ creature. Meshy cannot rig a non-humanoid, so nothing here uses its rigging or m
   becomes the prod node; there is no blaster part. Such a family names its own copy of the clip model (`c_astromechb`)
   with a shorter tool retract, because its arm is as long as its body is deep. These sources carry no dye mask, so the
   mask comes from the diffuse map: `panel_hue` marks the main paint when it is itself saturated, omitting `accent_hue`
-  takes any saturated paint as trim, and `normalize_shade` stretches each layer's shade range. Painted detail such as
+  takes any saturated paint as trim. The shade of every layer is centred on the palette midtone (5th percentile
+  0.25, median 0.50, 95th percentile 0.75) so a chosen colour renders as chosen. Painted detail such as
   lenses and decals takes the color of the layer it falls in.
 - **Package.** `--mode package` compiles the models with cleanmodels and compresses textures with NWN Crunch, as for
   other Meshy creatures. Commit the compiled MDL, DDS and MTR files only.
 - **Voice set.** `tools/GenerateAstromechSoundset.py` synthesizes the sounds and the SSF from a phrase table; nothing is
   sampled.
+- **Portraits.** `tools/BuildAstromechPortraits.py` builds a chassis portrait from two client captures taken from one
+  camera in a still scene: the chassis in its default paint, and the same view with the chassis hidden. It cuts the
+  chassis out by the difference (shadows are left out), sets it on a drawn backdrop and writes the four portrait sizes.
+  Register each in `portraits.2da` under the astromech race and name the default in `AstromechChassisCatalog`.
+- **Default paint.** Pick a chassis's default paint by looking at it in the client. The tint shaders light a custom
+  color from its nearest palette swatch, so some values (light greys near 228, pure white) do not render as entered.
 
 Verify in the client that the chassis plays the shared clips, that both tools slide out, that dye rows change the
 three zones, and that the voice set plays.

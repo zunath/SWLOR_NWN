@@ -16,12 +16,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private readonly GuiWindowBuilder<ChassisWorkshopViewModel> _builder = new();
 
         private const float ContentPanelWidth = 380f;
-        private const float ChassisRowHeight = 28f;
+        private const float ChassisRowHeight = 24f;
+        private const float ListRowPadding = 4f;
         private const float ChassisButtonWidth = 80f;
         private const float PaintLabelWidth = 76f;
         private const float SwatchWidth = 52f;
         private const float SwatchHeight = 24f;
         private const float PaintButtonWidth = 64f;
+        private const float PaintButtonHeight = 26f;
         private const float StepButtonWidth = 36f;
         private const float PickerWidth = 240f;
         private const float PickerHeight = 110f;
@@ -29,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.ChassisWorkshop)
-                .SetInitialGeometry(0, 0, 430f, 640f)
+                .SetInitialGeometry(0, 0, 430f, 660f)
                 .SetTitle("Chassis Workshop")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -58,9 +60,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(content =>
                         {
+                            // The color picker opens under the paint rows, so paint goes last and the
+                            // size control never moves.
                             AddChassisSection(content);
-                            AddPaintSection(content);
                             AddSizeSection(content);
+                            AddPaintSection(content);
                         });
                     })
                         .SetWidth(ContentPanelWidth);
@@ -81,7 +85,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             AddSectionLabel(col, "Chassis");
             col.AddRow(row =>
             {
-                row.SetHeight(ChassisRowHeight * AstromechChassisCatalog.All.Count + 8f);
+                // The client draws each list row 4 px taller than its row height and frames the list, so the
+                // row needs that much more or the last chassis scrolls out of view.
+                row.SetHeight((ChassisRowHeight + ListRowPadding) * AstromechChassisCatalog.All.Count + 12f);
                 row.AddList(template =>
                 {
                     template.AddCell(cell => cell.AddLabel()
@@ -160,10 +166,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddButton()
                     .BindText(pickText)
                     .SetWidth(PaintButtonWidth)
+                    .SetHeight(PaintButtonHeight)
                     .BindOnClicked(model => model.OnClickPick(zone));
                 row.AddButton()
                     .SetText("Reset")
                     .SetWidth(PaintButtonWidth)
+                    .SetHeight(PaintButtonHeight)
                     .BindOnClicked(model => model.OnClickReset(zone));
                 row.AddSpacer();
             });
@@ -188,6 +196,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddButton()
                     .SetText("-")
                     .SetWidth(StepButtonWidth)
+                    .SetHeight(PaintButtonHeight)
                     .BindOnClicked(model => model.OnClickSmaller());
                 row.AddSliderFloat()
                     .BindValue(model => model.ScaleValue)
@@ -197,6 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddButton()
                     .SetText("+")
                     .SetWidth(StepButtonWidth)
+                    .SetHeight(PaintButtonHeight)
                     .BindOnClicked(model => model.OnClickLarger());
             });
         }

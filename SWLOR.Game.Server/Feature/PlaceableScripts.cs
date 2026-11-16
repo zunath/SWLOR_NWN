@@ -180,6 +180,26 @@ namespace SWLOR.Game.Server.Feature
             }
         }
         /// <summary>
+        /// The stock chair script: seat the user unless the chair is taken. An astromech has no sitting
+        /// pose, so it is told so instead of being parked on the seat.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnPlaceableStockSit)]
+        public static void SitOnStockChair()
+        {
+            var chair = OBJECT_SELF;
+            var user = GetLastUsedBy();
+
+            if (Astromech.IsAstromech(user))
+            {
+                SendMessageToPC(user, AstromechAnimations.SitRefusal);
+                return;
+            }
+
+            if (!GetIsObjectValid(GetSittingCreature(chair)))
+                AssignCommand(user, () => ActionSit(chair));
+        }
+
+        /// <summary>
         /// Handle sitting on an object.
         /// </summary>
         [NWNEventHandler(ScriptName.OnPlaceableSit)]

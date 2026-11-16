@@ -27,7 +27,7 @@ Manifest (schema_version 1, paths relative to the manifest, every source needs i
   chassis, kind "gr2" (a SWTOR astromech skinned to the shared 54 bone skeleton; needs --addon-root, importer 4.2.1):
     {kind, model (<= 16 chars), source (GR2), sha256, skeleton (GR2), skeleton_sha256, maps {diffuse, normal}
      (DDS paths), maps_sha256 {same keys}, material (<= 14 chars; dye material and PLT name), tint (as for glb; accent_hue
-     optional, panel_hue [lo, hi] = main panel paint, normalize_shade), texture_size (512 or 1024), height (metres),
+     optional, panel_hue [lo, hi] = main panel paint), texture_size (512 or 1024), height (metres),
      yaw_degrees (optional; derived from the tool arm and centre leg when absent), bone_segments (optional bone name ->
      head, body, toolr, right_leg or left_leg overrides), tool_arm (default true)}
 GR2 chassis are cut by dominant bone, not thresholds: each triangle goes to the segment of the majority of its corners'
@@ -71,7 +71,8 @@ LAYER_DARK, LAYER_ACCENT, LAYER_BODY = 3, 4, 5
 PLT_HEADER = b'PLT V1  ' + (10).to_bytes(4, 'little') + bytes(4)
 LAYER_REVIEW_COLORS = {LAYER_DARK: (0.25, 0.30, 0.75), LAYER_ACCENT: (0.95, 0.55, 0.10), LAYER_BODY: (0.85, 0.85, 0.85)}
 GR2_ADDON_VERSION = (4, 2, 1)
-SHADE_RANGE = (0.25, 0.95)   # target of the optional per-layer shade normalisation
+SHADE_TARGETS = (0.25, 0.50, 0.75)   # 5th percentile, median and 95th percentile of every dye layer's shade
+SHADE_CLAMP = (0.06, 0.94)
 GR2_SEGMENTS = ('head', 'body', 'toolr', 'right_leg', 'left_leg')
 GR2_MAP_KEYS = ('diffuse', 'normal')
 DEFAULT_BONE_SEGMENTS = {
@@ -151,8 +152,8 @@ def chassis_kind(item):
 
 def validate_tint(tint, label):
     """accent_hue is optional (omitted or [0, 1] means any hue); panel_hue [lo, hi] marks the main panel paint (lo > hi wraps
-    through red); normalize_shade stretches each layer's shade range."""
-    require_keys(tint, label, ('accent_min_saturation', 'dark_max_value'), ('accent_hue', 'panel_hue', 'normalize_shade'))
+    through red)."""
+    require_keys(tint, label, ('accent_min_saturation', 'dark_max_value'), ('accent_hue', 'panel_hue'))
     if 'accent_hue' in tint:
         require_vector(tint['accent_hue'], f'{label}.accent_hue', 2)
         if not 0 <= tint['accent_hue'][0] < tint['accent_hue'][1] <= 1:
@@ -161,8 +162,6 @@ def validate_tint(tint, label):
         require_vector(tint['panel_hue'], f'{label}.panel_hue', 2)
         if not all(0 <= v <= 1 for v in tint['panel_hue']) or tint['panel_hue'][0] == tint['panel_hue'][1]:
             raise ValueError(f'{label}.panel_hue must be two different values inside 0..1')
-    if 'normalize_shade' in tint and not isinstance(tint['normalize_shade'], bool):
-        raise ValueError(f'{label}.normalize_shade must be true or false')
     for key in ('accent_min_saturation', 'dark_max_value'):
         if not is_number(tint[key]) or not 0 < tint[key] <= 1:
             raise ValueError(f'{label}.{key} must be in (0, 1]')
@@ -626,19 +625,32 @@ def points_inside_mesh(points, verts, faces):
 # Tint and PLT (NumPy)
 # ---------------------------------------------------------------------------------------------------------------------
 
-def normalize_layers(shade, layer):
-    """Stretch each layer's 5th to 95th percentile shade to SHADE_RANGE so no dye layer looks flat."""
+def centre_curve(values):
+    """Monotone piecewise-linear curve that sends the 5th percentile of values to 0.25, the median to 0.50 and the 95th
+    percentile to 0.75 (end slopes continue beyond them), clamped to SHADE_CLAMP. A layer with too few texels or equal
+    percentiles is only shifted so its median is 0.50."""
     import numpy as np
+    low, mid, high = (float(v) for v in np.percentile(values, (5, 50, 95)))
+    t_low, t_mid, t_high = SHADE_TARGETS
+    if len(values) < 16 or not low < mid < high:
+        def curve(x):
+            return np.clip(x - mid + t_mid, *SHADE_CLAMP)
+        return curve
+    slope_low, slope_high = (t_mid - t_low) / (mid - low), (t_high - t_mid) / (high - mid)
+
+    def curve(x):
+        return np.clip(np.where(x < mid, t_mid + (x - mid) * slope_low, t_mid + (x - mid) * slope_high), *SHADE_CLAMP)
+    return curve
+
+
+def centre_layers(shade, layer):
+    """Centre every dye layer's shade on the palette midtone (shade 128 is the colour the player picked)."""
     result = shade.copy()
     for index in (LAYER_DARK, LAYER_ACCENT, LAYER_BODY):
         mask = layer == index
-        if mask.sum() < 16:
-            continue
-        low, high = np.percentile(shade[mask], (5, 95))
-        if high - low < 1e-4:
-            continue
-        result[mask] = SHADE_RANGE[0] + (shade[mask] - low) / (high - low) * (SHADE_RANGE[1] - SHADE_RANGE[0])
-    return np.clip(result, 0, 1)
+        if mask.any():
+            result[mask] = centre_curve(shade[mask])(shade[mask])
+    return result
 
 
 def classify_tint(rgb, tint):
@@ -660,8 +672,7 @@ def classify_tint(rgb, tint):
     dark = (mx < tint['dark_max_value']) & ~accent
     layer = np.where(accent, LAYER_ACCENT, np.where(dark, LAYER_DARK, LAYER_BODY)).astype(np.uint8)
     shade = np.clip(np.where(accent, lum * 1.5, np.where(dark, lum * 2.2, lum * 1.05)), 0, 1)
-    if tint.get('normalize_shade'):
-        shade = normalize_layers(shade, layer)
+    shade = centre_layers(shade, layer)
     return np.rint(shade * 255).astype(np.uint8), layer
 
 
@@ -1246,7 +1257,7 @@ def export_gr2_chassis(item, supermodel, tool_lengths, manifest_dir, out, weapon
                            for k, m in meshes.items()},
               'toolr_socket_torso_space': [round(v, 4) for v in socket] if socket else None,
               'body_bounds_torso_space': box(body_bounds), 'bone_segments': table,
-              'layer_coverage': layer_coverage(layer), 'normalize_shade': bool(item['tint'].get('normalize_shade'))}
+              'layer_coverage': layer_coverage(layer)}
     report.update(tool)
     (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     return report

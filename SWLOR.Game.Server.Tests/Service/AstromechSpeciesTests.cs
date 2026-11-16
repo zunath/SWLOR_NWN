@@ -224,6 +224,38 @@ public class AstromechSpeciesTests
     }
 
     [Test]
+    public void TheBrightestWhitesAreStoredOneStepBelowTheBrokenRange()
+    {
+        // 255,255,254 and 255,255,255 round past the top of the range the tint shaders decode and render red.
+        AstromechChassisCatalog.NormalizePaint(new TintMapColor(255, 255, 255)).Should().Be(new TintMapColor(255, 255, 252));
+        AstromechChassisCatalog.NormalizePaint(new TintMapColor(255, 255, 253)).Should().Be(new TintMapColor(255, 255, 252));
+        AstromechChassisCatalog.NormalizePaint(new TintMapColor(255, 255, 252)).Should().Be(new TintMapColor(255, 255, 252));
+        AstromechChassisCatalog.NormalizePaint(new TintMapColor(255, 254, 255)).Should().Be(new TintMapColor(255, 254, 255));
+        AstromechChassisCatalog.NormalizePaint(new TintMapColor(10, 20, 30)).Should().Be(new TintMapColor(10, 20, 30));
+    }
+
+    [Test]
+    public void EveryChassisPortraitShipsInTheHakAtEverySize()
+    {
+        var haks = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks");
+        var registered = Rows(Path.Combine(haks, "sw_2da", "portraits.2da"))
+            .Where(row => row.Length > 3 && row[3] == ((int)RacialType.Astromech).ToString())
+            .Select(row => "po_" + row[1])
+            .ToList();
+
+        foreach (var chassis in AstromechChassisCatalog.All)
+        {
+            registered.Should().Contain(chassis.Portrait);
+            (chassis.Portrait.Length + 1).Should().BeLessThanOrEqualTo(16, "a resource name holds 16 characters");
+            foreach (var size in new[] { "l", "m", "s", "t" })
+                File.Exists(Path.Combine(haks, "sw_portrait", chassis.Portrait + size + ".dds")).Should().BeTrue(
+                    $"{chassis.Portrait}{size} is a portrait size the game asks for");
+        }
+
+        registered.Should().HaveCount(AstromechChassisCatalog.All.Count);
+    }
+
+    [Test]
     public void ScaleStaysInsideTheChassisRange()
     {
         AstromechChassisCatalog.ClampScale(0.5f).Should().Be(AstromechChassisCatalog.MinimumScale);

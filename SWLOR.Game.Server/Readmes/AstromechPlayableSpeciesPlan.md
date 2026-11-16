@@ -1,10 +1,10 @@
 # Astromech Playable Species Plan
 
-**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 (go verdict) and Phase 1 (first chassis, animation, tools, dyes, voice set) are done; see their results sections. No species code exists yet.** No balance numbers are proposed here: they are set in the Design Bible in Phase 3 and approved there.
+**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 (go verdict), Phase 1 (chassis, animation, tools, dyes, voice set) and Phase 2 (the playable species itself) are done; see their results sections. The astromech has no skills or gear of its own yet.** No balance numbers are proposed here: they are set in the Design Bible in Phase 3 and approved there.
 
 **Base: this builds on the space revamp** (`feature/space-revamp`, read at `0e2bc7231`, and its `Readmes/SpaceRevampPlan.md`). It assumes crew stations, droid crew, power routing and the space jobs of Engineering, Espionage and Leadership exist. It ships as its own release after space, so it never delays the space release.
 
-Sections: Summary · What exists today · Species rules · Skills and perks · Equipment · 3D models (Meshy) · Animation · 2D art · Sound · Code work · Phases · Phase 0 results · Phase 1 results · Risks · Separate droid healing · Decisions
+Sections: Summary · What exists today · Species rules · Skills and perks · Equipment · 3D models (Meshy) · Animation · 2D art · Sound · Code work · Phase 0 results · Phase 1 results · Phase 2 results · Phases · Risks · Separate droid healing · Decisions
 
 ## Summary
 
@@ -207,7 +207,7 @@ All four chassis share one skeleton and one animation set, built once.
 The generator refuses franchise content, so the plan needs it as little as possible. Three routes, in order of preference:
 
 1. **Render from the 3D model (no generator at all).**
-   - *Portraits:* a new small Blender render script produces the five portrait sizes per chassis and paint scheme, registered in `portraits.2da` under the new race id. This is the one new tool in the art pipeline.
+   - *Portraits:* built from the game client's own render of each chassis (`tools/BuildAstromechPortraits.py`, see Phase 2 results) in the four sizes the haks carry, registered in `portraits.2da` under the new race id. This is the one new tool in the art pipeline.
    - *Module and tool inventory icons:* rendered from their own models on a transparent canvas, the same way generated blaster icons already are (`TrellisWeaponExport.py` `render_view` and `pad_icon`, written with `FixWeaponInventoryIcons.py`).
 2. **SVG symbols rasterized with ImageMagick** for every perk, ability and status icon. This is already the documented Claude icon pipeline. The subjects are simple symbols (bolt, weld arc, sensor eye, socket, shield arc), which suits it, and the project tools stamp frame, color and badge as usual.
 3. **Painted art only where 1 and 2 cannot work** (for example a splash or wiki image): Meshy's `nano-banana` image models, already used for concepts, or the local Z-Image-Turbo setup. Not GPT.
@@ -348,6 +348,50 @@ The owner asked for a contributor's set of seven astromech models to be added, m
 - Death and get-up were seen as the knockdown pose only. Walk and run on the production model were not re-filmed (they were in Phase 0).
 - The other three chassis, portraits, and the camera height for this appearance are later work.
 
+## Phase 2 results
+
+Built on the Phase 1 branch and checked on 2026-11-16 in the real client, creating new characters through native character creation. Evidence is in `C:\Temp\astro-spike\phase2\evidence` (local).
+
+**Delivered**
+
+- **Species:** `RacialType.Astromech = 170` with its `racialtypes.2da` row, Standard class row and strings. Force Sensitive is not offered to it.
+- **Body frame:** `BodyFrame` (Humanoid or Astromech) from `Race.GetBodyFrame`, saved on the player record. Existing records read as Humanoid, so there is no migration.
+- **Chassis, paint and size:** `Service/Astromech.cs` and `Service/AstromechService/`. The chosen chassis is the character's stored appearance (the value leaving space restores), paint is three zones (primary, secondary, trim) written as dye variables for the worn chassis, and size is 85% to 115%. Each chassis has its own default paint and portrait.
+- **Chassis Workshop:** a new window that replaces the appearance editor for astromechs (`/customize` and the character sheet button): chassis list, size, and a color picker per paint zone. Every change applies at once.
+- **Locks:** skills carry a body-frame restriction; the locked list is closed to astromechs in the skills window, RP XP distribution, the full rebuild, DM examine and XP awards. A perk behind a closed skill cannot be bought (the skill requirement refuses it); the eight humanoid-only perks that had no skill requirement gained a rank 0 one, as Mimicry already had.
+- **Speech:** astromechs speak only Droidspeak, through the same rule as Wookiees.
+- **Gear:** an astromech player equips only items limited to astromechs (none exist until Phase 3), and nobody else can equip those. The starter kit is the credits alone.
+- **Humanoid systems:** rest uses a powered-down pose, chairs refuse an astromech (including the stock chair script most area chairs use), emotes the chassis has no clip for are refused and hidden from the emote window, the voice list offers only the astromech voice, the stranger descriptor reads "Astromech", and ion and mind effects use one shared machine check.
+- **Portraits:** `tools/BuildAstromechPortraits.py` builds them from two client captures per chassis (with the chassis and with it hidden), so a portrait is the game's own render. Eight portraits ship, one per chassis in its default paint.
+- **Dye masks:** the exporter now centres every dye layer on the palette midtone and all eight chassis were regenerated. Before this a chosen color rendered much lighter than picked.
+
+**Verified in the client**
+
+| Check | Result | Evidence |
+|---|---|---|
+| Character creation | Astromech is in the species list with its description; Standard is offered and Force Sensitive is greyed out | `chargen_species.png`, `chargen_class.png` |
+| New character | Enters in the first chassis with its default paint, the astromech voice and portrait, 200 credits and no items; strangers see "<trait> Astromech" | `new_character_default.png` |
+| Speech | A line typed in Basic is spoken as Droidspeak | `forced_droidspeak.png` |
+| Chassis Workshop | Opens from `/customize`; changing chassis keeps chosen paint and moves the portrait; the picker recolors a zone; size steps and is saved | `workshop_size_picker.png`, `workshop_paint_chassis_portrait.png` |
+| Default paints | All eight chassis in their default paint | `defaults1.png` |
+| Rest | The astromech powers down on the floor and the rest effect ticks | `rest_pose.png` |
+| Emotes | `/bow` is refused with a message | `emote_refused.png` |
+| Chairs | Using a chair is refused with a message | `chair_refused.png` |
+| Gear and skills | Clothes and a knife are refused; the skills window lists only the shared skills; a locked skill takes no XP while a shared one does | `skills_and_equip_refusal.png` |
+
+**Found on the way**
+
+- A descriptor was generated from the half-created player record, before the species was applied, so it read "Humanoid" and was never replaced. `PlayerDescriptor.EnsureUnknownDisplayName` now waits for character initialization. This is not specific to the astromech.
+- The shared tint shaders light a custom color from its nearest palette swatch. On the cloth layers, greys from about 220 to 236 land on a metallic swatch and render as chrome. That is how the dye system works for every item, so it is left alone; the default paints avoid it.
+- Pure white (255, 255, 254 or 255) sent as a custom color renders red: the value rounds past the top of the range the shaders decode. Astromech paint stores such a white one step lower. The same defect is open for every other custom color in the dye system and is not fixed here.
+
+**Not done or not verified**
+
+- Entering and leaving space as an astromech was not run in the client (it needs a ship; it is covered with the crew work in Phase 4). The restore path uses the stored appearance, which is the chosen chassis.
+- The last workshop layout change (a taller chassis list so all eight names show without scrolling) was made after the final client pass.
+- Work animations (crafting, gathering, item use) have no clip on the chassis; the action runs and the model idles.
+- The perks window still lists humanoid-only lines to an astromech, each perk marked as closed. Hiding lines by body frame comes with the astromech lines in Phase 3.
+
 ## Phases
 
 Each phase is its own pull request into a `feature/astromech` branch cut from `feature/space-revamp`; the owner decides when it merges. It releases after the space revamp, with its own migration versions if any turn out to be needed.
@@ -363,7 +407,7 @@ Each phase is its own pull request into a `feature/astromech` branch cut from `f
 
 **Phase 1 - Skeleton, animation, first chassis. Done 2026-11-15; see Phase 1 results.** Reference skeleton, exporter rigid mode, authored clip set, one Meshy chassis through the pipeline, soundset. *Exit:* one chassis moving, fighting and dying correctly in the client as an NPC.
 
-**Phase 2 - Species plumbing.** Race, body frame, creation flow, starter kit, speech rule, all humanoid-system guards, Chassis Workshop, portraits. *Exit:* a new astromech character can be made and played end to end with no skills or gear of its own yet, and no humanoid system misbehaves for it.
+**Phase 2 - Species plumbing. Done 2026-11-16; see Phase 2 results.** Race, body frame, creation flow, starter kit, speech rule, all humanoid-system guards, Chassis Workshop, portraits. *Exit:* a new astromech character can be made and played end to end with no skills or gear of its own yet, and no humanoid system misbehaves for it.
 
 **Phase 3 - Skills, perks, abilities, modules.** Bible tabs written and **approved by the owner before any code**, then implementation, icons, recipes and CombatSim evidence. *Exit:* parity evidence at entry, middle and endgame.
 

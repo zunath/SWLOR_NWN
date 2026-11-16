@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshPaint(dbPlayer);
 
             IsPickerVisible = _activeZone != null;
-            PickerLabel = _activeZone == null ? string.Empty : $"Colour: {GetZoneName(_activeZone.Value)}";
+            PickerLabel = _activeZone == null ? string.Empty : $"Color: {GetZoneName(_activeZone.Value)}";
             SelectedColor = _activeZone == null
                 ? GuiColor.Grey
                 : ToGuiColor(Astromech.GetPaint(dbPlayer, _activeZone.Value));
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 _activeZone = zone;
-                PickerLabel = $"Colour: {GetZoneName(zone)}";
+                PickerLabel = $"Color: {GetZoneName(zone)}";
                 SetPickerColor(ToGuiColor(Astromech.GetPaint(DB.Get<Player>(GetObjectUUID(Player)), zone)));
                 IsPickerVisible = true;
             }

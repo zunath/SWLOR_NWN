@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.AstromechService
     {
         public const float MinimumScale = 0.85f;
         public const float MaximumScale = 1.15f;
+        private const byte BrightestSafeBlue = 252;
 
         public static IReadOnlyList<AstromechPaintZone> Zones { get; } = new[]
         {
@@ -21,24 +22,26 @@ namespace SWLOR.Game.Server.Service.AstromechService
             AstromechPaintZone.Trim
         };
 
+        // The paints were picked in the client: the tint shaders light a color from its nearest palette
+        // swatch, so a value has to be looked at before it is used (greys near 228 pick up a chrome swatch).
         public static IReadOnlyList<AstromechChassis> All { get; } = new[]
         {
             new AstromechChassis(AppearanceType.SWLORAstromechChassis1, "c_astro_01", "Dome Frame",
-                new TintMapColor(226, 226, 220), new TintMapColor(38, 84, 168), new TintMapColor(148, 152, 158)),
+                new TintMapColor(210, 210, 205), new TintMapColor(40, 90, 170), new TintMapColor(80, 82, 88)),
             new AstromechChassis(AppearanceType.SWLORAstromechChassis2, "c_astro_02", "Utility Frame",
-                new TintMapColor(196, 190, 176), new TintMapColor(176, 96, 32), new TintMapColor(120, 122, 126)),
+                new TintMapColor(165, 100, 45), new TintMapColor(60, 62, 66), new TintMapColor(90, 90, 95)),
             new AstromechChassis(AppearanceType.SWLORAstromechChassis3, "c_astro_03", "Survey Frame",
-                new TintMapColor(92, 118, 96), new TintMapColor(210, 190, 110), new TintMapColor(112, 114, 118)),
+                new TintMapColor(60, 110, 70), new TintMapColor(205, 175, 60), new TintMapColor(80, 82, 88)),
             new AstromechChassis(AppearanceType.SWLORAstromechChassis4, "c_astro_04", "Patrol Frame",
-                new TintMapColor(62, 64, 70), new TintMapColor(150, 30, 30), new TintMapColor(96, 98, 104)),
+                new TintMapColor(52, 54, 60), new TintMapColor(170, 30, 30), new TintMapColor(95, 97, 102)),
             new AstromechChassis(AppearanceType.SWLORAstromechChassis5, "c_astro_05", "Salvage Frame",
-                new TintMapColor(150, 92, 52), new TintMapColor(70, 120, 120), new TintMapColor(104, 98, 90)),
+                new TintMapColor(125, 72, 40), new TintMapColor(50, 110, 110), new TintMapColor(85, 80, 74)),
             new AstromechChassis(AppearanceType.SWLORAstromechChassis6, "c_astro_06", "Service Frame",
-                new TintMapColor(214, 214, 208), new TintMapColor(168, 40, 40), new TintMapColor(140, 144, 150)),
+                new TintMapColor(210, 210, 205), new TintMapColor(170, 35, 35), new TintMapColor(90, 92, 98)),
             new AstromechChassis(AppearanceType.SWLORAstromechChassis7, "c_astro_07", "Scout Frame",
-                new TintMapColor(206, 200, 186), new TintMapColor(40, 110, 70), new TintMapColor(132, 134, 138)),
+                new TintMapColor(40, 90, 170), new TintMapColor(210, 210, 205), new TintMapColor(80, 82, 88)),
             new AstromechChassis(AppearanceType.SWLORAstromechChassis8, "c_astro_08", "Courier Frame",
-                new TintMapColor(70, 96, 150), new TintMapColor(220, 200, 90), new TintMapColor(126, 128, 134))
+                new TintMapColor(215, 175, 40), new TintMapColor(52, 54, 60), new TintMapColor(90, 92, 98))
         };
 
         public static AstromechChassis Default => All[0];
@@ -89,6 +92,17 @@ namespace SWLOR.Game.Server.Service.AstromechService
             }
 
             return variables;
+        }
+
+        /// <summary>
+        /// The color a paint choice is stored as. The two brightest whites round up past the top of the
+        /// range the tint shaders decode and come out red, so they are stored one step below.
+        /// </summary>
+        public static TintMapColor NormalizePaint(TintMapColor color)
+        {
+            return color.Red == 255 && color.Green == 255 && color.Blue > BrightestSafeBlue
+                ? new TintMapColor(255, 255, BrightestSafeBlue)
+                : color;
         }
 
         public static float ClampScale(float scale)

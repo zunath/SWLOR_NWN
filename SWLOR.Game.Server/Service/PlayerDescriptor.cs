@@ -115,6 +115,11 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // A record still waiting for character initialization has no species or stats yet; a
+            // descriptor made from it would read "Humanoid" for every species and never be replaced.
+            if (dbPlayer.CharacterInitializationPending)
+                return false;
+
             var generatedDisplayName = GenerateUnknownDisplayName(dbPlayer);
             if (string.IsNullOrWhiteSpace(generatedDisplayName))
                 return false;

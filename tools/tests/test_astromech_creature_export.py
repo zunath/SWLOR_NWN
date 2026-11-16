@@ -387,8 +387,8 @@ class TintAndPltTests(unittest.TestCase):
         shade, layer = astro.classify_tint(rgb, self.tint)
         self.assertEqual(layer.tolist(), [[astro.LAYER_ACCENT, astro.LAYER_DARK, astro.LAYER_BODY, astro.LAYER_BODY]])
         self.assertEqual(shade.dtype, np.uint8)
-        luminance = 0.7 * 0.299 + 0.7 * 0.587 + 0.72 * 0.114
-        self.assertEqual(int(shade[0, 2]), round(min(luminance * 1.05, 1) * 255))
+        self.assertEqual(shade.ravel()[:2].tolist(), [128, 128])   # single-texel layers are shifted to the midtone
+        self.assertAlmostEqual(float(np.median(shade[0, 2:])), 128, delta=1)
         coverage = astro.layer_coverage(layer)
         self.assertAlmostEqual(sum(coverage.values()), 1.0)
 
@@ -555,10 +555,10 @@ class Gr2ManifestTests(unittest.TestCase):
             astro.validate_manifest(manifest)
 
     def test_tint_options_are_validated(self):
-        for tint in ({'panel_hue': [0.2, 0.2]}, {'panel_hue': [0.2]}, {'normalize_shade': 1}, {'accent_hue': [0.5, 0.1]}):
+        for tint in ({'panel_hue': [0.2, 0.2]}, {'panel_hue': [0.2]}, {'accent_hue': [0.5, 0.1]}):
             self.rejects(lambda m, t=tint: m['chassis'][0]['tint'].update(t))
         manifest = gr2_manifest()
-        manifest['chassis'][0]['tint'].update(panel_hue=[0.93, 0.04], normalize_shade=True, accent_hue=[0, 1])
+        manifest['chassis'][0]['tint'].update(panel_hue=[0.93, 0.04], accent_hue=[0, 1])
         astro.validate_manifest(manifest)
 
 
@@ -658,15 +658,34 @@ class TintOptionTests(unittest.TestCase):
         plain = self.layers([self.red, self.green], panel_hue=[0.25, 0.4])
         self.assertEqual(plain, [astro.LAYER_ACCENT, astro.LAYER_BODY])
 
-    def test_normalisation_stretches_each_layer_and_is_off_by_default(self):
-        rgb = np.full((8, 8, 3), 0.5, np.float32)
-        rgb[:, :4] = 0.52
-        flat = astro.classify_tint(rgb, self.base)[0]
-        stretched = astro.classify_tint(rgb, self.base | {'normalize_shade': True})[0]
-        self.assertLess(int(flat.max()) - int(flat.min()), 10)
-        self.assertGreater(int(stretched.max()) - int(stretched.min()), 100)
-        self.assertEqual(int(stretched.min()), round(astro.SHADE_RANGE[0] * 255))
-        self.assertTrue((astro.classify_tint(rgb, self.base)[0] == flat).all())
+    def test_every_layer_is_centred_on_the_palette_midtone(self):
+        rng = np.random.default_rng(3)
+        rgb = np.concatenate([rng.uniform(0.55, 0.95, (64, 64, 3)), rng.uniform(0.02, 0.2, (64, 64, 3))], axis=0)
+        rgb = rgb.astype(np.float32)
+        shade, layer = astro.classify_tint(rgb, self.base)
+        for index in (astro.LAYER_DARK, astro.LAYER_BODY):
+            values = shade[layer == index]
+            low, mid, high = np.percentile(values, (5, 50, 95))
+            self.assertAlmostEqual(mid, 128, delta=1.5)
+            self.assertAlmostEqual(low, 64, delta=2.5)
+            self.assertAlmostEqual(high, 191, delta=2.5)
+
+    def test_centre_curve_is_monotone_and_clamped(self):
+        values = np.concatenate([np.linspace(0.6, 0.9, 200), [0.0, 1.0]])
+        curve = astro.centre_curve(values)
+        x = np.linspace(0, 1, 501)
+        y = curve(x)
+        self.assertTrue((np.diff(y) >= -1e-9).all())
+        self.assertGreaterEqual(float(y.min()), astro.SHADE_CLAMP[0] - 1e-9)
+        self.assertLessEqual(float(y.max()), astro.SHADE_CLAMP[1] + 1e-9)
+        self.assertAlmostEqual(float(curve(np.median(values))), 0.5, places=6)
+
+    def test_degenerate_layers_are_shifted_to_the_midtone(self):
+        for values in (np.full(40, 0.9), np.array([0.2, 0.4, 0.3])):
+            curve = astro.centre_curve(values)
+            self.assertAlmostEqual(float(curve(np.median(values))), 0.5, places=6)
+        rgb = np.full((8, 8, 3), 0.7, np.float32)
+        self.assertEqual(set(astro.classify_tint(rgb, self.base)[0].ravel().tolist()), {128})
 
 
 class YawPivotTests(unittest.TestCase):

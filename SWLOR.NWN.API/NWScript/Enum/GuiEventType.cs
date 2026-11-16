@@ -27,6 +27,5 @@ namespace SWLOR.NWN.API.NWScript.Enum
         ExamineObject = 23,
         OptionsOpen = 24,
         OptionsClose = 25,
-        ChatLogPortraitClick = 27,
     }
 }

@@ -37,6 +37,11 @@ namespace SWLOR.Game.Server.Domain.Social
             return ApplyEffect(creature, effect, seconds);
         }
 
+        public bool IsInspired(uint creature)
+        {
+            return GetInspiredEffect(creature) != null;
+        }
+
         public double GetRemainingSeconds(uint creature, DateTime nowUtc)
         {
             var existing = GetInspiredEffect(creature);

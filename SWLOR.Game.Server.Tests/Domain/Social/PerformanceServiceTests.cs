@@ -126,11 +126,16 @@ public class PerformanceServiceTests
             return true;
         });
 
-        _audience = ScriptedProxy.Create<IPerformanceAudienceService>(out _audienceScript);
-        foreach (var member in new[] { "OnSessionEnded", "OnPerformanceStarted", "OnFlourish", "SetPerformerSong" })
+        _watching = ScriptedProxy.Create<IPerformanceWatchingService>(out _audienceScript);
+        _flourish = ScriptedProxy.Create<IPerformanceFlourishService>(out var flourishScript);
+        foreach (var (member, script) in new[]
+                 {
+                     ("OnSessionEnded", _audienceScript), ("OnPerformanceStarted", _audienceScript),
+                     ("SetPerformerSong", _audienceScript), ("OnFlourish", flourishScript)
+                 })
         {
             var name = member;
-            _audienceScript.On(name, arguments =>
+            script.On(name, arguments =>
             {
                 _audienceCalls.Add((name, arguments));
                 if (_audienceThrows && name == "OnSessionEnded")
@@ -169,13 +174,16 @@ public class PerformanceServiceTests
         });
 
         _view = new FakeView { IsOpen = true };
-        _performance = new TestPerformance(_db, _animation, _audience, _windows, new PerformanceSongService(null!), new PerformanceRiderService(FacadeForwarder.For<IPerkService>())) { Now = T0, Perks = _perks };
+        _performance = NewPerformance();
+        _performance.Now = T0;
+        _performance.Perks = _perks;
         _perks.Clear();
     }
 
     private FakeView _view = null!;
     private INamedAnimationService _animation = null!;
-    private IPerformanceAudienceService _audience = null!;
+    private IPerformanceWatchingService _watching = null!;
+    private IPerformanceFlourishService _flourish = null!;
     private IPerformanceWindowsService _windows = null!;
     private bool _closeThrows;
     private readonly Dictionary<PerkType, int> _perks = new();
@@ -188,6 +196,8 @@ public class PerformanceServiceTests
 
         _scopes.Clear();
     }
+
+    private TestPerformance NewPerformance() => new(new PerformanceBench(_db, _animation, _windows, _watching, _flourish));
 
     private PerformanceSession Live => _performance.TryGetSession(Player, out var session) ? session : throw new InvalidOperationException("no live session");
 
@@ -297,7 +307,8 @@ public class PerformanceServiceTests
     public void AStartThatCannotReadThePlayerRecordIsRefused()
     {
         _db = new InMemoryDBService();
-        _performance = new TestPerformance(_db, _animation, _audience, _windows, new PerformanceSongService(null!), new PerformanceRiderService(FacadeForwarder.For<IPerkService>())) { Now = T0 };
+        _performance = NewPerformance();
+        _performance.Now = T0;
 
         _performance.ToggleDance(Player, 1);
 
@@ -1152,63 +1163,173 @@ public class PerformanceServiceTests
         public void Dispose() => Disposed = true;
     }
 
-    private sealed class TestPerformance : PerformanceService
+    /// <summary>
+    /// The state the stand-ins of the Performance services share, and the services built over it: the real registry,
+    /// hot bar, eligibility, animation and rider services with their seams answered from here.
+    /// </summary>
+    private sealed class PerformanceBench
     {
-        public TestPerformance(
+        public PerformanceBench(
             IDBService db,
             INamedAnimationService animation,
-            IPerformanceAudienceService audience,
             IPerformanceWindowsService windows,
-            IPerformanceSongService songs,
-            IPerformanceRiderService riders)
-            : base(db, animation, audience, windows, songs, riders, null!, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISpaceService>())
+            IPerformanceWatchingService watching,
+            IPerformanceFlourishService flourish)
         {
+            Windows = windows;
+            Watching = watching;
+            Flourish = flourish;
+            Registry = new PerformanceRegistryService();
+            Hotbar = new TestHotbar(this, db, Registry);
+            Eligibility = new TestEligibility(this);
+            Animation = new TestAnimation(this, animation, Registry);
+            Riders = new TestRiders(this);
+            Songs = new PerformanceSongService(null!);
         }
+
+        public IPerformanceWindowsService Windows { get; }
+        public IPerformanceWatchingService Watching { get; }
+        public IPerformanceFlourishService Flourish { get; }
+        public PerformanceRegistryService Registry { get; }
+        public TestHotbar Hotbar { get; }
+        public TestEligibility Eligibility { get; }
+        public TestAnimation Animation { get; }
+        public TestRiders Riders { get; }
+        public IPerformanceSongService Songs { get; }
 
         public DateTime Now { get; set; }
         public int FileSequence { get; set; }
         public int LoadedFileSequence { get; set; }
-        public int PersistCalls { get; private set; }
+        public int PersistCalls { get; set; }
         public Dictionary<PerkType, int> Perks { get; set; } = new();
         public bool Busy { get; set; }
         public bool InSpace { get; set; }
         public ActivityStatusType BusyType { get; set; }
-        public ActivityStatusType? BusySet { get; private set; }
-        public bool BusyCleared { get; private set; }
+        public ActivityStatusType? BusySet { get; set; }
+        public bool BusyCleared { get; set; }
         public int ChosenSong { get; set; } = -1;
         public List<Schedule> Schedules { get; } = new();
-        protected override DateTime UtcNow() => Now;
 
-        protected override IDisposable ScheduleRepeating(Action task, TimeSpan interval)
-        {
-            var schedule = new Schedule(task);
-            Schedules.Add(schedule);
-            return schedule;
-        }
+        public ActivityStatusType GetBusyType() => BusySet ?? BusyType;
 
-        protected override int GetPerkLevel(uint creature, PerkType perk) => Perks.GetValueOrDefault(perk);
-
-        protected override int AdvanceFileSequence(uint player) => ++FileSequence;
-
-        protected override int LoadedSequence(uint player) => LoadedFileSequence;
-
-        protected override void PersistCharacter(uint player) => PersistCalls++;
-
-        protected override bool IsBusy(uint target) => Busy;
-
-        protected override ActivityStatusType GetBusyType(uint target) => BusySet ?? BusyType;
-
-        protected override void SetBusy(uint target, ActivityStatusType type) => BusySet = type;
-
-        protected override void ClearBusy(uint target)
+        public void ClearBusy()
         {
             BusyCleared = true;
             BusySet = null;
             BusyType = ActivityStatusType.Invalid;
         }
+    }
 
-        protected override bool IsPlayerInSpaceMode(uint player) => InSpace;
+    private sealed class TestHotbar : PerformanceHotbarService
+    {
+        private readonly PerformanceBench _bench;
 
-        public override int ChooseSong(string playerId, int preferredTrackId = PerformanceSongs.AutomaticSong) => ChosenSong;
+        public TestHotbar(PerformanceBench bench, IDBService db, IPerformanceRegistryService registry)
+            : base(db, null!, FacadeForwarder.For<IActivityService>(), registry)
+        {
+            _bench = bench;
+        }
+
+        protected override int AdvanceFileSequence(uint player) => ++_bench.FileSequence;
+
+        protected override int LoadedSequence(uint player) => _bench.LoadedFileSequence;
+
+        protected override void PersistCharacter(uint player) => _bench.PersistCalls++;
+
+        protected override ActivityStatusType GetBusyType(uint target) => _bench.GetBusyType();
+
+        protected override void ClearBusy(uint target) => _bench.ClearBusy();
+    }
+
+    private sealed class TestEligibility : PerformanceEligibilityService
+    {
+        private readonly PerformanceBench _bench;
+
+        public TestEligibility(PerformanceBench bench)
+            : base(FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ISpaceService>())
+        {
+            _bench = bench;
+        }
+
+        protected override bool IsBusy(uint target) => _bench.Busy;
+
+        protected override bool IsPlayerInSpaceMode(uint player) => _bench.InSpace;
+    }
+
+    private sealed class TestAnimation : PerformanceAnimationService
+    {
+        private readonly PerformanceBench _bench;
+
+        public TestAnimation(PerformanceBench bench, INamedAnimationService animation, IPerformanceRegistryService registry)
+            : base(animation, registry)
+        {
+            _bench = bench;
+        }
+
+        protected override DateTime UtcNow() => _bench.Now;
+    }
+
+    private sealed class TestRiders : PerformanceRiderService
+    {
+        private readonly PerformanceBench _bench;
+
+        public TestRiders(PerformanceBench bench)
+            : base(FacadeForwarder.For<IPerkService>())
+        {
+            _bench = bench;
+        }
+
+        protected override int GetPerkLevel(uint creature, PerkType perk) => _bench.Perks.GetValueOrDefault(perk);
+    }
+
+    private sealed class TestPerformance : PerformanceService
+    {
+        private readonly PerformanceBench _bench;
+
+        public TestPerformance(PerformanceBench bench)
+            : base(bench.Registry, bench.Windows, bench.Watching, bench.Flourish, bench.Songs, bench.Riders, bench.Hotbar, bench.Eligibility, bench.Animation, FacadeForwarder.For<IActivityService>())
+        {
+            _bench = bench;
+        }
+
+        public DateTime Now { get => _bench.Now; set => _bench.Now = value; }
+        public int FileSequence { get => _bench.FileSequence; set => _bench.FileSequence = value; }
+        public int LoadedFileSequence { get => _bench.LoadedFileSequence; set => _bench.LoadedFileSequence = value; }
+        public int PersistCalls => _bench.PersistCalls;
+        public Dictionary<PerkType, int> Perks { get => _bench.Perks; set => _bench.Perks = value; }
+        public bool Busy { get => _bench.Busy; set => _bench.Busy = value; }
+        public bool InSpace { get => _bench.InSpace; set => _bench.InSpace = value; }
+        public ActivityStatusType BusyType { get => _bench.BusyType; set => _bench.BusyType = value; }
+        public ActivityStatusType? BusySet => _bench.BusySet;
+        public bool BusyCleared => _bench.BusyCleared;
+        public int ChosenSong { get => _bench.ChosenSong; set => _bench.ChosenSong = value; }
+        public List<Schedule> Schedules => _bench.Schedules;
+
+        public bool TryGetSession(uint performer, out PerformanceSession session) => _bench.Registry.TryGetSession(performer, out session);
+
+        public IReadOnlyList<PerformanceSession> GetSessions() => _bench.Registry.GetSessions();
+
+        public PerformancePreference GetPreference(uint player) => _bench.Registry.GetPreference(player);
+
+        public bool HasInstrumentEquipped(uint player, out PerformanceInstrumentFamily family) => _bench.Eligibility.HasInstrumentEquipped(player, out family);
+
+        public bool IsModeFeat(FeatType feat) => _bench.Hotbar.IsModeFeat(feat);
+
+        protected override DateTime UtcNow() => _bench.Now;
+
+        protected override IDisposable ScheduleRepeating(Action task, TimeSpan interval)
+        {
+            var schedule = new Schedule(task);
+            _bench.Schedules.Add(schedule);
+            return schedule;
+        }
+
+        protected override ActivityStatusType GetBusyType(uint target) => _bench.GetBusyType();
+
+        protected override void SetBusy(uint target, ActivityStatusType type) => _bench.BusySet = type;
+
+        protected override void ClearBusy(uint target) => _bench.ClearBusy();
+
+        protected override int ChooseSong(string playerId, int preferredTrackId = PerformanceSongs.AutomaticSong) => _bench.ChosenSong;
     }
 }

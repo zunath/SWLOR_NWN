@@ -16,13 +16,46 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Dance and Play Instrument performances (the facade <c>Service.Performance</c> until P2-ZM).</summary>
         public static IPerformanceService Performance => FacadeAccessor.Resolve<IPerformanceService>();
 
-        /// <summary>The audience side of Performance (the facade <c>SWLOR.Game.Server.Domain.Social.PerformanceAudience</c> until P2-ZM).</summary>
+        /// <summary>The clips a performer plays (P5-11b).</summary>
+        public static IPerformanceAnimationService PerformanceAnimation => FacadeAccessor.Resolve<IPerformanceAnimationService>();
+
+        /// <summary>The audience tick of Performance (P5-11b).</summary>
         public static IPerformanceAudienceService PerformanceAudience => FacadeAccessor.Resolve<IPerformanceAudienceService>();
 
-        /// <summary>The venue rating of a performance (the facade <c>SWLOR.Game.Server.Domain.Social.PerformanceVenue</c> until P2-ZM).</summary>
+        /// <summary>Whether a player may start a performance, and which instrument they play it on (P5-11b).</summary>
+        public static IPerformanceEligibilityService PerformanceEligibility => FacadeAccessor.Resolve<IPerformanceEligibilityService>();
+
+        /// <summary>The minutes a performer's Flourish banks for the watchers who follow them (P5-11b).</summary>
+        public static IPerformanceFlourishService PerformanceFlourish => FacadeAccessor.Resolve<IPerformanceFlourishService>();
+
+        /// <summary>A performer's hot bar and mode feats (P5-11b).</summary>
+        public static IPerformanceHotbarService PerformanceHotbar => FacadeAccessor.Resolve<IPerformanceHotbarService>();
+
+        /// <summary>Puts an Inspired status effect on a creature (P5-11b).</summary>
+        public static IPerformanceInspiredService PerformanceInspired => FacadeAccessor.Resolve<IPerformanceInspiredService>();
+
+        /// <summary>The live performance sessions and the players' performance preferences (P5-11b).</summary>
+        public static IPerformanceRegistryService PerformanceRegistry => FacadeAccessor.Resolve<IPerformanceRegistryService>();
+
+        /// <summary>What a rider perk of a performance requires, and which routines and sets a player has unlocked (P5-11b).</summary>
+        public static IPerformanceRiderService PerformanceRider => FacadeAccessor.Resolve<IPerformanceRiderService>();
+
+        /// <summary>Reads a live performing session into a snapshot (P5-11b).</summary>
+        public static IPerformanceSnapshotService PerformanceSnapshot => FacadeAccessor.Resolve<IPerformanceSnapshotService>();
+
+        /// <summary>The Cantina songs a musician owns and plays (P5-11b).</summary>
+        public static IPerformanceSongService PerformanceSong => FacadeAccessor.Resolve<IPerformanceSongService>();
+
+        /// <summary>The venue rating of a performance.</summary>
         public static IPerformanceVenueService PerformanceVenue => FacadeAccessor.Resolve<IPerformanceVenueService>();
 
-        /// <summary>The engine side of the Performance windows (the facade <c>SWLOR.Game.Server.Domain.Social.PerformanceWindows</c> until P2-ZM).</summary>
+        /// <summary>What each watcher and performer is doing between the audience ticks (P5-11b).</summary>
+        public static IPerformanceWatchingService PerformanceWatching => FacadeAccessor.Resolve<IPerformanceWatchingService>();
+
+        /// <summary>What a watcher does in the Watching window (P5-11b).</summary>
+        public static IPerformanceWatchingWindowService PerformanceWatchingWindow => FacadeAccessor.Resolve<IPerformanceWatchingWindowService>();
+
+        /// <summary>The engine side of the Performance windows.</summary>
         public static IPerformanceWindowsService PerformanceWindows => FacadeAccessor.Resolve<IPerformanceWindowsService>();
 
         /// <summary>The data and actions behind the player list window (the facade <c>Service.PlayerList</c> until P2-ZM).</summary>

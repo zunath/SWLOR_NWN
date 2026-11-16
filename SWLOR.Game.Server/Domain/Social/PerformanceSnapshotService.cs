@@ -13,13 +13,15 @@ namespace SWLOR.Game.Server.Domain.Social
     /// </summary>
     public class PerformanceSnapshotService : IPerformanceSnapshotService
     {
-        private readonly Lazy<IPerformanceService> _performance;
+        private readonly IPerformanceRegistryService _sessions;
+        private readonly IPerformanceRiderService _riders;
         private readonly IPerkService _perk;
         private readonly IStatService _stat;
 
-        public PerformanceSnapshotService(Lazy<IPerformanceService> performance, IPerkService perk, IStatService stat)
+        public PerformanceSnapshotService(IPerformanceRegistryService sessions, IPerformanceRiderService riders, IPerkService perk, IStatService stat)
         {
-            _performance = performance;
+            _sessions = sessions;
+            _riders = riders;
             _perk = perk;
             _stat = stat;
         }
@@ -95,12 +97,12 @@ namespace SWLOR.Game.Server.Domain.Social
             };
         }
 
-        // The main service of the Performance service is reached through its facade: it takes the services that use this one by constructor.
-        protected virtual PerformancePreference GetPreference(uint player) => _performance.Value.GetPreference(player);
+        // The Performance session and rider services, one line each so a test can answer them.
+        protected virtual PerformancePreference GetPreference(uint player) => _sessions.GetPreference(player);
 
-        protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => _performance.Value.IsRoutineUnlocked(player, routine);
+        protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => _riders.IsRoutineUnlocked(player, routine);
 
-        protected virtual bool IsSetUnlocked(uint player, PerformanceSetType set) => _performance.Value.IsSetUnlocked(player, set);
+        protected virtual bool IsSetUnlocked(uint player, PerformanceSetType set) => _riders.IsSetUnlocked(player, set);
 
         protected virtual int GetPerkLevel(uint creature, PerkType perk) => _perk.GetPerkLevel(creature, perk);
 

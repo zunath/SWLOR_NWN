@@ -35,14 +35,14 @@ namespace SWLOR.Game.Server.Domain.World
 
         private readonly IDBService _db;
         private readonly IKeyItemService _keyItem;
-        private readonly Lazy<IPerformanceAudienceService> _performanceAudience;
+        private readonly Lazy<IPerformanceWatchingService> _performanceWatching;
         private readonly IPropertyService _property;
 
-        public MusicService(IDBService db, IKeyItemService keyItem, Lazy<IPerformanceAudienceService> performanceAudience, IPropertyService property)
+        public MusicService(IDBService db, IKeyItemService keyItem, Lazy<IPerformanceWatchingService> performanceWatching, IPropertyService property)
         {
             _db = db;
             _keyItem = keyItem;
-            _performanceAudience = performanceAudience;
+            _performanceWatching = performanceWatching;
             _property = property;
             _collectibleSongs = new MusicSongCatalog().Songs;
             _collectibleSongsByKeyItem = _collectibleSongs.ToDictionary(song => song.KeyItem);
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Domain.World
 
         // A performance audience remembers the band song it follows in static state; a test subclass records the call
         // instead.
-        protected virtual void ForgetBandSong(uint player) => _performanceAudience.Value.ForgetBandSong(player);
+        protected virtual void ForgetBandSong(uint player) => _performanceWatching.Value.ForgetBandSong(player);
 
         public Player ClearUncollectedMusicSettings(string playerId)
         {

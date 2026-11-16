@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Social;
 
 namespace SWLOR.Game.Server.Domain.Social
@@ -14,8 +13,9 @@ namespace SWLOR.Game.Server.Domain.Social
     /// debt, band music and Performance XP for the performers. The decisions live in pure classes (follow choice, watch plan,
     /// composition, Flourish payouts); this class reads the engine, applies the results and keeps what the next tick needs.
     /// The logic that used to be static in <c>PerformanceAudience</c> is moved here unchanged, and
-    /// the watcher and performer states, the tick schedule and the tick number are this instance's own. The
-    /// event handlers run on the container's instance; static callers reach it through <c>GameServices.PerformanceAudience</c>.
+    /// the tick schedule is this instance's own. What each watcher is doing between ticks is
+    /// <see cref="IPerformanceWatchingService"/>'s, the Flourish bank is <see cref="IPerformanceFlourishService"/>'s and the Watching
+    /// window's actions are <see cref="IPerformanceWatchingWindowService"/>'s.
     /// </summary>
     public class PerformanceAudienceService : IPerformanceAudienceService
     {
@@ -28,21 +28,12 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IPerformanceSongService _songs;
         private readonly IPerformanceSnapshotService _snapshots;
         private readonly IPerformanceInspiredService _inspired;
-        private readonly Lazy<IPerformanceService> _performance;
-        private readonly IPerkService _perk;
-        private readonly IPlayerNameService _playerName;
+        private readonly IPerformanceRegistryService _sessions;
+        private readonly IPerformanceWatchingService _watching;
         private readonly ISkillService _skill;
-        private readonly IStatService _stat;
-        private readonly IStatusEffectService _statusEffect;
-        [ReloadState(ReloadStateKind.Runtime)]
-        private readonly Dictionary<uint, PerformanceAudienceState> _states = new();
-        [ReloadState(ReloadStateKind.Runtime)]
-        private readonly Dictionary<uint, PerformancePerformerState> _performerStates = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly List<PerformerSnapshot> _scratchPartners = new();
         private IDisposable _tickSchedule;
-        [ReloadState(ReloadStateKind.Runtime)]
-        private int _tickNumber;
 
         public PerformanceAudienceService(
             IDBService db,
@@ -52,12 +43,9 @@ namespace SWLOR.Game.Server.Domain.Social
             IPerformanceSongService songs,
             IPerformanceSnapshotService snapshots,
             IPerformanceInspiredService inspired,
-            Lazy<IPerformanceService> performance,
-            IPerkService perk,
-            IPlayerNameService playerName,
-            ISkillService skill,
-            IStatService stat,
-            IStatusEffectService statusEffect)
+            IPerformanceRegistryService sessions,
+            IPerformanceWatchingService watching,
+            ISkillService skill)
         {
             _db = db;
             _venue = venue;
@@ -66,13 +54,11 @@ namespace SWLOR.Game.Server.Domain.Social
             _songs = songs;
             _snapshots = snapshots;
             _inspired = inspired;
-            _performance = performance;
-            _perk = perk;
-            _playerName = playerName;
+            _sessions = sessions;
+            _watching = watching;
             _skill = skill;
-            _stat = stat;
-            _statusEffect = statusEffect;
         }
+
 
         [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -81,136 +67,6 @@ namespace SWLOR.Game.Server.Domain.Social
             _tickSchedule?.Dispose();
             _tickSchedule = ScheduleRepeating(
                 OnAudienceTick, TimeSpan.FromSeconds(PerformanceAudienceRules.TickSeconds));
-        }
-
-        /// <summary>
-        /// Gives a leaving watcher back the Inspired time frozen while they watched. Disconnect-before runs ahead of
-        /// module exit, where StatusEffect stores the live countdown that is reconciled when the player returns.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnClientDisconnectBefore)]
-        public void RestoreFrozenInspiredOnDisconnect()
-        {
-            if (_states.TryGetValue(OBJECT_SELF, out var state))
-                StopWatching(state);
-        }
-
-        [PlayerSession(PlayerReload.LogoutOnly,
-            "Forgets the watcher in memory, which goes with the old build.")]
-        [NWNEventHandler(ScriptName.OnModuleExit)]
-        public void ForgetExitingPlayer()
-        {
-            _states.Remove(GetExitingObject());
-        }
-
-        /// <summary>
-        /// Picks the performer a watcher follows for that performer's kind (dancer or musician); the Watching window calls this.
-        /// The choice holds while the performer stays in range, and the strongest performer is followed otherwise.
-        /// </summary>
-        public bool Follow(uint watcher, uint performer)
-        {
-            if (watcher == performer ||
-                !GetIsObjectValid(watcher) ||
-                !TryGetSession(performer, out var session))
-                return false;
-
-            var state = GetState(watcher);
-            if (session.Kind == PerformanceKind.Dance)
-                state.DancerChoice = performer;
-            else
-                state.MusicianChoice = performer;
-
-            return true;
-        }
-
-        /// <summary>Drops the watcher's pick of this performer, so they go back to following the strongest of that kind.</summary>
-        public bool Unfollow(uint watcher, uint performer)
-        {
-            if (performer == 0 || !_states.TryGetValue(watcher, out var state))
-                return false;
-
-            var cleared = false;
-            if (state.DancerChoice == performer)
-            {
-                state.DancerChoice = 0;
-                cleared = true;
-            }
-
-            if (state.MusicianChoice == performer)
-            {
-                state.MusicianChoice = 0;
-                cleared = true;
-            }
-
-            return cleared;
-        }
-
-        /// <summary>
-        /// A Flourish banks minutes for every watcher past their warm-up who follows the performer, at most once per two
-        /// minutes each. Two performers who Flourish within two seconds of each other double it for both audiences.
-        /// </summary>
-        public void OnFlourish(PerformanceSession session)
-        {
-            var now = session.LastFlourishUtc ?? UtcNow();
-            var performer = session.Performer;
-            var range = GetPerformerRange(performer);
-            var baseMinutes = GetFlourishBaseMinutes(session);
-
-            var partner = FindSynchronizedFlourish(session, now, range, out var partnerBaseMinutes, out var partnerRange);
-            var synchronized = partner != null;
-
-            foreach (var state in _states.Values)
-            {
-                // The same rules as the tick's watcher pass: a Flourish pays now, not after the next check.
-                if (!state.IsWarmedUp || !CanWatchNow(state.Creature))
-                    continue;
-
-                var watcherBase = 0;
-                if (state.Follows(performer) && IsInRange(state.Creature, performer, range))
-                    watcherBase = baseMinutes;
-                if (synchronized && state.Follows(partner.Performer) && IsInRange(state.Creature, partner.Performer, partnerRange))
-                    watcherBase = Math.Max(watcherBase, partnerBaseMinutes);
-
-                if (watcherBase > 0)
-                    BankFlourish(state, watcherBase, synchronized, now);
-            }
-        }
-
-        /// <summary>
-        /// A band that loses a member stops playing for the watchers who followed that member. Watchers following another
-        /// band member hear the new leader's song at the next tick.
-        /// </summary>
-        public void OnSessionEnded(PerformanceSession session, PerformanceEndReason reason)
-        {
-            var performer = session.Performer;
-            _performerStates.Remove(performer);
-
-            foreach (var state in _states.Values)
-            {
-                // The cached view must not offer the ended performer until the next tick rebuilds it, or a Follow click or
-                // the song box could bring back their band.
-                if (state.LastEntry is { } entry)
-                {
-                    entry.Candidates.RemoveAll(candidate => candidate.Performer == performer);
-                    if (entry.Dancer?.Performer == performer)
-                        entry.Dancer = null;
-                    if (entry.Musician?.Performer == performer)
-                        entry.Musician = null;
-                }
-
-                if (state.DancerChoice == performer)
-                    state.DancerChoice = 0;
-                if (state.MusicianChoice == performer)
-                    state.MusicianChoice = 0;
-                if (state.FollowedDancer == performer)
-                    state.FollowedDancer = 0;
-
-                if (state.FollowedMusician != performer)
-                    continue;
-
-                state.FollowedMusician = 0;
-                if (state.BandTrackId.HasValue)
-                    RestoreMusic(state);
-            }
         }
 
         private void OnAudienceTick()
@@ -232,12 +88,12 @@ namespace SWLOR.Game.Server.Domain.Social
 
         private void RunTick(DateTime now)
         {
-            _tickNumber++;
+            _watching.NextTick();
 
             var sessions = GetSessions();
             if (sessions.Count == 0)
             {
-                ReleaseUnseenStates();
+                _watching.ReleaseUnseenStates();
                 return;
             }
 
@@ -251,7 +107,7 @@ namespace SWLOR.Game.Server.Domain.Social
                     ServeShow(show, compositions, now);
             }
 
-            ReleaseUnseenStates();
+            _watching.ReleaseUnseenStates();
         }
 
         private Dictionary<uint, PerformanceAreaShow> BuildShows(IReadOnlyList<PerformanceSession> sessions)
@@ -285,13 +141,13 @@ namespace SWLOR.Game.Server.Domain.Social
             if (!GetIsObjectValid(area))
                 return;
 
-            if (!_performerStates.TryGetValue(performer, out var performerState))
+            if (!_watching.TryGetPerformerState(performer, out var performerState))
             {
                 var song = session.Kind == PerformanceKind.Music
                     ? ChooseSong(session.PlayerId, GetPreference(performer).SongTrackId)
                     : -1;
                 performerState = new PerformancePerformerState(session.StartedUtc, song);
-                _performerStates[performer] = performerState;
+                _watching.SetPerformerState(performer, performerState);
             }
 
             var venue = _venue.Combine(
@@ -348,8 +204,8 @@ namespace SWLOR.Game.Server.Domain.Social
         {
             foreach (var entry in show.Watchers)
             {
-                var state = GetState(entry.Player);
-                state.LastSeenTick = _tickNumber;
+                var state = _watching.GetState(entry.Player);
+                state.LastSeenTick = _watching.TickNumber;
                 entry.State = state;
                 PerformanceFollow.Apply(entry, state);
 
@@ -422,10 +278,9 @@ namespace SWLOR.Game.Server.Domain.Social
             report.Plan = plan;
             UpdateBandMusic(show, entry);
 
-            var existing = GetInspiredEffect(watcher);
-            var hasEffect = existing != null;
+            var hasEffect = IsInspired(watcher);
             var frozenSeconds = PerformanceAudienceRules.FrozenRemainingSeconds(
-                hasEffect ? existing.GetRemainingDurationSeconds(now) : 0.0,
+                hasEffect ? GetInspiredRemainingSeconds(watcher, now) : 0.0,
                 hasEffect && state.HasFrozenRemaining,
                 state.FrozenRemainingSeconds);
             report.RemainingSeconds = frozenSeconds;
@@ -526,117 +381,7 @@ namespace SWLOR.Game.Server.Domain.Social
             state.LastReport = report;
 
             var composition = Compose(compositions, entry.Dancer, entry.Musician, report.Plan.Venue);
-            _windows.ShowWatching(watcher, BuildWatchView(state, entry, report, report.Plan, composition));
-        }
-
-        private PerformanceWatchView BuildWatchView(
-            PerformanceAudienceState state,
-            PerformanceWatcherEntry entry,
-            PerformanceWatcherReport report,
-            PerformanceWatchPlan plan,
-            InspiredEffectData composition)
-        {
-            var watcher = entry.Player;
-            return PerformanceWatchViewBuilder.Build(
-                entry.Candidates,
-                entry.Dancer,
-                entry.Musician,
-                plan,
-                state.ContinuousMinutes,
-                report.RemainingSeconds,
-                report.XpDebt,
-                report.DebtCleared,
-                composition,
-                performer => state.GetName(performer, _tickNumber, () => GetDisplayName(watcher, performer)),
-                state.DancerChoice,
-                state.MusicianChoice);
-        }
-
-        /// <summary>
-        /// The Watching window's content from the last audience tick, or null when the watcher is not being served.
-        /// A window that opens between ticks starts from it.
-        /// </summary>
-        public PerformanceWatchView BuildWatchingView(uint watcher)
-        {
-            if (!_states.TryGetValue(watcher, out var state) || state.LastEntry == null || state.LastReport == null)
-                return null;
-
-            var entry = state.LastEntry;
-            var report = state.LastReport;
-            var composition = PerformanceInspiredComposer.Compose(entry.Dancer, entry.Musician, report.Plan.Venue);
-            return BuildWatchView(state, entry, report, report.Plan, composition);
-        }
-
-        /// <summary>
-        /// Redraws the Watching window after a Follow click. The followed performers and the banking rate change at once;
-        /// the Inspired and debt numbers stay as the last tick left them.
-        /// </summary>
-        public void RefreshWatching(uint watcher)
-        {
-            if (!_states.TryGetValue(watcher, out var state) ||
-                state.LastEntry == null ||
-                state.LastReport == null)
-                return;
-
-            // The follow and its cap change now, not at the next tick, so a Flourish before then reaches the performer
-            // just picked and banks against that performer's cap.
-            var entry = state.LastEntry;
-            PerformanceFollow.Apply(entry, state);
-            var plan = PerformanceWatchPlan.Create(
-                state.ContinuousMinutes, entry.Dancer, entry.Musician, PerformanceAudienceRules.TroupeCount(entry.Candidates));
-            state.CapMinutes = plan.CapMinutes;
-
-            if (!_windows.IsWatchingOpen(watcher))
-                return;
-
-            var composition = PerformanceInspiredComposer.Compose(entry.Dancer, entry.Musician, plan.Venue);
-            _windows.ShowWatching(watcher, BuildWatchView(state, entry, state.LastReport, plan, composition));
-        }
-
-        /// <summary>
-        /// A watcher who closes the Watching window keeps it closed until they start watching a new show. A window closed
-        /// because they changed area, or stopped watching, is not their choice and does not count.
-        /// </summary>
-        public void OnWatchingWindowClosed(uint watcher)
-        {
-            if (_states.TryGetValue(watcher, out var state) &&
-                state.WatchingArea != 0 &&
-                GetArea(watcher) == state.WatchingArea)
-            {
-                state.WatchingDismissed = true;
-            }
-        }
-
-        /// <summary>
-        /// The Watching window's "Play the performer's song" box. Clearing it hands the watcher their own music back at once;
-        /// checking it brings the band they follow back without waiting for the next tick.
-        /// </summary>
-        public void SetPlayPerformerSong(uint watcher, bool play)
-        {
-            GetPreference(watcher).PlayPerformerSong = play;
-            if (!_states.TryGetValue(watcher, out var state))
-                return;
-
-            if (!play)
-            {
-                RestoreMusic(state);
-                return;
-            }
-
-            int? desired = state.LastEntry?.Musician?.BandTrackId;
-            if (!desired.HasValue || desired.Value < 0 || state.BandTrackId == desired || state.WatchingArea == 0)
-                return;
-
-            _music.PlayTemporaryTrack(watcher, desired.Value);
-            state.BandTrackId = desired;
-            state.BandArea = state.WatchingArea;
-        }
-
-        /// <summary>A musician picked another song in the Perform window; the band's audience hears it at the next tick.</summary>
-        public void SetPerformerSong(uint performer, int trackId)
-        {
-            if (_performerStates.TryGetValue(performer, out var performerState))
-                performerState.SongTrackId = trackId;
+            _windows.ShowWatching(watcher, _watching.BuildWatchView(state, entry, report, report.Plan, composition));
         }
 
         private void ServePerformer(
@@ -645,12 +390,12 @@ namespace SWLOR.Game.Server.Domain.Social
             Dictionary<(uint, uint, int), InspiredEffectData> compositions,
             DateTime now)
         {
-            var state = GetState(performer.Performer);
-            state.LastSeenTick = _tickNumber;
+            var state = _watching.GetState(performer.Performer);
+            state.LastSeenTick = _watching.TickNumber;
 
             // Performing interrupts watching, as leaving range does. OnPerformanceStarted already did this; a performer
             // whose start was missed (a reload) is caught here.
-            InterruptWatching(state);
+            _watching.InterruptWatching(state);
 
             // Practice, with no watcher in range, earns no Inspired.
             if (PerformanceAudienceRules.IsLiveShow(performer.WatcherCount))
@@ -710,7 +455,7 @@ namespace SWLOR.Game.Server.Domain.Social
         // One Performance XP award per performer per tick. A first tick shorter than a minute pays only the time performed.
         private void PayPerformerXp(PerformerSnapshot performer, DateTime now)
         {
-            if (!_performerStates.TryGetValue(performer.Performer, out var performerState))
+            if (!_watching.TryGetPerformerState(performer.Performer, out var performerState))
                 return;
 
             var since = performerState.LastPaidUtc > performer.StartedUtc ? performerState.LastPaidUtc : performer.StartedUtc;
@@ -748,124 +493,6 @@ namespace SWLOR.Game.Server.Domain.Social
             state.BandArea = desired.HasValue ? show.Area : 0;
         }
 
-        /// <summary>
-        /// Changing area interrupts watching even when the next tick finds the player at another show, and it replaces
-        /// the client's music, so the band song is sent again at the next tick.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnAreaEnter)]
-        public void StopWatchingOnAreaEnter()
-        {
-            var player = GetEnteringObject();
-            ForgetBandSong(player);
-            if (_states.TryGetValue(player, out var state))
-                StopWatching(state);
-        }
-
-        /// <summary>
-        /// Stepping out of every performer's range, or into combat, interrupts watching. The minute tick would miss a gap
-        /// shorter than a minute, so each watcher's heartbeat checks; anyone else returns after one lookup.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnPlayerHeartbeat)]
-        public void StopWatchingWhenOutOfRange()
-        {
-            var player = OBJECT_SELF;
-            if (!_states.TryGetValue(player, out var state) || !state.WatchingSinceUtc.HasValue)
-                return;
-
-            if (!GetIsInCombat(player) && IsCoveredByAnyPerformer(player))
-                return;
-
-            InterruptWatching(state);
-        }
-
-        private bool CanWatchNow(uint player)
-        {
-            return GetIsObjectValid(player) &&
-                   !GetIsDead(player) &&
-                   !GetIsInCombat(player) &&
-                   !TryGetSession(player, out _);
-        }
-
-        private bool IsCoveredByAnyPerformer(uint watcher)
-        {
-            foreach (var session in GetSessions())
-            {
-                var performer = session.Performer;
-                if (performer != watcher && IsInRange(watcher, performer, GetPerformerRange(performer)))
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Starting a performance interrupts watching at once, so starting and stopping between two ticks cannot keep
-        /// the warm-up or the frozen Inspired.
-        /// </summary>
-        public void OnPerformanceStarted(uint performer)
-        {
-            if (_states.TryGetValue(performer, out var state))
-                InterruptWatching(state);
-        }
-
-        // The warm-up starts over and the player's own music comes back. Picked performers are kept.
-        private void InterruptWatching(PerformanceAudienceState state)
-        {
-            if (!state.IsWatching)
-                return;
-
-            RestoreMusic(state);
-            StopWatching(state);
-            // After StopWatching, so the window closing is not taken for the watcher choosing to hide it.
-            if (GetIsObjectValid(state.Creature))
-                _windows.CloseWatching(state.Creature);
-        }
-
-        /// <summary>
-        /// Something else replaced the player's music, such as their own music player, so the band song they follow is
-        /// sent again at the next tick.
-        /// </summary>
-        public void ForgetBandSong(uint player)
-        {
-            if (_states.TryGetValue(player, out var state))
-            {
-                state.BandTrackId = null;
-                state.BandArea = 0;
-            }
-        }
-
-        /// <summary>Death clears Inspired, so a watcher revived in range starts the warm-up over instead of resuming it.</summary>
-        [NWNEventHandler(ScriptName.OnModuleDeath)]
-        public void StopWatchingOnDeath()
-        {
-            if (_states.TryGetValue(GetLastPlayerDied(), out var state))
-                StopWatching(state);
-        }
-
-        /// <summary>
-        /// Clears a player's watching state. While they watched, each tick held their Inspired at a stored remainder (with
-        /// padding so it outlasts the gap to the next tick); that stored remainder is what they leave with.
-        /// </summary>
-        private void StopWatching(PerformanceAudienceState state)
-        {
-            if (state.HasFrozenRemaining && GetIsObjectValid(state.Creature) &&
-                GetInspiredEffect(state.Creature) != null)
-            {
-                SetInspiredRemaining(state.Creature, state.FrozenRemainingSeconds);
-            }
-
-            state.StopWatching();
-        }
-
-        private void RestoreMusic(PerformanceAudienceState state)
-        {
-            if (state.BandTrackId.HasValue && GetIsObjectValid(state.Creature))
-                _music.RestoreBackgroundMusic(state.Creature);
-
-            state.BandTrackId = null;
-            state.BandArea = 0;
-        }
-
         private InspiredEffectData Compose(
             Dictionary<(uint, uint, int), InspiredEffectData> compositions,
             PerformerSnapshot dancer,
@@ -882,135 +509,8 @@ namespace SWLOR.Game.Server.Domain.Social
             return composition;
         }
 
-        // A player who left every show forgets their warm-up and gets their own music back; players who picked a performer keep that pick.
-        private void ReleaseUnseenStates()
-        {
-            if (_states.Count == 0)
-                return;
-
-            List<uint> forgotten = null;
-            foreach (var state in _states.Values)
-            {
-                if (state.LastSeenTick == _tickNumber)
-                    continue;
-
-                RestoreMusic(state);
-                StopWatching(state);
-
-                // After StopWatching, so the window closing is not taken for the watcher choosing to hide it.
-                if (GetIsObjectValid(state.Creature))
-                    _windows.CloseWatching(state.Creature);
-
-                if (!state.HasChoice || !GetIsObjectValid(state.Creature))
-                {
-                    forgotten ??= new List<uint>();
-                    forgotten.Add(state.Creature);
-                }
-            }
-
-            if (forgotten == null)
-                return;
-
-            foreach (var creature in forgotten)
-                _states.Remove(creature);
-        }
-
-        private PerformanceAudienceState GetState(uint creature)
-        {
-            if (!_states.TryGetValue(creature, out var state))
-            {
-                state = new PerformanceAudienceState(creature);
-                _states[creature] = state;
-            }
-
-            return state;
-        }
-
-        private int GetFlourishBaseMinutes(PerformanceSession session)
-        {
-            var capstone = session.Kind == PerformanceKind.Dance ? PerkType.Showstopper : PerkType.Virtuoso;
-            return PerformanceAudienceRules.FlourishBaseMinutes(GetPerkLevel(session.Performer, capstone) > 0);
-        }
-
-        private float GetPerformerRange(uint performer)
-        {
-            return PerformanceAudienceRules.GetRange(GetStatAdjustment(performer, StatType.PerformanceRangeBonusMeters));
-        }
-
-        private bool IsInRange(uint watcher, uint performer, float range)
-        {
-            if (!GetIsObjectValid(watcher) || !GetIsObjectValid(performer) || GetArea(watcher) != GetArea(performer))
-                return false;
-
-            return PerformanceAudienceRules.IsWithinRange(GetPosition(watcher), GetPosition(performer), range);
-        }
-
-        // The other performer in this show, in range of both, who Flourished within the two seconds before this one.
-        private PerformanceSession FindSynchronizedFlourish(
-            PerformanceSession session,
-            DateTime now,
-            float range,
-            out int partnerBaseMinutes,
-            out float partnerRange)
-        {
-            partnerBaseMinutes = 0;
-            partnerRange = 0f;
-
-            var performerPosition = GetPosition(session.Performer);
-            foreach (var other in GetSessions())
-            {
-                if (other == session ||
-                    !other.LastFlourishUtc.HasValue ||
-                    other.Area != session.Area ||
-                    !PerformanceAudienceRules.AreFlourishesSynchronized(now, other.LastFlourishUtc.Value) ||
-                    !GetIsObjectValid(other.Performer))
-                    continue;
-
-                var otherRange = GetPerformerRange(other.Performer);
-                if (!PerformanceAudienceRules.IsWithinRange(
-                        performerPosition, GetPosition(other.Performer), Math.Min(range, otherRange)))
-                    continue;
-
-                partnerBaseMinutes = GetFlourishBaseMinutes(other);
-                partnerRange = otherRange;
-                return other;
-            }
-
-            return null;
-        }
-
-        private void BankFlourish(PerformanceAudienceState state, int baseMinutes, bool synchronized, DateTime now)
-        {
-            var minutes = PerformanceAudienceRules.FlourishMinutesToBank(
-                baseMinutes, synchronized, state.LastFlourishBankUtc, state.LastFlourishBankedMinutes, now);
-            if (minutes <= 0)
-                return;
-
-            // A watcher with no Inspired yet has banked nothing to add to; the next tick pays them.
-            var watcher = state.Creature;
-            if (!GetIsObjectValid(watcher) || GetInspiredEffect(watcher) == null)
-                return;
-
-            var frozenSeconds = PerformanceAudienceRules.FrozenRemainingSeconds(
-                GetInspiredRemainingSeconds(watcher, now),
-                state.HasFrozenRemaining,
-                state.FrozenRemainingSeconds);
-            var remainingSeconds = PerformanceAudienceRules.BankedRemainingSeconds(frozenSeconds, minutes, state.CapMinutes);
-            SetInspiredRemaining(watcher, remainingSeconds, bankedAgain: remainingSeconds > frozenSeconds);
-
-            state.HasFrozenRemaining = true;
-            state.FrozenRemainingSeconds = remainingSeconds;
-            state.LastFlourishBankedMinutes = PerformanceAudienceRules.FlourishBankedTotal(
-                state.LastFlourishBankUtc, state.LastFlourishBankedMinutes, minutes, now);
-            state.LastFlourishBankUtc = now;
-
-            var addedMinutes = (remainingSeconds - frozenSeconds) / 60.0;
-            if (addedMinutes > 0.0)
-                SendMessageToPC(watcher, $"The flourish thrills you. (+{addedMinutes:0.#} min of Inspired)");
-        }
-
-        // The calls into the unconverted Scheduler, Skill, Perk, Stat, StatusEffect and PlayerName statics and the main
-        // Performance facade (it takes this service by constructor), one line each so a test can answer them.
+        // The calls into the unconverted Scheduler and Skill statics and the Performance services, one line each so a test
+        // can answer them.
 
         /// <summary>The time now.</summary>
         protected virtual DateTime UtcNow() => DateTime.UtcNow;
@@ -1019,22 +519,15 @@ namespace SWLOR.Game.Server.Domain.Social
             Scheduler.ScheduleRepeating(action, interval);
 
         protected virtual bool TryGetSession(uint performer, out PerformanceSession session) =>
-            _performance.Value.TryGetSession(performer, out session);
+            _sessions.TryGetSession(performer, out session);
 
-        protected virtual IReadOnlyList<PerformanceSession> GetSessions() => _performance.Value.GetSessions();
+        protected virtual IReadOnlyList<PerformanceSession> GetSessions() => _sessions.GetSessions();
 
-        protected virtual PerformancePreference GetPreference(uint player) => _performance.Value.GetPreference(player);
+        protected virtual PerformancePreference GetPreference(uint player) => _sessions.GetPreference(player);
 
-        protected virtual InspiredStatusEffect GetInspiredEffect(uint creature) =>
-            _statusEffect.GetStatusEffect<InspiredStatusEffect>(creature);
+        protected virtual bool IsInspired(uint creature) => _inspired.IsInspired(creature);
 
         protected virtual void GiveSkillXP(uint player, SkillType skill, int xp) => _skill.GiveSkillXP(player, skill, xp);
-
-        protected virtual int GetPerkLevel(uint creature, PerkType perk) => _perk.GetPerkLevel(creature, perk);
-
-        protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
-
-        protected virtual string GetDisplayName(uint observer, uint target) => _playerName.GetDisplayName(observer, target);
 
         protected virtual PerformerSnapshot BuildSnapshot(PerformanceSession session, int venue, int songTrackId) =>
             _snapshots.Build(session, venue, songTrackId);

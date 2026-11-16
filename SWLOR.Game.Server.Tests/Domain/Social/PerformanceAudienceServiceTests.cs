@@ -35,7 +35,10 @@ public class PerformanceAudienceServiceTests
     private FakeNWScript _engine = null!;
     private IDisposable _scope = null!;
     private InMemoryDBService _db = null!;
-    private TestAudience _audience = null!;
+    private AudienceBench _audience = null!;
+    private TestWatching _watching = null!;
+    private TestFlourish _flourish = null!;
+    private TestWindowActions _window = null!;
     private ScriptedProxy _windowsScript = null!;
     private ScriptedProxy _musicScript = null!;
     private readonly List<uint> _online = new();
@@ -128,12 +131,18 @@ public class PerformanceAudienceServiceTests
             return null;
         });
 
-        _audience = new TestAudience(
-            _db, venue, windows, music, new PerformanceSongService(music), new PerformanceSnapshotService(FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()), new PerformanceInspiredService(FacadeForwarder.For<IStatusEffectService>()))
+        var inspired = new PerformanceInspiredService(FacadeForwarder.For<IStatusEffectService>());
+        var registry = FacadeForwarder.For<IPerformanceRegistryService>();
+        _audience = new AudienceBench
         {
             Now = T0,
             PositionOf = creature => _positions.GetValueOrDefault(creature, Vector3.Zero)
         };
+        _watching = new TestWatching(_audience, windows, music, inspired, registry);
+        _audience.Service = new TestAudience(
+            _audience, _db, venue, windows, music, new PerformanceSongService(music), new PerformanceSnapshotService(registry, FacadeForwarder.For<IPerformanceRiderService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()), inspired, registry, _watching);
+        _flourish = new TestFlourish(_audience, _watching, registry, inspired);
+        _window = new TestWindowActions(_audience, _watching, windows, music, registry);
     }
 
     [TearDown]
@@ -194,8 +203,8 @@ public class PerformanceAudienceServiceTests
 
         Tick();
 
-        _audience.Follow(WatcherId, DancerId).Should().BeFalse("the performer has no session");
-        _audience.BuildWatchingView(WatcherId).Should().BeNull("the watcher's state was released");
+        _window.Follow(WatcherId, DancerId).Should().BeFalse("the performer has no session");
+        _window.BuildWatchingView(WatcherId).Should().BeNull("the watcher's state was released");
     }
 
     [Test]
@@ -246,7 +255,7 @@ public class PerformanceAudienceServiceTests
         _db.Saved.OfType<Player>().Last().XPDebt.Should().Be(50);
         _windowsScript.Calls.Should().Contain(call => call.Member == "OpenWatching");
         _shown.Should().NotBeEmpty();
-        _audience.BuildWatchingView(WatcherId).Should().NotBeNull();
+        _window.BuildWatchingView(WatcherId).Should().NotBeNull();
     }
 
     [Test]
@@ -313,7 +322,7 @@ public class PerformanceAudienceServiceTests
         Tick();
 
         performer.Should().NotBeNull();
-        _audience.BuildWatchingView(WatcherId).Should().BeNull("no window was drawn yet");
+        _window.BuildWatchingView(WatcherId).Should().BeNull("no window was drawn yet");
     }
 
     [Test]
@@ -361,18 +370,18 @@ public class PerformanceAudienceServiceTests
         _played.Clear();
         _restored.Clear();
 
-        _audience.SetPlayPerformerSong(WatcherId, false);
+        _window.SetPlayPerformerSong(WatcherId, false);
         _restored.Should().Contain(WatcherId);
         _audience.Preferences[WatcherId].PlayPerformerSong.Should().BeFalse();
 
-        _audience.SetPlayPerformerSong(WatcherId, true);
+        _window.SetPlayPerformerSong(WatcherId, true);
         _played.Should().ContainSingle(play => play.Player == WatcherId);
 
         _played.Clear();
-        _audience.SetPlayPerformerSong(WatcherId, true);
+        _window.SetPlayPerformerSong(WatcherId, true);
         _played.Should().BeEmpty("the band song is already playing");
 
-        _audience.SetPlayPerformerSong(SecondWatcherId, true);
+        _window.SetPlayPerformerSong(SecondWatcherId, true);
         _audience.Preferences[SecondWatcherId].PlayPerformerSong.Should().BeTrue("a player with no watching state only keeps the choice");
     }
 
@@ -382,17 +391,17 @@ public class PerformanceAudienceServiceTests
         Perform(DancerId, PerformanceKind.Dance);
         Perform(MusicianId, PerformanceKind.Music);
 
-        _audience.Follow(WatcherId, WatcherId).Should().BeFalse("nobody follows themselves");
-        _audience.Follow(WatcherId, 9999).Should().BeFalse("the performer has no session");
-        _audience.Follow(ObjectInvalid, DancerId).Should().BeFalse("the watcher is not valid");
-        _audience.Follow(WatcherId, DancerId).Should().BeTrue();
-        _audience.Follow(WatcherId, MusicianId).Should().BeTrue();
+        _window.Follow(WatcherId, WatcherId).Should().BeFalse("nobody follows themselves");
+        _window.Follow(WatcherId, 9999).Should().BeFalse("the performer has no session");
+        _window.Follow(ObjectInvalid, DancerId).Should().BeFalse("the watcher is not valid");
+        _window.Follow(WatcherId, DancerId).Should().BeTrue();
+        _window.Follow(WatcherId, MusicianId).Should().BeTrue();
 
-        _audience.Unfollow(WatcherId, DancerId).Should().BeTrue();
-        _audience.Unfollow(WatcherId, MusicianId).Should().BeTrue();
-        _audience.Unfollow(WatcherId, MusicianId).Should().BeFalse("nothing left to drop");
-        _audience.Unfollow(WatcherId, 0).Should().BeFalse();
-        _audience.Unfollow(SecondWatcherId, DancerId).Should().BeFalse("no state for the watcher");
+        _window.Unfollow(WatcherId, DancerId).Should().BeTrue();
+        _window.Unfollow(WatcherId, MusicianId).Should().BeTrue();
+        _window.Unfollow(WatcherId, MusicianId).Should().BeFalse("nothing left to drop");
+        _window.Unfollow(WatcherId, 0).Should().BeFalse();
+        _window.Unfollow(SecondWatcherId, DancerId).Should().BeFalse("no state for the watcher");
     }
 
     [Test]
@@ -407,15 +416,15 @@ public class PerformanceAudienceServiceTests
         Tick();
         _shown.Clear();
 
-        _audience.RefreshWatching(WatcherId);
+        _window.RefreshWatching(WatcherId);
         _shown.Should().ContainSingle();
 
         _watchingOpen.Clear();
         _shown.Clear();
-        _audience.RefreshWatching(WatcherId);
+        _window.RefreshWatching(WatcherId);
         _shown.Should().BeEmpty("a closed window costs nothing");
 
-        _audience.RefreshWatching(SecondWatcherId);
+        _window.RefreshWatching(SecondWatcherId);
         _shown.Should().BeEmpty("a player with no last tick has nothing to redraw");
     }
 
@@ -428,13 +437,13 @@ public class PerformanceAudienceServiceTests
         Tick(0);
         Tick();
 
-        _audience.OnWatchingWindowClosed(WatcherId);
+        _window.OnWatchingWindowClosed(WatcherId);
         _watchingOpen.Clear();
         _windowsScript.Calls.Count(call => call.Member == "OpenWatching").Should().Be(1);
         Tick();
 
         _windowsScript.Calls.Count(call => call.Member == "OpenWatching").Should().Be(1, "a dismissed window stays closed");
-        _audience.OnWatchingWindowClosed(SecondWatcherId);
+        _window.OnWatchingWindowClosed(SecondWatcherId);
     }
 
     [Test]
@@ -445,18 +454,18 @@ public class PerformanceAudienceServiceTests
         Watch(WatcherId);
         _audience.Preferences[WatcherId] = new PerformancePreference();
         StartTickLoop();
-        _audience.Follow(WatcherId, DancerId);
-        _audience.Follow(WatcherId, MusicianId);
+        _window.Follow(WatcherId, DancerId);
+        _window.Follow(WatcherId, MusicianId);
         Tick(0);
         Tick();
         _played.Should().NotBeEmpty();
         _restored.Clear();
 
-        _audience.OnSessionEnded(musician, PerformanceEndReason.Stopped);
-        _audience.OnSessionEnded(_audience.Sessions[DancerId], PerformanceEndReason.Stopped);
+        _watching.OnSessionEnded(musician, PerformanceEndReason.Stopped);
+        _watching.OnSessionEnded(_audience.Sessions[DancerId], PerformanceEndReason.Stopped);
 
         _restored.Should().Contain(WatcherId);
-        _audience.BuildWatchingView(WatcherId).Should().NotBeNull();
+        _window.BuildWatchingView(WatcherId).Should().NotBeNull();
     }
 
     [Test]
@@ -468,8 +477,8 @@ public class PerformanceAudienceServiceTests
         StartTickLoop();
         Tick(0);
 
-        _audience.SetPerformerSong(MusicianId, 44);
-        _audience.SetPerformerSong(9999, 44);
+        _watching.SetPerformerSong(MusicianId, 44);
+        _watching.SetPerformerSong(9999, 44);
         Tick();
 
         _played.Should().Contain(play => play.Track == 44);
@@ -487,7 +496,7 @@ public class PerformanceAudienceServiceTests
         Tick();
         Tick();
         _audience.Remaining.Clear();
-        _audience.OnFlourishNow(dancer);
+        _flourish.OnFlourish(dancer);
 
         _audience.Remaining.Should().Contain(call => call.Creature == WatcherId && call.BankedAgain);
         _engine.CallsTo("SendMessageToPC").Select(call => (string)call.Arguments[1]!).Should()
@@ -509,7 +518,7 @@ public class PerformanceAudienceServiceTests
         _audience.Remaining.Clear();
         _audience.Sessions[MusicianId] = FlourishedAt(musician, _audience.Now.AddSeconds(-1));
 
-        _audience.OnFlourishNow(dancer);
+        _flourish.OnFlourish(dancer);
 
         _audience.Remaining.Should().Contain(call => call.Creature == WatcherId);
     }
@@ -528,7 +537,7 @@ public class PerformanceAudienceServiceTests
         _audience.Remaining.Clear();
         _inCombat.Add(WatcherId);
 
-        _audience.OnFlourishNow(dancer);
+        _flourish.OnFlourish(dancer);
 
         _audience.Remaining.Should().BeEmpty();
     }
@@ -546,19 +555,19 @@ public class PerformanceAudienceServiceTests
         Tick();
 
         _engine.SetReturn("GetEnteringObject", WatcherId);
-        _audience.StopWatchingOnAreaEnter();
-        _audience.BuildWatchingView(WatcherId).Should().BeNull("area entry resets the cached view");
-        _audience.StopWatchingOnAreaEnter();
+        _watching.StopWatchingOnAreaEnter();
+        _window.BuildWatchingView(WatcherId).Should().BeNull("area entry resets the cached view");
+        _watching.StopWatchingOnAreaEnter();
 
         Tick();
         _engine.SetReturn("GetLastPlayerDied", WatcherId);
-        _audience.StopWatchingOnDeath();
-        _audience.BuildWatchingView(WatcherId).Should().BeNull();
+        _watching.StopWatchingOnDeath();
+        _window.BuildWatchingView(WatcherId).Should().BeNull();
 
         Tick();
         _engine.SetReturn("OBJECT_SELF", WatcherId);
-        _audience.RestoreFrozenInspiredOnDisconnect();
-        _audience.BuildWatchingView(WatcherId).Should().BeNull();
+        _watching.RestoreFrozenInspiredOnDisconnect();
+        _window.BuildWatchingView(WatcherId).Should().BeNull();
         _audience.Remaining.Should().NotBeEmpty("the frozen remainder is handed back");
     }
 
@@ -570,22 +579,22 @@ public class PerformanceAudienceServiceTests
         StartTickLoop();
         _engine.SetReturn("OBJECT_SELF", WatcherId);
 
-        _audience.StopWatchingWhenOutOfRange();
+        _watching.StopWatchingWhenOutOfRange();
         Tick(0);
         Tick();
-        _audience.StopWatchingWhenOutOfRange();
-        _audience.BuildWatchingView(WatcherId).Should().NotBeNull("a performer still covers the watcher");
+        _watching.StopWatchingWhenOutOfRange();
+        _window.BuildWatchingView(WatcherId).Should().NotBeNull("a performer still covers the watcher");
 
         _positions[WatcherId] = new Vector3(500f, 0f, 0f);
-        _audience.StopWatchingWhenOutOfRange();
+        _watching.StopWatchingWhenOutOfRange();
 
-        _audience.BuildWatchingView(WatcherId).Should().BeNull();
+        _window.BuildWatchingView(WatcherId).Should().BeNull();
         _closed.Should().Contain(WatcherId);
 
         Tick();
         _inCombat.Add(WatcherId);
         _positions[WatcherId] = new Vector3(1f, 0f, 0f);
-        _audience.StopWatchingWhenOutOfRange();
+        _watching.StopWatchingWhenOutOfRange();
     }
 
     [Test]
@@ -597,10 +606,10 @@ public class PerformanceAudienceServiceTests
         Tick(0);
         Tick();
 
-        _audience.OnPerformanceStarted(WatcherId);
-        _audience.OnPerformanceStarted(9999);
+        _watching.OnPerformanceStarted(WatcherId);
+        _watching.OnPerformanceStarted(9999);
 
-        _audience.BuildWatchingView(WatcherId).Should().BeNull();
+        _window.BuildWatchingView(WatcherId).Should().BeNull();
     }
 
     [Test]
@@ -613,14 +622,14 @@ public class PerformanceAudienceServiceTests
         Tick(0);
         _played.Should().HaveCount(1);
 
-        _audience.ForgetBandSong(WatcherId);
-        _audience.ForgetBandSong(9999);
+        _watching.ForgetBandSong(WatcherId);
+        _watching.ForgetBandSong(9999);
         Tick();
         _played.Should().HaveCount(2, "the band song is sent again after it was forgotten");
 
         _engine.SetReturn("GetExitingObject", WatcherId);
-        _audience.ForgetExitingPlayer();
-        _audience.BuildWatchingView(WatcherId).Should().BeNull();
+        _watching.ForgetExitingPlayer();
+        _window.BuildWatchingView(WatcherId).Should().BeNull();
     }
 
     [Test]
@@ -692,14 +701,14 @@ public class PerformanceAudienceServiceTests
         StartTickLoop();
         Tick(0);
         Tick();
-        _audience.BuildWatchingView(WatcherId).Should().NotBeNull();
+        _window.BuildWatchingView(WatcherId).Should().NotBeNull();
 
         Perform(WatcherId, PerformanceKind.Music, x: 1f);
         _online.Remove(WatcherId);
         Watch(SecondWatcherId, x: 2f);
         Tick();
 
-        _audience.BuildWatchingView(WatcherId).Should().BeNull("performing interrupts watching");
+        _window.BuildWatchingView(WatcherId).Should().BeNull("performing interrupts watching");
         _closed.Should().Contain(WatcherId);
     }
 
@@ -763,20 +772,10 @@ public class PerformanceAudienceServiceTests
         public void Dispose() => Disposed = true;
     }
 
-    private sealed class TestAudience : PerformanceAudienceService
+    /// <summary>The state the stand-ins of the audience services share, and the audience tick they run.</summary>
+    private sealed class AudienceBench
     {
-        public TestAudience(
-            IDBService db,
-            IPerformanceVenueService venue,
-            IPerformanceWindowsService windows,
-            IMusicService music,
-            IPerformanceSongService songs,
-            IPerformanceSnapshotService snapshots,
-            IPerformanceInspiredService inspired)
-            : base(db, venue, windows, music, songs, snapshots, inspired, FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>())
-        {
-        }
-
+        public PerformanceAudienceService Service { get; set; } = null!;
         public DateTime Now { get; set; }
         public Func<uint, Vector3> PositionOf { get; set; } = _ => Vector3.Zero;
         public int Debt { get; set; }
@@ -790,23 +789,14 @@ public class PerformanceAudienceServiceTests
         public List<(uint Creature, double Seconds, bool BankedAgain)> Remaining { get; } = new();
         public List<(uint Player, SkillType Skill, int Xp)> SkillXp { get; } = new();
 
+        public void StartAudienceTick() => Service.StartAudienceTick();
+
         public void RunScheduledTick() => Schedules[^1].Action();
 
-        public void OnFlourishNow(PerformanceSession session) => OnFlourish(session);
-
-        protected override DateTime UtcNow() => Now;
-
-        protected override IDisposable ScheduleRepeating(Action action, TimeSpan interval)
-        {
-            var schedule = new Schedule(action, interval);
-            Schedules.Add(schedule);
-            return schedule;
-        }
-
-        protected override bool TryGetSession(uint performer, out PerformanceSession session) =>
+        public bool TryGetSession(uint performer, out PerformanceSession session) =>
             Sessions.TryGetValue(performer, out session!);
 
-        protected override IReadOnlyList<PerformanceSession> GetSessions()
+        public IReadOnlyList<PerformanceSession> GetSessions()
         {
             if (FailSessions)
                 throw new InvalidOperationException("tick failure");
@@ -814,7 +804,7 @@ public class PerformanceAudienceServiceTests
             return Sessions.Values.ToArray();
         }
 
-        protected override PerformancePreference GetPreference(uint player)
+        public PerformancePreference GetPreference(uint player)
         {
             if (!Preferences.TryGetValue(player, out var preference))
             {
@@ -824,20 +814,51 @@ public class PerformanceAudienceServiceTests
 
             return preference;
         }
+    }
 
-        protected override InspiredStatusEffect GetInspiredEffect(uint creature) => Effects.GetValueOrDefault(creature)!;
+    private sealed class TestAudience : PerformanceAudienceService
+    {
+        private readonly AudienceBench _bench;
 
-        protected override void GiveSkillXP(uint player, SkillType skill, int xp) => SkillXp.Add((player, skill, xp));
+        public TestAudience(
+            AudienceBench bench,
+            IDBService db,
+            IPerformanceVenueService venue,
+            IPerformanceWindowsService windows,
+            IMusicService music,
+            IPerformanceSongService songs,
+            IPerformanceSnapshotService snapshots,
+            IPerformanceInspiredService inspired,
+            IPerformanceRegistryService registry,
+            IPerformanceWatchingService watching)
+            : base(db, venue, windows, music, songs, snapshots, inspired, registry, watching, FacadeForwarder.For<ISkillService>())
+        {
+            _bench = bench;
+        }
 
-        protected override int GetPerkLevel(uint creature, PerkType perk) => 0;
+        protected override DateTime UtcNow() => _bench.Now;
 
-        protected override int GetStatAdjustment(uint creature, StatType stat) => 0;
+        protected override IDisposable ScheduleRepeating(Action action, TimeSpan interval)
+        {
+            var schedule = new Schedule(action, interval);
+            _bench.Schedules.Add(schedule);
+            return schedule;
+        }
 
-        protected override string GetDisplayName(uint observer, uint target) => $"Name{target}";
+        protected override bool TryGetSession(uint performer, out PerformanceSession session) =>
+            _bench.TryGetSession(performer, out session);
+
+        protected override IReadOnlyList<PerformanceSession> GetSessions() => _bench.GetSessions();
+
+        protected override PerformancePreference GetPreference(uint player) => _bench.GetPreference(player);
+
+        protected override bool IsInspired(uint creature) => _bench.Effects.ContainsKey(creature);
+
+        protected override void GiveSkillXP(uint player, SkillType skill, int xp) => _bench.SkillXp.Add((player, skill, xp));
 
         protected override PerformerSnapshot BuildSnapshot(PerformanceSession session, int venue, int songTrackId)
         {
-            if (session.Performer == FailFor)
+            if (session.Performer == _bench.FailFor)
                 throw new InvalidOperationException("snapshot failure");
 
             return new PerformerSnapshot
@@ -849,8 +870,8 @@ public class PerformanceAudienceServiceTests
                 Venue = venue,
                 XpBase = 6,
                 XpScaled = 6,
-                DebtClearPercent = session.Kind == PerformanceKind.Dance ? Debt : 0,
-                Position = PositionOf(session.Performer),
+                DebtClearPercent = session.Kind == PerformanceKind.Dance ? _bench.Debt : 0,
+                Position = _bench.PositionOf(session.Performer),
                 SongTrackId = songTrackId,
                 Session = session
             };
@@ -860,14 +881,94 @@ public class PerformanceAudienceServiceTests
 
         protected override bool ApplyInspired(uint creature, InspiredEffectData data, double remainingSeconds, bool bankedAgain)
         {
-            Applied.Add((creature, remainingSeconds, bankedAgain));
+            _bench.Applied.Add((creature, remainingSeconds, bankedAgain));
             return true;
         }
 
         protected override double GetInspiredRemainingSeconds(uint creature, DateTime nowUtc) =>
-            Effects.ContainsKey(creature) ? 300.0 : 0.0;
+            _bench.Effects.TryGetValue(creature, out var effect) ? effect.GetRemainingDurationSeconds(nowUtc) : 0.0;
 
         protected override void SetInspiredRemaining(uint creature, double remainingSeconds, bool bankedAgain = false) =>
-            Remaining.Add((creature, remainingSeconds, bankedAgain));
+            _bench.Remaining.Add((creature, remainingSeconds, bankedAgain));
+    }
+
+    private sealed class TestWatching : PerformanceWatchingService
+    {
+        private readonly AudienceBench _bench;
+
+        public TestWatching(
+            AudienceBench bench,
+            IPerformanceWindowsService windows,
+            IMusicService music,
+            IPerformanceInspiredService inspired,
+            IPerformanceRegistryService registry)
+            : base(windows, music, inspired, registry, FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatService>())
+        {
+            _bench = bench;
+        }
+
+        protected override bool TryGetSession(uint performer, out PerformanceSession session) =>
+            _bench.TryGetSession(performer, out session);
+
+        protected override IReadOnlyList<PerformanceSession> GetSessions() => _bench.GetSessions();
+
+        protected override bool IsInspired(uint creature) => _bench.Effects.ContainsKey(creature);
+
+        protected override int GetStatAdjustment(uint creature, StatType stat) => 0;
+
+        protected override string GetDisplayName(uint observer, uint target) => $"Name{target}";
+
+        protected override void SetInspiredRemaining(uint creature, double remainingSeconds, bool bankedAgain = false) =>
+            _bench.Remaining.Add((creature, remainingSeconds, bankedAgain));
+    }
+
+    private sealed class TestFlourish : PerformanceFlourishService
+    {
+        private readonly AudienceBench _bench;
+
+        public TestFlourish(
+            AudienceBench bench,
+            IPerformanceWatchingService watching,
+            IPerformanceRegistryService registry,
+            IPerformanceInspiredService inspired)
+            : base(watching, registry, inspired, FacadeForwarder.For<IPerkService>())
+        {
+            _bench = bench;
+        }
+
+        protected override DateTime UtcNow() => _bench.Now;
+
+        protected override IReadOnlyList<PerformanceSession> GetSessions() => _bench.GetSessions();
+
+        protected override bool IsInspired(uint creature) => _bench.Effects.ContainsKey(creature);
+
+        protected override int GetPerkLevel(uint creature, PerkType perk) => 0;
+
+        protected override double GetInspiredRemainingSeconds(uint creature, DateTime nowUtc) =>
+            _bench.Effects.ContainsKey(creature) ? 300.0 : 0.0;
+
+        protected override void SetInspiredRemaining(uint creature, double remainingSeconds, bool bankedAgain = false) =>
+            _bench.Remaining.Add((creature, remainingSeconds, bankedAgain));
+    }
+
+    private sealed class TestWindowActions : PerformanceWatchingWindowService
+    {
+        private readonly AudienceBench _bench;
+
+        public TestWindowActions(
+            AudienceBench bench,
+            IPerformanceWatchingService watching,
+            IPerformanceWindowsService windows,
+            IMusicService music,
+            IPerformanceRegistryService registry)
+            : base(watching, windows, music, registry)
+        {
+            _bench = bench;
+        }
+
+        protected override bool TryGetSession(uint performer, out PerformanceSession session) =>
+            _bench.TryGetSession(performer, out session);
+
+        protected override PerformancePreference GetPreference(uint player) => _bench.GetPreference(player);
     }
 }

@@ -106,36 +106,13 @@ public class NaturalStaminaRegenerationTests
     [Test]
     public void BeastHeartbeat_UsesDelayedStaminaRegenerationWithoutCombatGating()
     {
-        var root = FindRepositoryRoot();
-        var stat = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "StatService.cs"));
+        var stat = StatSource.Read();
 
         // That the beast heartbeat calls Stat.RestoreBeastStats is pinned by BeastMasteryServiceTests.
         stat.Should().Contain("RestoreNPCStats(false, true);");
         stat.Should().Contain("_companions.IsPlayerBeast(creature)");
 
-        var restoreBeastStats = stat.Substring(
-            stat.IndexOf("public void RestoreBeastStats()", StringComparison.Ordinal),
-            stat.IndexOf("public bool IsNaturalStaminaRegenerationAvailable", StringComparison.Ordinal) -
-            stat.IndexOf("public void RestoreBeastStats()", StringComparison.Ordinal));
+        var restoreBeastStats = StatSource.Method("RestoreBeastStats").ToString();
         restoreBeastStats.Should().NotContain("GetIsInCombat");
-    }
-
-    private static string FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory.FullName;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
     }
 }

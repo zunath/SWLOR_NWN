@@ -30,21 +30,21 @@ public class StatServiceMovementTests : StatServiceTestBase
     {
         Bench.AddNpc();
         Bench.SetLocal(Npc, WalkToggle, 1);
-        Service.IsWalkModeEnabled(Npc).Should().BeFalse();
+        Movement.IsWalkModeEnabled(Npc).Should().BeFalse();
 
         Bench.Players.Add(Npc);
-        Service.IsWalkModeEnabled(Npc).Should().BeTrue();
+        Movement.IsWalkModeEnabled(Npc).Should().BeTrue();
         Bench.Players.Clear();
 
         Bench.Dms.Add(Npc);
-        Service.IsWalkModeEnabled(Npc).Should().BeTrue();
+        Movement.IsWalkModeEnabled(Npc).Should().BeTrue();
         Bench.Dms.Clear();
 
         Bench.Possessed.Add(Npc);
-        Service.IsWalkModeEnabled(Npc).Should().BeTrue();
+        Movement.IsWalkModeEnabled(Npc).Should().BeTrue();
 
         Bench.SetLocal(Npc, WalkToggle, 0);
-        Service.IsWalkModeEnabled(Npc).Should().BeFalse();
+        Movement.IsWalkModeEnabled(Npc).Should().BeFalse();
     }
 
     [Test]
@@ -52,7 +52,7 @@ public class StatServiceMovementTests : StatServiceTestBase
     {
         Bench.AddPlayer();
 
-        Service.ToggleWalkMode(PlayerCreature).Should().BeTrue();
+        Movement.ToggleWalkMode(PlayerCreature).Should().BeTrue();
 
         Bench.Locals.Int(PlayerCreature, WalkToggle).Should().Be(1);
         Bench.PlayerPlugin.CallsTo("SetAlwaysWalk").Single().Arguments.Should().Equal(PlayerCreature, true);
@@ -60,7 +60,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         LastFactor.Should().Be(1f);
         Bench.Locals.Has(PlayerCreature, WalkRestore).Should().BeFalse("only staff snapshot their rate");
 
-        Service.ToggleWalkMode(PlayerCreature).Should().BeFalse();
+        Movement.ToggleWalkMode(PlayerCreature).Should().BeFalse();
         Bench.PlayerPlugin.CallsTo("SetAlwaysWalk").Last().Arguments.Should().Equal(PlayerCreature, false);
         LastFactor.Should().BeApproximately(1.25f, 0.001f);
     }
@@ -72,7 +72,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.Dms.Add(Npc);
         Bench.Creature.SetReturn("GetMovementRateFactor", 1.3f);
 
-        Service.ToggleWalkMode(Npc).Should().BeTrue();
+        Movement.ToggleWalkMode(Npc).Should().BeTrue();
 
         Bench.Locals.Float(Npc, WalkRestore).Should().BeApproximately(1.3f, 0.001f);
         Bench.Locals.Float(Npc, WalkRestoreBase).Should().BeApproximately(1.3f, 0.001f);
@@ -86,7 +86,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.Possessed.Add(Npc);
         Bench.Creature.SetReturn("GetMovementRateFactor", 2f);
 
-        Service.ToggleWalkMode(Npc);
+        Movement.ToggleWalkMode(Npc);
 
         Bench.Locals.Float(Npc, WalkRestore).Should().Be(2f);
         Bench.Locals.Float(Npc, WalkRestoreBase).Should().Be(2f);
@@ -100,7 +100,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.Dms.Add(Npc);
         SetStat(Npc, StatType.MovementSpeedDisabled, 1);
 
-        Service.ToggleWalkMode(Npc);
+        Movement.ToggleWalkMode(Npc);
 
         Bench.Locals.Float(Npc, WalkRestore).Should().Be(-1f);
         Bench.Locals.Has(Npc, WalkRestoreBase).Should().BeFalse();
@@ -115,7 +115,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         SetFloatLocal(Npc, WalkRestoreBase, 1.7f);
         SetFloatLocal(Npc, WalkRestoreMaximum, float.MaxValue);
 
-        Service.ToggleWalkMode(Npc);
+        Movement.ToggleWalkMode(Npc);
 
         Bench.Locals.Float(Npc, WalkRestore).Should().Be(1.7f);
         LastFactor.Should().Be(1f, "a walking creature is capped at the walk rate");
@@ -128,7 +128,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.Dms.Add(Npc);
         Bench.SetLocal(Npc, WalkToggle, 1);
 
-        Service.ToggleWalkMode(Npc).Should().BeFalse();
+        Movement.ToggleWalkMode(Npc).Should().BeFalse();
 
         Bench.Creature.CountOf("SetMovementRateFactor").Should().Be(0);
     }
@@ -136,10 +136,10 @@ public class StatServiceMovementTests : StatServiceTestBase
     [Test]
     public void ApplyCreatureMovementRate_SkipsWhatIsNotAValidCreature()
     {
-        Service.ApplyCreatureMovementRate(ObjectInvalid);
+        Movement.ApplyCreatureMovementRate(ObjectInvalid);
         Bench.AddNpc();
         Bench.ObjectTypes[Npc] = ObjectType.Placeable;
-        Service.ApplyCreatureMovementRate(Npc);
+        Movement.ApplyCreatureMovementRate(Npc);
 
         Bench.Creature.CountOf("SetMovementRateFactor").Should().Be(0);
     }
@@ -149,7 +149,7 @@ public class StatServiceMovementTests : StatServiceTestBase
     {
         Bench.AddPlayer();
 
-        Service.ApplyCreatureMovementRate(PlayerCreature);
+        Movement.ApplyCreatureMovementRate(PlayerCreature);
 
         Bench.Creature.CallsTo("SetMovementRate").Single().Arguments.Should().Equal(PlayerCreature, MovementRate.PC);
         LastFactor.Should().BeApproximately(1.25f, 0.001f);
@@ -160,7 +160,7 @@ public class StatServiceMovementTests : StatServiceTestBase
     {
         Bench.AddNpc();
 
-        Service.ApplyCreatureMovementRate(Npc);
+        Movement.ApplyCreatureMovementRate(Npc);
 
         Bench.Creature.CountOf("SetMovementRate").Should().Be(0);
         LastFactor.Should().BeApproximately(1.3f, 0.001f);
@@ -172,7 +172,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.AddNpc();
         Bench.SetLocal(Npc, WalkToggle, 1);
 
-        Service.ApplyCreatureMovementRate(Npc);
+        Movement.ApplyCreatureMovementRate(Npc);
 
         Bench.Locals.Int(Npc, WalkToggle).Should().Be(0);
         LastFactor.Should().BeApproximately(1.3f, 0.001f);
@@ -187,7 +187,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         SetFloatLocal(Npc, WalkRestoreBase, 1.4f);
         SetFloatLocal(Npc, WalkRestoreMaximum, 1.5f);
 
-        Service.ApplyCreatureMovementRate(Npc);
+        Movement.ApplyCreatureMovementRate(Npc);
 
         LastFactor.Should().BeApproximately(1.4f, 0.001f);
         Bench.Locals.Float(Npc, WalkRestore).Should().Be(0f);
@@ -203,7 +203,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         SetFloatLocal(Npc, WalkRestore, 1.4f);
         SetStat(Npc, StatType.MovementSpeedDisabled, 1);
 
-        Service.ApplyCreatureMovementRate(Npc);
+        Movement.ApplyCreatureMovementRate(Npc);
 
         LastFactor.Should().Be(0f);
         Bench.Locals.Float(Npc, WalkRestore).Should().Be(1.4f);
@@ -215,7 +215,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.AddPlayer();
         Bench.SetLocal(PlayerCreature, WalkToggle, 1);
 
-        Service.RestoreWalkMode(PlayerCreature);
+        Movement.RestoreWalkMode(PlayerCreature);
 
         Bench.PlayerPlugin.CallsTo("SetAlwaysWalk").Single().Arguments.Should().Equal(PlayerCreature, true);
         LastFactor.Should().Be(1f);
@@ -226,16 +226,16 @@ public class StatServiceMovementTests : StatServiceTestBase
     {
         Bench.AddPlayer();
         Bench.Engine.SetReturn("GetEnteringObject", PlayerCreature);
-        Service.ApplyPlayerStats();
+        Movement.ApplyPlayerStats();
         Bench.PlayerPlugin.CountOf("SetAlwaysWalk").Should().Be(1);
 
         Bench.Dms.Add(PlayerCreature);
-        Service.ApplyPlayerStats();
+        Movement.ApplyPlayerStats();
         Bench.PlayerPlugin.CountOf("SetAlwaysWalk").Should().Be(1);
 
         Bench.AddNpc();
         Bench.Engine.SetReturn("GetEnteringObject", Npc);
-        Service.ApplyPlayerStats();
+        Movement.ApplyPlayerStats();
         Bench.PlayerPlugin.CountOf("SetAlwaysWalk").Should().Be(1);
     }
 
@@ -247,7 +247,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
         Bench.SetLocal(Npc, WalkToggle, 1);
 
-        Service.ClearWalkModeBeforeDMPossessionChange();
+        Movement.ClearWalkModeBeforeDMPossessionChange();
 
         Bench.Locals.Int(Npc, WalkToggle).Should().Be(0);
         Bench.PlayerPlugin.CallsTo("SetAlwaysWalk").Single().Arguments.Should().Equal(Npc, false);
@@ -258,10 +258,10 @@ public class StatServiceMovementTests : StatServiceTestBase
     {
         Bench.AddNpc();
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
-        Service.ClearWalkModeBeforeDMPossessionChange();
+        Movement.ClearWalkModeBeforeDMPossessionChange();
 
         Bench.Possessed.Add(Npc);
-        Service.ClearWalkModeBeforeDMPossessionChange();
+        Movement.ClearWalkModeBeforeDMPossessionChange();
 
         Bench.PlayerPlugin.CountOf("SetAlwaysWalk").Should().Be(0);
     }
@@ -273,14 +273,14 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", PlayerCreature);
         SetStat(PlayerCreature, StatType.OutOfCombatMovementSpeedPercentAdjustment, 10);
 
-        Service.RefreshOutOfCombatMovementRate();
+        Movement.RefreshOutOfCombatMovementRate();
         Bench.Creature.CountOf("SetMovementRateFactor").Should().Be(1, "the first heartbeat learns the state");
 
-        Service.RefreshOutOfCombatMovementRate();
+        Movement.RefreshOutOfCombatMovementRate();
         Bench.Creature.CountOf("SetMovementRateFactor").Should().Be(1);
 
         Bench.InCombat.Add(PlayerCreature);
-        Service.RefreshOutOfCombatMovementRate();
+        Movement.RefreshOutOfCombatMovementRate();
         Bench.Creature.CountOf("SetMovementRateFactor").Should().Be(2);
     }
 
@@ -290,14 +290,14 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.AddPlayer();
         Bench.Engine.SetReturn("OBJECT_SELF", PlayerCreature);
         SetStat(PlayerCreature, StatType.OutOfCombatMovementSpeedPercentAdjustment, 10);
-        Service.RefreshOutOfCombatMovementRate();
+        Movement.RefreshOutOfCombatMovementRate();
 
         SetStat(PlayerCreature, StatType.OutOfCombatMovementSpeedPercentAdjustment, 0);
-        Service.RefreshOutOfCombatMovementRate();
+        Movement.RefreshOutOfCombatMovementRate();
         Bench.Creature.CountOf("SetMovementRateFactor").Should().Be(1);
 
         SetStat(PlayerCreature, StatType.OutOfCombatMovementSpeedPercentAdjustment, 10);
-        Service.RefreshOutOfCombatMovementRate();
+        Movement.RefreshOutOfCombatMovementRate();
         Bench.Creature.CountOf("SetMovementRateFactor").Should().Be(2, "the state was forgotten, so this is a first heartbeat");
     }
 
@@ -317,7 +317,7 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", creature);
         SetStat(creature, StatType.OutOfCombatMovementSpeedPercentAdjustment, 10);
 
-        Service.RefreshOutOfCombatMovementRate();
+        Movement.RefreshOutOfCombatMovementRate();
 
         Bench.Creature.CountOf("SetMovementRateFactor").Should().Be(0);
     }
@@ -329,10 +329,10 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", PlayerCreature);
         Bench.Engine.SetReturn("GetExitingObject", PlayerCreature);
         SetStat(PlayerCreature, StatType.OutOfCombatMovementSpeedPercentAdjustment, 10);
-        Service.RefreshOutOfCombatMovementRate();
+        Movement.RefreshOutOfCombatMovementRate();
 
-        Service.ForgetOutOfCombatMovementState();
-        Service.RefreshOutOfCombatMovementRate();
+        Movement.ForgetOutOfCombatMovementState();
+        Movement.RefreshOutOfCombatMovementRate();
 
         Bench.Creature.CountOf("SetMovementRateFactor").Should().Be(2);
     }
@@ -340,10 +340,10 @@ public class StatServiceMovementTests : StatServiceTestBase
     [Test]
     public void GetMovementSpeedMultiplier_OfWhatIsNotAValidCreatureIsOne()
     {
-        Service.GetMovementSpeedMultiplier(ObjectInvalid).Should().Be(1f);
+        Movement.GetMovementSpeedMultiplier(ObjectInvalid).Should().Be(1f);
         Bench.AddNpc();
         Bench.ObjectTypes[Npc] = ObjectType.Door;
-        Service.GetMovementSpeedMultiplier(Npc).Should().Be(1f);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().Be(1f);
     }
 
     [Test]
@@ -352,24 +352,24 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.AddNpc();
         SetStat(Npc, StatType.MovementSpeedDisabled, 1);
 
-        Service.GetMovementSpeedMultiplier(Npc).Should().Be(0f);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().Be(0f);
     }
 
     [Test]
     public void GetMovementSpeedMultiplier_StartsFromTheBaseOfTheKindOfCreature()
     {
         Bench.AddPlayer();
-        Service.GetMovementSpeedMultiplier(PlayerCreature).Should().BeApproximately(1.25f, 0.001f);
+        Movement.GetMovementSpeedMultiplier(PlayerCreature).Should().BeApproximately(1.25f, 0.001f);
 
         Bench.AddNpc();
-        Service.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.30f, 0.001f);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.30f, 0.001f);
 
-        Service.Droids.Add(Npc);
-        Service.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.25f, 0.001f);
-        Service.Droids.Clear();
+        Bench.Droids.Add(Npc);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.25f, 0.001f);
+        Bench.Droids.Clear();
 
         Bench.Beasts.Add(Npc);
-        Service.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.25f, 0.001f);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.25f, 0.001f);
     }
 
     [Test]
@@ -385,13 +385,13 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.Engine.SetReturnHandler("GetEffectType", _ => effects[cursor].Item1);
         Bench.Engine.SetReturnHandler("GetEffectInteger", _ => effects[cursor].Item2);
 
-        Service.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.30f - 0.10f + 0.20f - 0.05f, 0.001f);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.30f - 0.10f + 0.20f - 0.05f, 0.001f);
 
         SetStat(Npc, StatType.MovementSpeedPercentAdjustment, 500);
-        Service.GetMovementSpeedMultiplier(Npc).Should().Be(StatService.MaximumMovementSpeedMultiplier);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().Be(StatService.MaximumMovementSpeedMultiplier);
 
         SetStat(Npc, StatType.MovementSpeedPercentAdjustment, -500);
-        Service.GetMovementSpeedMultiplier(Npc).Should().Be(StatService.MinimumMovementSpeedMultiplier);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().Be(StatService.MinimumMovementSpeedMultiplier);
     }
 
     [Test]
@@ -400,10 +400,10 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.AddNpc();
         SetStat(Npc, StatType.OutOfCombatMovementSpeedPercentAdjustment, 10);
 
-        Service.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.40f, 0.001f);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.40f, 0.001f);
 
         Bench.InCombat.Add(Npc);
-        Service.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.30f, 0.001f);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.30f, 0.001f);
     }
 
     [Test]
@@ -413,10 +413,10 @@ public class StatServiceMovementTests : StatServiceTestBase
         Bench.SetLocal(PlayerCreature, WalkToggle, 1);
         SetStat(PlayerCreature, StatType.MovementSpeedPercentAdjustment, 20);
 
-        Service.GetMovementSpeedMultiplier(PlayerCreature).Should().Be(1f);
+        Movement.GetMovementSpeedMultiplier(PlayerCreature).Should().Be(1f);
 
         SetStat(PlayerCreature, StatType.MovementSpeedPercentAdjustment, -20);
-        Service.GetMovementSpeedMultiplier(PlayerCreature).Should().BeApproximately(0.8f, 0.001f);
+        Movement.GetMovementSpeedMultiplier(PlayerCreature).Should().BeApproximately(0.8f, 0.001f);
     }
 
     [Test]
@@ -427,13 +427,13 @@ public class StatServiceMovementTests : StatServiceTestBase
         SetFloatLocal(Npc, WalkRestore, 1.4f);
         SetFloatLocal(Npc, WalkRestoreBase, 1.6f);
         SetFloatLocal(Npc, WalkRestoreMaximum, 1.55f);
-        Service.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.55f, 0.001f, "the snapshot's own cap applies");
+        Movement.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.55f, 0.001f, "the snapshot's own cap applies");
 
         SetFloatLocal(Npc, WalkRestoreBase, 0.7f);
         Bench.SetLocal(Npc, WalkToggle, 1);
-        Service.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(0.7f, 0.001f, "a walker keeps a snapshot below the walk rate");
+        Movement.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(0.7f, 0.001f, "a walker keeps a snapshot below the walk rate");
 
         SetFloatLocal(Npc, WalkRestoreBase, 1.6f);
-        Service.GetMovementSpeedMultiplier(Npc).Should().Be(1f);
+        Movement.GetMovementSpeedMultiplier(Npc).Should().Be(1f);
     }
 }

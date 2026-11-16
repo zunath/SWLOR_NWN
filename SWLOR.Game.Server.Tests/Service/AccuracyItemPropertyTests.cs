@@ -73,7 +73,7 @@ public class AccuracyItemPropertyTests
     public void AccuracyReaders_UseOnlyTheCustomProperty()
     {
         var root = FindRepositoryRoot();
-        var stat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var stat = StatSource.Read();
 
         stat.Should().NotContain("ItemPropertyType.AccuracyBonus");
         stat.Should().NotContain("ItemPropertyType.EnhancementBonus");

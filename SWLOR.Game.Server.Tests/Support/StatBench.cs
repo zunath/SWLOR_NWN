@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// <see cref="Log"/> records everything the service reaches outside itself in the order it happens (database reads and
 /// writes, recorder events, scripts, reactions), so a test can pin the order of a whole operation.
 /// </summary>
-public sealed class StatBench : IDisposable
+public sealed partial class StatBench : IDisposable
 {
     public const uint ObjectInvalid = ItemWorld.ObjectInvalid;
     public const uint PlayerCreature = 100;
@@ -173,7 +173,42 @@ public sealed class StatBench : IDisposable
 
     public FakePlayerPlugin PlayerPlugin { get; }
 
+    /// <summary>Part 1 of the stat split, <c>StatService</c> (stays): the stat adjustment read, its sources and the stat metadata.</summary>
     public TestStatService Service { get; }
+
+    // One accessor per part of the stat split (Readmes/MaintainabilityRefactorStatSplit.md). A test calls each member through
+    // its part's accessor; until a part moves, its accessor is the one instance, and the pull request that moves the part points
+    // the accessor at the part's double without changing the tests.
+
+    /// <summary>Part 2, <c>NpcStatService</c>: the NPC stat skin reads and the native ability score read.</summary>
+    public TestStatService NpcStats => Service;
+
+    /// <summary>Part 3, <c>StatPoolService</c>: the FP and Stamina pools.</summary>
+    public TestStatService Pool => Service;
+
+    /// <summary>Part 4, <c>StatRecordService</c>: maximum HP, the gear-fed player records, attributes and NPC loading.</summary>
+    public TestStatService Record => Service;
+
+    /// <summary>Part 5, <c>StatMovementService</c>: walk mode and the movement rate.</summary>
+    public TestStatService Movement => Service;
+
+    /// <summary>Part 6, <c>StatRatingService</c>: Detection, Stealth, Lockpicking, Control and Craftsmanship.</summary>
+    public TestStatService Rating => Service;
+
+    /// <summary>Part 7, <c>CombatRatingService</c> (Combat): Attack, Accuracy, Defense and Evasion.</summary>
+    public TestStatService CombatRating => Service;
+
+    /// <summary>Part 8, <c>CombatDeflectionService</c> (Combat): the deflection and Guard chances.</summary>
+    public TestStatService Deflection => Service;
+
+    /// <summary>Part 9, <c>CombatDeflectionReactionService</c> (Combat): what a deflection triggers.</summary>
+    public TestStatService DeflectionReaction => Service;
+
+    /// <summary>Part 10, the healing adjustments that join <c>CombatResourcesService</c> (Combat).</summary>
+    public TestStatService Healing => Service;
+
+    /// <summary>Part 11, <c>NpcRegenerationService</c> (Combat): the NPC and beast resource regeneration.</summary>
+    public TestStatService Regeneration => Service;
 
     /// <summary>Everything the service did outside itself, in order.</summary>
     public List<string> Log { get; } = new();
@@ -292,121 +327,4 @@ public sealed class StatEngine : FakeNWScript, INWScript
         ExecuteScript(script, target);
         _bench.Log.Add($"Script:{script}");
     }
-}
-
-/// <summary>The instance with its calls into unconverted code answered by the bench.</summary>
-public sealed class TestStatService : StatService
-{
-    private readonly StatBench _bench;
-
-    public TestStatService(
-        StatBench bench,
-        IDBService db,
-        ICombatRecorderService combatRecorder,
-        IPlayerFeedbackService playerFeedback,
-        IStatusEffectService statusEffect,
-        IMimicryService mimicry,
-        ITwinPistolEquipmentService twinPistolEquipment,
-        IPowerGloveEquipmentService powerGloveEquipment,
-        IItemService item,
-        IRecastService recast,
-        ICompanionLookup beastMastery,
-        IEnmityService enmity,
-        IResistanceService resistance,
-        IPvpCombatService pvpCombat)
-        : base(db, combatRecorder, playerFeedback, statusEffect, mimicry, twinPistolEquipment, powerGloveEquipment, item, recast, beastMastery, enmity, resistance, pvpCombat,
-            FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatDamageCatalogService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
-    {
-        _bench = bench;
-    }
-
-    public Dictionary<(uint Creature, StatType Stat), int> PerkStats { get; } = new();
-
-    public Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>> PerkSources { get; } = new();
-
-    public Dictionary<(uint Creature, StatType Stat), int> TemporaryStats { get; } = new();
-
-    public Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>> TemporarySources { get; } = new();
-
-    public HashSet<uint> Droids { get; } = new();
-
-    public Dictionary<uint, SkillType> WeaponSkills { get; } = new();
-
-    public Dictionary<SkillType, SkillAttribute> SkillDetails { get; } = new();
-
-    public SkillType BaseItemSkill { get; set; } = SkillType.Invalid;
-
-    public AbilityType WeaponDamageAbility { get; set; } = AbilityType.Might;
-
-    public AbilityType WeaponAccuracyAbility { get; set; } = AbilityType.Perception;
-
-    public int NearbyStatusTargetAdjustment { get; set; }
-
-    public int LowHPAdjustment { get; set; }
-
-    public int LowFPAdjustment { get; set; }
-
-    public bool StatTriggerAvailable { get; set; } = true;
-
-    public HashSet<SkillType> RangedSkills { get; } = new();
-
-    protected override uint GetNativeCreatureId(global::NWN.Native.API.CNWSCreature creature) => StatBench.PlayerCreature;
-
-    protected override IReadOnlyList<StatAdjustmentSource> GetPerkStatSources(uint creature, StatType payloadStat) =>
-        PerkSources.GetValueOrDefault(payloadStat, Array.Empty<StatAdjustmentSource>());
-
-    protected override int GetPerkStatBonus(uint creature, StatType stat) => PerkStats.GetValueOrDefault((creature, stat));
-
-    protected override IReadOnlyList<StatAdjustmentSource> GetTemporaryStatSources(uint creature, StatType payloadStat) =>
-        TemporarySources.GetValueOrDefault(payloadStat, Array.Empty<StatAdjustmentSource>());
-
-    protected override int GetTemporaryStatAdjustment(uint creature, StatType stat) => TemporaryStats.GetValueOrDefault((creature, stat));
-
-    protected override void ReplaceTemporaryStatModifier(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType) =>
-        _bench.Log.Add($"Temporary:{statType}:{amount}:{durationSeconds}:{groupStatType}");
-
-    protected override void ScheduleTemporaryHitPointLimitCheck(uint creature) => _bench.Log.Add($"LimitCheck:{creature}");
-
-    protected override bool IsDroid(uint creature) => Droids.Contains(creature);
-
-    protected override SkillType GetSkillTypeByBaseItem(BaseItem baseItem) => BaseItemSkill;
-
-    protected override SkillType GetWeaponSkill(uint creature, uint weapon) => WeaponSkills.GetValueOrDefault(weapon, SkillType.Invalid);
-
-    protected override SkillAttribute GetSkillDetails(SkillType skillType) => SkillDetails[skillType];
-
-    protected override IReadOnlyList<CombatDamageType> GetDefenseDamageTypes() => new[] { CombatDamageType.Physical, CombatDamageType.Force };
-
-    protected override void ApplyFPRestoredEffects(uint creature) => _bench.Log.Add($"FPRestoredEffects:{creature}");
-
-    protected override void ApplyStaminaRestoredEffects(uint creature) => _bench.Log.Add($"StaminaRestoredEffects:{creature}");
-
-    protected override AbilityType GetWeaponDamageAbilityType(uint creature, BaseItem weaponType) => WeaponDamageAbility;
-
-    protected override AbilityType GetWeaponAccuracyAbilityType(uint creature, BaseItem weaponType) => WeaponAccuracyAbility;
-
-    protected override int GetNearbyStatusTargetAttackAdjustment(uint creature) => NearbyStatusTargetAdjustment;
-
-    protected override int GetLowHPAttackAdjustment(uint creature) => LowHPAdjustment;
-
-    protected override int GetLowFPAttackAdjustment(uint creature) => LowFPAdjustment;
-
-    protected override void TrackDeflection(uint creature, DeflectionSource source) => _bench.Log.Add($"TrackDeflection:{source}");
-
-    protected override bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds)
-    {
-        _bench.Log.Add($"TryTrigger:{statType}:{cooldownSeconds}");
-        return StatTriggerAvailable;
-    }
-
-    protected override void GrantNextSkillAbilityBonuses(uint creature, SkillType skillType, int damageBonus, int criticalRate, int durationSeconds) =>
-        _bench.Log.Add($"NextSkillBonuses:{skillType}:{damageBonus}:{criticalRate}:{durationSeconds}");
-
-    protected override void GrantNextAutoAttackCriticalRateBonus(uint creature, SkillType skillType, int criticalRate, int durationSeconds) =>
-        _bench.Log.Add($"NextAutoAttackCritical:{skillType}:{criticalRate}:{durationSeconds}");
-
-    protected override void GrantNextAbilityNoDelay(uint creature, SkillType skillType, int durationSeconds) =>
-        _bench.Log.Add($"NextAbilityNoDelay:{skillType}:{durationSeconds}");
-
-    protected override bool IsRangedDamageSkill(SkillType skillType) => RangedSkills.Contains(skillType);
 }

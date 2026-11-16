@@ -35,7 +35,7 @@ public class StatServiceNpcTests : StatServiceTestBase
             (ItemPropertyType.FP, -1, 13),
             (ItemPropertyType.HPBonus, -1, 99));
 
-        var stats = Service.GetNPCStats(Npc);
+        var stats = NpcStats.GetNPCStats(Npc);
 
         stats.Level.Should().Be(10);
         stats.Defenses[CombatDamageType.Physical].Should().Be(3);
@@ -55,7 +55,7 @@ public class StatServiceNpcTests : StatServiceTestBase
     {
         Bench.AddNpc();
 
-        var stats = Service.GetNPCStats(Npc);
+        var stats = NpcStats.GetNPCStats(Npc);
 
         stats.Level.Should().Be(0);
         stats.Defenses.Should().BeEmpty();
@@ -65,10 +65,10 @@ public class StatServiceNpcTests : StatServiceTestBase
     public void GetNPCSkinMaxHP_SumsTheHitPointPropertiesUpToTheLimit()
     {
         var skin = Bench.Skin(Bench.AddNpc(), (ItemPropertyType.NPCHP, -1, 100), (ItemPropertyType.NPCHP, -1, 50), (ItemPropertyType.Attack, -1, 9));
-        Service.GetNPCSkinMaxHP(skin).Should().Be(150);
+        NpcStats.GetNPCSkinMaxHP(skin).Should().Be(150);
 
         Bench.Items.AddProperty(skin, ItemPropertyType.NPCHP, costTableValue: 40000);
-        Service.GetNPCSkinMaxHP(skin).Should().Be(30000);
+        NpcStats.GetNPCSkinMaxHP(skin).Should().Be(30000);
     }
 
     [Test]
@@ -79,7 +79,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.MaxHitPoints[Npc] = () => (int)(Bench.NativeObject.CallsTo("SetMaxHitPoints").LastOrDefault()?.Arguments[1] ?? 0);
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
 
-        Service.LoadNPCStats();
+        Record.LoadNPCStats();
 
         Bench.NativeObject.CallsTo("SetMaxHitPoints").Single().Arguments[1].Should().Be(150);
         Bench.NativeObject.CallsTo("SetCurrentHitPoints").Single().Arguments[1].Should().Be(150);
@@ -92,7 +92,7 @@ public class StatServiceNpcTests : StatServiceTestBase
     {
         Bench.AddNpc();
 
-        Service.LoadNPCStats(Npc);
+        Record.LoadNPCStats(Npc);
 
         Bench.NativeObject.CountOf("SetMaxHitPoints").Should().Be(0);
     }
@@ -104,7 +104,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.CurrentHitPoints[Npc] = 500;
         Bench.MaxHitPoints[Npc] = () => (int)(Bench.NativeObject.CallsTo("SetMaxHitPoints").LastOrDefault()?.Arguments[1] ?? 0) + 40;
 
-        Service.SetNPCMaxHitPoints(Npc, 300);
+        Record.SetNPCMaxHitPoints(Npc, 300);
 
         Bench.NativeObject.CallsTo("SetMaxHitPoints").Select(call => (int)call.Arguments[1]!).Should().Equal(300, 260);
         Bench.NativeObject.CallsTo("SetCurrentHitPoints").Single().Arguments[1].Should().Be(300);
@@ -118,7 +118,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.CurrentHitPoints[Npc] = 5;
         Bench.MaxHitPoints[Npc] = () => (int)(Bench.NativeObject.CallsTo("SetMaxHitPoints").LastOrDefault()?.Arguments[1] ?? 0);
 
-        Service.SetNPCMaxHitPoints(Npc, 90000, true);
+        Record.SetNPCMaxHitPoints(Npc, 90000, true);
 
         Bench.NativeObject.CallsTo("SetMaxHitPoints").Single().Arguments[1].Should().Be(30000);
         Bench.NativeObject.CallsTo("SetCurrentHitPoints").Single().Arguments[1].Should().Be(30000);
@@ -131,7 +131,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.CurrentHitPoints[Npc] = 5;
         Bench.MaxHitPoints[Npc] = () => 100;
 
-        Service.SetNPCMaxHitPoints(Npc, 300);
+        Record.SetNPCMaxHitPoints(Npc, 300);
 
         Bench.NativeObject.CountOf("SetMaxHitPoints").Should().Be(4);
         Bench.NativeObject.CallsTo("SetCurrentHitPoints").Single().Arguments[1].Should().Be(5);
@@ -147,7 +147,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
         Bench.Recording = true;
 
-        Service.RestoreNPCStats(false);
+        Regeneration.RestoreNPCStats(false);
 
         Bench.Locals.Int(Npc, "FP").Should().Be(11);
         Bench.Locals.Int(Npc, "STAMINA").Should().Be(20);
@@ -165,7 +165,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.SetLocal(Npc, StatService.SuppressNaturalRegenVariable, 1);
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
 
-        Service.RestoreNPCStats(true);
+        Regeneration.RestoreNPCStats(true);
 
         Bench.Log.Should().BeEmpty();
         Bench.Engine.CountOf("EffectHeal").Should().Be(0);
@@ -179,7 +179,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.CurrentHitPoints[Npc] = 50;
         Bench.MaxHitPoints[Npc] = () => 200;
 
-        Service.RestoreNPCStats(true);
+        Regeneration.RestoreNPCStats(true);
 
         Bench.Engine.CallsTo("EffectHeal").Single().Arguments[0].Should().Be(20);
         Bench.Engine.CountOf("ApplyEffectToObject").Should().Be(1);
@@ -202,7 +202,7 @@ public class StatServiceNpcTests : StatServiceTestBase
             Bench.HighestEnmityTarget = 777;
         }
 
-        Service.RestoreNPCStats(true);
+        Regeneration.RestoreNPCStats(true);
 
         Bench.Engine.CountOf("EffectHeal").Should().Be(0);
     }
@@ -216,7 +216,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.Abilities[(Npc, AbilityType.Might)] = 30;
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
 
-        Service.RestoreBeastStats();
+        Regeneration.RestoreBeastStats();
 
         Bench.Locals.Int(Npc, "FP").Should().Be(3);
         Bench.Locals.Int(Npc, "STAMINA").Should().Be(4);
@@ -230,12 +230,12 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
         Bench.Engine.SetLocalString(Npc, BeastRegenAvailableAt, DateTime.UtcNow.AddHours(1).Ticks.ToString(CultureInfo.InvariantCulture));
 
-        Service.RestoreBeastStats();
+        Regeneration.RestoreBeastStats();
         Bench.Locals.Int(Npc, "STAMINA").Should().Be(0);
         Bench.Locals.String(Npc, BeastRegenAvailableAt).Should().NotBeEmpty();
 
         Bench.Engine.SetLocalString(Npc, BeastRegenAvailableAt, DateTime.UtcNow.AddHours(-1).Ticks.ToString(CultureInfo.InvariantCulture));
-        Service.RestoreBeastStats();
+        Regeneration.RestoreBeastStats();
         Bench.Locals.Int(Npc, "STAMINA").Should().Be(1);
         Bench.Locals.String(Npc, BeastRegenAvailableAt).Should().BeEmpty();
     }
@@ -248,7 +248,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
         Bench.Engine.SetLocalString(Npc, BeastRegenAvailableAt, "not a number");
 
-        Service.RestoreBeastStats();
+        Regeneration.RestoreBeastStats();
 
         Bench.Locals.Int(Npc, "STAMINA").Should().Be(1);
         Bench.Locals.String(Npc, BeastRegenAvailableAt).Should().BeEmpty();
@@ -259,14 +259,14 @@ public class StatServiceNpcTests : StatServiceTestBase
     [TestCase(5L, 5L, true)]
     [TestCase(6L, 5L, false)]
     public void IsNaturalStaminaRegenerationAvailable_ComparesTheTicks(long availableAt, long now, bool expected) =>
-        Service.IsNaturalStaminaRegenerationAvailable(availableAt, now).Should().Be(expected);
+        Regeneration.IsNaturalStaminaRegenerationAvailable(availableAt, now).Should().Be(expected);
 
     [TestCase(0, 1)]
     [TestCase(9, 1)]
     [TestCase(10, 2)]
     [TestCase(-20, 1)]
     public void GetBeastNaturalRegenAmount_IsOnePlusATenthOfTheAttribute(int attribute, int expected) =>
-        Service.GetBeastNaturalRegenAmount(attribute).Should().Be(expected);
+        Regeneration.GetBeastNaturalRegenAmount(attribute).Should().Be(expected);
 
     [TestCase(AbilityType.Invalid, "INV")]
     [TestCase(AbilityType.Might, "MGT")]
@@ -286,14 +286,14 @@ public class StatServiceNpcTests : StatServiceTestBase
     {
         var record = Bench.AddPlayer();
         record.Control[SkillType.Smithery] = 4;
-        Service.SkillDetails[SkillType.Smithery] = CraftSkill(true);
+        Bench.SkillDetails[SkillType.Smithery] = CraftSkill(true);
         Bench.CreatureEffects = new CreatureStatusEffect();
         Bench.CreatureEffects.StatGroup.CraftSkillBonuses[CraftSkillBonusType.Control][SkillType.Smithery] = 3;
 
-        Service.CalculateControl(PlayerCreature, SkillType.Smithery).Should().Be(7);
+        Rating.CalculateControl(PlayerCreature, SkillType.Smithery).Should().Be(7);
 
         record.Control.Clear();
-        Service.CalculateControl(PlayerCreature, SkillType.Smithery).Should().Be(3);
+        Rating.CalculateControl(PlayerCreature, SkillType.Smithery).Should().Be(3);
     }
 
     [Test]
@@ -301,23 +301,23 @@ public class StatServiceNpcTests : StatServiceTestBase
     {
         var record = Bench.AddPlayer();
         record.Craftsmanship[SkillType.Smithery] = 4;
-        Service.SkillDetails[SkillType.Smithery] = CraftSkill(true);
+        Bench.SkillDetails[SkillType.Smithery] = CraftSkill(true);
         Bench.CreatureEffects = new CreatureStatusEffect();
         Bench.CreatureEffects.StatGroup.CraftSkillBonuses[CraftSkillBonusType.Craftsmanship][SkillType.Smithery] = 3;
 
-        Service.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery).Should().Be(7);
+        Rating.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery).Should().Be(7);
 
         record.Craftsmanship.Clear();
-        Service.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery).Should().Be(3);
+        Rating.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery).Should().Be(3);
     }
 
     [Test]
     public void TheCraftingTotals_RefuseASkillThatIsNotCrafting()
     {
-        Service.SkillDetails[SkillType.Smithery] = CraftSkill(false);
+        Bench.SkillDetails[SkillType.Smithery] = CraftSkill(false);
 
-        var control = () => Service.CalculateControl(PlayerCreature, SkillType.Smithery);
-        var craftsmanship = () => Service.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery);
+        var control = () => Rating.CalculateControl(PlayerCreature, SkillType.Smithery);
+        var craftsmanship = () => Rating.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery);
 
         control.Should().Throw<ArgumentException>();
         craftsmanship.Should().Throw<ArgumentException>();
@@ -335,10 +335,10 @@ public class StatServiceNpcTests : StatServiceTestBase
             Bench.Dms.Add(Npc);
         if (possessed)
             Bench.Possessed.Add(Npc);
-        Service.SkillDetails[SkillType.Smithery] = CraftSkill(true);
+        Bench.SkillDetails[SkillType.Smithery] = CraftSkill(true);
 
-        Service.CalculateControl(Npc, SkillType.Smithery).Should().Be(0);
-        Service.CalculateCraftsmanship(Npc, SkillType.Smithery).Should().Be(0);
+        Rating.CalculateControl(Npc, SkillType.Smithery).Should().Be(0);
+        Rating.CalculateCraftsmanship(Npc, SkillType.Smithery).Should().Be(0);
         Bench.Log.Should().BeEmpty();
     }
 }

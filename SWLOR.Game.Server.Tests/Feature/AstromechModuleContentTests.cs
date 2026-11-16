@@ -166,7 +166,7 @@ public class AstromechModuleContentTests
     [Test]
     public void RecipeTypesFormOneContiguousBlock()
     {
-        var names = Enum.GetNames<RecipeType>().Where(name => name.StartsWith("Astromech")).ToList();
+        var names = Enum.GetNames<RecipeType>().Where(name => name.StartsWith("AstromechHardened") || name.StartsWith("AstromechTuned")).ToList();
         names.Should().HaveCount(160);
         var ids = names.Select(name => (int)Enum.Parse<RecipeType>(name)).OrderBy(id => id).ToList();
         ids.Should().Equal(Enumerable.Range(FirstRecipeId, 160));

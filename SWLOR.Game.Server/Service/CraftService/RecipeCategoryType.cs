@@ -158,6 +158,9 @@ namespace SWLOR.Game.Server.Service.CraftService
 
         [RecipeCategory("Astromech Modules", true)]
         AstromechModule = 75,
+
+        [RecipeCategory("Astromech Tools", true)]
+        AstromechTool = 76,
     }
 
     public class RecipeCategoryAttribute : Attribute

@@ -124,6 +124,190 @@
     }
    ],
    "animation": "LoopingConjure1"
+  },
+  {
+   "skill": "Armaments",
+   "skill_name": "Armaments",
+   "skill_description": "Ability of an astromech to fight with the tools built into its chassis: the shock prod and the blaster mount.",
+   "source_skill": "Staff",
+   "source_skill_name": "Staff",
+   "ids": {
+    "skill": 63,
+    "perk": 1119,
+    "recast": 616,
+    "feat": 3504,
+    "spell": 1867
+   },
+   "animation": "LoopingConjure1",
+   "cast_animation": false,
+   "words": {},
+   "lines": [
+    {
+     "source_skill": "Staff",
+     "source_skill_name": "Staff",
+     "source_file": "StaffPerkDefinition",
+     "source_coverage": "StaffPerkCoverage",
+     "source_category": "StaffCrusher",
+     "source_name": "Crusher",
+     "category": "ArmamentsShockProd",
+     "category_id": 79,
+     "name": "Shock Prod",
+     "perks": {
+      "Slam": {
+       "id": "ShockJab",
+       "source_name": "Slam",
+       "name": "Shock Jab"
+      },
+      "CrushingMastery": {
+       "id": "OverchargedCapacitors",
+       "source_name": "Crushing Mastery",
+       "name": "Overcharged Capacitors",
+       "short": "Overcharged"
+      },
+      "ChargedBlows": {
+       "id": "ResidualCharge",
+       "source_name": "Charged Blows",
+       "name": "Residual Charge",
+       "short": "Residual Chrg"
+      },
+      "RibBreaker": {
+       "id": "StunProd",
+       "source_name": "Rib Breaker",
+       "name": "Stun Prod"
+      },
+      "HeavyHands": {
+       "id": "ArcConductors",
+       "source_name": "Heavy Hands",
+       "name": "Arc Conductors"
+      },
+      "GroundQuake": {
+       "id": "DischargeRing",
+       "source_name": "Ground Quake",
+       "name": "Discharge Ring"
+      },
+      "CrusherStance": {
+       "id": "AggressionRoutine",
+       "source_name": "Crusher Stance",
+       "name": "Aggression Routine",
+       "short": "Aggression"
+      },
+      "BreakPosture": {
+       "id": "CircuitBreaker",
+       "source_name": "Break Posture",
+       "name": "Circuit Breaker",
+       "short": "Circuit Break"
+      },
+      "SkullRattle": {
+       "id": "SensorScramble",
+       "source_name": "Skull Rattle",
+       "name": "Sensor Scramble"
+      },
+      "Worldbreaker": {
+       "id": "OverloadBurst",
+       "source_name": "Worldbreaker",
+       "name": "Overload Burst"
+      }
+     },
+     "identity": "Staff"
+    },
+    {
+     "source_skill": "Rifle",
+     "source_skill_name": "Rifle",
+     "identity": "Rifle",
+     "source_file": "RiflePerkDefinition",
+     "source_coverage": "RiflePerkCoverage",
+     "source_category": "RiflePacification",
+     "source_name": "Pacification",
+     "category": "ArmamentsBlasterMount",
+     "category_id": 80,
+     "name": "Blaster Mount",
+     "perks": {
+      "SuppressingShot": {
+       "id": "SuppressiveBurst",
+       "source_name": "Suppressing Shot",
+       "name": "Suppressive Burst",
+       "short": "Suppr. Burst"
+      },
+      "PinningFire": {
+       "id": "TrackingServos",
+       "source_name": "Pinning Fire",
+       "name": "Tracking Servos"
+      },
+      "SustainedFire": {
+       "id": "LockedBarrage",
+       "source_name": "Sustained Fire",
+       "name": "Locked Barrage"
+      },
+      "CripplingShot": {
+       "id": "HobblingBolt",
+       "source_name": "Crippling Shot",
+       "name": "Hobbling Bolt"
+      },
+      "SpottersRhythm": {
+       "id": "TargetAnalysis",
+       "source_name": "Spotter's Rhythm",
+       "name": "Target Analysis"
+      },
+      "SuppressiveLine": {
+       "id": "SweepingFire",
+       "source_name": "Suppressive Line",
+       "name": "Sweeping Fire"
+      },
+      "SuppressionStance": {
+       "id": "SuppressionProtocol",
+       "source_name": "Suppression Stance",
+       "name": "Suppression Protocol",
+       "short": "Suppr Protocol"
+      },
+      "Overwatch": {
+       "id": "OverwatchSubroutine",
+       "source_name": "Overwatch",
+       "name": "Overwatch Subroutine",
+       "short": "Overwatch Sub"
+      },
+      "ContainmentNet": {
+       "id": "ContainmentPattern",
+       "source_name": "Containment Net",
+       "name": "Containment Pattern",
+       "short": "Containment"
+      },
+      "KillBox": {
+       "id": "DesignateTarget",
+       "source_name": "Kill Box",
+       "name": "Designate Target",
+       "short": "Designate Tgt"
+      }
+     }
+    }
+   ],
+   "hotbar": {
+    "feats": [
+     "ShockJab1",
+     "ShockJab2",
+     "ShockJab3",
+     "ShockJab4",
+     "StunProd1",
+     "StunProd2",
+     "StunProd3",
+     "SuppressiveBurst1",
+     "SuppressiveBurst2",
+     "SuppressiveBurst3",
+     "SuppressiveBurst4",
+     "HobblingBolt1",
+     "HobblingBolt2",
+     "HobblingBolt3",
+     "SweepingFire1",
+     "SweepingFire2",
+     "DesignateTarget1"
+    ],
+    "make_room": [
+     "SoulDevourerStance1",
+     "SniperStance1",
+     "SkirmisherStance1",
+     "SentinelStance1",
+     "PerceptiveStance1"
+    ]
+   }
   }
  ],
  "ledger": {
@@ -306,6 +490,193 @@
    },
    "#skill": {
     "name": 193217
+   }
+  },
+  "Armaments": {
+   "ContainmentPatternTrait": {
+    "feat": 3504,
+    "name": 193222,
+    "description": 193223
+   },
+   "OverwatchSubroutineTrait": {
+    "feat": 3505,
+    "name": 193224,
+    "description": 193225
+   },
+   "TrackingServosTrait": {
+    "feat": 3506,
+    "name": 193226,
+    "description": 193227
+   },
+   "CircuitBreakerTrait": {
+    "feat": 3507,
+    "name": 193228,
+    "description": 193229
+   },
+   "OverchargedCapacitorsTrait": {
+    "feat": 3508,
+    "name": 193230,
+    "description": 193231
+   },
+   "ArcConductorsTrait": {
+    "feat": 3509,
+    "name": 193232,
+    "description": 193233
+   },
+   "SensorScrambleTrait": {
+    "feat": 3510,
+    "name": 193234,
+    "description": 193235
+   },
+   "ResidualChargeTrait": {
+    "feat": 3511,
+    "name": 193236,
+    "description": 193237
+   },
+   "LockedBarrageTrait": {
+    "feat": 3512,
+    "name": 193238,
+    "description": 193239
+   },
+   "TargetAnalysisTrait": {
+    "feat": 3513,
+    "name": 193240,
+    "description": 193241
+   },
+   "AggressionRoutine1": {
+    "feat": 3514,
+    "name": 193242,
+    "description": 193243,
+    "spell": 1867
+   },
+   "DischargeRing1": {
+    "feat": 3515,
+    "name": 193244,
+    "description": 193245,
+    "spell": 1868
+   },
+   "DischargeRing2": {
+    "feat": 3516,
+    "name": 193246,
+    "description": 193247,
+    "spell": 1869
+   },
+   "StunProd1": {
+    "feat": 3517,
+    "name": 193248,
+    "description": 193249,
+    "spell": 1870
+   },
+   "StunProd2": {
+    "feat": 3518,
+    "name": 193250,
+    "description": 193251,
+    "spell": 1871
+   },
+   "StunProd3": {
+    "feat": 3519,
+    "name": 193252,
+    "description": 193253,
+    "spell": 1872
+   },
+   "SweepingFire1": {
+    "feat": 3520,
+    "name": 193254,
+    "description": 193255,
+    "spell": 1873
+   },
+   "OverloadBurst1": {
+    "feat": 3521,
+    "name": 193256,
+    "description": 193257,
+    "spell": 1874
+   },
+   "HobblingBolt1": {
+    "feat": 3522,
+    "name": 193258,
+    "description": 193259,
+    "spell": 1875
+   },
+   "HobblingBolt2": {
+    "feat": 3523,
+    "name": 193260,
+    "description": 193261,
+    "spell": 1876
+   },
+   "HobblingBolt3": {
+    "feat": 3524,
+    "name": 193262,
+    "description": 193263,
+    "spell": 1877
+   },
+   "ShockJab1": {
+    "feat": 3525,
+    "name": 193264,
+    "description": 193265,
+    "spell": 1878
+   },
+   "ShockJab2": {
+    "feat": 3526,
+    "name": 193266,
+    "description": 193267,
+    "spell": 1879
+   },
+   "ShockJab3": {
+    "feat": 3527,
+    "name": 193268,
+    "description": 193269,
+    "spell": 1880
+   },
+   "SuppressiveBurst1": {
+    "feat": 3528,
+    "name": 193270,
+    "description": 193271,
+    "spell": 1881
+   },
+   "SuppressiveBurst2": {
+    "feat": 3529,
+    "name": 193272,
+    "description": 193273,
+    "spell": 1882
+   },
+   "SuppressiveBurst3": {
+    "feat": 3530,
+    "name": 193274,
+    "description": 193275,
+    "spell": 1883
+   },
+   "SuppressiveBurst4": {
+    "feat": 3531,
+    "name": 193276,
+    "description": 193277,
+    "spell": 1884
+   },
+   "SweepingFire2": {
+    "feat": 3532,
+    "name": 193278,
+    "description": 193279,
+    "spell": 1885
+   },
+   "ShockJab4": {
+    "feat": 3533,
+    "name": 193280,
+    "description": 193281,
+    "spell": 1886
+   },
+   "SuppressionProtocol1": {
+    "feat": 3534,
+    "name": 193282,
+    "description": 193283,
+    "spell": 1887
+   },
+   "DesignateTarget1": {
+    "feat": 3535,
+    "name": 193284,
+    "description": 193285,
+    "spell": 1888
+   },
+   "#skill": {
+    "name": 193286
    }
   }
  }

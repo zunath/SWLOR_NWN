@@ -71,6 +71,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Bracer,
             BaseItem.Gloves,
             BaseItem.QuarterStaff,
+            BaseItem.ShockProd,
             BaseItem.Katar,
             BaseItem.PowerGlove,
             BaseItem.CreatureBludgeonWeapon,
@@ -82,6 +83,7 @@ namespace SWLOR.Game.Server.Service
         {
             BaseItem.Cannon,
             BaseItem.Rifle,
+            BaseItem.BlasterMount,
             BaseItem.Longbow,
             BaseItem.Pistol,
             BaseItem.LegacyPistol,
@@ -832,6 +834,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Katar,
             BaseItem.PowerGlove,
             BaseItem.QuarterStaff,
+            BaseItem.ShockProd,
             BaseItem.LightMace,
             BaseItem.Pistol,
             BaseItem.LegacyPistol,
@@ -843,6 +846,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Cannon,
             BaseItem.Longbow,
             BaseItem.Rifle,
+            BaseItem.BlasterMount,
         };
 
         /// <summary>
@@ -1004,7 +1008,9 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Club,
             BaseItem.MorningStar,
             BaseItem.LightFlail,
-            BaseItem.LightHammer
+            BaseItem.LightHammer,
+            // The astromech's shock prod follows every staff weapon rule; only its skill differs.
+            BaseItem.ShockProd
         };
 
         /// <summary>
@@ -1034,7 +1040,9 @@ namespace SWLOR.Game.Server.Service
         {
             BaseItem.Longbow,
             BaseItem.Rifle,
-            BaseItem.Cannon
+            BaseItem.Cannon,
+            // The astromech's blaster mount follows every rifle weapon rule; only its skill differs.
+            BaseItem.BlasterMount
         };
 
         /// <summary>
@@ -1078,6 +1086,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.TwoBladedSword,
             BaseItem.Saberstaff,
             BaseItem.QuarterStaff,
+            BaseItem.ShockProd,
             BaseItem.LightMace
         };
 

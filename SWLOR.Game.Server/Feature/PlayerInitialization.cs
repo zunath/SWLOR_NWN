@@ -405,9 +405,11 @@ namespace SWLOR.Game.Server.Feature
                     throw new InvalidOperationException($"The starting item {resref} could not be created.");
                 return created;
             }
-            // An astromech has no hands or clothes; its starting kit is the credits alone.
+            // An astromech has no hands or clothes; it starts with a basic shock prod, as others start with a
+            // knife, and the same credits.
             if (Race.GetBodyFrame(race) == BodyFrame.Astromech)
             {
+                SetItemCursedFlag(CreateStarterItem("am_w_prod_01"), true);
                 GiveGoldToCreature(player, 200);
                 return;
             }

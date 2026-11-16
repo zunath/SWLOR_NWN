@@ -212,6 +212,8 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
+            // XP earned with a tool that follows another skill's weapon rules trains the skill of the body frame.
+            skill = SkillBodyFrames.GetTrainedSkill(skill, dbPlayer.BodyFrame);
             var details = GetSkillDetails(skill);
 
             // A skill closed to the body frame of the character never gains rank, whatever awarded the XP.

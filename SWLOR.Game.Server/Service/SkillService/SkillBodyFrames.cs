@@ -36,6 +36,26 @@ namespace SWLOR.Game.Server.Service.SkillService
         }
 
         /// <summary>
+        /// The skill whose rank and XP stand for another on a body frame. An astromech's tools follow the staff
+        /// and rifle weapon rules, so combat still reads them as Staff and Rifle; the rank behind those rules, and
+        /// the XP they earn, is the astromech's Armaments. Armor resolves to Chassis the same way.
+        /// This never opens a humanoid perk: perk requirements use <see cref="GetFrameEquivalent"/>.
+        /// </summary>
+        public static SkillType GetTrainedSkill(SkillType skill, BodyFrame frame)
+        {
+            if (frame != BodyFrame.Astromech)
+                return skill;
+
+            return skill switch
+            {
+                SkillType.Armor => SkillType.Chassis,
+                SkillType.Staff => SkillType.Armaments,
+                SkillType.Rifle => SkillType.Armaments,
+                _ => skill
+            };
+        }
+
+        /// <summary>
         /// The astromech skill that mirrors a humanoid one: its perk lines are copies of that skill's lines, so
         /// whatever asks a character to have mastered the humanoid skill (a capstone quest) accepts the mirror
         /// from an astromech. This does not open the humanoid skill's own perks; those stay behind
@@ -50,6 +70,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             {
                 SkillType.Armor => SkillType.Chassis,
                 SkillType.FirstAid => SkillType.UtilitySystems,
+                SkillType.Staff => SkillType.Armaments,
+                SkillType.Rifle => SkillType.Armaments,
                 _ => skill
             };
         }

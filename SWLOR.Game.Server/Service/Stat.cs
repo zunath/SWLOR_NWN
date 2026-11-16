@@ -1463,7 +1463,7 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DB.Get<Player>(playerId);
 
                 if (skillType != SkillType.Invalid)
-                    skillLevel = dbPlayer.Skills[skillType].Rank;
+                    skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
 
                 if (attackBonusOverride <= 0)
                 {
@@ -1527,7 +1527,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer != null)
                 {
                     if(skillType != SkillType.Invalid)
-                        skillLevel = dbPlayer.Skills[skillType].Rank;
+                        skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
 
                     if (usesForceAttack)
                         attackBonus += dbPlayer.ForceAttack;
@@ -1807,7 +1807,7 @@ namespace SWLOR.Game.Server.Service
                 var dbPlayer = DB.Get<Player>(playerId);
 
                 if (skillType != SkillType.Invalid)
-                    skillLevel = dbPlayer.Skills[skillType].Rank;
+                    skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
 
                 accuracyBonus += dbPlayer.Accuracy;
             }
@@ -1900,7 +1900,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer != null)
                 {
                     if (skillType != SkillType.Invalid)
-                        skillLevel = dbPlayer.Skills[skillType].Rank;
+                        skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
 
                     accuracyBonus += dbPlayer.Accuracy;
                 }
@@ -1980,7 +1980,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                skillLevel = dbPlayer.Skills[SkillBodyFrames.GetFrameEquivalent(skillType, dbPlayer.BodyFrame)].Rank;
+                skillLevel = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skillType, dbPlayer.BodyFrame)].Rank;
                 evasionBonus = dbPlayer.Evasion;
             }
             else

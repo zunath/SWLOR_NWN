@@ -253,6 +253,10 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (GetIsPC(creature) || GetIsDM(creature)) return;
 
+            // An astromech's tools act as a staff and a rifle; the points they earn belong to Armaments, so the
+            // XP that follows is weighed against the rank the astromech actually trains.
+            skill = SkillBodyFrames.GetTrainedSkill(skill, Race.GetBodyFrame(player));
+
             var tracker = _creatureCombatPointTracker.ContainsKey(creature) ?
                 _creatureCombatPointTracker[creature] :
                 new Dictionary<uint, Dictionary<SkillType, int>>();

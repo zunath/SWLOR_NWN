@@ -569,6 +569,18 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
         UtilitySystems = 62,
+
+        [Skill(SkillCategoryType.Combat,
+            "Armaments",
+            50,
+            true,
+            "Ability of an astromech to fight with the tools built into its chassis: the shock prod and the blaster mount.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Weapon,
+            BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
+        Armaments = 63,
     }
 
     public class SkillAttribute : Attribute

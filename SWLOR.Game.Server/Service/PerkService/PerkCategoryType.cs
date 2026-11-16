@@ -214,6 +214,10 @@ namespace SWLOR.Game.Server.Service.PerkService
         UtilitySystemsRepair = 77,
         [PerkCategory("Utility Systems - Augments", true, BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
         UtilitySystemsAugments = 78,
+        [PerkCategory("Armaments - Shock Prod", true, BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
+        ArmamentsShockProd = 79,
+        [PerkCategory("Armaments - Blaster Mount", true, BodyFrameRestriction = BodyFrameRestriction.AstromechOnly)]
+        ArmamentsBlasterMount = 80,
     }
 
     public class PerkCategoryAttribute : Attribute

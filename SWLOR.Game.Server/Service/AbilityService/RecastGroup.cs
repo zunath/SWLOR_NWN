@@ -1015,6 +1015,24 @@ namespace SWLOR.Game.Server.Service.AbilityService
         TargetingUplink = 614,
         [RecastGroup("Full Override", "Full Override", true)]
         FullOverride = 615,
+        [RecastGroup("Shock Jab", "Shock Jab", true)]
+        ShockJab = 616,
+        [RecastGroup("Stun Prod", "Stun Prod", true)]
+        StunProd = 617,
+        [RecastGroup("Discharge Ring", "Discharge Ring", true)]
+        DischargeRing = 618,
+        [RecastGroup("Aggression Routine", "Aggression", true)]
+        AggressionRoutine = 619,
+        [RecastGroup("Overload Burst", "Overload Burst", true)]
+        OverloadBurst = 620,
+        [RecastGroup("Suppressive Burst", "Suppr. Burst", true)]
+        SuppressiveBurst = 621,
+        [RecastGroup("Hobbling Bolt", "Hobbling Bolt", true)]
+        HobblingBolt = 622,
+        [RecastGroup("Sweeping Fire", "Sweeping Fire", true)]
+        SweepingFire = 623,
+        [RecastGroup("Suppression Protocol", "Suppr Protocol", true)]
+        SuppressionProtocol = 624,
     }
 
     public class RecastGroupAttribute : Attribute

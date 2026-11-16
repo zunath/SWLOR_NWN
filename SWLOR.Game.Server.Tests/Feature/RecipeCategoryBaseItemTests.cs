@@ -28,6 +28,7 @@ public class RecipeCategoryBaseItemTests
             BaseItem.Helmet, BaseItem.Armor, BaseItem.Gloves, BaseItem.Bracer, BaseItem.Boots, BaseItem.Belt, BaseItem.Cloak,
             BaseItem.Amulet, BaseItem.Ring
         },
+        [RecipeCategoryType.AstromechTool] = new[] { BaseItem.ShockProd, BaseItem.BlasterMount },
     };
 
     private static readonly Dictionary<RecipeType, RecipeDetail> Recipes = typeof(IRecipeListDefinition).Assembly

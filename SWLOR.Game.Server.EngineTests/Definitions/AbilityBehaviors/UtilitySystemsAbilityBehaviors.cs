@@ -19,57 +19,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             return new List<AbilityBehaviorCase>
             {
-                // PowerTransferAbilityDefinition - friendly self buff. RequirementItem("stim_pack")
-                // is bypassed entirely for non-PC activators (AbilityRequirementItem.CheckRequirements
-                // returns success for anything that isn't a PC), so no item is needed here.
-                new()
-                {
-                    Feat = FeatType.PowerTransfer1,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(AdrenalStimStatusEffect) },
-                    ExpectsRecast = true,
-                    Notes = "RequirementItem is a no-op for NPC activators, so no item setup is needed. No FP/Stamina cost is declared.",
-                },
-                new()
-                {
-                    Feat = FeatType.PowerTransfer2,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(AdrenalStimStatusEffect) },
-                    ExpectsRecast = true,
-                },
-                new()
-                {
-                    Feat = FeatType.PowerTransfer3,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(AdrenalStimStatusEffect) },
-                    ExpectsRecast = true,
-                },
 
-                // FilterFlushAbilityDefinition - friendly self cleanse + status.
-                new()
-                {
-                    Feat = FeatType.FilterFlush1,
-                    Target = AbilityTargetKind.Self,
-                    TargetSetupStatusEffects = new[] { typeof(PoisonStatusEffect) },
-                    ExpectedRemovedTargetStatusEffects = new[] { typeof(PoisonStatusEffect) },
-                    ExpectedActivatorStatusEffects = new[] { typeof(Antitoxin1StatusEffect) },
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                },
 
-                // FullOverrideAbilityDefinition - capstone self buff.
-                new()
-                {
-                    Feat = FeatType.FullOverride1,
-                    Target = AbilityTargetKind.Self,
-                    TargetSetupStatusEffects = new[] { typeof(PoisonStatusEffect) },
-                    ExpectedRemovedTargetStatusEffects = new[] { typeof(PoisonStatusEffect) },
-                    ExpectedActivatorStatusEffects = new[] { typeof(EmergencyCocktailStatusEffect) },
-                    ExpectsActivatorTemporaryHP = true,
-                    ExpectsRecast = true,
-                    CostAssertionWaiverReason = "The impact restores more stamina than its own 15 STM cost in the same engine tick, so no post-activation pool dip can be observed.",
-                    Notes = "Asserts the status, a newly added raw temporary-HP effect, and removal of a pre-applied Poison. The capstone's same-tick stamina restore masks its declared cost.",
-                },
 
                 // EmergencyOverrideAbilityDefinition - direct heal only, no tracked status effect;
                 // ApplyTraumaMedicRiders is gated on a stat adjustment the base NPC doesn't have.
@@ -83,23 +34,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Notes = "Heals via ApplyActivatedMedicalScaledHeal (raw EffectHeal); TraumaMedic rider requires a stat adjustment the NPC doesn't have.",
                 },
 
-                // TargetingUplinkAbilityDefinition - friendly self buff.
-                new()
-                {
-                    Feat = FeatType.TargetingUplink1,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(FocusStim1StatusEffect) },
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                },
-                new()
-                {
-                    Feat = FeatType.TargetingUplink2,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(FocusStim2StatusEffect) },
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                },
 
                 // MaintenanceRoutineAbilityDefinition - friendly self heal-over-time status. The status effect's
                 // own Tick (Frequency=3s) applies a guaranteed, unconditional heal each pulse, well
@@ -182,25 +116,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // DamperFieldAbilityDefinition - friendly self buff (temp HP + status).
-                new()
-                {
-                    Feat = FeatType.DamperField1,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(PainSuppressant1StatusEffect) },
-                    ExpectsActivatorTemporaryHP = true,
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                },
-                new()
-                {
-                    Feat = FeatType.DamperField2,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(PainSuppressant2StatusEffect) },
-                    ExpectsActivatorTemporaryHP = true,
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                },
 
                 // JumpStartAbilityDefinition - ValidateFriendlyTarget(requireDead: true), so it
                 // requires a dead ally target. The harness only spawns living Self/HostileCreature
@@ -229,31 +144,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Notes = "Derives the minimum post-revive HP from 20% of the target's maximum HP plus the caster's Willpower scaling, proving the full delayed heal rather than a token HP increase.",
                 },
 
-                // DeflectorFieldAbilityDefinition - friendly self buff.
-                new()
-                {
-                    Feat = FeatType.DeflectorField1,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(Shielding1StatusEffect) },
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                },
-                new()
-                {
-                    Feat = FeatType.DeflectorField2,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(Shielding2StatusEffect) },
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                },
-                new()
-                {
-                    Feat = FeatType.DeflectorField3,
-                    Target = AbilityTargetKind.Self,
-                    ExpectedActivatorStatusEffects = new[] { typeof(Shielding3StatusEffect) },
-                    ExpectsSTMCost = true,
-                    ExpectsRecast = true,
-                },
 
                 // SystemPurgeAbilityDefinition - pre-apply every ailment promised by each rank
                 // and require the real friendly-target cast to remove all of them.
@@ -314,6 +204,127 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         typeof(DiseaseStatusEffect),
                     },
                     ExpectedTargetStatusEffects = new[] { typeof(AilmentResistance3StatusEffect) },
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+
+                // PowerTransferAbilityDefinition - friendly self buff. RequirementItem("stim_pack")
+                // is bypassed entirely for non-PC activators (AbilityRequirementItem.CheckRequirements
+                // returns success for anything that isn't a PC), so no item is needed here.
+                new()
+                {
+                    Feat = FeatType.PowerTransfer1,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(AdrenalStimStatusEffect) },
+                    ExpectsRecast = true,
+                    Notes = "RequirementItem is a no-op for NPC activators, so no item setup is needed. No FP/Stamina cost is declared.",
+                },
+                new()
+                {
+                    Feat = FeatType.PowerTransfer2,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(AdrenalStimStatusEffect) },
+                    ExpectsRecast = true,
+                },
+                new()
+                {
+                    Feat = FeatType.PowerTransfer3,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(AdrenalStimStatusEffect) },
+                    ExpectsRecast = true,
+                },
+
+                // FilterFlushAbilityDefinition - friendly self cleanse + status.
+                new()
+                {
+                    Feat = FeatType.FilterFlush1,
+                    Target = AbilityTargetKind.Self,
+                    TargetSetupStatusEffects = new[] { typeof(PoisonStatusEffect) },
+                    ExpectedRemovedTargetStatusEffects = new[] { typeof(PoisonStatusEffect) },
+                    ExpectedActivatorStatusEffects = new[] { typeof(Antitoxin1StatusEffect) },
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+
+                // FullOverrideAbilityDefinition - capstone self buff.
+                new()
+                {
+                    Feat = FeatType.FullOverride1,
+                    Target = AbilityTargetKind.Self,
+                    TargetSetupStatusEffects = new[] { typeof(PoisonStatusEffect) },
+                    ExpectedRemovedTargetStatusEffects = new[] { typeof(PoisonStatusEffect) },
+                    ExpectedActivatorStatusEffects = new[] { typeof(EmergencyCocktailStatusEffect) },
+                    ExpectsActivatorTemporaryHP = true,
+                    ExpectsRecast = true,
+                    CostAssertionWaiverReason = "The impact restores more stamina than its own 15 STM cost in the same engine tick, so no post-activation pool dip can be observed.",
+                    Notes = "Asserts the status, a newly added raw temporary-HP effect, and removal of a pre-applied Poison. The capstone's same-tick stamina restore masks its declared cost.",
+                },
+
+
+                // TargetingUplinkAbilityDefinition - friendly self buff.
+                new()
+                {
+                    Feat = FeatType.TargetingUplink1,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(FocusStim1StatusEffect) },
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+                new()
+                {
+                    Feat = FeatType.TargetingUplink2,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(FocusStim2StatusEffect) },
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+
+
+
+
+                // DamperFieldAbilityDefinition - friendly self buff (temp HP + status).
+                new()
+                {
+                    Feat = FeatType.DamperField1,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(PainSuppressant1StatusEffect) },
+                    ExpectsActivatorTemporaryHP = true,
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+                new()
+                {
+                    Feat = FeatType.DamperField2,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(PainSuppressant2StatusEffect) },
+                    ExpectsActivatorTemporaryHP = true,
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+
+
+                // DeflectorFieldAbilityDefinition - friendly self buff.
+                new()
+                {
+                    Feat = FeatType.DeflectorField1,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(Shielding1StatusEffect) },
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+                new()
+                {
+                    Feat = FeatType.DeflectorField2,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(Shielding2StatusEffect) },
+                    ExpectsSTMCost = true,
+                    ExpectsRecast = true,
+                },
+                new()
+                {
+                    Feat = FeatType.DeflectorField3,
+                    Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(Shielding3StatusEffect) },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
                 },

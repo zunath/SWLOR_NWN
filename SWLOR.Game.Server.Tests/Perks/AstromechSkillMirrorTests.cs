@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -21,7 +22,11 @@ namespace SWLOR.Game.Server.Tests.Perks;
 /// </summary>
 public class AstromechSkillMirrorTests
 {
-    private sealed record PerkPair(string Skill, string SourceSkill, PerkType Source, PerkType Mirror);
+    /// <param name="AbilitySkill">
+    /// The skill the mirrored abilities act as. Armaments abilities keep their source weapon skill, because the
+    /// astromech's tools follow the staff and rifle combat rules; the rank behind them is Armaments.
+    /// </param>
+    private sealed record PerkPair(string Skill, string SourceSkill, string AbilitySkill, PerkType Source, PerkType Mirror);
 
     private static string Root
     {
@@ -44,9 +49,13 @@ public class AstromechSkillMirrorTests
             {
                 foreach (var perk in line.GetProperty("perks").EnumerateObject())
                 {
+                    var skill = mirror.GetProperty("skill").GetString()!;
                     pairs.Add(new PerkPair(
-                        mirror.GetProperty("skill").GetString()!,
-                        mirror.GetProperty("source_skill").GetString()!,
+                        skill,
+                        line.TryGetProperty("source_skill", out var lineSource)
+                            ? lineSource.GetString()!
+                            : mirror.GetProperty("source_skill").GetString()!,
+                        line.TryGetProperty("identity", out var identity) ? identity.GetString()! : skill,
                         Enum.Parse<PerkType>(perk.Name),
                         Enum.Parse<PerkType>(perk.Value.GetProperty("id").GetString()!)));
                 }
@@ -155,7 +164,7 @@ public class AstromechSkillMirrorTests
                         .Should().Be(Seconds(() => source.ActivationDelay?.Invoke(0, 0, source.AbilityLevel)));
                     mirror.Requirements.Select(Requirement)
                         .Should().BeEquivalentTo(source.Requirements.Select(Requirement));
-                    mirror.SkillType.Should().Be(Enum.Parse<SkillType>(pair.Skill));
+                    mirror.SkillType.Should().Be(Enum.Parse<SkillType>(pair.AbilitySkill));
                     mirror.IsHostileAbility.Should().Be(source.IsHostileAbility);
                 }
             }
@@ -205,6 +214,38 @@ public class AstromechSkillMirrorTests
             humanoid.Skills[skill] = new PlayerSkill { Rank = 50 };
         new PerkRequirementSkill(SkillType.UtilitySystems, 0).CheckRequirements(humanoid, null)
             .Should().Contain("cannot be trained by your species");
+    }
+
+    [Test]
+    public void AnAstromechsToolsFightAsStaffAndRifleOnItsArmamentsRank()
+    {
+        // Rank reads and XP awards resolve to the skill the astromech trains.
+        SkillBodyFrames.GetTrainedSkill(SkillType.Staff, BodyFrame.Astromech).Should().Be(SkillType.Armaments);
+        SkillBodyFrames.GetTrainedSkill(SkillType.Rifle, BodyFrame.Astromech).Should().Be(SkillType.Armaments);
+        SkillBodyFrames.GetTrainedSkill(SkillType.Armor, BodyFrame.Astromech).Should().Be(SkillType.Chassis);
+        SkillBodyFrames.GetTrainedSkill(SkillType.Pistol, BodyFrame.Astromech).Should().Be(SkillType.Pistol);
+        foreach (var skill in Enum.GetValues<SkillType>())
+            SkillBodyFrames.GetTrainedSkill(skill, BodyFrame.Humanoid).Should().Be(skill);
+
+        // The capstone quests of the source skills accept Armaments.
+        SkillBodyFrames.GetMirror(SkillType.Staff, BodyFrame.Astromech).Should().Be(SkillType.Armaments);
+        SkillBodyFrames.GetMirror(SkillType.Rifle, BodyFrame.Astromech).Should().Be(SkillType.Armaments);
+
+        // None of this opens the Staff or Rifle perks themselves.
+        SkillBodyFrames.GetFrameEquivalent(SkillType.Staff, BodyFrame.Astromech).Should().Be(SkillType.Staff);
+        SkillBodyFrames.GetFrameEquivalent(SkillType.Rifle, BodyFrame.Astromech).Should().Be(SkillType.Rifle);
+        var astromech = new Player { BodyFrame = BodyFrame.Astromech };
+        foreach (var skill in Enum.GetValues<SkillType>())
+            astromech.Skills[skill] = new PlayerSkill { Rank = 50 };
+        new PerkRequirementSkill(SkillType.Staff, 0).CheckRequirements(astromech, null)
+            .Should().Contain("cannot be trained by your species");
+        new PerkRequirementSkill(SkillType.Rifle, 0).CheckRequirements(astromech, null)
+            .Should().Contain("cannot be trained by your species");
+        new PerkRequirementSkill(SkillType.Armaments, 50).CheckRequirements(astromech, null).Should().BeEmpty();
+
+        // The tools carry every weapon rule of the staff and the rifle.
+        Item.StaffBaseItemTypes.Should().Contain(BaseItem.ShockProd);
+        Item.RifleBaseItemTypes.Should().Contain(BaseItem.BlasterMount);
     }
 
     [Test]

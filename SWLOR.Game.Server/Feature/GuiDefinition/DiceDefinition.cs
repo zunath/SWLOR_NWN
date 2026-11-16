@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Dice)
-                .SetInitialGeometry(0, 0, 190f, 430f)
+                .SetInitialGeometry(0, 0, 190f, 460f)
                 .SetTitle("Dice Bag")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -135,6 +135,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("d100")
                             .SetHeight(18f)
                             .BindOnClicked(model => model.OnClickRollD100());
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .SetText("Initiative Tracker")
+                            .SetTooltip("Open the initiative tracker for this area.")
+                            .SetHeight(18f)
+                            .BindOnClicked(model => model.OnClickTracker());
                     });
                 });
 

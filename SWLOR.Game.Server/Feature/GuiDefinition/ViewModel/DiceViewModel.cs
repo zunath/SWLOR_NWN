@@ -89,6 +89,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickRollD20() => () => DoDiceRoll(20, DiceCount);
         public Action OnClickRollD100() => () => DoDiceRoll(100, DiceCount);
 
+        public Action OnClickTracker() => () => InitiativeTracker.ToggleWindow(Player, GuiWindowType.InitiativeTracker);
+
         private void DoDiceRoll(int sides, int number)
         {
             if (number < MinDiceCount)

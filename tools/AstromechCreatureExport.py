@@ -522,6 +522,7 @@ THRUST = 0.12     # prod slide beyond its rest position at the hit
 ANIM_NODES = [('rootdummy', None), ('torso', 'rootdummy'), ('head', 'torso'), ('legl', 'rootdummy'), ('legr', 'rootdummy'),
               ('toolr', 'toolr_socket'), ('tooll', 'tooll_socket')]
 POSITION_NODES = ('rootdummy', 'toolr', 'tooll')
+SOCKET_PARENTS = {'toolr_socket': 'torso', 'tooll_socket': 'torso'}
 LOOPING_CLIPS = ('cpause1', 'cpause2', 'cwalk', 'cwalkinj', 'crun', 'creadyr', 'creadyl', 'ccastoutlp')
 MELEE_CLIPS = ('ca1slashl', 'ca1slashr', 'ca1stab', 'cclosel', 'ccloseh', 'creach')
 
@@ -637,6 +638,9 @@ def format_clip(spec, model, tool_lengths):
     rest = {'rootdummy': (0, 0, 0), 'toolr': slide(retract_offset(tool_lengths['prod'])), 'tooll': slide(retract_offset(tool_lengths['blaster']))}
     for node, parent in ANIM_NODES:
         track = spec['tracks'].get(node, {})
+        if parent in SOCKET_PARENTS:
+            # an unkeyed socket keeps the tool connected to the root; the compiler drops disconnected nodes
+            lines += [f'  node dummy {parent}', f'    parent {SOCKET_PARENTS[parent]}', '  endnode']
         lines += [f'  node dummy {node}', f'    parent {parent or model}']
         if node in POSITION_NODES:
             pos = track.get('pos') or [(0, rest[node]), (length, rest[node])]

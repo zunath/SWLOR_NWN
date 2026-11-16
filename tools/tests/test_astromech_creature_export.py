@@ -144,10 +144,38 @@ class ClipTests(unittest.TestCase):
         self.assertEqual(self.text.count('newanim '), len(EXPECTED_CLIPS))
         self.assertEqual(self.text.count('doneanim '), len(EXPECTED_CLIPS))
 
+    def test_every_clip_node_hangs_from_a_declared_parent(self):
+        """The compiler drops animation nodes that are not connected to the root, so each node's parent must be
+        declared earlier in the same clip."""
+        blocks = re.findall(r'newanim (\S+) \S+\n(.*?)doneanim', self.text, re.S)
+        self.assertTrue(blocks)
+        for name, body in blocks:
+            declared = set()
+            for node, parent in re.findall(r'node \w+ (\S+)\n\s+parent (\S+)', body):
+                if parent != 'NULL':
+                    self.assertIn(parent, declared, f'{name}: {node} hangs from undeclared {parent}')
+                declared.add(node)
+            self.assertTrue({'toolr', 'tooll', 'toolr_socket', 'tooll_socket'} <= declared, name)
+
+    def test_whole_shells_stay_in_one_segment(self):
+        """A shell that straddles a threshold goes to the side holding its area-weighted centroid."""
+        quad = [((0.0, 0.0, 0.0), (0.0, 0.0, 1.0), (0.0, 0.0)), ((1.0, 0.0, 0.0), (0.0, 0.0, 1.0), (1.0, 0.0)),
+                ((1.0, 1.0, 0.0), (0.0, 0.0, 1.0), (1.0, 1.0)), ((0.0, 1.0, 0.0), (0.0, 0.0, 1.0), (0.0, 1.0))]
+        far = [((5.0, 0.0, 0.0), (0.0, 0.0, 1.0), (0.0, 0.0)), ((6.0, 0.0, 0.0), (0.0, 0.0, 1.0), (1.0, 0.0)),
+               ((6.0, 1.0, 0.0), (0.0, 0.0, 1.0), (1.0, 1.0))]
+        triangles = [[quad[0], quad[1], quad[2]], [quad[0], quad[2], quad[3]], far]
+        centroids = astro.shell_centroids(triangles)
+        self.assertEqual(centroids[0], centroids[1])
+        self.assertNotEqual(centroids[0], centroids[2])
+        for value, expected in zip(centroids[0], (0.5, 0.5, 0.0)):
+            self.assertAlmostEqual(value, expected, places=6)
+
     def test_only_root_and_tools_carry_position_keys(self):
         for name, clip in self.clips.items():
             for node, tracks in clip['nodes'].items():
-                if node not in POSITION_NODES and node != 'c_astromech':
+                if node in astro.SOCKET_PARENTS:
+                    self.assertEqual(tracks, {}, f'{name}/{node}: sockets differ per chassis and are never keyed')
+                elif node not in POSITION_NODES and node != 'c_astromech':
                     self.assertNotIn('position', tracks, f'{name}/{node}')
                     self.assertIn('orientation', tracks, f'{name}/{node}')
 

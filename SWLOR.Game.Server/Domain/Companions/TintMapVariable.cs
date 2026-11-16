@@ -1,6 +1,7 @@
 using System;
+using SWLOR.Game.Server.Domain.Character;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>The stable GFF/local-variable contract shared by the server and desktop Toolset.</summary>
     public static class TintMapVariable

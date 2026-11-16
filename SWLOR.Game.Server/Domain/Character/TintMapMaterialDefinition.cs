@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Character
 {
     public class TintMapMaterialDefinition
     {

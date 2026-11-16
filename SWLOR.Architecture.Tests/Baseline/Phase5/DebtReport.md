@@ -229,7 +229,7 @@ Largest 15 of 139 (all in `StaticState.txt`):
 | `SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData` | 7 | fields: ArmorPaletteLabels, ArmorPartLabels, ItemHeader, RenamedTextFields, RevisedPropertyCostTables, RootIcons, SimpleModelRootIcons |
 | `SWLOR.Game.Server.Core.Scheduler` | 6 | fields: DeltaTime*, Time*, _clearCount*, _comparer, _scheduledItems*, _stopwatch* |
 | `SWLOR.Game.Server.Domain.Character.RoleplayMessageClassifier` | 6 | fields: DefaultOOCTerms, EmoticonPunctuation, OOCLabels, OOCMarkers, WordPunctuation, WordSeparators |
-| `SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapPaletteColors` | 6 | fields: Colors, Hair, Metal1, Metal2, Organic, Skin |
+| `SWLOR.Game.Server.Domain.Companions.TintMapPaletteColors` | 6 | fields: Colors, Hair, Metal1, Metal2, Organic, Skin |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel` | 6 | fields: BottomToggles, CraftingTable, ResistancesTable, StatsTable, Tabs, TopToggles |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DebugNuiGalleryViewModel` | 6 | fields: ColorCycle, ImageCycle, RowAToggles, RowBToggles, RowCToggles, Tabs |
 | `SWLOR.Game.Server.NativeSinks.LegacyItemPropertiesSink` | 6 | fields: BaseItemLabel, CostTableLabel, CostValueLabel, PropertiesListLabel, PropertyNameLabel, SubtypeLabel |

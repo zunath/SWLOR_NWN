@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// Precomputed equipment-material slots grouped by wearer-variant identity. Runtime tint

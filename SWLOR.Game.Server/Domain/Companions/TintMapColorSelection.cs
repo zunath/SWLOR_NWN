@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>
     /// The resolved value applied to one layer: either an RGB override, or a palette row retained

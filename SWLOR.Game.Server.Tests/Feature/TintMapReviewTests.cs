@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -465,9 +466,8 @@ public class TintMapReviewTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapModelResolver.cs");
         var method = FindMethod(source, nameof(TintMapModelResolver.GetCurrentSelections));
         var appendageCalls = method.DescendantNodes()
@@ -555,9 +555,8 @@ public class TintMapReviewTests
     {
         var resolver = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapModelResolver.cs");
         FindMethod(resolver, "AddItemSelections")
             .ToString().Should().Contain("ItemClass");
@@ -594,9 +593,8 @@ public class TintMapReviewTests
     {
         var resolver = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapModelResolver.cs");
         var worldSource = FindMethod(resolver, "AddItemSelections").ToString();
         worldSource.Should().Contain("itemClass == \"cloak\"");
@@ -1006,17 +1004,15 @@ public class TintMapReviewTests
     {
         var selectionSource = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapMaterialSelection.cs");
         selectionSource.Should().Contain("public AppearanceWeapon WeaponPart { get; }");
 
         var resolverSource = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapModelResolver.cs");
         FindMethod(resolverSource, "AddItemPart").ToString().Should().Contain("weaponPart: part",
             "each top, middle, and bottom model must retain its component color identity");
@@ -1080,9 +1076,8 @@ public class TintMapReviewTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapModelResolver.cs");
         var partsMethod = FindMethod(source, "AddPartsAppearanceSelections");
         partsMethod.DescendantNodes()
@@ -1107,9 +1102,8 @@ public class TintMapReviewTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapModelResolver.cs");
         var currentSelections = FindMethod(source, nameof(TintMapModelResolver.GetCurrentSelections));
         currentSelections.ToString().Should().Contain("InventorySlot.RightHand");
@@ -1134,9 +1128,8 @@ public class TintMapReviewTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapModelResolver.cs");
         var method = FindMethod(source, "GetCurrentSelections");
         var nonPartsBranch = method.DescendantNodes()
@@ -1185,9 +1178,8 @@ public class TintMapReviewTests
 
         var resolverSource = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapModelResolver.cs");
         var method = FindMethod(resolverSource, "CopyArmorPartTintOverrides");
         var invocations = method.DescendantNodes()
@@ -2637,9 +2629,8 @@ public class TintMapReviewTests
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
-            "Feature",
-            "AppearanceDefinition",
-            "TintMap",
+            "Domain",
+            "Companions",
             "TintMapMaterialRegistry.cs");
         var loadMethod = FindMethod(source, nameof(TintMapMaterialRegistry.Load));
         var invocations = loadMethod.DescendantNodes()

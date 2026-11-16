@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -16,22 +17,6 @@ using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
-    public sealed class TintMapItemColorCarry
-    {
-        public IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<TintMapItemColorSource>> Sources { get; }
-
-        public TintMapItemColorCarry(
-            IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<TintMapItemColorSource>> sources)
-        {
-            Sources = sources;
-        }
-    }
-
-    public readonly record struct TintMapItemColorSource(
-        string MaterialResref,
-        string VariableName,
-        int? StoredValue);
-
     public static class TintMapService
     {
         private const float RefreshDelaySeconds = 0.2f;

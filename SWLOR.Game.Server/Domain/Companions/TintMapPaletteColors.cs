@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Character;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>
     /// Representative RGB values sampled from the midtone column of plt_palette.tga.

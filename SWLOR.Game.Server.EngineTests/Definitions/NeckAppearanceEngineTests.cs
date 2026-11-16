@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using NWN.Native.API;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;

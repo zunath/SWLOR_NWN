@@ -45,11 +45,11 @@ SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveOpenFram
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.TrainingSaberCatalog | 2
 SWLOR.Game.Server.Feature.AppearanceDefinition.Preview.AppearancePartNames | 2
 SWLOR.Game.Server.Feature.AppearanceDefinition.Species.RacialAppearanceRegistry | 2
-SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.PartSkinModelCatalog | 2
-SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapEquipmentMaterialIndex | 1
-SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapMaterialRegistry | 1
-SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapModelResolver | 1
-SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapPaletteColors | 6
+SWLOR.Game.Server.Domain.Character.PartSkinModelCatalog | 2
+SWLOR.Game.Server.Domain.Character.TintMapEquipmentMaterialIndex | 1
+SWLOR.Game.Server.Domain.Companions.TintMapMaterialRegistry | 1
+SWLOR.Game.Server.Domain.Companions.TintMapModelResolver | 1
+SWLOR.Game.Server.Domain.Companions.TintMapPaletteColors | 6
 SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility | 1
 SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand | 2
 SWLOR.Game.Server.Feature.EchaniTempleMonks | 1

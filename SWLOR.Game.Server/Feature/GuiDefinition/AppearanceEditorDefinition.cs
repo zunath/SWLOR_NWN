@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {

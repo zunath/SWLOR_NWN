@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum;
 using ObjectVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;
 

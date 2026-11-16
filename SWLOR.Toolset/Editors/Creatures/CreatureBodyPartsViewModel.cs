@@ -2,6 +2,8 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Avalonia.Media;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Toolset.Domain.Documents;
 using Nwn.Authoring.Documents.Native;
 using Nwn.Authoring.Editing;

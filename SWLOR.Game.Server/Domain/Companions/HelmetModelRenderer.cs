@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using NWN.Native.API;
+using SWLOR.Game.Server.Feature.AppearanceDefinition;
 using SWLOR.NWN.API.NWScript.Enum;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ObjectVisualTransform = SWLOR.NWN.API.NWScript.Enum.ObjectVisualTransform;
 using static SWLOR.Game.Server.Composition.GameServices;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Companions
 {
     public static class HelmetModelRenderer
     {

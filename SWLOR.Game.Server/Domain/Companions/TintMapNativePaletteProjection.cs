@@ -1,6 +1,6 @@
 using System;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>Preserves native preset colors while projecting the current tint into a PLT palette.</summary>
     public static class TintMapNativePaletteProjection

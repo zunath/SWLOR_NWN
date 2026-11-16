@@ -2,6 +2,7 @@ using System;
 using NWN.Native.API;
 using SWLOR.Game.Contracts;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum.Item;

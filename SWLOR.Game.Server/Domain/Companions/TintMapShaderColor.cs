@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>
     /// Lossless RGB transport through the existing scalar material parameter. Palette UVs

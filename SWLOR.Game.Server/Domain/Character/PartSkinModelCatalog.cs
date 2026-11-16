@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// Robe bodies of one family share a skeleton layout, so partlayout.2da maps each body to a layout

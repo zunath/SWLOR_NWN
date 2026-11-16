@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Companions
 {
     public static class TintMapModelResolver
     {
@@ -215,7 +217,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     continue;
 
                 var model = part == CreaturePart.Neck
-                    ? ItemAppearance.NeckAppearance.GetModel(creature, NeckModelRenderer.GetAuthoredStyle(creature, partId))
+                    ? NeckAppearance.GetModel(creature, NeckModelRenderer.GetAuthoredStyle(creature, partId))
                     : $"{prefix}{partName}{partId:D3}".ToLowerInvariant();
                 AddModelSelections(
                     selections,

@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
 using Nwn.Authoring.Documents.NimGff;

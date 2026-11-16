@@ -395,3 +395,8 @@ SWLOR.Game.Server.Feature.StoreManagement.ProcessStores SWLOR.Game.Server.Featur
 SWLOR.Game.Server.Feature.DialogDefinition.CoxxionTerminalDialog.LoadDoors SWLOR.Game.Server.Domain.World.CoxxionBaseDoorsService.LoadDoors
 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnDMPossess SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnDMPossess
 SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.RefreshClientTargetingOnEnter SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnEnter
+SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.NeckModelRenderer.Load SWLOR.Game.Server.Domain.Companions.NeckModelRenderer.Load
+SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.PartSkinModelRenderer.Load SWLOR.Game.Server.Domain.Companions.PartSkinModelRenderer.Load
+SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.RobeModelRenderer.Load SWLOR.Game.Server.Domain.Companions.RobeModelRenderer.Load
+SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.ShoulderModelRenderer.Load SWLOR.Game.Server.Domain.Companions.ShoulderModelRenderer.Load
+SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapMaterialRegistry.Load SWLOR.Game.Server.Domain.Companions.TintMapMaterialRegistry.Load

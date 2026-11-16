@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>
     /// An authored tint-map color. RGB values are packed into a positive local-int value with a

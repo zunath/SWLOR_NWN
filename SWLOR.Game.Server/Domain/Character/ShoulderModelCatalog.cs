@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Character
 {
     public sealed class ShoulderModelCatalog
     {

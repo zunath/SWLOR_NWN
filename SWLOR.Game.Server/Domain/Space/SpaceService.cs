@@ -21,6 +21,7 @@ using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using Vector3 = System.Numerics.Vector3;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Domain.Space
 {

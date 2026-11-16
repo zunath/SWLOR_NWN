@@ -4,13 +4,14 @@ using System.Collections.Immutable;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ItemAppearanceType = SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType;
 using static SWLOR.Game.Server.Composition.GameServices;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
+namespace SWLOR.Game.Server.Domain.Companions
 {
     /// <summary>
     /// Projects equipped armor parts whose external skins would bind to shifted bones on a robe body

@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsObjectValid(area))
                 return OOCMessageContext.Standard;
 
-            var context = GetLocalBool(area, CommunicationService.EventCommsAreaVariable)
+            var context = GetLocalBool(area, ChatVariables.EventCommsAreaVariable)
                 ? OOCMessageContext.EventArea
                 : OOCMessageContext.Standard;
 

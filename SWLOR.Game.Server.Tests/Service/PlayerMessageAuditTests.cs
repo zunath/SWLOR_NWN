@@ -124,7 +124,7 @@ public class PlayerMessageAuditTests
         };
         if ((file is "SWLOR.Game.Server/Service/PlayerFeedback.cs" or "SWLOR.Game.Server/Service/Messaging.cs" or
             "SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs" or "SWLOR.Game.Server/Domain/Foundation/MessagingService.cs" or
-            "SWLOR.Game.Server/Service/Communication.cs" or "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs" or
+            "SWLOR.Game.Server/Service/Communication.cs" or "SWLOR.Game.Server/Domain/Social/CommunicationService.cs" or
             "SWLOR.Game.Server/Domain/UI/GuiService.cs") &&
             !name.Contains("Diagnostic", StringComparison.OrdinalIgnoreCase))
             delivery = "Shared transport; policy at caller";

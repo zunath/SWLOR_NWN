@@ -994,43 +994,43 @@
     "Call": "SendMessageToPC(player, $\"{dbPlayer.MarketTill} credits are in your market till.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
-    "Line": 225,
-    "Member": "ProcessChatMessage",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "ChatPlugin.SendMessage(ChatChannel.ServerMessage, \"(Sent to DM) \" + message, sender, sender)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
-    "Line": 238,
-    "Member": "ProcessChatMessage",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
-    "Line": 244,
-    "Member": "ProcessChatMessage",
-    "Delivery": "Shared transport; policy at caller",
-    "Call": "SendMessageToPC(sender, ColorToken.Red(\"You cannot speak while dead.\"))"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
-    "Line": 352,
+    "File": "SWLOR.Game.Server/Domain/Social/CommunicationService.cs",
+    "Line": 184,
     "Member": "ProcessChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
-    "Line": 554,
+    "File": "SWLOR.Game.Server/Domain/Social/CommunicationService.cs",
+    "Line": 245,
+    "Member": "TryAcceptMessage",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "ChatPlugin.SendMessage(ChatChannel.ServerMessage, \"(Sent to DM) \" + message, sender, sender)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/CommunicationService.cs",
+    "Line": 258,
+    "Member": "TryAcceptMessage",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(DisabledChannelMessage))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/CommunicationService.cs",
+    "Line": 264,
+    "Member": "TryAcceptMessage",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "SendMessageToPC(sender, ColorToken.Red(\"You cannot speak while dead.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Social/CommunicationService.cs",
+    "Line": 586,
     "Member": "SendProcessedChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs",
-    "Line": 570,
+    "File": "SWLOR.Game.Server/Domain/Social/CommunicationService.cs",
+    "Line": 602,
     "Member": "SendProcessedChatMessage",
     "Delivery": "Shared transport; policy at caller",
     "Call": "ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)"

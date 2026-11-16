@@ -258,8 +258,7 @@ Domain/Economy -> Domain/World | 7
 # Foundation -> Abilities (1 edge)
 Feature/MigrationDefinition -> Domain/Abilities | 4
 
-# Foundation -> Administration (2 edges)
-Domain/Foundation -> Domain/Administration | 7
+# Foundation -> Administration (1 edge)
 Platform/Entity -> Domain/Administration | 4
 
 # Foundation -> Character (4 edges)
@@ -304,11 +303,7 @@ Feature/SnippetDefinition -> Domain/Items | 2
 Feature/DialogDefinition -> Domain/Quests | 5
 Feature/SnippetDefinition -> Domain/Quests | 8
 
-# Foundation -> Social (1 edge)
-Domain/Foundation -> Domain/Social | 3
-
-# Foundation -> Space (2 edges)
-Domain/Foundation -> Domain/Space | 3
+# Foundation -> Space (1 edge)
 Feature/DialogDefinition -> Domain/Space | 13
 
 # Foundation -> UI (6 edges)
@@ -319,8 +314,7 @@ Feature/DialogDefinition -> Feature/GuiDefinition | 3
 Feature/SnippetDefinition -> Feature/GuiDefinition | 2
 Platform/Entity -> Domain/UI | 4
 
-# Foundation -> World (2 edges)
-Domain/Foundation -> Domain/World | 9
+# Foundation -> World (1 edge)
 Feature/DialogDefinition -> Domain/World | 52
 
 # Gameplay -> Abilities (5 edges)

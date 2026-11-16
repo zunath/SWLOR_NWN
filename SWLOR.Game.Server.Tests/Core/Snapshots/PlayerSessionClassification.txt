@@ -18,9 +18,9 @@ mod_enter (57)
               Fills missing defense and resistance keys in Redis; the login already did.
   Restore     SWLOR.Game.Server.Domain.Combat.CombatActivityService.RestoreIdleReadinessOnPlayerEnter -> RestoreIdleReadiness
               Re-arms the idle readiness timers, closures of the old build that a reload drops, from the carried combat times.
-  LoginOnly   SWLOR.Game.Server.Domain.Foundation.CommunicationService.ApplyCommsChannelName
+  LoginOnly   SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyCommsChannelName
               The TLK override stays in the engine.
-  LoginOnly   SWLOR.Game.Server.Domain.Foundation.CommunicationService.ApplyShoutChannelName
+  LoginOnly   SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyShoutChannelName
               The TLK override stays in the engine.
   LoginOnly   SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
               Writes a missing respawn point to Redis; the login already did.

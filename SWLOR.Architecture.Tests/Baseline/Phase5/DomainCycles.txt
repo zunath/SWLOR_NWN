@@ -20,7 +20,7 @@ Abilities content <-> Character content | 3
 Abilities content <-> Gameplay content | 4
 Administration <-> Character | 2
 Administration <-> Creatures | 2
-Administration <-> Foundation | 4
+Administration <-> Foundation | 3
 Administration <-> Items | 2
 Administration <-> UI | 2
 Administration <-> World | 2
@@ -52,10 +52,7 @@ Economy <-> Items | 2
 Economy <-> Quests | 2
 Foundation <-> Items | 4
 Foundation <-> Platform | 9
-Foundation <-> Social | 4
-Foundation <-> Space | 4
 Foundation <-> UI | 5
-Foundation <-> World | 4
 Foundation content <-> Gameplay content | 7
 Gameplay content <-> UI content | 8
 Items <-> Platform | 4

@@ -6,8 +6,8 @@ namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The runtime state of the tint maps: the equipment-swap color carries that are waiting to be applied, and the
-    /// tint-map material tables read from the 2DAs when the module loads. The tint logic stays in the
-    /// <c>TintMapService</c> and <c>TintMapMaterialRegistry</c> Feature classes.
+    /// tint-map material tables read from the 2DAs when the module loads. The tint logic is in the Companions
+    /// tint-map services (<c>TintMapService</c> and its parts) and <c>TintMapMaterialRegistry</c>.
     /// </summary>
     public interface ITintMapStateService
     {

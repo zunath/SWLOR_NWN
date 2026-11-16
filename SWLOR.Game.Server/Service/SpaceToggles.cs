@@ -375,12 +375,12 @@ namespace SWLOR.Game.Server.Service
                 // pilot's.
                 var seat = ShipCrewSeats.GetSeatForSlot(status.Size, status.SlotTags, slot);
                 // An astromech in the socket works the Pilot's repair and capacitor modules while it is plugged in,
-                // whoever switched them on; with the socket empty they are the Pilot's again.
-                if (ShipCrewSeats.SeatWorksSlot(ShipCrewSeat.AstromechSocket, seat, detail.Type) &&
-                    GetIsObjectValid(SpaceCrew.GetSeatOccupant(creature, ShipCrewSeat.AstromechSocket)))
-                {
-                    seat = ShipCrewSeat.AstromechSocket;
-                }
+                // whoever switched them on, when it meets the module's rank as it must to switch the module on itself;
+                // otherwise, and with the socket empty, they are the Pilot's.
+                var socketCrew = SpaceCrew.GetSeatOccupant(creature, ShipCrewSeat.AstromechSocket);
+                var socketCrewed = socketCrew != OBJECT_INVALID && GetIsObjectValid(socketCrew);
+                seat = ShipCrewSeats.GetCycleSeat(seat, detail.Type, socketCrewed,
+                    socketCrewed && string.IsNullOrEmpty(GetStationRankError(socketCrew, ShipCrewSeat.AstromechSocket, module)));
 
                 var crewMember = seat == ShipCrewSeat.Pilot ? OBJECT_INVALID : SpaceCrew.GetSeatOccupant(creature, seat);
                 var playerCrewed = crewMember != OBJECT_INVALID && GetIsObjectValid(crewMember);

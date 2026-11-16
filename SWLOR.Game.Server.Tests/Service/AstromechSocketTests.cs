@@ -94,6 +94,25 @@ public class AstromechSocketTests
     }
 
     [Test]
+    public void ARunningSocketModule_CyclesAsTheAstromech_OnlyWhileItIsPluggedInAtTheModulesRank()
+    {
+        const ShipModuleType Repairer = ShipModuleType.ShieldRepairer;
+
+        ShipCrewSeats.GetCycleSeat(ShipCrewSeat.Pilot, Repairer, true, true).Should().Be(ShipCrewSeat.AstromechSocket);
+
+        // Below the module's rank the astromech cannot switch it on, so its cycles and their credit stay the Pilot's.
+        ShipCrewSeats.GetCycleSeat(ShipCrewSeat.Pilot, Repairer, true, false).Should().Be(ShipCrewSeat.Pilot);
+        ShipCrewSeats.GetCycleSeat(ShipCrewSeat.Pilot, Repairer, false, false).Should().Be(ShipCrewSeat.Pilot);
+        ShipCrewSeats.GetCycleSeat(ShipCrewSeat.Pilot, Repairer, false, true).Should().Be(ShipCrewSeat.Pilot);
+
+        // Weapons and other seats' slots are never the socket's.
+        foreach (var type in Enum.GetValues<ShipModuleType>().Where(type => !ShipCrewSeats.IsSocketModule(type)))
+            ShipCrewSeats.GetCycleSeat(ShipCrewSeat.Pilot, type, true, true).Should().Be(ShipCrewSeat.Pilot, type.ToString());
+        ShipCrewSeats.GetCycleSeat(ShipCrewSeat.Engineer, Repairer, true, true).Should().Be(ShipCrewSeat.Engineer);
+        ShipCrewSeats.GetCycleSeat(ShipCrewSeat.Gunner, Repairer, true, true).Should().Be(ShipCrewSeat.Gunner);
+    }
+
+    [Test]
     public void TheSocket_RoutesPower_LikeTheEngineerStation()
     {
         foreach (var seat in Enum.GetValues<ShipCrewSeat>())
@@ -122,8 +141,8 @@ public class AstromechSocketTests
 
         // A socket module that is switched on runs its cycles as the astromech while it is plugged in.
         var toggles = ReadServerSource("Service", "SpaceToggles.cs");
-        toggles.Should().Contain("ShipCrewSeats.SeatWorksSlot(ShipCrewSeat.AstromechSocket, seat, detail.Type)");
-        toggles.Should().Contain("seat = ShipCrewSeat.AstromechSocket;");
+        toggles.Should().Contain("seat = ShipCrewSeats.GetCycleSeat(seat, detail.Type, socketCrewed,");
+        toggles.Should().Contain("string.IsNullOrEmpty(GetStationRankError(socketCrew, ShipCrewSeat.AstromechSocket, module))");
 
         // The pose is one the chassis has a clip for.
         AstromechAnimations.CanPlay(AstromechAnimations.Station).Should().BeTrue();

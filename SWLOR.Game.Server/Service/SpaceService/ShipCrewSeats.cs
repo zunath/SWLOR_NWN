@@ -76,6 +76,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
                 ? slotSeat == ShipCrewSeat.Pilot && IsSocketModule(moduleType)
                 : seat == slotSeat;
 
+        /// <summary>
+        /// The seat that runs a cycle of a module that is switched on: the astromech socket for the Pilot's socket
+        /// modules while an astromech who meets the module's rank is plugged in, otherwise the slot's own seat. An
+        /// astromech below the module's rank cannot switch it on, so it does not run or take credit for its cycles
+        /// either; they stay the Pilot's.
+        /// </summary>
+        public static ShipCrewSeat GetCycleSeat(ShipCrewSeat slotSeat, ShipModuleType moduleType, bool socketCrewed, bool socketMeetsRank) =>
+            socketCrewed && socketMeetsRank && SeatWorksSlot(ShipCrewSeat.AstromechSocket, slotSeat, moduleType)
+                ? ShipCrewSeat.AstromechSocket
+                : slotSeat;
+
         /// <summary>Whether a seat routes the ship's power: the Engineer station and the astromech socket.</summary>
         public static bool RoutesPower(ShipCrewSeat seat) =>
             seat is ShipCrewSeat.Engineer or ShipCrewSeat.AstromechSocket;

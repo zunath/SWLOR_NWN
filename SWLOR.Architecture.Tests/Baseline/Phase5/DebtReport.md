@@ -7,11 +7,11 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,078 | 13,394 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 39 | 65,048 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 25 | 6,241 lines | none over 150 lines (400 for layout) |
+| 1. Static service lookup | `StaticLookups.txt` | 1,079 | 13,397 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 37 | 62,727 lines | none over 1,000 lines |
+| 3. Long methods | `LongMethods.txt` | 24 | 5,993 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 19 | 306 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 51 | 76 parameters | none |
+| 5. Deferred resolution | `DeferredResolution.txt` | 50 | 75 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 104 | 232 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 43 | 133 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 139 | 266 members | each kept with an approved reason, or removed |
@@ -20,10 +20,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,078 files, 13,394 uses: 820 using directives and 12,574 uses in code (7,457 in a static context).
+- 1,079 files, 13,397 uses: 821 using directives and 12,576 uses in code (7,457 in a static context).
 - SWLOR.Game.Server: 637 file(s), 5,945 use(s) (Feature/ 533, Domain/ 80, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 235 file(s), 5,232 use(s).
-- SWLOR.Game.Server.Tests: 177 file(s), 2,059 use(s).
+- SWLOR.Game.Server.Tests: 178 file(s), 2,062 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
 - SWLOR.Game.Server.IntegrationTests: 4 file(s), 20 use(s).
@@ -36,7 +36,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - Content (Feature/) uses in code: 4,698 (1,765 in a static context).
 - Content (Feature/) types that use it: 530. Static classes: 78. Instance classes that use it from a static member: 202 (156 only from static members).
 
-Largest 15 of 1,078 (all in `StaticLookups.txt`):
+Largest 15 of 1,079 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -58,11 +58,11 @@ Largest 15 of 1,078 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 39 types over 1,000 lines, 65,048 lines in all.
+- 37 types over 1,000 lines, 62,727 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 39 (all in `LargeTypes.txt`):
+Largest 15 of 37 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -84,10 +84,10 @@ Largest 15 of 39 (all in `LargeTypes.txt`):
 
 ## 3. Long methods
 
-- 23 methods over 150 lines and 2 GUI layout methods over 400.
+- 22 methods over 150 lines and 2 GUI layout methods over 400.
 - Exempt and over the limit: 80 (content data 76, data catalog member 4).
 
-Largest 15 of 25 (all in `LongMethods.txt`):
+Largest 15 of 24 (all in `LongMethods.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -97,7 +97,6 @@ Largest 15 of 25 (all in `LongMethods.txt`):
 | `SWLOR.Game.Server.Feature.GuiDefinition.ShipManagementDefinition.BuildWindow` | 414 | layout, ShipManagementDefinition.cs |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase.ConfigureWeaponAbility` | 291 | WeaponActiveAbilityDefinitionBase.cs |
 | `SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid` | 272 | DroidService.cs |
-| `SWLOR.Game.Server.Domain.Crafting.CraftService.BuildItemPropertyForEnhancement` | 248 | CraftService.cs |
 | `SWLOR.Game.Server.Domain.Character.SkillService.GiveSkillXP` | 237 | SkillService.cs |
 | `SWLOR.Game.Server.Domain.Character.StatusEffectService.ApplyStatusEffectInternal` | 234 | StatusEffectService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CombatStyleGuideTopics.Create` | 224 | CombatStyleGuideTopics.cs |
@@ -106,6 +105,7 @@ Largest 15 of 25 (all in `LongMethods.txt`):
 | `SWLOR.Game.Server.Domain.Items.ItemService.UseItem` | 189 | ItemService.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.RegisterColorMappings` | 188 | AppearanceEditorViewModel.ColorBindings.cs |
 | `SWLOR.Game.Server.Feature.DialogDefinition.StarportDockDialog.MainPageInit` | 186 | StarportDockDialog.cs |
+| `SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.QueueItemCustomColorCarry` | 183 | TintMapService.cs |
 
 ## 4. Services per type
 
@@ -134,12 +134,12 @@ Largest 15 of 19 (all in `ServicesPerType.txt`):
 
 ## 5. Deferred resolution
 
-- 76 deferred constructor parameters in 33 files (Lazy 76, Func 0), taken by 33 types, deferring 34 distinct services.
-- By direction in the domain order: up 13, down 40, inside one domain 23.
+- 75 deferred constructor parameters in 32 files (Lazy 75, Func 0), taken by 32 types, deferring 33 distinct services.
+- By direction in the domain order: up 13, down 40, inside one domain 22.
 - Up: Character -> Combat 8, Administration -> Space 1, Combat -> Space 1, Items -> Combat 1, World -> Social 1, World -> Space 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 51 (all in `DeferredResolution.txt`):
+Largest 15 of 50 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|

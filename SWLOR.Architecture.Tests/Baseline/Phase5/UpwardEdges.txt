@@ -57,7 +57,7 @@ SWLOR.Game.Server/Domain/Combat/ResistanceService.cs: Combat -> Abilities | 3
 SWLOR.Game.Server/Domain/Combat/StealthService.cs: Combat -> Creatures | 4
 SWLOR.Game.Server/Domain/Combat/TelegraphService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs: Combat -> Quests | 3
-SWLOR.Game.Server/Domain/Crafting/CraftService.cs: Crafting -> World | 3
+SWLOR.Game.Server/Domain/Crafting/CraftDeviceService.cs: Crafting -> World | 3
 SWLOR.Game.Server/Domain/Creatures/AIService.cs: Creatures -> Social | 3
 SWLOR.Game.Server/Domain/Foundation/CacheService.cs: Foundation -> Items | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> Character | 3

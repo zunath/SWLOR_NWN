@@ -805,29 +805,29 @@
     "Call": "SpeakString(personality.DeathPhrase())"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
-    "Line": 1079,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftDeviceService.cs",
+    "Line": 63,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
-    "Line": 1087,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftDeviceService.cs",
+    "Line": 71,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"This research terminal cannot be used.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
-    "Line": 1110,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftDeviceService.cs",
+    "Line": 94,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job will complete in: {completionTime}.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Crafting/CraftService.cs",
-    "Line": 1114,
+    "File": "SWLOR.Game.Server/Domain/Crafting/CraftDeviceService.cs",
+    "Line": 98,
     "Member": "UseResearchTerminal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"Another player's research job is active. This job has completed.\")"

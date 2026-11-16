@@ -68,7 +68,7 @@ mod_enter (57)
               Clears a granted-stealth window left by a crash at login; it would end a live one.
   LoginOnly   SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
               The encounter visibility overrides stay in the engine.
-  LoginOnly   SWLOR.Game.Server.Domain.Crafting.CraftService.RestoreCraftingStylesOnEnter
+  LoginOnly   SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.RestoreCraftingStylesOnEnter
               The crafting style status effects are carried.
   LoginOnly   SWLOR.Game.Server.Domain.Creatures.CompanionControlService.RenameToggleAbilitiesCommand
               The TLK override stays in the engine.

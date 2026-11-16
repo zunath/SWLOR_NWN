@@ -1,32 +1,26 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
-using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Combat;
-using SWLOR.Game.Server.Domain.UI;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
-using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Items;
-using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Crafting.Minigame;
-using SWLOR.Game.Server.Domain.Crafting.Research;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.Engine;
-using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.NWN.API.NWScript.Enum.Item.Property;
-using ResearchJob = SWLOR.Game.Server.Entity.ResearchJob;
 
 namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
-    /// Crafting: the recipe, category and enhancement caches, recipe requirement checks, enhancement item properties, blueprint
-    /// details and the research cost formulas. The logic that used to be a static class, moved here unchanged: the
+    /// Crafting: the recipe, category and enhancement caches, recipe requirement checks, blueprint details and the research cost
+    /// formulas. The enhancement item properties are <see cref="CraftEnhancementPropertyService"/>'s, the devices and the property and
+    /// login handlers <see cref="CraftDeviceService"/>'s. The logic that used to be a static class, moved here unchanged: the
     /// caches, and the objects the crafting minigames keep (the session and quick craft worlds, the quick craft batches and the
     /// route cache), are this instance's state. The event handlers run on the container's instance; static callers reach it through <c>GameServices.Craft</c>.
     /// </summary>
@@ -53,32 +47,20 @@ namespace SWLOR.Game.Server.Domain.Crafting
         private readonly ICacheService _cache;
         private readonly IDBService _db;
         private readonly IItemService _item;
-        private readonly IPropertyService _property;
-        private readonly Lazy<ICraftResearchExperimentService> _craftResearchExperiment;
-        private readonly ICraftStyleEffectsService _craftStyleEffects;
-        private readonly IGuiService _gui;
-        private readonly IResistanceService _resistance;
+        private readonly ICraftEnhancementPropertyService _enhancement;
         private readonly ISkillService _skill;
 
         public CraftService(
             ICacheService cache,
             IDBService db,
             IItemService item,
-            IPropertyService property,
-            Lazy<ICraftResearchExperimentService> craftResearchExperiment,
-            ICraftStyleEffectsService craftStyleEffects,
-            IGuiService gui,
-            IResistanceService resistance,
+            ICraftEnhancementPropertyService enhancement,
             ISkillService skill)
         {
             _cache = cache;
             _db = db;
             _item = item;
-            _property = property;
-            _craftResearchExperiment = craftResearchExperiment;
-            _craftStyleEffects = craftStyleEffects;
-            _gui = gui;
-            _resistance = resistance;
+            _enhancement = enhancement;
             _skill = skill;
         }
 
@@ -430,17 +412,6 @@ namespace SWLOR.Game.Server.Domain.Crafting
             return _categoriesBySkill[skill].ToDictionary(x => x.Key, y => y.Value);
         }
 
-        /// <summary>
-        /// When a crafting device is used, display the recipe menu.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnCraftUsed)]
-        public void UseCraftingDevice()
-        {
-            var player = GetLastUsedBy();
-            var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
-            var payload = new RecipesPayload(RecipesUIMode.Crafting, skillType);
-            _gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
-        }
 
         /// <summary>
         /// Builds a recipe's detail for use within the NUI window.
@@ -617,512 +588,6 @@ namespace SWLOR.Game.Server.Domain.Crafting
         }
 
         /// <summary>
-        /// Builds an item property for a given enhancement type.
-        /// </summary>
-        /// <param name="subTypeId">The sub type of the enhancement</param>
-        /// <param name="amount">The amount to apply.</param>
-        /// <returns></returns>
-        public IEnumerable<ItemProperty> BuildItemPropertiesForEnhancement(
-            EnhancementSubType subTypeId,
-            int amount,
-            CombatDamageType damageType = CombatDamageType.Invalid)
-        {
-            yield return BuildItemPropertyForEnhancement(subTypeId, amount);
-
-            if (TryGetWeaponDamageTypeForEnhancement(subTypeId, damageType, out var resolvedDamageType) &&
-                !resolvedDamageType.IsPhysicalDamageType())
-            {
-                yield return ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)resolvedDamageType);
-            }
-        }
-
-        public ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount)
-        {
-            switch (subTypeId)
-            {
-                case EnhancementSubType.DefensePhysical: // Defense - Physical
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, amount);
-                case EnhancementSubType.DefenseForce: // Defense - Force
-                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, amount);
-                case EnhancementSubType.ResistanceFire: // Resistance - Fire
-                    return BuildResistanceItemProperty(ResistanceType.Fire, amount);
-                case EnhancementSubType.ResistancePoison: // Resistance - Poison
-                    return BuildResistanceItemProperty(ResistanceType.Poison, amount);
-                case EnhancementSubType.ResistanceElectrical: // Resistance - Electrical
-                    return BuildResistanceItemProperty(ResistanceType.Electrical, amount);
-                case EnhancementSubType.ResistanceIce: // Resistance - Ice
-                    return BuildResistanceItemProperty(ResistanceType.Ice, amount);
-                case EnhancementSubType.ResistanceMind: // Resistance - Mind
-                    return BuildResistanceItemProperty(ResistanceType.Mind, amount);
-                case EnhancementSubType.ResistanceMobility: // Resistance - Mobility
-                    return BuildResistanceItemProperty(ResistanceType.Mobility, amount);
-                case EnhancementSubType.ResistanceTrauma: // Resistance - Trauma
-                    return BuildResistanceItemProperty(ResistanceType.Trauma, amount);
-                case EnhancementSubType.ResistanceDisruption: // Resistance - Disruption
-                    return BuildResistanceItemProperty(ResistanceType.Disruption, amount);
-                case EnhancementSubType.Evasion: // Evasion
-                    return ItemPropertyCustom(ItemPropertyType.Evasion, -1, amount);
-                case EnhancementSubType.HP: // HP
-                    return ItemPropertyCustom(ItemPropertyType.HPBonus, -1, amount);
-                case EnhancementSubType.FP: // FP
-                    return ItemPropertyCustom(ItemPropertyType.FP, -1, amount);
-                case EnhancementSubType.Stamina: // Stamina
-                    return ItemPropertyCustom(ItemPropertyType.Stamina, -1, amount);
-                case EnhancementSubType.Vitality: // Vitality
-                    return ItemPropertyAbilityBonus(AbilityType.Vitality, amount);
-                case EnhancementSubType.Social: // Social
-                    return ItemPropertyAbilityBonus(AbilityType.Social, amount);
-                case EnhancementSubType.Willpower: // Willpower
-                    return ItemPropertyAbilityBonus(AbilityType.Willpower, amount);
-                case EnhancementSubType.ControlSmithery: // Control - Smithery
-                    return ItemPropertyCustom(ItemPropertyType.Control, 1, amount);
-                case EnhancementSubType.CraftsmanshipSmithery: // Craftsmanship - Smithery
-                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 1, amount);
-                case EnhancementSubType.ShieldDeflection: // Shield Deflection
-                    return ItemPropertyCustom(ItemPropertyType.ShieldDeflection, -1, amount);
-
-                // 16 and 17 are applied within the view model, as they are not actually item properties.
-
-                case EnhancementSubType.DMG: // DMG
-                    return ItemPropertyCustom(ItemPropertyType.DMG, -1, amount);
-                case EnhancementSubType.Might: // Might
-                    return ItemPropertyAbilityBonus(AbilityType.Might, amount);
-                case EnhancementSubType.Perception: // Perception
-                    return ItemPropertyAbilityBonus(AbilityType.Perception, amount);
-                case EnhancementSubType.Accuracy: // Accuracy
-                    return ItemPropertyCustom(ItemPropertyType.Accuracy, -1, amount);
-                case EnhancementSubType.CombatReadiness: // Combat Readiness
-                    return ItemPropertyCustom(ItemPropertyType.CombatReadiness, -1, amount);
-                case EnhancementSubType.StructureBonus: // Structure Bonus
-                    return ItemPropertyCustom(ItemPropertyType.StructureBonus, -1, amount);
-                case EnhancementSubType.FoodBonusHPRegen: // Food Bonus - HP Regen
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.HPRegen, amount);
-                case EnhancementSubType.FoodBonusFPRegen: // Food Bonus - FP Regen
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.FPRegen, amount);
-                case EnhancementSubType.FoodBonusSTMRegen: // Food Bonus - STM Regen
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.STMRegen, amount);
-                case EnhancementSubType.FoodBonusRestRegen: // Food Bonus - Rest Regen
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.RestRegen, amount);
-                case EnhancementSubType.FoodBonusXPBonus: // Food Bonus - XP Bonus
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.XPBonus, amount);
-                case EnhancementSubType.FoodBonusCombatReadiness: // Food Bonus - Combat Readiness
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CombatReadiness, amount);
-                case EnhancementSubType.FoodBonusDuration: // Food Bonus - Duration
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Duration, amount);
-                case EnhancementSubType.FoodBonusHP: // Food Bonus - HP
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.HP, amount);
-                case EnhancementSubType.FoodBonusFP: // Food Bonus - FP
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.FP, amount);
-                case EnhancementSubType.FoodBonusSTM: // Food Bonus - STM
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.STM, amount);
-                case EnhancementSubType.ControlEngineering: // Control - Engineering
-                    return ItemPropertyCustom(ItemPropertyType.Control, 2, amount);
-                case EnhancementSubType.CraftsmanshipEngineering: // Craftsmanship - Engineering
-                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 2, amount);
-                case EnhancementSubType.ControlFabrication: // Control - Fabrication
-                    return ItemPropertyCustom(ItemPropertyType.Control, 3, amount);
-                case EnhancementSubType.CraftsmanshipFabrication: // Craftsmanship - Fabrication
-                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 3, amount);
-                case EnhancementSubType.ControlAgriculture: // Control - Agriculture
-                    return ItemPropertyCustom(ItemPropertyType.Control, 4, amount);
-                case EnhancementSubType.CraftsmanshipAgriculture: // Craftsmanship - Agriculture
-                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, 4, amount);
-                case EnhancementSubType.ModuleBonus: // Module Bonus
-                    return ItemPropertyCustom(ItemPropertyType.ModuleBonus, -1, amount);
-                case EnhancementSubType.StarshipHull: // Starship Hull
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 46, amount);
-                case EnhancementSubType.StarshipCapacitor: // Starship Capacitor
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 47, amount);
-                case EnhancementSubType.StarshipShield: // Starship Shield
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 48, amount);
-                case EnhancementSubType.StarshipShieldRechargeRate: // Starship Shield Recharge Rate
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 49, amount);
-                case EnhancementSubType.StarshipEMDamage: // Starship EM Damage
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 50, amount);
-                case EnhancementSubType.StarshipThermalDamage: // Starship Thermal Damage
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 51, amount);
-                case EnhancementSubType.StarshipExplosiveDamage: // Starship Explosive Damage
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 52, amount);
-                case EnhancementSubType.StarshipAccuracy: // Starship Accuracy
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 53, amount);
-                case EnhancementSubType.StarshipEvasion: // Starship Evasion
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 54, amount);
-                case EnhancementSubType.StarshipThermalDefense: // Starship Thermal Defense
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 55, amount);
-                case EnhancementSubType.StarshipExplosiveDefense: // Starship Explosive Defense
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 56, amount);
-                case EnhancementSubType.StarshipEMDefense: // Starship EM Defense
-                    return ItemPropertyCustom(ItemPropertyType.StarshipBonus, 57, amount);
-                case EnhancementSubType.Agility: // Agility
-                    return ItemPropertyAbilityBonus(AbilityType.Agility, amount);
-
-                // 59 is free
-
-                case EnhancementSubType.FoodBonusAttack: // Food Bonus - Attack
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Attack, amount);
-                case EnhancementSubType.FoodBonusAccuracy: // Food Bonus - Accuracy
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Accuracy, amount);
-                case EnhancementSubType.FoodBonusPhysicalDefense: // Food Bonus - Physical Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefensePhysical, amount);
-                case EnhancementSubType.FoodBonusForceDefense: // Food Bonus - Force Defense
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.DefenseForce, amount);
-                case EnhancementSubType.FoodBonusPoisonResistance: // Food Bonus - Poison Resistance
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistancePoison, amount);
-                case EnhancementSubType.FoodBonusFireResistance: // Food Bonus - Fire Resistance
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceFire, amount);
-                case EnhancementSubType.FoodBonusIceResistance: // Food Bonus - Ice Resistance
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceIce, amount);
-                case EnhancementSubType.FoodBonusElectricalResistance: // Food Bonus - Electrical Resistance
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceElectrical, amount);
-                case EnhancementSubType.FoodBonusMindResistance: // Food Bonus - Mind Resistance
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceMind, amount);
-                case EnhancementSubType.FoodBonusMobilityResistance: // Food Bonus - Mobility Resistance
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceMobility, amount);
-                case EnhancementSubType.FoodBonusTraumaResistance: // Food Bonus - Trauma Resistance
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceTrauma, amount);
-                case EnhancementSubType.FoodBonusDisruptionResistance: // Food Bonus - Disruption Resistance
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ResistanceDisruption, amount);
-                case EnhancementSubType.FoodBonusEvasion: // Food Bonus - Evasion
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Evasion, amount);
-                case EnhancementSubType.FoodBonusControlSmithery: // Food Bonus - Control Smithery
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlSmithery, amount);
-                case EnhancementSubType.FoodBonusCraftsmanshipSmithery: // Food Bonus - Craftsmanship Smithery
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipSmithery, amount);
-                case EnhancementSubType.FoodBonusControlFabrication: // Food Bonus - Control Fabrication
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlFabrication, amount);
-                case EnhancementSubType.FoodBonusCraftsmanshipFabrication: // Food Bonus - Craftsmanship Fabrication
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipFabrication, amount);
-                case EnhancementSubType.FoodBonusControlEngineering: // Food Bonus - Control Engineering
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlEngineering, amount);
-                case EnhancementSubType.FoodBonusCraftsmanshipEngineering: // Food Bonus - Craftsmanship Engineering
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipEngineering, amount);
-                case EnhancementSubType.FoodBonusControlAgriculture: // Food Bonus - Control Agriculture
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.ControlAgriculture, amount);
-                case EnhancementSubType.FoodBonusCraftsmanshipAgriculture: // Food Bonus - Craftsmanship Agriculture
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.CraftsmanshipAgriculture, amount);
-                case EnhancementSubType.FoodBonusMight: // Food Bonus - Might
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Might, amount);
-                case EnhancementSubType.FoodBonusPerception: // Food Bonus - Perception
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Perception, amount);
-                case EnhancementSubType.FoodBonusVitality: // Food Bonus - Vitality
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Vitality, amount);
-                case EnhancementSubType.FoodBonusWillpower: // Food Bonus - Willpower
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Willpower, amount);
-                case EnhancementSubType.FoodBonusAgility: // Food Bonus - Agility
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Agility, amount);
-                case EnhancementSubType.FoodBonusSocial: // Food Bonus - Social
-                    return ItemPropertyCustom(ItemPropertyType.FoodBonus, (int)FoodItemPropertySubType.Social, amount);
-                case EnhancementSubType.Attack: // Attack
-                    return ItemPropertyCustom(ItemPropertyType.Attack, -1, amount);
-                case EnhancementSubType.ForceAttack: // Force Attack
-                    return ItemPropertyCustom(ItemPropertyType.ForceAttack, -1, amount);
-
-                case EnhancementSubType.DroidResistanceFire: // Droid: Fire Resistance
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceFire, amount);
-                case EnhancementSubType.DroidResistancePoison: // Droid: Poison Resistance
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistancePoison, amount);
-                case EnhancementSubType.DroidResistanceElectrical: // Droid: Electrical Resistance
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceElectrical, amount);
-                case EnhancementSubType.DroidResistanceIce: // Droid: Ice Resistance
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceIce, amount);
-                case EnhancementSubType.DroidResistanceMind: // Droid: Mind Resistance
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMind, amount);
-                case EnhancementSubType.DroidResistanceMobility: // Droid: Mobility Resistance
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceMobility, amount);
-                case EnhancementSubType.DroidResistanceTrauma: // Droid: Trauma Resistance
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceTrauma, amount);
-                case EnhancementSubType.DroidResistanceDisruption: // Droid: Disruption Resistance
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.ResistanceDisruption, amount);
-
-                case EnhancementSubType.DroidAISlot: // Droid: AI Slot
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AISlots, amount);
-                case EnhancementSubType.DroidHP: // Droid: HP
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HP, amount);
-                case EnhancementSubType.DroidSTM: // Droid: STM
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.STM, amount);
-                case EnhancementSubType.DroidMGT: // Droid: MGT
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.MGT, amount);
-                case EnhancementSubType.DroidPER: // Droid: PER
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.PER, amount);
-                case EnhancementSubType.DroidVIT: // Droid: VIT
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.VIT, amount);
-                case EnhancementSubType.DroidWIL: // Droid: WIL
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.WIL, amount);
-                case EnhancementSubType.DroidAGI: // Droid: AGI
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.AGI, amount);
-                case EnhancementSubType.DroidSOC: // Droid: SOC
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.SOC, amount);
-                case EnhancementSubType.DroidVibroblade: // Droid: Vibroblade
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroblade, amount);
-                case EnhancementSubType.DroidVibroknife: // Droid: Vibroknife
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Vibroknife, amount);
-                case EnhancementSubType.DroidLightsaber: // Droid: Lightsaber
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Lightsaber, amount);
-                case EnhancementSubType.DroidHeavyVibroblade: // Droid: Heavy Vibroblade
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.HeavyVibroblade, amount);
-                case EnhancementSubType.DroidSpear: // Droid: Spear
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Spear, amount);
-                case EnhancementSubType.DroidTwinBlade: // Droid: Twin Blade
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinBlade, amount);
-                case EnhancementSubType.DroidSaberstaff: // Droid: Saberstaff
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Saberstaff, amount);
-                case EnhancementSubType.DroidKatar: // Droid: Katar
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Katar, amount);
-                case EnhancementSubType.DroidStaff: // Droid: Staff
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Staff, amount);
-                case EnhancementSubType.DroidPistol: // Droid: Pistol
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Pistol, amount);
-                case EnhancementSubType.DroidRifle: // Droid: Rifle
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Rifle, amount);
-                case EnhancementSubType.DroidThrowing: // Droid: Throwing
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Throwing, amount);
-                case EnhancementSubType.DroidUnarmed: // Droid: Unarmed
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.Unarmed, amount);
-                case EnhancementSubType.DroidTwinPistol: // Droid: Twin Pistol
-                    return ItemPropertyCustom(ItemPropertyType.DroidStat, (int)DroidStatSubType.TwinPistol, amount);
-            }
-
-            throw new Exception("Unsupported enhancement type.");
-        }
-
-        private ItemProperty BuildResistanceItemProperty(ResistanceType type, int amount)
-        {
-            return ItemPropertyCustom(
-                ItemPropertyType.Resistance,
-                (int)type,
-                _resistance.EncodeItemPropertyCostTableValue(amount));
-        }
-
-        public bool IsWeaponDamageEnhancement(EnhancementSubType subTypeId)
-        {
-            return subTypeId == EnhancementSubType.DMG;
-        }
-
-        public bool TryGetWeaponDamageTypeForEnhancement(
-            EnhancementSubType subTypeId,
-            CombatDamageType explicitDamageType,
-            out CombatDamageType damageType)
-        {
-            if (!IsWeaponDamageEnhancement(subTypeId))
-            {
-                damageType = CombatDamageType.Invalid;
-                return false;
-            }
-
-            // Force conversion belongs to Imbuement Stance, including its FP cost.
-            if (explicitDamageType == CombatDamageType.Force)
-            {
-                damageType = CombatDamageType.Physical;
-                return true;
-            }
-
-            if (explicitDamageType.IsCharacterDamageType())
-            {
-                damageType = explicitDamageType;
-                return true;
-            }
-
-            damageType = CombatDamageType.Physical;
-            return true;
-        }
-
-        /// <summary>
-        /// Applies an enhancement-provided item property onto a crafted item,
-        /// merging with any existing property of the same type. DMG amounts are
-        /// summed together; a conflicting WeaponDamageType is resolved by randomly
-        /// keeping one of the two rather than always favoring the latest one applied.
-        /// </summary>
-        public void ApplyCraftedItemProperty(uint item, ItemProperty ip)
-        {
-            var type = GetItemPropertyType(ip);
-            var subType = GetItemPropertySubType(ip);
-            var amount = GetItemPropertyCostTableValue(ip);
-
-            if (type == ItemPropertyType.WeaponDamageType)
-            {
-                if (subType == (int)CombatDamageType.Force)
-                    return;
-                ApplyWeaponDamageTypeProperty(item, ip, subType);
-                return;
-            }
-
-            // Scan for matches first and remove them in a separate pass afterward -
-            // removing an item property while GetNextItemProperty is still iterating
-            // shifts the underlying list, which silently skips every other match.
-            //
-            // Subtype matching is judged off the INCOMING property's subtype, not the
-            // existing property's. Property types with no subtype table in
-            // itempropdef.2da (DMG, Attack, ForceAttack, Evasion, HPBonus, FP, Stamina,
-            // ShieldDeflection, CombatReadiness, StructureBonus, ...) are always packed
-            // with subtype -1, but re-querying that -1 back off a property already
-            // attached to a live item is not reliable - the engine has no subtype table
-            // to round-trip it through. Trusting the freshly-built incoming property's
-            // subtype instead of re-reading the attached one is what actually holds: if
-            // the enhancement never had a meaningful subtype to begin with, any existing
-            // property of the same type is a match; if it does (Defense, Resistance,
-            // FoodBonus, DroidStat), only the same subtype matches.
-            var matches = new List<ItemProperty>();
-            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
-            {
-                if (GetItemPropertyType(property) == type &&
-                    (subType == -1 || GetItemPropertySubType(property) == subType))
-                {
-                    amount += GetItemPropertyCostTableValue(property);
-                    matches.Add(property);
-                }
-            }
-
-            foreach (var property in matches)
-            {
-                RemoveItemProperty(item, property);
-            }
-
-            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
-            unpacked.CostTableValue = amount;
-            ip = ItemPropertyPlugin.PackIP(unpacked);
-
-            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
-        }
-
-        /// <summary>
-        /// Merges a crafted property into a list of properties by the rules <see cref="ApplyCraftedItemProperty"/> applies to an item:
-        /// a property of the same type (and subtype, when the incoming one has one) is summed into one, a weapon keeps one damage type,
-        /// and Force is never a weapon damage type. Working on a list lets a craft settle every property before any of them reaches
-        /// the item, so the item never has a property removed and re-added: a removal is not committed to the item's saved property
-        /// list until later, so a serialized form or copy taken in the same script would still carry the pre-merge property.
-        /// </summary>
-        public void MergeCraftedItemProperty(List<ItemProperty> properties, ItemProperty ip)
-        {
-            var type = GetItemPropertyType(ip);
-            var subType = GetItemPropertySubType(ip);
-
-            if (type == ItemPropertyType.WeaponDamageType)
-            {
-                if (subType == (int)CombatDamageType.Force)
-                    return;
-
-                var damageTypes = properties.Where(property => GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType).ToList();
-                var keepExisting = damageTypes.Count > 0 &&
-                                   GetItemPropertySubType(damageTypes[0]) != subType &&
-                                   Domain.Foundation.Random.D100(1) <= 50;
-                if (keepExisting)
-                    return;
-
-                properties.RemoveAll(property => GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType);
-                properties.Add(ip);
-                return;
-            }
-
-            // The same matching as ApplyCraftedItemProperty: judged off the incoming property's subtype.
-            var amount = GetItemPropertyCostTableValue(ip);
-            var matches = properties
-                .Where(property => GetItemPropertyType(property) == type &&
-                                   (subType == -1 || GetItemPropertySubType(property) == subType))
-                .ToList();
-            foreach (var match in matches)
-            {
-                amount += GetItemPropertyCostTableValue(match);
-                properties.Remove(match);
-            }
-
-            var unpacked = ItemPropertyPlugin.UnpackIP(ip);
-            unpacked.CostTableValue = amount;
-            properties.Add(ItemPropertyPlugin.PackIP(unpacked));
-        }
-
-        /// <summary>
-        /// A weapon can only carry one damage type. If it already has a different
-        /// type than the one being applied now, keep only one - chosen at random
-        /// rather than always letting whichever enhancement was socketed last
-        /// silently win.
-        /// </summary>
-        private void ApplyWeaponDamageTypeProperty(uint item, ItemProperty ip, int subType)
-        {
-            var damageTypeMatches = new List<ItemProperty>();
-            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
-            {
-                if (GetItemPropertyType(property) == ItemPropertyType.WeaponDamageType)
-                {
-                    damageTypeMatches.Add(property);
-                }
-            }
-
-            var keepExisting = damageTypeMatches.Count > 0 &&
-                                GetItemPropertySubType(damageTypeMatches[0]) != subType &&
-                                Domain.Foundation.Random.D100(1) <= 50;
-
-            if (keepExisting)
-                return;
-
-            foreach (var property in damageTypeMatches)
-            {
-                RemoveItemProperty(item, property);
-            }
-
-            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
-        }
-        [NWNEventHandler(ScriptName.OnRefineryUsed)]
-        public void UseRefinery()
-        {
-            var player = GetLastUsedBy();
-            _gui.TogglePlayerWindow(player, GuiWindowType.Refinery, null, OBJECT_SELF);
-        }
-        [NWNEventHandler(ScriptName.OnResearchTerminal)]
-        public void UseResearchTerminal()
-        {
-            var player = GetLastUsedBy();
-            var playerId = GetObjectUUID(player);
-            var terminal = OBJECT_SELF;
-
-            if (CraftRankMilestones.GetResearchTier(player) <= 0)
-            {
-                SendMessageToPC(player, $"Fabrication rank {CraftRankMilestones.RequiredFabricationRankForResearchTier(1)} is required to use research terminals.");
-                return;
-            }
-
-            var propertyId = _property.GetPropertyId(terminal);
-
-            if (string.IsNullOrWhiteSpace(propertyId))
-            {
-                SendMessageToPC(player, $"This research terminal cannot be used.");
-                return;
-            }
-
-            var query = new DBQuery<ResearchJob>()
-                .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
-            var dbJob = _db.Search(query)
-                .FirstOrDefault();
-
-            if (dbJob == null)
-            {
-                var payload = new RecipesPayload(RecipesUIMode.Research, SkillType.Invalid);
-                _gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, terminal);
-            }
-            else
-            {
-                if (dbJob.PlayerId != playerId)
-                {
-                    var now = Clock.UtcNow;
-                    if (dbJob.DateCompleted > now)
-                    {
-                        var delta = dbJob.DateCompleted - now;
-                        var completionTime = Time.GetTimeLongIntervals(delta, false);
-                        SendMessageToPC(player, $"Another player's research job is active. This job will complete in: {completionTime}.");
-                    }
-                    else
-                    {
-                        SendMessageToPC(player, $"Another player's research job is active. This job has completed.");
-                    }
-                }
-                else
-                {
-                    var payload = new ResearchPayload(propertyId, OBJECT_INVALID, RecipeType.Invalid);
-                    _gui.TogglePlayerWindow(player, GuiWindowType.Research, payload, terminal);
-                }
-            }
-        }
-
-        /// <summary>
         /// Retrieves a blueprint detail object about an item.
         /// If item is not a blueprint, resulting recipe type will be Invalid.
         /// </summary>
@@ -1190,7 +655,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
                     var damageType = CombatDamageType.Invalid;
                     var enhancementSubType = (EnhancementSubType)subType;
                     if (type == ItemPropertyType.WeaponEnhancement &&
-                        IsWeaponDamageEnhancement(enhancementSubType) &&
+                        _enhancement.IsWeaponDamageEnhancement(enhancementSubType) &&
                         index + 1 < blueprintProperties.Count &&
                         blueprintProperties[index + 1].Type == ItemPropertyType.WeaponDamageType &&
                         Enum.IsDefined(typeof(CombatDamageType), blueprintProperties[index + 1].SubType))
@@ -1199,7 +664,7 @@ namespace SWLOR.Game.Server.Domain.Crafting
                         index++;
                     }
 
-                    blueprintDetail.GuaranteedBonuses.AddRange(BuildItemPropertiesForEnhancement(enhancementSubType, costValue, damageType));
+                    blueprintDetail.GuaranteedBonuses.AddRange(_enhancement.BuildItemPropertiesForEnhancement(enhancementSubType, costValue, damageType));
                 }
 
             }
@@ -1282,38 +747,5 @@ namespace SWLOR.Game.Server.Domain.Crafting
         {
             return CalculateResearchCost(recipe, blueprintLevel, 200, reductionBonus * 0.01f);
         }
-
-        /// <summary>
-        /// When a property is removed, also remove any associated research jobs.
-        /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorDeleteProperty)]
-        public void OnRemoveProperty()
-        {
-            var propertyId = EventsPlugin.GetEventData("PROPERTY_ID");
-            var dbQuery = new DBQuery<ResearchJob>()
-                .AddFieldSearch(nameof(ResearchJob.ParentPropertyId), propertyId, false);
-            var dbJobs = _db.Search(dbQuery).ToList();
-
-            foreach (var dbJob in dbJobs)
-            {
-                DeleteResearchJob(dbJob);
-            }
-        }
-
-        /// <summary>Applies the player's selected crafting styles again when they log in; the effects are not kept across a logout.</summary>
-        [PlayerSession(PlayerReload.LoginOnly,
-            "The crafting style status effects are carried.")]
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public void RestoreCraftingStylesOnEnter()
-        {
-            RestoreCraftingStyles(GetEnteringObject());
-        }
-
-        /// <summary>Deletes a research job. The research experiment service depends on this one, so it is reached through a lazy reference.</summary>
-        protected virtual void DeleteResearchJob(ResearchJob job) => _craftResearchExperiment.Value.DeleteJob(job);
-
-        /// <summary>Applies the creature's selected crafting styles. The style service is reached through its interface.</summary>
-        protected virtual void RestoreCraftingStyles(uint creature) => _craftStyleEffects.Restore(creature);
     }
 }
-

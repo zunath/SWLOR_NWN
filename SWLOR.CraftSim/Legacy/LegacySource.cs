@@ -79,7 +79,7 @@ namespace SWLOR.CraftSim.Legacy
             "Enhancement transfer chance", CraftViewModel, 1420, 1468, CraftViewModelCommit);
 
         public static readonly SourceReference RecipeUnlockOffset = new(
-            "Recipe rank requirement", Craft, 374, 377,
+            "Recipe rank requirement", Craft, 356, 359,
             "var requiredRank = recipe.Level - RecipeSkillUnlockOffset;", "return Math.Max(requiredRank, 0);");
 
         public static readonly SourceReference GearStats = new(

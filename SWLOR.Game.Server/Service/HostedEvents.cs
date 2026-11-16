@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static (int Total, int Online) CountParticipants(HostedEvent hostedEvent)
         {
-            return (hostedEvent.ParticipantPlayerIds.Count, GetOnlineParticipants(hostedEvent).Count());
+            return (hostedEvent.ParticipantPlayerIds.Count, GetOnlineParticipants(hostedEvent).Count);
         }
 
         /// <summary>
@@ -300,7 +300,10 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var returnPoint = dbPlayer.EventReturnPoint;
-            var destination = GetReturnLocation(player, dbPlayer, returnPoint);
+            var destination = FindLanding(player, GetReturnLocation(player, dbPlayer, returnPoint))
+                              ?? FindLanding(player, Death.GetRespawnLocation(dbPlayer));
+            if (destination == null)
+                return "Your way back is blocked right now. Try again shortly, or ask a DM for help.";
 
             dbPlayer.EventReturnPoint = null;
             DB.Set(dbPlayer);
@@ -371,7 +374,7 @@ namespace SWLOR.Game.Server.Service
         {
             var action = HostedEventRules.IsJoinable(hostedEvent) ? "join" : "see the details";
             var message = ColorToken.Cyan($"Event started: {hostedEvent.Name}, hosted by {hostedEvent.HostName}. Use /events to {action}.");
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            foreach (var player in GetOnlinePCs())
             {
                 if (!DMPresence.IsControlledByDM(player) &&
                     !(DB.Get<Player>(GetObjectUUID(player))?.Settings?.DisplayEventAnnouncements ?? true))
@@ -387,19 +390,27 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(player, ColorToken.Cyan($"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back."));
         }
 
-        private static IEnumerable<uint> GetOnlineParticipants(HostedEvent hostedEvent)
+        // Returned as a list: callers leave or refresh players, which walks the same native PC cursor.
+        private static List<uint> GetOnlineParticipants(HostedEvent hostedEvent)
         {
+            return GetOnlinePCs()
+                .Where(player => !DMPresence.IsControlledByDM(player) &&
+                                 hostedEvent.ParticipantPlayerIds.Contains(GetObjectUUID(player)))
+                .ToList();
+        }
+
+        private static List<uint> GetOnlinePCs()
+        {
+            var players = new List<uint>();
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (!DMPresence.IsControlledByDM(player) && hostedEvent.ParticipantPlayerIds.Contains(GetObjectUUID(player)))
-                    yield return player;
-            }
+                players.Add(player);
+            return players;
         }
 
         private static void RefreshWindows()
         {
             var refresh = new HostedEventsChangedRefreshEvent();
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            foreach (var player in GetOnlinePCs())
                 Gui.PublishRefreshEvent(player, refresh, DMPresence.GetControlledCreature(player));
         }
 

@@ -721,6 +721,23 @@ carrier keys only carried fields. No `Lazy<>` became a plain parameter: the thre
   `ApplyHostileCombatImpact` methods; the tests that read the per-target code, the abort and the delayed telegraph by text follow.
   `AbilityServiceDefaultSeamsTests` runs the four parts' defaults, `AbilityFacadeAllocationTests` registers the five parts, and the
   music and capstone tests cover the notices.
+- **Baselines:** `UpwardEdges.txt` 175 -> 172 (531 -> 520 members: `AbilityService`'s Quests and World rows and the twin pistol
+  service's Combat -> Abilities row), `DomainCycles.txt` 53 -> 52 (`Abilities <-> World` gone; `Abilities <-> Platform` 5 -> 6
+  edges, because the twin pistol service names the native attack cycles from Abilities now), `LargeTypes.txt` 44 -> 43,
+  `LongMethods.txt` 29 -> 27, `ServicesPerType.txt` 22 -> 21 (354 -> 331 services: `AbilityService` left it;
+  `WeaponActiveAbilityDefinitionBase` 19 -> 21, as it reaches `AbilityHostileImpact` and `AbilityDamageInput` beside `Ability`),
+  `DeferredResolution.txt` 54, `StaticLookups.txt` 1,078 and `LogicToContent.txt` 105 (the twin pistol line re-keyed) unchanged.
+  `CrossDomainEdges.txt` loses Abilities -> Quests and -> World and gains Quests -> Abilities and
+  `Feature.TwinPistolCombatLifecycle` -> Abilities (both down), and `EdgesIntoCoreAndPlatform.txt` gains Abilities -> Platform/Native.
+- **Readings:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs) and its
+  ability table are byte-identical to the base's (`20ebf046a`), and `WeaponLineTests` still reads Rending Strike through
+  `IAbilityService.ApplyCombatImpact` behind `GameServices.Ability`. The filtered engine run (379 tests: damage, ability, weapon,
+  twin pistol, music, capstone, hostile, heal, aura, Leadership, Mimicry, venom and bleed) failed the same 10 tests on the branch
+  and on the base, all old. The paired `CombatLoad` runs against `ccdd62130` (before the per-target moves) had only the two stacks
+  on the machine in the first round: players 838 against 841 managed ms/s (17.1 against 15.9 fps), NPCs 578 against 553 (19.2
+  against 20.4 fps). The second round, with the homes swapped, ran on a loaded machine (about 9 fps on both sides): players 891
+  against 902 ms/s, NPCs 757 against 760. The sides are within the spread of one side between rounds, so the chain's interface
+  calls show no measurable cost; a quiet repeat of the second round would confirm it.
 
 ## Risks
 

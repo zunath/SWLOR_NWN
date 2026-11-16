@@ -97,22 +97,27 @@ public class ColorTokenTests
         ColorToken.GetNameNPCColor(1001).Should().Be(ColorToken.GetNPCColor("Leia"));
     }
 
-    [TestCase(255, 0, 0)]
-    [TestCase(0, 255, 0)]
-    [TestCase(0, 0, 255)]
-    [TestCase(255, 255, 255)]
-    [TestCase(1, 254, 1)]
-    [TestCase(254, 1, 1)]
-    [TestCase(1, 1, 254)]
-    [TestCase(175, 48, 255)]
-    [TestCase(102, 178, 255)]
-    public void ASemanticColor_DecodesBackToItself(byte r, byte g, byte b)
+    [TestCase(255, 0, 0, 255, 0, 0)]
+    [TestCase(0, 255, 0, 0, 255, 0)]
+    [TestCase(0, 0, 255, 0, 0, 255)]
+    [TestCase(255, 255, 255, 255, 255, 255)]
+    [TestCase(1, 254, 1, 1, 254, 1)]
+    [TestCase(254, 1, 1, 254, 1, 1)]
+    [TestCase(1, 1, 254, 1, 1, 254)]
+    [TestCase(175, 48, 255, 175, 48, 255)]
+    [TestCase(102, 178, 255, 102, 178, 255)]
+    // The encoding is lossy: a channel of 1 shares its character with 0, so a color with a 1 decodes as the
+    // earlier color unless it is one of the semantic colors, which are looked up first.
+    [TestCase(1, 255, 1, 0, 255, 0)]
+    [TestCase(1, 100, 120, 0, 100, 120)]
+    [TestCase(100, 1, 120, 100, 0, 120)]
+    public void ATokenDecodesToItsColorOrToTheColorItsCharactersShare(
+        byte r, byte g, byte b, byte expectedR, byte expectedG, byte expectedB)
     {
-        // 254 and 255 share a character, so the semantic colors are looked up before the character table.
         ColorToken.TryDecodeStartToken(ColorToken.TokenStart(r, g, b), 0, out var red, out var green, out var blue)
             .Should().BeTrue();
 
-        (red, green, blue).Should().Be((r, g, b));
+        (red, green, blue).Should().Be((expectedR, expectedG, expectedB));
     }
 
     [Test]

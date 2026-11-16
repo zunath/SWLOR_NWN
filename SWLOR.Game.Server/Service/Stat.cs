@@ -3124,7 +3124,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             var alignedMaxHitPoints = GetMaxHitPoints(creature);
-            if (alignedMaxHitPoints != desiredMaxHitPoints)
+            // Plot and immortal spawns get 100 Vitality (Spawn.AdjustStats), so their floor passes any budget.
+            // They cannot be harmed, so their HP does not matter.
+            if (alignedMaxHitPoints != desiredMaxHitPoints &&
+                !GetPlotFlag(creature) && !GetImmortal(creature))
             {
                 Log.Write(
                     LogGroup.Error,

@@ -87,6 +87,7 @@ public class EmotesWindowLifecycleTests
                 {{Method("Service/Gui.cs", "IsWindowOpen")}}
                 {{Method("Service/Gui.cs", "TogglePlayerWindow")}}
                 {{Method("Service/Gui.cs", "ClosePlayerWindow")}}
+                {{Method("Service/Gui.cs", "GetWindowOwner")}}
                 {{Method("Service/Gui.cs", "GetPlayerWindow")}}
                 {{Method("Service/Gui.cs", "CloseAllWindows")}}
                 public static int Owners => _playerWindows.Count;
@@ -202,13 +203,16 @@ public class EmotesWindowLifecycleTests
 
     [TestCase(DMPossess)]
     [TestCase(DMPossessFullPower)]
-    public void PossessedCreatureIsNotRegisteredButCommandUsesTheDMsWindow(int possessionType)
+    public void PossessedCreatureIsNotRegisteredButUsesTheDMsWindow(int possessionType)
     {
         Login(DM, isDM: true);
         _harness.Possess(DM, Creature, possessionType);
-        Action direct = () => _harness.Invoke("Driver", "DirectCreatureToggle", Creature);
-        direct.Should().Throw<System.Reflection.TargetInvocationException>()
-            .WithInnerException<KeyNotFoundException>();
+        // Commands such as /rename pass the possessed creature itself; production threw KeyNotFoundException.
+        _harness.Invoke("Driver", "DirectCreatureToggle", Creature);
+        OpenWindows.Should().Be(1);
+        BoundTo(DM).Should().Be(Creature);
+        _harness.Invoke("Driver", "DirectCreatureToggle", Creature);
+        OpenWindows.Should().Be(0);
 
         Command(Creature);
         OpenWindows.Should().Be(1);

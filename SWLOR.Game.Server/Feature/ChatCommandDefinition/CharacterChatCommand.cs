@@ -623,7 +623,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                     {
                         SendMessageToPC(user, ColorToken.Red("You may only name player characters."));
                         return;
@@ -695,7 +695,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
                 {
-                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target))
+                    if (!GetIsObjectValid(target) || !GetIsPC(target) || GetIsDM(target) || GetIsDMPossessed(target))
                     {
                         SendMessageToPC(user, ColorToken.Red("You may only forget names for player characters."));
                         return;

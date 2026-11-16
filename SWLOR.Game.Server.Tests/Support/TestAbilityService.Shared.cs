@@ -23,13 +23,6 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// </summary>
 public sealed partial class TestAbilityService
 {
-    // Called by Dark Force and the damage formulas; the aura and activation parts have their own (TestAbilityAuraService,
-    // TestAbilityActivationService).
-    protected override int GetStatAdjustment(uint creature, StatType stat) => _bench.Stats.GetValueOrDefault((creature, stat));
-
-    // Called by the damage formulas; the magnitude part has its own (TestCombatAbilityMagnitudeService).
-    protected override int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount) => amount + 2;
-
     // Called by the impact lifecycle; the activation part's Force power check answers with the same skill.
     protected override SkillType GetAbilitySkillType(uint creature, AbilityDetail ability) => ability.SkillType;
 
@@ -40,15 +33,12 @@ public sealed partial class TestAbilityService
         return _bench.StatusAppliedBonus;
     }
 
-    // Called by the impact lifecycle and the damage formulas.
+    // Called by the impact lifecycle; the damage inputs have their own (TestAbilityDamageInputService).
     protected override int GetCombatImpactWeaponDamage(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon = false, int? triggeringWeaponDamage = null, bool abilityImpact = false) =>
         triggeringWeaponDamage ?? _bench.WeaponDamage;
 
     // Called by the impact lifecycle and the hostile impact.
     protected override CombatDamageType GetCombatImpactWeaponDamageType(uint activator, SkillType skillType, bool usesQueuedNaturalWeapon) => _bench.WeaponDamageType;
-
-    // Called by the damage formulas and the weapon trait reads; the activation part has its own (TestAbilityActivationService).
-    protected override bool IsWeaponSkillType(SkillType skillType) => _bench.WeaponSkills.Contains(skillType);
 
     // Called by the impact lifecycle and the telegraphed impact.
     protected override void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary) =>

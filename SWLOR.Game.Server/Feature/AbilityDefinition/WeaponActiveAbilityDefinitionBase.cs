@@ -1567,7 +1567,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ability.HasActivationDelay(activationDelay)
                 .SkillType(skill)
                 .ResolvesImpactStatusCategories(activator => isHostile
-                    ? Ability.GetCombatImpactStatusCategories(
+                    ? AbilityStatusApplication.GetCombatImpactStatusCategories(
                         profile.ResolveImpactStatus(activator, statusEffect, duration).StatusEffect,
                         additionalStatusEffects,
                         profile.StatusEffectFactory)

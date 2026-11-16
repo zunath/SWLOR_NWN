@@ -108,9 +108,16 @@ public sealed partial class AbilityBench : IDisposable
         var meleeTechnique = MeleeTechnique();
         TargetCheck = new AbilityTargetCheckService(Geometry, meleeTechnique, Recast(), PlayerFeedback());
         Activation = new TestAbilityActivationService(this, Catalog, Mimicry(), Activity(), TargetCheck);
-        Service = new TestAbilityService(this, statusEffects, Enmity(), combatPoints, telegraph, Messaging(), Music(),
-            NamedAnimation(), CombatRecorder, meleeTechnique, CapstoneProof(), Resistance(), Stealth(), ImpactState, Geometry,
-            Magnitude);
+        var resistance = Resistance();
+        ImpactMessage = new TestAbilityImpactMessageService(Messaging(), CombatRecorder);
+        DarkForce = new TestAbilityDarkForceService(this, ImpactState, CombatRecorder);
+        DamageDelivery = new TestAbilityDamageDeliveryService(this, statusEffects, CombatRecorder, DarkForce);
+        StatusApplication = new TestAbilityStatusApplicationService(this, statusEffects, resistance, ImpactState);
+        DamageInput = new TestAbilityDamageInputService(this, ImpactState, Magnitude, resistance);
+        DamageStage = new TestAbilityDamageStageService(this, DamageInput, ImpactState, Magnitude, resistance);
+        Service = new TestAbilityService(this, statusEffects, Enmity(), combatPoints, telegraph, Music(), NamedAnimation(),
+            CombatRecorder, meleeTechnique, CapstoneProof(), Stealth(), ImpactState, Geometry, ImpactMessage, DarkForce,
+            DamageDelivery, StatusApplication, DamageInput, DamageStage);
     }
 
     public AbilityEngine Engine { get; }
@@ -155,11 +162,23 @@ public sealed partial class AbilityBench : IDisposable
     /// <summary>The hostile impact (part 12, <c>IAbilityHostileImpactService</c>).</summary>
     public TestAbilityService HostileImpact => Service;
 
+    /// <summary>The damage delivery (part 13, <c>IAbilityDamageDeliveryService</c>), over the Dark Force part.</summary>
+    public TestAbilityDamageDeliveryService DamageDelivery { get; }
+
     /// <summary>The Dark Force conversion and restoration (part 14, <c>IAbilityDarkForceService</c>).</summary>
-    public TestAbilityService DarkForce => Service;
+    public TestAbilityDarkForceService DarkForce { get; }
+
+    /// <summary>The impact messages (part 15, <c>IAbilityImpactMessageService</c>), over the messaging and recorder stand-ins.</summary>
+    public TestAbilityImpactMessageService ImpactMessage { get; }
+
+    /// <summary>The damage inputs and the unscaled damage formula (part 16, <c>IAbilityDamageInputService</c>).</summary>
+    public TestAbilityDamageInputService DamageInput { get; }
+
+    /// <summary>The player and NPC damage formulas (part 17, <c>IAbilityDamageStageService</c>), over the damage inputs.</summary>
+    public TestAbilityDamageStageService DamageStage { get; }
 
     /// <summary>The status application (part 18, <c>IAbilityStatusApplicationService</c>).</summary>
-    public TestAbilityService StatusApplication => Service;
+    public TestAbilityStatusApplicationService StatusApplication { get; }
 
     /// <summary>The temporary immunities (part 19, <c>IAbilityImmunityService</c>): the real part over the status effect stand-in.</summary>
     public AbilityImmunityService Immunity { get; }

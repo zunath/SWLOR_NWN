@@ -833,12 +833,13 @@ public class CombatDamageTests
     {
         var abilitySource = AbilitySource.Read();
         var combatSource = CombatSource.Read();
-        var playerDamage = ExtractMethod(abilitySource, "private int CalculateCombatImpactDamage");
-        var npcDamage = ExtractMethod(abilitySource, "private int CalculateNPCCombatImpactDamage");
+        // The weapon damage is a damage input of each formula since the ability split (P5-3e).
+        var playerDamage = ExtractMethod(abilitySource, "public bool TryGetCombatImpactDamageInputs");
+        var npcDamage = ExtractMethod(abilitySource, "public bool TryGetNPCCombatImpactDamageInputs");
         var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");
         var impactWeaponSelection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
 
-        var queuedNaturalWeapon = ExtractMethod(abilitySource, "private bool UsesQueuedNaturalWeapon");
+        var queuedNaturalWeapon = ExtractMethod(abilitySource, "public bool UsesQueuedNaturalWeapon");
         queuedNaturalWeapon.Should().Contain(
             "trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon");
         queuedNaturalWeapon.Should().Contain("skillType == SkillType.BeastMastery");

@@ -172,7 +172,7 @@ public class ForceDarkManipulatorTests
         staminaRequirement.Should().Contain("AbilityStaminaCostPercentAdjustment");
 
         var forceDamageOverTime = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceDamageOverTimeStatusEffectBase.cs").FullName);
-        forceDamageOverTime.Should().Contain("Ability.ApplyDarkForceDamageRestoration(Source, damage)");
+        forceDamageOverTime.Should().Contain("AbilityDarkForce.ApplyDarkForceDamageRestoration(Source, damage)");
     }
 
     [Test]

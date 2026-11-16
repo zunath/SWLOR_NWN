@@ -36,10 +36,10 @@ public sealed class TestAbilityActivationService : AbilityActivationService
 
     protected override bool HasEquippedWeaponForAbility(uint creature) => _bench.HasEquippedWeapon;
 
-    // Dark Force and the damage formulas answer the same read through TestAbilityService.Shared.cs, the aura part through
-    // TestAbilityAuraService.
+    // Dark Force, the damage inputs and the aura part answer the same read through their own doubles
+    // (TestAbilityDarkForceService, TestAbilityDamageInputService, TestAbilityAuraService).
     protected override int GetStatAdjustment(uint creature, StatType stat) => _bench.Stats.GetValueOrDefault((creature, stat));
 
-    // The damage formulas and the weapon trait reads answer the same through TestAbilityService.Shared.cs.
+    // The damage inputs (the damage formulas and the weapon trait reads) answer the same through TestAbilityDamageInputService.
     protected override bool IsWeaponSkillType(SkillType skillType) => _bench.WeaponSkills.Contains(skillType);
 }

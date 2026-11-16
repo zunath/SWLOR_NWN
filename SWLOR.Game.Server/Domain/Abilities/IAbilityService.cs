@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
 {
     /// <summary>
     /// Abilities: the lifecycle of each impact while it resolves, and the combat impacts content applies. The catalog, the
-    /// impact state, the activation and target checks, the auras, the temporary immunities and the activation state have
-    /// interfaces of their own (Readmes/MaintainabilityRefactorAbilitySplit.md). Static callers reach the container's instance through <c>GameServices.Ability</c>; the event handlers are on
+    /// impact state, the activation and target checks, the auras, the temporary immunities, the activation state, the impact
+    /// messages, Dark Force, the damage delivery, the status application and the damage formulas have interfaces of their own (Readmes/MaintainabilityRefactorAbilitySplit.md). Static callers reach the container's instance through <c>GameServices.Ability</c>; the event handlers are on
     /// <see cref="AbilityService"/>.
     /// </summary>
     public interface IAbilityService
@@ -201,12 +201,5 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// target mitigation. Control-only payloads remain zero.
         /// </summary>
         int ApplyCapturedAbilityDamageBonus(uint activator, int damage);
-
-        StatusEffectCategory GetCombatImpactStatusCategories(
-            Type statusEffect,
-            IEnumerable<Type> additionalStatusEffects,
-            Func<IStatusEffect> statusEffectFactory);
-
-        void ApplyDarkForceDamageRestoration(uint activator, int damage);
     }
 }

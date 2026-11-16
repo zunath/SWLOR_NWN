@@ -11,9 +11,9 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// <summary>
 /// Reaches the private members of the ability instance, which the tests used to reach as private statics of the
 /// <c>Ability</c> class. <see cref="NoNeighbours"/> is an instance for a test of pure rules or of the impact tracker's
-/// own data: its constructor only assigns, so it runs until something calls a neighbour. Its impact state store, geometry and
-/// magnitude parts (the ability split, <c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>) are real instances over one store,
-/// so a test that puts a tracker in the store (<see cref="TrackedImpacts"/>) sees the instance read it.
+/// own data: its constructor only assigns, so it runs until something calls a neighbour. Its impact state store, geometry,
+/// magnitude and damage parts (the ability split, <c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>) are real instances over
+/// one store, so a test that puts a tracker in the store (<see cref="TrackedImpacts"/>) sees the instance read it.
 /// </summary>
 public static class AbilityInternals
 {
@@ -26,10 +26,24 @@ public static class AbilityInternals
     public static AbilityService NoNeighbours()
     {
         var impactState = new AbilityImpactStore();
-        return new(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!,
-            FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IPerkService>(), impactState, Geometry(),
-            new CombatAbilityMagnitudeService(impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()),
-            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>());
+        var magnitude = new CombatAbilityMagnitudeService(impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
+        var darkForce = new AbilityDarkForceService(impactState, null!, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatResourcesService>());
+        var damageInput = new AbilityDamageInputService(impactState, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatActivityService>(),
+            FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
+            FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), magnitude, null!);
+        return new(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, impactState, Geometry(),
+            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
+            FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(),
+            FacadeForwarder.For<ICombatResourcesService>(),
+            new AbilityImpactMessageService(null!, null!, FacadeForwarder.For<ICombatFeedbackService>()),
+            darkForce,
+            new AbilityDamageDeliveryService(null!, null!, darkForce, FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatDamageModifiersService>(),
+                FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageTakenService>()),
+            new AbilityStatusApplicationService(null!, null!, impactState, FacadeForwarder.For<ICombatAbilityBonusService>()),
+            damageInput,
+            new AbilityDamageStageService(damageInput, impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICombatAbilityHitService>(),
+                FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(),
+                FacadeForwarder.For<ICombatHitEffectsService>(), magnitude, null!));
     }
 
     /// <summary>A geometry part with no telegraph service, for a test of the shape tests that resolve no marker.</summary>
@@ -64,4 +78,14 @@ public static class AbilityInternals
     public static TDelegate Delegate<TDelegate>(AbilityService service, string name)
         where TDelegate : Delegate =>
         Method(name).CreateDelegate<TDelegate>(service);
+
+    /// <summary>The damage inputs part (part 16) of <paramref name="service"/>.</summary>
+    public static AbilityDamageInputService DamageInput(AbilityService service) =>
+        (AbilityDamageInputService)typeof(AbilityService).GetField("_damageInput", PrivateInstance)!.GetValue(service)!;
+
+    /// <summary>A private method of a part of the ability split as a delegate on that part.</summary>
+    public static TDelegate PartDelegate<TDelegate>(object part, string name)
+        where TDelegate : Delegate =>
+        (part.GetType().GetMethod(name, PrivateInstance) ?? throw new MissingMethodException(part.GetType().Name, name))
+        .CreateDelegate<TDelegate>(part);
 }

@@ -63,11 +63,6 @@ SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs: Combat -> Quests | 
 SWLOR.Game.Server/Domain/Crafting/CraftService.cs: Crafting -> World | 3
 SWLOR.Game.Server/Domain/Creatures/AIService.cs: Creatures -> Social | 3
 SWLOR.Game.Server/Domain/Foundation/CacheService.cs: Foundation -> Items | 3
-SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs: Foundation -> Administration | 7
-SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs: Foundation -> Character | 9
-SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs: Foundation -> Social | 3
-SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs: Foundation -> Space | 3
-SWLOR.Game.Server/Domain/Foundation/CommunicationService.cs: Foundation -> World | 9
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> Character | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> UI | 6
 SWLOR.Game.Server/Domain/Foundation/MessagingService.cs: Foundation -> Combat | 3

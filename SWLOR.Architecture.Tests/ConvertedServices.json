@@ -23,7 +23,7 @@
     { "name": "Combat", "domain": "Combat", "extras": [ { "part": "CombatAbilityActivation" }, { "part": "CombatAbilityBonus" }, { "part": "CombatAbilityHit" }, { "part": "CombatAbilityImpact" }, { "part": "CombatAbilityMagnitude" }, { "part": "CombatActivity" }, { "part": "CombatAttackTiming" }, { "part": "CombatDamageCatalog" }, { "part": "CombatDamageModifiers" }, { "part": "CombatDamageTaken" }, { "part": "CombatFeedback" }, { "part": "CombatHitEffects" }, { "part": "CombatImpactGeometry" }, { "part": "CombatQueries" }, { "part": "CombatResources" }, { "part": "CombatSuppression" } ] },
     { "name": "CombatPoint", "domain": "Combat" },
     { "name": "CombatRecorder", "domain": "Combat" },
-    { "name": "Communication", "domain": "Foundation" },
+    { "name": "Communication", "domain": "Social", "extras": [ { "part": "CommunicationAudience" }, { "part": "CommunicationMessageSplit" } ] },
     { "name": "CompanionControl", "domain": "Creatures" },
     { "name": "Conversation", "domain": "Foundation" },
     { "name": "ConversationMenu", "domain": "Foundation" },

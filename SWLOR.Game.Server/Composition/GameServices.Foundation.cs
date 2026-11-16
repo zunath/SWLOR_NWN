@@ -19,9 +19,6 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>NWN data cached for the lifespan of the server (the static facade <c>Cache</c> until P2-ZI).</summary>
         public static ICacheService Cache => FacadeAccessor.Resolve<ICacheService>();
 
-        /// <summary>Chat handling and emote styles (the static facade <c>Communication</c> until P2-ZI).</summary>
-        public static ICommunicationService Communication => FacadeAccessor.Resolve<ICommunicationService>();
-
         /// <summary>The NUI-native conversation system (the static facade <c>Conversation</c> until P2-ZI).</summary>
         public static IConversationService Conversation => FacadeAccessor.Resolve<IConversationService>();
 

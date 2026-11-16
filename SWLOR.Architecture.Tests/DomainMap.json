@@ -14,7 +14,7 @@
   "domains": {
     "Foundation": {
       "services": [
-        "DB", "Cache", "Messaging", "Communication", "BackgroundJob", "Migration", "Authorization",
+        "DB", "Cache", "Messaging", "BackgroundJob", "Migration", "Authorization",
         "Conversation", "ConversationMenu", "Snippet", "PlayerFeedback", "ObjectVisibility",
         "Walkmesh", "TileMagic", "AnimationPlayer", "NamedAnimation", "Animation", "Attribute"
       ],
@@ -126,7 +126,7 @@
     },
     "Social": {
       "services": [
-        "ChatCommand", "ChatPortraitTells", "Party", "PlayerList", "ChatPortraitTell", "Performance"
+        "ChatCommand", "ChatPortraitTells", "Communication", "Party", "PlayerList", "ChatPortraitTell", "Performance"
       ],
       "featureFolders": [
         "ChatCommandDefinition"

@@ -9,6 +9,7 @@ using static SWLOR.Game.Server.Tests.Support.DMPossessionEngine;
 using static SWLOR.NWN.API.NWScript.NWScript;
 using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Social;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Tests.Domain.Core;
@@ -290,8 +291,8 @@ public class CommunicationCommsTests
         _bench.AddPlayer(Carol, area: Spaceport);
         _bench.Group(Alice, Bob, Carol);
         _bench.World.Place(Alice, EventHall);
-        SetLocalBool(EventHall, CommunicationService.EventCommsAreaVariable, true);
-        SetLocalBool(EventStage, CommunicationService.EventCommsAreaVariable, true);
+        SetLocalBool(EventHall, ChatVariables.EventCommsAreaVariable, true);
+        SetLocalBool(EventStage, ChatVariables.EventCommsAreaVariable, true);
         _bench.AreaPlanets[EventHall] = PlanetType.Viscara;
         _bench.AreaPlanets[Spaceport] = PlanetType.Viscara;
 
@@ -303,7 +304,7 @@ public class CommunicationCommsTests
     public void ASenderOutsideAnEventAreaDoesNotReachIntoOne()
     {
         PartyOfTwoAcrossAreas(EventStage);
-        SetLocalBool(EventStage, CommunicationService.EventCommsAreaVariable, true);
+        SetLocalBool(EventStage, ChatVariables.EventCommsAreaVariable, true);
 
         Hears(Bob).Should().BeFalse();
     }

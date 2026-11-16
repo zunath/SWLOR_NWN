@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.World;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -898,7 +899,7 @@ namespace SWLOR.Game.Server.Domain.World
             // Interiors without a console point (the legacy freighter) fall back to the boarding point.
             var console = CreateObject(ObjectType.Placeable, TerminalTag, consoleLocation ?? flight.EntranceLocation);
             SetName(console, "Shuttle Status Console");
-            SetLocalInt(console, CommunicationService.SuppressChatAuditVariable, 1);
+            SetLocalInt(console, ChatVariables.SuppressChatAuditVariable, 1);
             SetPlotFlag(console, true);
             SetLocalString(console, "CONVERSATION", "ShuttleStatusDialog");
             SetLocalString(console, ShuttleFlightIdVariable, flight.FlightId);

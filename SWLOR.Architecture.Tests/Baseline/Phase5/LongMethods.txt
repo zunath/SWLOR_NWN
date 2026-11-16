@@ -18,7 +18,6 @@ SWLOR.Game.Server.Domain.Combat.CombatRecordSerializer.Write | 198
 SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid | 272
 SWLOR.Game.Server.Domain.Crafting.CraftService.BuildItemPropertyForEnhancement | 248
 SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen.KitchenComponentTable.BuildFlavors | 182
-SWLOR.Game.Server.Domain.Foundation.CommunicationService.ProcessChatMessage | 327
 SWLOR.Game.Server.Domain.Items.ItemService.UseItem | 189
 SWLOR.Game.Server.Domain.Space.SpaceService.ActivateShipModule | 155
 SWLOR.Game.Server.Domain.UI.GuiWindowBuilder<T>.Build | 192

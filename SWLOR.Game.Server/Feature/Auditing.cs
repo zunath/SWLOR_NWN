@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.NWNX;
 using static SWLOR.Game.Server.Composition.GameServices;
 
@@ -95,7 +96,7 @@ namespace SWLOR.Game.Server.Feature
             if (channel == ChatChannel.ServerMessage) return;
 
             // Automated announcements can remain visible without filling the chat audit log.
-            if (GetLocalInt(ChatPlugin.GetSender(), CommunicationService.SuppressChatAuditVariable) != 0) return;
+            if (GetLocalInt(ChatPlugin.GetSender(), ChatVariables.SuppressChatAuditVariable) != 0) return;
 
             if (channel == ChatChannel.DMTell ||
                 channel == ChatChannel.PlayerTell)

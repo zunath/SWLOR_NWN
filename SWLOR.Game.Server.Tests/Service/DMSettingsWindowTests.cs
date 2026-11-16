@@ -89,7 +89,7 @@ public class DMSettingsWindowTests
                 {
                     public bool Update(uint actor, System.Action<DMPreferences> change) => DMPreference.Update(actor, change);
                 }
-                {{InstanceMethod("Domain/Foundation/CommunicationService.cs", "SetEmoteStyle")}}
+                {{InstanceMethod("Domain/Social/CommunicationService.cs", "SetEmoteStyle")}}
             }
 
             public static class ArmorDisplay

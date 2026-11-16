@@ -62,7 +62,6 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IBackgroundJobService, BackgroundJobService>();
             services.AddSingleton<ICacheService, CacheService>();
-            services.AddSingleton<ICommunicationService, CommunicationService>();
             services.AddSingleton<IConversationMenuService, ConversationMenuService>();
             services.AddSingleton<IConversationService, ConversationService>();
             services.AddSingleton<IMessagingService, MessagingService>();
@@ -248,6 +247,9 @@ namespace SWLOR.Game.Server.Composition
 
             // Social
             services.AddSingleton<IChatCommandService, ChatCommandService>();
+            services.AddSingleton<ICommunicationService, CommunicationService>();
+            services.AddSingleton<ICommunicationAudienceService, CommunicationAudienceService>();
+            services.AddSingleton<ICommunicationMessageSplitService, CommunicationMessageSplitService>();
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
             services.AddSingleton<IPartyService, PartyService>();
             services.AddSingleton<IPartyRosterService, PartyRosterService>();

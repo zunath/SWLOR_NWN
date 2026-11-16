@@ -166,6 +166,8 @@
     { "type": "CombatImpactShapeGeometry", "from": "SWLOR.Game.Server.Domain.Abilities", "to": "SWLOR.Game.Server.Domain.Combat", "file": "CombatImpactAreaShape.cs" },
     { "type": "AbilityEffectScaling", "from": "SWLOR.Game.Server.Feature.AbilityDefinition", "to": "SWLOR.Game.Server.Domain.Combat" },
     { "type": "AbilityTargeting", "from": "SWLOR.Game.Server.Feature.AbilityDefinition", "to": "SWLOR.Game.Server.Domain.Combat" },
+    { "type": "CommunicationService", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Social" },
+    { "type": "ICommunicationService", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Social" },
   ],
   "textExcludes": [
     "SWLOR.Game.Server/Readmes/Maintainability*",

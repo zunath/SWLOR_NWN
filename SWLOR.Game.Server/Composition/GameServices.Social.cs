@@ -7,6 +7,9 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The chat commands (the facade <c>Service.ChatCommand</c> until P2-ZM).</summary>
         public static IChatCommandService ChatCommand => FacadeAccessor.Resolve<IChatCommandService>();
 
+        /// <summary>Chat handling and emote styles (the static facade <c>Communication</c> until P2-ZI).</summary>
+        public static ICommunicationService Communication => FacadeAccessor.Resolve<ICommunicationService>();
+
         /// <summary>The guard for tells started from a chat-log portrait (the facade <c>Service.ChatPortraitTells</c> until P2-ZM).</summary>
         public static IChatPortraitTellsService ChatPortraitTells => FacadeAccessor.Resolve<IChatPortraitTellsService>();
 

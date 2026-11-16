@@ -145,14 +145,15 @@ public static class StatSource
         if (injected.Count == 0)
             return text;
 
-        // Only the receiver of a call is removed (_pool.GetMaxFP(x) and _pool.Get<T>(x)); a property read (_pool.Count),
-        // a method group and text inside a string or comment keep it. The syntax tree finds the calls.
+        // Only the receiver of a call on the field is removed (_pool.GetMaxFP(x), this._pool.GetMaxFP(x), _pool.Get<T>(x)); a
+        // property read (_pool.Count), a method group, text inside a string or comment, and a call through a parameter, local,
+        // lambda parameter or pattern variable that shadows the field keep it. The syntax tree finds the calls.
         var receivers = CSharpSyntaxTree.ParseText(text).GetRoot()
             .DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Select(invocation => invocation.Expression)
             .OfType<MemberAccessExpressionSyntax>()
-            .Where(access => access.Expression is IdentifierNameSyntax receiver && injected.Contains(receiver.Identifier.ValueText))
+            .Where(access => IsInjectedFieldReceiver(access.Expression, injected))
             .Select(access => (Start: access.Expression.SpanStart, End: access.OperatorToken.Span.End))
             .OrderByDescending(span => span.Start)
             .ToArray();
@@ -163,6 +164,68 @@ public static class StatSource
 
         return builder.ToString();
     }
+
+    /// <summary>
+    /// Whether a receiver is one of the injected fields: <c>this._pool</c> always is; a bare <c>_pool</c> is when no
+    /// declaration of that name is in scope between it and its type (a parameter of an enclosing method, local function or
+    /// lambda, a local, a pattern or <c>out</c> variable, a loop, <c>using</c>, <c>catch</c> or query variable). The check reads
+    /// syntax only and errs towards a declaration being in scope, which keeps the receiver, so a needle fails rather than
+    /// matching a different call.
+    /// </summary>
+    private static bool IsInjectedFieldReceiver(ExpressionSyntax receiver, IReadOnlySet<string> injected)
+    {
+        if (receiver is MemberAccessExpressionSyntax { Expression: ThisExpressionSyntax, Name: IdentifierNameSyntax field })
+            return injected.Contains(field.Identifier.ValueText);
+
+        if (receiver is not IdentifierNameSyntax name || !injected.Contains(name.Identifier.ValueText))
+            return false;
+
+        var text = name.Identifier.ValueText;
+        for (var scope = name.Parent; scope != null && scope is not BaseTypeDeclarationSyntax; scope = scope.Parent)
+        {
+            // A nested scope that does not hold the receiver cannot shadow it; the scopes that do hold it are visited as
+            // ancestors in turn.
+            var scopeNode = scope;
+            var declares = scopeNode
+                .DescendantNodesAndSelf(node => node == scopeNode || !IsScopeBoundary(node))
+                .Any(node => DeclaredName(node) == text);
+            if (declares)
+                return false;
+        }
+
+        return true;
+    }
+
+    private static bool IsScopeBoundary(SyntaxNode node) => node is BlockSyntax
+        or AnonymousFunctionExpressionSyntax
+        or LocalFunctionStatementSyntax
+        or BaseMethodDeclarationSyntax
+        or AccessorDeclarationSyntax
+        or ForStatementSyntax
+        or CommonForEachStatementSyntax
+        or UsingStatementSyntax
+        or FixedStatementSyntax
+        or CatchClauseSyntax
+        or WhileStatementSyntax
+        or DoStatementSyntax
+        or SwitchStatementSyntax
+        or SwitchExpressionArmSyntax
+        or QueryExpressionSyntax;
+
+    private static string? DeclaredName(SyntaxNode node) => node switch
+    {
+        ParameterSyntax parameter => parameter.Identifier.ValueText,
+        VariableDeclaratorSyntax variable when variable.Parent?.Parent is not FieldDeclarationSyntax => variable.Identifier.ValueText,
+        SingleVariableDesignationSyntax designation => designation.Identifier.ValueText,
+        ForEachStatementSyntax loop => loop.Identifier.ValueText,
+        CatchDeclarationSyntax declaration => declaration.Identifier.ValueText,
+        FromClauseSyntax from => from.Identifier.ValueText,
+        LetClauseSyntax let => let.Identifier.ValueText,
+        JoinClauseSyntax join => join.Identifier.ValueText,
+        JoinIntoClauseSyntax into => into.Identifier.ValueText,
+        QueryContinuationSyntax continuation => continuation.Identifier.ValueText,
+        _ => null
+    };
 
     private static IReadOnlyList<SourceFile> LoadAsIs(string repositoryRoot, IEnumerable<string> relativePaths) =>
         relativePaths

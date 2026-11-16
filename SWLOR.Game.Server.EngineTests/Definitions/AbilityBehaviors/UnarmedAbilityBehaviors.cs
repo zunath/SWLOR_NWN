@@ -230,7 +230,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     ctx.Assert(UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target)),
-                        $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}"));
+                        $"{ability.Name} starts: {AbilityActivation.GetLastActivationDenialReason()}"));
                 await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
                     6f, $"{ability.Name} to complete its actual activation");
                 // The next technique waits out the one-second technique lock.

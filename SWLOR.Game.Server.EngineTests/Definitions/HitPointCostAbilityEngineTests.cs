@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
                 activated = UsePerkFeat.TryUseAbility(caster, target, FeatType.SacrificialBlade1, GetLocation(target));
-                denial = Ability.GetLastActivationDenialReason();
+                denial = AbilityActivation.GetLastActivationDenialReason();
             });
 
             ctx.Assert(!activated, "Sacrificial Blade is refused at 1 HP");
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
                 activated = UsePerkFeat.TryUseAbility(caster, target, FeatType.SoulBurst1, GetLocation(target));
-                denial = Ability.GetLastActivationDenialReason();
+                denial = AbilityActivation.GetLastActivationDenialReason();
             });
             ctx.Assert(activated, $"Soul Burst activates: {denial}");
             await ctx.DelaySecondsAsync(1f);

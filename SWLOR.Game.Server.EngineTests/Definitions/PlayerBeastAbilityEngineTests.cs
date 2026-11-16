@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var activated = false;
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                     activated = UsePerkFeat.TryUseAbility(player, target, feat, GetLocation(target)));
-                ctx.Assert(activated, $"{feat} activates through the player feat pipeline: {Ability.GetLastActivationDenialReason()}");
+                ctx.Assert(activated, $"{feat} activates through the player feat pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
                 var wait = (ability.ActivationDelay?.Invoke(player, target, ability.AbilityLevel) ?? 0f) + 8f;
                 if (isTame)
                 {

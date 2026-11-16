@@ -139,7 +139,7 @@ public static class TwinPistolPvpBalanceEngineTests
                 stamina = Stat.GetCurrentStamina(actor);
                 health = GetCurrentHitPoints(target);
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FinalSalvo, GetLocation(target)),
-                    $"The real Cadence finisher begins in the same batch as its earned charges: {Ability.GetLastActivationDenialReason()}");
+                    $"The real Cadence finisher begins in the same batch as its earned charges: {AbilityActivation.GetLastActivationDenialReason()}");
             });
             await WaitFrames(ctx, () => AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor) is { AttributedDamage: > 0 } summary &&
                 summary.Ability == ability && !Activity.IsBusy(actor), "Final Salvo's real paid impact", 5f);
@@ -442,7 +442,7 @@ public static class TwinPistolPvpBalanceEngineTests
             stamina = Stat.GetCurrentStamina(actor);
             ctx.SeedRandom(1);
             ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-                $"The actual ability is accepted: {Ability.GetLastActivationDenialReason()}");
+                $"The actual ability is accepted: {AbilityActivation.GetLastActivationDenialReason()}");
             if (feat != FeatType.Headshot1) return;
             ctx.AssertEqual(stamina - Cost(feat), Stat.GetCurrentStamina(actor), "Headshot pays exactly once at real queue time");
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(actor).AsNWSCreature();

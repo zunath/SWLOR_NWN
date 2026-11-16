@@ -11,8 +11,8 @@ using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 namespace SWLOR.Game.Server.Domain.Abilities
 {
     /// <summary>
-    /// Abilities: the validation of an activation, the lifecycle of each impact while it resolves, and the combat impacts
-    /// content applies. The catalog, the impact state, the auras, the temporary immunities and the activation state have
+    /// Abilities: the lifecycle of each impact while it resolves, and the combat impacts content applies. The catalog, the
+    /// impact state, the activation and target checks, the auras, the temporary immunities and the activation state have
     /// interfaces of their own (Readmes/MaintainabilityRefactorAbilitySplit.md). Static callers reach the container's instance through <c>GameServices.Ability</c>; the event handlers are on
     /// <see cref="AbilityService"/>.
     /// </summary>
@@ -84,30 +84,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         void ApplyHostileAbilityEnmity(uint activator, uint target, int bonus = 0);
 
         int CalculateHostileAbilityEnmity(int bonus, int volleyIndex = 0, int volleyCount = 1);
-
-        /// <summary>
-        /// The reason the most recent CanUseAbility call returned false. Player-facing feedback
-        /// goes through SendMessageToPC, which is invisible for NPC activators - the in-engine
-        /// test harness reads this to report WHY an activation was rejected. Cleared at the
-        /// start of every check.
-        /// </summary>
-        string GetLastActivationDenialReason();
-
-        /// <summary>
-        /// Checks whether a creature can activate the perk feat.
-        /// </summary>
-        /// <param name="activator">The activator of the perk feat.</param>
-        /// <param name="target">The target of the perk feat.</param>
-        /// <param name="abilityType">The type of ability to use.</param>
-        /// <param name="effectivePerkLevel">The activator's effective perk level.</param>
-        /// <param name="targetLocation">The target location of the perk feat.</param>
-        /// <returns>true if successful, false otherwise</returns>
-        bool CanUseAbility(
-            uint activator,
-            uint target,
-            FeatType abilityType,
-            int effectivePerkLevel,
-            Location targetLocation);
 
         /// <summary>
         /// Applies the standard hostile combat impact used by weapon and martial abilities.

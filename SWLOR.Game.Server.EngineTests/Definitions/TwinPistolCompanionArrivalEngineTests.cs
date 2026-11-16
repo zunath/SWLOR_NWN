@@ -208,7 +208,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                 writer = CombatRecorder.LastWriter;
                 HostileAbilityDelay.EndForTesting(actor);
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
-                    $"Headshot queues through its normal paid pipeline: {Ability.GetLastActivationDenialReason()}");
+                    $"Headshot queues through its normal paid pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
                 paidStamina = Stat.GetCurrentStamina(actor);
                 var cost = AbilityCatalog.GetAbilityDetail(FeatType.Headshot1).Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
                 ctx.AssertEqual(stamina - cost, paidStamina, "The readied ability pays its authored cost exactly once at queue time");

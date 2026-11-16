@@ -53,7 +53,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
                 GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
             });
             await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.LeadShot1, GetLocation(target)),
-                $"Lead Shot enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
+                $"Lead Shot enters the pipeline: {AbilityActivation.GetLastActivationDenialReason()}"));
             await Until(ctx, () => State(actor)?.Cadence == 1, "Lead Shot's landed hit to grant one Cadence");
             await Until(ctx, () => !Activity.IsBusy(actor) && !TwinPistolAbility.HasActiveActivation(actor), "Lead Shot resolution");
             var state = State(actor);
@@ -69,7 +69,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             {
                 ClearAllActions();
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
-                    $"Foreign Rifle Headshot queues: {Ability.GetLastActivationDenialReason()}");
+                    $"Foreign Rifle Headshot queues: {AbilityActivation.GetLastActivationDenialReason()}");
                 ctx.Assert(AbilityActivationState.TryGetQueuedWeaponTraits(actor, out traits), "the queued Headshot captures its traits");
                 ctx.AssertEqual(5, UsePerkFeat.GetQueuedWeaponTraitAccuracy(actor), "Captured Changing Angles reaches the carrier attack roll");
                 ctx.AssertEqual(1, traits.Snapshot.CadenceSpent, "A foreign paid weapon ability captures Cadence");
@@ -155,7 +155,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             ctx.Assert(GetCurrentHitPoints(actor) < hp, "The discount source deals actual hostile damage");
             var stamina = Stat.GetCurrentStamina(actor);
             await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.Shielding1, GetLocation(actor)),
-                $"Real First Aid support cast enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
+                $"Real First Aid support cast enters the pipeline: {AbilityActivation.GetLastActivationDenialReason()}"));
             await Until(ctx, () => !Activity.IsBusy(actor), "First Aid support cast completion");
             ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The first support cast pays zero STM");
             ctx.AssertEqual(otherMakesFree ? -2 : 0, PairedRangedTraits.GetAbilityStaminaCostAdjustment(actor),
@@ -194,14 +194,14 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
             });
             var stamina = Stat.GetCurrentStamina(actor);
             await InFrame(ctx, actor, () => ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.ControlledBurst1, GetLocation(target)),
-                $"Controlled Burst enters the pipeline: {Ability.GetLastActivationDenialReason()}"));
+                $"Controlled Burst enters the pipeline: {AbilityActivation.GetLastActivationDenialReason()}"));
             await Until(ctx, () => !Activity.IsBusy(actor) && !TwinPistolAbility.HasActiveActivation(actor), "Controlled Burst resolution");
             ctx.AssertEqual(stamina - 6 + 2, Stat.GetCurrentStamina(actor), "Neutral Cadence context preserves Controlled Burst's intrinsic recovery");
             await InFrame(ctx, actor, () =>
             {
                 ClearAllActions();
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.TwinSuns, GetLocation(target)),
-                    $"Twin Suns enters the pipeline: {Ability.GetLastActivationDenialReason()}");
+                    $"Twin Suns enters the pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
             });
             await Until(ctx, () => State(actor)?.BonusAttempts == 6, "Twin Suns intrinsic six-attempt buff");
             ctx.AssertEqual(25, State(actor).BonusDamagePercent, "Neutral context preserves Twin Suns damage buff");

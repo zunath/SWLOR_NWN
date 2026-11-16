@@ -26,10 +26,10 @@ public static class AbilityInternals
     public static AbilityService NoNeighbours()
     {
         var impactState = new AbilityImpactStore();
-        return new(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!,
-            FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IAbilityCatalog>(), impactState, Geometry(),
+        return new(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!,
+            FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IPerkService>(), impactState, Geometry(),
             new CombatAbilityMagnitudeService(impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>()),
-            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ISpaceService>());
+            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>());
     }
 
     /// <summary>A geometry part with no telegraph service, for a test of the shape tests that resolve no marker.</summary>

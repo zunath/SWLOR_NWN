@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     used = UsePerkFeat.TryUseAbility(caster, struck, FeatType.EscapeArtist1, GetLocation(struck));
                     if (!used)
-                        denial = Ability.GetLastActivationDenialReason();
+                        denial = AbilityActivation.GetLastActivationDenialReason();
                 });
                 ctx.Assert(used, $"Escape Artist must activate: {denial}");
 

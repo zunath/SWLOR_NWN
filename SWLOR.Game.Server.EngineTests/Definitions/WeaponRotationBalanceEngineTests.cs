@@ -396,7 +396,7 @@ public static class WeaponRotationBalanceEngineTests
                         }
                         else
                         {
-                            var reason = $"{feat}: {Ability.GetLastActivationDenialReason()}";
+                            var reason = $"{feat}: {AbilityActivation.GetLastActivationDenialReason()}";
                             denials[reason] = denials.GetValueOrDefault(reason) + 1;
                             if (denials[reason] == 1)
                                 ctx.Log(JsonSerializer.Serialize(new { seed, denied = reason, elapsed,

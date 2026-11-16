@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Composition
         {
             // Abilities
             services.AddSingleton<IAbilityService, AbilityService>();
+            services.AddSingleton<IAbilityActivationService, AbilityActivationService>();
             services.AddSingleton<IAbilityActivationStateService, AbilityActivationStateService>();
             services.AddSingleton<IAbilityAuraService, AbilityAuraService>();
             // The same instance, seen through the interface Combat owns for a creature revived in place (P5-3c).
@@ -88,6 +89,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAbilityCatalog>(provider => provider.GetRequiredService<IAbilityCatalogService>());
             services.AddSingleton<IAbilityCooldownVisualService, AbilityCooldownVisualService>();
             services.AddSingleton<IAbilityImmunityService, AbilityImmunityService>();
+            services.AddSingleton<IAbilityTargetCheckService, AbilityTargetCheckService>();
             services.AddSingleton<IAbilityTargetingCacheService, AbilityTargetingCacheService>();
             services.AddSingleton<IFieldEngineerPulseEmittersService, FieldEngineerPulseEmittersService>();
             services.AddSingleton<IForceControlCooldownsService, ForceControlCooldownsService>();
@@ -241,6 +243,8 @@ namespace SWLOR.Game.Server.Composition
 
             // Space
             services.AddSingleton<ISpaceService, SpaceService>();
+            // The space mode read Abilities owns for its activation checks (P5-3d).
+            services.AddSingleton<ISpaceModeQuery, SpaceModeQuery>();
 
             // Social
             services.AddSingleton<IChatCommandService, ChatCommandService>();

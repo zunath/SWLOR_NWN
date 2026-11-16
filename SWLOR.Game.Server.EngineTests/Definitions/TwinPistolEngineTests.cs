@@ -716,7 +716,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         SWLOR.Game.Server.Domain.Abilities.HostileAbilityDelay.EndForTesting(actor);
                         GameServices.AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                         ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-                            $"{feat} validation: {GameServices.Ability.GetLastActivationDenialReason()}");
+                            $"{feat} validation: {GameServices.AbilityActivation.GetLastActivationDenialReason()}");
                         ctx.Assert(TwinPistolAbility.HasActiveActivation(actor), "The cast captures its weapon and trait state");
                         TwinPistolCombatLifecycle.Reconcile();
                         ctx.Assert(TwinPistolAbility.HasActiveActivation(actor),

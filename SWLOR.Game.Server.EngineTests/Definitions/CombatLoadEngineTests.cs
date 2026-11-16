@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     return;
                 }
 
-                var reason = Ability.GetLastActivationDenialReason() ?? "unknown";
+                var reason = AbilityActivation.GetLastActivationDenialReason() ?? "unknown";
                 denials[$"{feat}: {reason}"] = denials.GetValueOrDefault($"{feat}: {reason}") + 1;
             });
             return true;
@@ -367,7 +367,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 {
                     used = UsePerkFeat.TryUseAbility(caster, caster, feat, GetLocation(caster));
-                    reason = used ? string.Empty : Ability.GetLastActivationDenialReason();
+                    reason = used ? string.Empty : AbilityActivation.GetLastActivationDenialReason();
                 });
                 if (!used)
                     await ctx.DelaySecondsAsync(0.5f);

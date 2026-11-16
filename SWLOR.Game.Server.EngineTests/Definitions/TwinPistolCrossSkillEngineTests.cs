@@ -80,7 +80,7 @@ public static class TwinPistolCrossSkillEngineTests
                     _ordinaryDamageEvents = 0;
                     AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                     ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.Headshot1, GetLocation(target)),
-                        $"The existing queued weapon ability accepts its damageable target: {Ability.GetLastActivationDenialReason()}");
+                        $"The existing queued weapon ability accepts its damageable target: {AbilityActivation.GetLastActivationDenialReason()}");
                     ActionAttack(target);
                 });
                 await ctx.WaitUntilAsync(() => !UsePerkFeat.HasQueuedWeaponAbility(actor) &&
@@ -426,7 +426,7 @@ public static class TwinPistolCrossSkillEngineTests
                         PairedRangedPresentation.Prepare(actor);
                     }
                     ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.PairedVolley1, GetLocation(target)),
-                        $"Paired Volley accepts {mainResref}/{offResref}: {Ability.GetLastActivationDenialReason()}");
+                        $"Paired Volley accepts {mainResref}/{offResref}: {AbilityActivation.GetLastActivationDenialReason()}");
                 });
                 await ctx.WaitUntilAsync(() => (killingShot ? GetIsDead(target) : _damageEvents >= impacts) &&
                     AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,
@@ -502,7 +502,7 @@ public static class TwinPistolCrossSkillEngineTests
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 90f);
             ctx.MakeHostile(target);
             ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.AkimboStance, GetLocation(actor)),
-                $"Akimbo activates through the normal stance pipeline: {Ability.GetLastActivationDenialReason()}");
+                $"Akimbo activates through the normal stance pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
         });
         GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(true);
         try
@@ -532,7 +532,7 @@ public static class TwinPistolCrossSkillEngineTests
                 CreaturePlugin.RunEquip(actor, rifle, InventorySlot.RightHand);
                 ctx.AssertEqual(70, GameServices.CombatDamageModifiers.ApplyOrdinaryAttackDamageMultiplier(actor, 100), "The rifle inherits the same ordinary damage cost");
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.CrossfireStance, GetLocation(actor)),
-                    $"Crossfire can activate with a rifle: {Ability.GetLastActivationDenialReason()}");
+                    $"Crossfire can activate with a rifle: {AbilityActivation.GetLastActivationDenialReason()}");
             });
             await ctx.WaitUntilAsync(() => StatusEffect.GetStatusEffect<CrossfireStanceStatusEffect>(actor) != null,
                 5f, "Crossfire to replace Akimbo");

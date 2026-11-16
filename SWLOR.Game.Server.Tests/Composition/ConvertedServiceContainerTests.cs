@@ -135,6 +135,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IAbilityCatalog", "IAbilityImpactState", "IActiveAbilityImpact" })
             // The ability split (P5-3c): the party roster as Combat reads it, and the aura part as the death service's revive listener.
             .Concat(new[] { "IPartyRoster", "ICreatureRevivedListener" })
+            // The ability split (P5-3d): the space mode read the activation checks own, which Space answers.
+            .Concat(new[] { "ISpaceModeQuery" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

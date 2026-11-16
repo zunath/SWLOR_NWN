@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
@@ -23,11 +22,11 @@ using NumericsVector3 = System.Numerics.Vector3;
 namespace SWLOR.Game.Server.Domain.Abilities
 {
     /// <summary>
-    /// Abilities: the validation of an activation, the lifecycle of each impact while it resolves, and the combat impacts
-    /// content applies. The catalog, the impact state, the auras, the temporary immunities and the activation state
+    /// Abilities: the lifecycle of each impact while it resolves, and the combat impacts content applies. The catalog, the
+    /// impact state, the activation and target checks, the auras, the temporary immunities and the activation state
     /// <c>UsePerkFeat</c> runs on are parts of their own (Readmes/MaintainabilityRefactorAbilitySplit.md). The logic that used to be static in <c>Service.Ability</c> is moved here unchanged; the event handlers run on the
     /// container's instance, and static callers reach it through <c>GameServices.Ability</c>. Converted services are
-    /// injected. Calls into the unconverted <c>Combat</c>, <c>Stat</c>, <c>Perk</c>, <c>Space</c>, <c>WeaponDamage</c> and
+    /// injected. Calls into the unconverted <c>Combat</c>, <c>Stat</c>, <c>Perk</c>, <c>WeaponDamage</c> and
     /// feature code and the definition search sit behind one-line <c>protected virtual</c> methods whose bodies are the
     /// original calls.
     /// </summary>
@@ -36,14 +35,10 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IStatusEffectService _statusEffect;
         private readonly IEnmityService _enmity;
         private readonly ICombatPointService _combatPoint;
-        private readonly IRecastService _recast;
         private readonly ITelegraphService _telegraph;
         private readonly IMessagingService _messaging;
         private readonly IMusicService _music;
         private readonly INamedAnimationService _namedAnimation;
-        private readonly IMimicryService _mimicry;
-        private readonly IActivityService _activity;
-        private readonly IPlayerFeedbackService _playerFeedback;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IMeleeTechniqueService _meleeTechnique;
         private readonly ICapstoneProofService _capstoneProof;
@@ -51,7 +46,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IStealthService _stealth;
         private readonly IStatService _stat;
         private readonly IPerkService _perk;
-        private readonly IAbilityCatalog _catalog;
         private readonly IAbilityImpactState _impactState;
         private readonly ICombatImpactGeometryService _geometry;
         private readonly ICombatAbilityMagnitudeService _magnitude;
@@ -66,20 +60,14 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatQueriesService _queries;
         private readonly ICombatResourcesService _resources;
 
-        private readonly ISpaceService _space;
-
         public AbilityService(
             IStatusEffectService statusEffect,
             IEnmityService enmity,
             ICombatPointService combatPoint,
-            IRecastService recast,
             ITelegraphService telegraph,
             IMessagingService messaging,
             IMusicService music,
             INamedAnimationService namedAnimation,
-            IMimicryService mimicry,
-            IActivityService activity,
-            IPlayerFeedbackService playerFeedback,
             ICombatRecorderService combatRecorder,
             IMeleeTechniqueService meleeTechnique,
             ICapstoneProofService capstoneProof,
@@ -87,7 +75,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IStealthService stealth,
             IStatService stat,
             IPerkService perk,
-            IAbilityCatalog catalog,
             IAbilityImpactState impactState,
             ICombatImpactGeometryService geometry,
             ICombatAbilityMagnitudeService magnitude,
@@ -100,20 +87,15 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatFeedbackService feedback,
             ICombatHitEffectsService hitEffects,
             ICombatQueriesService queries,
-            ICombatResourcesService resources,
-            ISpaceService space)
+            ICombatResourcesService resources)
         {
             _statusEffect = statusEffect;
             _enmity = enmity;
             _combatPoint = combatPoint;
-            _recast = recast;
             _telegraph = telegraph;
             _messaging = messaging;
             _music = music;
             _namedAnimation = namedAnimation;
-            _mimicry = mimicry;
-            _activity = activity;
-            _playerFeedback = playerFeedback;
             _combatRecorder = combatRecorder;
             _meleeTechnique = meleeTechnique;
             _capstoneProof = capstoneProof;
@@ -121,7 +103,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _stealth = stealth;
             _stat = stat;
             _perk = perk;
-            _catalog = catalog;
             _impactState = impactState;
             _geometry = geometry;
             _magnitude = magnitude;
@@ -135,7 +116,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _hitEffects = hitEffects;
             _queries = queries;
             _resources = resources;
-            _space = space;
         }
 
         /// <summary>
@@ -548,236 +528,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private void ApplyMissedHostileAbilityEnmity(uint activator, uint target)
         {
             _enmity.ModifyEnmity(activator, target, HostileAbilityMissEnmity);
-        }
-
-
-
-        /// <summary>
-        /// Checks whether a creature can activate the perk feat.
-        /// </summary>
-        /// <param name="activator">The activator of the perk feat.</param>
-        /// <param name="target">The target of the perk feat.</param>
-        /// <param name="abilityType">The type of ability to use.</param>
-        /// <param name="effectivePerkLevel">The activator's effective perk level.</param>
-        /// <param name="targetLocation">The target location of the perk feat.</param>
-        /// <returns>true if successful, false otherwise</returns>
-        [ReloadState(ReloadStateKind.Runtime)]
-        private string _lastActivationDenial = string.Empty;
-
-        /// <summary>
-        /// The reason the most recent CanUseAbility call returned false. Player-facing feedback
-        /// goes through SendMessageToPC, which is invisible for NPC activators - the in-engine
-        /// test harness reads this to report WHY an activation was rejected. Cleared at the
-        /// start of every check.
-        /// </summary>
-        public string GetLastActivationDenialReason()
-        {
-            return _lastActivationDenial;
-        }
-
-        public bool CanUseAbility(
-            uint activator,
-            uint target,
-            FeatType abilityType,
-            int effectivePerkLevel,
-            Location targetLocation)
-        {
-            var ability = _catalog.GetAbilityDetail(abilityType);
-
-            _lastActivationDenial = string.Empty;
-
-            bool Deny(string reason)
-            {
-                _lastActivationDenial = reason;
-                SendMessageToPC(activator, reason);
-                return false;
-            }
-
-            // Cannot use this ability in space.
-            if (IsPlayerInSpaceMode(activator) &&
-                !ability.CanBeUsedInSpace)
-            {
-                return Deny("This ability cannot be used in space.");
-            }
-
-            // Must have appropriate levels in the perk to use the ability.
-            if (effectivePerkLevel <= 0 || ability.AbilityLevel > effectivePerkLevel)
-            {
-                return Deny("You do not meet the prerequisites to use this ability.");
-            }
-
-            if (ShouldEnforceActiveAbilityFeatReplacement(activator, ability.EffectiveLevelPerkType) &&
-                !IsCurrentActiveAbilityFeat(abilityType, ability.EffectiveLevelPerkType, effectivePerkLevel))
-            {
-                return Deny("A newer rank has replaced this ability.");
-            }
-
-            // Mimicry techniques are granted through the equipped technique loadout rather than
-            // directly by Combat Analyzer. Re-check the loadout at both activation gates so a stale
-            // feat, or a technique unequipped while its cast is winding up, cannot still resolve.
-            if (ability.IsMimicryTechnique &&
-                !_mimicry.IsTechniqueEquipped(activator, abilityType))
-            {
-                return Deny("That technique is not equipped.");
-            }
-
-            // Activator is dead.
-            if (GetCurrentHitPoints(activator) <= 0)
-            {
-                return Deny("You are dead.");
-            }
-
-            // Not commandable
-            if (!GetCommandable(activator))
-            {
-                return Deny("You cannot take actions at this time.");
-            }
-
-            // Must be within line of sight.
-            if (ability.RequiresTarget &&
-                GetIsObjectValid(target) &&
-                !_geometry.HasAbilityLineOfSight(activator, target))
-            {
-                return Deny("You cannot see your target.");
-            }
-
-            // Must not be busy
-            if (_activity.IsBusy(activator))
-            {
-                return Deny("You are busy.");
-            }
-
-            if (ability.ActivationType == AbilityActivationType.Weapon &&
-                IsWeaponSkillType(ability.SkillType) &&
-                !HasEquippedWeaponForAbility(activator))
-            {
-                return Deny("You must equip a weapon to use this ability.");
-            }
-
-            if (ability.ActivationType == AbilityActivationType.Weapon ||
-                ability.IsHostileAbility && IsWeaponSkillType(ability.SkillType))
-            {
-                var equipmentError = GetUnusableEquipmentError(activator);
-                if (!string.IsNullOrEmpty(equipmentError)) return Deny(equipmentError);
-            }
-
-            if (IsForcePower(activator, ability) &&
-                GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
-            {
-                return Deny("You cannot use Force abilities right now.");
-            }
-
-            // Target check.
-            if (ability.RequiresTarget && !GetIsObjectValid(target))
-            {
-                return Deny("A target is required.");
-            }
-
-            // Aimed areas use the feat's location cursor. They must not use RequiresTarget,
-            // because empty-ground casts have no target object and object range/hostility checks
-            // do not describe a selected location or direction.
-            if (ability.RequiresLocationTarget)
-            {
-                var targetArea = GetAreaFromLocation(targetLocation);
-                if (!GetIsObjectValid(targetArea) || targetArea != GetArea(activator))
-                {
-                    return Deny("A target location in your current area is required.");
-                }
-
-                if (ability.HasExplicitMaxRange &&
-                    GetDistanceBetweenLocations(GetLocation(activator), targetLocation) > ability.MaxRange)
-                {
-                    return Deny("You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
-                }
-            }
-
-            // Object range check. Location-targeted areas are validated separately above.
-            if (ability.RequiresTarget &&
-                GetIsObjectValid(target) &&
-                GetDistanceBetween(activator, target) > ability.MaxRange)
-            {
-                return Deny("You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
-            }
-
-            // Hostility check
-            if (ability.RequiresTarget &&
-                GetIsObjectValid(target) &&
-                !GetIsReactionTypeHostile(target, activator) &&
-                ability.IsHostileAbility)
-            {
-                return Deny("You may only use this ability on enemies.");
-            }
-
-            // Perk-specific requirement checks
-            var techniqueError = _meleeTechnique.ValidateActivation(activator, ability, target);
-            if (!string.IsNullOrWhiteSpace(techniqueError))
-                return Deny(techniqueError);
-
-            foreach (var req in ability.Requirements)
-            {
-                var requirementError = req.CheckRequirements(activator, ability);
-                if (!string.IsNullOrWhiteSpace(requirementError))
-                {
-                    return Deny(requirementError);
-                }
-            }
-
-            // Perk-specific custom validation logic.
-            var customValidationResult = ability.CustomValidation == null ? string.Empty : ability.CustomValidation(activator, target, effectivePerkLevel, targetLocation);
-            if (!string.IsNullOrWhiteSpace(customValidationResult))
-            {
-                return Deny(customValidationResult);
-            }
-
-            var areaLineOfSightError = ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability);
-            if (!string.IsNullOrWhiteSpace(areaLineOfSightError))
-            {
-                return Deny(areaLineOfSightError);
-            }
-
-            // Check if ability is on a recast timer still.
-            var (isOnRecast, timeToWait) = _recast.IsOnRecastDelay(activator, ability.RecastGroup);
-            if (isOnRecast)
-            {
-                _playerFeedback.ShowCooldownFloatingText(activator, ability.Name, timeToWait);
-                return Deny($"This ability can be used in {timeToWait}.");
-            }
-
-            return true;
-        }
-
-        private string ValidateHostileAreaLineOfSight(
-            uint activator,
-            uint target,
-            Location targetLocation,
-            AbilityDetail ability)
-        {
-            var targeting = ability.Targeting;
-            if (targeting == null ||
-                !targeting.Flags.HasFlag(AbilityTargetingFlags.HarmsEnemies) ||
-                !_geometry.TryGetCombatImpactShape(targeting.Shape, out var shape))
-            {
-                return string.Empty;
-            }
-
-            var creatures = _geometry.GetHostileCreaturesInCombatImpactShape(
-                    activator,
-                    target,
-                    targetLocation,
-                    shape,
-                    targeting.ResolveSizeX(activator, true),
-                    targeting.ResolveSizeY(),
-                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf),
-                    targeting.Flags.HasFlag(AbilityTargetingFlags.BackOffsetOrigin))
-                .ToList();
-
-            if (creatures.Count <= 0 ||
-                creatures.Any(creature => _geometry.HasAbilityLineOfSight(activator, creature)))
-            {
-                return string.Empty;
-            }
-
-            return "You cannot see any enemies in the target area.";
         }
 
         /// <summary>
@@ -2665,13 +2415,9 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 : ability;
         }
 
-        protected virtual string GetUnusableEquipmentError(uint creature) => TwinPistolEquipmentValidation.GetUnusableEquipmentError(creature);
-
         protected virtual int GetAbilityDMG(uint creature, uint weapon, SkillType abilitySkill) => WeaponDamage.GetAbilityDMG(creature, weapon, abilitySkill);
 
         protected virtual CombatDamageType GetWeaponDamageType(uint weapon) => WeaponDamage.GetDamageType(weapon);
-
-        protected virtual bool IsPlayerInSpaceMode(uint player) => _space.IsPlayerInSpaceMode(player);
 
         protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
 
@@ -2695,13 +2441,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount) => _perk.ApplyForceAffinityMagnitude(creature, perkType, amount);
 
-        protected virtual bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType) => _perk.ShouldEnforceActiveAbilityFeatReplacement(creature, perkType);
-
-        protected virtual bool IsCurrentActiveAbilityFeat(FeatType feat, PerkType perkType, int perkLevel) => _perk.IsCurrentActiveAbilityFeat(feat, perkType, perkLevel);
-
         protected virtual SkillType GetAbilitySkillType(uint creature, AbilityDetail ability) => _queries.GetAbilitySkillType(creature, ability);
-
-        protected virtual bool IsForcePower(uint creature, AbilityDetail ability) => _queries.IsForcePower(creature, ability);
 
         protected virtual int ConsumeNextAbilityDamageBonus(uint creature, PerkType perkType) => _abilityBonus.ConsumeNextAbilityDamageBonus(creature, perkType);
 
@@ -2735,8 +2475,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         protected virtual int ConsumePersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType) => _abilityBonus.ConsumePersistentNextSkillAbilityCriticalRateBonus(creature, skillType);
 
         protected virtual void ApplyNonCriticalAbilityEffects(uint activator, uint target, SkillType skillType) => _hitEffects.ApplyNonCriticalAbilityEffects(activator, target, skillType);
-
-        protected virtual bool HasEquippedWeaponForAbility(uint creature) => _queries.HasEquippedWeaponForAbility(creature);
 
         protected virtual void DeferAbilityStaminaCostContext(uint creature, AbilityDetail ability) => _resources.DeferAbilityStaminaCostContext(creature, ability);
 

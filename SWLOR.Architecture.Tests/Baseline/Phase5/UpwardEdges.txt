@@ -16,7 +16,6 @@
 
 SWLOR.Game.Server/ApplicationSettings.cs: Platform -> Character | 1
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs: Abilities -> Quests | 3
-SWLOR.Game.Server/Domain/Abilities/AbilityService.cs: Abilities -> Space | 3
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs: Abilities -> World | 3
 SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs: Administration -> Creatures | 3
 SWLOR.Game.Server/Domain/Administration/DMObjectDetailsService.cs: Administration -> Creatures | 3

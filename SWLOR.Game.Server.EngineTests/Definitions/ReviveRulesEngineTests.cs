@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
                 activated = UsePerkFeat.TryUseAbility(caster, body, FeatType.Resuscitation1, GetLocation(body));
-                denial = Ability.GetLastActivationDenialReason();
+                denial = AbilityActivation.GetLastActivationDenialReason();
             });
             return (activated, denial);
         }

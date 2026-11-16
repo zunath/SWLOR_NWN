@@ -116,7 +116,7 @@ public static class SlamActivationEngineTests
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(5000), target, 120f);
             await ctx.ExecuteInCreatureContextAsync(player, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(player, target, FeatType.Slam1, GetLocation(target)),
-                    $"Slam I works after hand-in: {Ability.GetLastActivationDenialReason()}"));
+                    $"Slam I works after hand-in: {AbilityActivation.GetLastActivationDenialReason()}"));
             await ctx.WaitUntilAsync(() => !Activity.IsBusy(player), 3f, "Slam I to finish before fixture cleanup");
         }
         finally
@@ -151,7 +151,7 @@ public static class SlamActivationEngineTests
             {
                 ctx.Assert(!Activity.IsBusy(player), "A fresh player starts idle.");
                 ctx.Assert(UsePerkFeat.TryUseAbility(player, target, FeatType.Slam1, GetLocation(target)),
-                    $"Slam I starts: {Ability.GetLastActivationDenialReason()}");
+                    $"Slam I starts: {AbilityActivation.GetLastActivationDenialReason()}");
             });
             await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(player) != null,
                 5f, "Slam I's player impact");
@@ -162,8 +162,8 @@ public static class SlamActivationEngineTests
             {
                 ctx.Assert(!UsePerkFeat.TryUseAbility(player, target, FeatType.Slam1, GetLocation(target)),
                     "A repeated Slam I is rejected during its cooldown.");
-                ctx.Assert(!Ability.GetLastActivationDenialReason().Contains("busy"),
-                    $"The cooldown rejection must not be busy: {Ability.GetLastActivationDenialReason()}");
+                ctx.Assert(!AbilityActivation.GetLastActivationDenialReason().Contains("busy"),
+                    $"The cooldown rejection must not be busy: {AbilityActivation.GetLastActivationDenialReason()}");
             });
         }
         finally

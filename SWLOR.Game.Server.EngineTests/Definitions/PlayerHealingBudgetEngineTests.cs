@@ -58,11 +58,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(observed < 500, "this legal combination restores less than half a health bar per cast");
             ctx.AssertEqual(0, Stat.GetCurrentStamina(player), "one rank-IV heal consumes the eight-STM budget");
             await ctx.WaitUntilAsync(() => !GetIsObjectValid(supplies), 3f, "the medical supply to be consumed");
-            ctx.Assert(!Ability.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "healing cannot be spammed during recast");
+            ctx.Assert(!AbilityActivation.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "healing cannot be spammed during recast");
             await ctx.DelaySecondsAsync(11f);
-            ctx.Assert(!Ability.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "an exhausted medic cannot heal after recast");
+            ctx.Assert(!AbilityActivation.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "an exhausted medic cannot heal after recast");
             ctx.SetResources(player, 100, 8);
-            ctx.Assert(!Ability.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "restoring stamina does not replace the consumed supply");
+            ctx.Assert(!AbilityActivation.CanUseAbility(player, target, FeatType.MedKit4, 4, GetLocation(target)), "restoring stamina does not replace the consumed supply");
             ctx.Log($"Med Kit IV: {observed}/1000 HP restored, 8 STM and one supply consumed.");
         }
     }

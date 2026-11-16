@@ -718,7 +718,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(GameServices.Mimicry.EquipTechnique(caster, FeatType.SnapRushTechnique), "Snap Rush equips through the player loadout");
             Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - 3);
             SWLOR.NWN.API.NWNX.CreaturePlugin.AddFeat(caster, FeatType.SnapRushTechnique);
-            ctx.Assert(!Ability.CanUseAbility(caster, caster, FeatType.SnapRushTechnique, 1, GetLocation(caster)),
+            ctx.Assert(!AbilityActivation.CanUseAbility(caster, caster, FeatType.SnapRushTechnique, 1, GetLocation(caster)),
                 "three STM cannot fund a four-STM recovery ability");
             Stat.RestoreStamina(caster, 1);
             var used = false;

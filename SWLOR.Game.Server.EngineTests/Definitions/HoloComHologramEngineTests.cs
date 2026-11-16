@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster, () =>
                         ctx.Assert(UsePerkFeat.TryUseAbility(caster, sender.Creature, FeatType.CreepingTerror3, GetLocation(sender.Creature)),
-                            $"Creeping Terror III activates: {Ability.GetLastActivationDenialReason()}"));
+                            $"Creeping Terror III activates: {AbilityActivation.GetLastActivationDenialReason()}"));
 
                     await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<HobbleStatusEffect>(sender.Creature), 10f,
                         "the first pulse to hobble the calling player");

@@ -533,6 +533,50 @@ implements Character's `IAuraStatusEffect`. Where the pull request differs from 
   the target queries' party reads through an `IPartyRoster` stand-in.
 - **CombatSim** reads `TemporaryImmunityBaseDurationSeconds` from `AbilityImmunityService`.
 
+### P5-3d (activation checks, target checks and the space mode query)
+
+Parts 6 and 7 moved. `AbilityActivationService` (behind `IAbilityActivationService` and `GameServices.AbilityActivation`; 209
+lines, 8 services: the catalog, `ISpaceModeQuery`, `IPerkService`, `IMimicryService`, `IActivityService`, `IStatService`,
+`ICombatQueriesService` and part 7) holds `CanUseAbility`, `GetLastActivationDenialReason` and `_lastActivationDenial` (still
+`Runtime`), with its 8 seams. `AbilityTargetCheckService` (behind `IAbilityTargetCheckService` and
+`GameServices.AbilityTargetCheck`; 167 lines, 4 services: the geometry, `IMeleeTechniqueService`, `IRecastService`,
+`IPlayerFeedbackService`) holds the target checks and `ValidateHostileAreaLineOfSight`, with no seams. `ISpaceModeQuery`
+(Abilities) is implemented by `SpaceModeQuery` in Space, which needs only `IDBService`, so `AbilityService` no longer takes
+`ISpaceService` and the Abilities -> Space edge and the `Abilities <-> Space` cycle are gone. No `[ReloadState(Carried)]` field
+moved. Where the pull request differs from the map:
+
+- **`CanUseAbility` runs four check methods.** The map's order holds: `ValidateActivatorState` (space, prerequisites,
+  replacement, Mimicry loadout, dead, commandable) in part 6, `ValidateLineOfSight` in part 7, `ValidateActivatorReadiness`
+  (busy, weapon, equipment, Force disabled) in part 6, then `ValidateTarget` in part 7 (target, location, range, hostility,
+  technique, requirements, custom validation, hostile-area line of sight, recast). Each returns its denial or empty, and
+  `CanUseAbility` stops at the first denial and passes it to its local `Deny`, unchanged (it records the reason, then sends it), so
+  `return Deny("...")` became `return "..."` in the checks. A check whose text is whitespace still passes, as before, and the
+  recast check still shows the cooldown text before the denial is recorded. Part 7's three ranges are two public members: the
+  line-of-sight check sits between part 6's two groups, so it is its own member.
+- **`AIService` and `CompanionControlService` keep a `Lazy<>`, narrowed to `Lazy<IAbilityActivationService>`.** A plain parameter is
+  a construction cycle, which the container reports: `AIService -> IAbilityActivationService -> IPerkService ->
+  IStatusEffectService -> IResistanceService -> IMimicryService -> IPlayerFeedbackService -> IMessagingService -> IStealthService
+  -> IAIService`, and `CompanionControlService -> IAbilityActivationService -> IStatService -> IEnmityService ->
+  ICompanionControlService`. The services the checks call (perk, stat, Mimicry, the combat queries, through part 7 the player
+  feedback) all reach the AI or companion service; the two lazies go when Combat and Character reach those through interfaces
+  they own (P5-7, P5-8). `DeferredResolution.txt` keeps both lines.
+- **No `Lazy<>` goes here.** Row 6's `Lazy<ISpaceService>` went in P5-3c; this item removes the upward edge it stood for.
+- **`SpaceModeQuery` repeats the three lines** of `SpaceService.IsPlayerInSpaceMode` instead of the space service forwarding to it,
+  so `feature/space-revamp`'s port of `SpaceService` is untouched. `SpaceModeQueryTests` checks that both answer the same, and
+  `ConvertedServiceContainerTests` lists `ISpaceModeQuery` with the interfaces that are not services, like `IAbilityCatalog`.
+- **Growth:** `UsePerkFeat` reaches `AbilityActivation` beside `Ability` (30 -> 31 services). `AbilityService` loses six services
+  (33 -> 27: the catalog, recast, Mimicry, activity, player feedback and space) and 262 lines (2,900 -> 2,638), and `CanUseAbility`
+  leaves `LongMethods.txt`. The `TwinPistolEquipmentValidation` line of `LogicToContent.txt` moves to `AbilityActivationService.cs`.
+- **Callers:** `RemovedFacades.json` lists the two members under `AbilityActivation`, and `Apply-FacadeRemoval.ps1` rewrote
+  `UsePerkFeat` (5 sites), the engine tests and two unit tests; three engine tests that wrote `GameServices.Ability.` in full
+  changed by hand.
+- **Tests:** `TestAbilityService.Activation.cs` became `TestAbilityActivationService`, the part's double; it also answers
+  `GetStatAdjustment` and `IsWeaponSkillType`, which the other parts answer through `TestAbilityService.Shared.cs`. The bench's
+  `Activation` is that double over the real part 7 (`TargetCheck`). `AbilityFacadeAllocationTests` registers it and pins the
+  last-denial read through `GameServices.AbilityActivation`. `AbilitySource` adds both files and interfaces, and the tests that read
+  `CanUseAbility` read it with the check methods it calls. `AbilityServiceDefaultSeamsTests` counts the service's and the
+  activation part's seams together and runs the part's defaults.
+
 ## Risks
 
 - **Hot paths.** `ApplyCombatImpact` runs per target per ability and the weapon abilities ride every landed swing, so the chain

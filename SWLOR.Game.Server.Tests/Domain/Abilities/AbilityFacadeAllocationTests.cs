@@ -42,7 +42,7 @@ public class AbilityFacadeAllocationTests
     private IDisposable _installed = null!;
 
     /// <summary>
-    /// The container's ability service and its parts (catalog, impact state store, magnitude, aura, immunity, activation state) are the bench's, whose calls into unconverted code answer from its own
+    /// The container's ability service and its parts (catalog, impact state store, magnitude, activation, aura, immunity, activation state) are the bench's, whose calls into unconverted code answer from its own
     /// tables without allocating, so a count here is the accessor and the instance and nothing behind them.
     /// </summary>
     [SetUp]
@@ -58,6 +58,7 @@ public class AbilityFacadeAllocationTests
             services.Replace(ServiceDescriptor.Singleton<IAbilityAuraService>(_world.Aura));
             services.Replace(ServiceDescriptor.Singleton<IAbilityImmunityService>(_world.Immunity));
             services.Replace(ServiceDescriptor.Singleton<IAbilityActivationStateService>(_world.ActivationState));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityActivationService>(_world.Activation));
         });
         _installed = _container.Install();
         _world.Catalog.Register(Registered, Force);
@@ -96,13 +97,13 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // The reads of IAbilityActivationService (GameServices.AbilityActivation after P5-3d) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // The reads of IAbilityActivationService (GameServices.AbilityActivation since P5-3d) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_last_denial_read_allocates_nothing()
     {
         var sink = 0;
 
-        Allocated(() => sink += Ability.GetLastActivationDenialReason().Length).Should().Be(0);
+        Allocated(() => sink += AbilityActivation.GetLastActivationDenialReason().Length).Should().Be(0);
         GC.KeepAlive(sink);
     }
 

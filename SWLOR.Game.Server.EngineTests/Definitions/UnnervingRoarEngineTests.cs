@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     used = UsePerkFeat.TryUseAbility(caster, target, FeatType.UnnervingRoar, GetLocation(caster));
                     if (!used)
-                        denial = Ability.GetLastActivationDenialReason();
+                        denial = AbilityActivation.GetLastActivationDenialReason();
                     attempted = true;
                 });
                 await ctx.WaitUntilAsync(() => attempted, 3f, "Unnerving Roar to be attempted in the caster's script context");

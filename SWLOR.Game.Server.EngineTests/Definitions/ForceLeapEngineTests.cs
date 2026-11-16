@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     used = UsePerkFeat.TryUseAbility(caster, target, FeatType.ForceLeap1, GetLocation(target));
                     if (!used)
-                        denial = Ability.GetLastActivationDenialReason();
+                        denial = AbilityActivation.GetLastActivationDenialReason();
                 });
                 ctx.Assert(used, $"Force Leap I starts: {denial}");
 

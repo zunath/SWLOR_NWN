@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var fpBefore = Stat.GetCurrentFP(caster);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(caster, center, FeatType.CreepingTerror3, GetLocation(center)),
-                    $"Creeping Terror III activates: {Ability.GetLastActivationDenialReason()}"));
+                    $"Creeping Terror III activates: {AbilityActivation.GetLastActivationDenialReason()}"));
 
             var deadline = DateTime.UtcNow.AddSeconds(10);
             while (!StatusEffect.HasStatusEffect<HobbleStatusEffect>(center) && DateTime.UtcNow < deadline)

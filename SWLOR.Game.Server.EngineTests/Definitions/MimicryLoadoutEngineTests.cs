@@ -248,7 +248,7 @@ public static class MimicryLoadoutEngineTests
         Apply(ctx, player, first, Rush, Trait);
         var activated = false;
         await ctx.ExecuteInCreatureContextAsync(player, () => activated = UsePerkFeat.TryUseAbility(player, player, Rush, GetLocation(player)));
-        ctx.Assert(activated, $"the equipped technique activates: {Ability.GetLastActivationDenialReason()}");
+        ctx.Assert(activated, $"the equipped technique activates: {AbilityActivation.GetLastActivationDenialReason()}");
         await ctx.WaitUntilAsync(() => DB.Get<Player>(fixture.Id).RecastTimes.ContainsKey(RecastGroup.SnapRush), 5f, "the actual technique to start its cooldown");
         var expires = DB.Get<Player>(fixture.Id).RecastTimes[RecastGroup.SnapRush];
         ctx.Assert(expires > DateTime.UtcNow, "activation creates a future cooldown");
@@ -257,13 +257,13 @@ public static class MimicryLoadoutEngineTests
         ctx.Assert(StatusEffect.HasStatusEffect<Hasten1StatusEffect>(player), "reapplying a shared technique preserves its active effect");
         Apply(ctx, player, second, Wave, Trait);
         ctx.Assert(!StatusEffect.HasStatusEffect<Hasten1StatusEffect>(player), "removing a technique revokes its source-owned active effect");
-        ctx.Assert(!Ability.CanUseAbility(player, player, Rush, 1, GetLocation(player)) && Ability.GetLastActivationDenialReason().Contains("not equipped"), "removed techniques cannot be used through a stale shortcut");
+        ctx.Assert(!AbilityActivation.CanUseAbility(player, player, Rush, 1, GetLocation(player)) && AbilityActivation.GetLastActivationDenialReason().Contains("not equipped"), "removed techniques cannot be used through a stale shortcut");
         Apply(ctx, player, first, Rush, Trait);
         await ctx.WaitFrameAsync();
         ctx.AssertEqual(expires, DB.Get<Player>(fixture.Id).RecastTimes[RecastGroup.SnapRush], "switching does not reset or extend the cooldown");
-        ctx.Assert(!Ability.CanUseAbility(player, player, Rush, 1, GetLocation(player)) && Ability.GetLastActivationDenialReason().StartsWith("This ability can be used in "), "re-equipped techniques remain blocked by their real cooldown");
+        ctx.Assert(!AbilityActivation.CanUseAbility(player, player, Rush, 1, GetLocation(player)) && AbilityActivation.GetLastActivationDenialReason().StartsWith("This ability can be used in "), "re-equipped techniques remain blocked by their real cooldown");
         await ctx.WaitUntilAsync(() => DateTime.UtcNow > expires, 35f, "the original cooldown to expire");
-        ctx.Assert(Ability.CanUseAbility(player, player, Rush, 1, GetLocation(player)), $"normal use becomes available after expiry: {Ability.GetLastActivationDenialReason()}");
+        ctx.Assert(AbilityActivation.CanUseAbility(player, player, Rush, 1, GetLocation(player)), $"normal use becomes available after expiry: {AbilityActivation.GetLastActivationDenialReason()}");
         ctx.SetResultDetail("Snap Rush activated through TryUseAbility; original cooldown timestamp and activation denials verified across switches through natural expiry.");
     }
 

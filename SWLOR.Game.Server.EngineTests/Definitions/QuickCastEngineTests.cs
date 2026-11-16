@@ -96,7 +96,7 @@ public static class QuickCastEngineTests
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
             ctx.Assert(!QuickCast.TryCast(player, FeatType.AutoCastInnervate1, out _), "normal recast prevents repeated activation");
-            ctx.Assert(GameServices.Ability.GetLastActivationDenialReason().Contains("can be used in"), "recast denial comes from the normal ability pipeline");
+            ctx.Assert(GameServices.AbilityActivation.GetLastActivationDenialReason().Contains("can be used in"), "recast denial comes from the normal ability pipeline");
         });
         var beforeShoutHP = GetCurrentHitPoints(player);
         await ctx.ExecuteInCreatureContextAsync(player, () => UseNativeFeat(player, FeatType.AutoCastRousingShout3));

@@ -318,7 +318,7 @@ public static class TwinPistolHostileDelayEngineTests
 
     private static void Press(EngineTestContext ctx, uint actor, uint target, FeatType feat) =>
         ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-            $"{feat} is accepted by the real ability pipeline: {Ability.GetLastActivationDenialReason()}");
+            $"{feat} is accepted by the real ability pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
 
     private static int CadenceCharges(uint actor) => StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0;
     private static int Cost(FeatType feat) => AbilityCatalog.GetAbilityDetail(feat).Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;

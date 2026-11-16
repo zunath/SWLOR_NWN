@@ -105,9 +105,12 @@ public sealed partial class AbilityBench : IDisposable
         Aura = new TestAbilityAuraService(this, statusEffects, Party(), combatPoints);
         Immunity = new AbilityImmunityService(statusEffects);
         ActivationState = new AbilityActivationStateService();
-        Service = new TestAbilityService(this, statusEffects, Enmity(), combatPoints, Recast(), telegraph, Messaging(), Music(),
-            NamedAnimation(), Mimicry(), Activity(), PlayerFeedback(), CombatRecorder, MeleeTechnique(), CapstoneProof(),
-            Resistance(), Stealth(), Catalog, ImpactState, Geometry, Magnitude);
+        var meleeTechnique = MeleeTechnique();
+        TargetCheck = new AbilityTargetCheckService(Geometry, meleeTechnique, Recast(), PlayerFeedback());
+        Activation = new TestAbilityActivationService(this, Catalog, Mimicry(), Activity(), TargetCheck);
+        Service = new TestAbilityService(this, statusEffects, Enmity(), combatPoints, telegraph, Messaging(), Music(),
+            NamedAnimation(), CombatRecorder, meleeTechnique, CapstoneProof(), Resistance(), Stealth(), ImpactState, Geometry,
+            Magnitude);
     }
 
     public AbilityEngine Engine { get; }
@@ -140,8 +143,11 @@ public sealed partial class AbilityBench : IDisposable
     /// <summary>The impact lifecycle (part 5, <c>IAbilityImpactLifecycleService</c>).</summary>
     public TestAbilityService Lifecycle => Service;
 
-    /// <summary>The activation checks (part 6, <c>IAbilityActivationService</c>).</summary>
-    public TestAbilityService Activation => Service;
+    /// <summary>The activation checks (part 6, <c>IAbilityActivationService</c>), over the target checks (part 7).</summary>
+    public TestAbilityActivationService Activation { get; }
+
+    /// <summary>The checks of an activation's target (part 7, <c>IAbilityTargetCheckService</c>): the real part over the bench's stand-ins.</summary>
+    public AbilityTargetCheckService TargetCheck { get; }
 
     /// <summary>The auras and the Leadership combat point (part 8, <c>IAbilityAuraService</c>), with the party roster stand-in.</summary>
     public TestAbilityAuraService Aura { get; }

@@ -286,7 +286,7 @@ public static class UnarmedMasteryEngineTests
         AbilityImpactState.ClearLastCompletedAbilityImpactSummary(player);
         await context.ExecuteInCreatureContextAsync(player, () =>
             context.Assert(UsePerkFeat.TryUseAbility(player, target, feat, GetLocation(target)),
-                $"The real {ability.Name} activation starts: {Ability.GetLastActivationDenialReason()}"));
+                $"The real {ability.Name} activation starts: {AbilityActivation.GetLastActivationDenialReason()}"));
         await context.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(player)?.Ability == ability,
             6f, $"the real {ability.Name} impact");
         return AbilityImpactState.GetLastCompletedAbilityImpactSummary(player);

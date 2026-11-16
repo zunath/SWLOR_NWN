@@ -44,9 +44,6 @@ Feature/AbilityDefinition -> Domain/Quests | 1
 # Abilities -> Social (1 edge)
 Feature/AbilityDefinition -> Domain/Social | 11
 
-# Abilities -> Space (1 edge)
-Domain/Abilities -> Domain/Space | 3
-
 # Abilities -> UI (1 edge)
 Domain/Abilities -> Domain/UI | 12
 

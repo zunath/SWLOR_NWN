@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         private readonly IAIService _ai;
         private readonly ICompanionLookup _companions;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly Lazy<IAbilityActivationService> _activation;
         private readonly IAbilityCatalog _catalog;
         private readonly IActivityService _activity;
         private readonly IPerkService _perk;
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public CompanionControlService(
             IAIService ai,
             ICompanionLookup companions,
-            Lazy<IAbilityService> ability,
+            Lazy<IAbilityActivationService> activation,
             IAbilityCatalog catalog,
             IActivityService activity,
             IPerkService perk,
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         {
             _ai = ai;
             _companions = companions;
-            _ability = ability;
+            _activation = activation;
             _catalog = catalog;
             _activity = activity;
             _perk = perk;
@@ -1085,6 +1085,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
             FeatType feat,
             int effectiveLevel,
             Location targetLocation) =>
-            _ability.Value.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
+            _activation.Value.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
     }
 }

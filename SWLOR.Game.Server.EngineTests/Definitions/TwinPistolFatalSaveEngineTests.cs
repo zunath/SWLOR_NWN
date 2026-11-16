@@ -83,7 +83,7 @@ public static class TwinPistolFatalSaveEngineTests
                 if (duringCast)
                 {
                     ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FinalSalvo, GetLocation(target)),
-                        $"Final Salvo begins its normal unpaid cast: {Ability.GetLastActivationDenialReason()}");
+                        $"Final Salvo begins its normal unpaid cast: {AbilityActivation.GetLastActivationDenialReason()}");
                     ctx.Assert(TwinPistolAbility.HasActiveActivation(actor) && Activity.IsBusy(actor),
                         "A real captured Twin activation exists before the native dying event");
                     ctx.Assert(!string.IsNullOrWhiteSpace(UsePerkFeat.GetActiveAbilityActivationId(actor)),

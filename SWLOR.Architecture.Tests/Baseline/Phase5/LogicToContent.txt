@@ -12,9 +12,9 @@
 # SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
+SWLOR.Game.Server/Domain/Abilities/AbilityActivationService.cs -> Feature.TwinPistolEquipmentValidation | 1
 SWLOR.Game.Server/Domain/Abilities/AbilityActivationStateService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature.PistolAnimationRemap | 1
-SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature.TwinPistolEquipmentValidation | 1
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Feature.DMActions | 1

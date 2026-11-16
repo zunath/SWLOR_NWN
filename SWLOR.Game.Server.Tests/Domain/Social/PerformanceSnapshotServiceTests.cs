@@ -165,7 +165,7 @@ public class PerformanceSnapshotServiceTests
     private sealed class TestSnapshots : PerformanceSnapshotService
     {
         public TestSnapshots()
-            : base(FacadeForwarder.LazyFor<IPerformanceService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
+            : base(FacadeForwarder.For<IPerformanceRegistryService>(), FacadeForwarder.For<IPerformanceRiderService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
         {
         }
 

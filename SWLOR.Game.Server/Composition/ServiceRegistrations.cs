@@ -274,6 +274,13 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPerformanceSnapshotService, PerformanceSnapshotService>();
             services.AddSingleton<IPerformanceInspiredService, PerformanceInspiredService>();
             services.AddSingleton<IPerformanceRiderService, PerformanceRiderService>();
+            services.AddSingleton<IPerformanceRegistryService, PerformanceRegistryService>();
+            services.AddSingleton<IPerformanceHotbarService, PerformanceHotbarService>();
+            services.AddSingleton<IPerformanceEligibilityService, PerformanceEligibilityService>();
+            services.AddSingleton<IPerformanceAnimationService, PerformanceAnimationService>();
+            services.AddSingleton<IPerformanceWatchingService, PerformanceWatchingService>();
+            services.AddSingleton<IPerformanceFlourishService, PerformanceFlourishService>();
+            services.AddSingleton<IPerformanceWatchingWindowService, PerformanceWatchingWindowService>();
             services.AddSingleton<IPlayerListService, PlayerListService>();
 
             // UI

@@ -197,17 +197,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             try
             {
                 foreach (var (routine, _) in Routines)
-                    ctx.Assert(!GameServices.Performance.IsRoutineUnlocked(player, routine), $"{routine} is locked with no perks");
+                    ctx.Assert(!GameServices.PerformanceRider.IsRoutineUnlocked(player, routine), $"{routine} is locked with no perks");
                 foreach (var (set, _) in Sets)
-                    ctx.Assert(!GameServices.Performance.IsSetUnlocked(player, set), $"{set} is locked with no perks");
+                    ctx.Assert(!GameServices.PerformanceRider.IsSetUnlocked(player, set), $"{set} is locked with no perks");
 
                 foreach (var unlockPerk in Routines.Select(entry => entry.Perk).Concat(Sets.Select(entry => entry.Perk)))
                 {
                     fixture.Update(record => record.Perks[unlockPerk] = 1);
                     foreach (var (routine, perk) in Routines)
-                        ctx.AssertEqual(perk == unlockPerk, GameServices.Performance.IsRoutineUnlocked(player, routine), $"{unlockPerk} unlocks {routine}");
+                        ctx.AssertEqual(perk == unlockPerk, GameServices.PerformanceRider.IsRoutineUnlocked(player, routine), $"{unlockPerk} unlocks {routine}");
                     foreach (var (set, perk) in Sets)
-                        ctx.AssertEqual(perk == unlockPerk, GameServices.Performance.IsSetUnlocked(player, set), $"{unlockPerk} unlocks {set}");
+                        ctx.AssertEqual(perk == unlockPerk, GameServices.PerformanceRider.IsSetUnlocked(player, set), $"{unlockPerk} unlocks {set}");
 
                     fixture.Update(record => record.Perks.Remove(unlockPerk));
                 }
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var player = fixture.Creature;
             try
             {
-                var preference = GameServices.Performance.GetPreference(player);
+                var preference = GameServices.PerformanceRegistry.GetPreference(player);
 
                 // A locked routine or set cannot be chosen; buying its perk allows it.
                 ctx.Assert(!GameServices.Performance.SetRoutine(player, PerformanceRoutineType.PowerStep), "Power Step cannot be chosen before its perk");

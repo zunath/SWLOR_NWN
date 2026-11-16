@@ -30,7 +30,8 @@ namespace SWLOR.Game.Server.Domain.Social
         private readonly IPerformanceSongService _songs;
         private readonly IPerformanceSnapshotService _snapshots;
         private readonly IGuiService _gui;
-        private readonly Lazy<IPerformanceService> _performance;
+        private readonly IPerformanceRegistryService _sessions;
+        private readonly IPerformanceRiderService _riders;
         private readonly IPerkService _perk;
         private readonly IPlayerNameService _playerName;
         private readonly IStatService _stat;
@@ -42,7 +43,8 @@ namespace SWLOR.Game.Server.Domain.Social
             IPerformanceSongService songs,
             IPerformanceSnapshotService snapshots,
             IGuiService gui,
-            Lazy<IPerformanceService> performance,
+            IPerformanceRegistryService sessions,
+            IPerformanceRiderService riders,
             IPerkService perk,
             IPlayerNameService playerName,
             IStatService stat)
@@ -52,7 +54,8 @@ namespace SWLOR.Game.Server.Domain.Social
             _songs = songs;
             _snapshots = snapshots;
             _gui = gui;
-            _performance = performance;
+            _sessions = sessions;
+            _riders = riders;
             _perk = perk;
             _playerName = playerName;
             _stat = stat;
@@ -298,7 +301,7 @@ namespace SWLOR.Game.Server.Domain.Social
             };
         }
 
-        // The calls into the unconverted Gui, Perk, Stat, PlayerName and Performance statics, one line each so a test can answer them.
+        // The calls into the unconverted Gui, Perk, Stat, PlayerName and Performance services, one line each so a test can answer them.
 
         /// <summary>Reserves GUI ids for a system through the unconverted <c>Gui</c> service.</summary>
         protected virtual IdReservation ReserveIds(string systemName, int amount) => _gui.ReserveIds(systemName, amount);
@@ -318,12 +321,12 @@ namespace SWLOR.Game.Server.Domain.Social
 
         protected virtual string GetDisplayName(uint observer, uint target) => _playerName.GetDisplayName(observer, target);
 
-        // The main service of the Performance service, reached lazily because it takes this one by constructor.
-        protected virtual PerformancePreference GetPreference(uint player) => _performance.Value.GetPreference(player);
+        // The Performance session and rider services.
+        protected virtual PerformancePreference GetPreference(uint player) => _sessions.GetPreference(player);
 
-        protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => _performance.Value.IsRoutineUnlocked(player, routine);
+        protected virtual bool IsRoutineUnlocked(uint player, PerformanceRoutineType routine) => _riders.IsRoutineUnlocked(player, routine);
 
-        protected virtual bool IsSetUnlocked(uint player, PerformanceSetType set) => _performance.Value.IsSetUnlocked(player, set);
+        protected virtual bool IsSetUnlocked(uint player, PerformanceSetType set) => _riders.IsSetUnlocked(player, set);
 
         protected virtual PerformerSnapshot BuildSnapshot(PerformanceSession session, int venue, int songTrackId) =>
             _snapshots.Build(session, venue, songTrackId);

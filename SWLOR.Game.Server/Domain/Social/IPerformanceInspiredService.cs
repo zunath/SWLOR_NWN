@@ -19,6 +19,9 @@ namespace SWLOR.Game.Server.Domain.Social
         /// <param name="bankedAgain">True when the holder banked time this tick, which gives them a fresh Requiem.</param>
         bool Apply(uint creature, InspiredEffectData data, double remainingSeconds, bool bankedAgain);
 
+        /// <summary>True when the creature holds an Inspired effect.</summary>
+        bool IsInspired(uint creature);
+
         /// <summary>The seconds of Inspired the creature has right now, or 0 when they have none.</summary>
         double GetRemainingSeconds(uint creature, DateTime nowUtc);
 

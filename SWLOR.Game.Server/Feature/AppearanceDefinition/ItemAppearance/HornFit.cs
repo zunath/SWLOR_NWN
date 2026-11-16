@@ -177,7 +177,7 @@ public static class HornFit
         var item = GetItemInSlot(InventorySlot.RightHand, creature);
         if (!GetIsObjectValid(item))
             return;
-        var performing = GameServices.Performance.TryGetSession(creature, out var session) && session.Kind == PerformanceKind.Music;
+        var performing = GameServices.PerformanceRegistry.TryGetSession(creature, out var session) && session.Kind == PerformanceKind.Music;
         ApplyFit(item, ResolveFit(GetResRef(item), GetAppearanceType(creature),
             RobeModelRenderer.GetBasePhenotype(creature), GetGender(creature), performing));
     }

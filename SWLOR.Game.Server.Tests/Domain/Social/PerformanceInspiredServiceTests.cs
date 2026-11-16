@@ -107,6 +107,16 @@ public class PerformanceInspiredServiceTests
         _inspired.Calls.Should().Equal("Refresh:30");
     }
 
+    [Test]
+    public void ACreatureIsInspiredWhenItHoldsTheEffect()
+    {
+        _inspired.IsInspired(Creature).Should().BeFalse();
+
+        _inspired.Held = new InspiredStatusEffect(new InspiredEffectData());
+
+        _inspired.IsInspired(Creature).Should().BeTrue();
+    }
+
     private sealed class TestInspired : PerformanceInspiredService
     {
         public TestInspired()

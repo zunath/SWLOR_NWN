@@ -46,7 +46,7 @@
     { "name": "Enmity", "domain": "Combat" },
     { "name": "EquipmentUnequip", "domain": "Items" },
     { "name": "EspionageInfiltration", "domain": "Character" },
-    { "name": "ExtraHotbars", "domain": "UI" },
+    { "name": "ExtraHotbars", "domain": "Social", "extras": [ { "part": "ExtraHotbarsEdit" }, { "part": "ExtraHotbarsEquip" }, { "part": "ExtraHotbarsStatus" }, { "part": "ExtraHotbarsWindow" } ] },
     { "name": "Faction", "domain": "Quests" },
     { "name": "FieldEngineerPulseEmitters", "domain": "Abilities" },
     { "name": "Fishing", "domain": "World", "extras": [ { "class": "FishingFights" } ] },

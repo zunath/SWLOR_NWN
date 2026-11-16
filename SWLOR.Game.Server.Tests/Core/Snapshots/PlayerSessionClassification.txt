@@ -26,7 +26,7 @@ mod_enter (57)
               Writes a missing respawn point to Redis; the login already did.
   LoginOnly   SWLOR.Game.Server.Domain.Character.DisguiseService.ApplyActiveDisguiseOnEnter
               The disguise's portrait, soundset and description stay in the engine.
-  LoginOnly   SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnEnter
+  LoginOnly   SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.LockBarsOnEnter
               Clears the unlocked flag of a fresh login; the quiescence step locked the bars and the new build starts with none unlocked.
   Restore     SWLOR.Game.Server.Domain.UI.GuiService.CreatePlayerWindows -> CreatePlayerWindowsFor
               Creates the player's window view models (memory only) with their saved geometry; every window needs them.
@@ -140,7 +140,7 @@ mod_exit (45)
               Makes enemies drop the player; a reload carries the enmity tables.
   LogoutOnly  SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnPlayerExit
               Cancels an infiltration attempt held in memory, which goes with the old build.
-  Quiesce     SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnExit -> LockBarsFor
+  Quiesce     SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.LockBarsOnExit -> LockBarsFor
               Locks bars the player unlocked and saves their geometry, which only the old build's view models hold, before the windows close.
   Quiesce     SWLOR.Game.Server.Domain.UI.GuiService.SavePlayerWindowGeometry -> SavePlayerWindowGeometryFor
               Saves the geometry of the open windows, which only the old build's view models hold, so the reopened windows keep their place.

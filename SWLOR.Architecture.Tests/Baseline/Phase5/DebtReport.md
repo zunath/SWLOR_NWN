@@ -8,11 +8,11 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,078 | 13,394 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 43 | 70,761 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 41 | 67,713 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 28 | 6,781 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 21 | 343 services | none over 10 services |
-| 5. Deferred resolution | `DeferredResolution.txt` | 54 | 79 parameters | none |
-| 6. Logic referencing content | `LogicToContent.txt` | 105 | 233 types | none |
+| 4. Services per type | `ServicesPerType.txt` | 20 | 329 services | none over 10 services |
+| 5. Deferred resolution | `DeferredResolution.txt` | 51 | 76 parameters | none |
+| 6. Logic referencing content | `LogicToContent.txt` | 104 | 232 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 50 | 146 edges | none |
 | 8. Static entry points and static state | `StaticState.txt` | 139 | 266 members | each kept with an approved reason, or removed |
 | 9. References up the domain order | `UpwardEdges.txt` | 170 | 500 members | none: every reference follows the domain order |
@@ -58,11 +58,11 @@ Largest 15 of 1,078 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 43 types over 1,000 lines, 70,761 lines in all.
+- 41 types over 1,000 lines, 67,713 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 43 (all in `LargeTypes.txt`):
+Largest 15 of 41 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -70,7 +70,6 @@ Largest 15 of 43 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Domain.Character.StatService` | 3,358 | StatService.cs |
 | `SWLOR.Game.Server.Domain.Character.StatusEffectService` | 2,804 | StatusEffectService.cs |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 2,762 | SpaceService.cs |
-| `SWLOR.Game.Server.Domain.Abilities.AbilityService` | 2,638 | AbilityService.cs |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase` | 2,332 | WeaponActiveAbilityDefinitionBase.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel` | 2,081 | ShipManagementViewModel.cs |
 | `SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService` | 1,926 | TintMapService.cs |
@@ -79,6 +78,7 @@ Largest 15 of 43 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,691 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 1,689 | CombatAbilityImpactService.cs |
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 1,687 | UsePerkFeat.cs |
+| `SWLOR.Game.Server.Domain.Abilities.AbilityService` | 1,645 | AbilityService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 1,640 | CombatDamageTakenService.cs |
 | `SWLOR.Game.Server.Domain.World.PropertyService` | 1,637 | PropertyService.cs |
 
@@ -109,18 +109,18 @@ Largest 15 of 28 (all in `LongMethods.txt`):
 
 ## 4. Services per type
 
-- 21 types use more than 10 services: 16 through the constructor only, 5 through the lookup only, 0 through both.
+- 20 types use more than 10 services: 15 through the constructor only, 5 through the lookup only, 0 through both.
 - Exempt and over the limit: 0 (none).
 
-Largest 15 of 21 (all in `ServicesPerType.txt`):
+Largest 15 of 20 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server.Feature.UsePerkFeat` | 31 | constructor 0, lookup 31 |
-| `SWLOR.Game.Server.Domain.Abilities.AbilityService` | 27 | constructor 27, lookup 0 |
+| `SWLOR.Game.Server.Domain.Abilities.AbilityService` | 25 | constructor 25, lookup 0 |
 | `SWLOR.Game.Server.Domain.Character.StatService` | 22 | constructor 22, lookup 0 |
+| `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase` | 19 | constructor 0, lookup 19 |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel` | 19 | constructor 0, lookup 19 |
-| `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase` | 18 | constructor 0, lookup 18 |
 | `SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService` | 17 | constructor 17, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 17 | constructor 17, lookup 0 |
 | `SWLOR.Game.Server.Domain.Character.StatusEffectService` | 16 | constructor 16, lookup 0 |
@@ -134,12 +134,12 @@ Largest 15 of 21 (all in `ServicesPerType.txt`):
 
 ## 5. Deferred resolution
 
-- 79 deferred constructor parameters in 36 files (Lazy 79, Func 0), taken by 36 types, deferring 35 distinct services.
-- By direction in the domain order: up 13, down 40, inside one domain 26.
+- 76 deferred constructor parameters in 33 files (Lazy 76, Func 0), taken by 33 types, deferring 34 distinct services.
+- By direction in the domain order: up 13, down 40, inside one domain 23.
 - Up: Character -> Combat 8, Administration -> Space 1, Combat -> Space 1, Items -> Combat 1, World -> Social 1, World -> Space 1.
 - IServiceProvider outside Composition/: 0 uses.
 
-Largest 15 of 54 (all in `DeferredResolution.txt`):
+Largest 15 of 51 (all in `DeferredResolution.txt`):
 
 | Entry | Parameters | Detail |
 |---|---:|---|
@@ -161,11 +161,11 @@ Largest 15 of 54 (all in `DeferredResolution.txt`):
 
 ## 6. Logic referencing content
 
-- 83 logic files name content: 105 file-to-content-unit lines, 233 named content types, 51 unit edges.
+- 82 logic files name content: 104 file-to-content-unit lines, 232 named content types, 51 unit edges.
 - Unit edges from Domain/ into another domain's content: 37. From Platform/Native and Platform/NativeSinks: 8. From other Platform areas: 0.
 - Domain/ files that name their own domain's content: 14.
 
-Largest 15 of 105 (all in `LogicToContent.txt`):
+Largest 15 of 104 (all in `LogicToContent.txt`):
 
 | Entry | Types | Detail |
 |---|---:|---|
@@ -189,7 +189,7 @@ Largest 15 of 105 (all in `LogicToContent.txt`):
 
 - 50 pairs of domains depend on each other: 46 between logic (12 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 7 domains, Platform with 6.
-- Members both ways: 5,162.
+- Members both ways: 5,232.
 
 Largest 15 of 50 (all in `DomainCycles.txt`):
 

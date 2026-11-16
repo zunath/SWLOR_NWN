@@ -42,7 +42,8 @@ public class AbilityFacadeAllocationTests
     private IDisposable _installed = null!;
 
     /// <summary>
-    /// The container's ability service and its parts (catalog, impact state store, magnitude, activation, aura, immunity, activation state) are the bench's, whose calls into unconverted code answer from its own
+    /// The container's ability service and its parts (catalog, impact state store, magnitude, activation, aura, immunity, activation state and
+    /// the damage parts) are the bench's, whose calls into unconverted code answer from its own
     /// tables without allocating, so a count here is the accessor and the instance and nothing behind them.
     /// </summary>
     [SetUp]
@@ -59,6 +60,12 @@ public class AbilityFacadeAllocationTests
             services.Replace(ServiceDescriptor.Singleton<IAbilityImmunityService>(_world.Immunity));
             services.Replace(ServiceDescriptor.Singleton<IAbilityActivationStateService>(_world.ActivationState));
             services.Replace(ServiceDescriptor.Singleton<IAbilityActivationService>(_world.Activation));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityImpactMessageService>(_world.ImpactMessage));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityDarkForceService>(_world.DarkForce));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityDamageDeliveryService>(_world.DamageDelivery));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityStatusApplicationService>(_world.StatusApplication));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityDamageInputService>(_world.DamageInput));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityDamageStageService>(_world.DamageStage));
         });
         _installed = _container.Install();
         _world.Catalog.Register(Registered, Force);
@@ -172,6 +179,26 @@ public class AbilityFacadeAllocationTests
 
         Allocated(() => sink += AbilityImpactState.GetAbilityImpactStatSources(Tracked, StatType.Attack, _world.Stat).Count).Should().Be(0);
         Allocated(() => sink += AbilityImpactState.GetAbilityImpactStatSources(Untracked, StatType.Attack, _world.Stat).Count).Should().Be(0);
+        GC.KeepAlive(sink);
+    }
+
+    // The per-target rules of the damage inputs and the status application (P5-3e) that answer before any engine call, read on
+    // the bench's parts: the hostile impact calls them through the parts' interfaces, not through GameServices.
+    [Test]
+    public void The_damage_part_rules_allocate_nothing_with_or_without_an_active_impact()
+    {
+        IAbilityDamageInputService damageInput = _world.DamageInput;
+        IAbilityStatusApplicationService statusApplication = _world.StatusApplication;
+        var sink = 0;
+
+        foreach (var creature in new[] { Tracked, Untracked })
+        {
+            var impact = _world.ImpactState.GetTrackedAbilityImpact(creature);
+            Allocated(() => sink += damageInput.ShouldUseNPCStatScaling(creature, false) ? 1 : 0).Should().Be(0);
+            Allocated(() => sink += damageInput.UsesQueuedNaturalWeapon(impact, SkillType.BeastMastery) ? 1 : 0).Should().Be(0);
+        }
+
+        Allocated(() => sink += (int)statusApplication.GetCombatImpactStatusCategories(null!, null!, null!)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 

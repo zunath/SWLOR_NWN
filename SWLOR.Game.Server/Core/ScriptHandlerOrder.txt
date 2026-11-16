@@ -166,7 +166,7 @@ area_enter
   action      SWLOR.Game.Server.Domain.Combat.TelegraphService.OnAreaEnter
   action      SWLOR.Game.Server.Domain.World.WeatherService.OnAreaEnter
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnAreaEnter
-  action      SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.StopWatchingOnAreaEnter
+  action      SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.StopWatchingOnAreaEnter
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnAreaEnter
   action      SWLOR.Game.Server.Feature.AchievementProgression.EnterArea
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.OpenToolbar
@@ -285,7 +285,7 @@ client_conn_bef
 
 client_disc_bef
   action      SWLOR.Game.Server.Domain.World.AreaService.DisconnectBefore
-  action      SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.RestoreFrozenInspiredOnDisconnect
+  action      SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.RestoreFrozenInspiredOnDisconnect
 
 condition
   conditional SWLOR.Game.Server.Domain.Foundation.SnippetService.ConversationAppearsWhen
@@ -717,7 +717,7 @@ mod_death
   action      SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerDeath
   action      SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService.AbandonOnDeath
   action      SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService.AbandonOnDeath
-  action      SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.StopWatchingOnDeath
+  action      SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.StopWatchingOnDeath
   action      SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnDeath
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnPlayerDeath
   action      SWLOR.Game.Server.Feature.CraftingInterruptions.SettleOnDeath
@@ -835,7 +835,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerExit
   action      SWLOR.Game.Server.Domain.Crafting.ScavengeSessionsService.AbandonOnExit
   action      SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService.AbandonOnExit
-  action      SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.ForgetExitingPlayer
+  action      SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.ForgetExitingPlayer
   action      SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnExit
   action      SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.ClearExitingObject
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit
@@ -969,7 +969,7 @@ pc_heartbeat
   action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnHeartbeat
   action      SWLOR.Game.Server.Domain.Character.StatService.RefreshOutOfCombatMovementRate
   action      SWLOR.Game.Server.Domain.Combat.StealthService.EnsureStealthStatusWhileHidden
-  action      SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.StopWatchingWhenOutOfRange
+  action      SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.StopWatchingWhenOutOfRange
   action      SWLOR.Game.Server.Feature.NaturalRegeneration.ProcessRegeneration
   action      SWLOR.Game.Server.Feature.RoleplayXP.DistributeRoleplayXP
   action      SWLOR.Game.Server.Feature.SaveCharacters.HandleSaveCharacters

@@ -28,6 +28,43 @@ public class PerformanceRiderServiceTests
         riders.GetRequiredRank(PerkType.VigorReel).Should().Be(0, "an unknown perk asks for none");
     }
 
+    [Test]
+    public void ARoutineOrSetIsUnlockedByItsPerk()
+    {
+        var riders = new TestRiders(new Dictionary<PerkType, PerkDetail>());
+        riders.Levels[PerkType.LightFeet] = 1;
+        riders.Levels[PerkType.KeenEar] = 2;
+
+        riders.IsRoutineUnlocked(1, PerformanceRoutineType.LightFeet).Should().BeTrue();
+        riders.IsRoutineUnlocked(1, PerformanceRoutineType.PowerStep).Should().BeFalse();
+        riders.IsSetUnlocked(1, PerformanceSetType.KeenEar).Should().BeTrue();
+        riders.IsSetUnlocked(1, PerformanceSetType.SteadyHands).Should().BeFalse();
+    }
+
+    [Test]
+    public void ASecondRoutineNeedsItsOwnPerkAndTheCapstone()
+    {
+        var riders = new TestRiders(new Dictionary<PerkType, PerkDetail>());
+        riders.Levels[PerkType.LightFeet] = 1;
+
+        riders.CanBlendSecondRoutine(1, PerformanceRoutineType.LightFeet).Should().BeFalse("Showstopper is missing");
+        riders.Levels[PerkType.Showstopper] = 1;
+        riders.CanBlendSecondRoutine(1, PerformanceRoutineType.LightFeet).Should().BeTrue();
+        riders.CanBlendSecondRoutine(1, PerformanceRoutineType.PowerStep).Should().BeFalse("the routine itself is locked");
+    }
+
+    [Test]
+    public void ASecondSetNeedsItsOwnPerkAndTheCapstone()
+    {
+        var riders = new TestRiders(new Dictionary<PerkType, PerkDetail>());
+        riders.Levels[PerkType.KeenEar] = 1;
+
+        riders.CanWeaveSecondSet(1, PerformanceSetType.KeenEar).Should().BeFalse("Virtuoso is missing");
+        riders.Levels[PerkType.Virtuoso] = 1;
+        riders.CanWeaveSecondSet(1, PerformanceSetType.KeenEar).Should().BeTrue();
+        riders.CanWeaveSecondSet(1, PerformanceSetType.SteadyHands).Should().BeFalse("the set itself is locked");
+    }
+
     private static PerkDetail Detail(PerkLevel level)
     {
         var detail = new PerkDetail();
@@ -48,6 +85,10 @@ public class PerformanceRiderServiceTests
 
         public TestRiders(Dictionary<PerkType, PerkDetail> perks)
             : base(FacadeForwarder.For<IPerkService>()) => _perks = perks;
+
+        public Dictionary<PerkType, int> Levels { get; } = new();
+
+        protected override int GetPerkLevel(uint creature, PerkType perk) => Levels.GetValueOrDefault(perk);
 
         protected override bool TryGetPerkDetails(PerkType perk, out PerkDetail detail) => _perks.TryGetValue(perk, out detail!);
     }

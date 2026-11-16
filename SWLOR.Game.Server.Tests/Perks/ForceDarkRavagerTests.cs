@@ -134,7 +134,7 @@ public class ForceDarkRavagerTests
         ability.Should().Contain("ApplyDarkForceDamageRestoration(activator, damage)");
 
         var forceDamageOverTime = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ForceDamageOverTimeStatusEffectBase.cs").FullName);
-        forceDamageOverTime.Should().Contain("Ability.ApplyDarkForceDamageRestoration(Source, damage)");
+        forceDamageOverTime.Should().Contain("AbilityDarkForce.ApplyDarkForceDamageRestoration(Source, damage)");
 
         var forceLightning = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLightningAbilityDefinition.cs").FullName);
         forceLightning.Should().Contain("damageType: CombatDamageType.Force");

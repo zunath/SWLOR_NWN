@@ -31,19 +31,25 @@ public sealed partial class TestAbilityService : AbilityService
         IEnmityService enmity,
         ICombatPointService combatPoint,
         ITelegraphService telegraph,
-        IMessagingService messaging,
         IMusicService music,
         INamedAnimationService namedAnimation,
         ICombatRecorderService combatRecorder,
         IMeleeTechniqueService meleeTechnique,
         ICapstoneProofService capstoneProof,
-        IResistanceService resistance,
         IStealthService stealth,
         IAbilityImpactState impactState,
         ICombatImpactGeometryService geometry,
-        ICombatAbilityMagnitudeService magnitude)
-        : base(statusEffect, enmity, combatPoint, telegraph, messaging, music, namedAnimation, combatRecorder, meleeTechnique,
-            capstoneProof, resistance, stealth, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IPerkService>(), impactState, geometry, magnitude, FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>())
+        IAbilityImpactMessageService impactMessage,
+        IAbilityDarkForceService darkForce,
+        IAbilityDamageDeliveryService damageDelivery,
+        IAbilityStatusApplicationService statusApplication,
+        IAbilityDamageInputService damageInput,
+        IAbilityDamageStageService damageStage)
+        : base(statusEffect, enmity, combatPoint, telegraph, music, namedAnimation, combatRecorder, meleeTechnique, capstoneProof, stealth,
+            impactState, geometry, FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(),
+            FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatHitEffectsService>(),
+            FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), impactMessage, darkForce, damageDelivery,
+            statusApplication, damageInput, damageStage)
     {
         _bench = bench;
     }

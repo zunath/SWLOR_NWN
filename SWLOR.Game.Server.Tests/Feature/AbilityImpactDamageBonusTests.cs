@@ -19,7 +19,8 @@ public class AbilityImpactDamageBonusTests
     public void DamageCalculation_RecognizesCapturedDamageOnZeroBaseImpacts(
         int baseDamage, int capturedBonus, bool weapon, bool expected)
     {
-        var hasDamage = AbilityInternals.Delegate<Func<int, int, bool, bool>>(AbilityInternals.NoNeighbours(), "HasCombatImpactDamage");
+        var hasDamage = AbilityInternals.PartDelegate<Func<int, int, bool, bool>>(
+            AbilityInternals.DamageInput(AbilityInternals.NoNeighbours()), "HasCombatImpactDamage");
         hasDamage(baseDamage, capturedBonus, weapon).Should().Be(expected);
     }
 

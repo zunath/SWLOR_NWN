@@ -241,12 +241,15 @@ public class AbilityDamageQueueTests
             StringComparison.Ordinal);
         publicImpactStart.Should().BeGreaterThan(-1);
         privateImpactStart.Should().BeGreaterThan(publicImpactStart);
+        // The damage block of the public apply is the delivery part's since the ability split (P5-3e).
         var primaryImpact = abilitySource.Substring(
             publicImpactStart,
             privateImpactStart - publicImpactStart);
+        var delivery = AbilitySource.Members("DeliverHostileImpactDamage").Replace("\r\n", "\n");
 
-        primaryImpact.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
-        primaryImpact.Should().Contain("if (trackedImpact == null)\n                    ApplyDamageReflectionEffects(",
+        primaryImpact.Should().Contain("DeliverHostileImpactDamage(");
+        delivery.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
+        delivery.Should().Contain("if (trackedImpact == null)\n                ApplyDamageReflectionEffects(",
             "tracked hits must not reflect until each queued damage effect is applied");
     }
 
@@ -262,18 +265,18 @@ public class AbilityDamageQueueTests
             source.IndexOf("private int ApplyHostileCombatImpact(", StringComparison.Ordinal),
             source.IndexOf("private bool ShouldResolveCombatImpactHit", StringComparison.Ordinal) -
             source.IndexOf("private int ApplyHostileCombatImpact(", StringComparison.Ordinal));
-        var unscaledDamageBody = source.Substring(
-            source.IndexOf("private int CalculateUnscaledCombatImpactDamage(", StringComparison.Ordinal),
-            source.IndexOf("private int CalculateCombatImpactDamage(", StringComparison.Ordinal) -
-            source.IndexOf("private int CalculateUnscaledCombatImpactDamage(", StringComparison.Ordinal));
+        // The damage inputs part holds the unscaled formula and the delivery part the public apply's damage block (P5-3e).
+        var unscaledDamageBody = AbilitySource.Members("CalculateUnscaledCombatImpactDamage").Replace("\r\n", "\n");
+        var deliveryBody = AbilitySource.Members("DeliverHostileImpactDamage").Replace("\r\n", "\n");
 
         source.Should().Contain("useUnscaledDamage: useUnscaledDamage",
             "the public combat-impact entry points must propagate unscaled damage through every area path");
         formulaSelectionBody.Should().Contain("useUnscaledDamage\n                ? CalculateUnscaledCombatImpactDamage(");
         formulaSelectionBody.Should().Contain("return ApplyHostileCombatImpact(",
             "unscaled damage must retain the primary ability damage, rider, and enmity path");
-        primaryImpactBody.Should().Contain("SendTemporaryHitPointDamageFeedback(activator, target, damage);");
-        primaryImpactBody.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
+        primaryImpactBody.Should().Contain("DeliverHostileImpactDamage(");
+        deliveryBody.Should().Contain("SendTemporaryHitPointDamageFeedback(activator, target, damage);");
+        deliveryBody.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
 
         unscaledDamageBody.Should().Contain("var trackedImpact = GetTrackedAbilityImpact(activator);");
         unscaledDamageBody.Should().Contain("baseDamage + (trackedImpact?.NextAbilityDamageBonus ?? 0)",

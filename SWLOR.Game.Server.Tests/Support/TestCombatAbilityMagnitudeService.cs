@@ -26,7 +26,7 @@ public sealed class TestCombatAbilityMagnitudeService : CombatAbilityMagnitudeSe
 
     protected override int ApplyForceAffinityRestorativeMagnitude(uint creature, PerkType perkType, int amount) => amount + 1;
 
-    // The ability damage formulas call the same rule through AbilityService (TestAbilityService.Shared.cs).
+    // The ability damage formulas call the same rule through the damage stage part (TestAbilityDamageStageService).
     protected override int ApplyForceAffinityMagnitude(uint creature, PerkType perkType, int amount) => amount + 2;
 
     protected override float ApplyForceAffinityMagnitude(uint creature, PerkType perkType, float amount) => amount + 2.5f;

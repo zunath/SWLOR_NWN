@@ -35,23 +35,8 @@ public sealed partial class TestAbilityService
         return _bench.AttackingAlly;
     }
 
-    protected override void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage) =>
-        Log($"TempHpFeedback:{attacker}:{defender}:{damage}");
-
-    protected override void ConsumeSameTargetPressureWeaponAbilityDamageBonus(uint attacker, uint target, SkillType skillType, int damage) =>
-        Log($"ConsumeSameTargetPressure:{damage}");
-
-    protected override void ApplyDamageDealtEffects(uint attacker, uint defender, int damage, SkillType skillType, CombatDamageType damageType, bool isAbilityDamage, bool allowsHitProcs) =>
-        Log($"DamageDealtEffects:{damage}:{isAbilityDamage}:{allowsHitProcs}");
-
-    protected override void ApplyDamageReflectionEffects(uint attacker, uint defender, int damage, CombatDamageType damageType) =>
-        Log($"DamageReflection:{attacker}:{defender}:{damage}:{damageType}");
-
     protected override void ApplySuccessfulAbilityImpactRiders(uint activator, uint target, AbilityDetail ability, SkillType skillType, CombatDamageType damageType, int damage, bool statusApplied, Type primaryStatusEffect, IEnumerable<Type> additionalStatusEffects, bool firstHostileAbilityHitDamageBonusApplied, bool isFirstSuccessfulTarget, StatusEffectCategory appliedStatusCategories, bool allowsHitProcs, bool targetWasAttackingAlly) =>
         Log($"ImpactRiders:{target}:{damage}:{statusApplied}:{firstHostileAbilityHitDamageBonusApplied}:{isFirstSuccessfulTarget}:{appliedStatusCategories}:{allowsHitProcs}:{targetWasAttackingAlly}");
 
     protected override bool IncludesCombatImpactWeaponDamage(SkillType skillType, bool usesQueuedNaturalWeapon) => _bench.IncludesWeaponDamage;
-
-    protected override void ApplyCriticalHitEffects(uint attacker, uint defender, int damage, int criticalRating, bool isSingleTargetImpact, SkillType skillType) =>
-        Log($"CriticalEffects:{damage}:{criticalRating}:{isSingleTargetImpact}");
 }

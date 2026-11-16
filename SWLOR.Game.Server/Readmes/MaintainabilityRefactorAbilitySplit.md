@@ -579,6 +579,77 @@ moved. Where the pull request differs from the map:
   `CanUseAbility` read it with the check methods it calls. `AbilityServiceDefaultSeamsTests` counts the service's and the
   activation part's seams together and runs the part's defaults.
 
+### P5-3e (the damage side: messages, Dark Force, delivery, status application, damage inputs and stages)
+
+Parts 15, 14, 13, 18, 16 and 17 moved, in that order, each behind its interface and a `GameServices` property
+(`AbilityImpactMessage`, `AbilityDarkForce`, `AbilityDamageDelivery`, `AbilityStatusApplication`, `AbilityDamageInput`,
+`AbilityDamageStage`; the container test wants one per part):
+
+| # | Part | Lines | Services | Members |
+|---|---|---:|---:|---|
+| 15 | `AbilityImpactMessageService` | 75 | 3: messaging, recorder, combat feedback | the hit-roll result and no-target messages |
+| 14 | `AbilityDarkForceService` | 136 | 4: the store, recorder, stat, combat resources | the low-HP adjustment, the conversion, the restoration (content's `ApplyDarkForceDamageRestoration`) and the cast conversion |
+| 13 | `AbilityDamageDeliveryService` | 145 | 7: status effects, recorder, part 14, combat feedback, damage modifiers, hit effects, damage taken | `DeliverHostileImpactDamage` and `FlushDamageEffects` |
+| 18 | `AbilityStatusApplicationService` | 204 | 4: status effects, resistance, the store, ability bonus | `GetCombatImpactStatusCategories` (content) and `ApplyCombatImpactStatusEffect` |
+| 16 | `AbilityDamageInputService` | 469 | 10: the store, stat, activity, queries, ability bonus, ability impact, damage modifiers, damage taken, magnitude, resistance | the unscaled formula, the inputs of the player and NPC formulas, `ShouldUseNPCStatScaling`, `UsesQueuedNaturalWeapon` |
+| 17 | `AbilityDamageStageService` | 315 | 10: part 16, the store, perk, ability hit, damage modifiers, damage taken, combat feedback, hit effects, magnitude, resistance | the player and NPC formulas |
+
+No `[ReloadState]` field and no handler moved (the moved code holds no state). `AbilityService` keeps the lifecycle and the
+per-target code of parts 10, 11 and 12 for P5-3f and calls the six parts. Where the pull request differs from the map:
+
+- **The two damage formulas split at the critical rating.** Between them they reach 14 services, so they cannot be one part
+  (target 2); the NPC formula was also 150 lines. `IAbilityDamageStageService.CalculateCombatImpactDamage` and
+  `CalculateNPCCombatImpactDamage` keep their signatures and run the formula: they ask part 16 for the inputs
+  (`TryGetCombatImpactDamageInputs` / `TryGetNPCCombatImpactDamageInputs`: the early "no damage" return, the weapon damage and flat
+  bonuses, the attack, the defense and the defense ignore, verbatim), then run their own stages verbatim. The inputs come back as
+  `AbilityDamageInputs`, a readonly struct in an `out` parameter: no tuple, no closure, nothing allocated. The stages read it
+  into locals of the original names, so the only changed expression is the idle critical damage bonus
+  (`idleBonuses.CriticalDamagePercentAdjustment` became `inputs.IdleCriticalDamagePercentAdjustment`). Each formula keeps its own
+  stages: the player one asks the weapon profile before the critical effects (`TryCriticalNotification`) and the NPC one does
+  not, so sharing them would change behaviour. The defense-conversion closure stays where it was, in the inputs.
+- **The unscaled formula is part 16's,** as the range says (3310-3351), though it is mostly stages: it takes magnitude and
+  resistance there (8 -> 10 services), and the four damage-dealt and damage-taken seams it shares with part 17 are copied, as the
+  seams of earlier parts were. In part 17 it would have needed `HasCombatImpactDamage` from part 16 through the interface.
+- **Part 17 reaches Force affinity through `IPerkService`,** not the magnitude part (note 4): the formula scales by the hit's
+  skill type and passes the impact's perk, while `ApplyActiveForceAffinityMagnitude` keys on the impact ability's own skill, so
+  the swap would change which hits scale. With part 16 that is 10 services (map 9).
+- **Helpers go to their only callers, whatever range they sit in:** `GetCombatImpactDamageAbility` (in part 18's range),
+  `ScaleImpactWeaponDamage` and `HasCombatImpactDamage` (parts 12 and 11) to part 16, and `CanApplyTechniqueWeaponProc` and
+  `ApplyTrackedCriticalHitEffects` (part 12) to part 17. `UsesQueuedNaturalWeapon` is shared by the formulas and the hostile
+  impact's damage type, and `ShouldUseNPCStatScaling` (part 16's range) is read by the per-target resolution, so both are on part
+  16's interface rather than copied. `TakeWeaponTraitDamageBonus` went to part 16, as note 2 says.
+- **The delivery part takes the damage block, not the consume.** Note 2 gives `ConsumeStatusAppliedNextAttackDamageBonus` to the
+  hostile part (P5-3f), so `ApplyHostileCombatImpact` keeps `if (damage > 0)` and the consume and hands the rest of the block to
+  `DeliverHostileImpactDamage`, which needs 7 services, not 9. The closure that applies untracked damage moved with the block, so
+  `ApplyHostileCombatImpact` no longer builds a closure environment on every call (its captured parameters made it one); only a
+  damaging hit does, as before.
+- **Growth:** `AbilityService` drops messaging, resistance, stat, perk, magnitude, damage modifiers, damage taken and combat feedback
+  and takes the six parts (27 -> 25 services, 2,638 -> 1,645 lines). `WeaponActiveAbilityDefinitionBase` reaches
+  `AbilityStatusApplication` beside `Ability` (18 -> 19). The domain-pair report's "members both ways" grows (5,719 -> 5,779)
+  because each part's own constructor, seams and split methods count as members that reference Character and Combat; no pair
+  or edge is added. A damaging hit now makes about ten interface calls where it made private ones (each of the six parts once
+  or twice), which the paired `CombatLoad` run checks.
+- **Callers:** `RemovedFacades.json` lists `ApplyDarkForceDamageRestoration` under `AbilityDarkForce` and
+  `GetCombatImpactStatusCategories` under `AbilityStatusApplication`, and `Apply-FacadeRemoval.ps1` rewrote the two content callers
+  (`ForceDamageOverTimeStatusEffectBase`, `WeaponActiveAbilityDefinitionBase`). The two message audit rows are keyed by the message
+  part.
+- **Tests:** the bench builds a double per part (`TestAbilityImpactMessageService`, `TestAbilityDarkForceService`,
+  `TestAbilityDamageDeliveryService`, `TestAbilityStatusApplicationService`, `TestAbilityDamageInputService`,
+  `TestAbilityDamageStageService`) from the overrides of `TestAbilityService`'s partial files for those parts, and passes them to
+  `TestAbilityService`, so the tests that read the bench's log see the same calls in the same order. `AbilitySource` adds the six
+  files and interfaces; the tests that read the damage formulas, the delivery and the status application by text read the moved
+  methods (`Members`), and the two that read content follow the new property. `AbilityServiceDefaultSeamsTests` runs every damage
+  part's defaults and reads the moved seams on their parts. `AbilityFacadeAllocationTests` registers the six parts and pins the
+  per-target rules that answer without the engine (`ShouldUseNPCStatScaling`, `UsesQueuedNaturalWeapon`, the status categories of
+  an impact with none) at zero.
+- **Readings:** CombatSim's team-fight, twin-pistol-barrage and solo-boss reports (seed 1, 50 runs) and its ability table are
+  byte-identical to the base's, and `WeaponLineTests` still reads Rending Strike through `IAbilityService.ApplyCombatImpact`
+  behind `GameServices.Ability`. The paired `CombatLoad` runs (base and branch side by side, then the homes swapped) were
+  saturated by other engine and live stacks on the machine (750 to 910 managed ms/s and 7 to 10 fps on both sides), so they are
+  noise, not a reading: averaged over both rounds the sides' managed time was within 1% (players 901 against 906 ms/s, NPCs 775
+  against 767), and fps swung more between two rounds of one side (7.4 to 9.8) than between the sides. The pair is worth
+  repeating on a quiet machine with P5-3f, which adds the rest of the per-target chain.
+
 ## Risks
 
 - **Hot paths.** `ApplyCombatImpact` runs per target per ability and the weapon abilities ride every landed swing, so the chain

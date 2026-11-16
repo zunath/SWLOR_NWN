@@ -76,7 +76,9 @@ public class PerformanceWindowCostTests
     {
         var source = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceAudienceService.cs"));
 
-        CountOf(source, "_windows.ShowWatching(").Should().Be(2, "the tick and a Follow click");
+        var clicks = File.ReadAllText(SourcePath("Domain", "Social", "PerformanceWatchingWindowService.cs"));
+
+        (CountOf(source, "_windows.ShowWatching(") + CountOf(clicks, "_windows.ShowWatching(")).Should().Be(2, "the tick and a Follow click");
         CountOf(source, "Scheduler.ScheduleRepeating(").Should().Be(1);
         CountOf(source, "_db.Get<Player>(").Should().Be(1, "the debt and the window share one read per watcher per tick");
         CountOf(source, "_db.Set(").Should().Be(1);

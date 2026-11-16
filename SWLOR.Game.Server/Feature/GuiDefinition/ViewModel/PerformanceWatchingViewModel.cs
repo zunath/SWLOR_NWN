@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BankedText = string.Empty;
             DebtText = string.Empty;
             LeaveWithText = string.Empty;
-            PlayPerformerSong = GameServices.Performance.GetPreference(Player).PlayPerformerSong;
+            PlayPerformerSong = GameServices.PerformanceRegistry.GetPreference(Player).PlayPerformerSong;
             _rows = System.Array.Empty<PerformanceWatchRow>();
             _shownHeader = null;
             _shownBanked = null;
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.PlayPerformerSong);
 
             // A window opened from the debug command or reopened mid-show starts from the last tick's view.
-            var view = PerformanceAudience.BuildWatchingView(Player);
+            var view = PerformanceWatchingWindow.BuildWatchingView(Player);
             if (view != null)
                 ShowView(view);
 
@@ -68,12 +68,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PlayPerformerSong = PlayPerformerSong;
         }
 
-        public override Action OnWindowClosed() => () => PerformanceAudience.OnWatchingWindowClosed(Player);
+        public override Action OnWindowClosed() => () => PerformanceWatchingWindow.OnWatchingWindowClosed(Player);
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
             if (propertyName == nameof(PlayPerformerSong))
-                PerformanceAudience.SetPlayPerformerSong(Player, PlayPerformerSong);
+                PerformanceWatchingWindow.SetPlayPerformerSong(Player, PlayPerformerSong);
         }
 
         public Action OnFollowRow() => () =>
@@ -85,10 +85,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // A performer the watcher picked offers Unfollow, which goes back to following the strongest performer.
             var row = _rows[index];
             var changed = row.IsChosen
-                ? PerformanceAudience.Unfollow(Player, row.Performer)
-                : PerformanceAudience.Follow(Player, row.Performer);
+                ? PerformanceWatchingWindow.Unfollow(Player, row.Performer)
+                : PerformanceWatchingWindow.Follow(Player, row.Performer);
             if (changed)
-                PerformanceAudience.RefreshWatching(Player);
+                PerformanceWatchingWindow.RefreshWatching(Player);
         };
 
         /// <summary>Shows one watcher's audience tick. Values that did not change since the last tick are not sent.</summary>

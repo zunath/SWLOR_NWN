@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            var isLive = GameServices.Performance.TryGetSession(Player, out var live) && live.Kind == Kind;
+            var isLive = GameServices.PerformanceRegistry.TryGetSession(Player, out var live) && live.Kind == Kind;
             var session = isLive ? live : CreatePreviewSession();
 
             ResetShown();

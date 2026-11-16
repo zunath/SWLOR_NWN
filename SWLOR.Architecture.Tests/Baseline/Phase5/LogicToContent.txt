@@ -87,7 +87,6 @@ SWLOR.Game.Server/Domain/Foundation/SavedItem.cs -> Feature/MigrationDefinition 
 SWLOR.Game.Server/Domain/Items/WardrobeService.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Quests/CapstoneProofService.cs -> Feature/QuestDefinition | 1
 SWLOR.Game.Server/Domain/Quests/QuestDetail.cs -> Feature/DialogDefinition | 1
-SWLOR.Game.Server/Domain/Social/PerformanceAudienceService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceInspiredService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceService.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs -> Feature/GuiDefinition | 1

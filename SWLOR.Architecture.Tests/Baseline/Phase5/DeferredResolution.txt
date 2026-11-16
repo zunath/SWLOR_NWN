@@ -56,9 +56,6 @@ SWLOR.Game.Server/Domain/Quests/QuestEncounterService.cs -> Quests (inside) | 1
 SWLOR.Game.Server/Domain/Social/ChatPortraitTellsService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Social/PartyService.cs -> Abilities (down) | 1
 SWLOR.Game.Server/Domain/Social/PartyService.cs -> Combat (down) | 1
-SWLOR.Game.Server/Domain/Social/PerformanceAudienceService.cs -> Social (inside) | 1
-SWLOR.Game.Server/Domain/Social/PerformanceSnapshotService.cs -> Social (inside) | 1
-SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs -> Social (inside) | 1
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Character (down) | 2
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Space (down) | 1
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> World (down) | 1

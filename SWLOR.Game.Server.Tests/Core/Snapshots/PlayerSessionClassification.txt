@@ -184,7 +184,7 @@ mod_exit (45)
               A search cannot be carried, so it ends as at logout (finds saved, site cleared) instead of leaving the site claimed.
   Quiesce     SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService.AbandonOnExit -> AbandonFor
               A prospecting session cannot be carried, so it ends as at logout and the busy flag clears instead of sticking.
-  LogoutOnly  SWLOR.Game.Server.Domain.Social.PerformanceAudienceService.ForgetExitingPlayer
+  LogoutOnly  SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.ForgetExitingPlayer
               Forgets the watcher in memory, which goes with the old build.
   Quiesce     SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnExit -> AbandonFor
               A fishing fight cannot be carried, so it ends as at logout and the busy flag clears instead of sticking.

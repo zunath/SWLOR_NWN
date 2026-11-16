@@ -42,7 +42,7 @@ public static class PerformanceInstrumentEngineTests
                     SetObjectVisualTransform(item, channels[i], authored[i], nScope: scope);
                 GameServices.Performance.SetRoleplay(player, true);
                 await ctx.ExecuteInCreatureContextAsync(player, () => GameServices.Performance.TogglePlayInstrument(player, 1));
-                await ctx.WaitUntilAsync(() => GameServices.Performance.TryGetSession(player, out _), 8f, "instrument to start performing");
+                await ctx.WaitUntilAsync(() => GameServices.PerformanceRegistry.TryGetSession(player, out _), 8f, "instrument to start performing");
                 var fitted = channels.Select(channel => GetObjectVisualTransform(item, channel, nScope: scope)).ToArray();
                 if (resref == "panpipes")
                     ctx.Assert(fitted.Where((value, i) => Math.Abs(value - authored[i]) > .0001f).Any(), "the playing fit is applied");
@@ -60,14 +60,14 @@ public static class PerformanceInstrumentEngineTests
                     AssignCommand(player, () => { ClearAllActions(); ActionUnequipItem(item); });
                     await ctx.WaitUntilAsync(() => GetItemInSlot(InventorySlot.RightHand, player) != item, 8f, "instrument to be unequipped");
                 }
-                await ctx.WaitUntilAsync(() => !GameServices.Performance.TryGetSession(player, out _), 8f, "the performance to stop");
+                await ctx.WaitUntilAsync(() => !GameServices.PerformanceRegistry.TryGetSession(player, out _), 8f, "the performance to stop");
                 for (var i = 0; i < channels.Length; i++)
                     ctx.Assert(Math.Abs(GetObjectVisualTransform(item, channels[i], nScope: scope) - authored[i]) < .0001f,
                         "stopping or unequipping removes only the playing fit");
             }
             finally
             {
-                if (GameServices.Performance.TryGetSession(player, out _)) GameServices.Performance.EndPerformance(player, PerformanceEndReason.Invalid);
+                if (GameServices.PerformanceRegistry.TryGetSession(player, out _)) GameServices.Performance.EndPerformance(player, PerformanceEndReason.Invalid);
                 AssignCommand(player, () => DestroyObject(player));
             }
         }
@@ -96,16 +96,16 @@ public static class PerformanceInstrumentEngineTests
                 var bow = OBJECT_INVALID;
                 if (family == PerformanceInstrumentFamily.BowedStrings)
                 {
-                    ctx.Assert(!GameServices.Performance.HasInstrumentEquipped(player, out _), "a violin cannot perform without its bow");
+                    ctx.Assert(!GameServices.PerformanceEligibility.HasInstrumentEquipped(player, out _), "a violin cannot perform without its bow");
                     bow = await ctx.EquipItemAsync(player, "violin_bow", InventorySlot.RightHand);
                 }
 
-                ctx.Assert(GameServices.Performance.HasInstrumentEquipped(player, out var recognized), $"{resref} is recognized without item locals");
+                ctx.Assert(GameServices.PerformanceEligibility.HasInstrumentEquipped(player, out var recognized), $"{resref} is recognized without item locals");
                 ctx.AssertEqual(family, recognized, $"{resref} selects the correct family");
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                     ctx.Assert(UsePerkFeat.TryUseAbility(player, player, FeatType.PlayInstrument1, GetLocation(player)), "the music feat activates"));
-                await ctx.WaitUntilAsync(() => GameServices.Performance.TryGetSession(player, out _), 8f, $"{resref} to start performing");
-                GameServices.Performance.TryGetSession(player, out var session);
+                await ctx.WaitUntilAsync(() => GameServices.PerformanceRegistry.TryGetSession(player, out _), 8f, $"{resref} to start performing");
+                GameServices.PerformanceRegistry.TryGetSession(player, out var session);
                 ctx.AssertEqual(PerformanceKind.Music, session.Kind, "the prop uses the existing music audience channel");
                 ctx.AssertEqual(family, session.InstrumentFamily, "the session retains the recognized family");
                 ctx.AssertEqual(item, session.Instrument, "the session tracks the exact instrument");
@@ -118,12 +118,12 @@ public static class PerformanceInstrumentEngineTests
                 });
                 await ctx.WaitUntilAsync(() => GetItemInSlot(bow != OBJECT_INVALID ? InventorySlot.RightHand : slot, player) != removed,
                     8f, "the required item to leave its equipment slot");
-                await ctx.WaitUntilAsync(() => !GameServices.Performance.TryGetSession(player, out _), 8f, "removing a required item to end the performance");
+                await ctx.WaitUntilAsync(() => !GameServices.PerformanceRegistry.TryGetSession(player, out _), 8f, "removing a required item to end the performance");
                 ctx.Assert(!GetHasFeat(FeatType.PerformanceNoteLow, player), "ending the performance removes its note feats");
             }
             finally
             {
-                if (GameServices.Performance.TryGetSession(player, out _))
+                if (GameServices.PerformanceRegistry.TryGetSession(player, out _))
                     GameServices.Performance.EndPerformance(player, PerformanceEndReason.Invalid);
                 AssignCommand(player, () => DestroyObject(player));
             }

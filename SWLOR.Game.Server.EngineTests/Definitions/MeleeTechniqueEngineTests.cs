@@ -164,8 +164,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await Cast(ctx, caster, target, FeatType.Jab1);
                 ctx.AssertEqual(MeleeTechniqueStage.Opening, MeleeTechnique.GetSetupStage(caster, target), "first-rank Jab creates Opening");
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingWeavePower(caster, target), "no weave without Flowing Form");
-                ctx.Assert(!Ability.CanUseAbility(caster, target, FeatType.PalmStrike1, 1, GetLocation(target)), "one-second action lock gates the next technique");
-                ctx.Assert(!Ability.CanUseAbility(caster, target, FeatType.DirtyJab1, 1, GetLocation(target)), "the other opener shares the recast");
+                ctx.Assert(!AbilityActivation.CanUseAbility(caster, target, FeatType.PalmStrike1, 1, GetLocation(target)), "one-second action lock gates the next technique");
+                ctx.Assert(!AbilityActivation.CanUseAbility(caster, target, FeatType.DirtyJab1, 1, GetLocation(target)), "the other opener shares the recast");
                 await ctx.DelaySecondsAsync(1.05f);
                 await Cast(ctx, caster, target, FeatType.PalmStrike1);
                 ctx.AssertEqual(MeleeTechniqueStage.Finish, MeleeTechnique.GetSetupStage(caster, target), "first-rank Palm creates Finish");
@@ -1029,7 +1029,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(caster, target, FeatType.PerfectForm1, GetLocation(target)),
-                    $"Perfect Form starts with Finish: {Ability.GetLastActivationDenialReason()}"));
+                    $"Perfect Form starts with Finish: {AbilityActivation.GetLastActivationDenialReason()}"));
             return stamina;
         }
 
@@ -1040,7 +1040,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 started = UsePerkFeat.TryUseAbility(caster, target, FeatType.PerfectForm1, GetLocation(target)));
             ctx.Assert(!started, $"Perfect Form cannot start {setup}");
-            ctx.AssertEqual("Perfect Form requires your Finish against this enemy.", Ability.GetLastActivationDenialReason(),
+            ctx.AssertEqual("Perfect Form requires your Finish against this enemy.", AbilityActivation.GetLastActivationDenialReason(),
                 $"the refusal {setup} names the missing Finish");
             ctx.AssertEqual(stamina, Stat.GetCurrentStamina(caster), $"a refusal {setup} spends no STM");
             ctx.Assert(!Recast.IsOnRecastDelay(caster, RecastGroup.Capstone).Item1, $"a refusal {setup} starts no Capstone recast");
@@ -1072,7 +1072,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             AbilityImpactState.ClearLastCompletedAbilityImpactSummary(caster);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target)),
-                    $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}"));
+                    $"{ability.Name} starts: {AbilityActivation.GetLastActivationDenialReason()}"));
             await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
                 6f, $"{ability.Name} to complete its actual activation");
         }

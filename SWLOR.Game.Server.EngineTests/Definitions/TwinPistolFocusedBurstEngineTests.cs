@@ -416,7 +416,7 @@ public static class TwinPistolFocusedBurstEngineTests
 
     private static void Press(EngineTestContext ctx, uint actor, uint target) =>
         ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FocusedBurst3, GetLocation(target)),
-            $"Focused Burst enters the real ability pipeline: {Ability.GetLastActivationDenialReason()}");
+            $"Focused Burst enters the real ability pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
 
     private static int Cost() => AbilityCatalog.GetAbilityDetail(FeatType.FocusedBurst3).Requirements
         .OfType<AbilityRequirementStamina>().Single().RequiredSTM;

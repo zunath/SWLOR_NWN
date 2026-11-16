@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 beforeUse?.Invoke();
                 used = UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target));
                 if (!used)
-                    denial = Ability.GetLastActivationDenialReason();
+                    denial = AbilityActivation.GetLastActivationDenialReason();
                 attempted = true;
             });
             await WaitFramesUntilAsync(ctx, () => attempted, $"{feat} to be attempted in the caster's script context");

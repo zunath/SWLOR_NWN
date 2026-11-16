@@ -32,7 +32,7 @@ public abstract class AbilityServiceTestBase
     protected CombatImpactGeometryService Geometry => Bench.Geometry;
     protected TestCombatAbilityMagnitudeService Magnitude => Bench.Magnitude;
     protected TestAbilityService Lifecycle => Bench.Lifecycle;
-    protected TestAbilityService Activation => Bench.Activation;
+    protected TestAbilityActivationService Activation => Bench.Activation;
     protected TestAbilityAuraService Aura => Bench.Aura;
     protected TestAbilityService HostileImpact => Bench.HostileImpact;
     protected TestAbilityService DarkForce => Bench.DarkForce;

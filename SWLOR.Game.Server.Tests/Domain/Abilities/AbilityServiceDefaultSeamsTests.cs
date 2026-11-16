@@ -48,9 +48,17 @@ public class AbilityServiceDefaultSeamsTests
         _facadeScope.Dispose();
     }
 
-    private static IEnumerable<MethodInfo> Seams() =>
-        typeof(AbilityService).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+    private static IEnumerable<MethodInfo> Seams() => Seams(typeof(AbilityService));
+
+    private static IEnumerable<MethodInfo> Seams(Type type) =>
+        type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
             .Where(method => method.IsVirtual && method.IsFamily);
+
+    // The activation part of the ability split (P5-3d) with every service forwarded to the installed container.
+    private static AbilityActivationService ActivationPart() =>
+        new(FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<ISpaceModeQuery>(), FacadeForwarder.For<IPerkService>(),
+            FacadeForwarder.For<IMimicryService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IStatService>(),
+            FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<IAbilityTargetCheckService>());
 
     private static object? Sample(Type type)
     {
@@ -88,7 +96,8 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void There_is_a_seam_for_every_unconverted_call()
     {
-        Seams().Should().HaveCountGreaterThan(70);
+        // The activation checks took their seams with them (P5-3d), so the count spans the service and that part.
+        Seams().Concat(Seams(typeof(AbilityActivationService))).Should().HaveCountGreaterThan(70);
     }
 
     [Test]
@@ -101,13 +110,39 @@ public class AbilityServiceDefaultSeamsTests
             "GetAbilityListDefinitionTypes"
         };
 
+        InvokeEveryDefault(_service, Seams().Where(method => !engineOnly.Contains(method.Name))).Should().BeEmpty();
+    }
+
+    [Test]
+    public void Every_default_of_the_activation_part_reaches_the_static_code_and_stops_without_a_server()
+    {
+        Seams(typeof(AbilityActivationService)).Should().HaveCount(8);
+        InvokeEveryDefault(ActivationPart(), Seams(typeof(AbilityActivationService))).Should().BeEmpty();
+    }
+
+    [Test]
+    public void The_activation_part_reads_space_mode_through_the_query_and_the_weapon_skills_from_combat()
+    {
+        var part = ActivationPart();
+        object? Call(string name, params object?[] arguments) =>
+            Seams(typeof(AbilityActivationService)).Single(seam => seam.Name == name).Invoke(part, arguments);
+
+        Call("IsPlayerInSpaceMode", Creature).Should().Be(false, "the engine fake reports no player");
+        Call("IsWeaponSkillType", SkillType.Vibroblade).Should().Be(true);
+        Call("IsWeaponSkillType", SkillType.Force).Should().Be(false);
+        Call("GetStatAdjustment", Creature, StatType.ForceAbilityActivationDisabled).Should().Be(0);
+        Call("GetUnusableEquipmentError", Creature).Should().Be(string.Empty);
+    }
+
+    private static List<string> InvokeEveryDefault(object instance, IEnumerable<MethodInfo> seams)
+    {
         var failures = new List<string>();
-        foreach (var seam in Seams().Where(method => !engineOnly.Contains(method.Name)))
+        foreach (var seam in seams)
         {
             var arguments = seam.GetParameters().Select(parameter => Sample(parameter.ParameterType)).ToArray();
             try
             {
-                seam.Invoke(_service, arguments);
+                seam.Invoke(instance, arguments);
             }
             catch (TargetInvocationException exception)
             {
@@ -115,7 +150,7 @@ public class AbilityServiceDefaultSeamsTests
             }
         }
 
-        failures.Should().BeEmpty();
+        return failures;
     }
 
     [Test]

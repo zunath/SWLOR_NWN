@@ -749,7 +749,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(medic, () =>
                 {
                     started = UsePerkFeat.TryUseAbility(medic, body, FeatType.Resuscitation1, GetLocation(body));
-                    denial = Ability.GetLastActivationDenialReason();
+                    denial = AbilityActivation.GetLastActivationDenialReason();
                 });
                 ctx.Assert(started, $"the revive cast starts: {denial}");
                 await ctx.DelaySecondsAsync(1f);
@@ -955,7 +955,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     activated = UsePerkFeat.TryUseAbility(player, player, FeatType.ReviveBeast1, GetLocation(player));
-                    denial = Ability.GetLastActivationDenialReason();
+                    denial = AbilityActivation.GetLastActivationDenialReason();
                 });
                 ctx.Assert(activated, $"Revive Beast activates: {denial}");
                 await ctx.WaitUntilAsync(() => BeastMastery.IsPlayerBeast(GetAssociate(AssociateType.Henchman, player)), 12f,
@@ -1206,7 +1206,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 used = UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target));
                 if (!used)
-                    denial = Ability.GetLastActivationDenialReason();
+                    denial = AbilityActivation.GetLastActivationDenialReason();
             });
             ctx.Assert(used, $"{feat} activation was denied: {denial}");
         }

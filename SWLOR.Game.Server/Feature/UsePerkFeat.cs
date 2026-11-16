@@ -405,7 +405,7 @@ namespace SWLOR.Game.Server.Feature
             // Weapon abilities are queued for the next time the activator's attack lands on an enemy.
             if (ability.ActivationType == AbilityActivationType.Weapon)
             {
-                if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                if (AbilityActivation.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if (HoldForHostileAbilityDelay(activator, target, feat, targetLocation, ability))
                         return true;
@@ -437,7 +437,7 @@ namespace SWLOR.Game.Server.Feature
             // All other abilities are funneled through the same process.
             else
             {
-                if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                if (AbilityActivation.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if (HoldForHostileAbilityDelay(activator, target, feat, targetLocation, ability))
                         return true;
@@ -463,7 +463,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (CombatRecorder.IsRecording)
-                CombatRecorder.RecordAbilityDenied(activator, target, ability, feat, Ability.GetLastActivationDenialReason(), false);
+                CombatRecorder.RecordAbilityDenied(activator, target, ability, feat, AbilityActivation.GetLastActivationDenialReason(), false);
             return false;
         }
 
@@ -857,10 +857,10 @@ namespace SWLOR.Game.Server.Feature
                         ? 1
                         : Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
 
-                if (!Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                if (!AbilityActivation.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
                     if (CombatRecorder.IsRecording)
-                        CombatRecorder.RecordAbilityDenied(activator, target, ability, feat, Ability.GetLastActivationDenialReason(), true);
+                        CombatRecorder.RecordAbilityDenied(activator, target, ability, feat, AbilityActivation.GetLastActivationDenialReason(), true);
                     ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(true);
                     return;

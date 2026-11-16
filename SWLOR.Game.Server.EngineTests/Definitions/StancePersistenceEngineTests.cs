@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
                 used = UsePerkFeat.TryUseAbility(caster, caster, feat, GetLocation(caster));
-                denial = Ability.GetLastActivationDenialReason();
+                denial = AbilityActivation.GetLastActivationDenialReason();
             });
             ctx.Assert(used, $"{feat} should activate on its caster: {denial}");
             await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(caster, stanceType), 10f,

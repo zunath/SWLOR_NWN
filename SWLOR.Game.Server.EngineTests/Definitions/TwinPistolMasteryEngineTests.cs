@@ -179,7 +179,7 @@ public static class TwinPistolMasteryEngineTests
         {
             AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
             var activated = UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target));
-            context.Assert(activated, $"The mastery action uses the normal validated feat pipeline: {Ability.GetLastActivationDenialReason()}");
+            context.Assert(activated, $"The mastery action uses the normal validated feat pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
         });
         await context.WaitUntilAsync(() => !TwinPistolAbility.HasActiveActivation(actor) &&
             AbilityImpactState.GetLastCompletedAbilityImpactSummary(actor)?.AttributedDamage > 0,

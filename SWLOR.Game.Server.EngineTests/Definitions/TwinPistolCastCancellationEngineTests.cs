@@ -120,7 +120,7 @@ public static class TwinPistolCastCancellationEngineTests
                 ctx.Assert(CombatRecorder.Start(GetArea(actor), "Twin capstone death regression", out var message), message);
                 writer = CombatRecorder.LastWriter;
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-                    $"The real two-second cast starts: {Ability.GetLastActivationDenialReason()}");
+                    $"The real two-second cast starts: {AbilityActivation.GetLastActivationDenialReason()}");
                 ctx.Assert(TwinPistolAbility.HasActiveActivation(actor) && Activity.IsBusy(actor),
                     "The captured activation is unpaid and active before death");
                 ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "The cast has not paid its stamina cost");
@@ -234,7 +234,7 @@ public static class TwinPistolCastCancellationEngineTests
                 haste = Stat.GetStatAdjustment(actor, StatType.AttackDelayReductionPercent);
                 AbilityImpactState.ClearLastCompletedAbilityImpactSummary(actor);
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, feat, GetLocation(target)),
-                    $"The real two-second cast starts: {Ability.GetLastActivationDenialReason()}");
+                    $"The real two-second cast starts: {AbilityActivation.GetLastActivationDenialReason()}");
                 ctx.Assert(TwinPistolAbility.HasActiveActivation(actor) && Activity.IsBusy(actor), "The unpaid capture belongs to the active cast");
                 ctx.AssertEqual(stamina, Stat.GetCurrentStamina(actor), "Starting the cast does not pay stamina");
                 ctx.AssertEqual(3, StatusEffect.GetStatusEffect<CadenceStatusEffect>(actor)?.Charges ?? 0, "Starting the cast only captures Cadence");
@@ -276,13 +276,13 @@ public static class TwinPistolCastCancellationEngineTests
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, target, FeatType.FinalSalvo, GetLocation(target)),
-                    $"The first cast starts: {Ability.GetLastActivationDenialReason()}");
+                    $"The first cast starts: {AbilityActivation.GetLastActivationDenialReason()}");
                 var oldId = UsePerkFeat.GetActiveAbilityActivationId(actor);
                 ctx.Assert(!string.IsNullOrWhiteSpace(oldId), "The Twin capture has a real shared identity");
                 ctx.Assert(UsePerkFeat.InterruptAbilityActivation(actor), "A generic interruption cancels the first shared cast");
                 ctx.Assert(!TwinPistolAbility.HasActiveActivation(actor), "A stale capture is not an active cast");
                 ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.WatchfulPresence1, GetLocation(actor)),
-                    $"The unrelated two-second cast starts: {Ability.GetLastActivationDenialReason()}");
+                    $"The unrelated two-second cast starts: {AbilityActivation.GetLastActivationDenialReason()}");
                 var newId = UsePerkFeat.GetActiveAbilityActivationId(actor);
                 ctx.Assert(!string.IsNullOrWhiteSpace(newId) && newId != oldId, "The later cast owns a distinct identity");
                 ctx.Assert(!UsePerkFeat.InterruptAbilityActivation(actor, oldId, CombatRecordInterruptCause.Died),

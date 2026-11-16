@@ -185,7 +185,7 @@ public static class MeleeTechniqueLifecycleEngineTests
             context.Assert(GetIsReactionTypeHostile(target, caster),
                 $"{ability.Name}: native target {target} (PC={GetIsPC(target)}) is hostile to caster {caster} (PC={GetIsPC(caster)}).");
             context.Assert(UsePerkFeat.TryUseAbility(caster, target, feat, GetLocation(target)),
-                $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}");
+                $"{ability.Name} starts: {AbilityActivation.GetLastActivationDenialReason()}");
         });
         await context.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability == ability,
             6f, $"{ability.Name} to complete its actual activation");

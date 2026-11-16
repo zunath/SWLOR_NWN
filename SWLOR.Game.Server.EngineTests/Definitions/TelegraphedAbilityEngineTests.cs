@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             catch (EngineTestAssertionException ex)
             {
                 throw new EngineTestAssertionException($"{ex.Message} (impactStarted={impactStarted}, " +
-                    $"denial={Ability.GetLastActivationDenialReason()}, casterHP={GetCurrentHitPoints(caster)}, " +
+                    $"denial={AbilityActivation.GetLastActivationDenialReason()}, casterHP={GetCurrentHitPoints(caster)}, " +
                     $"distance={GetDistanceBetween(caster, dodger)}, busy={Activity.IsBusy(caster)})");
             }
             finally

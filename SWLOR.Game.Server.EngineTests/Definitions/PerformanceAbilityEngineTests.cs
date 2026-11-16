@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.Assert(!GameServices.Performance.HasInstrumentEquipped(player, out _), "the fixture starts with no instrument");
 
                     var instrumentless = await UseAsync(ctx, player, feat);
-                    ctx.Assert(instrumentless, $"{feat} activates through the player feat pipeline: {Ability.GetLastActivationDenialReason()}");
+                    ctx.Assert(instrumentless, $"{feat} activates through the player feat pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
                     await ctx.WaitUntilAsync(() => !Activity.IsBusy(player), 5f, "the instrumentless activation to finish");
                     await ctx.WaitFrameAsync();
                     ctx.Assert(!GameServices.Performance.TryGetSession(player, out _), "playing music with no instrument starts no session");
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var originalBar = SnapshotQuickbar(player);
 
                 var activated = await UseAsync(ctx, player, feat);
-                ctx.Assert(activated, $"{feat} activates through the player feat pipeline: {Ability.GetLastActivationDenialReason()}");
+                ctx.Assert(activated, $"{feat} activates through the player feat pipeline: {AbilityActivation.GetLastActivationDenialReason()}");
                 await ctx.WaitUntilAsync(() => GameServices.Performance.TryGetSession(player, out _), 8f, $"{feat} to start a performance session");
                 GameServices.Performance.TryGetSession(player, out var session);
 

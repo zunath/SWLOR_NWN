@@ -40,6 +40,9 @@ public static class AbilitySource
         "SWLOR.Game.Server/Domain/Abilities/AbilityAuraService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityImmunityService.cs",
         "SWLOR.Game.Server/Domain/Abilities/AbilityActivationStateService.cs",
+        // P5-3d: the activation checks and the target checks.
+        "SWLOR.Game.Server/Domain/Abilities/AbilityActivationService.cs",
+        "SWLOR.Game.Server/Domain/Abilities/AbilityTargetCheckService.cs",
     };
 
     /// <summary>
@@ -49,7 +52,8 @@ public static class AbilitySource
     public static readonly IReadOnlySet<string> PartInterfaces = new HashSet<string>(StringComparer.Ordinal)
     {
         "IAbilityCatalog", "IAbilityCatalogService", "IAbilityImpactState", "ICombatImpactGeometryService", "ICombatAbilityMagnitudeService",
-        "IAbilityAuraService", "IAbilityImmunityService", "IAbilityActivationStateService"
+        "IAbilityAuraService", "IAbilityImmunityService", "IAbilityActivationStateService", "IAbilityActivationService",
+        "IAbilityTargetCheckService"
     };
 
     private static readonly Lazy<IReadOnlyList<SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));

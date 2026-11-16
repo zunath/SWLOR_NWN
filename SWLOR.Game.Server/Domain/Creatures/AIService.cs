@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly IPartyService _party;
         private readonly ICompanionLookup _companions;
         private readonly IDMPresenceService _dmPresence;
-        private readonly Lazy<IAbilityService> _ability;
+        private readonly Lazy<IAbilityActivationService> _activation;
         private readonly IAbilityCatalog _catalog;
         private readonly IActivityService _activity;
         private readonly Lazy<ICompanionControlService> _companionControl;
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             IPartyService party,
             ICompanionLookup companions,
             IDMPresenceService dmPresence,
-            Lazy<IAbilityService> ability,
+            Lazy<IAbilityActivationService> activation,
             IAbilityCatalog catalog,
             IActivityService activity,
             Lazy<ICompanionControlService> companionControl,
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             _party = party;
             _companions = companions;
             _dmPresence = dmPresence;
-            _ability = ability;
+            _activation = activation;
             _catalog = catalog;
             _activity = activity;
             _companionControl = companionControl;
@@ -1857,7 +1857,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.Value.GetPerkLevel(creature, perkType);
 
         protected virtual bool CanActivateAbility(uint activator, uint target, FeatType feat, int effectiveLevel, Location targetLocation) =>
-            _ability.Value.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
+            _activation.Value.CanUseAbility(activator, target, feat, effectiveLevel, targetLocation);
 
         protected virtual bool TryUseAbility(uint creature, uint target, FeatType feat, Location targetLocation) =>
             UsePerkFeat.TryUseAbility(creature, target, feat, targetLocation);

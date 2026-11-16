@@ -107,7 +107,7 @@ public static class ForceEspionageEngineTests
         var activated = false;
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
             activated = UsePerkFeat.TryUseAbility(player.Creature, guard, FeatType.CloudMind1, GetLocation(guard)));
-        ctx.Assert(activated, $"Cloud Mind activates: {Ability.GetLastActivationDenialReason()}");
+        ctx.Assert(activated, $"Cloud Mind activates: {AbilityActivation.GetLastActivationDenialReason()}");
 
         await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<CloudedMindStatusEffect>(guard), 10f,
             "Cloud Mind to cloud the guard after its cast");

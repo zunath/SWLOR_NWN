@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await ctx.ExecuteInCreatureContextAsync(npc, () =>
                 ctx.Assert(UsePerkFeat.TryUseAbility(npc, npc, FeatType.GuardianWard4, GetLocation(npc)),
-                    $"Guardian Ward IV must start on its caster: {Ability.GetLastActivationDenialReason()}"));
+                    $"Guardian Ward IV must start on its caster: {AbilityActivation.GetLastActivationDenialReason()}"));
             await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, TemporaryHitPointEffectKey.GuardianWard) > 0,
                 10f, "Guardian Ward IV's temporary HP to land");
 

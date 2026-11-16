@@ -224,7 +224,7 @@ public class AbilityActivationPathTests
         RunDelayed(2f);
 
         _log.Should().Equal("ClearBusy", "Requirement.Check");
-        Ability.GetLastActivationDenialReason().Should().Be("Not any more.");
+        AbilityActivation.GetLastActivationDenialReason().Should().Be("Not any more.");
         AbilityActivationState.TryGetActiveAbilityActivation(Caster, out _).Should().BeFalse();
     }
 

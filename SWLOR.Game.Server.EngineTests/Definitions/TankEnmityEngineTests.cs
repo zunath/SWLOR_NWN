@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
             catch (Exception error)
             {
-                throw new InvalidOperationException($"{error.Message}; denial={Ability.GetLastActivationDenialReason()} busy={Activity.IsBusy(tank)} position={GetPosition(tank)} enemies={string.Join(';', enemies.Select(enemy => $"{enemy:X} at {GetPosition(enemy)} threat {Enmity.GetEnmityTable(enemy).GetValueOrDefault(tank)}"))}", error);
+                throw new InvalidOperationException($"{error.Message}; denial={AbilityActivation.GetLastActivationDenialReason()} busy={Activity.IsBusy(tank)} position={GetPosition(tank)} enemies={string.Join(';', enemies.Select(enemy => $"{enemy:X} at {GetPosition(enemy)} threat {Enmity.GetEnmityTable(enemy).GetValueOrDefault(tank)}"))}", error);
             }
             foreach (var enemy in enemies)
             {
@@ -396,7 +396,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.ExecuteInCreatureContextAsync(source, () =>
             {
                 used = UsePerkFeat.TryUseAbility(source, target, feat, GetLocation(target));
-                denial = Ability.GetLastActivationDenialReason();
+                denial = AbilityActivation.GetLastActivationDenialReason();
             });
             ctx.Assert(used, $"{feat} activates: {denial}");
         }

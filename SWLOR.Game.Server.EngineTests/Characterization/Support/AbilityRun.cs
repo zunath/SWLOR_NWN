@@ -103,7 +103,7 @@ public static class AbilityRun
                 ctx.SeedRandom(seed);
                 accepted = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
                 if (!accepted)
-                    denial = Ability.GetLastActivationDenialReason();
+                    denial = AbilityActivation.GetLastActivationDenialReason();
             });
 
             if (accepted)

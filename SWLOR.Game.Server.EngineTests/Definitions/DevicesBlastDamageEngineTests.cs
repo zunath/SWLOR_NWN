@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AbilityImpactState.ClearLastCompletedAbilityImpactSummary(player);
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                     ctx.Assert(UsePerkFeat.TryUseAbility(player, target, feat, GetLocation(target)),
-                        $"{ability.Name} starts: {Ability.GetLastActivationDenialReason()}"));
+                        $"{ability.Name} starts: {AbilityActivation.GetLastActivationDenialReason()}"));
                 await ctx.WaitUntilAsync(() => AbilityImpactState.GetLastCompletedAbilityImpactSummary(player)?.Ability == ability,
                     8f, $"{ability.Name} to complete");
                 // Telegraphed blasts land after the activation completes.

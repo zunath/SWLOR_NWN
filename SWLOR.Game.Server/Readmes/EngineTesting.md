@@ -88,7 +88,7 @@ that publishes the engine-test assembly with its candidate runs the new build's 
 
 What *does* live in game code is a small set of public observability/determinism seams the tests
 consume: `Combat.SetAbilityHitResolutionOverride` / `SetAutoAttackHitResolutionOverride`,
-`Ability.GetLastCompletedAbilityImpactSummary`, `Ability.GetLastActivationDenialReason`, and
+`Ability.GetLastCompletedAbilityImpactSummary`, `AbilityActivation.GetLastActivationDenialReason`, and
 `Stat.SuppressNaturalRegenVariable`.
 
 ## Architecture Overview

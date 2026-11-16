@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     ctx.Assert(!GameServices.Mimicry.CanEquip(caster, behaviorCase.Feat, out _), "unlearned techniques cannot be equipped");
                     playerFixture.Update(record => record.LearnedTechniques[behaviorCase.Feat] = DateTime.UtcNow);
-                    ctx.Assert(!Ability.CanUseAbility(caster, caster, behaviorCase.Feat, ability.AbilityLevel, GetLocation(caster)),
+                    ctx.Assert(!AbilityActivation.CanUseAbility(caster, caster, behaviorCase.Feat, ability.AbilityLevel, GetLocation(caster)),
                         "learned but unequipped techniques cannot be activated");
                     ctx.Assert(GameServices.Mimicry.CanEquip(caster, behaviorCase.Feat, out var equipError), $"learned technique can equip: {equipError}");
                     ctx.Assert(GameServices.Mimicry.EquipTechnique(caster, behaviorCase.Feat), "learned technique equips through the player service");
@@ -487,7 +487,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                             // (AI, arena bystanders) can overwrite within a frame.
                             if (!used)
                             {
-                                activationDenial = Ability.GetLastActivationDenialReason();
+                                activationDenial = AbilityActivation.GetLastActivationDenialReason();
                                 if (behaviorCase.SearchForSafeMovementLane)
                                     activationDenial += $"; actor={GetPosition(caster)}, target={GetPosition(target)}, cursor={GetPositionFromLocation(activationLocation)}";
                             }
@@ -751,7 +751,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     {
                         used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, activationLocation);
                         if (!used)
-                            denial = Ability.GetLastActivationDenialReason();
+                            denial = AbilityActivation.GetLastActivationDenialReason();
                     }
                     catch (Exception ex) { error = ex; }
                 });

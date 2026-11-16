@@ -100,7 +100,7 @@
     { "name": "RoleplayXPDetection", "domain": "Character" },
     { "name": "Scavenge", "domain": "Crafting", "extras": [ { "class": "ScavengeSessions" } ] },
     { "name": "ServerTask", "domain": "Gameplay" },
-    { "name": "Shuttle", "domain": "World" },
+    { "name": "Shuttle", "domain": "World", "extras": [ { "part": "ShuttleArrival" }, { "part": "ShuttleBoarding" }, { "part": "ShuttleClock" }, { "part": "ShuttleFlight" }, { "part": "ShuttlePassenger" }, { "part": "ShuttleState" }, { "part": "ShuttleTicket" } ] },
     { "name": "Skill", "domain": "Character" },
     { "name": "Slicing", "domain": "Crafting", "extras": [ { "class": "SlicingSession" } ] },
     { "name": "Snippet", "domain": "Foundation" },

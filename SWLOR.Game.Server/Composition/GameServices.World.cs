@@ -34,6 +34,27 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The scheduled passenger shuttles (the static class <c>Shuttle</c> until P2-ZL).</summary>
         public static IShuttleService Shuttle => FacadeAccessor.Resolve<IShuttleService>();
 
+        /// <summary>The shuttle arrival: delivering a landed flight's passengers and tearing down its instance (P5-9c).</summary>
+        public static IShuttleArrivalService ShuttleArrival => FacadeAccessor.Resolve<IShuttleArrivalService>();
+
+        /// <summary>The shuttle boarding calls and boarding of ticket holders (P5-9c).</summary>
+        public static IShuttleBoardingService ShuttleBoarding => FacadeAccessor.Resolve<IShuttleBoardingService>();
+
+        /// <summary>The time and scheduler seam of the shuttle services (P5-9c).</summary>
+        public static IShuttleClockService ShuttleClock => FacadeAccessor.Resolve<IShuttleClockService>();
+
+        /// <summary>Finding shuttle passengers and placing them at the destination (P5-9c).</summary>
+        public static IShuttlePassengerService ShuttlePassenger => FacadeAccessor.Resolve<IShuttlePassengerService>();
+
+        /// <summary>The flight state the shuttle services share (P5-9c).</summary>
+        public static IShuttleStateService ShuttleState => FacadeAccessor.Resolve<IShuttleStateService>();
+
+        /// <summary>The shuttle tickets: a player's ride, buying and refunding a ticket, and the next departure (P5-9c).</summary>
+        public static IShuttleTicketService ShuttleTicket => FacadeAccessor.Resolve<IShuttleTicketService>();
+
+        /// <summary>The shuttle flights in the air and their interiors (P5-9c).</summary>
+        public static IShuttleFlightService ShuttleFlight => FacadeAccessor.Resolve<IShuttleFlightService>();
+
         /// <summary>Taxi destinations and the ones a player has registered (the facade <c>Service.Taxi</c> until P2-ZA).</summary>
         public static ITaxiService Taxi => FacadeAccessor.Resolve<ITaxiService>();
 

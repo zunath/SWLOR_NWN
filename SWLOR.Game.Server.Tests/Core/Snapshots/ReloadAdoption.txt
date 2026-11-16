@@ -78,8 +78,8 @@ SWLOR.Game.Server.Domain.World.PropertyLoaderService._propertyLoadStates
 SWLOR.Game.Server.Domain.World.PropertyLoaderService._propertyLoadWaiters
 SWLOR.Game.Server.Domain.World.PropertyLoaderService._startupPropertyLoadIds
 SWLOR.Game.Server.Domain.World.PropertyLoaderService._structurePropertyIdToPlaceable
-SWLOR.Game.Server.Domain.World.ShuttleService._activeFlights
-SWLOR.Game.Server.Domain.World.ShuttleService._ticketHolders
+SWLOR.Game.Server.Domain.World.ShuttleStateService._activeFlights
+SWLOR.Game.Server.Domain.World.ShuttleStateService._ticketHolders
 SWLOR.Game.Server.Domain.World.WeatherService._areas
 SWLOR.Game.Server.Domain.World.WeatherService._pattern
 SWLOR.Game.Server.Domain.World.WeatherService._regions
@@ -137,10 +137,10 @@ SWLOR.Game.Server.Domain.World.AreaService.<AreasByResref>k__BackingField
 SWLOR.Game.Server.Domain.World.AreaService.<PlayersByArea>k__BackingField
 SWLOR.Game.Server.Domain.World.HoloComService._nextCallToken
 SWLOR.Game.Server.Domain.World.MusicService._lastBattleThemeCombat
-SWLOR.Game.Server.Domain.World.ShuttleService._announcedBoardings
-SWLOR.Game.Server.Domain.World.ShuttleService._boardingNotBeforeUtc
-SWLOR.Game.Server.Domain.World.ShuttleService._boardings
-SWLOR.Game.Server.Domain.World.ShuttleService._missedBoardings
+SWLOR.Game.Server.Domain.World.ShuttleStateService._announcedBoardings
+SWLOR.Game.Server.Domain.World.ShuttleStateService._boardingNotBeforeUtc
+SWLOR.Game.Server.Domain.World.ShuttleStateService._boardings
+SWLOR.Game.Server.Domain.World.ShuttleStateService._missedBoardings
 SWLOR.Game.Server.Domain.World.WeatherService._exposures
 SWLOR.Game.Server.Feature.StatusEffectDefinition.InspiredStatusEffect._lastOvationByPlayer
 SWLOR.Game.Server.Feature.StoreManagement._stores

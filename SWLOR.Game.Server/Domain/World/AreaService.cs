@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Domain.World
         {
             // Scheduled flights clone this template without a property layout definition.
             // Keep flight coordinates out of persistent player locations.
-            AreasByResref.Remove(ShuttleService.ShuttleInteriorResref);
+            AreasByResref.Remove(ShuttleFlightService.ShuttleInteriorResref);
 
             foreach (var areaResref in _property.Value.GetAllInstanceAreaResrefs())
             {

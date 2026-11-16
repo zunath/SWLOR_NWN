@@ -75,7 +75,7 @@
     { "name": "OverflowStorage", "domain": "Items" },
     { "name": "PairedRangedTraits", "domain": "Combat" },
     { "name": "Party", "domain": "Social", "extras": [ { "part": "PartyRoster" } ] },
-    { "name": "Performance", "domain": "Social", "extras": [ { "part": "PerformanceAnimation" }, { "part": "PerformanceAudience" }, { "part": "PerformanceEligibility" }, { "part": "PerformanceFlourish" }, { "part": "PerformanceHotbar" }, { "part": "PerformanceInspired" }, { "part": "PerformanceRegistry" }, { "part": "PerformanceRider" }, { "part": "PerformanceSnapshot" }, { "part": "PerformanceSong" }, { "class": "PerformanceVenue" }, { "part": "PerformanceWatching" }, { "part": "PerformanceWatchingWindow" }, { "class": "PerformanceWindows" } ] },
+    { "name": "Performance", "domain": "Social", "extras": [ { "part": "PerformanceAnimation" }, { "class": "PerformanceAudience" }, { "part": "PerformanceEligibility" }, { "part": "PerformanceFlourish" }, { "part": "PerformanceHotbar" }, { "part": "PerformanceInspired" }, { "part": "PerformanceRegistry" }, { "part": "PerformanceRider" }, { "part": "PerformanceSnapshot" }, { "part": "PerformanceSong" }, { "class": "PerformanceVenue" }, { "part": "PerformanceWatching" }, { "part": "PerformanceWatchingWindow" }, { "class": "PerformanceWindows" } ] },
     { "name": "Perk", "domain": "Character" },
     { "name": "Planet", "domain": "World" },
     { "name": "PlayerDescriptor", "domain": "Character" },

@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// </summary>
     public class DMEventsDefinition : IGuiWindowDefinition
     {
+        // The window cannot shrink below the size that shows every button.
+        public const float MinimumWindowWidth = 830f;
+        public const float MinimumWindowHeight = 680f;
         private const float EventRailWidth = 220f;
         private const float ContentPanelWidth = 560f;
         private const float ContentWidth = ContentPanelWidth - 24f;
@@ -21,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.DMEvents)
-                .SetInitialGeometry(0, 0, 830f, 680f)
+                .SetInitialGeometry(0, 0, MinimumWindowWidth, MinimumWindowHeight)
                 .SetTitle("DM Events")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

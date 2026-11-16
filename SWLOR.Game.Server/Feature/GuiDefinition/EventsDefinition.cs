@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// </summary>
     public class EventsDefinition : IGuiWindowDefinition
     {
+        // The window cannot shrink below the size that shows Join and Leave Event.
+        public const float MinimumWindowWidth = 570f;
+        public const float MinimumWindowHeight = 620f;
         private const float ContentPanelWidth = 520f;
         private const float ContentWidth = ContentPanelWidth - 24f;
         private const float RowHeight = 30f;
@@ -18,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Events)
-                .SetInitialGeometry(0, 0, 570f, 620f)
+                .SetInitialGeometry(0, 0, MinimumWindowWidth, MinimumWindowHeight)
                 .SetTitle("Events")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

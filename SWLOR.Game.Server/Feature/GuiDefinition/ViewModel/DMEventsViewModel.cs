@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.HostedEventService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -38,6 +39,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            EnsureMinimumSize();
             Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
             _selectedEventId = string.Empty;
             FeedbackText = string.Empty;
@@ -54,6 +56,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChangePartialView(ContentElement, MainContentPartial);
             // Values unchanged since the last open are not resent, so the new controls need them pushed again.
             RepublishBindings();
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName != nameof(Geometry) || !EnsureMinimumSize() || WindowToken <= 0)
+                return;
+
+            // A client resize can commit after its watch callback. Republish on the next tick.
+            DelayCommand(0.0f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    OnPropertyChanged(nameof(Geometry));
+            });
+        }
+
+        private bool EnsureMinimumSize()
+        {
+            var current = Geometry;
+            if (current == null || current.Width >= DMEventsDefinition.MinimumWindowWidth && current.Height >= DMEventsDefinition.MinimumWindowHeight)
+                return false;
+
+            Geometry = new GuiRectangle(
+                current.X,
+                current.Y,
+                Math.Max(current.Width, DMEventsDefinition.MinimumWindowWidth),
+                Math.Max(current.Height, DMEventsDefinition.MinimumWindowHeight));
+            return true;
         }
 
         // Keeps the DM's unsaved typing; only the list and the event's state are reloaded.

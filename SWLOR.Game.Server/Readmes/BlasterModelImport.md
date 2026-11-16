@@ -639,6 +639,14 @@ creature. Meshy cannot rig a non-humanoid, so nothing here uses its rigging or m
   rewrite line endings in unrelated materials; restore every file whose `git diff --ignore-cr-at-eol` is empty. The
   mask holds a metal layer, so the material keeps its normal map and binds no specular or roughness map
   (`TintMapRendering.md`).
+- **Skinned GR2 sources.** A chassis entry with `"kind": "gr2"` takes a model skinned to a skeleton instead of a
+  generated mesh; pass `--addon-root` for the pinned importer from `tools/SetupBlasterImporter.ps1`. Triangles go to the
+  segment of their dominant bone, and the pivots come from the skeleton's hip and head bones. The model's own tool arm
+  becomes the prod node; there is no blaster part. Such a family names its own copy of the clip model (`c_astromechb`)
+  with a shorter tool retract, because its arm is as long as its body is deep. These sources carry no dye mask, so the
+  mask comes from the diffuse map: `panel_hue` marks the main paint when it is itself saturated, omitting `accent_hue`
+  takes any saturated paint as trim, and `normalize_shade` stretches each layer's shade range. Painted detail such as
+  lenses and decals takes the color of the layer it falls in.
 - **Package.** `--mode package` compiles the models with cleanmodels and compresses textures with NWN Crunch, as for
   other Meshy creatures. Commit the compiled MDL, DDS and MTR files only.
 - **Voice set.** `tools/GenerateAstromechSoundset.py` synthesizes the sounds and the SSF from a phrase table; nothing is

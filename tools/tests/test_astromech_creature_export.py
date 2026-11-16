@@ -483,5 +483,211 @@ class ChassisTextTests(unittest.TestCase):
         self.assertRegex(text, r'node trimesh toolr\n  parent toolr_socket\n  position 0 0 0\n')
 
 
+def gr2_chassis(folder=None, model='c_astro_02'):
+    """A valid gr2 chassis entry; with a folder, real files whose hashes match."""
+    files = {'m.gr2': b'model', 'skel.gr2': b'skeleton', 'd.dds': b'diffuse', 'n.dds': b'normal'}
+    if folder is not None:
+        for name, data in files.items():
+            (Path(folder) / name).write_bytes(data)
+    return {'kind': 'gr2', 'model': model, 'source': 'm.gr2', 'sha256': sha(files['m.gr2']), 'skeleton': 'skel.gr2',
+            'skeleton_sha256': sha(files['skel.gr2']),
+            'maps': {'diffuse': 'd.dds', 'normal': 'n.dds'},
+            'maps_sha256': {'diffuse': sha(files['d.dds']), 'normal': sha(files['n.dds'])},
+            'material': model, 'texture_size': 1024, 'height': 1.05,
+            'tint': {'accent_min_saturation': 0.35, 'dark_max_value': 0.25}}
+
+
+def gr2_manifest(folder=None):
+    return {'schema_version': 1, 'supermodel': 'c_astromech', 'tool_lengths': {'prod': 0.4, 'blaster': 0.3},
+            'chassis': [gr2_chassis(folder)]}
+
+
+class Gr2ManifestTests(unittest.TestCase):
+    def rejects(self, mutate, folder=None):
+        manifest = gr2_manifest(folder)
+        mutate(manifest)
+        with self.assertRaises(ValueError):
+            astro.validate_manifest(manifest, Path(folder) if folder else None)
+
+    def test_a_good_gr2_manifest_passes_with_and_without_files(self):
+        astro.validate_manifest(gr2_manifest())
+        with tempfile.TemporaryDirectory() as folder:
+            astro.validate_manifest(gr2_manifest(folder), Path(folder))
+
+    def test_hash_mismatch_for_any_source_is_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            self.rejects(lambda m: m['chassis'][0].update(skeleton_sha256='0' * 64), folder)
+            self.rejects(lambda m: m['chassis'][0]['maps_sha256'].update(normal='1' * 64), folder)
+            self.rejects(lambda m: m['chassis'][0]['maps'].update(diffuse='absent.dds'), folder)
+
+    def test_bad_fields(self):
+        self.rejects(lambda m: m['chassis'][0]['maps'].pop('normal'))
+        self.rejects(lambda m: m['chassis'][0].update(material='c_astro_material'))
+        self.rejects(lambda m: m['chassis'][0].update(texture_size=256))
+        self.rejects(lambda m: m['chassis'][0].update(tool_arm='yes'))
+        self.rejects(lambda m: m['chassis'][0].update(bone_segments={'Gun9': 'wing'}))
+        self.rejects(lambda m: m['chassis'][0].update(sockets={'toolr': [0, 0, 0], 'tooll': [0, 0, 0]}))
+        self.rejects(lambda m: m['chassis'][0].update(yaw_degrees='180'))
+        self.rejects(lambda m: m['chassis'][0].update(kind='fbx'))
+        self.rejects(lambda m: m['chassis'][0]['tint'].pop('dark_max_value'))
+
+    def test_tool_lengths_rules(self):
+        self.rejects(lambda m: m.pop('tool_lengths'))
+        self.rejects(lambda m: m['tool_lengths'].update(prod=0))
+        self.rejects(lambda m: m['tool_lengths'].pop('blaster'))
+        self.rejects(lambda m: m.update(tools=good_manifest()['tools']))
+        self.assertEqual(astro.manifest_tool_lengths(gr2_manifest()), {'prod': 0.4, 'blaster': 0.3})
+        self.assertEqual(astro.manifest_tool_lengths(good_manifest()), {'prod': 0.4, 'blaster': 0.3})
+
+    def test_glb_chassis_still_need_tools(self):
+        manifest = good_manifest()
+        manifest.pop('tools')
+        manifest['tool_lengths'] = {'prod': 0.4, 'blaster': 0.3}
+        with self.assertRaises(ValueError):
+            astro.validate_manifest(manifest)
+
+    def test_mixed_glb_and_gr2_validates(self):
+        manifest = good_manifest()
+        manifest['chassis'].append(gr2_chassis())
+        astro.validate_manifest(manifest)
+        manifest['chassis'].append(gr2_chassis(model='c_astro_03') | {'material': 'c_astro_02'})
+        with self.assertRaises(ValueError):
+            astro.validate_manifest(manifest)
+
+    def test_tint_options_are_validated(self):
+        for tint in ({'panel_hue': [0.2, 0.2]}, {'panel_hue': [0.2]}, {'normalize_shade': 1}, {'accent_hue': [0.5, 0.1]}):
+            self.rejects(lambda m, t=tint: m['chassis'][0]['tint'].update(t))
+        manifest = gr2_manifest()
+        manifest['chassis'][0]['tint'].update(panel_hue=[0.93, 0.04], normalize_shade=True, accent_hue=[0, 1])
+        astro.validate_manifest(manifest)
+
+
+class Gr2SegmentTests(unittest.TestCase):
+    table = astro.bone_segment_table(None, True)
+
+    def test_default_table_maps_every_geometry_bone(self):
+        for bone, segment in (('Head', 'head'), ('Gun3', 'head'), ('HeadTop', 'head'), ('RightKnee', 'right_leg'),
+                              ('LeftAnkle', 'left_leg'), ('Tool2', 'toolr'), ('CenterWheel', 'body'), ('Root', 'body'),
+                              ('ToolDoor', 'body')):
+            self.assertEqual(astro.bone_segment(bone, self.table), segment)
+
+    def test_unknown_bone_is_an_error_naming_it(self):
+        with self.assertRaisesRegex(ValueError, 'Tentacle'):
+            astro.bone_segment('Tentacle', self.table)
+
+    def test_overrides_and_no_tool_arm(self):
+        table = astro.bone_segment_table({'Gun5': 'body', 'Tentacle': 'toolr'}, True)
+        self.assertEqual(table['Gun5'], 'body')
+        self.assertEqual(table['Tentacle'], 'toolr')
+        flat = astro.bone_segment_table({'Tentacle': 'toolr'}, False)
+        self.assertEqual({flat[b] for b in ('Tool1', 'Tool3', 'Tentacle')}, {'body'})
+
+    def test_dominant_bone_and_majority_rule(self):
+        self.assertEqual(astro.dominant_bone([('A', 0.2), ('B', 0.7), ('C', 0.1)]), 'B')
+        self.assertEqual(astro.dominant_bone([('A', 0.5), ('B', 0.5)]), 'A')
+        with self.assertRaises(ValueError):
+            astro.dominant_bone([])
+        self.assertEqual(astro.triangle_segment(['head', 'body', 'body']), 'body')
+        self.assertEqual(astro.triangle_segment(['body', 'head', 'body']), 'body')
+        self.assertEqual(astro.triangle_segment(['head', 'body', 'toolr']), 'head')
+
+    def test_sides_follow_game_x_not_bone_names(self):
+        self.assertEqual(astro.leg_side_names({'right_leg': -0.3, 'left_leg': 0.3}), {'right_leg': 'legl', 'left_leg': 'legr'})
+        self.assertEqual(astro.leg_side_names({'right_leg': 0.3, 'left_leg': -0.3}), {'right_leg': 'legr', 'left_leg': 'legl'})
+        with self.assertRaises(ValueError):
+            astro.leg_side_names({'right_leg': 0.3, 'left_leg': 0.2})
+        with self.assertRaises(ValueError):
+            astro.leg_side_names({'right_leg': 0.3})
+
+    bones = {'RightHip': (-0.04, -0.01, 0.08), 'LeftHip': (0.04, -0.01, 0.08), 'Head': (0.0, 0.0, 0.10)}
+
+    def test_pivots_come_from_the_skeleton(self):
+        frame = astro.make_frame(0.0, 0.15, 1.5, 180)
+        pivots = astro.gr2_pivots(frame, self.bones, {'right_leg': 'legl', 'left_leg': 'legr'})
+        self.assertEqual(pivots['body'][0], 0.0)
+        self.assertAlmostEqual(pivots['body'][1], 0.1)
+        self.assertAlmostEqual(pivots['body'][2], 0.8)
+        self.assertAlmostEqual(pivots['head'][2], 1.0)
+        self.assertEqual(pivots['legl'], astro.to_game((-0.04, -0.01, 0.08), frame))
+        with self.assertRaisesRegex(ValueError, 'LeftHip'):
+            astro.gr2_pivots(frame, {k: v for k, v in self.bones.items() if k != 'LeftHip'}, {})
+
+    def test_meshes_are_cut_by_bone_and_sides_by_x(self):
+        def tri(x, z):
+            return [((x + dx, 0.0, z + dz), (0.0, -1.0, 0.0), (u, v)) for (dx, dz), (u, v) in
+                    (((0, 0), (0, 0)), ((0.01, 0), (1, 0)), ((0, 0.01), (0, 1)))]
+        triangles = [tri(0.0, 0.05), tri(0.0, 0.12), tri(-0.04, 0.03), tri(0.04, 0.03), tri(0.0, 0.07)]
+        bones = [['Root'] * 3, ['Head', 'Head', 'Root'], ['RightKnee'] * 3, ['LeftKnee'] * 3, ['Tool1', 'Tool2', 'Root']]
+        frame = astro.make_frame(0.0, 0.15, 1.5, 180)
+        meshes, pivots, sides, socket = astro.gr2_meshes(triangles, bones, self.table, frame, self.bones)
+        self.assertEqual({k: len(m['faces']) for k, m in meshes.items()}, {'head': 1, 'body': 1, 'legl': 1, 'legr': 1, 'toolr': 1})
+        self.assertEqual(sides, {'right_leg': 'legr', 'left_leg': 'legl'})  # yaw 180 puts source -X on game +X
+        lo, hi = astro.mesh_bounds(meshes['toolr']['verts'])
+        self.assertAlmostEqual(hi[1], 0.0)
+        self.assertEqual(len(socket), 3)
+
+    def test_front_from_the_tool_arm_and_centre_leg(self):
+        yaw, evidence = astro.decide_front((0.0, 0.0), [(0.0, -0.05, 0.0)], (0.0, 0.05))
+        self.assertEqual(yaw, 180.0)
+        self.assertEqual(evidence['decided_from'], 'tool_arm')
+        self.assertEqual(astro.decide_front((0.0, 0.0), [], (0.0, -0.05))[0], 0.0)
+        self.assertEqual(astro.decide_front((0.0, 0.0), [(0.05, 0.0, 0.0)], None)[0], 90.0)
+        with self.assertRaises(ValueError):
+            astro.decide_front((0.0, 0.0), [(0.0, -0.05, 0.0)], (0.0, -0.05))
+        with self.assertRaises(ValueError):
+            astro.decide_front((0.0, 0.0), [], None)
+
+
+class TintOptionTests(unittest.TestCase):
+    base = {'accent_min_saturation': 0.35, 'dark_max_value': 0.25}
+
+    def layers(self, pixels, **tint):
+        rgb = np.array([pixels], np.float32)
+        return astro.classify_tint(rgb, self.base | tint)[1][0].tolist()
+
+    red, green, grey, black = [0.8, 0.1, 0.1], [0.1, 0.8, 0.1], [0.6, 0.6, 0.6], [0.05, 0.05, 0.05]
+
+    def test_omitted_or_full_accent_hue_means_any_hue_including_red(self):
+        expected = [astro.LAYER_ACCENT, astro.LAYER_ACCENT, astro.LAYER_BODY, astro.LAYER_DARK]
+        self.assertEqual(self.layers([self.red, self.green, self.grey, self.black]), expected)
+        self.assertEqual(self.layers([self.red, self.green, self.grey, self.black], accent_hue=[0, 1]), expected)
+
+    def test_panel_hue_makes_that_paint_the_body_layer(self):
+        wrapped = self.layers([self.red, self.green, self.grey, self.black], panel_hue=[0.93, 0.04])
+        self.assertEqual(wrapped, [astro.LAYER_BODY, astro.LAYER_ACCENT, astro.LAYER_BODY, astro.LAYER_DARK])
+        plain = self.layers([self.red, self.green], panel_hue=[0.25, 0.4])
+        self.assertEqual(plain, [astro.LAYER_ACCENT, astro.LAYER_BODY])
+
+    def test_normalisation_stretches_each_layer_and_is_off_by_default(self):
+        rgb = np.full((8, 8, 3), 0.5, np.float32)
+        rgb[:, :4] = 0.52
+        flat = astro.classify_tint(rgb, self.base)[0]
+        stretched = astro.classify_tint(rgb, self.base | {'normalize_shade': True})[0]
+        self.assertLess(int(flat.max()) - int(flat.min()), 10)
+        self.assertGreater(int(stretched.max()) - int(stretched.min()), 100)
+        self.assertEqual(int(stretched.min()), round(astro.SHADE_RANGE[0] * 255))
+        self.assertTrue((astro.classify_tint(rgb, self.base)[0] == flat).all())
+
+
+class YawPivotTests(unittest.TestCase):
+    segments = good_manifest()['chassis'][0]['segments']
+
+    def test_yaw_180_pivots_are_unchanged(self):
+        frame = astro.make_frame(0.0, 0.5, 1.0, 180)
+        pivots = astro.chassis_pivots(frame, self.segments)
+        self.assertEqual(pivots['legl'], (-0.5, 0.0, 0.332))
+        self.assertEqual(pivots['legr'], (0.5, 0.0, 0.332))
+
+    def test_other_yaws_transform_both_hubs_and_sort_by_game_x(self):
+        frame = astro.make_frame(0.0, 0.5, 1.0, 170)
+        pivots = astro.chassis_pivots(frame, self.segments)
+        hubs = [astro.to_game((side * 0.25, 0.0, 0.166), frame) for side in (1, -1)]
+        left, right = sorted(hubs)
+        self.assertEqual(pivots['legl'], left)
+        self.assertEqual(pivots['legr'], right)
+        self.assertLess(pivots['legl'][0], 0 < pivots['legr'][0])
+        self.assertNotAlmostEqual(pivots['legl'][1], pivots['legr'][1])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,7 +1,7 @@
 """Turn Meshy astromech chassis and tool GLBs into rigid, segmented NWN creature models that share one authored animation set.
 
 Blender 4.0: blender -b --factory-startup --python-exit-code 1 --python tools/AstromechCreatureExport.py --
-  --mode export --manifest PATH --output EMPTY
+  --mode export --manifest PATH [--addon-root DIR_WITH_io_scene_gr2] --output EMPTY
 Python:      python -B tools/AstromechCreatureExport.py --mode package --export PATH --crunch nwn_crunch.exe --output EMPTY
 
 Every chassis is cut by region into rigid meshes (head, body, left leg, right leg) that hang on their own nodes under
@@ -16,14 +16,28 @@ lhand, toolr_socket > toolr, tooll_socket > tooll}; rootdummy > {legl, legr}.
 
 Manifest (schema_version 1, paths relative to the manifest, every source needs its sha256):
   supermodel: model name of the shared animation model (c_astromech)
-  tools: [{name (prod or blaster), source (GLB), sha256, texture (<= 13 chars), texture_size (512 or 1024),
+  tool_lengths: {prod, blaster} metres; only when `tools` is absent (every chassis is then kind gr2)
+  tools: optional unless a chassis is kind glb; [{name (prod or blaster), source (GLB), sha256, texture (<= 13 chars), texture_size (512 or 1024),
            tip_axis (+x or -x: the end of the source's long X axis that is the working tip), length (metres in game)}]
-  chassis: [{model (<= 16 chars), source (GLB), sha256, material (<= 16 chars; the dye material and PLT name),
+  chassis, kind glb (default): [{model (<= 16 chars), source (GLB), sha256, material (<= 16 chars; the dye material and PLT name),
              texture_size (512 or 1024), height (metres), yaw_degrees (turn applied to the source, default 180: Meshy
              faces -Y), segments {head_above_z, leg_beyond_x, hub [abs x, y, z], dome_axis [x, y]} in source units,
              sockets {toolr, tooll}: [x, y, z] in game metres relative to the torso node,
              tint {accent_hue [lo, hi], accent_min_saturation, dark_max_value}}]
-Segmentation is by triangle centroid: above head_above_z and inside leg_beyond_x is the head, outside leg_beyond_x is a
+  chassis, kind "gr2" (a SWTOR astromech skinned to the shared 54 bone skeleton; needs --addon-root, importer 4.2.1):
+    {kind, model (<= 16 chars), source (GR2), sha256, skeleton (GR2), skeleton_sha256, maps {diffuse, normal}
+     (DDS paths), maps_sha256 {same keys}, material (<= 14 chars; dye material and PLT name), tint (as for glb; accent_hue
+     optional, panel_hue [lo, hi] = main panel paint, normalize_shade), texture_size (512 or 1024), height (metres),
+     yaw_degrees (optional; derived from the tool arm and centre leg when absent), bone_segments (optional bone name ->
+     head, body, toolr, right_leg or left_leg overrides), tool_arm (default true)}
+GR2 chassis are cut by dominant bone, not thresholds: each triangle goes to the segment of the majority of its corners'
+dominant bones. Pivots come from the skeleton (torso on the centre line at hip height, head on the Head bone, legs on
+their Hip bones). Right and left legs are told apart by game-space X, never by bone name. `toolr` carries the source's
+articulated tool arm, socketed at the arm's front tip, and `tooll` is an empty dummy. GR2 chassis are dyed like GLB ones
+(PLT, _n, starter MTR, review_tint.png), classified from the source diffuse map, and whether the retracted arm hides inside the body is recorded in
+report.json (`tool_hidden_when_retracted`) instead of failing the export.
+
+GLB segmentation is by triangle centroid: above head_above_z and inside leg_beyond_x is the head, outside leg_beyond_x is a
 leg (game -X is the left leg), everything else is the body. The torso node and the leg pivots sit on the hub; the head
 pivots on the dome axis at head_above_z.
 
@@ -41,6 +55,7 @@ compiled MDL, PLT, MTR and DDS only. Verify in the client; nothing here deploys 
 from __future__ import annotations
 
 import argparse, hashlib, json, math, re, shutil, struct, subprocess, sys
+from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -55,6 +70,18 @@ MODEL_LIMIT, TEXTURE_LIMIT = 16, 13
 LAYER_DARK, LAYER_ACCENT, LAYER_BODY = 3, 4, 5
 PLT_HEADER = b'PLT V1  ' + (10).to_bytes(4, 'little') + bytes(4)
 LAYER_REVIEW_COLORS = {LAYER_DARK: (0.25, 0.30, 0.75), LAYER_ACCENT: (0.95, 0.55, 0.10), LAYER_BODY: (0.85, 0.85, 0.85)}
+GR2_ADDON_VERSION = (4, 2, 1)
+SHADE_RANGE = (0.25, 0.95)   # target of the optional per-layer shade normalisation
+GR2_SEGMENTS = ('head', 'body', 'toolr', 'right_leg', 'left_leg')
+GR2_MAP_KEYS = ('diffuse', 'normal')
+DEFAULT_BONE_SEGMENTS = {
+    'Root': 'body', 'ToolDoor': 'body', 'CenterLeftPelvis': 'body', 'CenterRightPelvis': 'body', 'CenterLeftHip': 'body',
+    'CenterRightHip': 'body', 'CenterWheelAxle': 'body', 'CenterWheel': 'body',
+    'Head': 'head', 'HeadTop': 'head', 'GunDoor': 'head', 'Gun1': 'head', 'Gun2': 'head', 'Gun3': 'head', 'Gun4': 'head',
+    'Gun5': 'head',
+    'RightPelvis': 'right_leg', 'RightHip': 'right_leg', 'RightKnee': 'right_leg', 'RightAnkle': 'right_leg',
+    'LeftPelvis': 'left_leg', 'LeftHip': 'left_leg', 'LeftKnee': 'left_leg', 'LeftAnkle': 'left_leg',
+    'Tool1': 'toolr', 'Tool2': 'toolr', 'Tool3': 'toolr'}
 SEGMENT_REVIEW_COLORS = {'head': (0.9, 0.2, 0.2), 'body': (0.2, 0.4, 0.9), 'legl': (0.2, 0.8, 0.3), 'legr': (0.95, 0.85, 0.2),
                          'toolr': (0.9, 0.2, 0.9), 'tooll': (0.2, 0.9, 0.9)}
 
@@ -86,18 +113,22 @@ def require_vector(value, label, size):
         raise ValueError(f'{label} must be a list of {size} finite numbers')
 
 
-def require_source(item, label, manifest_dir):
-    source = item['source']
-    if not isinstance(source, str) or not source or Path(source).is_absolute():
-        raise ValueError(f'{label}.source must be a relative path')
-    if not isinstance(item['sha256'], str) or not re.fullmatch(r'[0-9a-f]{64}', item['sha256']):
-        raise ValueError(f'{label}.sha256 must be 64 lowercase hex characters')
+def require_file(path_value, sha_value, label, manifest_dir):
+    """A relative path with a lowercase sha256; with a manifest folder, the file must exist and match."""
+    if not isinstance(path_value, str) or not path_value or Path(path_value).is_absolute():
+        raise ValueError(f'{label} must be a relative path')
+    if not isinstance(sha_value, str) or not re.fullmatch(r'[0-9a-f]{64}', sha_value):
+        raise ValueError(f'{label} sha256 must be 64 lowercase hex characters')
     if manifest_dir is not None:
-        path = manifest_dir / source
+        path = manifest_dir / path_value
         if not path.is_file():
-            raise ValueError(f'{label}.source does not exist: {source}')
-        if hashlib.sha256(path.read_bytes()).hexdigest() != item['sha256']:
-            raise ValueError(f'{label}: source GLB does not match its sha256')
+            raise ValueError(f'{label} does not exist: {path_value}')
+        if hashlib.sha256(path.read_bytes()).hexdigest() != sha_value:
+            raise ValueError(f'{label} does not match its sha256')
+
+
+def require_source(item, label, manifest_dir):
+    require_file(item['source'], item['sha256'], f'{label}.source', manifest_dir)
 
 
 def validate_tool(tool, label, manifest_dir):
@@ -114,9 +145,61 @@ def validate_tool(tool, label, manifest_dir):
     require_source(tool, label, manifest_dir)
 
 
+def chassis_kind(item):
+    return item.get('kind', 'glb') if isinstance(item, dict) else 'glb'
+
+
+def validate_tint(tint, label):
+    """accent_hue is optional (omitted or [0, 1] means any hue); panel_hue [lo, hi] marks the main panel paint (lo > hi wraps
+    through red); normalize_shade stretches each layer's shade range."""
+    require_keys(tint, label, ('accent_min_saturation', 'dark_max_value'), ('accent_hue', 'panel_hue', 'normalize_shade'))
+    if 'accent_hue' in tint:
+        require_vector(tint['accent_hue'], f'{label}.accent_hue', 2)
+        if not 0 <= tint['accent_hue'][0] < tint['accent_hue'][1] <= 1:
+            raise ValueError(f'{label}.accent_hue must be an increasing range inside 0..1')
+    if 'panel_hue' in tint:
+        require_vector(tint['panel_hue'], f'{label}.panel_hue', 2)
+        if not all(0 <= v <= 1 for v in tint['panel_hue']) or tint['panel_hue'][0] == tint['panel_hue'][1]:
+            raise ValueError(f'{label}.panel_hue must be two different values inside 0..1')
+    if 'normalize_shade' in tint and not isinstance(tint['normalize_shade'], bool):
+        raise ValueError(f'{label}.normalize_shade must be true or false')
+    for key in ('accent_min_saturation', 'dark_max_value'):
+        if not is_number(tint[key]) or not 0 < tint[key] <= 1:
+            raise ValueError(f'{label}.{key} must be in (0, 1]')
+
+
+def validate_gr2_chassis(item, label, manifest_dir):
+    require_keys(item, label, ('kind', 'model', 'source', 'sha256', 'skeleton', 'skeleton_sha256', 'maps', 'maps_sha256',
+                               'material', 'texture_size', 'height', 'tint'), ('yaw_degrees', 'bone_segments', 'tool_arm'))
+    require_name(item['model'], f'{label}.model', MODEL_LIMIT)
+    require_name(item['material'], f'{label}.material', MODEL_LIMIT - 2)
+    validate_tint(item['tint'], f'{label}.tint')
+    if item['texture_size'] not in (512, 1024):
+        raise ValueError(f'{label}.texture_size must be 512 or 1024')
+    if not is_number(item['height']) or not 0.2 <= item['height'] <= 4:
+        raise ValueError(f'{label}.height must be between 0.2 and 4 metres')
+    if 'yaw_degrees' in item and not is_number(item['yaw_degrees']):
+        raise ValueError(f'{label}.yaw_degrees must be a number')
+    if 'tool_arm' in item and not isinstance(item['tool_arm'], bool):
+        raise ValueError(f'{label}.tool_arm must be true or false')
+    overrides = item.get('bone_segments', {})
+    if not isinstance(overrides, dict) or any(not isinstance(k, str) or v not in GR2_SEGMENTS for k, v in overrides.items()):
+        raise ValueError(f'{label}.bone_segments must map bone names to one of {GR2_SEGMENTS}')
+    require_keys(item['maps'], f'{label}.maps', GR2_MAP_KEYS)
+    require_keys(item['maps_sha256'], f'{label}.maps_sha256', GR2_MAP_KEYS)
+    require_file(item['source'], item['sha256'], f'{label}.source', manifest_dir)
+    require_file(item['skeleton'], item['skeleton_sha256'], f'{label}.skeleton', manifest_dir)
+    for key in GR2_MAP_KEYS:
+        require_file(item['maps'][key], item['maps_sha256'][key], f'{label}.maps.{key}', manifest_dir)
+
+
 def validate_chassis(item, label, manifest_dir):
+    if chassis_kind(item) == 'gr2':
+        return validate_gr2_chassis(item, label, manifest_dir)
+    if chassis_kind(item) != 'glb':
+        raise ValueError(f'{label}.kind must be glb or gr2')
     require_keys(item, label, ('model', 'source', 'sha256', 'material', 'texture_size', 'height', 'segments', 'sockets', 'tint'),
-                 ('yaw_degrees',))
+                 ('yaw_degrees', 'kind'))
     require_name(item['model'], f'{label}.model', MODEL_LIMIT)
     require_name(item['material'], f'{label}.material', MODEL_LIMIT - 2)
     if item['texture_size'] not in (512, 1024):
@@ -139,28 +222,45 @@ def validate_chassis(item, label, manifest_dir):
     require_keys(item['sockets'], f'{label}.sockets', ('toolr', 'tooll'))
     for name in ('toolr', 'tooll'):
         require_vector(item['sockets'][name], f'{label}.sockets.{name}', 3)
-    tint = item['tint']
-    require_keys(tint, f'{label}.tint', ('accent_hue', 'accent_min_saturation', 'dark_max_value'))
-    require_vector(tint['accent_hue'], f'{label}.tint.accent_hue', 2)
-    if not 0 <= tint['accent_hue'][0] < tint['accent_hue'][1] <= 1:
-        raise ValueError(f'{label}.tint.accent_hue must be an increasing range inside 0..1')
-    for key in ('accent_min_saturation', 'dark_max_value'):
-        if not is_number(tint[key]) or not 0 < tint[key] <= 1:
-            raise ValueError(f'{label}.tint.{key} must be in (0, 1]')
+    validate_tint(item['tint'], f'{label}.tint')
     require_source(item, label, manifest_dir)
+
+
+def validate_tool_lengths(lengths):
+    require_keys(lengths, 'tool_lengths', TOOL_NAMES)
+    for name in TOOL_NAMES:
+        if not is_number(lengths[name]) or not 0.05 <= lengths[name] <= 2:
+            raise ValueError(f'tool_lengths.{name} must be between 0.05 and 2 metres')
+
+
+def manifest_tool_lengths(manifest):
+    """Prod and blaster lengths: from the shared tool list, or the top-level `tool_lengths` when there is none."""
+    if 'tools' in manifest:
+        return {t['name']: t['length'] for t in manifest['tools']}
+    return dict(manifest['tool_lengths'])
 
 
 def validate_manifest(manifest, manifest_dir=None):
     """Reject anything the exporter would have to guess; with a manifest folder, also check the sources and their hashes."""
-    require_keys(manifest, 'manifest', ('schema_version', 'supermodel', 'tools', 'chassis'))
+    require_keys(manifest, 'manifest', ('schema_version', 'supermodel', 'chassis'), ('tools', 'tool_lengths'))
     if manifest['schema_version'] != 1:
         raise ValueError('Unsupported manifest schema')
     require_name(manifest['supermodel'], 'supermodel', MODEL_LIMIT)
-    tools, chassis = manifest['tools'], manifest['chassis']
-    if not isinstance(tools, list) or sorted(str(t.get('name')) if isinstance(t, dict) else '' for t in tools) != sorted(TOOL_NAMES):
-        raise ValueError(f'tools must hold exactly one entry for each of {TOOL_NAMES}')
+    chassis = manifest['chassis']
     if not isinstance(chassis, list) or not chassis:
         raise ValueError('chassis must be a non-empty list')
+    tools = manifest.get('tools', [])
+    if 'tools' in manifest:
+        if 'tool_lengths' in manifest:
+            raise ValueError('tool_lengths is only for a manifest without tools')
+        if not isinstance(tools, list) or sorted(str(t.get('name')) if isinstance(t, dict) else '' for t in tools) != sorted(TOOL_NAMES):
+            raise ValueError(f'tools must hold exactly one entry for each of {TOOL_NAMES}')
+    elif any(chassis_kind(c) == 'glb' for c in chassis):
+        raise ValueError('glb chassis need the shared tools list')
+    elif 'tool_lengths' not in manifest:
+        raise ValueError('a manifest without tools needs tool_lengths')
+    else:
+        validate_tool_lengths(manifest['tool_lengths'])
     for index, tool in enumerate(tools):
         validate_tool(tool, f'tools[{index}]', manifest_dir)
     for index, item in enumerate(chassis):
@@ -210,13 +310,14 @@ def to_game_normal(normal, frame):
 
 
 def chassis_pivots(frame, segments):
-    """Game positions (relative to the root dummy) of the torso, head and leg pivots."""
+    """Game positions (relative to the root dummy) of the torso, head and leg pivots. Both hub positions go through the
+    same frame as the triangles, and the one at negative game X is the left leg, so any yaw keeps the hinges on the legs."""
     hub_x, hub_y, hub_z = segments['hub']
     z = (hub_z - frame['zmin']) * frame['scale']
-    side_y = to_game((0.0, hub_y, hub_z), frame)[1]
     dome = to_game((segments['dome_axis'][0], segments['dome_axis'][1], segments['head_above_z']), frame)
-    return {'body': (0.0, 0.0, z), 'head': dome, 'legl': (-hub_x * frame['scale'], side_y, z),
-            'legr': (hub_x * frame['scale'], side_y, z)}
+    hubs = sorted((tuple(v + 0.0 for v in to_game((side * hub_x, hub_y, hub_z), frame)) for side in (1.0, -1.0)),  # + 0.0 drops -0.0
+                  key=lambda point: point[0])
+    return {'body': (0.0, 0.0, z), 'head': dome, 'legl': hubs[0], 'legr': hubs[1]}
 
 
 def segment_name(centroid, frame, segments):
@@ -264,14 +365,14 @@ def shell_centroids(triangles):
     return [tuple(totals[find(index)][i] / totals[find(index)][3] for i in range(3)) for index in range(len(triangles))]
 
 
-def weld_triangles(triangles, assign, to_pos, to_normal, origins, centroids=None):
+def weld_triangles(triangles, assign, to_pos, to_normal, origins, centroids=None, names=None):
     """Group triangles (three (position, normal, uv) corners each) into meshes by `assign(centroid)`; vertices are
     placed by `to_pos`, made relative to the group's origin and welded by position, UV and normal. `centroids`
-    replaces each triangle's own centroid, for example with its shell's."""
+    replaces each triangle's own centroid, for example with its shell's; `names` gives each triangle's group outright."""
     meshes = {name: new_mesh() for name in origins}
     for index, corners in enumerate(triangles):
         centroid = centroids[index] if centroids else tuple(sum(c[0][i] for c in corners) / 3 for i in range(3))
-        name = assign(centroid)
+        name = names[index] if names else assign(centroid)
         mesh, origin = meshes[name], origins[name]
         face = []
         for position, normal, uv in corners:
@@ -301,6 +402,136 @@ def chassis_meshes(triangles, frame, segments):
                             lambda n: to_game_normal(n, frame), pivots, shell_centroids(triangles))
     check_meshes(meshes)
     return meshes, pivots
+
+
+def bone_segment_table(overrides, tool_arm):
+    """Bone name -> segment: the defaults, the tool arm folded into the body when there is none, then the overrides."""
+    table = dict(DEFAULT_BONE_SEGMENTS)
+    table.update(overrides or {})
+    if not tool_arm:
+        table.update({bone: 'body' for bone, segment in table.items() if segment == 'toolr'})
+    return table
+
+
+def dominant_bone(influences):
+    """Bone name of the heaviest (name, weight) influence; the first wins a tie."""
+    if not influences:
+        raise ValueError('A vertex has no bone weights')
+    best = influences[0]
+    for influence in influences[1:]:
+        if influence[1] > best[1]:
+            best = influence
+    return best[0]
+
+
+def bone_segment(bone, table):
+    if bone not in table:
+        raise ValueError(f'Bone {bone} owns vertices but has no segment; add it to bone_segments')
+    return table[bone]
+
+
+def triangle_segment(corner_segments):
+    """The segment most of a triangle's corners belong to; three different segments go to the first corner's."""
+    segment, count = Counter(corner_segments).most_common(1)[0]
+    return segment if count >= 2 else corner_segments[0]
+
+
+def leg_side_names(side_x):
+    """Game name of each bone side from the mean game X of its triangles: the side at negative X is `legl`."""
+    if set(side_x) != {'right_leg', 'left_leg'}:
+        raise ValueError('Both legs need triangles to tell the sides apart')
+    low, high = sorted(side_x, key=side_x.get)
+    if not side_x[low] < 0 < side_x[high]:
+        raise ValueError(f'Legs are not on opposite sides of the centre line: {side_x}')
+    return {low: 'legl', high: 'legr'}
+
+
+def bone_point(bones, name):
+    if name not in bones:
+        raise ValueError(f'The skeleton has no bone {name}')
+    return bones[name]
+
+
+def gr2_pivots(frame, bones, sides):
+    """Game pivots from the skeleton: torso on the centre line at hip height and depth, head on the Head bone, each leg
+    on its Hip bone (`sides` maps right_leg and left_leg to legl or legr)."""
+    right, left = bone_point(bones, 'RightHip'), bone_point(bones, 'LeftHip')
+    hips = to_game(tuple((right[i] + left[i]) / 2 for i in range(3)), frame)
+    pivots = {'body': (0.0, hips[1], hips[2]), 'head': to_game(bone_point(bones, 'Head'), frame)}
+    pivots[sides['right_leg']] = to_game(right, frame)
+    pivots[sides['left_leg']] = to_game(left, frame)
+    return pivots
+
+
+def front_yaw(forward):
+    """Turn about Z (degrees) that points a source XY direction along game +Y."""
+    if math.hypot(*forward) < 1e-9:
+        raise ValueError('The front direction has no length')
+    return 90.0 - math.degrees(math.atan2(forward[1], forward[0]))
+
+
+def snap_quarter_turn(degrees):
+    return float((round(degrees / 90.0) * 90) % 360)
+
+
+def turn_difference(a, b):
+    """Smallest angle in degrees between two turns."""
+    return abs((a - b + 180) % 360 - 180)
+
+
+def decide_front(hips, tool_points, wheel):
+    """Front direction of a GR2 chassis in source XY from the data: toward the tool arm, away from the centre leg. Returns
+    (yaw degrees snapped to a quarter turn, evidence dict). The two cues must agree when both exist."""
+    evidence, yaws = {}, {}
+    if tool_points:
+        centre = [sum(p[i] for p in tool_points) / len(tool_points) for i in range(2)]
+        direction = (centre[0] - hips[0], centre[1] - hips[1])
+        evidence['tool_arm'] = [round(v, 4) for v in direction]
+        yaws['tool_arm'] = front_yaw(direction)
+    if wheel is not None:
+        direction = (hips[0] - wheel[0], hips[1] - wheel[1])
+        evidence['away_from_centre_leg'] = [round(v, 4) for v in direction]
+        yaws['away_from_centre_leg'] = front_yaw(direction)
+    if not yaws:
+        raise ValueError('No tool arm or centre leg to tell the front')
+    if len(yaws) == 2 and turn_difference(*yaws.values()) > 45:
+        raise ValueError(f'The tool arm and the centre leg disagree about the front: {evidence}')
+    chosen = yaws.get('tool_arm', next(iter(yaws.values())))
+    evidence['decided_from'] = 'tool_arm' if 'tool_arm' in yaws else 'away_from_centre_leg'
+    return snap_quarter_turn(chosen), evidence
+
+
+def place_tool_arm(meshes, torso):
+    """Re-base the toolr mesh on its socket (front tip, centred on the other axes) and return the socket relative to the
+    torso. The mesh keeps the pose it was modelled in: socket plus mesh vertex is the original position."""
+    mesh = meshes['toolr']
+    lo, hi = mesh_bounds(mesh['verts'])
+    anchor = ((lo[0] + hi[0]) / 2, hi[1], (lo[2] + hi[2]) / 2)
+    mesh['verts'] = [tuple(v[i] - anchor[i] for i in range(3)) for v in mesh['verts']]
+    return tuple(anchor[i] - torso[i] for i in range(3))
+
+
+def gr2_meshes(triangles, corner_bones, table, frame, bones):
+    """Rigid meshes of a GR2 chassis, cut by dominant bone. `corner_bones` holds three bone names per triangle. Returns
+    (meshes, pivots, sides, toolr socket or None). Meshes are head, body, legl, legr and, when the arm has triangles, toolr."""
+    segments = [triangle_segment([bone_segment(b, table) for b in corners]) for corners in corner_bones]
+    totals = {}
+    for corners, segment in zip(triangles, segments):
+        if segment in ('right_leg', 'left_leg'):
+            for position, _, _ in corners:
+                total = totals.setdefault(segment, [0.0, 0])
+                total[0] += to_game(position, frame)[0]
+                total[1] += 1
+    sides = leg_side_names({k: v[0] / v[1] for k, v in totals.items()})
+    names = [sides.get(segment, segment) for segment in segments]
+    pivots = gr2_pivots(frame, bones, sides)
+    origins = {name: pivots[name] for name in ('head', 'body', 'legl', 'legr')}
+    if 'toolr' in names:
+        origins['toolr'] = (0.0, 0.0, 0.0)
+    meshes = weld_triangles(triangles, None, lambda p: to_game(p, frame), lambda n: to_game_normal(n, frame), origins, names=names)
+    check_meshes(meshes)
+    socket = place_tool_arm(meshes, pivots['body']) if 'toolr' in meshes else None
+    return meshes, pivots, sides, socket
 
 
 def tool_frame(points, tip_axis, length):
@@ -395,6 +626,21 @@ def points_inside_mesh(points, verts, faces):
 # Tint and PLT (NumPy)
 # ---------------------------------------------------------------------------------------------------------------------
 
+def normalize_layers(shade, layer):
+    """Stretch each layer's 5th to 95th percentile shade to SHADE_RANGE so no dye layer looks flat."""
+    import numpy as np
+    result = shade.copy()
+    for index in (LAYER_DARK, LAYER_ACCENT, LAYER_BODY):
+        mask = layer == index
+        if mask.sum() < 16:
+            continue
+        low, high = np.percentile(shade[mask], (5, 95))
+        if high - low < 1e-4:
+            continue
+        result[mask] = SHADE_RANGE[0] + (shade[mask] - low) / (high - low) * (SHADE_RANGE[1] - SHADE_RANGE[0])
+    return np.clip(result, 0, 1)
+
+
 def classify_tint(rgb, tint):
     """Per-pixel dye layer and shade bytes from a base colour (rows h, columns w, three floats 0..1)."""
     import numpy as np
@@ -404,11 +650,18 @@ def classify_tint(rgb, tint):
     d = np.maximum(mx - mn, 1e-5)
     hue = np.where(mx == r, ((g - b) / d) % 6, np.where(mx == g, (b - r) / d + 2, (r - g) / d + 4)) / 6
     lum = 0.299 * r + 0.587 * g + 0.114 * b
-    low, high = tint['accent_hue']
-    accent = (sat > tint['accent_min_saturation']) & (mx > tint['dark_max_value']) & (hue > low) & (hue < high)
+    low, high = tint.get('accent_hue', (0.0, 1.0))
+    accent = (sat > tint['accent_min_saturation']) & (mx > tint['dark_max_value'])
+    if (low, high) != (0.0, 1.0):
+        accent &= (hue > low) & (hue < high)
+    if 'panel_hue' in tint:
+        start, end = tint['panel_hue']
+        accent &= ~((hue >= start) & (hue <= end) if start < end else (hue >= start) | (hue <= end))
     dark = (mx < tint['dark_max_value']) & ~accent
     layer = np.where(accent, LAYER_ACCENT, np.where(dark, LAYER_DARK, LAYER_BODY)).astype(np.uint8)
     shade = np.clip(np.where(accent, lum * 1.5, np.where(dark, lum * 2.2, lum * 1.05)), 0, 1)
+    if tint.get('normalize_shade'):
+        shade = normalize_layers(shade, layer)
     return np.rint(shade * 255).astype(np.uint8), layer
 
 
@@ -437,6 +690,7 @@ def starter_mtr(material):
 
 
 def tool_mtr(texture):
+    """Four-map material shared by the tool parts and the GR2 chassis."""
     return f'renderhint NormalAndSpecMapped\ntexture0 {texture}\ntexture1 {texture}_n\ntexture2 {texture}_s\ntexture3 {texture}_r\n'
 
 
@@ -490,6 +744,31 @@ def supermodel_text(model, tool_lengths):
     return '\n'.join(lines + [f'donemodel {model}']) + '\n'
 
 
+def attachment_dummies():
+    """Spell and hand attachment points shared by every chassis."""
+    lines = dummy('impact', 'torso', (0, 0.05, -0.15)) + dummy('handconjure', 'torso', (0, 0.35, -0.1))
+    return lines + dummy('rhand', 'torso', (0.13, 0.27, -0.2)) + dummy('lhand', 'torso', (-0.13, 0.27, -0.2))
+
+
+def gr2_chassis_text(item, supermodel, pivots, meshes, socket):
+    """GR2 chassis geometry: the arm on `toolr` when there is one, empty dummies for every other tool node."""
+    model, texture = item['model'], item['material']
+    torso = pivots['body']
+    head_local = tuple(a - b for a, b in zip(pivots['head'], torso))
+    lines = model_header(model, supermodel) + dummy(model, 'NULL') + dummy('rootdummy', model, (0, 0, 0))
+    lines += dummy('torso', 'rootdummy', torso) + trimesh('body', 'torso', (0, 0, 0), meshes['body'], texture)
+    lines += trimesh('head', 'torso', head_local, meshes['head'], texture) + dummy('headconjure', 'head', (0, 0, 0.35))
+    lines += attachment_dummies()
+    if 'toolr' in meshes:
+        lines += dummy('toolr_socket', 'torso', socket) + trimesh('toolr', 'toolr_socket', (0, 0, 0), meshes['toolr'], texture)
+    else:
+        lines += dummy('toolr_socket', 'torso', (0, 0, 0)) + dummy('toolr', 'toolr_socket', (0, 0, 0))
+    lines += dummy('tooll_socket', 'torso', (0, 0, 0)) + dummy('tooll', 'tooll_socket', (0, 0, 0))
+    lines += trimesh('legl', 'rootdummy', pivots['legl'], meshes['legl'], texture)
+    lines += trimesh('legr', 'rootdummy', pivots['legr'], meshes['legr'], texture)
+    return '\n'.join(lines + [f'endmodelgeom {model}', f'donemodel {model}']) + '\n'
+
+
 def chassis_text(item, supermodel, pivots, meshes, tool_meshes):
     """Chassis geometry only: no animations, the supermodel supplies them."""
     model, material = item['model'], item['material']
@@ -498,8 +777,7 @@ def chassis_text(item, supermodel, pivots, meshes, tool_meshes):
     lines = model_header(model, supermodel) + dummy(model, 'NULL') + dummy('rootdummy', model, (0, 0, 0))
     lines += dummy('torso', 'rootdummy', torso) + trimesh('body', 'torso', (0, 0, 0), meshes['body'], material)
     lines += trimesh('head', 'torso', head_local, meshes['head'], material) + dummy('headconjure', 'head', (0, 0, 0.35))
-    lines += dummy('impact', 'torso', (0, 0.05, -0.15)) + dummy('handconjure', 'torso', (0, 0.35, -0.1))
-    lines += dummy('rhand', 'torso', (0.13, 0.27, -0.2)) + dummy('lhand', 'torso', (-0.13, 0.27, -0.2))
+    lines += attachment_dummies()
     for tool, name in (('prod', 'toolr'), ('blaster', 'tooll')):
         lines += dummy(name + '_socket', 'torso', item['sockets'][name])
         lines += trimesh(name, name + '_socket', (0, 0, 0), tool_meshes[tool]['mesh'], tool_meshes[tool]['texture'])
@@ -718,13 +996,16 @@ def review_tint(weapon, path, layer):
     save_png(weapon, path, colors)
 
 
+def chassis_parts(pivots, meshes):
+    """World-space (name, verts, faces) of the head, body and both legs."""
+    return [(name, [tuple(a + b for a, b in zip(v, pivots[name])) for v in meshes[name]['verts']], meshes[name]['faces'])
+            for name in ('head', 'body', 'legl', 'legr')]
+
+
 def segment_parts(pivots, meshes, tool_meshes, sockets, extended):
     """World-space (name, verts, faces) parts of a chassis; tools extended at their sockets or retracted into the body."""
     torso = pivots['body']
-    parts = []
-    for name in ('head', 'body', 'legl', 'legr'):
-        origin = pivots[name]
-        parts.append((name, [tuple(a + b for a, b in zip(v, origin)) for v in meshes[name]['verts']], meshes[name]['faces']))
+    parts = chassis_parts(pivots, meshes)
     for tool, node in (('prod', 'toolr'), ('blaster', 'tooll')):
         slideback = 0.0 if extended else retract_offset(tool_meshes[tool]['length'])
         origin = (torso[0] + sockets[node][0], torso[1] + sockets[node][1] + slideback, torso[2] + sockets[node][2])
@@ -821,18 +1102,174 @@ def export_chassis(item, supermodel, tool_meshes, manifest_dir, out, weapon):
     return report
 
 
-def export_all(manifest, manifest_dir, out, weapon, only=None):
-    tool_lengths = {t['name']: t['length'] for t in manifest['tools']}
+# ---------------------------------------------------------------------------------------------------------------------
+# GR2 chassis export (Blender with the pinned SWTOR-Slicers importer)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def enable_gr2(addon_root):
+    """Enable the pinned GR2 importer from `addon_root` and refuse any version but 4.2.1."""
+    import addon_utils
+    if addon_root is None or not (Path(addon_root) / 'io_scene_gr2' / '__init__.py').is_file():
+        raise ValueError('--addon-root must contain io_scene_gr2/__init__.py')
+    if str(addon_root) not in sys.path:
+        sys.path.insert(0, str(addon_root))
+    addon_utils.enable('io_scene_gr2', default_set=True)
+    import io_scene_gr2
+    if tuple(io_scene_gr2.bl_info['version']) != GR2_ADDON_VERSION:
+        raise ValueError('Use the tested SWTOR-Slicers importer release 4.2.1')
+
+
+def import_gr2(weapon, addon_root, path):
+    """Import one GR2 into an empty scene. The importer gives its objects a Blender-only +90 X rotation; both the mesh
+    and the skeleton are read through matrix_world, so they share the same Z-up frame."""
+    bpy = weapon.bpy
+    enable_gr2(addon_root)
+    for obj in list(bpy.data.objects):
+        bpy.data.objects.remove(obj)
+    result = bpy.ops.import_mesh.gr2(filepath=str(path), import_collision=False, scale_object=False, apply_axis_conversion=False)
+    if result != {'FINISHED'}:
+        raise ValueError(f'GR2 import failed: {path}')
+    return list(bpy.context.scene.objects)
+
+
+def read_skeleton(weapon, addon_root, path):
+    """Bone name -> head position (Z-up frame) of the skeleton file."""
+    armatures = [o for o in import_gr2(weapon, addon_root, path) if o.type == 'ARMATURE']
+    if len(armatures) != 1:
+        raise ValueError(f'Expected one armature in {path}, found {len(armatures)}')
+    armature = armatures[0]
+    return {b.name: tuple(armature.matrix_world @ b.head_local) for b in armature.data.bones}
+
+
+def gr2_source_triangles(obj):
+    """Triangles of a skinned source in the Z-up frame, plus the dominant bone name of each triangle corner."""
+    mesh = obj.data
+    mesh.calc_loop_triangles()
+    mesh.calc_normals_split()  # Blender 4.0
+    world, rotation = obj.matrix_world, obj.matrix_world.to_3x3()
+    groups = [g.name for g in obj.vertex_groups]
+    bones = [dominant_bone([(groups[g.group], g.weight) for g in v.groups]) for v in mesh.vertices]
+    uv = mesh.uv_layers.active.data
+    triangles, corner_bones = [], []
+    for tri in mesh.loop_triangles:
+        corners = []
+        for loop in tri.loops:
+            vertex = mesh.loops[loop].vertex_index
+            normal = (rotation @ mesh.loops[loop].normal).normalized()
+            corners.append((tuple(world @ mesh.vertices[vertex].co), tuple(normal), tuple(uv[loop].uv)))
+        triangles.append(corners)
+        corner_bones.append([bones[mesh.loops[loop].vertex_index] for loop in tri.loops])
+    return triangles, corner_bones
+
+
+def gr2_maps(weapon, blaster, item, manifest_dir):
+    """Base colour (for the dye classification) and normal map from the source DDS files, converted as ImportBlasterModel
+    does: diffuse as is, the packed SWTOR normal unpacked."""
+    bpy, np = weapon.bpy, weapon.np
+    limit = item['texture_size']
+
+    def read_pixels(relative):
+        image = bpy.data.images.load(str(manifest_dir / relative), check_existing=False)
+        image.colorspace_settings.name = 'Non-Color'
+        if image.size[0] != image.size[1] or not image.size[0]:
+            raise ValueError(f'Expected a square texture; review resizing for {relative}')
+        if max(image.size) > limit:
+            image.scale(limit, limit)
+        pixels = np.empty(image.size[0] * image.size[1] * 4, dtype=np.float32)
+        image.pixels.foreach_get(pixels)
+        shaped = pixels.reshape((image.size[1], image.size[0], 4)).copy()
+        bpy.data.images.remove(image)
+        return shaped
+
+    return {'color': read_pixels(item['maps']['diffuse'])[..., :3],
+            item['material'] + '_n': blaster.unpack_normal(read_pixels(item['maps']['normal']), np)}
+
+
+def gr2_tool_report(meshes, socket, body_bounds, length):
+    """Whether the arm, slid back to its retracted place, hides inside the body; None when there is no arm."""
+    if 'toolr' not in meshes:
+        return {'tool_hidden_when_retracted': None}
+    bounds = retracted_tool_bounds(meshes['toolr']['verts'], socket, length)
+    probes = points_inside_mesh(bounds_probe_points(bounds), meshes['body']['verts'], meshes['body']['faces'])
+    return {'tool_hidden_when_retracted': bool(bounds_inside(bounds, body_bounds) and all(probes)),
+            'retracted_bounds_torso_space': [[round(v, 4) for v in bounds[0]], [round(v, 4) for v in bounds[1]]],
+            'retracted_probe_points_inside_body': sum(probes), 'probe_points': len(probes)}
+
+
+def export_gr2_chassis(item, supermodel, tool_lengths, manifest_dir, out, weapon, blaster, addon_root):
+    """Export one skinned GR2 astromech as a rigid, undyed chassis; returns its report."""
+    for path, sha in ((item['source'], item['sha256']), (item['skeleton'], item['skeleton_sha256'])):
+        if hashlib.sha256((manifest_dir / path).read_bytes()).hexdigest() != sha:
+            raise ValueError(path + ' does not match its sha256')
+    bones = read_skeleton(weapon, addon_root, manifest_dir / item['skeleton'])
+    found = [o for o in import_gr2(weapon, addon_root, manifest_dir / item['source']) if o.type == 'MESH']
+    if len(found) != 1:
+        raise ValueError(f"{item['source']}: expected one mesh, found {len(found)}")
+    triangles, corner_bones = gr2_source_triangles(found[0])
+    table = bone_segment_table(item.get('bone_segments'), item.get('tool_arm', True))
+    tool_points = [c[0] for corners, names in zip(triangles, corner_bones) for c, bone in zip(corners, names)
+                   if bone_segment(bone, table) == 'toolr']
+    hips = tuple((bone_point(bones, 'RightHip')[i] + bone_point(bones, 'LeftHip')[i]) / 2 for i in range(2))
+    derived, evidence = decide_front(hips, tool_points, bones.get('CenterWheelAxle'))
+    yaw = item.get('yaw_degrees', derived)
+    if turn_difference(yaw, derived) > 45:
+        raise ValueError(f"{item['model']}: yaw_degrees {yaw} contradicts the front found in the data ({derived})")
+    zs = [c[0][2] for corners in triangles for c in corners]
+    frame = make_frame(min(zs), max(zs), item['height'], yaw)
+    meshes, pivots, sides, socket = gr2_meshes(triangles, corner_bones, table, frame, bones)
+    resources = out / 'resources'
+    resources.mkdir(parents=True)
+    (resources / (item['model'] + '.mdl')).write_text(gr2_chassis_text(item, supermodel, pivots, meshes, socket), encoding='ascii')
+    maps = gr2_maps(weapon, blaster, item, manifest_dir)
+    shade, layer = classify_tint(weapon.np.asarray(maps['color'], weapon.np.float32), item['tint'])
+    (resources / (item['material'] + '.plt')).write_bytes(plt_bytes(shade, layer))
+    weapon.save_texture(resources / (item['material'] + '_n.tga'), weapon.np.asarray(maps[item['material'] + '_n']))
+    (resources / (item['material'] + '.mtr')).write_text(starter_mtr(item['material']), encoding='ascii')
+    review_tint(weapon, out / 'review_tint.png', layer)
+    body_bounds = mesh_bounds(meshes['body']['verts'])
+    tool = gr2_tool_report(meshes, socket, body_bounds, tool_lengths['prod'])
+    arm = [(('toolr', [tuple(a + b for a, b in zip(v, tuple(pivots['body'][i] + socket[i] for i in range(3)))) for v in meshes['toolr']['verts']],
+             meshes['toolr']['faces']))] if socket else []
+    shifted = [(n, [(v[0], v[1] + retract_offset(tool_lengths['prod']), v[2]) for v in verts], faces) for n, verts, faces in arm]
+    base = chassis_parts(pivots, meshes)
+    review_segments(weapon, out / 'review_segments.png', [(base + shifted, 0.9, False), (base + arm, -0.9, True)])
+
+    def box(bounds):
+        return [[round(v, 4) for v in bounds[0]], [round(v, 4) for v in bounds[1]]]
+
+    report = {'model': item['model'], 'kind': 'gr2', 'material': item['material'], 'source_sha256': item['sha256'],
+              'scale': round(frame['scale'], 6), 'pivots': {k: [round(c, 4) for c in v] for k, v in pivots.items()},
+              'front': {'yaw_used': yaw, 'yaw_from_data': derived, 'source_directions': evidence,
+                        'rule': 'front is toward the tool arm and away from the centre leg; yaw turns it to game +Y'},
+              'leg_sides': {'right_leg_bones': sides['right_leg'], 'left_leg_bones': sides['left_leg']},
+              'segments': {k: {'vertices': len(m['verts']), 'triangles': len(m['faces']), 'bounds': box(mesh_bounds(m['verts']))}
+                           for k, m in meshes.items()},
+              'toolr_socket_torso_space': [round(v, 4) for v in socket] if socket else None,
+              'body_bounds_torso_space': box(body_bounds), 'bone_segments': table,
+              'layer_coverage': layer_coverage(layer), 'normalize_shade': bool(item['tint'].get('normalize_shade'))}
+    report.update(tool)
+    (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
+    return report
+
+
+def export_all(manifest, manifest_dir, out, weapon, only=None, addon_root=None):
+    tool_lengths = manifest_tool_lengths(manifest)
     shared = out / manifest['supermodel'] / 'resources'
     shared.mkdir(parents=True)
-    tool_meshes = {t['name']: export_tool(t, manifest_dir, shared, weapon) for t in manifest['tools']}
+    tool_meshes = {t['name']: export_tool(t, manifest_dir, shared, weapon) for t in manifest.get('tools', [])}
+    blaster = meshy.load_module('import_blaster_model', REPO / 'tools/ImportBlasterModel.py') if any(
+        chassis_kind(c) == 'gr2' for c in manifest['chassis']) else None
     shutil.rmtree(shared.parent / 'image_cache', ignore_errors=True)
     (shared / (manifest['supermodel'] + '.mdl')).write_text(supermodel_text(manifest['supermodel'], tool_lengths), encoding='ascii')
     reports = []
     for item in manifest['chassis']:
         if only and item['model'] != only:
             continue
-        reports.append(export_chassis(item, manifest['supermodel'], tool_meshes, manifest_dir, out / item['model'], weapon))
+        if chassis_kind(item) == 'gr2':
+            reports.append(export_gr2_chassis(item, manifest['supermodel'], tool_lengths, manifest_dir, out / item['model'], weapon,
+                                              blaster, addon_root))
+        else:
+            reports.append(export_chassis(item, manifest['supermodel'], tool_meshes, manifest_dir, out / item['model'], weapon))
     return reports
 
 
@@ -895,6 +1332,7 @@ def main():
     parser.add_argument('--crunch', type=Path)
     parser.add_argument('--compiler', type=Path)
     parser.add_argument('--only', help='Export only this chassis model')
+    parser.add_argument('--addon-root', type=Path, help='Directory containing io_scene_gr2 (required for gr2 chassis)')
     parser.add_argument('--output', type=Path, required=True)
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else sys.argv[1:]
     args = parser.parse_args(argv)
@@ -913,11 +1351,13 @@ def main():
         parser.error('export requires --manifest')
     manifest_dir = args.manifest.resolve().parent
     manifest = validate_manifest(json.loads(args.manifest.read_text()), manifest_dir)
+    if not args.addon_root and any(chassis_kind(c) == 'gr2' for c in manifest['chassis']):
+        parser.error('gr2 chassis require --addon-root')
     weapon = meshy.load_module('trellis_weapon_export', REPO / 'tools/TrellisWeaponExport.py')
     weapon.load_blender()
     out.mkdir(parents=True, exist_ok=True)
     try:
-        reports = export_all(manifest, manifest_dir, out, weapon, args.only)
+        reports = export_all(manifest, manifest_dir, out, weapon, args.only, args.addon_root and args.addon_root.resolve())
     except BaseException:
         shutil.rmtree(out, ignore_errors=True)
         raise

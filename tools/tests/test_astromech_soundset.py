@@ -19,7 +19,6 @@ SPEC.loader.exec_module(astromech)
 SOUND_ROOTS = [
     Path(os.environ["SWLOR_HAKS_ROOT"]) / "sw_sound" if os.environ.get("SWLOR_HAKS_ROOT") else None,
     Path(__file__).parents[2] / "SWLOR_Haks" / "sw_sound",
-    Path(__file__).parents[5] / "SWLOR_Haks" / "sw_sound",
 ]
 
 

@@ -2146,5 +2146,12 @@ namespace SWLOR.NWN.API.NWScript.Enum
         SWLORShatterveinWolf = 10280,
         SWLOREshanDireWolfAlpha = 10281,
         SWLORAstromechChassis1 = 10282,
+        SWLORAstromechChassis2 = 10283,
+        SWLORAstromechChassis3 = 10284,
+        SWLORAstromechChassis4 = 10285,
+        SWLORAstromechChassis5 = 10286,
+        SWLORAstromechChassis6 = 10287,
+        SWLORAstromechChassis7 = 10288,
+        SWLORAstromechChassis8 = 10289,
     }
 }

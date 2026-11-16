@@ -325,6 +325,15 @@ Built on `feature/astromech` (cut from the space revamp) and checked on 2026-11-
 | Voice set | Eight voice lines played the matching generated sound in the client's own audio (match 0.83 to 0.99; 0.17 at most for a wrong sound) | `voice_test.json`, `voice_in_game.wav` |
 | Dye rules | `CheckDyeAppearance.py` passes, including the dyed-metal rule | - |
 
+**Seven more chassis from supplied models (owner request, 2026-11-15)**
+
+The owner asked for a contributor's set of seven astromech models to be added, made tintable and compatible. They are skinned to one shared skeleton, so the exporter gained a second source kind that assigns parts by bone. These are not original designs, so they sit outside decision 2; the owner asked for them directly.
+
+- Models `c_astro_02` to `c_astro_08`, appearance rows 10283 to 10289, on their own copy of the clip model (`c_astromechb`, same clips, shorter tool retract).
+- Each has a dye material from the tint generator. The sources carry no dye masks, so each mask is derived from the model's painted texture with per-model thresholds. Two models are a single hue, so nearly all of their paint is one dye layer.
+- Checked in the client: all eight chassis load and change color through the real dye system (`runp2/evidence/sheet_tour.png`); one of the seven played the shared clips including knockdown (`sheet_p2reel.png`, `p2reel.mp4`) and the combat clips in a real fight (`sheet_p2fight.png`).
+- Not verified: the tool arm's motion could not be made out from the fight camera angle; only one of the seven was filmed animating; the head gun does not deploy (it is fixed to the head); painted detail such as lenses takes the dye color of its layer.
+
 **What Phase 1 changes for later phases**
 
 - Per-player colors need no new dye code: the existing service already handles a non-part creature through `tintmap.2da`. Colors are `TM_<material>_<layer>` variables on the creature. Phase 2 only has to give a new astromech sensible defaults and a window to change them.

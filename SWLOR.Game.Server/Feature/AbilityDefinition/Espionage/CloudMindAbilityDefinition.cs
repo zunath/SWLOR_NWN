@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 
             // From a hidden caster, the puff on the target would point at someone unseen nearby.
             if (Stealth.IsConcealed(activator))
-                Ability.ShowVisualEffectToPlayer(activator, target, VisualEffect.Vfx_Imp_Confusion_S);
+                AbilityImpactVisual.ShowVisualEffectToPlayer(activator, target, VisualEffect.Vfx_Imp_Confusion_S);
             else
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), target);
             SendMessageToPC(activator, $"You cloud the mind of {PlayerName.GetDisplayName(activator, target)}.");

@@ -61,4 +61,26 @@ public sealed partial class AbilityBench
     public int StatusDurationAdjustment { get; set; }
     public bool AttackingAlly { get; set; }
     public IReadOnlyDictionary<FeatType, AbilityDetail>? CachedTargeting { get; set; }
+
+    /// <summary>
+    /// The damage-derived healing scope the per-target resolution and the hostile impact open: logged when it opens and when it
+    /// closes, so a test can see what ran inside it.
+    /// </summary>
+    public IDisposable BeginHealingScope(uint creature, uint target)
+    {
+        Log.Add($"HealingScope:{creature}:{target}");
+        return new HealingScope(this);
+    }
+
+    private sealed class HealingScope : IDisposable
+    {
+        private readonly AbilityBench _bench;
+
+        public HealingScope(AbilityBench bench)
+        {
+            _bench = bench;
+        }
+
+        public void Dispose() => _bench.Log.Add("HealingScopeEnd");
+    }
 }

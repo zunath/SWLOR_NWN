@@ -43,11 +43,26 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The status effects of an ability impact, a part of the ability service (P5-3e).</summary>
         public static IAbilityStatusApplicationService AbilityStatusApplication => FacadeAccessor.Resolve<IAbilityStatusApplicationService>();
 
+        /// <summary>The per-target hit roll of a hostile ability, a part of the ability service (P5-3f).</summary>
+        public static IAbilityHitRollService AbilityHitRoll => FacadeAccessor.Resolve<IAbilityHitRollService>();
+
+        /// <summary>What a hostile ability's hit does to its target once its damage is known, a part of the ability service (P5-3f).</summary>
+        public static IAbilityHostileImpactService AbilityHostileImpact => FacadeAccessor.Resolve<IAbilityHostileImpactService>();
+
+        /// <summary>Begin, recurring, end and abort of each ability impact, a part of the ability service (P5-3f).</summary>
+        public static IAbilityImpactLifecycleService AbilityImpactLifecycle => FacadeAccessor.Resolve<IAbilityImpactLifecycleService>();
+
+        /// <summary>How an ability's success visual reaches its recipient, a part of the ability service (P5-3f).</summary>
+        public static IAbilityImpactVisualService AbilityImpactVisual => FacadeAccessor.Resolve<IAbilityImpactVisualService>();
+
         /// <summary>The checks of an activation's target, a part of the ability service (P5-3d).</summary>
         public static IAbilityTargetCheckService AbilityTargetCheck => FacadeAccessor.Resolve<IAbilityTargetCheckService>();
 
         /// <summary>The targeting overrides that update the client's targeting data (the facade <c>Service.AbilityTargetingCache</c> until P2-ZF).</summary>
         public static IAbilityTargetingCacheService AbilityTargetingCache => FacadeAccessor.Resolve<IAbilityTargetingCacheService>();
+
+        /// <summary>The per-target resolution of a hostile ability impact, a part of the ability service (P5-3f).</summary>
+        public static IAbilityTargetImpactService AbilityTargetImpact => FacadeAccessor.Resolve<IAbilityTargetImpactService>();
 
         /// <summary>The Field Engineer pulse emitters that are active (the facade <c>Service.FieldEngineerPulseEmitters</c> until P2-ZF).</summary>
         public static IFieldEngineerPulseEmittersService FieldEngineerPulseEmitters => FacadeAccessor.Resolve<IFieldEngineerPulseEmittersService>();
@@ -66,5 +81,8 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>When players and beasts died and when a player was last revived mid-fight (the facade <c>Service.ReviveHistory</c> until P2-ZF).</summary>
         public static IReviveHistoryService ReviveHistory => FacadeAccessor.Resolve<IReviveHistoryService>();
+
+        /// <summary>Twin pistol weapon abilities (the facade <c>Service.TwinPistolAbility</c> until P2-ZH; moved from Combat in P5-3f).</summary>
+        public static ITwinPistolAbilityService TwinPistolAbility => FacadeAccessor.Resolve<ITwinPistolAbilityService>();
     }
 }

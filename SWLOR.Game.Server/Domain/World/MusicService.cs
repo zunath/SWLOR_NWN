@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.Social;
@@ -121,6 +123,14 @@ namespace SWLOR.Game.Server.Domain.World
         {
             var defender = OBJECT_SELF;
             StartBattleTheme(defender, GetLastDamager(defender));
+        }
+
+        /// <summary>A hostile ability engages a target: the battle theme starts as it does for an attack.</summary>
+        public void OnTargetEngaged(uint activator, uint target) => StartBattleTheme(target, activator);
+
+        /// <summary>The music does not follow where an ability's impact lands.</summary>
+        public void OnAbilityImpact(uint activator, uint target, AbilityDetail ability)
+        {
         }
 
         public void StartBattleTheme(uint defender, uint attacker)

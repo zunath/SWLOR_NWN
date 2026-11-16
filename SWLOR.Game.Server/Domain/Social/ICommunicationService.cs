@@ -1,6 +1,6 @@
 using SWLOR.Game.Server.Enumeration;
 
-namespace SWLOR.Game.Server.Domain.Foundation
+namespace SWLOR.Game.Server.Domain.Social
 {
     /// <summary>
     /// Chat handling: the in-character, Comms and out-of-character channels, language coloring and translation, emote

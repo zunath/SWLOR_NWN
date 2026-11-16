@@ -12,8 +12,9 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// Reaches the private members of the ability instance, which the tests used to reach as private statics of the
 /// <c>Ability</c> class. <see cref="NoNeighbours"/> is an instance for a test of pure rules or of the impact tracker's
 /// own data: its constructor only assigns, so it runs until something calls a neighbour. Its impact state store, geometry,
-/// magnitude and damage parts (the ability split, <c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>) are real instances over
-/// one store, so a test that puts a tracker in the store (<see cref="TrackedImpacts"/>) sees the instance read it.
+/// magnitude, lifecycle, per-target and damage parts (the ability split, <c>Readmes/MaintainabilityRefactorAbilitySplit.md</c>)
+/// are real instances over one store, so a test that puts a tracker in the store (<see cref="TrackedImpacts"/>) sees the
+/// instance read it.
 /// </summary>
 public static class AbilityInternals
 {
@@ -31,19 +32,27 @@ public static class AbilityInternals
         var damageInput = new AbilityDamageInputService(impactState, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatActivityService>(),
             FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), magnitude, null!);
-        return new(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, impactState, Geometry(),
-            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
-            FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatQueriesService>(),
-            FacadeForwarder.For<ICombatResourcesService>(),
-            new AbilityImpactMessageService(null!, null!, FacadeForwarder.For<ICombatFeedbackService>()),
-            darkForce,
-            new AbilityDamageDeliveryService(null!, null!, darkForce, FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatDamageModifiersService>(),
-                FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageTakenService>()),
-            new AbilityStatusApplicationService(null!, null!, impactState, FacadeForwarder.For<ICombatAbilityBonusService>()),
-            damageInput,
-            new AbilityDamageStageService(damageInput, impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICombatAbilityHitService>(),
-                FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(),
-                FacadeForwarder.For<ICombatHitEffectsService>(), magnitude, null!));
+        var damageDelivery = new AbilityDamageDeliveryService(null!, null!, darkForce, FacadeForwarder.For<ICombatFeedbackService>(),
+            FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageTakenService>(),
+            FacadeForwarder.For<ICombatAbilityBonusService>());
+        var statusApplication = new AbilityStatusApplicationService(null!, null!, impactState, FacadeForwarder.For<ICombatAbilityBonusService>());
+        var damageStage = new AbilityDamageStageService(damageInput, impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICombatAbilityHitService>(),
+            FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(),
+            FacadeForwarder.For<ICombatHitEffectsService>(), magnitude, null!);
+        var impactMessage = new AbilityImpactMessageService(null!, null!, FacadeForwarder.For<ICombatFeedbackService>());
+        var impactVisual = new AbilityImpactVisualService(null!);
+        var observers = Array.Empty<IAbilityImpactObserver>();
+        var lifecycle = new AbilityImpactLifecycleService(impactState, null!, null!, damageDelivery, null!, FacadeForwarder.For<ICombatQueriesService>(),
+            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatResourcesService>(),
+            FacadeForwarder.For<ICombatHitEffectsService>());
+        var hostileImpact = new AbilityHostileImpactService(impactState, observers, null!, null!, FacadeForwarder.For<ICombatResourcesService>(),
+            FacadeForwarder.For<ICombatAbilityImpactService>(), damageDelivery, statusApplication, darkForce, impactVisual);
+        var hitRoll = new AbilityHitRollService(observers, null!, damageInput, statusApplication, impactMessage, null!, null!,
+            FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityHitService>());
+        var targetImpact = new AbilityTargetImpactService(impactState, hitRoll, hostileImpact, darkForce, damageInput, damageStage,
+            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatAbilityBonusService>());
+        return new(impactState, lifecycle, targetImpact, impactMessage, impactVisual, Geometry(), null!, null!,
+            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>());
     }
 
     /// <summary>A geometry part with no telegraph service, for a test of the shape tests that resolve no marker.</summary>
@@ -79,9 +88,17 @@ public static class AbilityInternals
         where TDelegate : Delegate =>
         Method(name).CreateDelegate<TDelegate>(service);
 
-    /// <summary>The damage inputs part (part 16) of <paramref name="service"/>.</summary>
+    /// <summary>The impact lifecycle part (part 5) of <paramref name="service"/>.</summary>
+    public static AbilityImpactLifecycleService Lifecycle(AbilityService service) =>
+        (AbilityImpactLifecycleService)typeof(AbilityService).GetField("_lifecycle", PrivateInstance)!.GetValue(service)!;
+
+    /// <summary>The per-target resolution part (part 11) of <paramref name="service"/>.</summary>
+    public static AbilityTargetImpactService TargetImpact(AbilityService service) =>
+        (AbilityTargetImpactService)typeof(AbilityService).GetField("_targetImpact", PrivateInstance)!.GetValue(service)!;
+
+    /// <summary>The damage inputs part (part 16) of <paramref name="service"/>, which its per-target resolution reads.</summary>
     public static AbilityDamageInputService DamageInput(AbilityService service) =>
-        (AbilityDamageInputService)typeof(AbilityService).GetField("_damageInput", PrivateInstance)!.GetValue(service)!;
+        (AbilityDamageInputService)typeof(AbilityTargetImpactService).GetField("_damageInput", PrivateInstance)!.GetValue(TargetImpact(service))!;
 
     /// <summary>A private method of a part of the ability split as a delegate on that part.</summary>
     public static TDelegate PartDelegate<TDelegate>(object part, string name)

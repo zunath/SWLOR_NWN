@@ -7,9 +7,10 @@ namespace SWLOR.Game.Server.Domain.Abilities
 {
     /// <summary>
     /// The damage delivery of a hostile ability (part 13 of the ability split, Readmes/MaintainabilityRefactorAbilitySplit.md),
-    /// moved from <c>AbilityService</c> unchanged: the block of <c>ApplyHostileCombatImpact</c> that applies or queues a hit's
-    /// damage, and the flush of the queued damage at the end of an impact. Calls into the combat services sit behind
-    /// <c>protected virtual</c> methods whose bodies are the original calls, so a unit test can answer them.
+    /// moved from <c>AbilityService</c> unchanged: the block of <c>ApplyHostileCombatImpact</c> that consumes the status-applied
+    /// bonus and applies or queues a hit's damage, and the flush of the queued damage at the end of an impact. Calls into the
+    /// combat services sit behind <c>protected virtual</c> methods whose bodies are the original calls, so a unit test can
+    /// answer them.
     /// </summary>
     public class AbilityDamageDeliveryService : IAbilityDamageDeliveryService
     {
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly ICombatDamageModifiersService _damageModifiers;
         private readonly ICombatHitEffectsService _hitEffects;
         private readonly ICombatDamageTakenService _damageTaken;
+        private readonly ICombatAbilityBonusService _abilityBonus;
 
         public AbilityDamageDeliveryService(
             IStatusEffectService statusEffect,
@@ -28,7 +30,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
             ICombatFeedbackService feedback,
             ICombatDamageModifiersService damageModifiers,
             ICombatHitEffectsService hitEffects,
-            ICombatDamageTakenService damageTaken)
+            ICombatDamageTakenService damageTaken,
+            ICombatAbilityBonusService abilityBonus)
         {
             _statusEffect = statusEffect;
             _combatRecorder = combatRecorder;
@@ -37,6 +40,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _damageModifiers = damageModifiers;
             _hitEffects = hitEffects;
             _damageTaken = damageTaken;
+            _abilityBonus = abilityBonus;
         }
 
         public void DeliverHostileImpactDamage(
@@ -49,6 +53,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             AbilityImpactTracker trackedImpact,
             bool allowsHitProcs)
         {
+            ConsumeStatusAppliedNextAttackDamageBonus(trackedImpact, activator);
             if (trackedImpact == null)
             {
                 _statusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);
@@ -131,6 +136,20 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 }
             });
         }
+
+        private void ConsumeStatusAppliedNextAttackDamageBonus(AbilityImpactTracker impact, uint activator)
+        {
+            if (impact == null || impact.StatusAppliedNextAttackDamageBonusConsumed ||
+                impact.StatusAppliedNextAttackDamageBonus <= 0)
+            {
+                return;
+            }
+
+            ConsumeStatusAppliedNextAttackDamageBonus(activator);
+            impact.CompleteStatusAppliedNextAttackDamageBonusConsumption();
+        }
+
+        protected virtual int ConsumeStatusAppliedNextAttackDamageBonus(uint creature) => _abilityBonus.ConsumeStatusAppliedNextAttackDamageBonus(creature);
 
         protected virtual void SendTemporaryHitPointDamageFeedback(uint attacker, uint defender, int damage) => _feedback.SendTemporaryHitPointDamageFeedback(attacker, defender, damage);
 

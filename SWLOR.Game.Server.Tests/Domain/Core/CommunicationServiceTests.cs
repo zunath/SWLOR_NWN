@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Tests.Support;
@@ -340,7 +341,7 @@ public class CommunicationServiceTests
     {
         _bench.AddCreature(Npc);
 
-        new DefaultSeams(_bench).IsInSpace(Npc).Should().BeFalse("a creature that is not a player is never in space mode");
+        new DefaultAudienceSeams(_bench).IsInSpace(Npc).Should().BeFalse("a creature that is not a player is never in space mode");
     }
 
     [Test]
@@ -367,14 +368,22 @@ public class CommunicationServiceTests
     private sealed class DefaultSeams : CommunicationService
     {
         public DefaultSeams(CommunicationBench bench)
-            : base(bench.Db, bench.DMPresence, bench.DMPreference, bench.Party, bench.HoloCom, bench.Planet, bench.Area, bench.Property, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<ISpaceService>())
+            : base(bench.Db, bench.DMPresence, bench.DMPreference, bench.HoloCom, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<ICommunicationAudienceService>(), new CommunicationMessageSplitService())
         {
         }
-
-        public bool IsInSpace(uint player) => IsPlayerInSpaceMode(player);
 
         public string ChatName(uint observer, uint target) => GetColoredChatDisplayName(observer, target);
 
         public void WithOverride(uint observer, uint target, Action send) => SendChatMessageWithChatNameOverride(observer, target, send);
+    }
+
+    private sealed class DefaultAudienceSeams : CommunicationAudienceService
+    {
+        public DefaultAudienceSeams(CommunicationBench bench)
+            : base(bench.Db, bench.DMPresence, bench.DMPreference, bench.Party, bench.Planet, bench.Area, bench.Property, FacadeForwarder.For<ISpaceService>())
+        {
+        }
+
+        public bool IsInSpace(uint player) => IsPlayerInSpaceMode(player);
     }
 }

@@ -327,7 +327,7 @@ public class CombatDamageTests
             .And.Contain("WeaponDamage.GetDamageType(GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon))",
                 "the element comes from the same weapon that supplies the DMG");
 
-        var resolve = ExtractMethod(abilitySource, "private CombatDamageType ResolveWeaponAbilityDamageType");
+        var resolve = ExtractMethod(abilitySource, "public CombatDamageType ResolveWeaponAbilityDamageType");
         resolve.Should().Contain("damageType != CombatDamageType.Physical",
             "like native weapon resolution, an element only replaces Physical");
         resolve.Should().Contain("!IncludesCombatImpactWeaponDamage(skillType, usesQueuedNaturalWeapon)");
@@ -362,7 +362,7 @@ public class CombatDamageTests
         var combatSource = CombatSource.Read();
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
 
-        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,");
+        usePerkFeatSource.Should().Contain("AbilityImpactLifecycle.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,");
         usePerkFeatSource.Should().Contain("triggeringWeaponDamage: reservation?.TriggeringWeaponDamage");
         abilitySource.Should().Contain("trackedImpact.TriggeringWeaponDamage = triggeringWeaponDamage ?? (GetIsObjectValid(triggeringWeapon)");
         abilitySource.Should().Contain("? GetAbilityDMG(activator, triggeringWeapon, ability.SkillType)");
@@ -701,7 +701,7 @@ public class CombatDamageTests
 
         usePerkFeatSource.Should().Contain("Weapon abilities are queued for the next time the activator's attack lands on an enemy.");
         usePerkFeatSource.Should().Contain("ProcessQueuedWeaponAbility()");
-        usePerkFeatSource.Should().Contain("Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,");
+        usePerkFeatSource.Should().Contain("AbilityImpactLifecycle.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,");
         usePerkFeatSource.Should().Contain("triggeringWeaponDamageType: reservation?.TriggeringWeaponDamageType");
         usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator)");
         usePerkFeatSource.Should().Contain("public static bool HasQueuedWeaponAbility(uint activator, SkillType weaponSkillType, int? attackIndex = null)");

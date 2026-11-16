@@ -9,13 +9,15 @@ using SkillType = SWLOR.Game.Server.Domain.Foundation.SkillType;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// The chat instance with the four calls into not-yet-converted services answered by the test: a translation marks the
+/// The chat instance with the three calls into not-yet-converted services (and the space-mode check of the Comms audience) answered by the test: a translation marks the
 /// text with the listener (the real one rolls against the database's language ranks), a chat name is a readable
 /// placeholder, the per-observer name override is recorded around the send it wraps, and the space-mode check reads a
 /// set. Everything else is the production code.
 /// </summary>
 public sealed class TestCommunicationService : CommunicationService
 {
+    private readonly TestCommunicationAudienceService _audience;
+
     public TestCommunicationService(
         IDBService db,
         IDMPresenceService dmPresence,
@@ -25,8 +27,19 @@ public sealed class TestCommunicationService : CommunicationService
         IPlanetService planet,
         IAreaService area,
         IPropertyService property)
-        : base(db, dmPresence, dmPreference, party, holoCom, planet, area, property, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<ISpaceService>())
+        : this(db, dmPresence, dmPreference, holoCom, new TestCommunicationAudienceService(db, dmPresence, dmPreference, party, planet, area, property))
     {
+    }
+
+    private TestCommunicationService(
+        IDBService db,
+        IDMPresenceService dmPresence,
+        IDMPreferenceService dmPreference,
+        IHoloComService holoCom,
+        TestCommunicationAudienceService audience)
+        : base(db, dmPresence, dmPreference, holoCom, FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ILanguageService>(), FacadeForwarder.For<IPlayerNameService>(), audience, new CommunicationMessageSplitService())
+    {
+        _audience = audience;
     }
 
     /// <summary>Every translation asked for, in order.</summary>
@@ -42,7 +55,7 @@ public sealed class TestCommunicationService : CommunicationService
     public Func<int> CountSends { get; set; } = () => 0;
 
     /// <summary>Players the space-mode check answers true for.</summary>
-    public HashSet<uint> InSpace { get; } = new();
+    public HashSet<uint> InSpace => _audience.InSpace;
 
     /// <summary>What the chat name of <paramref name="target"/> looks like to <paramref name="observer"/>.</summary>
     public static string ChatName(uint observer, uint target) => $"<{target} seen by {observer}>";
@@ -64,6 +77,4 @@ public sealed class TestCommunicationService : CommunicationService
         sendMessage();
         NameOverrides.Add((observer, target, CountSends() - before));
     }
-
-    protected override bool IsPlayerInSpaceMode(uint player) => InSpace.Contains(player);
 }

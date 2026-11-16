@@ -11,7 +11,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.Testing;
 
-namespace SWLOR.Game.Server.Tests.Domain.Combat;
+namespace SWLOR.Game.Server.Tests.Domain.Abilities;
 
 /// <summary>
 /// The Twin Pistol ability instance: validating and starting an activation, resolving a single volley, the multi-volley
@@ -387,7 +387,7 @@ public class TwinPistolAbilityServiceTests
         private readonly AbilityDetail _detail = new() { EffectiveLevelPerkType = PerkType.TempoShot };
 
         public TestAbility(IPairedRangedTraitsService traits, ITwinPistolMasteryService mastery)
-            : base(traits, mastery, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<IAbilityImpactState>())
+            : base(traits, mastery, FacadeForwarder.For<IAbilityService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IAbilityImpactLifecycleService>())
         {
         }
 

@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Domain.World
 
         private readonly IDBService _db;
         private readonly IAbilityService _ability;
+        private readonly IAbilityImpactLifecycleService _lifecycle;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IDMPresenceService _dmPresence;
         private readonly IPerkService _perk;
@@ -80,6 +81,7 @@ namespace SWLOR.Game.Server.Domain.World
         public TrapsService(
             IDBService db,
             IAbilityService ability,
+            IAbilityImpactLifecycleService lifecycle,
             ICombatRecorderService combatRecorder,
             IDMPresenceService dmPresence,
             IPerkService perk,
@@ -90,6 +92,7 @@ namespace SWLOR.Game.Server.Domain.World
         {
             _db = db;
             _ability = ability;
+            _lifecycle = lifecycle;
             _combatRecorder = combatRecorder;
             _dmPresence = dmPresence;
             _perk = perk;
@@ -148,7 +151,7 @@ namespace SWLOR.Game.Server.Domain.World
             }
 
             RegisterTrap(record, ownerTraps);
-            var trigger = _ability.CaptureRepeatedAbilityImpact(owner, () => ApplyTrapImpact(
+            var trigger = _lifecycle.CaptureRepeatedAbilityImpact(owner, () => ApplyTrapImpact(
                 record, snapshotDamage, damageType, statusEffect, statusDurationSeconds, triggerVisualEffect),
                 snapshotDamage, requiresLivingActivator: false);
             ScheduleArming(record, trigger);

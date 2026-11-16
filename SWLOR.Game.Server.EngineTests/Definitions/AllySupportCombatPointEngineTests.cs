@@ -223,14 +223,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ability = AbilityCatalog.GetAbilityDetail(feat);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     ability.ImpactAction(caster, target, 1, GetLocation(target));
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
         }

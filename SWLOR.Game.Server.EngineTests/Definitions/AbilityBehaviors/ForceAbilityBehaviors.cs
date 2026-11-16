@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
 
                 // CreepingTerrorAbilityDefinition - area field that schedules 3s-interval pulses
                 // (CombatAreaPulses.SchedulePulses); each pulse unconditionally hits hostiles in
-                // radius with Ability.ApplyHostileCombatImpact(..., typeof(HobbleStatusEffect)).
+                // radius with AbilityHostileImpact.ApplyHostileCombatImpact(..., typeof(HobbleStatusEffect)).
                 // First pulse lands ~3s after activation, well inside the 20s wait window.
                 new()
                 {

@@ -168,7 +168,7 @@ public static class SingleWeaponEngineTests
         var weapon = await ctx.EquipItemAsync(player.Creature, "b_longsword", InventorySlot.RightHand);
         await SetDamage(ctx, player.Creature, weapon, 24);
         var ability = AbilityCatalog.GetAbilityDetail(FeatType.SavageCleave1);
-        Ability.BeginAbilityImpact(player.Creature, ability);
+        AbilityImpactLifecycle.BeginAbilityImpact(player.Creature, ability);
         try
         {
             var impact = ServiceInternals.Call<IAbilityService>("GetTrackedAbilityImpact", player.Creature);
@@ -185,7 +185,7 @@ public static class SingleWeaponEngineTests
             ctx.AssertEqual(39, capturedThrowDamage(player.Creature), "Throw Lightsaber captures its weapon component once for all path targets");
             DestroyObject(shield);
         }
-        finally { Ability.EndAbilityImpact(player.Creature); }
+        finally { AbilityImpactLifecycle.EndAbilityImpact(player.Creature); }
     }
 
     private static async Task SetDamage(EngineTestContext ctx, uint creature, uint weapon, int damage)

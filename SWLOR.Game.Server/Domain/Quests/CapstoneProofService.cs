@@ -99,6 +99,14 @@ namespace SWLOR.Game.Server.Domain.Quests
             }
         }
 
+        /// <summary>Capstone proofs do not follow a target being engaged, only the impact itself.</summary>
+        public void OnTargetEngaged(uint activator, uint target)
+        {
+        }
+
+        /// <summary>A hostile ability's impact landed: recorded as <see cref="RecordAbilityImpact"/>.</summary>
+        public void OnAbilityImpact(uint activator, uint target, AbilityDetail ability) => RecordAbilityImpact(activator, target, ability);
+
         public void RecordAbilityImpact(uint activator, uint target, AbilityDetail ability)
         {
             if (ability == null || _byAbility.Count == 0)

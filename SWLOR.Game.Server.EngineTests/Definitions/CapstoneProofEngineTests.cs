@@ -62,9 +62,9 @@ public static class CapstoneProofEngineTests
         var ability = AbilityCatalog.GetAbilityDetail(FeatType.RousingShout1);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
-            Ability.BeginAbilityImpact(player, ability);
+            AbilityImpactLifecycle.BeginAbilityImpact(player, ability);
             try { ability.ImpactAction(player, player, 1, GetLocation(player)); }
-            finally { Ability.EndAbilityImpact(player); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(player); }
         });
         ctx.Assert(!StatusEffect.HasEffect(typeof(RousingShout1StatusEffect), player), "Full-health shielding has no rescue rider.");
         ctx.Assert(CapstoneProof.HasProof(player, enemy, "hold_the_line"), "The shield itself proves the support action.");
@@ -86,12 +86,12 @@ public static class CapstoneProofEngineTests
             ctx.Assert(StatusEffect.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Unattributed Venom applies.");
             ctx.Assert(!CapstoneProof.HasProof(player, enemy, "viral_cascade"), "Item Venom alone does not prove the skill.");
             var ability = AbilityCatalog.GetAbilityDetail(FeatType.VirulentBlade1);
-            Ability.BeginAbilityImpact(player, ability);
+            AbilityImpactLifecycle.BeginAbilityImpact(player, ability);
             try
             {
                 ctx.Assert(StatusEffect.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Vibroknife Venom applies.");
             }
-            finally { Ability.EndAbilityImpact(player); }
+            finally { AbilityImpactLifecycle.EndAbilityImpact(player); }
         });
         ctx.Assert(CapstoneProof.HasProof(player, enemy, "viral_cascade"), "Venom from the Vibroknife ability proves the skill.");
     }

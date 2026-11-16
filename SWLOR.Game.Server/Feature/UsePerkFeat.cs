@@ -573,12 +573,12 @@ namespace SWLOR.Game.Server.Feature
             try
             {
                 PlayAbilitySound(activator, ability.ImpactSound);
-                Ability.BeginAbilityImpact(
+                AbilityImpactLifecycle.BeginAbilityImpact(
                     activator,
                     ability,
                     activationAreaTelegraphs: activationAreaTelegraphs, weaponTraits: weaponTraits);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
-                var summary = Ability.EndAbilityImpact(activator);
+                var summary = AbilityImpactLifecycle.EndAbilityImpact(activator);
                 impactEnded = true;
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.RecordAbilityImpact(activator, target, targetLocation, ability, feat, summary);
@@ -595,7 +595,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (!impactEnded)
                 {
-                    Ability.AbortAbilityImpact(activator);
+                    AbilityImpactLifecycle.AbortAbilityImpact(activator);
                 }
 
                 GameServices.CombatResources.CompleteAbilityStaminaCostContext(activator, ability);
@@ -1540,12 +1540,12 @@ namespace SWLOR.Game.Server.Feature
                 // weapon, rather than that projectile, owns this activation's budget.
                 if (weaponTraits != null && reservation != null)
                     weaponTraits.PrimaryWeapon = reservation.Weapon;
-                Ability.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,
+                AbilityImpactLifecycle.BeginAbilityImpact(activator, abilityDetail, triggeringWeapon: item,
                     triggeringWeaponDamage: reservation?.TriggeringWeaponDamage,
                     triggeringWeaponDamageType: reservation?.TriggeringWeaponDamageType,
                     weaponTraits: weaponTraits);
                 abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
-                var summary = Ability.EndAbilityImpact(activator);
+                var summary = AbilityImpactLifecycle.EndAbilityImpact(activator);
                 impactEnded = true;
                 if (CombatRecorder.IsRecording)
                     CombatRecorder.RecordAbilityImpact(activator, target, targetLocation, abilityDetail, activeWeaponAbility, summary);
@@ -1561,7 +1561,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (!impactEnded)
                 {
-                    Ability.AbortAbilityImpact(activator);
+                    AbilityImpactLifecycle.AbortAbilityImpact(activator);
                 }
 
                 GameServices.CombatResources.CompleteAbilityStaminaCostContext(activator, abilityDetail);

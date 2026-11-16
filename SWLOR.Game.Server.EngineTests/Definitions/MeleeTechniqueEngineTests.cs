@@ -47,12 +47,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(10, MeleeTechnique.GetAbilityAccuracy(caster, target, ability), "the primary retains Measured Technique accuracy");
                 ctx.AssertEqual(0, MeleeTechnique.GetAbilityAccuracy(caster, secondary, ability), "the secondary has no earned setup accuracy");
                 ctx.Assert(!MeleeTechnique.IsImpactValid(caster, excluded, ability), "a third enemy cannot join the captured sweep");
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 ctx.Assert(AbilityImpactState.IsAreaImpact(caster, ability), "classification is area before either hit resolves");
                 ctx.Assert(!AbilityImpactState.IsSingleTargetImpact(caster, ability), "single-target bonuses cannot also apply");
                 ctx.Assert(!AbilityImpactState.IsAreaImpact(excluded, ability), "another actor cannot inherit this cast's area classification");
                 ctx.Assert(!ability.IsAreaAbility && ability.IsSingleTargetAbility, "shared targeting metadata stays unchanged");
-                Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.EndAbilityImpact(caster);
             }
             finally
             {

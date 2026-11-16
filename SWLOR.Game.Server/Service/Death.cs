@@ -59,22 +59,21 @@ namespace SWLOR.Game.Server.Service
                 RecordDeathDebtWaiver(player);
             StatusEffect.ClearStatusEffectsOnDeath(player);
 
-            if (GetIsPC(hostile) && !GetIsDM(hostile) && !GetIsDMPossessed(hostile))
+            // Only a subdual revives on the spot. Every other death, a lethal kill by another
+            // player included, leaves the player dead with the respawn panel.
+            if (isSubdual)
             {
-                if (isSubdual)
-                {
-                    if (CombatRecorder.IsRecording)
-                        CombatRecorder.RecordSubdual(player, hostile);
-                    SendMessageToPC(player, "You have been subdued.");
-                    Messaging.SendMessageNearbyToPlayers(
-                        player,
-                        receiver => $"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, hostile)}.");
-                    ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
-                    Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(player);
-                    DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(player));
-                    StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);
-                    StatusEffect.ApplyStatusEffect(player, player, typeof(SubdualPenaltyStatusEffect), 300f);
-                }
+                if (CombatRecorder.IsRecording)
+                    CombatRecorder.RecordSubdual(player, hostile);
+                SendMessageToPC(player, "You have been subdued.");
+                Messaging.SendMessageNearbyToPlayers(
+                    player,
+                    receiver => $"{PlayerName.GetDisplayName(receiver, player)} has been subdued by {PlayerName.GetDisplayName(receiver, hostile)}.");
+                ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
+                Feature.PlayerTemporaryEffects.RestoreGhostAfterRevive(player);
+                DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(player));
+                StatusEffect.ApplyStatusEffect(player, player, typeof(KnockdownStatusEffect), 60f);
+                StatusEffect.ApplyStatusEffect(player, player, typeof(SubdualPenaltyStatusEffect), 300f);
             }
             else
             {
@@ -87,11 +86,29 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsSubdualDeath(uint hostile)
         {
-            if (!GetIsPC(hostile) || GetIsDM(hostile) || GetIsDMPossessed(hostile))
-                return false;
+            var hostileIsPlayer = GetIsPC(hostile);
+            var hostileIsDM = GetIsDM(hostile) || GetIsDMPossessed(hostile);
+            var dbHostilePlayer = hostileIsPlayer && !hostileIsDM
+                ? DB.Get<Player>(GetObjectUUID(hostile))
+                : null;
 
-            var dbHostilePlayer = DB.Get<Player>(GetObjectUUID(hostile));
-            return dbHostilePlayer != null && dbHostilePlayer.Settings.IsSubdualModeEnabled;
+            return IsSubdualDeath(hostileIsPlayer, hostileIsDM, dbHostilePlayer);
+        }
+
+        /// <summary>
+        /// Whether a player's death is a subdual: the killer is a player, not a DM, whose subdual
+        /// mode is on. A subdued player is revived where they fell; any other death, including a
+        /// lethal kill by another player, shows the respawn panel.
+        /// </summary>
+        /// <param name="hostileIsPlayer">Whether the killer is player-controlled.</param>
+        /// <param name="hostileIsDM">Whether the killer is a DM or a DM-possessed creature.</param>
+        /// <param name="dbHostilePlayer">The killer's player record. May be null.</param>
+        /// <returns>true if the death is a subdual, false if the player stays dead.</returns>
+        public static bool IsSubdualDeath(bool hostileIsPlayer, bool hostileIsDM, Player dbHostilePlayer)
+        {
+            return hostileIsPlayer &&
+                   !hostileIsDM &&
+                   dbHostilePlayer?.Settings?.IsSubdualModeEnabled == true;
         }
 
         /// <summary>

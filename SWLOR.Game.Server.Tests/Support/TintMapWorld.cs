@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.Testing;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -24,6 +25,9 @@ public sealed class TintMapWorld : IDisposable
     private readonly Dictionary<(uint Item, ItemAppearanceType Type, int Index), int> _appearance = new();
     private readonly Dictionary<(uint Creature, ColorChannel Channel), int> _colors = new();
     private readonly HashSet<uint> _players = new();
+    private readonly Dictionary<(string Table, string Column, int Row), string> _twoDA = new();
+    private readonly Dictionary<(CreaturePart Part, uint Creature), int> _bodyParts = new();
+    private readonly Dictionary<uint, BaseItem> _baseItems = new();
     private int _processed;
 
     public TintMapWorld()
@@ -45,6 +49,11 @@ public sealed class TintMapWorld : IDisposable
             _appearance.GetValueOrDefault(((uint)arguments[0]!, (ItemAppearanceType)arguments[1]!, (int)arguments[2]!)));
         Engine.SetReturnHandler("GetColor", arguments =>
             _colors.GetValueOrDefault(((uint)arguments[0]!, (ColorChannel)arguments[1]!)));
+        Engine.SetReturnHandler("Get2DAString", arguments =>
+            _twoDA.GetValueOrDefault(((string)arguments[0]!, (string)arguments[1]!, (int)arguments[2]!), string.Empty));
+        Engine.SetReturnHandler("GetCreatureBodyPart", arguments =>
+            _bodyParts.GetValueOrDefault(((CreaturePart)arguments[0]!, (uint)arguments[1]!)));
+        Engine.SetReturnHandler("GetBaseItemType", arguments => _baseItems.GetValueOrDefault((uint)arguments[0]!));
         Objects.SetReturnHandler("GetLocalVariableCount", arguments => Locals((uint)arguments[0]!).Count);
         Objects.SetReturnHandler("GetLocalVariable", arguments =>
             new ObjectPlugin.LocalVariable
@@ -75,6 +84,9 @@ public sealed class TintMapWorld : IDisposable
     public int Int(uint id, string name) => Locals(id).GetValueOrDefault(name);
     public void SetInt(uint id, string name, int value) => Locals(id)[name] = value;
     public IReadOnlyDictionary<string, int> LocalsOf(uint id) => Locals(id);
+    public void Set2DA(string table, string column, int row, string value) => _twoDA[(table, column, row)] = value;
+    public void SetBodyPart(uint creature, CreaturePart part, int id) => _bodyParts[(part, creature)] = id;
+    public void SetBaseItem(uint item, BaseItem type) => _baseItems[item] = type;
     public void Equip(uint creature, InventorySlot slot, uint item) => _slots[(creature, slot)] = item;
     public void SetAppearance(uint item, ItemAppearanceType type, int index, int value) => _appearance[(item, type, index)] = value;
     public void SetColor(uint creature, ColorChannel channel, int value) => _colors[(creature, channel)] = value;

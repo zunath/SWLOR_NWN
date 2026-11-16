@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Domain.Companions;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 

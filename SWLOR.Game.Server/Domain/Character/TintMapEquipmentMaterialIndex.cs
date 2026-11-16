@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly Dictionary<MaterialLayerKey, HashSet<AppearanceArmor>>
             _armorPartsByMaterial = new();
 
-        public static TintMapEquipmentMaterialIndex Empty { get; } = new(
+        public static TintMapEquipmentMaterialIndex CreateEmpty() => new(
             new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>());
 
         public TintMapEquipmentMaterialIndex(

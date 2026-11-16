@@ -192,6 +192,8 @@
     { "type": "PartSkinModelRenderer", "from": "SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap", "to": "SWLOR.Game.Server.Domain.Companions" },
     { "type": "RobeModelRenderer", "from": "SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap", "to": "SWLOR.Game.Server.Domain.Companions" },
     { "type": "ShoulderModelRenderer", "from": "SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap", "to": "SWLOR.Game.Server.Domain.Companions" },
+    { "type": "ModelResource", "from": "SWLOR.Game.Server.Feature.AppearanceDefinition", "to": "SWLOR.Game.Server.Domain.Companions" },
+    { "type": "ArmorColorIndexCalculator", "from": "SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance", "to": "SWLOR.Game.Server.Domain.Companions" },
   ],
   "textExcludes": [
     "SWLOR.Game.Server/Readmes/Maintainability*",

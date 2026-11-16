@@ -2,7 +2,6 @@ using Avalonia.Headless.NUnit;
 using Avalonia.Media;
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Toolset.Domain.Documents;

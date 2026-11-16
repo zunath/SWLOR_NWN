@@ -17,16 +17,6 @@ namespace SWLOR.Game.Server.Domain.Companions
     {
         private static NeckModelCatalog Catalog => AppearanceRenderState.GetNeckCatalog();
 
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public static void Load()
-        {
-            var rows = new List<(string, string, string)>();
-            for (var row = 0; row < Get2DARowCount("neckrender"); row++)
-                rows.Add((Get2DAString("neckrender", "BODY", row), Get2DAString("neckrender", "SOURCE", row),
-                    Get2DAString("neckrender", "RENDER", row)));
-            AppearanceRenderState.SetNeckCatalog(new NeckModelCatalog(rows));
-        }
 
         public static void Apply(uint creature)
         {

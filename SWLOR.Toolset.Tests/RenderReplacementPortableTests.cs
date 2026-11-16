@@ -5,7 +5,6 @@ using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using Nwn.Toolset.Avalonia.Areas;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using Nwn.Formats.NativeModels;

@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.EngineTests.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -53,7 +51,7 @@ public static class PowerGloveFitEngineTests
                         .GetMethod("GetCostumeModel", BindingFlags.Static | BindingFlags.NonPublic)!
                         .Invoke(null, new object[] { wearer }), "The selector follows the equipped robe resource");
                     for (var repeat = 0; repeat < 5; repeat++)
-                        TintMapService.ApplyCurrentColors(wearer);
+                        TintMapApply.ApplyCurrentColors(wearer);
                     foreach (var side in new[] { true, false })
                     {
                         var fit = ((float Scale, FitVector Translation))typeof(PowerGloveFit)
@@ -178,7 +176,7 @@ public static class PowerGloveFitEngineTests
                 ctx.Assert(expected >= 1f, "Measured fit never shrinks the authored model");
                 var savedAppearance = ReadAppearance(right);
                 for (var pass = 0; pass < 5; pass++)
-                    TintMapService.ApplyCurrentColors(wearer);
+                    TintMapApply.ApplyCurrentColors(wearer);
                 AssertPair(ctx, right, left, expected, "Repeated cosmetic refresh");
                 ctx.Assert(savedAppearance.SequenceEqual(ReadAppearance(right)), "Fitting never rewrites weapon appearance IDs");
                 ctx.Assert(savedAppearance.SequenceEqual(ReadAppearance(left)), "The one selected model supplies both fitted visuals");
@@ -236,7 +234,7 @@ public static class PowerGloveFitEngineTests
             ctx.Assert(!CreaturePlugin.RunEquip(wearer, right, InventorySlot.LeftHand), "The real glove cannot become a separate offhand weapon");
             ctx.AssertEqual(OBJECT_INVALID, GetItemInSlot(InventorySlot.LeftHand, wearer), "Rejected glove equip leaves the offhand empty");
             ctx.AssertEqual(sword, GetItemInSlot(InventorySlot.RightHand, wearer), "Rejected glove equip preserves the other weapon's slot");
-            TintMapService.ApplyCurrentColors(wearer);
+            TintMapApply.ApplyCurrentColors(wearer);
             AssertFit(ctx, sword, 1.37f, "Non-Power Glove equipment transforms are untouched");
             AssertIndependentTransforms(ctx, right);
         });
@@ -397,7 +395,7 @@ public static class PowerGloveFitEngineTests
                 for (var pass = 0; pass < 5; pass++)
                 {
                     PowerGloveEquipment.RefreshAppearance(wearer);
-                    TintMapService.ApplyCurrentColors(wearer);
+                    TintMapApply.ApplyCurrentColors(wearer);
                 }
                 AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
                     label + " repeated and nested refresh");
@@ -405,7 +403,7 @@ public static class PowerGloveFitEngineTests
                 var edit = new FitVector(.002f, -.001f, .003f);
                 SetPartTranslation(right, ReadPartTranslation(right) + edit);
                 authored += edit;
-                TintMapService.ApplyCurrentColors(wearer);
+                TintMapApply.ApplyCurrentColors(wearer);
                 AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
                     label + " preserves an authored edit while fitted");
 
@@ -573,7 +571,7 @@ public static class PowerGloveFitEngineTests
                 // Use the exact spawn/login normalization path after loading the native object.
                 PowerGloveEquipment.RestorePair(wearer);
                 PowerGloveFit.OnSpawn();
-                TintMapService.ApplyCurrentColors(wearer);
+                TintMapApply.ApplyCurrentColors(wearer);
             });
             right = GloveInventory(wearer).Single(item => GetLocalString(item, RoleVariable) == "right");
             left = await PowerGlovePairEngineTests.WaitForPair(ctx, wearer, right);

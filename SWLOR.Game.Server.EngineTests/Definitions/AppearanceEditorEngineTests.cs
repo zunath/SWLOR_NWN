@@ -12,7 +12,6 @@ using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -40,7 +39,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 EquippedItemAppearance.Set(cloak, ItemAppearanceType.SimpleModel, -1, 175);
                 EquippedItemAppearance.Refresh(civilian, cloak);
-                TintMapService.ApplyCurrentColors(civilian);
+                TintMapApply.ApplyCurrentColors(civilian);
                 var selection = TintMapModelResolver.GetCurrentSelections(civilian)
                     .Single(value => value.Material.Resref == CloakTintRenderer.MaterialResref);
                 ctx.AssertEqual("cloak_062", selection.ModelResref, "Cloak registry follows TEXTURE, independently of MODEL 4");
@@ -68,7 +67,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
             await ctx.DelaySecondsAsync(1f);
             await RunAssignedAsync(ctx, civilian, () =>
-                TintMapService.ApplyCurrentColors(civilian));
+                TintMapApply.ApplyCurrentColors(civilian));
         }
 
         [EngineTest("Body customization updates exposed hands and biceps while preserving clothing", Category = "BodyCustomization", TimeoutSeconds = 30f)]
@@ -643,7 +642,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var key = TintMapVariable.GetName("pmh0_robe260", layer);
                 var saved = new TintMapColor(100, 7, 180).ToStoredValue();
                 SetLocalInt(outfit, key, saved);
-                TintMapService.ResetInactiveItemCustomColor(civilian, outfit, layer, AppearanceArmor.Invalid);
+                TintMapItemColor.ResetInactiveItemCustomColor(civilian, outfit, layer, AppearanceArmor.Invalid);
                 ctx.AssertEqual(saved, GetLocalInt(outfit, key),
                     "One inactive material color cannot be inferred as a legacy global set");
                 var itemSelection = TintMapModelResolver.GetCurrentSelections(civilian)
@@ -651,25 +650,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var activeKey = TintMapVariable.GetName(itemSelection.Material.Resref, layer);
                 SetLocalInt(outfit, activeKey, saved);
                 var onePart = new[] { itemSelection, itemSelection };
-                TintMapService.ResetGlobalItemCustomColor(civilian, onePart, layer);
+                TintMapItemColor.ResetGlobalItemCustomColor(civilian, onePart, layer);
                 ctx.AssertEqual(saved, GetLocalInt(outfit, activeKey),
                     "A global preset preserves the sole independently colored active part");
-                TintMapService.SetGlobalItemCustomColor(civilian, onePart, layer, new TintMapColor(1, 2, 3));
+                TintMapItemColor.SetGlobalItemCustomColor(civilian, onePart, layer, new TintMapColor(1, 2, 3));
                 ctx.AssertEqual(saved, GetLocalInt(outfit, activeKey),
                     "A global RGB edit preserves a sole part even when its selection is repeated");
                 var selections = TintMapModelResolver.GetCurrentSelections(civilian)
                     .Where(s => s.Material.Layers.Contains(TintMapLayerType.Skin))
                     .GroupBy(s => s.Material.Resref).Select(g => g.First()).ToArray();
                 ctx.Assert(selections.Length >= 2, "Fixture exposes independently named skin materials");
-                TintMapService.ResetCreatureCustomColor(civilian, TintMapLayerType.Skin);
+                TintMapCreatureColor.ResetCreatureCustomColor(civilian, TintMapLayerType.Skin);
                 var authored = new TintMapColor(12, 34, 56);
                 var sibling = new TintMapColor(65, 43, 21);
                 SetLocalInt(civilian, TintMapVariable.GetName(selections[0].Material.Resref, TintMapLayerType.Skin), authored.ToStoredValue());
                 SetLocalInt(civilian, TintMapVariable.GetName(selections[1].Material.Resref, TintMapLayerType.Skin), sibling.ToStoredValue());
-                TintMapService.ApplyCurrentColors(civilian);
-                ctx.AssertEqual(authored, TintMapService.GetEffectiveDisplayColor(civilian, selections[0], TintMapLayerType.Skin),
+                TintMapApply.ApplyCurrentColors(civilian);
+                ctx.AssertEqual(authored, TintMapColorResolver.GetEffectiveDisplayColor(civilian, selections[0], TintMapLayerType.Skin),
                     "Authored per-material RGB participates in runtime color resolution");
-                ctx.AssertEqual(sibling, TintMapService.GetEffectiveDisplayColor(civilian, selections[1], TintMapLayerType.Skin),
+                ctx.AssertEqual(sibling, TintMapColorResolver.GetEffectiveDisplayColor(civilian, selections[1], TintMapLayerType.Skin),
                     "A sibling material retains its independent color");
             });
         }
@@ -727,11 +726,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var replacement = TintMapModelResolver.GetCurrentSelections(civilian).Single(selection =>
                     selection.ArmorPart == AppearanceArmor.LeftForearm &&
                     selection.Material.Layers.Contains(TintMapLayerType.Leather2));
-                ctx.AssertEqual(queuedPartColor, TintMapService.GetEffectiveDisplayColor(
+                ctx.AssertEqual(queuedPartColor, TintMapColorResolver.GetEffectiveDisplayColor(
                     civilian, replacement, TintMapLayerType.Leather2),
                     "A model change carries the queued picker color even without mouse-up");
                 InvokePrivate(editor, "FlushPendingPickerColor");
-                ctx.AssertEqual(queuedPartColor, TintMapService.GetEffectiveDisplayColor(
+                ctx.AssertEqual(queuedPartColor, TintMapColorResolver.GetEffectiveDisplayColor(
                     civilian, replacement, TintMapLayerType.Leather2),
                     "A late picker callback cannot revert the replacement tint");
             });

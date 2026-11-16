@@ -51,7 +51,7 @@ SWLOR.Game.Server.EngineTests/Definitions/AfkNameEngineTests.cs | 68
 SWLOR.Game.Server.EngineTests/Definitions/AllySupportCombatPointEngineTests.cs | 24
 SWLOR.Game.Server.EngineTests/Definitions/AngerShieldEngineTests.cs | 4
 SWLOR.Game.Server.EngineTests/Definitions/AppearanceEditorDmEngineTests.cs | 7
-SWLOR.Game.Server.EngineTests/Definitions/AppearanceEditorEngineTests.cs | 7
+SWLOR.Game.Server.EngineTests/Definitions/AppearanceEditorEngineTests.cs | 14
 SWLOR.Game.Server.EngineTests/Definitions/AppliedEffectsEngineTests.cs | 14
 SWLOR.Game.Server.EngineTests/Definitions/AutomaticTargetingOwnershipEngineTests.cs | 32
 SWLOR.Game.Server.EngineTests/Definitions/BaggedSupplyRequirementEngineTests.cs | 1
@@ -97,7 +97,7 @@ SWLOR.Game.Server.EngineTests/Definitions/DualWieldEngineTests.cs | 69
 SWLOR.Game.Server.EngineTests/Definitions/EmbattledRefreshEngineTests.cs | 14
 SWLOR.Game.Server.EngineTests/Definitions/EquipmentRecordReconciliationEngineTests.cs | 14
 SWLOR.Game.Server.EngineTests/Definitions/EquipmentTypeMigrationEngineTests.cs | 3
-SWLOR.Game.Server.EngineTests/Definitions/EquippedItemAppearanceEngineTests.cs | 4
+SWLOR.Game.Server.EngineTests/Definitions/EquippedItemAppearanceEngineTests.cs | 15
 SWLOR.Game.Server.EngineTests/Definitions/ExamineItemEngineTests.cs | 14
 SWLOR.Game.Server.EngineTests/Definitions/ExtraHotbarSetupEngineTests.cs | 9
 SWLOR.Game.Server.EngineTests/Definitions/FinalLineEngineTests.cs | 9
@@ -152,6 +152,7 @@ SWLOR.Game.Server.EngineTests/Definitions/PairedHandWeightEngineTests.cs | 5
 SWLOR.Game.Server.EngineTests/Definitions/PairedRangedConversionEngineTests.cs | 22
 SWLOR.Game.Server.EngineTests/Definitions/PartyAuraEngineTests.cs | 23
 SWLOR.Game.Server.EngineTests/Definitions/PartyCacheEngineTests.cs | 14
+SWLOR.Game.Server.EngineTests/Definitions/PelvisAppearanceMigrationEngineTests.cs | 2
 SWLOR.Game.Server.EngineTests/Definitions/PerformanceAbilityEngineTests.cs | 23
 SWLOR.Game.Server.EngineTests/Definitions/PerformanceInstrumentEngineTests.cs | 15
 SWLOR.Game.Server.EngineTests/Definitions/PerformancePerkEngineTests.cs | 19
@@ -175,7 +176,7 @@ SWLOR.Game.Server.EngineTests/Definitions/PlayerListNamePrivacyEngineTests.cs | 
 SWLOR.Game.Server.EngineTests/Definitions/PlayerPerkFeatRestorationEngineTests.cs | 14
 SWLOR.Game.Server.EngineTests/Definitions/PlayerTechniqueLearningEngineTests.cs | 15
 SWLOR.Game.Server.EngineTests/Definitions/PowerGloveAppearanceEngineTests.cs | 3
-SWLOR.Game.Server.EngineTests/Definitions/PowerGloveFitEngineTests.cs | 6
+SWLOR.Game.Server.EngineTests/Definitions/PowerGloveFitEngineTests.cs | 12
 SWLOR.Game.Server.EngineTests/Definitions/PowerGloveKatarParityEngineTests.cs | 6
 SWLOR.Game.Server.EngineTests/Definitions/PowerGlovePairEngineTests.cs | 70
 SWLOR.Game.Server.EngineTests/Definitions/PowerGloveStatMigrationEngineTests.cs | 11
@@ -231,6 +232,7 @@ SWLOR.Game.Server.EngineTests/Definitions/TelegraphedAbilityEngineTests.cs | 20
 SWLOR.Game.Server.EngineTests/Definitions/TemporaryHitPointCapEngineTests.cs | 13
 SWLOR.Game.Server.EngineTests/Definitions/TemporaryHitPointDisplayEngineTests.cs | 1
 SWLOR.Game.Server.EngineTests/Definitions/ThrowingStanceEngineTests.cs | 13
+SWLOR.Game.Server.EngineTests/Definitions/TintMapEngineTests.cs | 44
 SWLOR.Game.Server.EngineTests/Definitions/TrapDamageEngineTests.cs | 45
 SWLOR.Game.Server.EngineTests/Definitions/TrapPlacementEngineTests.cs | 6
 SWLOR.Game.Server.EngineTests/Definitions/TwinPistolAccuracyEngineTests.cs | 5
@@ -478,7 +480,13 @@ SWLOR.Game.Server/Domain/Companions/BeastCombatStatCalculator.cs | 5
 SWLOR.Game.Server/Domain/Companions/BeastResistanceCalculator.cs | 8
 SWLOR.Game.Server/Domain/Companions/BeastStableCapacity.cs | 3
 SWLOR.Game.Server/Domain/Companions/DroidInstructions.cs | 5
+SWLOR.Game.Server/Domain/Companions/HelmetModelRenderer.cs | 9
 SWLOR.Game.Server/Domain/Companions/MutationRequirementDayOfWeek.cs | 2
+SWLOR.Game.Server/Domain/Companions/NeckModelRenderer.cs | 6
+SWLOR.Game.Server/Domain/Companions/PartSkinModelRenderer.cs | 8
+SWLOR.Game.Server/Domain/Companions/RobeModelRenderer.cs | 2
+SWLOR.Game.Server/Domain/Companions/ShoulderModelRenderer.cs | 7
+SWLOR.Game.Server/Domain/Companions/TintMapMaterialRegistry.cs | 5
 SWLOR.Game.Server/Domain/Crafting/CraftRankMilestones.cs | 6
 SWLOR.Game.Server/Domain/Crafting/GatheringLevels.cs | 4
 SWLOR.Game.Server/Domain/Crafting/Minigame/Circuit/CircuitPerkLines.cs | 2
@@ -711,19 +719,12 @@ SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/ShieldBashAbilityDefiniti
 SWLOR.Game.Server/Feature/AbilityDefinition/Vibroblade/ShieldWallAbilityDefinition.cs | 2
 SWLOR.Game.Server/Feature/AbilityDefinition/WeaponActiveAbilityDefinitionBase.cs | 187
 SWLOR.Game.Server/Feature/AchievementProgression.cs | 51
-SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/EquippedItemAppearance.cs | 2
+SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/EquippedItemAppearance.cs | 5
 SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/HornFit.cs | 1
 SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/PowerGloveFit.cs | 4
 SWLOR.Game.Server/Feature/AppearanceDefinition/Preview/AppearancePreview.cs | 2
-SWLOR.Game.Server/Domain/Companions/HelmetModelRenderer.cs | 9
-SWLOR.Game.Server/Domain/Companions/NeckModelRenderer.cs | 7
-SWLOR.Game.Server/Domain/Companions/PartSkinModelRenderer.cs | 9
-SWLOR.Game.Server/Domain/Companions/RobeModelRenderer.cs | 3
-SWLOR.Game.Server/Domain/Companions/ShoulderModelRenderer.cs | 8
-SWLOR.Game.Server/Domain/Companions/TintMapMaterialRegistry.cs | 6
-SWLOR.Game.Server/Feature/AppearanceDefinition/TintMap/TintMapService.cs | 42
 SWLOR.Game.Server/Feature/AreaConfiguration.cs | 2
-SWLOR.Game.Server/Feature/ArmorDisplay.cs | 9
+SWLOR.Game.Server/Feature/ArmorDisplay.cs | 10
 SWLOR.Game.Server/Feature/Auditing.cs | 10
 SWLOR.Game.Server/Feature/BeastStableTrials.cs | 2
 SWLOR.Game.Server/Feature/BuffTimer.cs | 8
@@ -755,7 +756,7 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AchievementsViewModel.cs | 6
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AnimationDebugViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs | 22
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.PartBrowser.cs | 6
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs | 18
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs | 33
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AreaNotesViewModel.cs | 9
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/BankViewModel.cs | 12
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/BugReportViewModel.cs | 4

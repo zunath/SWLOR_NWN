@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
@@ -40,7 +39,7 @@ public class PartSkinAppearanceTests
     {
         var expected = Enum.GetValues<AppearanceArmor>()
             .Where(part => part is not (AppearanceArmor.Invalid or AppearanceArmor.Num or AppearanceArmor.Neck or AppearanceArmor.Robe));
-        Assert.That(PartSkinModelCatalog.PartNames.Keys, Is.EquivalentTo(expected));
+        Assert.That(PartSkinModelCatalog.PartNames.Select(pair => pair.Part), Is.EquivalentTo(expected));
         Assert.That(PartSkinModelRenderer.Parts, Is.EquivalentTo(expected));
     }
 
@@ -60,7 +59,7 @@ public class PartSkinAppearanceTests
         var robeBodies = Read("roberender.2da").Select(fields => fields[1][..3] + fields[2]).ToHashSet();
         Assert.That(layouts.Select(layout => layout.Item1), Is.SubsetOf(robeBodies));
 
-        var directories = PartSkinModelCatalog.PartNames.ToDictionary(pair => pair.Value, pair => pair.Key switch
+        var directories = PartSkinModelCatalog.PartNames.ToDictionary(pair => pair.Name, pair => pair.Part switch
         {
             AppearanceArmor.Torso => "sw_pt_chest",
             AppearanceArmor.Pelvis => "sw_pt_pelvis",

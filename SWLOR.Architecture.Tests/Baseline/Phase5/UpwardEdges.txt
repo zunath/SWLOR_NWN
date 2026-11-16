@@ -117,11 +117,10 @@ SWLOR.Game.Server/Feature/MigrationDefinition/CharacterMigration/_1_LegacyPlayer
 SWLOR.Game.Server/Feature/MigrationDefinition/FurnitureRenameMigration.cs: Foundation content -> UI content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/ItemAppearanceCatalogMigration.cs: Foundation content -> Character content | 2
 SWLOR.Game.Server/Feature/MigrationDefinition/LootStatRevisionMigration.cs: Foundation content -> Gameplay content | 1
-SWLOR.Game.Server/Feature/MigrationDefinition/PelvisAppearanceMigration.cs: Foundation content -> Character content | 10
+SWLOR.Game.Server/Feature/MigrationDefinition/PelvisAppearanceMigration.cs: Foundation content -> Character content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/PistolBaseItemMigration.cs: Foundation content -> Gameplay content | 3
 SWLOR.Game.Server/Feature/MigrationDefinition/SerializedItemWeaponDamageTypeMigration.cs: Foundation content -> Gameplay content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.FurnitureRenames.cs: Foundation content -> UI content | 1
-SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.Pelvis.cs: Foundation content -> Character content | 1
 SWLOR.Game.Server/Feature/NaturalRegeneration.cs: Gameplay content -> Abilities content | 1
 SWLOR.Game.Server/Feature/PerkDefinition/DevicesGrenadierPerkDefinition.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/PerkDefinition/LeadershipVanguardCommandPerkDefinition.cs: Character content -> Abilities content | 1

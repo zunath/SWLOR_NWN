@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -12,22 +14,21 @@ namespace SWLOR.Game.Server.Domain.Character
     /// </summary>
     public sealed class PartSkinModelCatalog
     {
-        public static readonly IReadOnlyDictionary<AppearanceArmor, string> PartNames = new Dictionary<AppearanceArmor, string>
-        {
-            { AppearanceArmor.RightFoot, "footr" }, { AppearanceArmor.LeftFoot, "footl" },
-            { AppearanceArmor.RightShin, "shinr" }, { AppearanceArmor.LeftShin, "shinl" },
-            { AppearanceArmor.LeftThigh, "legl" }, { AppearanceArmor.RightThigh, "legr" },
-            { AppearanceArmor.Pelvis, "pelvis" }, { AppearanceArmor.Torso, "chest" },
-            { AppearanceArmor.Belt, "belt" },
-            { AppearanceArmor.RightForearm, "forer" }, { AppearanceArmor.LeftForearm, "forel" },
-            { AppearanceArmor.RightBicep, "bicepr" }, { AppearanceArmor.LeftBicep, "bicepl" },
-            { AppearanceArmor.RightShoulder, "shor" }, { AppearanceArmor.LeftShoulder, "shol" },
-            { AppearanceArmor.RightHand, "handr" }, { AppearanceArmor.LeftHand, "handl" }
-        };
+        public static readonly ImmutableArray<PartSkinPartName> PartNames = ImmutableArray.Create(
+            new PartSkinPartName(AppearanceArmor.RightFoot, "footr"), new PartSkinPartName(AppearanceArmor.LeftFoot, "footl"),
+            new PartSkinPartName(AppearanceArmor.RightShin, "shinr"), new PartSkinPartName(AppearanceArmor.LeftShin, "shinl"),
+            new PartSkinPartName(AppearanceArmor.LeftThigh, "legl"), new PartSkinPartName(AppearanceArmor.RightThigh, "legr"),
+            new PartSkinPartName(AppearanceArmor.Pelvis, "pelvis"), new PartSkinPartName(AppearanceArmor.Torso, "chest"),
+            new PartSkinPartName(AppearanceArmor.Belt, "belt"),
+            new PartSkinPartName(AppearanceArmor.RightForearm, "forer"), new PartSkinPartName(AppearanceArmor.LeftForearm, "forel"),
+            new PartSkinPartName(AppearanceArmor.RightBicep, "bicepr"), new PartSkinPartName(AppearanceArmor.LeftBicep, "bicepl"),
+            new PartSkinPartName(AppearanceArmor.RightShoulder, "shor"), new PartSkinPartName(AppearanceArmor.LeftShoulder, "shol"),
+            new PartSkinPartName(AppearanceArmor.RightHand, "handr"), new PartSkinPartName(AppearanceArmor.LeftHand, "handl")
+        );
 
-        private static readonly Dictionary<string, AppearanceArmor> Parts =
-            PartNames.ToDictionary(pair => pair.Value, pair => pair.Key, StringComparer.OrdinalIgnoreCase);
-        private static readonly string PartPattern = string.Join("|", PartNames.Values);
+        private static readonly FrozenDictionary<string, AppearanceArmor> Parts =
+            PartNames.ToFrozenDictionary(pair => pair.Name, pair => pair.Part, StringComparer.OrdinalIgnoreCase);
+        private static readonly string PartPattern = string.Join("|", PartNames.Select(pair => pair.Name));
         private static readonly Regex Source = new($@"^(p[fm][a-z])\d+_({PartPattern})(\d{{3}})$", RegexOptions.IgnoreCase);
         private static readonly Regex Render = new($@"^(p[fm][a-z])0_({PartPattern})(\d{{4,5}})$", RegexOptions.IgnoreCase);
         private static readonly Regex Body = new(@"^(p[fm][a-z])\d+$", RegexOptions.IgnoreCase);

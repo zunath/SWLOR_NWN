@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using Nwn.Preview.Dds;

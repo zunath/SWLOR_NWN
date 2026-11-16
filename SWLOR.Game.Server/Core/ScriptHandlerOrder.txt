@@ -57,11 +57,11 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.World.WeatherService.LoadData
   action      SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration
   action      SWLOR.Game.Server.Feature.UnarmedMastery.Register
-  action      SWLOR.Game.Server.Domain.Companions.NeckModelRenderer.Load
-  action      SWLOR.Game.Server.Domain.Companions.PartSkinModelRenderer.Load
-  action      SWLOR.Game.Server.Domain.Companions.RobeModelRenderer.Load
-  action      SWLOR.Game.Server.Domain.Companions.ShoulderModelRenderer.Load
-  action      SWLOR.Game.Server.Domain.Companions.TintMapMaterialRegistry.Load
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadNeckCatalog
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadPartSkinCatalog
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadRobeCatalog
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadShoulderCatalog
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadMaterials
 
 mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript, after every mod_cache_bef handler
   action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
@@ -148,7 +148,7 @@ appear
 
 appearance_edit
   action      SWLOR.Game.Server.Domain.Companions.DroidService.EditDroidAppearance
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEdit
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAppearanceEdit
 
 appears
   conditional SWLOR.Game.Server.Domain.Foundation.SnippetService.ConversationAppearsWhen
@@ -176,7 +176,7 @@ area_enter
   action      SWLOR.Game.Server.Feature.PersistentLocation.LoadLocationOnEnter
   action      SWLOR.Game.Server.Feature.PersistentMapProgression.LoadMapProgression
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.LoadPlayerStatusWindow
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAreaEnter
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAreaEnter
 
 area_exit
   action      SWLOR.Game.Server.Domain.World.AreaService.ExitArea
@@ -394,7 +394,7 @@ crea_spawn_aft
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureSpawn
   action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.TrapDefinition.SpawnLarvaeOnSlugDeath.MessageOnDeath
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnCreatureSpawn
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
 
@@ -510,7 +510,7 @@ droid_roundend
 
 droid_spawn
   action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnSpawn
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnCreatureSpawn
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
 
@@ -626,7 +626,7 @@ item_eqpval_aft
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.AfterEquip
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.AfterEquip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEquipmentChanged
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAppearanceEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
 
@@ -650,8 +650,8 @@ item_uneqp_aft
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.AfterUnequip
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.AfterUnequip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceItemUnequipped
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEquipmentChanged
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAppearanceItemUnequipped
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAppearanceEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
 
@@ -784,7 +784,7 @@ mod_enter
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnEnter
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariables
   action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnLogin
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEnter
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnEnter
@@ -799,7 +799,7 @@ mod_equip
   action      SWLOR.Game.Server.Feature.LightsaberAudio.EquipLightsaber
   action      SWLOR.Game.Server.Feature.StandardItemConfigurations.AddOnHitProperty
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnEquip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEquip
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEquip
 
@@ -891,7 +891,7 @@ mod_unacquire
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnLostItem
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnUnacquire
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnLostItem
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnacquire
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleUnacquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnUnacquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnacquire
 
@@ -903,7 +903,7 @@ mod_unequip
   action      SWLOR.Game.Server.Feature.KatarAnimationRemap.OnUnequip
   action      SWLOR.Game.Server.Feature.LightsaberAudio.UnequipLightsaber
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnUnequip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnequip
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleUnequip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleUnequip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleUnequip
 
@@ -985,7 +985,7 @@ pc_shld_adjusted
 
 pc_spawn
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnSpawn
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnPlayerSpawn
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnPlayerSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
 

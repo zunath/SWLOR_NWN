@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
@@ -11,29 +13,31 @@ namespace SWLOR.Game.Server.Domain.Companions
 {
     public static class TintMapModelResolver
     {
-        private static readonly IReadOnlyDictionary<CreaturePart, string> BodyPartNames =
-            new Dictionary<CreaturePart, string>
-            {
-                { CreaturePart.RightFoot, "footr" },
-                { CreaturePart.LeftFoot, "footl" },
-                { CreaturePart.RightShin, "shinr" },
-                { CreaturePart.LeftShin, "shinl" },
-                { CreaturePart.LeftThigh, "legl" },
-                { CreaturePart.RightThigh, "legr" },
-                { CreaturePart.Pelvis, "pelvis" },
-                { CreaturePart.Torso, "chest" },
-                { CreaturePart.Belt, "belt" },
-                { CreaturePart.Neck, "neck" },
-                { CreaturePart.RightForearm, "forer" },
-                { CreaturePart.LeftForearm, "forel" },
-                { CreaturePart.RightBicep, "bicepr" },
-                { CreaturePart.LeftBicep, "bicepl" },
-                { CreaturePart.RightShoulder, "shor" },
-                { CreaturePart.LeftShoulder, "shol" },
-                { CreaturePart.RightHand, "handr" },
-                { CreaturePart.LeftHand, "handl" },
-                { CreaturePart.Head, "head" }
-            };
+        private static readonly ImmutableArray<TintMapBodyPartName> BodyPartNames =
+            ImmutableArray.Create(
+                new TintMapBodyPartName(CreaturePart.RightFoot, "footr"),
+                new TintMapBodyPartName(CreaturePart.LeftFoot, "footl"),
+                new TintMapBodyPartName(CreaturePart.RightShin, "shinr"),
+                new TintMapBodyPartName(CreaturePart.LeftShin, "shinl"),
+                new TintMapBodyPartName(CreaturePart.LeftThigh, "legl"),
+                new TintMapBodyPartName(CreaturePart.RightThigh, "legr"),
+                new TintMapBodyPartName(CreaturePart.Pelvis, "pelvis"),
+                new TintMapBodyPartName(CreaturePart.Torso, "chest"),
+                new TintMapBodyPartName(CreaturePart.Belt, "belt"),
+                new TintMapBodyPartName(CreaturePart.Neck, "neck"),
+                new TintMapBodyPartName(CreaturePart.RightForearm, "forer"),
+                new TintMapBodyPartName(CreaturePart.LeftForearm, "forel"),
+                new TintMapBodyPartName(CreaturePart.RightBicep, "bicepr"),
+                new TintMapBodyPartName(CreaturePart.LeftBicep, "bicepl"),
+                new TintMapBodyPartName(CreaturePart.RightShoulder, "shor"),
+                new TintMapBodyPartName(CreaturePart.LeftShoulder, "shol"),
+                new TintMapBodyPartName(CreaturePart.RightHand, "handr"),
+                new TintMapBodyPartName(CreaturePart.LeftHand, "handl"),
+                new TintMapBodyPartName(CreaturePart.Head, "head")
+            );
+
+        private static readonly FrozenDictionary<CreaturePart, string> BodyPartLookup =
+            BodyPartNames.ToFrozenDictionary(entry => entry.Part, entry => entry.Name);
 
         public static IReadOnlyList<TintMapMaterialSelection> GetCurrentSelections(uint creature)
         {
@@ -340,8 +344,8 @@ namespace SWLOR.Game.Server.Domain.Companions
             AppearanceArmor destinationPart)
         {
             if (!GetIsObjectValid(item) ||
-                !BodyPartNames.TryGetValue((CreaturePart)(int)sourcePart, out var sourcePartName) ||
-                !BodyPartNames.TryGetValue((CreaturePart)(int)destinationPart, out var destinationPartName))
+                !BodyPartLookup.TryGetValue((CreaturePart)(int)sourcePart, out var sourcePartName) ||
+                !BodyPartLookup.TryGetValue((CreaturePart)(int)destinationPart, out var destinationPartName))
             {
                 return;
             }
@@ -373,18 +377,18 @@ namespace SWLOR.Game.Server.Domain.Companions
             var activeVariables = BodyPartNames
                 .SelectMany(pair =>
                 {
-                    var part = (AppearanceArmor)(int)pair.Key;
+                    var part = (AppearanceArmor)(int)pair.Part;
                     var activePartId = part == destinationPart
                         ? sourcePartId
                         : ResolvePartId(
-                            GetCreatureBodyPart(pair.Key, creature),
+                            GetCreatureBodyPart(pair.Part, creature),
                             GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part),
                             true);
                     if (activePartId <= 0)
                         return Array.Empty<string>();
 
                     var activeModelResref =
-                        $"{prefix}{pair.Value}{activePartId:D3}".ToLowerInvariant();
+                        $"{prefix}{pair.Name}{activePartId:D3}".ToLowerInvariant();
                     return TintMapMaterialRegistry.GetMaterials(activeModelResref)
                         .SelectMany(material => material.Layers.SelectMany(layer =>
                             GetEquivalentMaterialVariables(activeModelResref, material, layer)));

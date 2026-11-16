@@ -21,21 +21,8 @@ namespace SWLOR.Game.Server.Domain.Companions
     public static class PartSkinModelRenderer
     {
         private static PartSkinModelCatalog Catalog => AppearanceRenderState.GetPartSkinCatalog();
-        public static readonly ImmutableArray<AppearanceArmor> Parts = PartSkinModelCatalog.PartNames.Keys.ToImmutableArray();
+        public static readonly ImmutableArray<AppearanceArmor> Parts = PartSkinModelCatalog.PartNames.Select(pair => pair.Part).ToImmutableArray();
 
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public static void Load()
-        {
-            var layouts = new List<(string, string)>();
-            for (var row = 0; row < Get2DARowCount("partlayout"); row++)
-                layouts.Add((Get2DAString("partlayout", "BODY", row), Get2DAString("partlayout", "LAYOUT", row)));
-            var renders = new List<(string, string, string)>();
-            for (var row = 0; row < Get2DARowCount("partrender"); row++)
-                renders.Add((Get2DAString("partrender", "LAYOUT", row), Get2DAString("partrender", "SOURCE", row),
-                    Get2DAString("partrender", "RENDER", row)));
-            AppearanceRenderState.SetPartSkinCatalog(new PartSkinModelCatalog(layouts, renders));
-        }
 
         public static void Apply(uint creature)
         {

@@ -9,7 +9,6 @@ using SWLOR.Toolset.Domain.GameData.Tilesets;
 using Nwn.Formats.Tilesets;
 using Nwn.Authoring.Areas.Tiles;
 using SWLOR.Toolset.Domain.Render;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 

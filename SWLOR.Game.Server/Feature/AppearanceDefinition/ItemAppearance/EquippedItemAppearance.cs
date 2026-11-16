@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NWN.Native.API;
 using SWLOR.Game.Server.Domain.Companions;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
@@ -121,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             }
 
             server.SetForceUpdate();
-            TintMapService.ApplyCurrentColors(creature, resetShaderOverrides);
+            TintMapApply.ApplyCurrentColors(creature, resetShaderOverrides);
             Droid.UpdateEquippedItemSnapshot(creature, item);
 
             if (detachingPlayers.Count > 0)
@@ -185,7 +184,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 return;
 
             server.SetForceUpdate();
-            TintMapService.ApplyCurrentColors(creature, resetShaderOverrides);
+            TintMapApply.ApplyCurrentColors(creature, resetShaderOverrides);
             if (GetIsPC(creature))
                 DelayCommand(QuickbarRefreshDelaySeconds, () => RestoreQuickbarReferences(creature, item));
         }
@@ -255,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                     appearance.m_oidRightHandItem = OBJECT_INVALID;
             }
             server.SetForceUpdate();
-            TintMapService.ApplyCurrentColors(creature);
+            TintMapApply.ApplyCurrentColors(creature);
         }
 
         public static void ApplyOutfit(uint creature, uint item, uint template)
@@ -274,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 Set(item, ItemAppearanceType.ArmorColor, color,
                     GetItemAppearance(template, ItemAppearanceType.ArmorColor, color));
 
-            TintMapService.ReplaceItemTintOverrides(template, item);
+            TintMapOverrideLocals.ReplaceItemTintOverrides(template, item);
             Refresh(creature, item);
         }
 
@@ -293,7 +292,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 Set(item, ItemAppearanceType.ArmorColor, color,
                     GetItemAppearance(template, ItemAppearanceType.ArmorColor, color));
 
-            TintMapService.ReplaceItemTintOverrides(template, item);
+            TintMapOverrideLocals.ReplaceItemTintOverrides(template, item);
             Refresh(creature, item);
         }
 

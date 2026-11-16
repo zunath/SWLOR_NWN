@@ -29,7 +29,6 @@ using SWLOR.Toolset.Editors.Creatures;
 using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Editors.TintMaps;
 using SWLOR.Game.Server.Domain.Creatures;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum;

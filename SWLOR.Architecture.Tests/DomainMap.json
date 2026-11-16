@@ -118,7 +118,7 @@
     },
     "Companions": {
       "services": [
-        "BeastMastery", "IncubationFieldNote", "Droid", "DroidEquipmentDiagnostics"
+        "BeastMastery", "IncubationFieldNote", "Droid", "DroidEquipmentDiagnostics", "TintMap"
       ],
       "featureFolders": [
         "BeastDefinition"

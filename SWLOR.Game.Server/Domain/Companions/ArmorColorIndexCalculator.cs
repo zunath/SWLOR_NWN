@@ -1,6 +1,6 @@
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
-namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
+namespace SWLOR.Game.Server.Domain.Companions
 {
     public static class ArmorColorIndexCalculator
     {

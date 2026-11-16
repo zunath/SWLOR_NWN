@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Domain.Companions
@@ -10,23 +12,23 @@ namespace SWLOR.Game.Server.Domain.Companions
     /// </summary>
     public static class TintMapPaletteColors
     {
-        private static readonly byte[] Skin = Convert.FromBase64String(
-            "zp96woxntXpWlWhPe1hFYEU3SDQpMiQczqt7todWfWBGSToqzZB5tWdUeE1ERi4oraObkIN7Zl5aPDg1j6e5b4ydU2VuMTtAwrF8qpBYeWdIRTwqMDM+ISEmDxASAQEBtrd8m5dbcW1IQUAri72caqJ6U3RbMEM1pKSkhYWFYGBgODg4VTsxSCsgVDBTRx9GLjJQHSBAM1BaIThJRF42NVEkXFQ1UEckyMjIAAAA/7UB459igICAAAAA5eXlHBwcmkpSg2dhtYoviINcZJpKbn1nZU2Xbmd9jkiQfmZ/r4lpjYB0TZt7ZX50QFx/YWt5X2c1bG9ZhY6/foKVgHdkgHdke25pbFo83Uc32T4kqCIVcxML/Nd05bI+soApa04ioj5XjzdNaik6VCAtq1tDoEs4hy0mdx8dYIlSWH1IQmIvPVElpqiDjo9gdHY9bG4xU1VCTU47QkAvOjgouJt7podrg15Mb0g5raaGnJJ0eWxVZVdCgnlydGlkV0xIRzo418Wvrpd+h2tMeFo4QkdVO0BOLzRCKC06PleiN02PKTlqIC1UdrS8ZKmsRoeBNHNs0GLHvVO6jDaZcyOEgq7HUomogcO4UKSZjMF9XaNPx76BqJ9Rx6eBqIBRuHNrkExEmmGCczpbx42DkR6IzdLmUFt/5uH4GR4HnKCIMUM6PS9FMTZDUE8kRjEueFo4cmEg");
+        private static readonly ImmutableArray<byte> Skin = ImmutableArray.Create(Convert.FromBase64String(
+            "zp96woxntXpWlWhPe1hFYEU3SDQpMiQczqt7todWfWBGSToqzZB5tWdUeE1ERi4oraObkIN7Zl5aPDg1j6e5b4ydU2VuMTtAwrF8qpBYeWdIRTwqMDM+ISEmDxASAQEBtrd8m5dbcW1IQUAri72caqJ6U3RbMEM1pKSkhYWFYGBgODg4VTsxSCsgVDBTRx9GLjJQHSBAM1BaIThJRF42NVEkXFQ1UEckyMjIAAAA/7UB459igICAAAAA5eXlHBwcmkpSg2dhtYoviINcZJpKbn1nZU2Xbmd9jkiQfmZ/r4lpjYB0TZt7ZX50QFx/YWt5X2c1bG9ZhY6/foKVgHdkgHdke25pbFo83Uc32T4kqCIVcxML/Nd05bI+soApa04ioj5XjzdNaik6VCAtq1tDoEs4hy0mdx8dYIlSWH1IQmIvPVElpqiDjo9gdHY9bG4xU1VCTU47QkAvOjgouJt7podrg15Mb0g5raaGnJJ0eWxVZVdCgnlydGlkV0xIRzo418Wvrpd+h2tMeFo4QkdVO0BOLzRCKC06PleiN02PKTlqIC1UdrS8ZKmsRoeBNHNs0GLHvVO6jDaZcyOEgq7HUomogcO4UKSZjMF9XaNPx76BqJ9Rx6eBqIBRuHNrkExEmmGCczpbx42DkR6IzdLmUFt/5uH4GR4HnKCIMUM6PS9FMTZDUE8kRjEueFo4cmEg"));
 
-        private static readonly byte[] Hair = Convert.FromBase64String(
-            "w4Yrq3QgkVwVhk0Mw1Yrq0cgkTUVhicM9OS57tmq58+c38GF2bF3uZBZhV5FUzUm/////v7+7OzssLCweoaaU2aCLj5REx8skV3oMgCjnX7QLxdlXX7oADGjfpHQFy9lXbjoAHajfrPQF1BlcNKlE3VDhcGlIlg9e+hdLqMAj9B+LWUX0ehdk6MAw9B+XWUX6K9do1YA0K9+ZUAX6GpdowQA0IV+ZRoX5eXlAAAA/7QA6baHgICAAAAA5eXlHBwcmkpSg2dhtYoviINcZJpKbn1nZU2Xbmd9jkiQfmZ/r4lpjYB0TZt7ZX50QFx/YWt5X2c1bG9ZhY6/foKVgHdkgHdke25pbFo83Uc32T4kqCIVcxML/Nd05bI+soApa04ioj5XjzdNaik6VCAtq1tDoEs4hy0mdx8dYIlSWH1IQmIvPVElpqiDjo9gdHY9bG4xU1VCTU47QkAvOjgouJt7podrg15Mb0g5raaGnJJ0eWxVZVdCgnlydGlkV0xIRzo418Wvrpd+h2tMeFo4QkdVO0BOLzRCKC06PleiN02PKTlqIC1UdrS8ZKmsRoeBNHNs0GLHvVO6jDaZcyOEgq7HUomogcO4UKSZjMF9XaNPx76BqJ9Rx6eBqIBRuHNrkExEmmGCczpbx42DkR6IzdLmUFt/5uH4GR4HnKCIMUM6PS9FMTZDUE8kRjEueFo4cmEg");
+        private static readonly ImmutableArray<byte> Hair = ImmutableArray.Create(Convert.FromBase64String(
+            "w4Yrq3QgkVwVhk0Mw1Yrq0cgkTUVhicM9OS57tmq58+c38GF2bF3uZBZhV5FUzUm/////v7+7OzssLCweoaaU2aCLj5REx8skV3oMgCjnX7QLxdlXX7oADGjfpHQFy9lXbjoAHajfrPQF1BlcNKlE3VDhcGlIlg9e+hdLqMAj9B+LWUX0ehdk6MAw9B+XWUX6K9do1YA0K9+ZUAX6GpdowQA0IV+ZRoX5eXlAAAA/7QA6baHgICAAAAA5eXlHBwcmkpSg2dhtYoviINcZJpKbn1nZU2Xbmd9jkiQfmZ/r4lpjYB0TZt7ZX50QFx/YWt5X2c1bG9ZhY6/foKVgHdkgHdke25pbFo83Uc32T4kqCIVcxML/Nd05bI+soApa04ioj5XjzdNaik6VCAtq1tDoEs4hy0mdx8dYIlSWH1IQmIvPVElpqiDjo9gdHY9bG4xU1VCTU47QkAvOjgouJt7podrg15Mb0g5raaGnJJ0eWxVZVdCgnlydGlkV0xIRzo418Wvrpd+h2tMeFo4QkdVO0BOLzRCKC06PleiN02PKTlqIC1UdrS8ZKmsRoeBNHNs0GLHvVO6jDaZcyOEgq7HUomogcO4UKSZjMF9XaNPx76BqJ9Rx6eBqIBRuHNrkExEmmGCczpbx42DkR6IzdLmUFt/5uH4GR4HnKCIMUM6PS9FMTZDUE8kRjEueFo4cmEg"));
 
-        private static readonly byte[] Metal1 = Convert.FromBase64String(
-            "zc3NbGxsPDs7AAAAysrKpaWlbm5uRUVF/70d/8QIyI0AjmIA5sV1tZg6gmQeRzEA/4kd/4oIyF8AjkEA5qt1tXs6gk0eRyAA/0EdjhQA5od1RwoApUjUUxtzuIrQKQ05XF7AJylmlJXGFBYzVaTGI1ZqkbjJEis1SNRKHHMbitCLDTkNodRIVXMbt9CKDTkNDABSAAAvbGxsbGxsMzMzNDQ0bGxsbGxszc3NAAAA/70d5qt1gICAAAAA////AAAAmkpSg2dhtYoviINcZJpKbn1nZU2Xbmd9jkiQfmZ/r4lpjYB0TZt7ZX50QFx/YWt5X2c1bG9ZhY6/foKVgHdkgHdke25pbFo83Uc32T4kqCIVcxML/Nd05bI+soApa04ioj5XjzdNaik6VCAtq1tDoEs4hy0mdx8dYIlSWH1IQmIvPVElpqiDjo9gdHY9bG4xU1VCTU47QkAvOjgouJt7podrg15Mb0g5raaGnJJ0eWxVZVdCgnlydGlkV0xIRzo418Wvrpd+h2tMeFo4QkdVO0BOLzRCKC06PleiN02PKTlqIC1UdrS8ZKmsRoeBNHNs0GLHvVO6jDaZcyOEgq7HUomogcO4UKSZjMF9XaNPx76BqJ9Rx6eBqIBRuHNrkExEmmGCczpbx42DkR6IzdLmUFt/5uH4GR4HnKCIMUM6PS9FMTZDUE8kRjEueFo4cmEg");
+        private static readonly ImmutableArray<byte> Metal1 = ImmutableArray.Create(Convert.FromBase64String(
+            "zc3NbGxsPDs7AAAAysrKpaWlbm5uRUVF/70d/8QIyI0AjmIA5sV1tZg6gmQeRzEA/4kd/4oIyF8AjkEA5qt1tXs6gk0eRyAA/0EdjhQA5od1RwoApUjUUxtzuIrQKQ05XF7AJylmlJXGFBYzVaTGI1ZqkbjJEis1SNRKHHMbitCLDTkNodRIVXMbt9CKDTkNDABSAAAvbGxsbGxsMzMzNDQ0bGxsbGxszc3NAAAA/70d5qt1gICAAAAA////AAAAmkpSg2dhtYoviINcZJpKbn1nZU2Xbmd9jkiQfmZ/r4lpjYB0TZt7ZX50QFx/YWt5X2c1bG9ZhY6/foKVgHdkgHdke25pbFo83Uc32T4kqCIVcxML/Nd05bI+soApa04ioj5XjzdNaik6VCAtq1tDoEs4hy0mdx8dYIlSWH1IQmIvPVElpqiDjo9gdHY9bG4xU1VCTU47QkAvOjgouJt7podrg15Mb0g5raaGnJJ0eWxVZVdCgnlydGlkV0xIRzo418Wvrpd+h2tMeFo4QkdVO0BOLzRCKC06PleiN02PKTlqIC1UdrS8ZKmsRoeBNHNs0GLHvVO6jDaZcyOEgq7HUomogcO4UKSZjMF9XaNPx76BqJ9Rx6eBqIBRuHNrkExEmmGCczpbx42DkR6IzdLmUFt/5uH4GR4HnKCIMUM6PS9FMTZDUE8kRjEueFo4cmEg"));
 
         // Native modular bodies, helmets and appendages select pal_armor01 for both metal layers.
-        private static readonly byte[] Metal2 = Metal1;
+        private static readonly ImmutableArray<byte> Metal2 = Metal1;
 
-        private static readonly byte[] Organic = Convert.FromBase64String(
-            "7NvGyKiFnnVIjGM006yCwpVtmmVJf0s3xbyRs6d7i3lWcl9Dk4R6hHNrYFBMTj47kZVEhYM3a2AjVkkYwcLDfYKFT1VYJSouWGmZKjhiVaLXI22hU9G5I5mEZM1PNJch2MVUoZAi2JNUoWAi12NXoTEkr0uGdB9Qj0ulWB5pdVuhQyxofYKFJSouKjhiI22hI5mENJchoZAioWAioTEkdB9QWB5pQyxo5eXlAAAA/7QA6baHgICAAAAA////AAAAmkpSg2dhtYoviINcZJpKbn1nZU2Xbmd9jkiQfmZ/r4lpjYB0TZt7ZX50QFx/YWt5X2c1bG9ZhY6/foKVgHdkgHdke25pbFo83Uc32T4kqCIVcxML/Nd05bI+soApa04ioj5XjzdNaik6VCAtq1tDoEs4hy0mdx8dYIlSWH1IQmIvPVElpqiDjo9gdHY9bG4xU1VCTU47QkAvOjgouJt7podrg15Mb0g5raaGnJJ0eWxVZVdCgnlydGlkV0xIRzo418Wvrpd+h2tMeFo4QkdVO0BOLzRCKC06PleiN02PKTlqIC1UdrS8ZKmsRoeBNHNs0GLHvVO6jDaZcyOEgq7HUomogcO4UKSZjMF9XaNPx76BqJ9Rx6eBqIBRuHNrkExEmmGCczpbx42DkR6IzdLmUFt/5uH4GR4HnKCIMUM6PS9FMTZDUE8kRjEueFo4cmEg");
+        private static readonly ImmutableArray<byte> Organic = ImmutableArray.Create(Convert.FromBase64String(
+            "7NvGyKiFnnVIjGM006yCwpVtmmVJf0s3xbyRs6d7i3lWcl9Dk4R6hHNrYFBMTj47kZVEhYM3a2AjVkkYwcLDfYKFT1VYJSouWGmZKjhiVaLXI22hU9G5I5mEZM1PNJch2MVUoZAi2JNUoWAi12NXoTEkr0uGdB9Qj0ulWB5pdVuhQyxofYKFJSouKjhiI22hI5mENJchoZAioWAioTEkdB9QWB5pQyxo5eXlAAAA/7QA6baHgICAAAAA////AAAAmkpSg2dhtYoviINcZJpKbn1nZU2Xbmd9jkiQfmZ/r4lpjYB0TZt7ZX50QFx/YWt5X2c1bG9ZhY6/foKVgHdkgHdke25pbFo83Uc32T4kqCIVcxML/Nd05bI+soApa04ioj5XjzdNaik6VCAtq1tDoEs4hy0mdx8dYIlSWH1IQmIvPVElpqiDjo9gdHY9bG4xU1VCTU47QkAvOjgouJt7podrg15Mb0g5raaGnJJ0eWxVZVdCgnlydGlkV0xIRzo418Wvrpd+h2tMeFo4QkdVO0BOLzRCKC06PleiN02PKTlqIC1UdrS8ZKmsRoeBNHNs0GLHvVO6jDaZcyOEgq7HUomogcO4UKSZjMF9XaNPx76BqJ9Rx6eBqIBRuHNrkExEmmGCczpbx42DkR6IzdLmUFt/5uH4GR4HnKCIMUM6PS9FMTZDUE8kRjEueFo4cmEg"));
 
-        private static readonly IReadOnlyDictionary<TintMapLayerType, byte[]> Colors =
-            new Dictionary<TintMapLayerType, byte[]>
+        private static readonly FrozenDictionary<TintMapLayerType, ImmutableArray<byte>> Colors =
+            new Dictionary<TintMapLayerType, ImmutableArray<byte>>
             {
                 [TintMapLayerType.Skin] = Skin,
                 [TintMapLayerType.Hair] = Hair,
@@ -38,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                 [TintMapLayerType.Leather2] = Organic,
                 [TintMapLayerType.Tattoo1] = Organic,
                 [TintMapLayerType.Tattoo2] = Organic
-            };
+            }.ToFrozenDictionary();
 
         public static TintMapColor GetColor(TintMapLayerType layer, int colorId)
         {

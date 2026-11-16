@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Domain.Companions
         public const int PaletteColorCount = 176;
         public const int PaletteTextureHeight = 2048;
         public const int CustomColorReferenceIntensity = 128;
-        private const string TintMap2DA = "tintmap";
 
         // Built once and never written again, so it needs no service and the toolset reads it without a container.
         // The material tables read from the 2DAs are runtime state and live in TintMapState.
@@ -32,49 +31,6 @@ namespace SWLOR.Game.Server.Domain.Companions
             { TintMapLayerType.Tattoo2, new TintMapLayerDefinition("Tattoo 2", "rowTat2", "tintTat2", "useCustomTat2", "gui_pal_tattoo", 1056) }
         }.ToFrozenDictionary();
 
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public static void Load()
-        {
-            var materials = new Dictionary<string, List<TintMapMaterialDefinition>>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var table in new[] { TintMap2DA, "cloaktint" })
-            {
-                for (var row = 0; row < Get2DARowCount(table); row++)
-                {
-                    var model = Get2DAString(table, "MODEL", row);
-                    var material = Get2DAString(table, "MATERIAL", row);
-                    var layerValues = Get2DAString(table, "LAYERS", row).Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    if (string.IsNullOrWhiteSpace(model) || string.IsNullOrWhiteSpace(material) || layerValues.Length == 0)
-                        continue;
-
-                    var layers = new List<TintMapLayerType>();
-                    foreach (var layerValue in layerValues)
-                    {
-                        if (int.TryParse(layerValue, out var value) && Enum.IsDefined(typeof(TintMapLayerType), value))
-                            layers.Add((TintMapLayerType)value);
-                    }
-
-                    if (layers.Count == 0)
-                        continue;
-
-                    if (!materials.TryGetValue(model, out var modelMaterials))
-                    {
-                        modelMaterials = new List<TintMapMaterialDefinition>();
-                        materials[model] = modelMaterials;
-                    }
-
-                    modelMaterials.Add(new TintMapMaterialDefinition(material, material, layers.ToArray()));
-                }
-            }
-
-            TintMapState.LoadMaterials(materials);
-
-            Log.WriteStructured(
-                LogGroup.Server,
-                "Loaded {TintMapModelCount} tint-map models.",
-                materials.Count);
-        }
 
         public static IReadOnlyList<TintMapMaterialDefinition> GetMaterials(string modelResref) =>
             TintMapState.GetMaterials(modelResref);

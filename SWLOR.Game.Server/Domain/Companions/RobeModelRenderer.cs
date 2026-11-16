@@ -16,34 +16,6 @@ namespace SWLOR.Game.Server.Domain.Companions
     {
         private static RobeModelCatalog Catalog => AppearanceRenderState.GetRobeCatalog();
 
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public static void Load()
-        {
-            var definitions = new List<(string, int, int)>();
-            var reserved = new List<(int, int)>();
-            // Preserve normalization of saved creatures even if a robe is later retired.
-            // Generated IDs stay reserved in phenotype.2da and must never be recycled.
-            for (var row = 34; row < Get2DARowCount("phenotype"); row++)
-            {
-                if (!Get2DAString("phenotype", "Label", row).StartsWith("RobeRgb_", StringComparison.Ordinal))
-                    continue;
-                if (!int.TryParse(Get2DAString("phenotype", "DefaultPhenoType", row), out var basePhenotype))
-                    throw new InvalidOperationException($"Invalid robe phenotype {row}.");
-                reserved.Add((row, basePhenotype));
-            }
-            for (var row = 0; row < Get2DARowCount("roberender"); row++)
-            {
-                var model = Get2DAString("roberender", "MODEL", row);
-                if (!int.TryParse(Get2DAString("roberender", "PHENOTYPE", row), out var phenotype) ||
-                    !int.TryParse(Get2DAString("roberender", "BASEPHENOTYPE", row), out var basePhenotype))
-                    throw new InvalidOperationException($"Invalid robe rendering row {row}.");
-                definitions.Add((model, phenotype, basePhenotype));
-            }
-            AppearanceRenderState.SetRobeCatalog(new RobeModelCatalog(definitions, reserved));
-            Log.WriteStructured(LogGroup.Server, "Loaded {RobeRgbModelCount} robe RGB models.", definitions.Count);
-        }
-
         public static int GetBasePhenotype(uint creature) => Catalog.GetBasePhenotype((int)GetPhenoType(creature));
 
         public static bool SupportsRgb(TintMapMaterialSelection selection) =>

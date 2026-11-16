@@ -339,10 +339,9 @@ Feature.Jukebox -> Domain/Administration | 1
 Feature.RoleplayXP -> Domain/Administration | 1
 Feature.ServerTasks -> Domain/Administration | 1
 
-# Gameplay -> Character (24 edges)
+# Gameplay -> Character (22 edges)
 Domain/Gameplay -> Domain/Character | 1
 Feature.AchievementProgression -> Domain/Character | 6
-Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
 Feature.Auditing -> Domain/Character | 3
 Feature.BuffTimer -> Domain/Character | 3
 Feature.CivilianPatrol -> Domain/Character | 1
@@ -356,7 +355,6 @@ Feature.PlayerInitialization -> Domain/Character | 5
 Feature.PlayerRest -> Domain/Character | 1
 Feature.PlayerRest -> Feature/StatusEffectDefinition | 1
 Feature.PlayerTemporaryEffects -> Domain/Character | 1
-Feature.PlayerTemporaryEffects -> Feature/AppearanceDefinition | 1
 Feature.RoleplayXP -> Domain/Character | 6
 Feature.ScavengePoint -> Domain/Character | 1
 Feature.TlkOverrides -> Domain/Character | 2
@@ -385,8 +383,10 @@ Feature.UnarmedMastery -> Domain/Combat | 1
 Feature.UnarmedTechniqueProfile -> Domain/Combat | 1
 Feature.UsePerkFeat -> Domain/Combat | 20
 
-# Gameplay -> Companions (2 edges)
+# Gameplay -> Companions (4 edges)
+Feature.ArmorDisplay -> Domain/Companions | 3
 Feature.EquipmentRestrictions -> Domain/Companions | 1
+Feature.PlayerTemporaryEffects -> Domain/Companions | 1
 Feature.TwinPistolEquipmentValidation -> Domain/Companions | 2
 
 # Gameplay -> Crafting (5 edges)
@@ -613,14 +613,16 @@ Feature/ChatCommandDefinition -> Domain/World | 3
 # Space -> Abilities (1 edge)
 Domain/Space -> Domain/Abilities | 5
 
-# Space -> Character (3 edges)
+# Space -> Character (2 edges)
 Domain/Space -> Domain/Character | 18
-Domain/Space -> Feature/AppearanceDefinition | 1
 Feature/ShipModuleDefinition -> Domain/Character | 8
 
 # Space -> Combat (2 edges)
 Domain/Space -> Domain/Combat | 8
 Feature/ShipModuleDefinition -> Domain/Combat | 16
+
+# Space -> Companions (1 edge)
+Domain/Space -> Domain/Companions | 3
 
 # Space -> Creatures (1 edge)
 Domain/Space -> Domain/Creatures | 6

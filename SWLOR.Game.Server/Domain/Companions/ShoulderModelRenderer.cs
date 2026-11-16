@@ -20,16 +20,6 @@ namespace SWLOR.Game.Server.Domain.Companions
         private static readonly ImmutableArray<AppearanceArmor> Parts =
             ImmutableArray.Create(AppearanceArmor.LeftShoulder, AppearanceArmor.RightShoulder);
 
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public static void Load()
-        {
-            var rows = new List<(string, string, string)>();
-            for (var row = 0; row < Get2DARowCount("shoulderrender"); row++)
-                rows.Add((Get2DAString("shoulderrender", "BODY", row), Get2DAString("shoulderrender", "SOURCE", row),
-                    Get2DAString("shoulderrender", "RENDER", row)));
-            AppearanceRenderState.SetShoulderCatalog(new ShoulderModelCatalog(rows));
-        }
 
         public static void Apply(uint creature)
         {

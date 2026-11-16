@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -282,12 +283,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    // Wookiees cannot speak any language besides Shyriiwook.
-                    if (race == RacialType.Wookiee &&
-                        command != SkillType.Shyriiwook.ToString().ToLower())
+                    // Wookiees can only speak Shyriiwook and astromechs can only speak Droidspeak.
+                    var onlyLanguage = Language.GetOnlySpokenLanguage(race);
+                    if (onlyLanguage != SkillType.Invalid &&
+                        command != onlyLanguage.ToString().ToLower())
                     {
-                        Language.SetActiveLanguage(user, SkillType.Shyriiwook);
-                        SendMessageToPC(user, ColorToken.Red("Wookiees can only speak Shyriiwook."));
+                        Language.SetActiveLanguage(user, onlyLanguage);
+                        SendMessageToPC(user, ColorToken.Red(Language.GetOnlySpokenLanguageMessage(race)));
                         return;
                     }
 
@@ -433,6 +435,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         uiTarget = player;
                         player = GetMaster(player);
                     }
+                    else if (AstromechWorkshop.TryOpenInsteadOfAppearanceEditor(player))
+                    {
+                        return;
+                    }
 
                     var payload = new AppearanceEditorPayload(user);
                     Gui.TogglePlayerWindow(player, GuiWindowType.AppearanceEditor, payload, OBJECT_INVALID, uiTarget);
@@ -451,6 +457,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (GetIsDM(user) || GetIsDMPossessed(user))
                     {
                         return "This command can only be used by players.";
+                    }
+
+                    if (Astromech.IsAstromech(user))
+                    {
+                        return AstromechWorkshop.HeadScaleMessage;
                     }
 
                     if (!RacialAppearanceRegistry.TryGet(GetAppearanceType(user), out var appearance))

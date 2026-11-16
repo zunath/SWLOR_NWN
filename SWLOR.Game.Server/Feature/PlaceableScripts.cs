@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
@@ -185,6 +186,12 @@ namespace SWLOR.Game.Server.Feature
         public static void Sit()
         {
             var user = GetLastUsedBy();
+
+            if (Astromech.IsAstromech(user))
+            {
+                SendMessageToPC(user, AstromechAnimations.SitRefusal);
+                return;
+            }
 
             AssignCommand(user, () => ActionSit(OBJECT_SELF));
             if (GetObjectVisualTransform(user, ObjectVisualTransform.Scale) == 1.0) return;

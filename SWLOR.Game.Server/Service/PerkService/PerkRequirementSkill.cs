@@ -23,6 +23,9 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         public string CheckRequirements(Player dbPlayer, Beast activeBeast)
         {
+            if (!SkillBodyFrames.IsOpenTo(Type, dbPlayer.BodyFrame))
+                return SkillBodyFrames.GetRefusal(Type);
+
             var skill = dbPlayer.Skills[Type];
             var rank = skill.Rank;
 

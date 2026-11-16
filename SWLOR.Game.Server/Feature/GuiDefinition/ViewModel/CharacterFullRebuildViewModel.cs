@@ -322,8 +322,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecalculateAvailableSkillPoints();
         }
 
+        // The body frame of the character being rebuilt, read once when the window opens.
+        private Enumeration.BodyFrame _bodyFrame = Enumeration.BodyFrame.Humanoid;
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            _bodyFrame = Service.Race.GetBodyFrame(Player);
             LoadCharacterTypeControls();
             LoadSkills();
             ResetControls();
@@ -336,7 +340,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadSkills()
         {
             var availableSkills = Skill.GetActiveContributingSkills()
-                .Where(x => x.Value.IsAvailableToCharacterType(SelectedSkillCharacterType));
+                .Where(x => x.Value.IsAvailableTo(SelectedSkillCharacterType, _bodyFrame));
             var previousPoints = _skills.Select((type, index) => (type, points: _skillDistributionPoints[index]))
                 .ToDictionary(x => x.type, x => x.points);
             var skills = new GuiBindingList<string>();
@@ -772,7 +776,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 if (_skills.Where((skill, index) => _skillDistributionPoints[index] > 0)
-                    .Any(skill => !Skill.GetSkillDetails(skill).IsAvailableToCharacterType(SelectedSkillCharacterType)))
+                    .Any(skill => !Skill.GetSkillDetails(skill).IsAvailableTo(SelectedSkillCharacterType, _bodyFrame)))
                 {
                     FloatingTextStringOnCreature("One or more selected skills are unavailable to this character type.", Player, false);
                     return;

@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.CombatRecorderService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -40,9 +41,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
+            // An astromech has no sitting pose; it powers down where it stands.
+            var pose = Astromech.IsAstromech(creature) ? AstromechAnimations.Rest : Animation.LoopingSitCross;
             AssignCommand(creature, () =>
             {
-                ActionPlayAnimation(Animation.LoopingSitCross, 1f, 9999f);
+                ActionPlayAnimation(pose, 1f, 9999f);
             });
 
             var position = GetPosition(creature);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.ChatCommandService
@@ -97,6 +98,19 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
             return this;
         }
         /// <summary>
+        /// Whether the body of a character has a clip for an emote. An astromech is told when it does not,
+        /// instead of standing frozen for the length of a motion it cannot show.
+        /// </summary>
+        private static bool CanPlayEmote(uint user, Animation animation)
+        {
+            if (!Astromech.IsAstromech(user) || AstromechAnimations.CanPlay(animation))
+                return true;
+
+            SendMessageToPC(user, AstromechAnimations.EmoteRefusal);
+            return false;
+        }
+
+        /// <summary>
         /// Sets the action to play an animation.
         /// </summary>
         /// <param name="animation">The animation to play.</param>
@@ -105,6 +119,9 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         {
             _currentDetail.DoAction = (user, target, location, args) =>
             {
+                if (!CanPlayEmote(user, animation))
+                    return;
+
                 AssignCommand(user, () => ActionPlayAnimation(animation));
             };
             _currentDetail.EmoteAnimation = animation;
@@ -122,6 +139,9 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         {
             _currentDetail.DoAction = (user, target, location, args) =>
             {
+                if (!CanPlayEmote(user, animation))
+                    return;
+
                 var duration = 9999.9f;
 
                 if (args.Length > 0)

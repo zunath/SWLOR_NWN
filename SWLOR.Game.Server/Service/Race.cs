@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 
@@ -224,6 +225,20 @@ namespace SWLOR.Game.Server.Service
                 HeadId = 223,
                 RightHandId = 45,
                 LeftHandId = 45
+            };
+
+            // An astromech has one creature model and no body parts; only the chassis and scale apply.
+            _defaultRaceAppearancesMale[RacialType.Astromech] = new RacialAppearance
+            {
+                AppearanceType = AppearanceType.SWLORAstromechChassis1,
+                SkinColorId = 0,
+                HairColorId = 0
+            };
+            _defaultRaceAppearancesFemale[RacialType.Astromech] = new RacialAppearance
+            {
+                AppearanceType = AppearanceType.SWLORAstromechChassis1,
+                SkinColorId = 0,
+                HairColorId = 0
             };
 
             _defaultRaceAppearancesMale[RacialType.Droid] = new RacialAppearance
@@ -560,6 +575,9 @@ namespace SWLOR.Game.Server.Service
 
                 // Appearance, Skin, and Hair
                 SetCreatureAppearanceType(player, raceConfig.AppearanceType);
+                if (GetBodyFrame(racialType) != BodyFrame.Humanoid)
+                    return;
+
                 SetColor(player, ColorChannel.Skin, raceConfig.SkinColorId);
                 SetColor(player, ColorChannel.Hair, raceConfig.HairColorId);
 
@@ -596,6 +614,34 @@ namespace SWLOR.Game.Server.Service
                 return gender == Gender.Female ?
                     _defaultRaceAppearancesFemale[race] :
                     _defaultRaceAppearancesMale[race];
+            }
+
+            /// <summary>
+            /// The body frame of a species. Every species but the astromech has the part-based humanoid body.
+            /// </summary>
+            public static BodyFrame GetBodyFrame(RacialType race)
+            {
+                return race == RacialType.Astromech ? BodyFrame.Astromech : BodyFrame.Humanoid;
+            }
+
+            /// <summary>
+            /// The body frame of a creature, from its species.
+            /// </summary>
+            public static BodyFrame GetBodyFrame(uint creature)
+            {
+                return GetBodyFrame(GetRacialType(creature));
+            }
+
+            /// <summary>
+            /// Whether a species is a machine: the playable droid species and the droid, robot and construct
+            /// creature types. Ion effects hit these harder and mind effects do not work on them.
+            /// </summary>
+            public static bool IsMechanical(RacialType race)
+            {
+                return race == RacialType.Droid ||
+                       race == RacialType.Astromech ||
+                       race == RacialType.Robot ||
+                       race == RacialType.Construct;
             }
 
             public static bool IsClassAvailableToRace(ClassType classType, RacialType race)

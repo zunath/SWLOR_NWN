@@ -233,6 +233,27 @@ namespace SWLOR.Game.Server.Service
             return "Basic";
         }
 
+        /// <summary>
+        /// The one language a species is able to speak, or Invalid when it may speak any language it knows.
+        /// Wookiees and astromechs understand other languages but cannot voice them.
+        /// </summary>
+        public static SkillType GetOnlySpokenLanguage(RacialType race)
+        {
+            return race switch
+            {
+                RacialType.Wookiee => SkillType.Shyriiwook,
+                RacialType.Astromech => SkillType.Droidspeak,
+                _ => SkillType.Invalid
+            };
+        }
+
+        public static string GetOnlySpokenLanguageMessage(RacialType race)
+        {
+            return race == RacialType.Astromech
+                ? "Astromechs can only speak Droidspeak."
+                : "Wookiees can only speak Shyriiwook.";
+        }
+
         public static SkillType GetActiveLanguage(uint obj)
         {
             var ret = GetLocalInt(obj, "ACTIVE_LANGUAGE");

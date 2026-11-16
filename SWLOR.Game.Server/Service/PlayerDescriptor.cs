@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.LogService;
 using AbilityType = SWLOR.NWN.API.NWScript.Enum.AbilityType;
@@ -25,6 +26,8 @@ namespace SWLOR.Game.Server.Service
             AbilityType.Agility,
             AbilityType.Social
         };
+
+        private const string AstromechSpeciesName = "Astromech";
 
         private static readonly HashSet<AppearanceType> DescriptorSpeciesAppearanceTypes = new()
         {
@@ -235,6 +238,9 @@ namespace SWLOR.Game.Server.Service
 
         private static string ResolveSpeciesName(AppearanceType appearanceType)
         {
+            if (AstromechChassisCatalog.IsChassis(appearanceType))
+                return AstromechSpeciesName;
+
             if (appearanceType == AppearanceType.Invalid ||
                 !DescriptorSpeciesAppearanceTypes.Contains(appearanceType))
             {

@@ -306,12 +306,13 @@ namespace SWLOR.Game.Server.Service
             var isHoloComRelay = sender != speaker;
             var language = Language.GetActiveLanguage(speaker);
 
-            // Wookiees cannot speak any other language (but they can understand them).
+            // Wookiees and astromechs cannot speak any other language (but they can understand them).
             // Swap their language if they attempt to speak in any other language.
-            if (GetRacialType(speaker) == RacialType.Wookiee && language != SkillType.Shyriiwook)
+            var onlyLanguage = Language.GetOnlySpokenLanguage(GetRacialType(speaker));
+            if (onlyLanguage != SkillType.Invalid && language != onlyLanguage)
             {
-                Language.SetActiveLanguage(speaker, SkillType.Shyriiwook);
-                language = SkillType.Shyriiwook;
+                Language.SetActiveLanguage(speaker, onlyLanguage);
+                language = onlyLanguage;
             }
 
             // Now we have a list of who is going to actually receive a message, we need to modify

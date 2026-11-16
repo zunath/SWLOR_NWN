@@ -138,6 +138,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Enables you to tame & train creatures between levels 0 and 10. Also grants 'Call Beast' ability. Taming chance increases by 3% per SOC, capped at 75%.")
                 .Price(3)
+                .RequirementSkill(SkillType.BeastMastery, 0)
                 .GrantsFeat(FeatType.Tame)
                 .GrantsFeat(FeatType.CallBeast)
 
@@ -268,6 +269,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Revives your pet with 1 HP. Taking damage interrupts the cast. Fails while a hostile player is within 20m, or, after your pet is killed by a player, until your party nearby has gone 15 seconds without taking damage.")
                 .Price(1)
+                .RequirementSkill(SkillType.BeastMastery, 0)
                 .GrantsFeat(FeatType.ReviveBeast1)
 
                 .AddPerkLevel()

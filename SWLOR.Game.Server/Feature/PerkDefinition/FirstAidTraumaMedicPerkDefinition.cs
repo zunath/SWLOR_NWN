@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores 7 HP plus 1.25% of the target's maximum HP to a single target. Each WIL point above 10 adds 6.25% to the healing, up to double at 26 WIL. Consumes medical supplies.")
                 .Price(2)
+                .RequirementSkill(SkillType.FirstAid, 0)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.MedKit1)
 

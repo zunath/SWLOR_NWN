@@ -352,6 +352,7 @@ namespace SWLOR.Game.Server.Feature
                     languages.Add(SkillType.KelDor);
                     break;
                 case RacialType.Droid:
+                case RacialType.Astromech:
                     languages.Add(SkillType.Droidspeak);
                     break;
                 case RacialType.Nautolan:
@@ -380,6 +381,13 @@ namespace SWLOR.Game.Server.Feature
 
             Race.SetDefaultRaceAppearance(player);
             dbPlayer.OriginalAppearanceType = raceAppearance.AppearanceType;
+            dbPlayer.BodyFrame = Race.GetBodyFrame(player);
+            if (dbPlayer.BodyFrame == BodyFrame.Astromech)
+            {
+                // Character creation offers every voice; an astromech always gets its own.
+                SetSoundset(player, Astromech.SoundSetId);
+                Astromech.ApplyPaint(player, dbPlayer, true);
+            }
         }
 
         /// <summary>
@@ -396,6 +404,13 @@ namespace SWLOR.Game.Server.Feature
                     throw new InvalidOperationException($"The starting item {resref} could not be created.");
                 return created;
             }
+            // An astromech has no hands or clothes; its starting kit is the credits alone.
+            if (Race.GetBodyFrame(race) == BodyFrame.Astromech)
+            {
+                GiveGoldToCreature(player, 200);
+                return;
+            }
+
             var item = CreateStarterItem("survival_knife");
             SetName(item, "Survival Knife");
             SetItemCursedFlag(item, true);

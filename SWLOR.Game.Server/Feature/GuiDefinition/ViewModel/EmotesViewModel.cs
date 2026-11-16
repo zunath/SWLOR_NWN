@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -40,6 +41,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var emoteDescriptions = ChatCommand.EmoteDescriptions;
             var emoteAnimations = ChatCommand.EmoteAnimations;
             var isEmoteLoopingAnimations = ChatCommand.EmoteIsLooping;
+
+            // An astromech is only offered the emotes its chassis has a clip for.
+            if (Astromech.IsAstromech(Player))
+            {
+                var names = new GuiBindingList<string>();
+                var descriptions = new GuiBindingList<string>();
+                var animations = new List<Animation>();
+                var looping = new GuiBindingList<bool>();
+                for (var index = 0; index < emoteAnimations.Count; index++)
+                {
+                    if (!AstromechAnimations.CanPlay(emoteAnimations[index]))
+                        continue;
+
+                    names.Add(emoteNames[index]);
+                    descriptions.Add(emoteDescriptions[index]);
+                    animations.Add(emoteAnimations[index]);
+                    looping.Add(isEmoteLoopingAnimations[index]);
+                }
+
+                emoteNames = names;
+                emoteDescriptions = descriptions;
+                emoteAnimations = animations;
+                isEmoteLoopingAnimations = looping;
+            }
 
             SelectedEmoteIndex = -1;
 

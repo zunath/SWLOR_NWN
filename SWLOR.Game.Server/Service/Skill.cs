@@ -213,6 +213,11 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
 
             var details = GetSkillDetails(skill);
+
+            // A skill closed to the body frame of the character never gains rank, whatever awarded the XP.
+            if (!SkillBodyFrames.IsOpenTo(skill, dbPlayer.BodyFrame))
+                return 0;
+
             var pcSkill = dbPlayer.Skills[skill];
             var requiredXP = GetRequiredXP(pcSkill.Rank);
             var receivedRankUp = false;

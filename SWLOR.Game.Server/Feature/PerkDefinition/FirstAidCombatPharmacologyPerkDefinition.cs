@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Restores 10% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack.")
                 .Price(2)
+                .RequirementSkill(SkillType.FirstAid, 0)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.AdrenalStim1)
 

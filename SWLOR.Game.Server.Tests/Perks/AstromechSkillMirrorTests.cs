@@ -243,6 +243,14 @@ public class AstromechSkillMirrorTests
             .Should().Contain("cannot be trained by your species");
         new PerkRequirementSkill(SkillType.Armaments, 50).CheckRequirements(astromech, null).Should().BeEmpty();
 
+        // Every place that reads the rank behind a weapon skill resolves it: attack, accuracy and evasion in
+        // Stat.cs, and the ability damage bonus in Combat.cs.
+        var combat = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combat.Should().Contain("var pcSkill = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skill, dbPlayer.BodyFrame)];");
+        combat.Should().NotContain("dbPlayer.Skills[skill]");
+        var stat = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "Stat.cs"));
+        stat.Should().NotContain("dbPlayer.Skills[skillType]");
+
         // The tools carry every weapon rule of the staff and the rifle.
         Item.StaffBaseItemTypes.Should().Contain(BaseItem.ShockProd);
         Item.RifleBaseItemTypes.Should().Contain(BaseItem.BlasterMount);

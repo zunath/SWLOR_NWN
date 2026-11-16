@@ -12403,7 +12403,8 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                var pcSkill = dbPlayer.Skills[skill];
+                // An astromech's abilities act as Staff and Rifle; the rank behind them is Armaments.
+                var pcSkill = dbPlayer.Skills[SkillBodyFrames.GetTrainedSkill(skill, dbPlayer.BodyFrame)];
                 level = pcSkill.Rank;
             }
 

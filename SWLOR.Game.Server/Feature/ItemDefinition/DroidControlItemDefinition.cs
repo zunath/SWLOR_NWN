@@ -56,8 +56,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             var skillLevel = 0;
             foreach (var skill in _skillsUsedForAverages)
             {
-                // Records saved before a skill existed have no entry for it.
-                var rank = dbPlayer.Skills.TryGetValue(skill, out var playerSkill) ? playerSkill.Rank : 0;
+                // Records saved before a skill existed have no entry for it. An astromech counts the skill that
+                // mirrors a humanoid one (Armaments for Staff and Rifle, Utility Systems for First Aid).
+                var counted = SkillBodyFrames.GetMirror(skill, dbPlayer.BodyFrame);
+                var rank = dbPlayer.Skills.TryGetValue(counted, out var playerSkill) ? playerSkill.Rank : 0;
                 if (rank > skillLevel)
                     skillLevel = rank;
             }

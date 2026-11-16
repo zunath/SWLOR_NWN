@@ -66,6 +66,7 @@ public class DMPossessedCombatTargetTests
                 public sealed class Player
                 {
                     public int FP = 30, Stamina = 30, Evasion = 7;
+                    public SWLOR.Game.Server.Enumeration.BodyFrame BodyFrame;
                     public Dictionary<SkillType, PlayerSkill> Skills = new() { [SkillType.Armor] = new PlayerSkill() };
                     public Dictionary<CombatDamageType, int> Defenses = new() { [Defense] = 9 };
                     public Dictionary<ResistanceType, int> Resistances = new() { [ResistanceType.Electrical] = 100 };

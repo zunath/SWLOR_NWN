@@ -84,6 +84,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool DisplayEventAnnouncements
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool DisplayCooldownFloatingText
         {
             get => Get<bool>();
@@ -191,6 +197,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.ShowOwnDescriptor);
             WatchOnClient(model => model.ScrambleAccountName);
             WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);
+            WatchOnClient(model => model.DisplayEventAnnouncements);
             WatchOnClient(model => model.DisplayCooldownFloatingText);
             WatchOnClient(model => model.SelectedColor);
             WatchOnClient(model => model.SelfQuickCastEnabled);
@@ -250,6 +257,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
             PortraitVitals = dbPlayer.Settings.PortraitVitals ?? true;
             DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;
+            DisplayEventAnnouncements = dbPlayer.Settings.DisplayEventAnnouncements ?? true;
             DisplayCooldownFloatingText = dbPlayer.Settings.DisplayCooldownFloatingText;
         }
 
@@ -361,6 +369,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OnPropertyChanged(nameof(DisplayServerResetReminders));
             OnPropertyChanged(nameof(PortraitVitals));
             OnPropertyChanged(nameof(DisplayCommsOutOfRangeWarnings));
+            OnPropertyChanged(nameof(DisplayEventAnnouncements));
             OnPropertyChanged(nameof(DisplayCooldownFloatingText));
             OnPropertyChanged(nameof(ShowOwnDescriptor));
             OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));
@@ -411,6 +420,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
             dbPlayer.Settings.PortraitVitals = PortraitVitals;
             dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;
+            dbPlayer.Settings.DisplayEventAnnouncements = DisplayEventAnnouncements;
             dbPlayer.Settings.DisplayCooldownFloatingText = DisplayCooldownFloatingText;
             dbPlayer.Settings.SelfQuickCastEnabled = SelfQuickCastEnabled;
             dbPlayer.Settings.EnemyQuickCastEnabled = EnemyQuickCastEnabled;

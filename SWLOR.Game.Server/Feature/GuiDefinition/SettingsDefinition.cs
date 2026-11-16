@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         public const float MinimumWindowWidth = 400f;
         // Tall enough to show every General row, down to the Hotbars button.
-        public const float MinimumWindowHeight = 570f;
+        public const float MinimumWindowHeight = 613f;
 
         private readonly GuiWindowBuilder<SettingsViewModel> _builder = new();
 
@@ -86,6 +86,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetTooltip("Warns you when one or more party members are outside the range of a Comms message and do not receive it.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.DisplayCommsOutOfRangeWarnings);
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
+                            row.AddCheckBox()
+                                .SetText("Event Announcements")
+                                .SetTooltip("Shows a chat message when a DM starts an event. Use /events to see running and upcoming events either way.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.DisplayEventAnnouncements);
                         });
 
                         col.AddRow(row =>

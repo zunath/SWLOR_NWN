@@ -155,7 +155,7 @@ public static class SnapshotComparison
         return diff.ToString();
     }
 
-    private static DirectoryInfo FindRepositoryRoot()
+    internal static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null)

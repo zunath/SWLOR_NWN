@@ -17,7 +17,9 @@ namespace SWLOR.Game.Server.Core
     /// activates (MaintainabilityRefactorHotReload.md, P4-15). While the old build quiesces, each class's carried fields are written
     /// as one JSON object (its static fields, and the fields of the container's singleton of the class) and left on the module
     /// (<see cref="ReloadCarry"/>); after the new build's rerun and adoption steps, each class's object is read back into the same
-    /// fields of the new singleton. Objects of the game assembly are copied field by field (<see cref="ReloadCarryContractResolver"/>),
+    /// fields of the new singleton. A field that moved to another class or was renamed since the old build names where it lived
+    /// (<see cref="ReloadCarriedFromAttribute"/>): when the old build left nothing under the new class's name, the field is read from
+    /// the former class's object. Objects of the game assembly are copied field by field (<see cref="ReloadCarryContractResolver"/>),
     /// subclasses keep their type (<see cref="ReloadCarryBinder"/>), shared objects stay shared, engine object ids stay valid (the
     /// engine keeps every object across a reload). A class whose state cannot be written or read is logged and left as the new build
     /// made it; the other classes still carry. Nothing of it runs unless a reload quiesces or activates a build.
@@ -107,9 +109,13 @@ namespace SWLOR.Game.Server.Core
 
         /// <summary>
         /// Reads every carried class's text from <paramref name="take"/> (the server passes <see cref="ReloadCarry.Take"/>, which also
-        /// removes it) back into the class's fields, then lets an <see cref="IReloadStateAdopter"/> owner start its timers again. A
-        /// class the old build left nothing for keeps what the new build made and is logged. Every class is tried; when any fails,
-        /// this throws after the last one, naming them.
+        /// removes it) back into the class's fields, then lets an <see cref="IReloadStateAdopter"/> owner start its timers again. When
+        /// the old build left nothing under a class's own name (an older build, before a field moved), each former class its fields
+        /// name (<see cref="ReloadCarriedFromAttribute"/>, in the order of their names) is read instead, each field under its former
+        /// name; the former class's other fields are skipped. Each key is taken once, so one former class's text can feed several
+        /// classes, and a class's own text can also feed a class whose field moved from it. A class the old build left nothing for
+        /// keeps what the new build made and is logged. Every class is tried; when any fails, this throws after the last one, naming
+        /// them.
         /// </summary>
         public void AdoptAll(Func<Type, object> resolveOwner, Func<string, string> take)
         {
@@ -118,20 +124,49 @@ namespace SWLOR.Game.Server.Core
             if (take == null)
                 throw new ArgumentNullException(nameof(take));
 
+            var taken = new Dictionary<string, string>(StringComparer.Ordinal);
+            string TakeOnce(string key)
+            {
+                if (!taken.TryGetValue(key, out var text))
+                    taken[key] = text = take(key);
+                return text;
+            }
+
             var failed = new List<string>();
             foreach (var (type, fields) in CarriedClasses(_gameAssembly))
             {
                 try
                 {
-                    var text = take(KeyPrefix + type.FullName);
-                    if (text == null)
+                    var text = TakeOnce(KeyPrefix + type.FullName);
+                    var reads = new List<(IReadOnlyDictionary<string, FieldInfo> ByName, string Text)>();
+                    if (text != null)
+                    {
+                        reads.Add((ByName(fields), text));
+                    }
+                    else
+                    {
+                        foreach (var former in fields
+                                     .SelectMany(field => field.GetCustomAttributes<ReloadCarriedFromAttribute>(false)
+                                         .Select(from => (From: from, Field: field)))
+                                     .GroupBy(entry => entry.From.FormerOwner, StringComparer.Ordinal)
+                                     .OrderBy(group => group.Key, StringComparer.Ordinal))
+                        {
+                            var formerText = TakeOnce(KeyPrefix + former.Key);
+                            if (formerText != null)
+                                reads.Add((former.ToDictionary(entry => entry.From.FormerField ?? entry.Field.Name, entry => entry.Field,
+                                    StringComparer.Ordinal), formerText));
+                        }
+                    }
+
+                    if (reads.Count == 0)
                     {
                         Log.Write(LogGroup.Error, $"Reload found no carried state for {type.FullName}; it starts empty.", true);
                         continue;
                     }
 
                     var owner = OwnerOf(type, fields, resolveOwner);
-                    Read(fields, owner, text);
+                    foreach (var (byName, json) in reads)
+                        Read(byName, owner, json);
                     (owner as IReloadStateAdopter)?.OnCarriedStateAdopted();
                 }
                 catch (Exception ex)
@@ -181,8 +216,16 @@ namespace SWLOR.Game.Server.Core
             if (json == null)
                 throw new ArgumentNullException(nameof(json));
 
+            Read(ByName(fields), instance, json);
+        }
+
+        /// <summary>
+        /// <see cref="Read(IReadOnlyList{FieldInfo}, object, string)"/> with each field found under the name the text gives it
+        /// (<paramref name="byName"/>): its own name, or its name in the earlier build (<see cref="ReloadCarriedFromAttribute"/>).
+        /// </summary>
+        private void Read(IReadOnlyDictionary<string, FieldInfo> byName, object instance, string json)
+        {
             var serializer = CreateSerializer();
-            var byName = fields.ToDictionary(field => field.Name, StringComparer.Ordinal);
             using var reader = new JsonTextReader(new StringReader(json));
             reader.Read();
             if (reader.TokenType != JsonToken.StartObject)
@@ -320,6 +363,11 @@ namespace SWLOR.Game.Server.Core
                    definition == typeof(IDictionary<,>) || definition == typeof(IReadOnlyDictionary<,>) ||
                    definition == typeof(KeyValuePair<,>) || definition == typeof(Nullable<>) ||
                    definition.FullName!.StartsWith("System.ValueTuple`", StringComparison.Ordinal);
+        }
+
+        private static IReadOnlyDictionary<string, FieldInfo> ByName(IReadOnlyList<FieldInfo> fields)
+        {
+            return fields.ToDictionary(field => field.Name, StringComparer.Ordinal);
         }
 
         private static object OwnerOf(Type type, IReadOnlyList<FieldInfo> fields, Func<Type, object> resolveOwner)

@@ -85,8 +85,30 @@ class Module:
 MODULES = [Module(s, l, t) for s in range(len(SLOTS)) for l in range(2) for t in range(10)]
 
 
-def read(path: Path) -> str:
-    return path.read_bytes().decode("latin-1")
+def to_crlf(text: str) -> str:
+    """Text with every line ending as CRLF, whichever form the checkout gave it."""
+    return text.replace("\r\n", "\n").replace("\n", "\r\n")
+
+
+def read(path: Path, encoding: str = "latin-1") -> str:
+    """A file as text with CRLF line endings. The generators parse and build in CRLF; a checkout that normalizes
+    these files to LF (`* text=auto` on Linux) reads the same, and `localize` gives the output its line endings back."""
+    return to_crlf(path.read_bytes().decode(encoding))
+
+
+def checkout_newline(path: Path, fallback: bytes) -> bytes:
+    """The line ending a file has in this checkout, or the fallback for a file that does not exist yet."""
+    if not path.exists():
+        return fallback
+    return b"\r\n" if b"\r\n" in path.read_bytes() else b"\n"
+
+
+def localize(outputs: dict) -> dict:
+    """Generated content with the line endings of this checkout: each file keeps the form it already has on disk,
+    and a new file takes the form RecipeType.cs is checked out in."""
+    fallback = checkout_newline(RECIPE_TYPE_CS, b"\r\n")
+    return {path: content.replace(b"\r\n", b"\n").replace(b"\n", checkout_newline(path, fallback))
+            for path, content in outputs.items()}
 
 
 # ---------------------------------------------------------------- source recipes
@@ -316,9 +338,9 @@ def expected_outputs() -> dict:
     for module in MODULES:
         outputs[UTI / f"{module.resref}.uti.json"] = module_blueprint(module).encode("latin-1")
     outputs[RECIPES_CS] = recipes_source(smithery).encode("utf-8")
-    outputs[RECIPE_TYPE_CS] = recipe_type_text(RECIPE_TYPE_CS.read_bytes().decode("utf-8")).encode("utf-8")
-    outputs[STORE] = store_text(STORE.read_bytes().decode("latin-1")).encode("latin-1")
-    return outputs
+    outputs[RECIPE_TYPE_CS] = recipe_type_text(read(RECIPE_TYPE_CS, "utf-8")).encode("utf-8")
+    outputs[STORE] = store_text(read(STORE)).encode("latin-1")
+    return localize(outputs)
 
 
 def main() -> int:

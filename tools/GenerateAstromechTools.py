@@ -253,9 +253,9 @@ def expected_outputs() -> dict:
     for tool in TOOLS:
         outputs[UTI / f"{tool.resref}.uti.json"] = tool_blueprint(tool).encode("latin-1")
     outputs[RECIPES_CS] = recipes_source(smithery).encode("utf-8")
-    outputs[RECIPE_TYPE_CS] = recipe_type_text(RECIPE_TYPE_CS.read_bytes().decode("utf-8")).encode("utf-8")
-    outputs[STORE] = store_text(STORE.read_bytes().decode("latin-1")).encode("latin-1")
-    return outputs
+    outputs[RECIPE_TYPE_CS] = recipe_type_text(mod.read(RECIPE_TYPE_CS, "utf-8")).encode("utf-8")
+    outputs[STORE] = store_text(mod.read(STORE)).encode("latin-1")
+    return mod.localize(outputs)
 
 
 def main() -> int:

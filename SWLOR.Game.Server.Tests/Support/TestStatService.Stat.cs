@@ -3,9 +3,12 @@ using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
-// Part 1, StatService (stays): the stat adjustment read and its sources, and the pools' restored effects.
+// Part 1, StatService (stays): the stat adjustment read and its sources, the pools' restored effects, and the skill details
+// Control and Craftsmanship read.
 public sealed partial class TestStatService
 {
+    protected override SkillAttribute GetSkillDetails(SkillType skillType) => _bench.SkillDetails[skillType];
+
     protected override IReadOnlyList<StatAdjustmentSource> GetPerkStatSources(uint creature, StatType payloadStat) =>
         _bench.PerkSources.GetValueOrDefault(payloadStat, Array.Empty<StatAdjustmentSource>());
 

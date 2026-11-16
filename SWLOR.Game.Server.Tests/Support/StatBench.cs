@@ -175,7 +175,7 @@ public sealed partial class StatBench : IDisposable
 
     /// <summary>
     /// Part 1 of the stat split, <c>StatService</c> (stays): the stat adjustment read and metadata, the FP and Stamina pools, the
-    /// NPC stat skin reads, Detection and Stealth.
+    /// NPC stat skin reads, and the Detection, Stealth, Lockpicking, Combat Readiness, Control and Craftsmanship reads.
     /// </summary>
     public TestStatService Service { get; }
 
@@ -186,7 +186,7 @@ public sealed partial class StatBench : IDisposable
     /// <summary>Part 2, <c>CreatureStatService</c>: movement, maximum HP and food HP, attributes, NPC loading and regeneration.</summary>
     public TestStatService CreatureStat => Service;
 
-    /// <summary>Part 3, <c>StatRecordService</c>: the gear-fed player records, Combat Readiness, Lockpicking, Control, Craftsmanship.</summary>
+    /// <summary>Part 3, <c>StatRecordService</c>: the gear-fed player records and the Combat Readiness equipment.</summary>
     public TestStatService Record => Service;
 
     /// <summary>Part 5, <c>CombatRatingService</c> (Combat): Attack, Accuracy, Defense, Evasion and the deflection and Guard chances.</summary>

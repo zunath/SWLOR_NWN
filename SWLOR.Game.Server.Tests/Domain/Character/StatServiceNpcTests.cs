@@ -290,10 +290,10 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.CreatureEffects = new CreatureStatusEffect();
         Bench.CreatureEffects.StatGroup.CraftSkillBonuses[CraftSkillBonusType.Control][SkillType.Smithery] = 3;
 
-        Record.CalculateControl(PlayerCreature, SkillType.Smithery).Should().Be(7);
+        Service.CalculateControl(PlayerCreature, SkillType.Smithery).Should().Be(7);
 
         record.Control.Clear();
-        Record.CalculateControl(PlayerCreature, SkillType.Smithery).Should().Be(3);
+        Service.CalculateControl(PlayerCreature, SkillType.Smithery).Should().Be(3);
     }
 
     [Test]
@@ -305,10 +305,10 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.CreatureEffects = new CreatureStatusEffect();
         Bench.CreatureEffects.StatGroup.CraftSkillBonuses[CraftSkillBonusType.Craftsmanship][SkillType.Smithery] = 3;
 
-        Record.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery).Should().Be(7);
+        Service.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery).Should().Be(7);
 
         record.Craftsmanship.Clear();
-        Record.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery).Should().Be(3);
+        Service.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery).Should().Be(3);
     }
 
     [Test]
@@ -316,8 +316,8 @@ public class StatServiceNpcTests : StatServiceTestBase
     {
         Bench.SkillDetails[SkillType.Smithery] = CraftSkill(false);
 
-        var control = () => Record.CalculateControl(PlayerCreature, SkillType.Smithery);
-        var craftsmanship = () => Record.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery);
+        var control = () => Service.CalculateControl(PlayerCreature, SkillType.Smithery);
+        var craftsmanship = () => Service.CalculateCraftsmanship(PlayerCreature, SkillType.Smithery);
 
         control.Should().Throw<ArgumentException>();
         craftsmanship.Should().Throw<ArgumentException>();
@@ -337,8 +337,8 @@ public class StatServiceNpcTests : StatServiceTestBase
             Bench.Possessed.Add(Npc);
         Bench.SkillDetails[SkillType.Smithery] = CraftSkill(true);
 
-        Record.CalculateControl(Npc, SkillType.Smithery).Should().Be(0);
-        Record.CalculateCraftsmanship(Npc, SkillType.Smithery).Should().Be(0);
+        Service.CalculateControl(Npc, SkillType.Smithery).Should().Be(0);
+        Service.CalculateCraftsmanship(Npc, SkillType.Smithery).Should().Be(0);
         Bench.Log.Should().BeEmpty();
     }
 }

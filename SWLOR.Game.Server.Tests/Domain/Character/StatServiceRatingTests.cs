@@ -414,7 +414,7 @@ public class StatServiceRatingTests : StatServiceTestBase
         record.Lockpicking = 6;
         SetStat(PlayerCreature, StatType.Lockpicking, 2);
 
-        Record.GetLockpicking(PlayerCreature).Should().Be(8);
+        Service.GetLockpicking(PlayerCreature).Should().Be(8);
     }
 
     [Test]
@@ -424,7 +424,7 @@ public class StatServiceRatingTests : StatServiceTestBase
         Bench.Skin(Npc, (ItemPropertyType.Lockpicking, -1, 3));
         SetStat(Npc, StatType.Lockpicking, 2);
 
-        Record.GetLockpicking(Npc).Should().Be(5);
+        Service.GetLockpicking(Npc).Should().Be(5);
     }
 
     [Test]

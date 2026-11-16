@@ -77,7 +77,7 @@ public class StatFacadeAllocationTests
 
     /// <summary>
     /// Part 1, <c>StatService</c> (stays): the stat adjustment read, the metadata, the equipment action read, the pools, the NPC
-    /// skin reads, Detection and Stealth.
+    /// skin reads, Detection, Stealth and Lockpicking.
     /// </summary>
     [Test]
     public void TheStatServiceReadsAllocateNothing()
@@ -108,6 +108,7 @@ public class StatFacadeAllocationTests
         Allocated(() => sink += Stat.CalculateStealthRating(1, 2, 3)).Should().Be(0);
         Allocated(() => sink += Stat.GetStealth(Creature)).Should().Be(0);
         Allocated(() => sink += Stat.GetDetection(Creature)).Should().Be(0);
+        Allocated(() => sink += Stat.GetLockpicking(Creature)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
@@ -133,7 +134,6 @@ public class StatFacadeAllocationTests
         var sink = 0;
 
         Allocated(() => sink += Stat.GetEquippedCombatReadiness(Creature)).Should().Be(0);
-        Allocated(() => sink += Stat.GetLockpicking(Creature)).Should().Be(0);
         Allocated(() => Stat.AdjustEvasion(player, 1)).Should().Be(0);
         Allocated(() => Stat.AdjustAttack(player, 1)).Should().Be(0);
         Allocated(() => Stat.AdjustCombatReadiness(player, 1)).Should().Be(0);

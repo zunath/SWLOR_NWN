@@ -419,13 +419,13 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.CombatReadiness = 40;
         SetStat(PlayerCreature, StatType.CombatReadinessPercent, -30);
 
-        Record.GetCombatReadinessPercent(PlayerCreature).Should().Be(10);
+        Service.GetCombatReadinessPercent(PlayerCreature).Should().Be(10);
 
         record.CombatReadiness = 400;
-        Record.GetCombatReadinessPercent(PlayerCreature).Should().Be(StatService.MaximumCombatReadinessPercent);
+        Service.GetCombatReadinessPercent(PlayerCreature).Should().Be(StatService.MaximumCombatReadinessPercent);
 
         record.CombatReadiness = 0;
-        Record.GetCombatReadinessPercent(PlayerCreature).Should().Be(0);
+        Service.GetCombatReadinessPercent(PlayerCreature).Should().Be(0);
     }
 
     [Test]
@@ -434,13 +434,13 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         Bench.AddPlayer();
         Bench.Records.Clear();
         SetStat(PlayerCreature, StatType.CombatReadinessPercent, 4);
-        Record.GetCombatReadinessPercent(PlayerCreature).Should().Be(4);
+        Service.GetCombatReadinessPercent(PlayerCreature).Should().Be(4);
 
         Bench.AddNpc();
         Bench.Skin(Npc, (ItemPropertyType.CombatReadiness, -1, 7));
-        Record.GetCombatReadinessPercent(Npc).Should().Be(7);
+        Service.GetCombatReadinessPercent(Npc).Should().Be(7);
 
-        Record.GetCombatReadinessPercent(ObjectInvalid).Should().Be(0);
+        Service.GetCombatReadinessPercent(ObjectInvalid).Should().Be(0);
     }
 
     [Test]

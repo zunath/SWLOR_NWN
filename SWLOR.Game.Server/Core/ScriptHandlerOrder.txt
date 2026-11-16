@@ -304,7 +304,7 @@ cp_xp_distribute
   action      SWLOR.Game.Server.Domain.Abilities.MimicryService.CombatPointXPDistributed
 
 craft_on_used
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.UseCraftingDevice
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.UseCraftingDevice
 
 craft_success
   action      SWLOR.Game.Server.Feature.AchievementProgression.CompleteCraftSuccessfully
@@ -762,7 +762,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter
   action      SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnEnter
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.RestoreCraftingStylesOnEnter
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.RestoreCraftingStylesOnEnter
   action      SWLOR.Game.Server.Domain.Creatures.CompanionControlService.RenameToggleAbilitiesCommand
   action      SWLOR.Game.Server.Feature.AchievementProgression.LogIn
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientConnection
@@ -1062,7 +1062,7 @@ quest_trigger
   action      SWLOR.Game.Server.Domain.Quests.QuestService.EnterQuestTrigger
 
 refinery_used
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.UseRefinery
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.UseRefinery
 
 res_heartbeat
   action      SWLOR.Game.Server.Feature.Resource.OnHeartbeat
@@ -1071,7 +1071,7 @@ res_used
   action      SWLOR.Game.Server.Feature.Resource.OnUsed
 
 research_term
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.UseResearchTerminal
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.UseResearchTerminal
 
 rest_started
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariablesOnRest
@@ -1160,7 +1160,7 @@ swlor_damage
 
 swlor_del_prop
   action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OnRemoveProperty
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.OnRemoveProperty
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.OnRemoveProperty
 
 swlor_gain_skill
   action      SWLOR.Game.Server.Feature.AchievementProgression.GainSkillPoint

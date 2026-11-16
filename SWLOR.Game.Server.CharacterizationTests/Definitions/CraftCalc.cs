@@ -16,8 +16,15 @@ internal static class CraftCalc
 {
     private static readonly Assembly ServerAssembly = typeof(RecipeDetail).Assembly;
 
+    // The crafting instance, and the service the enhancement calculations moved to in P5-9a. Master has none of them.
     private static readonly Type InstanceType =
         ServerAssembly.GetType("SWLOR.Game.Server.Domain.Crafting.CraftService");
+
+    private static readonly Type[] InstanceTypes =
+    {
+        InstanceType,
+        ServerAssembly.GetType("SWLOR.Game.Server.Domain.Crafting.CraftEnhancementPropertyService")
+    };
 
     // Master's static class; the branch has none once its facade is removed.
     private static readonly Type StaticType = ServerAssembly.GetType("SWLOR.Game.Server.Service.Craft");
@@ -34,10 +41,24 @@ internal static class CraftCalc
                 : null)
             .ToArray());
 
+    private static readonly Dictionary<Type, object> Instances = InstanceTypes
+        .Where(type => type != null)
+        .ToDictionary(type => type, type => type == InstanceType ? Instance : Build(type));
+
     private static object Call(string name, params object[] arguments)
     {
-        var method = (Instance == null ? StaticType : InstanceType).GetMethod(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
-        return method!.Invoke(Instance, arguments);
+        if (Instance == null)
+            return StaticType.GetMethod(name, BindingFlags.Public | BindingFlags.Static)!.Invoke(null, arguments);
+
+        // The method is on whichever of the crafting services owns it.
+        foreach (var (type, instance) in Instances)
+        {
+            var method = type.GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
+            if (method != null)
+                return method.Invoke(instance, arguments);
+        }
+
+        throw new MissingMethodException(name);
     }
 
     public static Dictionary<RecipeType, RecipeDetail> GetAllRecipes() =>

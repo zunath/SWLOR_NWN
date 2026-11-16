@@ -35,8 +35,12 @@ public abstract class AbilityServiceTestBase
     protected TestAbilityActivationService Activation => Bench.Activation;
     protected TestAbilityAuraService Aura => Bench.Aura;
     protected TestAbilityService HostileImpact => Bench.HostileImpact;
-    protected TestAbilityService DarkForce => Bench.DarkForce;
-    protected TestAbilityService StatusApplication => Bench.StatusApplication;
+    protected TestAbilityDamageDeliveryService DamageDelivery => Bench.DamageDelivery;
+    protected TestAbilityDarkForceService DarkForce => Bench.DarkForce;
+    protected TestAbilityImpactMessageService ImpactMessage => Bench.ImpactMessage;
+    protected TestAbilityDamageInputService DamageInput => Bench.DamageInput;
+    protected TestAbilityDamageStageService DamageStage => Bench.DamageStage;
+    protected TestAbilityStatusApplicationService StatusApplication => Bench.StatusApplication;
     protected AbilityImmunityService Immunity => Bench.Immunity;
     protected AbilityActivationStateService ActivationState => Bench.ActivationState;
 

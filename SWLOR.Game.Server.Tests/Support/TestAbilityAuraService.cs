@@ -18,6 +18,6 @@ public sealed class TestAbilityAuraService : AbilityAuraService
         _bench = bench;
     }
 
-    // The activation checks, Dark Force and the damage formulas answer the same read through TestAbilityService.Shared.cs.
+    // The activation checks, Dark Force and the damage inputs answer the same read through their own doubles.
     protected override int GetStatAdjustment(uint creature, StatType stat) => _bench.Stats.GetValueOrDefault((creature, stat));
 }

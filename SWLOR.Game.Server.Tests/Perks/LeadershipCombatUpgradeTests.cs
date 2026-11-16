@@ -405,16 +405,9 @@ public class LeadershipCombatUpgradeTests
             "all direct ability damage paths apply typed Leadership in the explicit post-conversion stage");
         (ability.Split("ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)").Length - 1)
             .Should().Be(2);
-        var unscaledStart = ability.IndexOf(
-            "private int CalculateUnscaledCombatImpactDamage(",
-            StringComparison.Ordinal);
-        unscaledStart.Should().BeGreaterThanOrEqualTo(0);
-        var unscaledEnd = ability.IndexOf(
-            "private int CalculateCombatImpactDamage(",
-            unscaledStart,
-            StringComparison.Ordinal);
-        unscaledEnd.Should().BeGreaterThan(unscaledStart);
-        var unscaledBody = ability[unscaledStart..unscaledEnd];
+        // The unscaled formula is the damage inputs part's since the ability split (P5-3e).
+        var unscaledBody = AbilitySource.Members("CalculateUnscaledCombatImpactDamage");
+        unscaledBody.Should().NotBeEmpty();
         var conversionIndex = unscaledBody.IndexOf(
             "ApplyIncomingPhysicalToForceConversion(",
             StringComparison.Ordinal);

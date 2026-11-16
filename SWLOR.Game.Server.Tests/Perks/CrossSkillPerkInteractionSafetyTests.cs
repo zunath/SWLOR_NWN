@@ -158,7 +158,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
     public void StatusAppliedCategoryRiders_OnlyCountCategoriesFromSuccessfulApplications()
     {
         var abilitySource = AbilitySource.Read();
-        var applyImpactStatus = ExtractMethod(abilitySource, "private bool ApplyCombatImpactStatusEffect(");
+        var applyImpactStatus = ExtractMethod(abilitySource, "public bool ApplyCombatImpactStatusEffect(");
         applyImpactStatus.Should().Contain("out StatusEffectCategory appliedStatusCategories");
         applyImpactStatus.Should().Contain("if (applied)");
         applyImpactStatus.Should().Contain("appliedStatusCategories |= categories;");
@@ -283,8 +283,11 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         bleedingRestore.Should().Contain(
             "SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds");
 
+        // The damage block of the hostile impact is the delivery part's since the ability split (P5-3e).
         var hostileImpact = ExtractMethod(ability, "public int ApplyHostileCombatImpact(");
-        hostileImpact.Should().Contain("isAbilityDamage: true",
+        hostileImpact.Should().Contain("DeliverHostileImpactDamage(");
+        var delivery = ExtractMethod(ability, "public void DeliverHostileImpactDamage(");
+        delivery.Should().Contain("isAbilityDamage: true",
             "ability impacts must select ability-only riders and exclude auto-attack procs");
     }
 

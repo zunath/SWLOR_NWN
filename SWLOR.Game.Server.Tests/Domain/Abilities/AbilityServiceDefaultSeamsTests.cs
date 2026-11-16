@@ -60,6 +60,46 @@ public class AbilityServiceDefaultSeamsTests
             FacadeForwarder.For<IMimicryService>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IStatService>(),
             FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<IAbilityTargetCheckService>());
 
+    // The damage parts of the ability split (P5-3e) with every service forwarded to the installed container.
+    private static AbilityImpactMessageService ImpactMessagePart() =>
+        new(FacadeForwarder.For<IMessagingService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<ICombatFeedbackService>());
+
+    private static AbilityDarkForceService DarkForcePart() =>
+        new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IStatService>(),
+            FacadeForwarder.For<ICombatResourcesService>());
+
+    private static AbilityDamageDeliveryService DamageDeliveryPart() =>
+        new(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IAbilityDarkForceService>(),
+            FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatHitEffectsService>(),
+            FacadeForwarder.For<ICombatDamageTakenService>());
+
+    private static AbilityStatusApplicationService StatusApplicationPart() =>
+        new(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IAbilityImpactState>(),
+            FacadeForwarder.For<ICombatAbilityBonusService>());
+
+    private static AbilityDamageInputService DamageInputPart() =>
+        new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatActivityService>(),
+            FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
+            FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(),
+            FacadeForwarder.For<ICombatAbilityMagnitudeService>(), FacadeForwarder.For<IResistanceService>());
+
+    private static AbilityDamageStageService DamageStagePart() =>
+        new(FacadeForwarder.For<IAbilityDamageInputService>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IPerkService>(),
+            FacadeForwarder.For<ICombatAbilityHitService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(),
+            FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatAbilityMagnitudeService>(),
+            FacadeForwarder.For<IResistanceService>());
+
+    // Each damage part with the number of seams it took from the service.
+    private static IEnumerable<TestCaseData> DamageParts()
+    {
+        yield return new TestCaseData((Func<object>)ImpactMessagePart, 2).SetArgDisplayNames(nameof(AbilityImpactMessageService));
+        yield return new TestCaseData((Func<object>)DarkForcePart, 3).SetArgDisplayNames(nameof(AbilityDarkForceService));
+        yield return new TestCaseData((Func<object>)DamageDeliveryPart, 4).SetArgDisplayNames(nameof(AbilityDamageDeliveryService));
+        yield return new TestCaseData((Func<object>)StatusApplicationPart, 1).SetArgDisplayNames(nameof(AbilityStatusApplicationService));
+        yield return new TestCaseData((Func<object>)DamageInputPart, 27).SetArgDisplayNames(nameof(AbilityDamageInputService));
+        yield return new TestCaseData((Func<object>)DamageStagePart, 11).SetArgDisplayNames(nameof(AbilityDamageStageService));
+    }
+
     private static object? Sample(Type type)
     {
         if (type.IsByRef)
@@ -85,19 +125,26 @@ public class AbilityServiceDefaultSeamsTests
         return type.IsValueType ? Activator.CreateInstance(type) : null;
     }
 
-    private object? Run(string name, params object?[] arguments)
+    private static object? Run(object instance, string name, params object?[] arguments)
     {
-        var method = Seams().Single(seam => seam.Name == name &&
+        var method = Seams(instance.GetType()).Single(seam => seam.Name == name &&
             seam.GetParameters().Select(parameter => parameter.ParameterType)
                 .SequenceEqual(arguments.Select(argument => argument!.GetType())));
-        return method.Invoke(_service, arguments);
+        return method.Invoke(instance, arguments);
     }
 
     [Test]
     public void There_is_a_seam_for_every_unconverted_call()
     {
-        // The activation checks took their seams with them (P5-3d), so the count spans the service and that part.
-        Seams().Concat(Seams(typeof(AbilityActivationService))).Should().HaveCountGreaterThan(70);
+        // The activation checks (P5-3d) and the damage parts (P5-3e) took their seams with them, so the count spans the
+        // service and those parts.
+        new[]
+            {
+                typeof(AbilityActivationService), typeof(AbilityImpactMessageService), typeof(AbilityDarkForceService),
+                typeof(AbilityDamageDeliveryService), typeof(AbilityStatusApplicationService), typeof(AbilityDamageInputService),
+                typeof(AbilityDamageStageService)
+            }
+            .SelectMany(Seams).Concat(Seams()).Should().HaveCountGreaterThan(70);
     }
 
     [Test]
@@ -118,6 +165,14 @@ public class AbilityServiceDefaultSeamsTests
     {
         Seams(typeof(AbilityActivationService)).Should().HaveCount(8);
         InvokeEveryDefault(ActivationPart(), Seams(typeof(AbilityActivationService))).Should().BeEmpty();
+    }
+
+    [TestCaseSource(nameof(DamageParts))]
+    public void Every_default_of_a_damage_part_reaches_the_static_code_and_stops_without_a_server(Func<object> part, int seams)
+    {
+        var instance = part();
+        Seams(instance.GetType()).Should().HaveCount(seams);
+        InvokeEveryDefault(instance, Seams(instance.GetType())).Should().BeEmpty();
     }
 
     [Test]
@@ -167,27 +222,30 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_stat_adjustment_is_stats_total()
     {
-        Run("GetStatAdjustment", Creature, StatType.Attack).Should().Be(0);
+        // Dark Force and the damage inputs took the read with them (P5-3e).
+        Run(DarkForcePart(), "GetStatAdjustment", Creature, StatType.Attack).Should().Be(0);
+        Run(DamageInputPart(), "GetStatAdjustment", Creature, StatType.Attack).Should().Be(0);
     }
 
     [Test]
     public void The_weapon_skill_check_is_combats()
     {
-        Run("IsWeaponSkillType", SkillType.Vibroblade).Should().Be(true);
-        Run("IsWeaponSkillType", SkillType.Force).Should().Be(false);
+        // The damage inputs took the check with them (P5-3e).
+        Run(DamageInputPart(), "IsWeaponSkillType", SkillType.Vibroblade).Should().Be(true);
+        Run(DamageInputPart(), "IsWeaponSkillType", SkillType.Force).Should().Be(false);
     }
 
     [Test]
     public void The_ability_skill_is_the_definitions_for_a_creature_with_no_override()
     {
-        Run("GetAbilitySkillType", Creature, new AbilityDetail { SkillType = SkillType.Force }).Should().Be(SkillType.Force);
+        Run(_service, "GetAbilitySkillType", Creature, new AbilityDetail { SkillType = SkillType.Force }).Should().Be(SkillType.Force);
     }
 
     [TestCase(100, 50, 50)]
     [TestCase(100, 0, 100)]
     public void Defense_ignore_is_combats_arithmetic(int defense, int percent, int expected)
     {
-        Run("ApplyDefenseIgnore", defense, percent).Should().Be(expected);
+        Run(DamageInputPart(), "ApplyDefenseIgnore", defense, percent).Should().Be(expected);
     }
 
     [Test]
@@ -200,14 +258,14 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_npc_attack_formula_is_stats()
     {
-        Run("GetAttack", 10, 12, 3).Should().Be(Stat.GetAttack(10, 12, 3));
+        Run(DamageInputPart(), "GetAttack", 10, 12, 3).Should().Be(Stat.GetAttack(10, 12, 3));
     }
 
     [Test]
     public void The_damage_roll_is_combats_with_no_critical_on_a_creature_with_no_stats()
     {
         var roll = ((int Damage, int CriticalRating, bool WasCriticalDowngraded))Run(
-            "CalculateDamageWithCriticalMitigation", Creature, 40, 10, 12, 20, 12, 0)!;
+            DamageStagePart(), "CalculateDamageWithCriticalMitigation", Creature, 40, 10, 12, 20, 12, 0)!;
 
         roll.CriticalRating.Should().Be(0);
         roll.WasCriticalDowngraded.Should().BeFalse();

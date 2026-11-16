@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Social;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;

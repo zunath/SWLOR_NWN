@@ -954,7 +954,7 @@ public class TintMapReviewTests
         var selectionSource = ReadSource(
             "SWLOR.Game.Server",
             "Domain",
-            "Companions",
+            "Character",
             "TintMapMaterialSelection.cs");
         selectionSource.Should().Contain("public AppearanceWeapon WeaponPart { get; }");
 

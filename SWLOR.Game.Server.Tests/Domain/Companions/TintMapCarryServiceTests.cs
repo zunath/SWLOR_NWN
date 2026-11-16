@@ -40,7 +40,7 @@ public class TintMapCarryServiceTests
         _world.Add(Item, ObjectType.Item);
         _world.Add(Replacement, ObjectType.Item);
         _world.Equip(Creature, InventorySlot.Chest, Item);
-        _state = new TintMapStateService();
+        _state = (TintMapStateService)_container.Get<ITintMapStateService>();
         _isDroid = false;
         var apply = ScriptedProxy.Create<ITintMapApplyService>(out _apply);
         _apply.On("ApplyCurrentColors", _ => null);
@@ -232,5 +232,129 @@ public class TintMapCarryServiceTests
         _service.CarryStoredEquipmentCustomColors(Creature);
 
         _world.LocalsOf(Creature).Should().BeEmpty();
+    }
+
+    private const uint Helmet = 20;
+
+    // A worn helmet whose model has one material; the helmet model after a swap names an equivalent material on the
+    // other wearer variant, which is the case the carry exists for.
+    private void WearAHelmet(string destinationMaterial = "pmh0_shor012", string otherVariant = "pfh0_shor012")
+    {
+        _world.Add(Helmet, ObjectType.Item);
+        _world.Equip(Creature, InventorySlot.Head, Helmet);
+        _world.SetAppearance(Helmet, ItemAppearanceType.SimpleModel, 0, 5);
+        _container.Get<ITintMapStateService>().LoadMaterials(new Dictionary<string, List<TintMapMaterialDefinition>>
+        {
+            ["helm_005"] = new() { new TintMapMaterialDefinition("Worn", destinationMaterial, TintMapLayerType.Cloth1) },
+            ["helm_006"] = new() { new TintMapMaterialDefinition("Other", otherVariant, TintMapLayerType.Cloth1) }
+        });
+    }
+
+    private ScriptedProxy _itemColorCalls = null!;
+
+    private TintMapCarryService ServiceWithItemColor()
+    {
+        var itemColor = ScriptedProxy.Create<ITintMapItemColorService>(out _itemColorCalls);
+        _itemColorCalls.On("SetStoredColor", _ => null);
+        var apply = ScriptedProxy.Create<ITintMapApplyService>(out var applyCalls);
+        applyCalls.On("ApplyCurrentColors", _ => null);
+        var droid = ScriptedProxy.Create<IDroidService>(out var droidCalls);
+        droidCalls.On("IsDroid", _ => false);
+        var gui = ScriptedProxy.Create<IGuiService>(out _);
+        return new TintMapCarryService(apply, droid, gui, itemColor, _state);
+    }
+
+    [Test]
+    public void CarryStoredEquipmentCustomColors_MovesAStoredColorToTheEquivalentMaterialOfTheWornItem()
+    {
+        WearAHelmet();
+        var color = new TintMapColor(11, 22, 33).ToStoredValue();
+        _world.SetInt(Helmet, Variable("pfh0_shor012", TintMapLayerType.Cloth1), color);
+        var service = ServiceWithItemColor();
+
+        service.CarryStoredEquipmentCustomColors(Creature);
+
+        _itemColorCalls.Calls.Should().ContainSingle(call => call.Member == "SetStoredColor"
+            && ((TintMapMaterialSelection)call.Arguments[1]!).Material.Resref == "pmh0_shor012"
+            && (int)call.Arguments[3]! == color && (bool)call.Arguments[4]! == false);
+    }
+
+    [Test]
+    public void CarryStoredEquipmentCustomColors_LeavesAMaterialThatAlreadyHasAColorOrAPerPartPreset()
+    {
+        WearAHelmet();
+        var color = new TintMapColor(11, 22, 33).ToStoredValue();
+        _world.SetInt(Helmet, Variable("pfh0_shor012", TintMapLayerType.Cloth1), color);
+        _world.SetInt(Helmet, Variable("pmh0_shor012", TintMapLayerType.Cloth1), 7);
+        var service = ServiceWithItemColor();
+
+        service.CarryStoredEquipmentCustomColors(Creature);
+
+        _itemColorCalls.Calls.Should().BeEmpty();
+    }
+
+    [Test]
+    public void CarryStoredEquipmentCustomColors_LetsAnItemWideTintShowThroughInsteadOfCopyingAColor()
+    {
+        WearAHelmet();
+        _world.SetInt(Helmet, TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1),
+            new TintMapColor(1, 2, 3).ToStoredValue());
+        var service = ServiceWithItemColor();
+
+        service.CarryStoredEquipmentCustomColors(Creature);
+
+        _itemColorCalls.Calls.Should().BeEmpty();
+    }
+
+    [Test]
+    public void QueueItemCustomColorCarry_MatchesSourcesToTheEquivalentDestinationMaterial()
+    {
+        WearAHelmet();
+        var color = new TintMapColor(5, 6, 7).ToStoredValue();
+        var oldVariable = Variable("pfh0_shor012", TintMapLayerType.Cloth1);
+        _world.SetInt(Helmet, oldVariable, color);
+        var service = ServiceWithItemColor();
+
+        service.QueueItemCustomColorCarry(Creature, Helmet, Helmet, 999, InventorySlot.Head, AppearanceArmor.Invalid,
+            Carry(TintMapLayerType.Cloth1, new TintMapItemColorSource("pfh0_shor012", oldVariable, color)), applyImmediately: true);
+
+        _itemColorCalls.Calls.Should().ContainSingle(call => call.Member == "SetStoredColor"
+            && ((TintMapMaterialSelection)call.Arguments[1]!).Material.Resref == "pmh0_shor012" && (int)call.Arguments[3]! == color);
+        _world.Int(Helmet, oldVariable).Should().Be(0, "the source slot is cleaned up once its colour moved to the equivalent material");
+    }
+
+    [Test]
+    public void QueueItemCustomColorCarry_FallsBackToPositionWhenNoSourceMatchesByIdentity()
+    {
+        WearAHelmet();
+        var color = new TintMapColor(5, 6, 7).ToStoredValue();
+        var oldVariable = Variable("zzz_unrelated", TintMapLayerType.Cloth1);
+        _world.SetInt(Helmet, oldVariable, color);
+        var service = ServiceWithItemColor();
+
+        service.QueueItemCustomColorCarry(Creature, Helmet, Helmet, 999, InventorySlot.Head, AppearanceArmor.Invalid,
+            Carry(TintMapLayerType.Cloth1, new TintMapItemColorSource("zzz_unrelated", oldVariable, color)), applyImmediately: true);
+
+        _itemColorCalls.Calls.Should().ContainSingle(call => call.Member == "SetStoredColor"
+            && ((TintMapMaterialSelection)call.Arguments[1]!).Material.Resref == "pmh0_shor012");
+        _world.LocalsOf(Helmet).Should().NotContainKey(oldVariable, "the source slot is cleaned up once it moved");
+    }
+
+    [Test]
+    public void QueueItemCustomColorCarry_CarriesTheOnlyCustomSourceWhenTheSlotCountChanges()
+    {
+        WearAHelmet();
+        var color = new TintMapColor(5, 6, 7).ToStoredValue();
+        var customVariable = Variable("zzz_one", TintMapLayerType.Cloth1);
+        var presetVariable = Variable("zzz_two", TintMapLayerType.Cloth1);
+        _world.SetInt(Helmet, customVariable, color);
+        var service = ServiceWithItemColor();
+
+        service.QueueItemCustomColorCarry(Creature, Helmet, Helmet, 999, InventorySlot.Head, AppearanceArmor.Invalid,
+            Carry(TintMapLayerType.Cloth1,
+                new TintMapItemColorSource("zzz_one", customVariable, color),
+                new TintMapItemColorSource("zzz_two", presetVariable, null)), applyImmediately: true);
+
+        _itemColorCalls.Calls.Should().ContainSingle(call => call.Member == "SetStoredColor" && (int)call.Arguments[3]! == color);
     }
 }

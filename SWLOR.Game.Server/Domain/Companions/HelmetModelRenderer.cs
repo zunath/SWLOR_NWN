@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

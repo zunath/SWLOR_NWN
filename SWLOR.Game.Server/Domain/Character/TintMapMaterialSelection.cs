@@ -1,6 +1,5 @@
-namespace SWLOR.Game.Server.Domain.Companions
+namespace SWLOR.Game.Server.Domain.Character
 {
-    using SWLOR.Game.Server.Domain.Character;
     using SWLOR.NWN.API.NWScript.Enum.Item;
 
     public class TintMapMaterialSelection

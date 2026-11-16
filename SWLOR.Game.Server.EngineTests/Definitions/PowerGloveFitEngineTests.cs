@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;

@@ -198,10 +198,10 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
             {
                 ctx.SetResources(player, 100, 25);
                 ability.Requirements.OfType<AbilityRequirementStamina>().Single().AfterActivationAction(player, ability);
-                Ability.BeginAbilityImpact(player, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(player, ability);
                 AbilityImpactSummary summary;
                 try { ability.ImpactAction(player, targets[0], 2, GetLocation(player)); }
-                finally { summary = Ability.EndAbilityImpact(player); }
+                finally { summary = AbilityImpactLifecycle.EndAbilityImpact(player); }
                 try
                 {
                     ctx.AssertEqual(3, summary.ImpactedTargetCount, "the real area hits three enemies");

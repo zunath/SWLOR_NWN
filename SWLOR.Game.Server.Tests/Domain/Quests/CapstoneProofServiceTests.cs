@@ -339,6 +339,21 @@ public class CapstoneProofServiceTests
     }
 
     [Test]
+    public void As_an_ability_impact_observer_it_records_the_impact_and_ignores_a_target_being_engaged()
+    {
+        var quickDraw = MakeAbility("Quick Draw");
+        _service.Registered[FeatType.QuickDraw1] = quickDraw;
+        IAbilityImpactObserver observer = _service;
+
+        observer.OnTargetEngaged(Player, Enemy);
+        _engine.Engine.CallsTo("SetLocalInt").Should().BeEmpty("a target being engaged is no proof");
+
+        observer.OnAbilityImpact(Player, Enemy, quickDraw);
+
+        Marked(Enemy, "dead_mans_hand").Should().BeTrue();
+    }
+
+    [Test]
     public void RecordAbilityImpact_credits_the_master_of_an_associate_that_used_the_ability()
     {
         var quickDraw = MakeAbility("Quick Draw");

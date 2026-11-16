@@ -17,6 +17,7 @@ SWLOR.Game.Server/Domain/Abilities/AbilityActivationStateService.cs -> Feature.U
 SWLOR.Game.Server/Domain/Abilities/AbilityService.cs -> Feature.PistolAnimationRemap | 1
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature/AbilityDefinition | 1
+SWLOR.Game.Server/Domain/Abilities/TwinPistolAbilityService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Feature.DMActions | 1
 SWLOR.Game.Server/Domain/Character/AppearanceRenderStateService.cs -> Feature/AppearanceDefinition | 4
 SWLOR.Game.Server/Domain/Character/IAppearanceRenderStateService.cs -> Feature/AppearanceDefinition | 4
@@ -58,7 +59,6 @@ SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs -> Feature/Migrati
 SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs -> Feature/StatusEffectDefinition | 6
 SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Feature.LightsaberAudio | 1
 SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Feature/StatusEffectDefinition | 2
-SWLOR.Game.Server/Domain/Combat/TwinPistolAbilityService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs -> Feature/QuestDefinition | 1

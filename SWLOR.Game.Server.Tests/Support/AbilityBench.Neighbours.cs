@@ -147,11 +147,13 @@ public sealed partial class AbilityBench
     private IMusicService Music()
     {
         var service = ScriptedProxy.Create<IMusicService>(out var proxy);
-        proxy.On("StartBattleTheme", args =>
-        {
-            Log.Add($"BattleTheme:{args[0]}:{args[1]}");
-            return null;
-        });
+        // As an ability impact observer, the music service starts the battle theme of the engaged target.
+        proxy.On("OnTargetEngaged", args =>
+            {
+                Log.Add($"BattleTheme:{args[1]}:{args[0]}");
+                return null;
+            })
+            .On("OnAbilityImpact", args => null);
         return service;
     }
 
@@ -257,11 +259,13 @@ public sealed partial class AbilityBench
     private ICapstoneProofService CapstoneProof()
     {
         var service = ScriptedProxy.Create<ICapstoneProofService>(out var proxy);
-        proxy.On("RecordAbilityImpact", args =>
-        {
-            Log.Add($"CapstoneProof:{args[0]}:{args[1]}:{(args[2] as AbilityDetail)?.Name}");
-            return null;
-        });
+        // As an ability impact observer, the capstone proof service records the impact.
+        proxy.On("OnAbilityImpact", args =>
+            {
+                Log.Add($"CapstoneProof:{args[0]}:{args[1]}:{(args[2] as AbilityDetail)?.Name}");
+                return null;
+            })
+            .On("OnTargetEngaged", args => null);
         return service;
     }
 

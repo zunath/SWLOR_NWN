@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(StatusEffect.ApplyStatusEffect(tank, tank, new BastionStanceStatusEffect(), 120f), "Tank stance applies");
             Enmity.ClearEnmityTable(enemy);
             var before = GetCurrentHitPoints(enemy);
-            await ctx.ExecuteInCreatureContextAsync(tank, () => Ability.ApplyHostileCombatImpact(
+            await ctx.ExecuteInCreatureContextAsync(tank, () => AbilityHostileImpact.ApplyHostileCombatImpact(
                 tank, enemy, SkillType.HeavyVibroblade, 100, CombatDamageType.Physical));
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(enemy) < before, 5f, "ability damage event");
             var damage = before - GetCurrentHitPoints(enemy);
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), actor, 60f);
             await ctx.WaitFrameAsync();
             Enmity.ClearEnmityTable(enemy);
-            await ctx.ExecuteInCreatureContextAsync(droid, () => Ability.ApplyHostileCombatImpact(
+            await ctx.ExecuteInCreatureContextAsync(droid, () => AbilityHostileImpact.ApplyHostileCombatImpact(
                 droid, enemy, SkillType.Vibroblade, 50, CombatDamageType.Physical));
             ctx.AssertEqual(150, Enmity.GetEnmityTable(enemy).GetValueOrDefault(droid), "Damage plus hostile impact belongs to droid exactly once");
             ctx.AssertEqual(0, Enmity.GetEnmityTable(enemy).GetValueOrDefault(owner.Creature), "Droid damage does not credit owner");

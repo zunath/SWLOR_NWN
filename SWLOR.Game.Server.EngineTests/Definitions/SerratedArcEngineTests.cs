@@ -80,14 +80,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         }
                         var ability = abilities[feat];
                         var impactedTargetCount = 0;
-                        Ability.BeginAbilityImpact(caster, ability);
+                        AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                         try
                         {
                             await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, target, rank, GetLocation(target)));
                         }
                         finally
                         {
-                            impactedTargetCount = Ability.EndAbilityImpact(caster).ImpactedTargetCount;
+                            impactedTargetCount = AbilityImpactLifecycle.EndAbilityImpact(caster).ImpactedTargetCount;
                         }
 
                         ctx.AssertEqual(recipientInsideArea ? 2 : 1, impactedTargetCount,

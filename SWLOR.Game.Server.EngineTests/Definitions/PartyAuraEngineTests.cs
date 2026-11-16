@@ -195,14 +195,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ability = AbilityCatalog.GetAbilityDetail(FeatType.ChargeOrder1);
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     ability.ImpactAction(caster, caster, 1, GetLocation(caster));
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
             });
         }

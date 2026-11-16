@@ -823,6 +823,22 @@ public class MusicServiceTests
     }
 
     [Test]
+    public void A_hostile_ability_that_engages_a_player_starts_the_theme_and_its_impact_does_nothing_more()
+    {
+        GivePlayerABattleTheme();
+        AddEnemy();
+        SWLOR.Game.Server.Domain.Abilities.IAbilityImpactObserver observer = _service;
+
+        observer.OnAbilityImpact(Enemy, Player, new SWLOR.Game.Server.Domain.Character.AbilityDetail());
+        _plugin.Calls.Should().BeEmpty("the music does not follow where an impact lands");
+
+        observer.OnTargetEngaged(Enemy, Player);
+
+        _service.IsBattleThemePlaying(Player).Should().BeTrue("the engaged target is the defender of StartBattleTheme");
+        PluginCalls("MusicBattleToggle").Should().Equal(Render("MusicBattleToggle", Player, true));
+    }
+
+    [Test]
     public void A_player_without_a_battle_theme_hears_nothing_when_a_fight_starts()
     {
         AddEnemy();

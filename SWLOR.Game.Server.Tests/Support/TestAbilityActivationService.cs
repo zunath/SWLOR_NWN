@@ -25,7 +25,7 @@ public sealed class TestAbilityActivationService : AbilityActivationService
     protected override string GetUnusableEquipmentError(uint creature) => _bench.EquipmentError;
 
     // The Force power rule moved to Combat (CombatRules and CombatQueriesService.IsForcePower); the check keeps the skill the
-    // doubles answer for an ability (TestAbilityService.Shared.cs: GetAbilitySkillType is the ability's own skill).
+    // doubles answer for an ability (TestAbilityImpactLifecycleService: GetAbilitySkillType is the ability's own skill).
     protected override bool IsForcePower(uint creature, AbilityDetail ability) => CombatRules.IsForcePower(ability.IsForcePower, ability.SkillType);
 
     protected override bool IsPlayerInSpaceMode(uint player) => _bench.SpaceMode.Contains(player);

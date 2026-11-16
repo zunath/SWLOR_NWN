@@ -49,18 +49,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 appliesBeaconPulseBonuses, showAreaIndicator, projectileVisualEffect, beamVisualEffect);
             if (emitter.IsAreaPulse && !emitter.HasShotVisual)
             {
-                emitter.ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
+                emitter.ApplyPulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(activator,
                     () => ApplyAreaHostilePulse(emitter), baseDamage: baseDamage);
             }
             else if (emitter.IsAreaPulse)
             {
-                emitter.CreateAreaImpactBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
+                emitter.CreateAreaImpactBatch = AbilityImpactLifecycle.CaptureRepeatedAbilityImpactBatch<uint>(activator,
                     target => ApplySingleHostilePulseImpact(emitter, target), baseDamage: baseDamage);
                 emitter.ApplyPulse = () => ApplyAreaHostileShots(emitter);
             }
             else
             {
-                emitter.ApplyTargetImpact = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
+                emitter.ApplyTargetImpact = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact<uint>(activator,
                     target => ApplySingleHostilePulseImpact(emitter, target), baseDamage: baseDamage);
                 emitter.ApplyPulse = () => ApplySingleHostilePulse(emitter);
             }

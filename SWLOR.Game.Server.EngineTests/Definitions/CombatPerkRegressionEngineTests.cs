@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 async Task ApplyEpicenter(uint target)
                 {
-                    Ability.BeginAbilityImpact(caster, epicenter);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, epicenter);
                     try
                     {
                         await ctx.ExecuteInCreatureContextAsync(caster,
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                     finally
                     {
-                        Ability.EndAbilityImpact(caster);
+                        AbilityImpactLifecycle.EndAbilityImpact(caster);
                     }
                 }
 
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             async Task ApplyGuardCounter(uint target)
             {
                 ctx.MakeHostile(target);
-                Ability.BeginAbilityImpact(caster, guardCounter);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, guardCounter);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
                 ChangeToStandardFaction(target, StandardFaction.Defender);
             }
@@ -260,7 +260,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             async Task ApplyReprisal(uint target)
             {
                 ctx.MakeHostile(target);
-                Ability.BeginAbilityImpact(caster, reprisal);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, reprisal);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
                 ChangeToStandardFaction(target, StandardFaction.Defender);
             }
@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             async Task ApplyJointLock(uint target)
             {
                 ctx.MakeHostile(target);
-                Ability.BeginAbilityImpact(caster, jointLock);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, jointLock);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    Ability.EndAbilityImpact(caster);
+                    AbilityImpactLifecycle.EndAbilityImpact(caster);
                 }
                 ChangeToStandardFaction(target, StandardFaction.Defender);
             }
@@ -547,13 +547,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var ability = AbilityCatalog.GetAbilityDetail(feat);
                     var hp = GetCurrentHitPoints(target);
-                    Ability.BeginAbilityImpact(caster, ability);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                     try
                     {
                         await ctx.ExecuteInCreatureContextAsync(caster,
                             () => ability.ImpactAction(caster, target, 1, GetLocation(target)));
                     }
-                    finally { Ability.EndAbilityImpact(caster); }
+                    finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                     await ctx.DelaySecondsAsync(0.5f);
                     ctx.AssertEqual(hp, GetCurrentHitPoints(target), $"{feat} causes no direct damage");
                     ctx.Assert(StatusEffect.GetCreatureStatusEffects(target).GetAllEffects().Count > 0,
@@ -568,13 +568,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(75, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
                         "Control-only casts preserve every First Strike stack without starting recharge");
                     Stat.SetNPCMaxHitPoints(target, 1000, true);
-                    Ability.BeginAbilityImpact(caster, attack);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, attack);
                     try
                     {
                         await ctx.ExecuteInCreatureContextAsync(caster,
                             () => attack.ImpactAction(caster, target, 1, GetLocation(target)));
                     }
-                    finally { Ability.EndAbilityImpact(caster); }
+                    finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                 }
                 ctx.AssertEqual(0, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
                     "Damaging attacks consume all three stacks and enter recharge normally");
@@ -604,13 +604,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
             {
-                Ability.BeginAbilityImpact(caster, ability);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
                         () => ability.ImpactAction(caster, target, 1, GetLocation(target)));
                 }
-                finally { Ability.EndAbilityImpact(caster); }
+                finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                 await ctx.DelaySecondsAsync(0.75f);
                 ctx.Assert(StatusEffect.HasStatusEffect(target, typeof(FlashStatusEffect)),
                     "Flash delayed impact resolves");
@@ -640,11 +640,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ability = new AbilityDetail { SkillType = SkillType.Force, IsHostileAbility = true,
                 ActivationType = AbilityActivationType.Casted };
             GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
-            Ability.BeginAbilityImpact(caster, ability);
-            var pulse = Ability.CaptureRepeatedAbilityImpact(caster, () => Ability.ApplyCombatImpact(
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
+            var pulse = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(caster, () => Ability.ApplyCombatImpact(
                 caster, target, GetLocation(target), SkillType.Force, 10, 0, null, false,
                 resolvesHit: false, canCritical: false, useUnscaledDamage: true), baseDamage: 10);
-            Ability.EndAbilityImpact(caster);
+            AbilityImpactLifecycle.EndAbilityImpact(caster);
             GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 101, 0, 120);
             await ctx.ExecuteInCreatureContextAsync(caster, pulse);
             var first = AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage;
@@ -675,13 +675,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Prepare(ctx, target);
                     ctx.MakeHostile(target);
                     var ability = AbilityCatalog.GetAbilityDetail(feats[i]);
-                    Ability.BeginAbilityImpact(caster, ability);
+                    AbilityImpactLifecycle.BeginAbilityImpact(caster, ability);
                     try
                     {
                         await ctx.ExecuteInCreatureContextAsync(caster,
                             () => ability.ImpactAction(caster, target, 1, GetLocation(target)));
                     }
-                    finally { Ability.EndAbilityImpact(caster); }
+                    finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                     ctx.Assert(StatusEffect.HasStatusEffect(target, typeof(ImmobilizedStatusEffect)), "Choke immobilizes");
                 }
                 await ctx.DelaySecondsAsync(32f);
@@ -695,25 +695,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(choke.DealsDeferredDamage, "Choke declares its damaging status effect");
                 ctx.AssertEqual(75, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
                     "First Strike is initially available for Choke");
-                Ability.BeginAbilityImpact(caster, choke);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, choke);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
                         () => choke.ImpactAction(caster, targets[0], 1, GetLocation(targets[0])));
                 }
-                finally { Ability.EndAbilityImpact(caster); }
+                finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                 ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
                     "Choke applies the hostile-hit damage bonus despite having no immediate base damage");
                 ctx.AssertEqual(0, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, targets[0], choke, SkillType.Force),
                     "Choke consumes the applied First Strike stack");
                 GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
-                Ability.BeginAbilityImpact(caster, choke);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, choke);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
                         () => choke.ImpactAction(caster, targets[0], 1, GetLocation(targets[0])));
                 }
-                finally { Ability.EndAbilityImpact(caster); }
+                finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                 ctx.Assert(AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).AttributedDamage > 0,
                     "Choke applies captured flat damage even without a separate base-damage rider");
             }
@@ -738,13 +738,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var i = 0; i < 40; i++)
             {
                 Stat.SetNPCMaxHitPoints(target, 1000, true);
-                Ability.BeginAbilityImpact(caster, apex);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, apex);
                 try
                 {
                     await ctx.ExecuteInCreatureContextAsync(caster,
                         () => apex.ImpactAction(caster, target, 1, GetLocation(target)));
                 }
-                finally { Ability.EndAbilityImpact(caster); }
+                finally { AbilityImpactLifecycle.EndAbilityImpact(caster); }
                 criticals += AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster).CriticalHitCount;
             }
             ctx.Assert(criticals > 0 && criticals < 40, "Apex Bite actually rolls critical impacts");

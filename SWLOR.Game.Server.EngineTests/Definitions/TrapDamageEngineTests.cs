@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
             var invoked = false;
-            Ability.BeginAbilityImpact(caster, AbilityCatalog.GetAbilityDetail(FeatType.RazorTrap1));
-            var trigger = Ability.CaptureRepeatedAbilityImpact(caster, () => invoked = true, baseDamage: 14);
-            Ability.EndAbilityImpact(caster);
+            AbilityImpactLifecycle.BeginAbilityImpact(caster, AbilityCatalog.GetAbilityDetail(FeatType.RazorTrap1));
+            var trigger = AbilityImpactLifecycle.CaptureRepeatedAbilityImpact(caster, () => invoked = true, baseDamage: 14);
+            AbilityImpactLifecycle.EndAbilityImpact(caster);
             ObjectPlugin.SetCurrentHitPoints(caster, 0);
             ctx.Assert(GetIsObjectValid(caster) && GetCurrentHitPoints(caster) <= 0,
                 "The default recurring impact has a valid dead owner");
@@ -97,26 +97,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ctx.SeedRandom(12345);
                 GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, capturedDamageBonus, 0, 120);
-                Ability.BeginAbilityImpact(caster, trapAbility);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, trapAbility);
                 trackerOpen = true;
                 await ctx.ExecuteInCreatureContextAsync(caster,
                     () => trapAbility.ImpactAction(caster, target, trapAbility.AbilityLevel, GetLocation(target)));
-                var placement = Ability.EndAbilityImpact(caster);
+                var placement = AbilityImpactLifecycle.EndAbilityImpact(caster);
                 trackerOpen = false;
                 ctx.AssertEqual(0, placement.AttributedDamage, "Placement queues no immediate damage");
                 ctx.AssertEqual(1000, GetCurrentHitPoints(target), "The trap waits for its arming delay");
 
                 GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Espionage, newerDamageBonus, 0, 120);
-                Ability.BeginAbilityImpact(caster, renewal);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, renewal);
                 trackerOpen = true;
                 await ctx.ExecuteInCreatureContextAsync(caster,
                     () => renewal.ImpactAction(caster, caster, renewal.AbilityLevel, GetLocation(caster)));
-                Ability.EndAbilityImpact(caster);
+                AbilityImpactLifecycle.EndAbilityImpact(caster);
                 trackerOpen = false;
                 ctx.Assert(ReferenceEquals(renewal, AbilityImpactState.GetLastCompletedAbilityImpactSummary(caster)?.Ability),
                     "A different registered ability completes between placement and detonation");
 
-                Ability.BeginAbilityImpact(caster, renewal);
+                AbilityImpactLifecycle.BeginAbilityImpact(caster, renewal);
                 trackerOpen = true;
                 if (ownerDiesAfterPlacement)
                 {
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertPerceptionDamage(ctx, caster, target, baseDamage + capturedDamageBonus,
                     damageType, detonation.AttributedDamage, detonation.CriticalHitCount > 0);
 
-                var restored = Ability.EndAbilityImpact(caster);
+                var restored = AbilityImpactLifecycle.EndAbilityImpact(caster);
                 trackerOpen = false;
                 ctx.Assert(ReferenceEquals(renewal, restored.Ability),
                     "Detonation restores the newer in-progress ability tracker");
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally
             {
                 if (trackerOpen)
-                    Ability.AbortAbilityImpact(caster);
+                    AbilityImpactLifecycle.AbortAbilityImpact(caster);
                 Traps.ClearTraps(caster);
                 StatusEffect.RemoveAllStatusEffects(caster);
                 StatusEffect.RemoveAllStatusEffects(target);

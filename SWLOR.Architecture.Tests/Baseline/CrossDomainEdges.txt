@@ -37,8 +37,7 @@ Feature/AbilityDefinition -> Feature.UsePerkFeat | 3
 Domain/Abilities -> Domain/Items | 1
 Feature/AbilityDefinition -> Domain/Items | 2
 
-# Abilities -> Quests (2 edges)
-Domain/Abilities -> Domain/Quests | 3
+# Abilities -> Quests (1 edge)
 Feature/AbilityDefinition -> Domain/Quests | 1
 
 # Abilities -> Social (1 edge)
@@ -47,8 +46,7 @@ Feature/AbilityDefinition -> Domain/Social | 11
 # Abilities -> UI (1 edge)
 Domain/Abilities -> Domain/UI | 12
 
-# Abilities -> World (2 edges)
-Domain/Abilities -> Domain/World | 3
+# Abilities -> World (1 edge)
 Feature/AbilityDefinition -> Domain/World | 2
 
 # Administration -> Character (1 edge)
@@ -325,9 +323,10 @@ Platform/Entity -> Domain/UI | 4
 Domain/Foundation -> Domain/World | 9
 Feature/DialogDefinition -> Domain/World | 52
 
-# Gameplay -> Abilities (4 edges)
+# Gameplay -> Abilities (5 edges)
 Feature.NaturalRegeneration -> Feature/AbilityDefinition | 1
 Feature.TlkOverrides -> Domain/Abilities | 2
+Feature.TwinPistolCombatLifecycle -> Domain/Abilities | 5
 Feature.UsePerkFeat -> Domain/Abilities | 24
 Feature.UsePerkFeat -> Feature/AbilityDefinition | 1
 
@@ -522,6 +521,9 @@ Platform/Native -> Feature.UsePerkFeat | 11
 
 # Platform -> Items (1 edge)
 Platform/Native -> Domain/Items | 4
+
+# Quests -> Abilities (1 edge)
+Domain/Quests -> Domain/Abilities | 2
 
 # Quests -> Administration (1 edge)
 Domain/Quests -> Domain/Administration | 3

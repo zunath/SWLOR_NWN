@@ -71,7 +71,7 @@ public class AbilityServiceDefaultSeamsTests
     private static AbilityDamageDeliveryService DamageDeliveryPart() =>
         new(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IAbilityDarkForceService>(),
             FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatHitEffectsService>(),
-            FacadeForwarder.For<ICombatDamageTakenService>());
+            FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatAbilityBonusService>());
 
     private static AbilityStatusApplicationService StatusApplicationPart() =>
         new(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IAbilityImpactState>(),
@@ -89,15 +89,43 @@ public class AbilityServiceDefaultSeamsTests
             FacadeForwarder.For<ICombatFeedbackService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatAbilityMagnitudeService>(),
             FacadeForwarder.For<IResistanceService>());
 
-    // Each damage part with the number of seams it took from the service.
+    // The lifecycle and per-target parts of the ability split (P5-3f) with every service forwarded to the installed container.
+    private static AbilityImpactLifecycleService LifecyclePart() =>
+        new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IMeleeTechniqueService>(), FacadeForwarder.For<ICombatRecorderService>(),
+            FacadeForwarder.For<IAbilityDamageDeliveryService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatQueriesService>(),
+            FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatResourcesService>(),
+            FacadeForwarder.For<ICombatHitEffectsService>());
+
+    private static AbilityHitRollService HitRollPart() =>
+        new(Array.Empty<IAbilityImpactObserver>(), FacadeForwarder.For<IMeleeTechniqueService>(), FacadeForwarder.For<IAbilityDamageInputService>(),
+            FacadeForwarder.For<IAbilityStatusApplicationService>(), FacadeForwarder.For<IAbilityImpactMessageService>(), FacadeForwarder.For<ICombatPointService>(),
+            FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatAbilityBonusService>(),
+            FacadeForwarder.For<ICombatAbilityHitService>());
+
+    private static AbilityTargetImpactService TargetImpactPart() =>
+        new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IAbilityHitRollService>(), FacadeForwarder.For<IAbilityHostileImpactService>(),
+            FacadeForwarder.For<IAbilityDarkForceService>(), FacadeForwarder.For<IAbilityDamageInputService>(), FacadeForwarder.For<IAbilityDamageStageService>(),
+            FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>(), FacadeForwarder.For<ICombatAbilityBonusService>());
+
+    private static AbilityHostileImpactService HostileImpactPart() =>
+        new(FacadeForwarder.For<IAbilityImpactState>(), Array.Empty<IAbilityImpactObserver>(), FacadeForwarder.For<ICombatPointService>(),
+            FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
+            FacadeForwarder.For<IAbilityDamageDeliveryService>(), FacadeForwarder.For<IAbilityStatusApplicationService>(),
+            FacadeForwarder.For<IAbilityDarkForceService>(), FacadeForwarder.For<IAbilityImpactVisualService>());
+
+    // Each damage, lifecycle and per-target part with the number of seams it took from the service.
     private static IEnumerable<TestCaseData> DamageParts()
     {
         yield return new TestCaseData((Func<object>)ImpactMessagePart, 2).SetArgDisplayNames(nameof(AbilityImpactMessageService));
         yield return new TestCaseData((Func<object>)DarkForcePart, 3).SetArgDisplayNames(nameof(AbilityDarkForceService));
-        yield return new TestCaseData((Func<object>)DamageDeliveryPart, 4).SetArgDisplayNames(nameof(AbilityDamageDeliveryService));
+        yield return new TestCaseData((Func<object>)DamageDeliveryPart, 5).SetArgDisplayNames(nameof(AbilityDamageDeliveryService));
         yield return new TestCaseData((Func<object>)StatusApplicationPart, 1).SetArgDisplayNames(nameof(AbilityStatusApplicationService));
-        yield return new TestCaseData((Func<object>)DamageInputPart, 27).SetArgDisplayNames(nameof(AbilityDamageInputService));
+        yield return new TestCaseData((Func<object>)DamageInputPart, 29).SetArgDisplayNames(nameof(AbilityDamageInputService));
         yield return new TestCaseData((Func<object>)DamageStagePart, 11).SetArgDisplayNames(nameof(AbilityDamageStageService));
+        yield return new TestCaseData((Func<object>)LifecyclePart, 15).SetArgDisplayNames(nameof(AbilityImpactLifecycleService));
+        yield return new TestCaseData((Func<object>)HitRollPart, 4).SetArgDisplayNames(nameof(AbilityHitRollService));
+        yield return new TestCaseData((Func<object>)TargetImpactPart, 3).SetArgDisplayNames(nameof(AbilityTargetImpactService));
+        yield return new TestCaseData((Func<object>)HostileImpactPart, 3).SetArgDisplayNames(nameof(AbilityHostileImpactService));
     }
 
     private static object? Sample(Type type)
@@ -136,13 +164,14 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void There_is_a_seam_for_every_unconverted_call()
     {
-        // The activation checks (P5-3d) and the damage parts (P5-3e) took their seams with them, so the count spans the
-        // service and those parts.
+        // The activation checks (P5-3d), the damage parts (P5-3e) and the lifecycle and per-target parts (P5-3f) took their seams
+        // with them, so the count spans the service and those parts.
         new[]
             {
                 typeof(AbilityActivationService), typeof(AbilityImpactMessageService), typeof(AbilityDarkForceService),
                 typeof(AbilityDamageDeliveryService), typeof(AbilityStatusApplicationService), typeof(AbilityDamageInputService),
-                typeof(AbilityDamageStageService)
+                typeof(AbilityDamageStageService), typeof(AbilityImpactLifecycleService), typeof(AbilityHitRollService),
+                typeof(AbilityTargetImpactService), typeof(AbilityHostileImpactService)
             }
             .SelectMany(Seams).Concat(Seams()).Should().HaveCountGreaterThan(70);
     }
@@ -150,6 +179,8 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void Every_default_reaches_the_static_code_and_stops_without_a_server()
     {
+        // The service keeps the seams of the telegraphed impact (P5-3f).
+        Seams().Should().HaveCount(3);
         // These need the database or the native engine for a real creature, so they are left to the in-engine tests:
         // the space mode and FP reads ask the database and the NPC stats read a creature's skin.
         var engineOnly = new HashSet<string>
@@ -238,7 +269,8 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_ability_skill_is_the_definitions_for_a_creature_with_no_override()
     {
-        Run(_service, "GetAbilitySkillType", Creature, new AbilityDetail { SkillType = SkillType.Force }).Should().Be(SkillType.Force);
+        // The impact lifecycle took the read with it (P5-3f).
+        Run(LifecyclePart(), "GetAbilitySkillType", Creature, new AbilityDetail { SkillType = SkillType.Force }).Should().Be(SkillType.Force);
     }
 
     [TestCase(100, 50, 50)]

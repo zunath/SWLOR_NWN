@@ -42,8 +42,8 @@ public class AbilityFacadeAllocationTests
     private IDisposable _installed = null!;
 
     /// <summary>
-    /// The container's ability service and its parts (catalog, impact state store, magnitude, activation, aura, immunity, activation state and
-    /// the damage parts) are the bench's, whose calls into unconverted code answer from its own
+    /// The container's ability service and its parts (catalog, impact state store, magnitude, activation, aura, immunity, activation state,
+    /// the damage parts, the lifecycle, the per-target parts and the visual part) are the bench's, whose calls into unconverted code answer from its own
     /// tables without allocating, so a count here is the accessor and the instance and nothing behind them.
     /// </summary>
     [SetUp]
@@ -66,6 +66,11 @@ public class AbilityFacadeAllocationTests
             services.Replace(ServiceDescriptor.Singleton<IAbilityStatusApplicationService>(_world.StatusApplication));
             services.Replace(ServiceDescriptor.Singleton<IAbilityDamageInputService>(_world.DamageInput));
             services.Replace(ServiceDescriptor.Singleton<IAbilityDamageStageService>(_world.DamageStage));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityImpactLifecycleService>(_world.Lifecycle));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityHitRollService>(_world.HitRoll));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityTargetImpactService>(_world.TargetImpact));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityHostileImpactService>(_world.HostileImpact));
+            services.Replace(ServiceDescriptor.Singleton<IAbilityImpactVisualService>(_world.ImpactVisual));
         });
         _installed = _container.Install();
         _world.Catalog.Register(Registered, Force);
@@ -154,7 +159,8 @@ public class AbilityFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    // The reads of IAbilityService (stays) and IAbilityHostileImpactService (GameServices.AbilityHostileImpact after P5-3f) (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
+    // The reads of IAbilityService (stays), IAbilityHostileImpactService (GameServices.AbilityHostileImpact) and IAbilityDamageInputService
+    // (GameServices.AbilityDamageInput, the weapon damage type) since P5-3f (Readmes/MaintainabilityRefactorAbilitySplit.md, "Every member").
     [Test]
     public void The_impact_reads_allocate_nothing_with_or_without_an_active_impact()
     {
@@ -163,8 +169,8 @@ public class AbilityFacadeAllocationTests
         foreach (var creature in new[] { Tracked, Untracked })
         {
             Allocated(() => sink += (int)Ability.GetSuccessfulImpactVisualEffect(creature)).Should().Be(0);
-            Allocated(() => sink += Ability.ApplyCapturedAbilityDamageBonus(creature, 5)).Should().Be(0);
-            Allocated(() => sink += (int)Ability.GetWeaponAbilityDamageType(creature, SkillType.Force, CombatDamageType.Fire)).Should().Be(0);
+            Allocated(() => sink += AbilityHostileImpact.ApplyCapturedAbilityDamageBonus(creature, 5)).Should().Be(0);
+            Allocated(() => sink += (int)AbilityDamageInput.GetWeaponAbilityDamageType(creature, SkillType.Force, CombatDamageType.Fire)).Should().Be(0);
         }
 
         GC.KeepAlive(sink);
@@ -210,7 +216,7 @@ public class AbilityFacadeAllocationTests
 
         Allocated(() => sink += CombatRules.IsForcePower(false, SkillType.Force) ? 1 : 0).Should().Be(0);
         Allocated(() => sink += CombatQueries.IsForcePower(Untracked, Force) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += Ability.CalculateHostileAbilityEnmity(5, 0, 1)).Should().Be(0);
+        Allocated(() => sink += AbilityHostileImpact.CalculateHostileAbilityEnmity(5, 0, 1)).Should().Be(0);
         Allocated(() => sink += AbilityImpactState.IsAreaImpact(null!, Force) ? 1 : 0).Should().Be(0);
         Allocated(() => sink += CombatAbilityMagnitude.ApplyCombatReadinessMagnitude(Untracked, 0)).Should().Be(0);
         GC.KeepAlive(sink);

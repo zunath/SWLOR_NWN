@@ -9,9 +9,10 @@ namespace SWLOR.Game.Server.Domain.Quests
     /// <summary>
     /// Tracks which capstone mechanics each player has used, so capstone quest steps credit a kill only when the
     /// player fought it with their skill's mechanic. Static callers reach the
-    /// container's instance of this interface through <c>GameServices.CapstoneProof</c>.
+    /// container's instance of this interface through <c>GameServices.CapstoneProof</c>. As an
+    /// <see cref="IAbilityImpactObserver"/> it records each hostile ability impact.
     /// </summary>
-    public interface ICapstoneProofService
+    public interface ICapstoneProofService : IAbilityImpactObserver
     {
         /// <summary>
         /// Adds a proof to the registry and to the indexes by status effect and by ability.

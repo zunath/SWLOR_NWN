@@ -650,6 +650,78 @@ per-target code of parts 10, 11 and 12 for P5-3f and calls the six parts. Where 
   against 767), and fps swung more between two rounds of one side (7.4 to 9.8) than between the sides. The pair is worth
   repeating on a quiet machine with P5-3f, which adds the rest of the per-target chain.
 
+### P5-3f (the lifecycle, the per-target chain, the observers and the twin pistol service; the split is complete)
+
+Parts 5, 10, 11 and 12 moved, each behind its interface and a `GameServices` property (`AbilityImpactLifecycle`, `AbilityHitRoll`,
+`AbilityTargetImpact`, `AbilityHostileImpact`), with one part the map did not have, the success visual
+(`AbilityImpactVisual`):
+
+| # | Part | Lines | Services | Members |
+|---|---|---:|---:|---|
+| 5 | `AbilityImpactLifecycleService` | 452 | 10: the store, melee technique, recorder, part 13, status effects, queries, ability bonus, ability impact, resources, hit effects | `BeginAbilityImpact`, the recurring and batched captures, `EndAbilityImpact`, `AbortAbilityImpact`, `BeginTelegraphedAbilityImpact`, `PrepareCombatImpactDamageBonuses` |
+| 10 | `AbilityHitRollService` | 147 | 10: the observers, melee technique, parts 16, 18 and 15, combat point, enmity, activity, ability bonus, ability hit | `TryResolveHostileImpactHit` |
+| 11 | `AbilityTargetImpactService` | 162 | 9: the store, parts 10, 12, 14, 16 and 17, resources, ability impact, ability bonus | the per-target `ApplyHostileCombatImpact` |
+| 12 | `AbilityHostileImpactService` | 202 | 10: the store, the observers, combat point, enmity, resources, ability impact, parts 13, 18 and 14, the visual part | `ApplyHostileCombatImpact`, `ApplyHostileAbilityEnmity`, `CalculateHostileAbilityEnmity`, `ApplyCapturedAbilityDamageBonus` |
+| - | `AbilityImpactVisualService` | 49 | 1: stealth | `ShowVisualEffectToPlayer` and the success visual playback |
+
+**The split is complete.** `AbilityService` is part 9: 933 lines (4,572 at the map), 10 services (31), no method over 150 lines
+and no `Lazy<>`; it keeps `ApplyCombatImpact`, `ApplyTelegraphedCombatImpact`, `PlaySuccessfulImpactVisualEffect`,
+`CaptureSuccessfulImpactVisualEffect`, `GetSuccessfulImpactVisualEffect` and `PlayAbilityImpactAnimation`, and takes the store, the
+lifecycle, the per-target resolution, the message and visual parts, geometry, telegraph, named animation, resources and ability
+impact. The 8 down `Lazy<ICombat...>` went in P5-3b already. `MusicService` and `CapstoneProofService` implement
+`IAbilityImpactObserver` (their interfaces extend it, as `IAbilityAuraService` extends `ICreatureRevivedListener`, and each answers
+the notice it does not use with an empty method), registered as the same instances after their services; parts 10 and 12 copy
+`IEnumerable<IAbilityImpactObserver>` to an array once. Abilities no longer names World or Quests. `TwinPistolAbilityService` and
+its interface moved to `Domain/Abilities` with `SWLOR.TypeMoves` (two `DomainOrderTypeMoves.json` entries; its test file moved
+with it), its `GameServices` property and registration to the Abilities files; it takes the lifecycle for
+`CaptureRepeatedAbilityImpact` (7 -> 8 services), and Combat's 5 members up to Abilities for it are gone. No `[ReloadState]`
+field and no handler moved: the twin pistol service's two dictionaries carry no reload attribute, before or after, and the
+carrier keys only carried fields. No `Lazy<>` became a plain parameter: the three narrowed ones (`PartyService`, `AIService`,
+`CompanionControlService`) break cycles through services this item does not touch. Where the pull request differs from the map:
+
+- **The success visual is a part of its own.** The map left `PlaySuccessfulImpactVisualEffect` in part 9, but the hostile impact
+  (part 12) plays it on every successful hit, and part 9 reaches part 12 through part 11, so part 12 cannot call part 9. The
+  playback (the private overload over a captured `AbilityImpactVisualEffects`) and `ShowVisualEffectToPlayer`, which the playback
+  calls, moved to `AbilityImpactVisualService` below both. `IAbilityService` keeps `PlaySuccessfulImpactVisualEffect`,
+  `CaptureSuccessfulImpactVisualEffect` and `GetSuccessfulImpactVisualEffect` (their bodies reach the part for the playback only);
+  `ShowVisualEffectToPlayer` left it, because keeping it there would be a forwarder or a copy, so its 6 content sites call
+  `AbilityImpactVisual.ShowVisualEffectToPlayer`. Part 12 reads the tracked impact's visuals from the store at the point it played
+  them, as the public member did.
+- **The weapon ability damage type is part 16's,** not part 12's: the hit roll resolves it before the roll, so it is a dependency
+  of part 10, and part 10 or 12 would reach 11 services with it. Part 16 already held the store, the queries and
+  `UsesQueuedNaturalWeapon`; it took `GetWeaponAbilityDamageType` (4 content sites call `AbilityDamageInput.`) and
+  `ResolveWeaponAbilityDamageType` (on its interface, for the impact part 10 already read) and copies of the two query seams.
+- **The status-applied bonus consume is the delivery part's.** Note 2 gave it to the hostile part, which would then need 11
+  services; it was the first statement of the damage block P5-3e handed to part 13, so it moved to the start of
+  `DeliverHostileImpactDamage` with its seam (part 13: 7 -> 8 services). Its order against everything else is unchanged.
+- **`CanDealCombatImpactDamage` is `CombatRules.CanDealCombatImpactDamage`,** beside `CanConsumeNextAbilityNoDelay`: the lifecycle
+  and the per-target resolution both read it, and it is a pure rule over the definition.
+- **The telegraphed begin is the lifecycle's.** The block of the delayed telegraph action that reads the status-applied bonus and
+  begins the impact with the bonuses the cast captured became `IAbilityImpactLifecycleService.BeginTelegraphedAbilityImpact`,
+  verbatim. In part 9 it would need the ability bonus service (11 services), and the resolved-bonus `BeginAbilityImpact` overload
+  stays private to the lifecycle. `PrepareCombatImpactDamageBonuses` is on the lifecycle's interface, since part 9 calls it.
+- **The telegraphed impact splits at its delayed half.** The map named three helpers for `ApplyTelegraphedCombatImpact` (197
+  lines); they would have saved about 45 lines. Its delayed half (build the action, draw the telegraph, defer the stamina cost)
+  became `ScheduleTelegraphedCombatImpact`, verbatim, with the 36 values it reads as parameters (145 and 129 lines).
+  `BuildTelegraphedCombatImpactAction` is 147 lines without a split once the begin block moved. This is why `AbilityService` is 933
+  lines and not the map's 880.
+- **Parts 10 and 11 split at the hit roll.** Part 11 keeps the damage-derived healing scope and the tracked impact read, asks part
+  10's `TryResolveHostileImpactHit` for the validity check, the damage type, the activity and battle theme, the roll and the miss
+  branch (verbatim, the early returns becoming `false`), and gets the values the damage needs back in an `AbilityHitRoll`, a readonly
+  struct in an `out` parameter, read into locals of the original names: no tuple, no closure, nothing allocated. The damage
+  bonus closure stays in part 11 and captures what it captured, so a hit allocates what it did.
+- **The callers:** `TrapsService` takes the lifecycle for `CaptureRepeatedAbilityImpact` (9 -> 10 services). `RemovedFacades.json`
+  lists the members under their parts, and `Apply-FacadeRemoval.ps1` rewrote the content (`UsePerkFeat`,
+  `WeaponActiveAbilityDefinitionBase`, `DeviceAbilityEffects` and four ability definitions), two unit tests and 20 engine test files.
+- **Tests:** `TestAbilityService` is part 9's double; the lifecycle, hit roll, per-target and hostile impact doubles came from its
+  partial files (`TestAbility<Part>Service`), the delivery and damage input doubles took the consume and the two query seams, and
+  the bench opens the damage-derived healing scope for both parts that open it (`BeginHealingScope`). The bench's music and
+  capstone stand-ins answer the observer notices with the log lines the direct calls wrote, so the tests that pin the order of a
+  hit see the same log. `AbilitySource` adds the five files and interfaces and a `Member(type, method)` read for the two
+  `ApplyHostileCombatImpact` methods; the tests that read the per-target code, the abort and the delayed telegraph by text follow.
+  `AbilityServiceDefaultSeamsTests` runs the four parts' defaults, `AbilityFacadeAllocationTests` registers the five parts, and the
+  music and capstone tests cover the notices.
+
 ## Risks
 
 - **Hot paths.** `ApplyCombatImpact` runs per target per ability and the weapon abilities ride every landed swing, so the chain

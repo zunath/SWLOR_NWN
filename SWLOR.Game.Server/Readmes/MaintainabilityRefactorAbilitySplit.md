@@ -642,6 +642,13 @@ per-target code of parts 10, 11 and 12 for P5-3f and calls the six parts. Where 
   part's defaults and reads the moved seams on their parts. `AbilityFacadeAllocationTests` registers the six parts and pins the
   per-target rules that answer without the engine (`ShouldUseNPCStatScaling`, `UsesQueuedNaturalWeapon`, the status categories of
   an impact with none) at zero.
+- **Readings:** CombatSim's team-fight, twin-pistol-barrage and solo-boss reports (seed 1, 50 runs) and its ability table are
+  byte-identical to the base's, and `WeaponLineTests` still reads Rending Strike through `IAbilityService.ApplyCombatImpact`
+  behind `GameServices.Ability`. The paired `CombatLoad` runs (base and branch side by side, then the homes swapped) were
+  saturated by other engine and live stacks on the machine (750 to 910 managed ms/s and 7 to 10 fps on both sides), so they are
+  noise, not a reading: averaged over both rounds the sides' managed time was within 1% (players 901 against 906 ms/s, NPCs 775
+  against 767), and fps swung more between two rounds of one side (7.4 to 9.8) than between the sides. The pair is worth
+  repeating on a quiet machine with P5-3f, which adds the rest of the per-target chain.
 
 ## Risks
 

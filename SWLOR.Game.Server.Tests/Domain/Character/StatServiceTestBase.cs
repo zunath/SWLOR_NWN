@@ -25,25 +25,15 @@ public abstract class StatServiceTestBase
 
     protected TestStatService Service => Bench.Service;
 
-    protected TestStatService NpcStats => Bench.NpcStats;
-
-    protected TestStatService Pool => Bench.Pool;
+    protected TestStatService CreatureStat => Bench.CreatureStat;
 
     protected TestStatService Record => Bench.Record;
 
-    protected TestStatService Movement => Bench.Movement;
-
-    protected TestStatService Rating => Bench.Rating;
-
     protected TestStatService CombatRating => Bench.CombatRating;
-
-    protected TestStatService Deflection => Bench.Deflection;
 
     protected TestStatService DeflectionReaction => Bench.DeflectionReaction;
 
     protected TestStatService Healing => Bench.Healing;
-
-    protected TestStatService Regeneration => Bench.Regeneration;
 
     [OneTimeSetUp]
     public void BuildFacades() => _facades = new FacadeContainer();

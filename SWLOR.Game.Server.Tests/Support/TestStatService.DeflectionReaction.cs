@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
-// Part 9, CombatDeflectionReactionService (Combat): what a deflection triggers.
+// Part 6, CombatDeflectionReactionService (Combat): what a deflection triggers.
 public sealed partial class TestStatService
 {
     protected override uint GetNativeCreatureId(global::NWN.Native.API.CNWSCreature creature) => StatBench.PlayerCreature;

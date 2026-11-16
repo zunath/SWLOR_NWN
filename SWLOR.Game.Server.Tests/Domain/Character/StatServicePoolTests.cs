@@ -16,13 +16,13 @@ public class StatServicePoolTests : StatServiceTestBase
     [TestCase(0, 0, 7, 7)]
     [TestCase(-5, -2, 1, -10)]
     public void GetMaxFP_AddsThreePerWillpowerAndTheBonus(int baseFP, int willpower, int bonus, int expected) =>
-        Pool.GetMaxFP(baseFP, willpower, bonus).Should().Be(expected);
+        Service.GetMaxFP(baseFP, willpower, bonus).Should().Be(expected);
 
     [TestCase(10, 5, 0, 17)]
     [TestCase(10, 2, 3, 16)]
     [TestCase(0, 1, 0, 1)]
     public void GetMaxStamina_AddsOneAndAHalfPerMightRoundedDown(int baseStamina, int might, int bonus, int expected) =>
-        Pool.GetMaxStamina(baseStamina, might, bonus).Should().Be(expected);
+        Service.GetMaxStamina(baseStamina, might, bonus).Should().Be(expected);
 
     [Test]
     public void GetMaxFP_OfAPlayerReadsTheRecordOnceWhenNoneIsGiven()
@@ -32,11 +32,11 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.Abilities[(PlayerCreature, AbilityType.Willpower)] = 10;
         SetStat(PlayerCreature, StatType.MaxFP, 5);
 
-        Pool.GetMaxFP(PlayerCreature).Should().Be(55);
+        Service.GetMaxFP(PlayerCreature).Should().Be(55);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
 
         Bench.Log.Clear();
-        Pool.GetMaxFP(PlayerCreature, record).Should().Be(55);
+        Service.GetMaxFP(PlayerCreature, record).Should().Be(55);
         Bench.Log.Should().BeEmpty("a supplied record is not read again");
     }
 
@@ -48,11 +48,11 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.Abilities[(PlayerCreature, AbilityType.Might)] = 4;
         SetStat(PlayerCreature, StatType.MaxStamina, 2);
 
-        Pool.GetMaxStamina(PlayerCreature).Should().Be(28);
+        Service.GetMaxStamina(PlayerCreature).Should().Be(28);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
 
         Bench.Log.Clear();
-        Pool.GetMaxStamina(PlayerCreature, record).Should().Be(28);
+        Service.GetMaxStamina(PlayerCreature, record).Should().Be(28);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -64,8 +64,8 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.Abilities[(Npc, AbilityType.Willpower)] = 2;
         Bench.Abilities[(Npc, AbilityType.Might)] = 2;
 
-        Pool.GetMaxFP(Npc).Should().Be(46);
-        Pool.GetMaxStamina(Npc).Should().Be(33);
+        Service.GetMaxFP(Npc).Should().Be(46);
+        Service.GetMaxStamina(Npc).Should().Be(33);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -81,8 +81,8 @@ public class StatServicePoolTests : StatServiceTestBase
             Bench.Possessed.Add(Npc);
         Bench.Skin(Npc, (ItemPropertyType.FP, -1, 40), (ItemPropertyType.Stamina, -1, 30));
 
-        Pool.GetMaxFP(Npc).Should().Be(40);
-        Pool.GetMaxStamina(Npc).Should().Be(30);
+        Service.GetMaxFP(Npc).Should().Be(40);
+        Service.GetMaxStamina(Npc).Should().Be(30);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -93,13 +93,13 @@ public class StatServicePoolTests : StatServiceTestBase
         record.FP = 12;
         record.Stamina = 34;
 
-        Pool.GetCurrentFP(PlayerCreature).Should().Be(12);
-        Pool.GetCurrentStamina(PlayerCreature).Should().Be(34);
+        Service.GetCurrentFP(PlayerCreature).Should().Be(12);
+        Service.GetCurrentStamina(PlayerCreature).Should().Be(34);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}", $"DB.Get:{PlayerUuid}");
 
         Bench.Log.Clear();
-        Pool.GetCurrentFP(PlayerCreature, record).Should().Be(12);
-        Pool.GetCurrentStamina(PlayerCreature, record).Should().Be(34);
+        Service.GetCurrentFP(PlayerCreature, record).Should().Be(12);
+        Service.GetCurrentStamina(PlayerCreature, record).Should().Be(34);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -110,8 +110,8 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.SetLocal(Npc, "FP", 7);
         Bench.SetLocal(Npc, "STAMINA", 9);
 
-        Pool.GetCurrentFP(Npc).Should().Be(7);
-        Pool.GetCurrentStamina(Npc).Should().Be(9);
+        Service.GetCurrentFP(Npc).Should().Be(7);
+        Service.GetCurrentStamina(Npc).Should().Be(9);
     }
 
     [TestCase(0, 50, -2, 0)]
@@ -125,14 +125,14 @@ public class StatServicePoolTests : StatServiceTestBase
         SetStat(PlayerCreature, StatType.FPCostPercentAdjustment, percent);
         SetStat(PlayerCreature, StatType.FPCostFlatAdjustment, flat);
 
-        Pool.GetAdjustedRequiredFP(PlayerCreature, required).Should().Be(expected);
+        Service.GetAdjustedRequiredFP(PlayerCreature, required).Should().Be(expected);
     }
 
     [TestCase(0)]
     [TestCase(-5)]
     public void RestoreFP_OfNothingDoesNothing(int amount)
     {
-        Pool.RestoreFP(PlayerCreature, amount).Should().Be(0);
+        Service.RestoreFP(PlayerCreature, amount).Should().Be(0);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -142,7 +142,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.AddPlayer();
         SetStat(PlayerCreature, StatType.FPRestorePercentAdjustment, -100);
 
-        Pool.RestoreFP(PlayerCreature, 10).Should().Be(0);
+        Service.RestoreFP(PlayerCreature, 10).Should().Be(0);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -152,7 +152,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.AddPlayer();
         Bench.Records.Clear();
 
-        Pool.RestoreFP(PlayerCreature, 10).Should().Be(0);
+        Service.RestoreFP(PlayerCreature, 10).Should().Be(0);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
     }
 
@@ -164,7 +164,7 @@ public class StatServicePoolTests : StatServiceTestBase
         record.FP = 20;
         Bench.Recording = true;
 
-        Pool.RestoreFP(PlayerCreature, 5).Should().Be(5);
+        Service.RestoreFP(PlayerCreature, 5).Should().Be(5);
 
         record.FP.Should().Be(25);
         Bench.Log.Should().Equal(
@@ -184,11 +184,11 @@ public class StatServicePoolTests : StatServiceTestBase
         record.FP = 38;
         SetStat(PlayerCreature, StatType.FPRestorePercentAdjustment, 50);
 
-        Pool.RestoreFP(PlayerCreature, 1, record).Should().Be(2, "1 becomes 2 and the cap leaves room for 2");
+        Service.RestoreFP(PlayerCreature, 1, record).Should().Be(2, "1 becomes 2 and the cap leaves room for 2");
         Bench.Log.Should().Contain("FPRestoredEffects:100");
 
         Bench.Log.Clear();
-        Pool.RestoreFP(PlayerCreature, 1, record).Should().Be(0);
+        Service.RestoreFP(PlayerCreature, 1, record).Should().Be(0);
         Bench.Log.Should().NotContain("FPRestoredEffects:100");
         Bench.Log.Should().Contain("Feedback:0:FP", "the report still says nothing was gained");
     }
@@ -199,7 +199,7 @@ public class StatServicePoolTests : StatServiceTestBase
         var record = Bench.AddPlayer();
         record.MaxFP = 40;
 
-        Pool.RestoreFP(PlayerCreature, 5, record, false).Should().Be(5);
+        Service.RestoreFP(PlayerCreature, 5, record, false).Should().Be(5);
         Bench.Log.Should().NotContain(entry => entry.StartsWith("Feedback", StringComparison.Ordinal));
     }
 
@@ -211,7 +211,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.SetLocal(Npc, "FP", 8);
         Bench.Recording = true;
 
-        Pool.RestoreFP(Npc, 5).Should().Be(2);
+        Service.RestoreFP(Npc, 5).Should().Be(2);
 
         Bench.Locals.Int(Npc, "FP").Should().Be(10);
         Bench.Log.Should().Equal("RecordChange:FP:2:10", "Script:pc_fp_adjusted", "FPRestoredEffects:200", "Feedback:2:FP");
@@ -221,7 +221,7 @@ public class StatServicePoolTests : StatServiceTestBase
     [TestCase(-1)]
     public void ReduceFP_OfNothingDoesNothing(int amount)
     {
-        Pool.ReduceFP(PlayerCreature, amount);
+        Service.ReduceFP(PlayerCreature, amount);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -232,7 +232,7 @@ public class StatServicePoolTests : StatServiceTestBase
         record.FP = 20;
         Bench.Recording = true;
 
-        Pool.ReduceFP(PlayerCreature, 3);
+        Service.ReduceFP(PlayerCreature, 3);
 
         record.FP.Should().Be(17);
         Bench.Log.Should().Equal(
@@ -249,7 +249,7 @@ public class StatServicePoolTests : StatServiceTestBase
         var record = Bench.AddPlayer();
         record.FP = 2;
 
-        Pool.ReduceFP(PlayerCreature, 5, record);
+        Service.ReduceFP(PlayerCreature, 5, record);
 
         record.FP.Should().Be(0);
         Bench.Log.Should().Equal($"DB.Set:{PlayerUuid}", "Script:pc_fp_adjusted");
@@ -262,7 +262,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.AddNpc();
         Bench.SetLocal(Npc, "FP", start);
 
-        Pool.ReduceFP(Npc, by);
+        Service.ReduceFP(Npc, by);
 
         Bench.Locals.Int(Npc, "FP").Should().Be(expected);
         Bench.Log.Should().Equal("Script:pc_fp_adjusted");
@@ -273,7 +273,7 @@ public class StatServicePoolTests : StatServiceTestBase
     [TestCase(false, true, false)]
     [TestCase(false, false, false)]
     public void StaminaRestoration_IsBlockedOnlyForAStealthedPlayer(bool isPlayer, bool inStealth, bool expected) =>
-        Pool.IsStaminaRestorationBlocked(isPlayer, inStealth).Should().Be(expected);
+        Service.IsStaminaRestorationBlocked(isPlayer, inStealth).Should().Be(expected);
 
     [Test]
     public void RestoreStamina_OfAStealthedPlayerStopsBeforeTheRecordIsRead()
@@ -281,7 +281,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.AddPlayer();
         Bench.ActionModes.Add((PlayerCreature, ActionMode.Stealth));
 
-        Pool.RestoreStamina(PlayerCreature, 5).Should().Be(0);
+        Service.RestoreStamina(PlayerCreature, 5).Should().Be(0);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -289,7 +289,7 @@ public class StatServicePoolTests : StatServiceTestBase
     [TestCase(-5)]
     public void RestoreStamina_OfNothingDoesNothing(int amount)
     {
-        Pool.RestoreStamina(PlayerCreature, amount).Should().Be(0);
+        Service.RestoreStamina(PlayerCreature, amount).Should().Be(0);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -299,7 +299,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.AddPlayer();
         Bench.Records.Clear();
 
-        Pool.RestoreStamina(PlayerCreature, 10).Should().Be(0);
+        Service.RestoreStamina(PlayerCreature, 10).Should().Be(0);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
     }
 
@@ -311,7 +311,7 @@ public class StatServicePoolTests : StatServiceTestBase
         record.Stamina = 20;
         Bench.Recording = true;
 
-        Pool.RestoreStamina(PlayerCreature, 5).Should().Be(5);
+        Service.RestoreStamina(PlayerCreature, 5).Should().Be(5);
 
         record.Stamina.Should().Be(25);
         Bench.Log.Should().Equal(
@@ -330,7 +330,7 @@ public class StatServicePoolTests : StatServiceTestBase
         record.MaxStamina = 10;
         record.Stamina = 10;
 
-        Pool.RestoreStamina(PlayerCreature, 5, record, false).Should().Be(0);
+        Service.RestoreStamina(PlayerCreature, 5, record, false).Should().Be(0);
 
         Bench.Log.Should().Equal($"DB.Set:{PlayerUuid}", "Script:pc_stm_adjusted");
     }
@@ -343,7 +343,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.SetLocal(Npc, "STAMINA", 8);
         Bench.Recording = true;
 
-        Pool.RestoreStamina(Npc, 5).Should().Be(2);
+        Service.RestoreStamina(Npc, 5).Should().Be(2);
 
         Bench.Locals.Int(Npc, "STAMINA").Should().Be(10);
         Bench.Log.Should().Equal("RecordChange:Stamina:2:10", "Script:pc_stm_adjusted", "StaminaRestoredEffects:200", "Feedback:2:STM");
@@ -353,7 +353,7 @@ public class StatServicePoolTests : StatServiceTestBase
     [TestCase(-1)]
     public void ReduceStamina_OfNothingDoesNothing(int amount)
     {
-        Pool.ReduceStamina(PlayerCreature, amount);
+        Service.ReduceStamina(PlayerCreature, amount);
         Bench.Log.Should().BeEmpty();
     }
 
@@ -364,7 +364,7 @@ public class StatServicePoolTests : StatServiceTestBase
         record.Stamina = 20;
         Bench.Recording = true;
 
-        Pool.ReduceStamina(PlayerCreature, 25);
+        Service.ReduceStamina(PlayerCreature, 25);
 
         record.Stamina.Should().Be(0);
         Bench.Log.Should().Equal(
@@ -381,7 +381,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.AddNpc();
         Bench.SetLocal(Npc, "STAMINA", 5);
 
-        Pool.ReduceStamina(Npc, 9);
+        Service.ReduceStamina(Npc, 9);
 
         Bench.Locals.Int(Npc, "STAMINA").Should().Be(0);
         Bench.Locals.String(Npc, "BEAST_STAMINA_REGEN_AVAILABLE_AT").Should().BeEmpty();
@@ -395,7 +395,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.SetLocal(Npc, "STAMINA", 5);
         var before = DateTime.UtcNow;
 
-        Pool.ReduceStamina(Npc, 2);
+        Service.ReduceStamina(Npc, 2);
 
         Bench.Locals.Int(Npc, "STAMINA").Should().Be(3);
         var availableAt = new DateTime(long.Parse(Bench.Locals.String(Npc, "BEAST_STAMINA_REGEN_AVAILABLE_AT"), CultureInfo.InvariantCulture), DateTimeKind.Utc);
@@ -408,7 +408,7 @@ public class StatServicePoolTests : StatServiceTestBase
         Bench.AddNpc();
         Bench.Beasts.Add(Npc);
 
-        Pool.ReduceStamina(Npc, 2);
+        Service.ReduceStamina(Npc, 2);
 
         Bench.Locals.String(Npc, "BEAST_STAMINA_REGEN_AVAILABLE_AT").Should().BeEmpty();
     }
@@ -419,7 +419,7 @@ public class StatServicePoolTests : StatServiceTestBase
         var record = Bench.AddPlayer();
         record.MaxFP = 40;
 
-        Pool.RestoreFP(PlayerCreature, 5, record);
+        Service.RestoreFP(PlayerCreature, 5, record);
 
         Bench.Log.Should().NotContain(entry => entry.StartsWith("RecordChange", StringComparison.Ordinal));
     }

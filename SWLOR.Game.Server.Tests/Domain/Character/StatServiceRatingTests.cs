@@ -366,7 +366,7 @@ public class StatServiceRatingTests : StatServiceTestBase
         SetStat(PlayerCreature, StatType.Detection, 2);
         Bench.ActionModes.Add((PlayerCreature, ActionMode.Detect));
 
-        Rating.GetDetection(PlayerCreature).Should().Be(122);
+        Service.GetDetection(PlayerCreature).Should().Be(122);
     }
 
     [Test]
@@ -374,10 +374,10 @@ public class StatServiceRatingTests : StatServiceTestBase
     {
         Bench.AddNpc();
         Bench.Skin(Npc, (ItemPropertyType.Detection, -1, 3), (ItemPropertyType.Detection, -1, 4), (ItemPropertyType.Attack, -1, 100));
-        Rating.GetDetection(Npc).Should().Be(7);
+        Service.GetDetection(Npc).Should().Be(7);
 
         SetStat(Npc, StatType.Detection, 500);
-        Rating.GetDetection(Npc).Should().Be(StatService.MaximumNPCDetection);
+        Service.GetDetection(Npc).Should().Be(StatService.MaximumNPCDetection);
     }
 
     [TestCase(true, false)]
@@ -391,21 +391,21 @@ public class StatServiceRatingTests : StatServiceTestBase
             Bench.Possessed.Add(Npc);
         SetStat(Npc, StatType.Detection, 500);
 
-        Rating.GetDetection(Npc).Should().Be(500);
+        Service.GetDetection(Npc).Should().Be(500);
     }
 
     [TestCase(1, 2, 3, true, 11)]
     [TestCase(1, 2, 3, false, 6)]
     [TestCase(-100, 0, 0, false, 0)]
     public void CalculateDetectionRating_AddsItsPartsAndIsNeverNegative(int perception, int willpower, int bonus, bool detect, int expected) =>
-        Rating.CalculateDetectionRating(perception, willpower, bonus, 0, detect).Should().Be(expected);
+        Service.CalculateDetectionRating(perception, willpower, bonus, 0, detect).Should().Be(expected);
 
     [TestCase(60, true, 50)]
     [TestCase(60, false, 60)]
     [TestCase(-1, true, 0)]
     [TestCase(-1, false, 0)]
     public void ApplyNPCDetectionCap_CapsOnlyNpcsAndNeverGoesNegative(int detection, bool isNpc, int expected) =>
-        Rating.ApplyNPCDetectionCap(detection, isNpc).Should().Be(expected);
+        Service.ApplyNPCDetectionCap(detection, isNpc).Should().Be(expected);
 
     [Test]
     public void GetLockpicking_OfAPlayerAddsTheRecordAndAdjustments()
@@ -414,7 +414,7 @@ public class StatServiceRatingTests : StatServiceTestBase
         record.Lockpicking = 6;
         SetStat(PlayerCreature, StatType.Lockpicking, 2);
 
-        Rating.GetLockpicking(PlayerCreature).Should().Be(8);
+        Record.GetLockpicking(PlayerCreature).Should().Be(8);
     }
 
     [Test]
@@ -424,7 +424,7 @@ public class StatServiceRatingTests : StatServiceTestBase
         Bench.Skin(Npc, (ItemPropertyType.Lockpicking, -1, 3));
         SetStat(Npc, StatType.Lockpicking, 2);
 
-        Rating.GetLockpicking(Npc).Should().Be(5);
+        Record.GetLockpicking(Npc).Should().Be(5);
     }
 
     [Test]
@@ -435,7 +435,7 @@ public class StatServiceRatingTests : StatServiceTestBase
         Bench.Abilities[(PlayerCreature, AbilityType.Agility)] = 10;
         SetStat(PlayerCreature, StatType.Stealth, 1);
 
-        Rating.GetStealth(PlayerCreature).Should().Be(26);
+        Service.GetStealth(PlayerCreature).Should().Be(26);
     }
 
     [Test]
@@ -443,9 +443,9 @@ public class StatServiceRatingTests : StatServiceTestBase
     {
         Bench.AddNpc();
         Bench.Skin(Npc, (ItemPropertyType.Stealth, -1, 5));
-        Rating.GetStealth(Npc).Should().Be(5);
+        Service.GetStealth(Npc).Should().Be(5);
 
         SetStat(Npc, StatType.Stealth, -100);
-        Rating.GetStealth(Npc).Should().Be(0);
+        Service.GetStealth(Npc).Should().Be(0);
     }
 }

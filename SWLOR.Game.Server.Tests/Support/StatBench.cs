@@ -173,42 +173,30 @@ public sealed partial class StatBench : IDisposable
 
     public FakePlayerPlugin PlayerPlugin { get; }
 
-    /// <summary>Part 1 of the stat split, <c>StatService</c> (stays): the stat adjustment read, its sources and the stat metadata.</summary>
+    /// <summary>
+    /// Part 1 of the stat split, <c>StatService</c> (stays): the stat adjustment read and metadata, the FP and Stamina pools, the
+    /// NPC stat skin reads, Detection and Stealth.
+    /// </summary>
     public TestStatService Service { get; }
 
     // One accessor per part of the stat split (Readmes/MaintainabilityRefactorStatSplit.md). A test calls each member through
     // its part's accessor; until a part moves, its accessor is the one instance, and the pull request that moves the part points
     // the accessor at the part's double without changing the tests.
 
-    /// <summary>Part 2, <c>NpcStatService</c>: the NPC stat skin reads and the native ability score read.</summary>
-    public TestStatService NpcStats => Service;
+    /// <summary>Part 2, <c>CreatureStatService</c>: movement, maximum HP and food HP, attributes, NPC loading and regeneration.</summary>
+    public TestStatService CreatureStat => Service;
 
-    /// <summary>Part 3, <c>StatPoolService</c>: the FP and Stamina pools.</summary>
-    public TestStatService Pool => Service;
-
-    /// <summary>Part 4, <c>StatRecordService</c>: maximum HP, the gear-fed player records, attributes and NPC loading.</summary>
+    /// <summary>Part 3, <c>StatRecordService</c>: the gear-fed player records, Combat Readiness, Lockpicking, Control, Craftsmanship.</summary>
     public TestStatService Record => Service;
 
-    /// <summary>Part 5, <c>StatMovementService</c>: walk mode and the movement rate.</summary>
-    public TestStatService Movement => Service;
-
-    /// <summary>Part 6, <c>StatRatingService</c>: Detection, Stealth, Lockpicking, Control and Craftsmanship.</summary>
-    public TestStatService Rating => Service;
-
-    /// <summary>Part 7, <c>CombatRatingService</c> (Combat): Attack, Accuracy, Defense and Evasion.</summary>
+    /// <summary>Part 5, <c>CombatRatingService</c> (Combat): Attack, Accuracy, Defense, Evasion and the deflection and Guard chances.</summary>
     public TestStatService CombatRating => Service;
 
-    /// <summary>Part 8, <c>CombatDeflectionService</c> (Combat): the deflection and Guard chances.</summary>
-    public TestStatService Deflection => Service;
-
-    /// <summary>Part 9, <c>CombatDeflectionReactionService</c> (Combat): what a deflection triggers.</summary>
+    /// <summary>Part 6, <c>CombatDeflectionReactionService</c> (Combat): what a deflection triggers.</summary>
     public TestStatService DeflectionReaction => Service;
 
-    /// <summary>Part 10, the healing adjustments that join <c>CombatResourcesService</c> (Combat).</summary>
+    /// <summary>Part 7, the healing adjustments that join <c>CombatResourcesService</c> (Combat).</summary>
     public TestStatService Healing => Service;
-
-    /// <summary>Part 11, <c>NpcRegenerationService</c> (Combat): the NPC and beast resource regeneration.</summary>
-    public TestStatService Regeneration => Service;
 
     /// <summary>Everything the service did outside itself, in order.</summary>
     public List<string> Log { get; } = new();

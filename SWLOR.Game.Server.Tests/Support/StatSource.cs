@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// <summary>
 /// The source of <c>StatService</c> wherever it lives, for the tests that guard a rule by reading the code. The stat split
 /// (<c>Readmes/MaintainabilityRefactorStatSplit.md</c>) moves the text of <c>Domain/Character/StatService.cs</c> into part
-/// files in Character, Combat and Abilities; each pull request that moves a part adds its files to <see cref="PartFiles"/>
+/// files in Character and Combat; each pull request that moves a part adds its files to <see cref="PartFiles"/>
 /// (and its interface to <see cref="InterfaceFiles"/> and <see cref="PartInterfaces"/>), and a test calls <see cref="Read"/>
 /// (or <see cref="Method"/>, <see cref="Members"/>, <see cref="Nodes{TNode}"/>) and keeps its needles.
 /// <para>

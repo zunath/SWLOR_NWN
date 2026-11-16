@@ -5,10 +5,12 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Support;
 
-// Part 7, CombatRatingService (Combat): Attack, Accuracy, Defense and Evasion.
+// Part 5, CombatRatingService (Combat): Attack, Accuracy, Defense, Evasion and the deflection and Guard chances.
 public sealed partial class TestStatService
 {
     protected override SkillType GetSkillTypeByBaseItem(BaseItem baseItem) => _bench.BaseItemSkill;
+
+    protected override SkillType GetWeaponSkill(uint creature, uint weapon) => _bench.WeaponSkills.GetValueOrDefault(weapon, SkillType.Invalid);
 
     protected override AbilityType GetWeaponDamageAbilityType(uint creature, BaseItem weaponType) => _bench.WeaponDamageAbility;
 

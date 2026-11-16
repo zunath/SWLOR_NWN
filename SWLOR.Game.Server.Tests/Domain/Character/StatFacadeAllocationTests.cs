@@ -75,7 +75,10 @@ public class StatFacadeAllocationTests
     // and still read through Stat: the pull request that moves a part points its group at the part's GameServices property and
     // registers the part's allocation double.
 
-    /// <summary>Part 1, <c>StatService</c> (stays): the stat adjustment read, the metadata, the equipment action read.</summary>
+    /// <summary>
+    /// Part 1, <c>StatService</c> (stays): the stat adjustment read, the metadata, the equipment action read, the pools, the NPC
+    /// skin reads, Detection and Stealth.
+    /// </summary>
     [Test]
     public void TheStatServiceReadsAllocateNothing()
     {
@@ -93,76 +96,51 @@ public class StatFacadeAllocationTests
         Allocated(() => sink += Stat.ScaleEffect(10, 10)).Should().Be(0);
         Allocated(() => sink += Stat.GetAbilityNameShort(AbilityType.Might).Length).Should().Be(0);
         Allocated(() => sink += Stat.TryGetEquipmentStatAction(SWLOR.NWN.API.NWScript.Enum.Item.ItemPropertyType.Attack, out _) ? 1 : 0).Should().Be(0);
-        GC.KeepAlive(sink);
-    }
-
-    /// <summary>Part 2, <c>NpcStatService</c>.</summary>
-    [Test]
-    public void TheNpcStatReadsAllocateNothing()
-    {
-        var sink = 0;
-
-        Allocated(() => sink += Stat.GetNPCSkinMaxHP(Creature)).Should().Be(0);
-        GC.KeepAlive(sink);
-    }
-
-    /// <summary>Part 3, <c>StatPoolService</c>.</summary>
-    [Test]
-    public void ThePoolReadsAllocateNothing()
-    {
-        var sink = 0;
-
         Allocated(() => sink += Stat.GetMaxFP(10, 10, 1)).Should().Be(0);
         Allocated(() => sink += Stat.GetMaxStamina(10, 10, 1)).Should().Be(0);
         Allocated(() => sink += Stat.IsStaminaRestorationBlocked(true, false) ? 1 : 0).Should().Be(0);
         Allocated(() => sink += Stat.GetCurrentFP(Creature)).Should().Be(0);
         Allocated(() => sink += Stat.GetCurrentStamina(Creature)).Should().Be(0);
         Allocated(() => sink += Stat.GetAdjustedRequiredFP(Creature, 10)).Should().Be(0);
+        Allocated(() => sink += Stat.GetNPCSkinMaxHP(Creature)).Should().Be(0);
+        Allocated(() => sink += Stat.CalculateDetectionRating(1, 2, 3, 4, true)).Should().Be(0);
+        Allocated(() => sink += Stat.ApplyNPCDetectionCap(100, true)).Should().Be(0);
+        Allocated(() => sink += Stat.CalculateStealthRating(1, 2, 3)).Should().Be(0);
+        Allocated(() => sink += Stat.GetStealth(Creature)).Should().Be(0);
+        Allocated(() => sink += Stat.GetDetection(Creature)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
-    /// <summary>Part 4, <c>StatRecordService</c>.</summary>
+    /// <summary>Part 2, <c>CreatureStatService</c>.</summary>
+    [Test]
+    public void TheCreatureStatReadsAllocateNothing()
+    {
+        var sink = 0;
+
+        Allocated(() => sink += (int)Stat.GetMovementSpeedMultiplier(Creature)).Should().Be(0);
+        Allocated(() => sink += Stat.IsWalkModeEnabled(Creature) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += Stat.GetEquippedHPBonus(Creature)).Should().Be(0);
+        Allocated(() => sink += Stat.GetBeastNaturalRegenAmount(30)).Should().Be(0);
+        Allocated(() => sink += Stat.IsNaturalStaminaRegenerationAvailable(1, 2) ? 1 : 0).Should().Be(0);
+        GC.KeepAlive(sink);
+    }
+
+    /// <summary>Part 3, <c>StatRecordService</c>.</summary>
     [Test]
     public void TheRecordReadsAndAdjustmentsAllocateNothing()
     {
         var player = new Player();
         var sink = 0;
 
-        Allocated(() => sink += Stat.GetEquippedHPBonus(Creature)).Should().Be(0);
         Allocated(() => sink += Stat.GetEquippedCombatReadiness(Creature)).Should().Be(0);
+        Allocated(() => sink += Stat.GetLockpicking(Creature)).Should().Be(0);
         Allocated(() => Stat.AdjustEvasion(player, 1)).Should().Be(0);
         Allocated(() => Stat.AdjustAttack(player, 1)).Should().Be(0);
         Allocated(() => Stat.AdjustCombatReadiness(player, 1)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
-    /// <summary>Part 5, <c>StatMovementService</c>.</summary>
-    [Test]
-    public void TheMovementReadsAllocateNothing()
-    {
-        var sink = 0;
-
-        Allocated(() => sink += (int)Stat.GetMovementSpeedMultiplier(Creature)).Should().Be(0);
-        Allocated(() => sink += Stat.IsWalkModeEnabled(Creature) ? 1 : 0).Should().Be(0);
-        GC.KeepAlive(sink);
-    }
-
-    /// <summary>Part 6, <c>StatRatingService</c>.</summary>
-    [Test]
-    public void TheRatingReadsAllocateNothing()
-    {
-        var sink = 0;
-
-        Allocated(() => sink += Stat.CalculateDetectionRating(1, 2, 3, 4, true)).Should().Be(0);
-        Allocated(() => sink += Stat.ApplyNPCDetectionCap(100, true)).Should().Be(0);
-        Allocated(() => sink += Stat.CalculateStealthRating(1, 2, 3)).Should().Be(0);
-        Allocated(() => sink += Stat.GetStealth(Creature)).Should().Be(0);
-        Allocated(() => sink += Stat.GetLockpicking(Creature)).Should().Be(0);
-        Allocated(() => sink += Stat.GetDetection(Creature)).Should().Be(0);
-        GC.KeepAlive(sink);
-    }
-
-    /// <summary>Part 7, <c>CombatRatingService</c> (Combat).</summary>
+    /// <summary>Part 5, <c>CombatRatingService</c> (Combat), with the deflection and Guard chances.</summary>
     [Test]
     public void TheCombatRatingReadsAllocateNothing()
     {
@@ -175,15 +153,6 @@ public class StatFacadeAllocationTests
         Allocated(() => sink += Stat.CalculateDefense(10, 10, 1)).Should().Be(0);
         Allocated(() => sink += Stat.GetAttackPercentAdjustment(Creature, SkillType.Force)).Should().Be(0);
         Allocated(() => sink += Stat.GetDefensePercentAdjustment(Creature, CombatDamageType.Physical)).Should().Be(0);
-        GC.KeepAlive(sink);
-    }
-
-    /// <summary>Part 8, <c>CombatDeflectionService</c> (Combat).</summary>
-    [Test]
-    public void TheDeflectionReadsAllocateNothing()
-    {
-        var sink = 0;
-
         Allocated(() => sink += Stat.GetGuardChance(Creature)).Should().Be(0);
         Allocated(() => sink += Stat.GetMeleeDeflectionChance(Creature)).Should().Be(0);
         Allocated(() => sink += Stat.GetRangedDeflectionChance(Creature)).Should().Be(0);
@@ -191,7 +160,7 @@ public class StatFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    /// <summary>Part 10, the healing adjustments that join <c>CombatResourcesService</c> (Combat).</summary>
+    /// <summary>Part 7, the healing adjustments that join <c>CombatResourcesService</c> (Combat).</summary>
     [Test]
     public void TheHealingAdjustmentsAllocateNothing()
     {
@@ -203,18 +172,7 @@ public class StatFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    /// <summary>Part 11, <c>NpcRegenerationService</c> (Combat).</summary>
-    [Test]
-    public void TheRegenerationRulesAllocateNothing()
-    {
-        var sink = 0;
-
-        Allocated(() => sink += Stat.GetBeastNaturalRegenAmount(30)).Should().Be(0);
-        Allocated(() => sink += Stat.IsNaturalStaminaRegenerationAvailable(1, 2) ? 1 : 0).Should().Be(0);
-        GC.KeepAlive(sink);
-    }
-
-    /// <summary>Parts 3 (<c>GetMaxFP</c>) and 7 (the ratings).</summary>
+    /// <summary>Parts 1 (<c>GetMaxFP</c>) and 5 (the ratings).</summary>
     [Test]
     public void TheReadsThatBuildAnNpcsStatsAllocateTheSameThroughTheFacadeAsTheInstance()
     {

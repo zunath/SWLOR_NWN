@@ -1,10 +1,10 @@
 # Astromech Playable Species Plan
 
-**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 is done with a go verdict (see [Phase 0 results](#phase-0-results)); nothing shippable is implemented.** No balance numbers are proposed here: they are set in the Design Bible in Phase 3 and approved there.
+**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 (go verdict) and Phase 1 (first chassis, animation, tools, dyes, voice set) are done; see their results sections. No species code exists yet.** No balance numbers are proposed here: they are set in the Design Bible in Phase 3 and approved there.
 
 **Base: this builds on the space revamp** (`feature/space-revamp`, read at `0e2bc7231`, and its `Readmes/SpaceRevampPlan.md`). It assumes crew stations, droid crew, power routing and the space jobs of Engineering, Espionage and Leadership exist. It ships as its own release after space, so it never delays the space release.
 
-Sections: Summary · What exists today · Species rules · Skills and perks · Equipment · 3D models (Meshy) · Animation · 2D art · Sound · Code work · Phases · Phase 0 results · Risks · Separate droid healing · Decisions
+Sections: Summary · What exists today · Species rules · Skills and perks · Equipment · 3D models (Meshy) · Animation · 2D art · Sound · Code work · Phases · Phase 0 results · Phase 1 results · Risks · Separate droid healing · Decisions
 
 ## Summary
 
@@ -304,6 +304,41 @@ Run on 2026-11-15 in the real client through `tools/NwnLiveClient.py` (GPU rende
 - Whether the full (`F`) type would animate with player-style clip names; only needed if drawing held items is ever wanted.
 - Normal and specular maps (the spike used the base colour only), compiled models, and the dye appearance checker.
 
+## Phase 1 results
+
+Built on `feature/astromech` (cut from the space revamp) and checked on 2026-11-15 in the real client against haks, module and server built from the phase 1 branch. Evidence is in `C:\Temp\astro-spike\runp1\evidence`.
+
+**Delivered**
+
+- `tools/AstromechCreatureExport.py` (with tests): chassis as rigid node meshes assigned by whole shell, the shared animation model `c_astromech` with 34 clips, two built-in tools, the dye mask, review renders, and packaging. The pipeline is described in `BlasterModelImport.md` under "Astromech chassis".
+- `tools/GenerateAstromechSoundset.py` (with tests): 49 synthesized sounds and the SSF.
+- Hak content: chassis `c_astro_01` (appearance row 10282, simple type), `c_astromech`, the prod and blaster textures, the dye material and `tintmap.2da` row from the project's tint generator, voice set row 954 with its name string, and the sound files.
+- Meshy spend to date: 72 of the 1,000 credits (one chassis, two tools).
+
+**Verified in the client**
+
+| Check | Result | Evidence |
+|---|---|---|
+| Shared clips on a chassis with no clips of its own | Idle, second idle, head turns, taunt, victory, both dodges, spasm, conjure and knockdown all play | `sheet_p1reel3.png`, `p1reel3.mp4` |
+| Built-in tools | The blaster slides out in the ability clip; the prod extends on attack swings in a real fight | `sheet_p1reel3.png`, `sheet_p1fight.png` |
+| Dyes through the real system | `TintMapService.ApplyCurrentColors` resolved the creature's material from `tintmap.2da` and applied stored colors to all three layers | `sheet_dye.png` |
+| Voice set | Eight voice lines played the matching generated sound in the client's own audio (match 0.83 to 0.99; 0.17 at most for a wrong sound) | `voice_test.json`, `voice_in_game.wav` |
+| Dye rules | `CheckDyeAppearance.py` passes, including the dyed-metal rule | - |
+
+**What Phase 1 changes for later phases**
+
+- Per-player colors need no new dye code: the existing service already handles a non-part creature through `tintmap.2da`. Colors are `TM_<material>_<layer>` variables on the creature. Phase 2 only has to give a new astromech sensible defaults and a window to change them.
+- A chassis shows its default dye rows until colors are written, so every astromech NPC blueprint needs dye variables or it renders in palette row 0.
+- Client checks need the cursor moved off the model, or the hover highlight washes it out.
+
+**Not done or not verified**
+
+- The sounds are plain WAV. The project's other sounds are MP3-compressed, which needs `ffmpeg`; it is not installed on this machine, and the sound manifest has not been refreshed for the new files.
+- Nobody has listened to the voice set critically; the owner has the preview file.
+- The chassis was checked as the player character and as a spawned NPC standing still; the NPC was not filmed fighting.
+- Death and get-up were seen as the knockdown pose only. Walk and run on the production model were not re-filmed (they were in Phase 0).
+- The other three chassis, portraits, and the camera height for this appearance are later work.
+
 ## Phases
 
 Each phase is its own pull request into a `feature/astromech` branch cut from `feature/space-revamp`; the owner decides when it merges. It releases after the space revamp, with its own migration versions if any turn out to be needed.
@@ -317,7 +352,7 @@ Each phase is its own pull request into a `feature/astromech` branch cut from `f
 
 *Exit:* client evidence for each point and a written go, no-go or change list. Points 1 and 2 are go or no-go for the whole feature; 3 and 4 only choose between routes already in this plan.
 
-**Phase 1 - Skeleton, animation, first chassis.** Reference skeleton, exporter rigid mode, authored clip set, one Meshy chassis through the pipeline, soundset. *Exit:* one chassis moving, fighting and dying correctly in the client as an NPC.
+**Phase 1 - Skeleton, animation, first chassis. Done 2026-11-15; see Phase 1 results.** Reference skeleton, exporter rigid mode, authored clip set, one Meshy chassis through the pipeline, soundset. *Exit:* one chassis moving, fighting and dying correctly in the client as an NPC.
 
 **Phase 2 - Species plumbing.** Race, body frame, creation flow, starter kit, speech rule, all humanoid-system guards, Chassis Workshop, portraits. *Exit:* a new astromech character can be made and played end to end with no skills or gear of its own yet, and no humanoid system misbehaves for it.
 

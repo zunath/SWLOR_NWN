@@ -616,6 +616,37 @@ credits). Each creature gets its own `appearance.2da` row copied from the row it
 changed. Verify the idle, attack and run poses in the client on the real spawn area; clear the hover highlight with
 `SetObjectUiDiscoveryMask` or hostile creatures render red.
 
+### Astromech chassis
+
+`tools/AstromechCreatureExport.py` turns a generated astromech chassis into a rigid machine instead of a skinned
+creature. Meshy cannot rig a non-humanoid, so nothing here uses its rigging or motion tools. See
+`AstromechPlayableSpeciesPlan.md` for the design and the approved generation recipe.
+
+- **Segments.** The source is one mesh made of many separate shells. Each whole shell goes to the head, the body or a
+  leg by its area-weighted centroid against the manifest thresholds, so a part is never torn along a boundary. Each
+  segment is its own mesh on its own node. Read `review_segments.png` before packaging.
+- **Shared animation model.** Every chassis names `c_astromech` as its supermodel and carries no clips of its own. The
+  clips live in the exporter as data. Only the root dummy and the two tool nodes may carry position keys; the torso, head
+  and legs carry orientation keys only, so chassis of different proportions share the clips. A tool hangs from an
+  unkeyed socket dummy, which every clip must declare or the compiler drops the tool from that clip.
+- **Built-in tools.** The prod and the blaster are separate generated parts on the two sockets. They rest inside the
+  body and slide out in the attack and ability clips. The export fails when a retracted tool is not inside the body mesh.
+  Equipped items are not drawn on the simple model type the chassis uses, so tools are part of the model.
+- **Dye mask.** The exporter classifies the base color into three dye layers (accents cloth 1, panels cloth 2, dark
+  metal 2) and writes a PLT named after the material, a normal map and a starter MTR. Copy the packaged files into
+  `sw_cr_creature` and run `python -B tools/GenerateTintMapAssets.py --generate-preserving` from the hak root: it emits
+  the `tm_*` map, the `fs_plt_tinter_nm` material and the `tintmap.2da` row, and removes the PLT. The run can also
+  rewrite line endings in unrelated materials; restore every file whose `git diff --ignore-cr-at-eol` is empty. The
+  mask holds a metal layer, so the material keeps its normal map and binds no specular or roughness map
+  (`TintMapRendering.md`).
+- **Package.** `--mode package` compiles the models with cleanmodels and compresses textures with NWN Crunch, as for
+  other Meshy creatures. Commit the compiled MDL, DDS and MTR files only.
+- **Voice set.** `tools/GenerateAstromechSoundset.py` synthesizes the sounds and the SSF from a phrase table; nothing is
+  sampled.
+
+Verify in the client that the chassis plays the shared clips, that both tools slide out, that dye rows change the
+three zones, and that the voice set plays.
+
 ## Import a rigid, opaque GR2 blaster
 
 Use Blender **4.0** and the pinned SWTOR-Slicers GR2 importer **4.2.1**:

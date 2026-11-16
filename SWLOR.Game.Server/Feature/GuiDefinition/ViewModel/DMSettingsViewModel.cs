@@ -1,6 +1,8 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.TimeZoneService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -45,10 +47,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int TimeZoneIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             // Settings apply to whatever the DM controls, so resolve it from the avatar on every change.
             _dm = DMPresence.GetDM(Player);
+            EnsureMinimumSize();
             Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
             LoadSettings();
 
@@ -56,7 +65,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CommsFilterIndex);
             WatchOnClient(model => model.ShowHelmet);
             WatchOnClient(model => model.ShowCloak);
+            WatchOnClient(model => model.TimeZoneIndex);
             ChangePartialView(MainContentElement, MainContentPartial);
+        }
+
+        // A size saved before the time zone row existed would hide it.
+        private bool EnsureMinimumSize()
+        {
+            var current = Geometry;
+            if (current == null || current.Width >= DMSettingsDefinition.MinimumWindowWidth && current.Height >= DMSettingsDefinition.MinimumWindowHeight)
+                return false;
+
+            Geometry = new GuiRectangle(
+                current.X,
+                current.Y,
+                Math.Max(current.Width, DMSettingsDefinition.MinimumWindowWidth),
+                Math.Max(current.Height, DMSettingsDefinition.MinimumWindowHeight));
+            return true;
         }
 
         private void LoadSettings()
@@ -65,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var preferences = DMPreference.Get(controlled);
             EmoteStyleIndex = preferences.EmoteStyle == EmoteStyle.Novel ? NovelEmoteIndex : RegularEmoteIndex;
             CommsFilterIndex = preferences.CommsFilter == DMCommsFilter.OwnParty ? OwnPartyIndex : AllPartiesIndex;
+            TimeZoneIndex = PlayerTimeZones.IndexOf(preferences.TimeZoneId);
 
             var (showHelmet, showCloak) = ArmorDisplay.GetDMArmorDisplay(controlled);
             ShowHelmet = showHelmet;
@@ -75,6 +101,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(Geometry))
+                KeepMinimumSize();
+            else
+                SaveSetting(propertyName);
+        }
+
+        private void KeepMinimumSize()
+        {
+            if (!EnsureMinimumSize() || WindowToken <= 0)
+                return;
+
+            // A client resize can commit after its watch callback. Republish on the next tick.
+            DelayCommand(0.0f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    OnPropertyChanged(nameof(Geometry));
+            });
+        }
+
+        private void SaveSetting(string propertyName)
         {
             var controlled = DMPresence.GetControlledCreature(_dm);
             if (!GetIsDM(controlled) && !GetIsDMPossessed(controlled))
@@ -94,6 +141,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 case nameof(ShowHelmet):
                 case nameof(ShowCloak):
                     saved = ArmorDisplay.SetDMArmorDisplay(controlled, ShowHelmet, ShowCloak);
+                    break;
+                case nameof(TimeZoneIndex):
+                    var timeZoneId = PlayerTimeZones.GetByIndex(TimeZoneIndex).Id;
+                    saved = DMPreference.Update(controlled, preferences => preferences.TimeZoneId = timeZoneId);
+                    if (saved)
+                        HostedEvents.RefreshWindows(_dm);
                     break;
                 default:
                     return;

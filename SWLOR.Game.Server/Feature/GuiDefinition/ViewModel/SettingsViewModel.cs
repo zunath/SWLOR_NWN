@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.TimeZoneService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -93,6 +94,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool DisplayCooldownFloatingText
         {
             get => Get<bool>();
+            set => Set(value);
+        }
+
+        public int TimeZoneIndex
+        {
+            get => Get<int>();
             set => Set(value);
         }
 
@@ -198,6 +205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.ScrambleAccountName);
             WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);
             WatchOnClient(model => model.DisplayEventAnnouncements);
+            WatchOnClient(model => model.TimeZoneIndex);
             WatchOnClient(model => model.DisplayCooldownFloatingText);
             WatchOnClient(model => model.SelectedColor);
             WatchOnClient(model => model.SelfQuickCastEnabled);
@@ -258,6 +266,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PortraitVitals = dbPlayer.Settings.PortraitVitals ?? true;
             DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;
             DisplayEventAnnouncements = dbPlayer.Settings.DisplayEventAnnouncements ?? true;
+            TimeZoneIndex = PlayerTimeZones.IndexOf(dbPlayer.Settings.TimeZoneId);
             DisplayCooldownFloatingText = dbPlayer.Settings.DisplayCooldownFloatingText;
         }
 
@@ -370,6 +379,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OnPropertyChanged(nameof(PortraitVitals));
             OnPropertyChanged(nameof(DisplayCommsOutOfRangeWarnings));
             OnPropertyChanged(nameof(DisplayEventAnnouncements));
+            OnPropertyChanged(nameof(TimeZoneIndex));
             OnPropertyChanged(nameof(DisplayCooldownFloatingText));
             OnPropertyChanged(nameof(ShowOwnDescriptor));
             OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));
@@ -421,6 +431,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.PortraitVitals = PortraitVitals;
             dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;
             dbPlayer.Settings.DisplayEventAnnouncements = DisplayEventAnnouncements;
+            var timeZoneId = PlayerTimeZones.GetByIndex(TimeZoneIndex).Id;
+            var timeZoneChanged = PlayerTimeZones.Get(dbPlayer.Settings.TimeZoneId).Id != timeZoneId;
+            dbPlayer.Settings.TimeZoneId = timeZoneId;
             dbPlayer.Settings.DisplayCooldownFloatingText = DisplayCooldownFloatingText;
             dbPlayer.Settings.SelfQuickCastEnabled = SelfQuickCastEnabled;
             dbPlayer.Settings.EnemyQuickCastEnabled = EnemyQuickCastEnabled;
@@ -461,6 +474,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             PlayerName.RefreshNameOverridesForObserver(Player);
             PlayerName.RefreshNameOverridesForPlayer(Player);
+
+            if (timeZoneChanged)
+                HostedEvents.RefreshWindows(Player);
 
             SendMessageToPC(Player, ColorToken.Green("Settings updated."));
         };

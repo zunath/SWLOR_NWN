@@ -94,9 +94,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     content.AddRow(r =>
                     {
-                        AddCaption(r, "Starts (UTC)");
+                        AddCaption(r, "Starts");
                         r.AddTextEdit()
                             .SetPlaceholder(HostedEventRules.StartTimeFormat)
+                            .SetTooltip("Type the start time in your time zone, shown beside Now. Change it in DM Settings.")
                             .SetMaxLength(16)
                             .SetWidth(170f)
                             .BindValue(model => model.StartText);

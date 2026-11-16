@@ -360,6 +360,8 @@ namespace SWLOR.Game.Server.Entity
         public bool SelfQuickCastEnabled { get; set; }
         public bool EnemyQuickCastEnabled { get; set; }
         public bool? DisplayEventAnnouncements { get; set; }
+        // IANA zone id from PlayerTimeZones. Null (records saved before this existed) means UTC.
+        public string TimeZoneId { get; set; }
 
         // The market categories switched off in the market search, kept as exclusions so a category added later still shows.
         // Empty means no filter. Records saved before this existed hold null, which means the same.

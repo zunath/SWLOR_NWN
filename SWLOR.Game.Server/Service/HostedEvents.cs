@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.DMToolService;
 using SWLOR.Game.Server.Service.HostedEventService;
+using SWLOR.Game.Server.Service.TimeZoneService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 
@@ -77,12 +78,13 @@ namespace SWLOR.Game.Server.Service
             string hostName,
             string description,
             string startText,
+            PlayerTimeZone zone,
             bool isJoinOpen,
             bool announceOnStart,
             out HostedEvent saved)
         {
             saved = null;
-            var error = HostedEventRules.ValidateDetails(name, hostName, description, startText, out var startUtc);
+            var error = HostedEventRules.ValidateDetails(name, hostName, description, startText, zone, out var startUtc);
             if (!string.IsNullOrEmpty(error))
                 return error;
 
@@ -405,6 +407,14 @@ namespace SWLOR.Game.Server.Service
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                 players.Add(player);
             return players;
+        }
+
+        /// <summary>
+        /// Redraws one player's open event windows, for example after they pick another time zone.
+        /// </summary>
+        public static void RefreshWindows(uint player)
+        {
+            Gui.PublishRefreshEvent(player, new HostedEventsChangedRefreshEvent(), DMPresence.GetControlledCreature(player));
         }
 
         private static void RefreshWindows()

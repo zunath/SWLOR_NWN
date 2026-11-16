@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.HostedEventService;
+using SWLOR.Game.Server.Service.TimeZoneService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private List<string> _eventIds = new();
         private string _selectedEventId = string.Empty;
+        private PlayerTimeZone _zone = PlayerTimeZones.Utc;
 
         public string ListSummaryText { get => Get<string>(); set => Set(value); }
         public GuiBindingList<string> EventNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
@@ -99,9 +101,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusText = string.IsNullOrEmpty(error) ? "Going back to where you joined from..." : error;
         };
 
+        private string DescribeZone()
+        {
+            return _zone.Id == PlayerTimeZones.UtcId
+                ? "Times are UTC; set your time zone in Settings."
+                : $"Times are {PlayerTimeZones.GetAbbreviation(DateTime.UtcNow, _zone)}.";
+        }
+
         private void LoadEvents()
         {
             var now = DateTime.UtcNow;
+            _zone = PlayerTimeZones.ForPlayer(Player);
             var events = HostedEvents.GetEvents();
             _eventIds = events.Select(e => e.Id).ToList();
             if (!_eventIds.Contains(_selectedEventId))
@@ -124,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var running = events.Count(e => e.Status == HostedEventStatus.Running);
             ListSummaryText = events.Count == 0
                 ? "No events are running or scheduled right now."
-                : $"{running} running, {events.Count - running} upcoming. Times are UTC.";
+                : $"{running} running, {events.Count - running} upcoming. {DescribeZone()}";
 
             var returnPoint = HostedEvents.GetReturnPoint(Player);
             LoadSelection(HostedEvents.GetEvent(_selectedEventId), returnPoint?.EventId ?? string.Empty, now);
@@ -147,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedName = hostedEvent.Name;
             SelectedHost = $"Hosted by {hostedEvent.HostName}";
-            SelectedTiming = HostedEventRules.DescribeTiming(hostedEvent, now);
+            SelectedTiming = HostedEventRules.DescribeTiming(hostedEvent, now, _zone);
             SelectedDescription = hostedEvent.Description;
             var refusal = HostedEventRules.GetJoinRefusal(hostedEvent, new HostedEventTravelState { CurrentEventId = currentEventId });
             IsJoinEnabled = string.IsNullOrEmpty(refusal);

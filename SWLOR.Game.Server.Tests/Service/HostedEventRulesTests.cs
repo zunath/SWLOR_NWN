@@ -2,12 +2,16 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.HostedEventService;
+using SWLOR.Game.Server.Service.TimeZoneService;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
 public class HostedEventRulesTests
 {
     private static readonly DateTime Now = new(2026, 11, 15, 18, 40, 0, DateTimeKind.Utc);
+    private static readonly PlayerTimeZone Utc = PlayerTimeZones.Utc;
+    private static readonly PlayerTimeZone Eastern = PlayerTimeZones.Get("America/New_York");
+    private static readonly PlayerTimeZone India = PlayerTimeZones.Get("Asia/Kolkata");
 
     private static HostedEvent Running(bool joinOpen = true, string arrival = "veles_spaceport") => new()
     {
@@ -89,37 +93,53 @@ public class HostedEventRulesTests
     [TestCase("20/11/2026 19:30", false)]
     [TestCase("", false)]
     [TestCase(null, false)]
-    public void StartTime_ParsesOnlyTheUtcFormat(string text, bool expected)
+    public void StartTime_ParsesOnlyTheTypedFormat(string text, bool expected)
     {
-        HostedEventRules.TryParseStartTime(text, out var start).Should().Be(expected);
-        if (expected)
-            start.Kind.Should().Be(DateTimeKind.Utc);
+        HostedEventRules.TryParseLocalTime(text, out _).Should().Be(expected);
     }
 
     [Test]
-    public void StartTime_RoundTripsWithoutShifting()
+    public void StartTime_IsTypedOnTheDMsClockAndStoredAsUtc()
     {
-        HostedEventRules.TryParseStartTime("2026-11-20 19:30", out var start).Should().BeTrue();
+        HostedEventRules.ValidateDetails("Cantina Night", "Host", "", "2026-11-20 19:30", Utc, out var utcStart).Should().BeEmpty();
+        utcStart.Should().Be(new DateTime(2026, 11, 20, 19, 30, 0, DateTimeKind.Utc));
+        utcStart.Kind.Should().Be(DateTimeKind.Utc);
 
-        start.Should().Be(new DateTime(2026, 11, 20, 19, 30, 0, DateTimeKind.Utc));
-        HostedEventRules.FormatStartTime(start).Should().Be("2026-11-20 19:30");
+        HostedEventRules.ValidateDetails("Cantina Night", "Host", "", "2026-11-20 19:30", Eastern, out var easternStart).Should().BeEmpty();
+        easternStart.Should().Be(new DateTime(2026, 11, 21, 0, 30, 0, DateTimeKind.Utc));
+        HostedEventRules.FormatStartTime(easternStart, Eastern).Should().Be("2026-11-20 19:30");
+        HostedEventRules.FormatStartTime(easternStart, Utc).Should().Be("2026-11-21 00:30");
     }
 
     [Test]
-    public void DefaultStartTime_IsAWholeHourAtLeastHalfAnHourAway()
+    public void StartTime_RefusesAnHourDaylightSavingSkips()
     {
-        HostedEventRules.GetDefaultStartTime(Now).Should().Be(new DateTime(2026, 11, 15, 20, 0, 0, DateTimeKind.Utc));
-        HostedEventRules.GetDefaultStartTime(Now.AddMinutes(-30)).Should().Be(new DateTime(2026, 11, 15, 19, 0, 0, DateTimeKind.Utc));
+        // US clocks jump from 02:00 to 03:00 on 2026-03-08.
+        HostedEventRules.ValidateDetails("Cantina Night", "Host", "", "2026-03-08 02:30", Eastern, out _)
+            .Should().Contain("daylight saving");
+        HostedEventRules.ValidateDetails("Cantina Night", "Host", "", "2026-03-08 03:30", Eastern, out var after).Should().BeEmpty();
+        after.Should().Be(new DateTime(2026, 3, 8, 7, 30, 0, DateTimeKind.Utc));
+    }
+
+    [Test]
+    public void DefaultStartTime_IsAWholeHourOnTheDMsClockAtLeastHalfAnHourAway()
+    {
+        HostedEventRules.GetDefaultStartTime(Now, Utc).Should().Be(new DateTime(2026, 11, 15, 20, 0, 0, DateTimeKind.Utc));
+        HostedEventRules.GetDefaultStartTime(Now.AddMinutes(-30), Utc).Should().Be(new DateTime(2026, 11, 15, 19, 0, 0, DateTimeKind.Utc));
+
+        // India is UTC+5:30, so its whole hours fall on the half hour in UTC: 00:10 local becomes 01:00 local.
+        var start = HostedEventRules.GetDefaultStartTime(Now, India);
+        HostedEventRules.FormatStartTime(start, India).Should().Be("2026-11-16 01:00");
     }
 
     [Test]
     public void ValidateDetails_ChecksNameLengthAndStartTime()
     {
-        HostedEventRules.ValidateDetails("Cantina Night", "Host", "", "2026-11-20 19:30", out _).Should().BeEmpty();
-        HostedEventRules.ValidateDetails(" ", "Host", "", "2026-11-20 19:30", out _).Should().NotBeEmpty();
-        HostedEventRules.ValidateDetails(new string('a', HostedEventRules.MaxNameLength + 1), "Host", "", "2026-11-20 19:30", out _).Should().NotBeEmpty();
-        HostedEventRules.ValidateDetails("Cantina Night", "Host", new string('a', HostedEventRules.MaxDescriptionLength + 1), "2026-11-20 19:30", out _).Should().NotBeEmpty();
-        HostedEventRules.ValidateDetails("Cantina Night", "Host", "", "tomorrow", out _).Should().Contain("UTC");
+        HostedEventRules.ValidateDetails("Cantina Night", "Host", "", "2026-11-20 19:30", Utc, out _).Should().BeEmpty();
+        HostedEventRules.ValidateDetails(" ", "Host", "", "2026-11-20 19:30", Utc, out _).Should().NotBeEmpty();
+        HostedEventRules.ValidateDetails(new string('a', HostedEventRules.MaxNameLength + 1), "Host", "", "2026-11-20 19:30", Utc, out _).Should().NotBeEmpty();
+        HostedEventRules.ValidateDetails("Cantina Night", "Host", new string('a', HostedEventRules.MaxDescriptionLength + 1), "2026-11-20 19:30", Utc, out _).Should().NotBeEmpty();
+        HostedEventRules.ValidateDetails("Cantina Night", "Host", "", "tomorrow", Eastern, out _).Should().Contain("UTC-5 US Eastern");
     }
 
     [Test]
@@ -158,9 +178,11 @@ public class HostedEventRulesTests
         HostedEventRules.GetListStatus(Running(), Now).Should().Be("Live");
         HostedEventRules.GetListStatus(upcoming, Now).Should().Be("in 3h 20m");
         HostedEventRules.GetListStatus(delayed, Now).Should().Be("Delayed");
-        HostedEventRules.DescribeTiming(Running(), Now).Should().Be("Running since 2026-11-15 17:55 UTC (45m ago).");
-        HostedEventRules.DescribeTiming(upcoming, Now).Should().Be("Starts 2026-11-15 22:00 UTC (in 3h 20m).");
-        HostedEventRules.DescribeTiming(delayed, Now).Should().Contain("Waiting for the host");
+        HostedEventRules.DescribeTiming(Running(), Now, Utc).Should().Be("Running since 2026-11-15 17:55 UTC (45m ago).");
+        HostedEventRules.DescribeTiming(upcoming, Now, Utc).Should().Be("Starts 2026-11-15 22:00 UTC (in 3h 20m).");
+        HostedEventRules.DescribeTiming(delayed, Now, Utc).Should().Contain("Waiting for the host");
+        HostedEventRules.DescribeTiming(Running(), Now, Eastern).Should().Be("Running since 2026-11-15 12:55 EST (45m ago).");
+        HostedEventRules.DescribeTiming(upcoming, Now, Eastern).Should().Be("Starts 2026-11-15 17:00 EST (in 3h 20m).");
     }
 
     [TestCase(0, "1m")]

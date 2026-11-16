@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.TimeZoneService;
 
 namespace SWLOR.Game.Server.Service.HostedEventService
 {
@@ -111,7 +112,13 @@ namespace SWLOR.Game.Server.Service.HostedEventService
         /// <summary>
         /// Checks the details a DM entered. Returns an error, or an empty string when they can be saved.
         /// </summary>
-        public static string ValidateDetails(string name, string hostName, string description, string startText, out DateTime startUtc)
+        public static string ValidateDetails(
+            string name,
+            string hostName,
+            string description,
+            string startText,
+            PlayerTimeZone zone,
+            out DateTime startUtc)
         {
             startUtc = default;
             if (string.IsNullOrWhiteSpace(name))
@@ -122,40 +129,66 @@ namespace SWLOR.Game.Server.Service.HostedEventService
                 return $"Host names are limited to {MaxHostLength} characters.";
             if ((description ?? string.Empty).Length > MaxDescriptionLength)
                 return $"Descriptions are limited to {MaxDescriptionLength} characters.";
-            if (!TryParseStartTime(startText, out startUtc))
-                return $"Enter the start time in UTC as {StartTimeFormat}, for example 2026-11-20 19:30.";
+            zone ??= PlayerTimeZones.Utc;
+            if (!TryParseLocalTime(startText, out var local))
+                return $"Enter the start time in your time zone ({zone.Label}) as {StartTimeFormat}, for example 2026-11-20 19:30.";
+            if (!PlayerTimeZones.TryToUtc(local, zone, out startUtc))
+                return $"{FormatLocal(local)} is skipped by the daylight saving change in your time zone ({zone.Label}). Pick another time.";
 
             return string.Empty;
         }
 
         /// <summary>
-        /// Reads a UTC start time typed as yyyy-MM-dd HH:mm.
+        /// Reads a wall-clock time typed as yyyy-MM-dd HH:mm.
         /// </summary>
-        public static bool TryParseStartTime(string text, out DateTime startUtc)
+        public static bool TryParseLocalTime(string text, out DateTime local)
         {
             var parsed = DateTime.TryParseExact(
                 (text ?? string.Empty).Trim(),
                 StartTimeFormat,
                 CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
-                out startUtc);
+                DateTimeStyles.None,
+                out local);
             if (parsed)
-                startUtc = DateTime.SpecifyKind(startUtc, DateTimeKind.Utc);
+                local = DateTime.SpecifyKind(local, DateTimeKind.Unspecified);
             return parsed;
         }
 
-        public static string FormatStartTime(DateTime utc)
+        /// <summary>
+        /// A UTC time as the zone's wall clock, in the format DMs type: "2026-11-20 19:30".
+        /// </summary>
+        public static string FormatStartTime(DateTime utc, PlayerTimeZone zone)
         {
-            return utc.ToString(StartTimeFormat, CultureInfo.InvariantCulture);
+            return FormatLocal(PlayerTimeZones.ToLocal(utc, zone));
         }
 
         /// <summary>
-        /// The next whole hour at least 30 minutes away, used as a new event's start time.
+        /// A UTC time as the zone's wall clock with the zone's short name: "2026-11-20 19:30 EST".
         /// </summary>
-        public static DateTime GetDefaultStartTime(DateTime now)
+        public static string FormatZoneTime(DateTime utc, PlayerTimeZone zone)
         {
-            var hour = new DateTime(now.Year, now.Month, now.Day, now.Hour, 0, 0, DateTimeKind.Utc).AddHours(1);
-            return hour - now < TimeSpan.FromMinutes(30) ? hour.AddHours(1) : hour;
+            return $"{FormatStartTime(utc, zone)} {PlayerTimeZones.GetAbbreviation(utc, zone)}";
+        }
+
+        private static string FormatLocal(DateTime local)
+        {
+            return local.ToString(StartTimeFormat, CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// The next whole hour on the zone's clock at least 30 minutes away, used as a new event's start time (UTC).
+        /// </summary>
+        public static DateTime GetDefaultStartTime(DateTime now, PlayerTimeZone zone)
+        {
+            var local = PlayerTimeZones.ToLocal(now, zone);
+            var hour = new DateTime(local.Year, local.Month, local.Day, local.Hour, 0, 0, DateTimeKind.Unspecified);
+            for (var step = 1; step <= 4; step++)
+            {
+                if (PlayerTimeZones.TryToUtc(hour.AddHours(step), zone, out var utc) && utc - now >= TimeSpan.FromMinutes(30))
+                    return utc;
+            }
+
+            return now.AddHours(1);
         }
 
         /// <summary>
@@ -197,18 +230,18 @@ namespace SWLOR.Game.Server.Service.HostedEventService
         /// <summary>
         /// The full timing line shown in the details.
         /// </summary>
-        public static string DescribeTiming(HostedEvent hostedEvent, DateTime now)
+        public static string DescribeTiming(HostedEvent hostedEvent, DateTime now, PlayerTimeZone zone)
         {
             if (hostedEvent.Status == HostedEventStatus.Running)
             {
                 var started = hostedEvent.StartedUtc ?? hostedEvent.ScheduledStartUtc;
-                return $"Running since {FormatStartTime(started)} UTC ({FormatDuration(now - started)} ago).";
+                return $"Running since {FormatZoneTime(started, zone)} ({FormatDuration(now - started)} ago).";
             }
 
-            var scheduled = FormatStartTime(hostedEvent.ScheduledStartUtc);
+            var scheduled = FormatZoneTime(hostedEvent.ScheduledStartUtc, zone);
             return hostedEvent.ScheduledStartUtc > now
-                ? $"Starts {scheduled} UTC (in {FormatDuration(hostedEvent.ScheduledStartUtc - now)})."
-                : $"Scheduled for {scheduled} UTC. Waiting for the host to start it.";
+                ? $"Starts {scheduled} (in {FormatDuration(hostedEvent.ScheduledStartUtc - now)})."
+                : $"Scheduled for {scheduled}. Waiting for the host to start it.";
         }
 
         /// <summary>

@@ -1856,8 +1856,8 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs",
-    "Line": 104,
-    "Member": "OnClientPropertyUpdated",
+    "Line": 157,
+    "Member": "SaveSetting",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(_dm, ColorToken.Red(\"Your DM settings could not be saved.\"))"
   },
@@ -2731,21 +2731,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SettingsViewModel.cs",
-    "Line": 465,
+    "Line": 481,
     "Member": "OnSave",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Green(\"Settings updated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SettingsViewModel.cs",
-    "Line": 477,
+    "Line": 493,
     "Member": "OnClickHotbars",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(\"Only player characters have extra hotbars.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/SettingsViewModel.cs",
-    "Line": 488,
+    "Line": 504,
     "Member": "OnClickChangeDescription",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(\"Edit your active disguise's biography from the Disguises window. Deactivate it to edit your normal biography.\"))"
@@ -5027,28 +5027,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 227,
+    "Line": 229,
     "Member": "SendEveryoneBack",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"The host sent you back from {hostedEvent.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 287,
+    "Line": 289,
     "Member": "Join",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Traveling to {hostedEvent.Name}. Use /leaveevent or the Events window to go back.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 380,
+    "Line": 385,
     "Member": "Announce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(DMPresence.GetControlledCreature(player), message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 387,
+    "Line": 392,
     "Member": "TellParticipantsEnded",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back.\"))"

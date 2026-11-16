@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.HostedEventService;
+using SWLOR.Game.Server.Service.TimeZoneService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -17,6 +18,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private List<string> _eventIds = new();
         private string _selectedEventId = string.Empty;
+        // The zone the start time box is typed in: the DM's Settings choice when the form was loaded.
+        private PlayerTimeZone _formZone = PlayerTimeZones.Utc;
 
         public GuiBindingList<string> EventNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<bool> EventSelected { get => Get<GuiBindingList<bool>>(); set => Set(value); }
@@ -94,7 +97,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LoadForm(null);
             }
 
+            FollowTimeZoneChange();
             LoadEvents();
+        }
+
+        // The DM picked another time zone in Settings: show the typed start time on the new zone's clock.
+        private void FollowTimeZoneChange()
+        {
+            var zone = PlayerTimeZones.ForPlayer(Player);
+            if (zone.Id == _formZone.Id)
+                return;
+
+            if (HostedEventRules.TryParseLocalTime(StartText, out var local) &&
+                PlayerTimeZones.TryToUtc(local, _formZone, out var startUtc))
+            {
+                StartText = HostedEventRules.FormatStartTime(startUtc, zone);
+            }
+
+            _formZone = zone;
         }
 
         public Action OnSelectEvent() => () =>
@@ -196,6 +216,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HostName,
                 Description,
                 StartText,
+                _formZone,
                 IsJoinOpen,
                 AnnounceOnStart,
                 out var saved);
@@ -207,17 +228,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _selectedEventId = saved.Id;
             HostName = saved.HostName;
+            StartText = HostedEventRules.FormatStartTime(saved.ScheduledStartUtc, _formZone);
             LoadEvents();
             return true;
         }
 
         private void LoadForm(HostedEvent hostedEvent)
         {
+            _formZone = PlayerTimeZones.ForPlayer(Player);
             if (hostedEvent == null)
             {
                 EventName = string.Empty;
                 HostName = GetName(DMPresence.GetDM(Player));
-                StartText = HostedEventRules.FormatStartTime(HostedEventRules.GetDefaultStartTime(DateTime.UtcNow));
+                StartText = HostedEventRules.FormatStartTime(HostedEventRules.GetDefaultStartTime(DateTime.UtcNow, _formZone), _formZone);
                 Description = string.Empty;
                 IsJoinOpen = true;
                 AnnounceOnStart = true;
@@ -226,7 +249,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             EventName = hostedEvent.Name;
             HostName = hostedEvent.HostName;
-            StartText = HostedEventRules.FormatStartTime(hostedEvent.ScheduledStartUtc);
+            StartText = HostedEventRules.FormatStartTime(hostedEvent.ScheduledStartUtc, _formZone);
             Description = hostedEvent.Description;
             IsJoinOpen = hostedEvent.IsJoinOpen;
             AnnounceOnStart = hostedEvent.AnnounceOnStart;
@@ -249,7 +272,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             EventNames = names;
             EventSelected = selected;
-            ServerTimeText = $"Now: {HostedEventRules.FormatStartTime(now)} UTC";
+            ServerTimeText = $"Now: {HostedEventRules.FormatZoneTime(now, _formZone)}";
             LoadState(HostedEvents.GetEvent(_selectedEventId), now);
         }
 
@@ -272,7 +295,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var (total, online) = HostedEvents.CountParticipants(hostedEvent);
             var areaName = HostedEvents.GetArrivalAreaName(hostedEvent);
 
-            HeaderText = HostedEventRules.DescribeTiming(hostedEvent, now);
+            HeaderText = HostedEventRules.DescribeTiming(hostedEvent, now, _formZone);
             HasArrival = areaName.Length > 0;
             ArrivalText = HasArrival
                 ? $"Arrival point: {areaName}"

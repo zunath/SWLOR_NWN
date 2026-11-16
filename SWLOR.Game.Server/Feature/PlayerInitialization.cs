@@ -416,14 +416,14 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Grants a new character one free rebuild token to spend on a later respec
+        /// Grants a new character three free rebuild token to spend on later respecs
         /// and one language token to master a language of their choice.
         /// </summary>
         /// <param name="dbPlayer">The player entity</param>
         private static void GiveStartingTokens(Player dbPlayer)
         {
             dbPlayer.Currencies.TryGetValue(CurrencyType.RebuildToken, out var rebuildTokens);
-            dbPlayer.Currencies[CurrencyType.RebuildToken] = rebuildTokens + 1;
+            dbPlayer.Currencies[CurrencyType.RebuildToken] = rebuildTokens + 3;
 
             dbPlayer.Currencies.TryGetValue(CurrencyType.LanguageToken, out var languageTokens);
             dbPlayer.Currencies[CurrencyType.LanguageToken] = languageTokens + 1;

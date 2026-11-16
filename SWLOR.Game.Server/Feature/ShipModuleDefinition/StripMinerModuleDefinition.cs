@@ -70,9 +70,14 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         if (!GetIsObjectValid(activator) || !GetIsObjectValid(target))
                             return;
 
+                        // A pilot whose ship was destroyed or who left space during the mine has no ship to load.
+                        var activatorStatus = Space.GetShipStatus(activator);
+                        if (activatorStatus == null)
+                            return;
+
                         var lootTableId = GetLocalString(target, "STRIPMINE_LOOT_TABLE_ID");
                         var asteroidLevel = GetLocalInt(target, "ASTEROID_TIER") * 10;
-                        var industrialBonus = Space.GetShipStatus(activator).Industrial;
+                        var industrialBonus = activatorStatus.Industrial;
 
                         var amountToMine = 1 + Perk.GetPerkLevel(activator, PerkType.StarshipMining) + (int)(industrialBonus / 6) + (moduleBonus / 6);
 

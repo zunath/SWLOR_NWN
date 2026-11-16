@@ -37,7 +37,7 @@ public class MaxHitPointsReconciliationTests
                 "SWLOR.Game.Server", "Service", "Stat.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Where(node => node.Identifier.ValueText is "AdjustPlayerMaxHP" or "RefreshPlayerMaxHP" or "GetEquippedHPBonus"
-                or "GetNPCSkinMaxHP");
+                or "GetNPCSkinMaxHP" or "GetNPCSkinHPBudget");
         var equipmentMethods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
                 "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()
@@ -90,8 +90,13 @@ public class MaxHitPointsReconciliationTests
                 }
                 public static class BiowareXP2
                 {
+                    // Stores the NPCHP budget on the skin, replacing the previous one, so gear can be added and removed.
                     public static void IPSafeAddItemProperty(uint item, ItemProperty ip, float duration,
-                        AddItemPropertyPolicy policy, bool ignoreDuration, bool ignoreSubtype) { }
+                        AddItemPropertyPolicy policy, bool ignoreDuration, bool ignoreSubtype)
+                    {
+                        if (item != 0)
+                            Properties[item] = new() { (ItemPropertyType.NPCHP, PendingAmount) };
+                    }
                 }
                 public static class EventsPlugin
                 {
@@ -112,7 +117,12 @@ public class MaxHitPointsReconciliationTests
                 private const int MaximumNPCHitPoints = 30000;
                 public static int NpcBudget;
                 public static void SetNPCMaxHitPoints(uint creature, int maxHP) => NpcBudget = maxHP;
-                private static ItemProperty ItemPropertyCustom(ItemPropertyType type, int subtype, int amount) => default;
+                private static int PendingAmount;
+                private static ItemProperty ItemPropertyCustom(ItemPropertyType type, int subtype, int amount)
+                {
+                    PendingAmount = amount;
+                    return default;
+                }
                 private static string GetObjectUUID(uint creature) => "test-player";
                 private static bool GetIsObjectValid(uint obj) => obj != 0;
                 private static bool GetIsPC(uint creature) => IsPlayer;
@@ -340,6 +350,21 @@ public class MaxHitPointsReconciliationTests
         Call("BeforeChange", (int)InventorySlot.Chest, true);
 
         Call("NpcHPBudget").Should().Be(1208);
+    }
+
+    [Test]
+    public void NpcAtTheHPCap_GetsItsExactBudgetBackWhenGearIsRemoved()
+    {
+        // The native maximum is capped at 30000, but the stored budget must not be, or removing gear loses HP.
+        Call("SetStaff", false, false, false);
+        Call("SetProperty", (int)InventorySlot.CreatureArmor, ItemPropertyType.NPCHP, 30000);
+        Call("SetSlot", (int)InventorySlot.Chest, 50);
+
+        Call("BeforeChange", (int)InventorySlot.Chest, true);
+        Call("NpcHPBudget").Should().Be(30050);
+
+        Call("BeforeChange", (int)InventorySlot.Chest, false);
+        Call("NpcHPBudget").Should().Be(30000);
     }
 
     [Test]

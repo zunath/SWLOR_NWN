@@ -268,8 +268,9 @@ namespace SWLOR.Game.Server.Feature
                 var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
 
                 // Without an NPCHP budget on its skin, the creature's maximum HP comes from its blueprint, so the
-                // bonus adjusts that. Starting from zero would leave it with only the item's bonus.
-                var maxHP = Stat.GetNPCSkinMaxHP(skin);
+                // bonus adjusts that. Starting from zero would leave it with only the item's bonus. The budget stays
+                // uncapped so removing gear restores it exactly; SetNPCMaxHitPoints applies the cap.
+                var maxHP = Stat.GetNPCSkinHPBudget(skin);
                 if (maxHP <= 0)
                     maxHP = GetMaxHitPoints(creature);
 

@@ -3080,16 +3080,26 @@ namespace SWLOR.Game.Server.Service
         /// <param name="skin">The stat skin item.</param>
         public static int GetNPCSkinMaxHP(uint skin)
         {
-            var maxHP = 0;
+            return Math.Min(GetNPCSkinHPBudget(skin), MaximumNPCHitPoints);
+        }
+
+        /// <summary>
+        /// Returns the uncapped NPCHP budget stored on a stat skin, or 0 when it has none.
+        /// Gear bonuses are added to and removed from this total, so the cap must not be applied to it.
+        /// </summary>
+        /// <param name="skin">The stat skin item.</param>
+        public static int GetNPCSkinHPBudget(uint skin)
+        {
+            var budget = 0;
             for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
             {
                 if (GetItemPropertyType(ip) == ItemPropertyType.NPCHP)
                 {
-                    maxHP += GetItemPropertyCostTableValue(ip);
+                    budget += GetItemPropertyCostTableValue(ip);
                 }
             }
 
-            return Math.Min(maxHP, MaximumNPCHitPoints);
+            return budget;
         }
 
         /// <summary>

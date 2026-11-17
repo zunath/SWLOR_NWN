@@ -138,7 +138,7 @@ actions
   action      SWLOR.Game.Server.Domain.Foundation.SnippetService.ConversationAction
 
 apartment_term
-  action      SWLOR.Game.Server.Domain.World.PropertyService.StartApartmentConversation
+  action      SWLOR.Game.Server.Domain.World.PropertyTerminalService.StartApartmentConversation
 
 app_shutdown
   action      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.StopOnShutdown
@@ -531,7 +531,7 @@ enmity_changed
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DebugEnmityViewModel.OnEnmityChanged
 
 enter_property
-  action      SWLOR.Game.Server.Domain.World.PropertyService.EnterBuilding
+  action      SWLOR.Game.Server.Domain.World.PropertyAccessService.EnterBuilding
 
 enter_world
   action      SWLOR.Game.Server.Feature.GameWorldEntry.EnterGameWorld
@@ -562,7 +562,7 @@ explore_trigger
   action      SWLOR.Game.Server.Feature.ExplorationTrigger.EnterExplorationTrigger
 
 feat_use_bef
-  action      SWLOR.Game.Server.Domain.World.PropertyService.PropertyMenu
+  action      SWLOR.Game.Server.Domain.World.PropertyTerminalService.PropertyMenu
   action      SWLOR.Game.Server.Domain.Space.SpaceService.HandleShipModuleFeats
   action      SWLOR.Game.Server.Feature.UsePerkFeat.UseFeat
 
@@ -668,7 +668,7 @@ item_uneqp_bef
 
 item_use_bef
   action      SWLOR.Game.Server.Domain.Items.ItemService.UseItem
-  action      SWLOR.Game.Server.Domain.World.PropertyService.PlaceStructure
+  action      SWLOR.Game.Server.Domain.World.PropertyStructurePlacementService.PlaceStructure
   action      SWLOR.Game.Server.Feature.InstantItemUse.OnUseItem
 
 jukebox_used
@@ -933,10 +933,10 @@ open_bank
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.BankViewModel.ShowBank
 
 open_citizenship
-  action      SWLOR.Game.Server.Domain.World.PropertyService.OpenCitizenshipMenu
+  action      SWLOR.Game.Server.Domain.World.PropertyTerminalService.OpenCitizenshipMenu
 
 open_city_manage
-  action      SWLOR.Game.Server.Domain.World.PropertyService.OpenCityManagementMenu
+  action      SWLOR.Game.Server.Domain.World.PropertyTerminalService.OpenCityManagementMenu
 
 open_holonet
   action      SWLOR.Game.Server.Feature.HolonetTerminal.OpenHolonetUI

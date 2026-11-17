@@ -9,9 +9,11 @@ using SWLOR.NWN.API.Engine;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// The property system: properties and their definitions, instance loading, permissions, placement and city governance.
-    /// The members of the parts (<see cref="IPropertyCatalogService"/>, <see cref="IPropertyLoaderService"/>,
-    /// <see cref="IPropertyCityGovernanceService"/>) are forwarded by <see cref="PropertyService"/>, so callers see one service.
+    /// The property system: creating properties, their definitions, instance loading and city governance. The members of the parts
+    /// (<see cref="IPropertyCatalogService"/>, <see cref="IPropertyLoaderService"/>, <see cref="IPropertyLoadRegistryService"/>,
+    /// <see cref="IPropertySpawnService"/>, <see cref="IPropertyCityGovernanceService"/>) are forwarded by <see cref="PropertyService"/>.
+    /// Maintenance and deletion, access, structure placement and the terminals are <see cref="IPropertyMaintenanceService"/>,
+    /// <see cref="IPropertyAccessService"/>, <see cref="IPropertyStructurePlacementService"/> and <see cref="IPropertyTerminalService"/>.
     /// </summary>
     public interface IPropertyService
     {
@@ -116,24 +118,6 @@ namespace SWLOR.Game.Server.Domain.World
         bool AbortQueuedPropertyLoad(string propertyId);
 
         /// <summary>
-        /// Starships left in a ship-only location, at a player starport that no longer exists (probably destroyed
-        /// by the previous cleanup) or is being retrieved, or without a dock return to the last regular starport
-        /// they docked at and its orbit. The caller saves the property.
-        /// </summary>
-        /// <param name="property">The starship property to update.</param>
-        /// <param name="retrievedStarportId">A player starport interior being retrieved. Ships docked there return even though it still exists.</param>
-        /// <param name="fallbackAreaResref">An area whose planet's starport receives the ship if it has no usable safe dock, such as the retrieved starport's city.</param>
-        /// <returns>What happened to the starship's dock.</returns>
-        StarshipDockReturnResult ReturnStarshipToSafeDock(WorldProperty property, string retrievedStarportId = "", string fallbackAreaResref = "");
-
-        /// <summary>
-        /// Deletes a property and its owned children, clears associated data and permissions,
-        /// and revokes its citizens' membership and unpaid citizenship taxes.
-        /// </summary>
-        /// <param name="property">The property to delete.</param>
-        void DeleteProperty(WorldProperty property);
-
-        /// <summary>
         /// Creates a new apartment in the database for a given player.
         /// </summary>
         /// <param name="player">The player to associate the apartment with.</param>
@@ -200,14 +184,6 @@ namespace SWLOR.Game.Server.Domain.World
             uint item,
             StructureType type,
             Location location);
-
-        /// <summary>
-        /// Retrieves a list of permissions associated with the item storage of a property for a given player.
-        /// </summary>
-        /// <param name="playerId">The player Id to search for</param>
-        /// <param name="propertyId">The property Id to search for</param>
-        /// <returns>A list of permissions</returns>
-        List<WorldPropertyPermission> GetCategoryPermissions(string playerId, string propertyId);
 
         /// <summary>
         /// Retrieves a property layout by its type.
@@ -280,38 +256,6 @@ namespace SWLOR.Game.Server.Domain.World
         List<StructureType> GetStructuresByInteriorPropertyType(PropertyType propertyType);
 
         /// <summary>
-        /// When an apartment terminal is used, open the Apartment NUI
-        /// </summary>
-        void StartApartmentConversation();
-
-        /// <summary>
-        /// Determines whether a player has a specific permission.
-        /// This will always return true for DMs.
-        /// </summary>
-        /// <param name="player">The player to check.</param>
-        /// <param name="propertyId">The property Id to check.</param>
-        /// <param name="permission">The type of permission to check.</param>
-        /// <returns>true if player has permission, false otherwise</returns>
-        bool HasPropertyPermission(uint player, string propertyId, PropertyPermissionType permission);
-
-        /// <summary>
-        /// Determines whether a player can GRANT a specific permission to another player.
-        /// This will always return true for DMs.
-        /// </summary>
-        /// <param name="player">The player to check.</param>
-        /// <param name="propertyId">The property Id to check.</param>
-        /// <param name="permission">The type of permission to check.</param>
-        /// <returns>true if player can grant the permission, false otherwise</returns>
-        bool CanGrantPermission(uint player, string propertyId, PropertyPermissionType permission);
-
-        /// <summary>
-        /// Sends a player to the template area of a particular layout.
-        /// </summary>
-        /// <param name="player">The player to send.</param>
-        /// <param name="layout">The layout type to send them to.</param>
-        void PreviewProperty(uint player, PropertyLayoutType layout);
-
-        /// <summary>
         /// When a player enters a property instance, add them to the list of players.
         /// </summary>
         void EnterPropertyInstance();
@@ -333,52 +277,6 @@ namespace SWLOR.Game.Server.Domain.World
         void ExitPropertyInstance();
 
         /// <summary>
-        /// Sends a player to a specific property's instance.
-        /// </summary>
-        /// <param name="player">The player to send.</param>
-        /// <param name="propertyId">The property Id</param>
-        void EnterProperty(uint player, string propertyId);
-
-        /// <summary>
-        /// Stores the original location of a player, before being ported into a property instance.
-        /// </summary>
-        /// <param name="player">The player whose location will be stored.</param>
-        void StoreOriginalLocation(uint player);
-
-        /// <summary>
-        /// Jumps player to their original location, which is where they were before entering a property instance.
-        /// This will also clear the temporary data related to the original location.
-        /// </summary>
-        /// <param name="player">The player who will jump.</param>
-        void JumpToOriginalLocation(uint player);
-
-        /// <summary>
-        /// When the property menu feat is used, open the GUI window.
-        /// </summary>
-        void PropertyMenu();
-
-        /// <summary>
-        /// Retrieves the structure type from an item.
-        /// Item's resref must start with 'structure_' and end with 4 numbers.
-        /// I.E: 'structure_0004'
-        /// Returns StructureType.Invalid on error.
-        /// </summary>
-        /// <param name="item">The item to retrieve from.</param>
-        /// <returns>A structure type associated with the item.</returns>
-        StructureType GetStructureTypeFromItem(uint item);
-
-        /// <summary>
-        /// Before an item is used, if it is a structure item, place it at the specified location.
-        /// </summary>
-        void PlaceStructure();
-
-        /// <summary>
-        /// When a building entrance is used, port the player inside the instance if they have permission
-        /// or display an error message saying they don't have permission to enter.
-        /// </summary>
-        void EnterBuilding();
-
-        /// <summary>
         /// If a structure changed action is registered, this will perform the action on the specified
         /// property and placeable. If not registered, nothing will happen.
         /// </summary>
@@ -387,16 +285,6 @@ namespace SWLOR.Game.Server.Domain.World
         /// <param name="property">The world property to target</param>
         /// <param name="placeable">The placeable to target</param>
         void RunStructureChangedEvent(StructureType structureType, StructureChangeType changeType, WorldProperty property, uint placeable);
-
-        /// <summary>
-        /// When the Citizenship terminal is used, open the Manage Citizenship UI.
-        /// </summary>
-        void OpenCitizenshipMenu();
-
-        /// <summary>
-        /// When the City Management terminal is used, open the City Management UI.
-        /// </summary>
-        void OpenCityManagementMenu();
 
         /// <summary>
         /// Retrieves the name of a particular city level.

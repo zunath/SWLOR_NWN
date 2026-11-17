@@ -25,7 +25,7 @@ public sealed class StarshipDockReturnEngineTests
     private static readonly string[] StationAreas = { "zomb_abanstation", "zomb_abanstatio2", "zomb_abanstatio3" };
 
     public StarshipDockReturnEngineTests(IAreaService area, IConversationMenuService conversationMenu, IDBService db, IGuiService gui,
-        IPlanetService planet, IPropertyService property, ISpaceService space)
+        IPlanetService planet, IPropertyService property, IPropertyMaintenanceService propertyMaintenance, ISpaceService space)
     {
         Area = area;
         ConversationMenu = conversationMenu;
@@ -33,6 +33,7 @@ public sealed class StarshipDockReturnEngineTests
         Gui = gui;
         Planet = planet;
         Property = property;
+        PropertyMaintenance = propertyMaintenance;
         Space = space;
     }
 
@@ -47,6 +48,8 @@ public sealed class StarshipDockReturnEngineTests
     private IPlanetService Planet { get; }
 
     private IPropertyService Property { get; }
+
+    private IPropertyMaintenanceService PropertyMaintenance { get; }
 
     private ISpaceService Space { get; }
 
@@ -160,7 +163,7 @@ public sealed class StarshipDockReturnEngineTests
             }
             velesContext.Cleanup();
             if (ship != null) DB.Delete<PlayerShip>(ship.Id);
-            if (property != null) Property.DeleteProperty(property);
+            if (property != null) PropertyMaintenance.DeleteProperty(property);
         }
 
         ctx.SetResultDetail("Two cycles docked through the real Viscara and Abandoned Station dock menus and ran the module-load cleanup. Veles stayed the safe dock, ships at Veles stayed put, and ships left at the station (docked or in space) returned to Veles and Viscara orbit with ownership intact; the ship window showed the ship at the station and back at Veles. Headless: no client UI or network handshake.");

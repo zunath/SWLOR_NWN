@@ -46,7 +46,7 @@ public class CharacterSheetCombatUpgradeTests
         restore.Should().Contain("SendMessageToPC(receiver");
         restore.Should().Contain("GetDisplayName(receiver, creature)");
 
-        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var stats = StatSource.Read();
         var regeneration = ExtractMethod(stats, "private void RestoreNPCStats(");
         regeneration.Should().Contain("if (fp != previousFP)");
         regeneration.Should().Contain("ExecuteScript(\"pc_fp_adjusted\", self)");
@@ -61,7 +61,7 @@ public class CharacterSheetCombatUpgradeTests
         var root = FindRepositoryRoot().FullName;
         var viewModel = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
         viewModel.Should().Contain("Stat.GetAttackPercentAdjustment(_target, SkillType.Force)");
-        var stats = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var stats = StatSource.Read();
         ExtractMethod(stats, "private int ApplyPostAttackStatusModifiers(")
             .Should().Contain("GetAttackPercentAdjustment(creature, skillType)");
     }

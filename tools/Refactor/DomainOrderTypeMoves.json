@@ -198,6 +198,8 @@
     { "type": "ITwinPistolAbilityService", "from": "SWLOR.Game.Server.Domain.Combat", "to": "SWLOR.Game.Server.Domain.Abilities" },
     { "type": "CommunicationService", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Social" },
     { "type": "ICommunicationService", "from": "SWLOR.Game.Server.Domain.Foundation", "to": "SWLOR.Game.Server.Domain.Social" },
+    { "type": "ExtraHotbarsService", "from": "SWLOR.Game.Server.Domain.UI", "to": "SWLOR.Game.Server.Domain.Social" },
+    { "type": "IExtraHotbarsService", "from": "SWLOR.Game.Server.Domain.UI", "to": "SWLOR.Game.Server.Domain.Social" },
   ],
   "textExcludes": [
     "SWLOR.Game.Server/Readmes/Maintainability*",

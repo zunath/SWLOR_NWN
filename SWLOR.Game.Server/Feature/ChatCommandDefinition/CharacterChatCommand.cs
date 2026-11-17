@@ -863,7 +863,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     // Extra hotbars are part of the HUD, so the ones the player turned on come back at their default spots.
-                    ExtraHotbars.ApplyVisibility(owner);
+                    ExtraHotbarsWindow.ApplyVisibility(owner);
 
                     SendMessageToPC(user, ColorToken.Green("All window positions and sizes have been reset to their default values."));
                 });

@@ -17,8 +17,11 @@ public sealed class FakeJsonEngine
     private readonly Dictionary<(string Resref, ResType Type), nint> _templates = new();
     private nint _nextHandle = 1;
 
+    private readonly FakeNWScript _engine;
+
     public FakeJsonEngine(FakeNWScript engine)
     {
+        _engine = engine;
         engine.SetReturnHandler("TemplateToJson", arguments =>
             _templates.TryGetValue((((string)arguments[0]!).ToLowerInvariant(), (ResType)arguments[1]!), out var handle)
                 ? Create(handle)
@@ -66,6 +69,34 @@ public sealed class FakeJsonEngine
                 : Null());
     }
 
+    /// <summary>
+    /// Also models the constructors and readers of the engine's JSON scalars and arrays (<c>JsonBool</c>, <c>JsonInt</c>,
+    /// <c>JsonFloat</c>, <c>JsonString</c>, <c>JsonNull</c>, <c>JsonArrayInsert</c>, <c>JsonGetFloat</c>), so code that
+    /// builds a whole NUI layout can be checked by dumping the JSON it produced. Booleans read back as 1 or 0 through
+    /// <c>JsonGetInt</c>, as in the engine.
+    /// </summary>
+    public FakeJsonEngine WithValueConstructors()
+    {
+        _engine.SetReturnHandler("JsonBool", arguments => Wrap(JsonValue.Create((bool)arguments[0]!)));
+        _engine.SetReturnHandler("JsonInt", arguments => Wrap(JsonValue.Create((int)arguments[0]!)));
+        _engine.SetReturnHandler("JsonFloat", arguments => Wrap(JsonValue.Create((float)arguments[0]!)));
+        _engine.SetReturnHandler("JsonString", arguments => Wrap(JsonValue.Create((string)arguments[0]!)));
+        _engine.SetReturnHandler("JsonNull", _ => Null());
+        _engine.SetReturnHandler("JsonArrayInsert", arguments =>
+        {
+            var copy = Node((Json)arguments[0]!)?.DeepClone() as JsonArray ?? new JsonArray();
+            copy.Add(Node((Json)arguments[1]!)?.DeepClone());
+            return Wrap(copy);
+        });
+        _engine.SetReturnHandler("JsonGetFloat", arguments =>
+            Node((Json)arguments[0]!) is JsonValue value && value.TryGetValue<float>(out var number) ? number : 0f);
+        _engine.SetReturnHandler("JsonGetInt", arguments =>
+            Node((Json)arguments[0]!) is JsonValue value
+                ? value.TryGetValue<int>(out var number) ? number : value.TryGetValue<bool>(out var flag) && flag ? 1 : 0
+                : 0);
+        return this;
+    }
+
     /// <summary>Registers the template the engine returns for a resref and resource type.</summary>
     /// <param name="resref">The blueprint's resref.</param>
     /// <param name="type">The resource type, such as <see cref="ResType.UTC"/>.</param>
@@ -76,6 +107,9 @@ public sealed class FakeJsonEngine
         _values[handle] = JsonNode.Parse(json);
         _templates[(resref.ToLowerInvariant(), type)] = handle;
     }
+
+    /// <summary>The text of a value, as <c>JsonDump</c> returns it.</summary>
+    public string Dump(Json json) => Node(json)?.ToJsonString() ?? "null";
 
     /// <summary>Wraps a value, as the engine hands it to game code.</summary>
     public Json Wrap(JsonNode node)

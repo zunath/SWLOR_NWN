@@ -53,7 +53,7 @@ public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
     [Test]
     public void DeflectionResourceRestores_AreRateLimited()
     {
-        var stat = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatService.cs");
+        var stat = StatSource.Read();
         var deflection = ExtractMethod(stat, "public void ApplyDeflectionEffectsNative(");
         deflection.Should().Contain("TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown)");
         deflection.Should().Contain("TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
@@ -67,7 +67,7 @@ public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
     [Test]
     public void TheDeflectionGate_IsOnlySpentWhenThereIsACooldownToShorten()
     {
-        var stat = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatService.cs");
+        var stat = StatSource.Read();
         var deflection = ExtractMethod(stat, "public void ApplyDeflectionEffectsNative(");
 
         deflection.Should().Contain("_recast.IsOnRecastDelay(creatureId, recastReductionGroup)",
@@ -200,18 +200,6 @@ public class TriggeredResourceRestoreGateTests : SkillFacadeFixture
             foreach (var entry in perks)
                 yield return (entry.Key, entry.Value);
         }
-    }
-
-    private static string ReadSource(params string[] pathParts)
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-            directory = directory.Parent;
-
-        if (directory == null)
-            throw new DirectoryNotFoundException("Could not locate SWLOR.Game.Server.sln from the test directory.");
-
-        return File.ReadAllText(Path.Combine(new[] { directory.FullName }.Concat(pathParts).ToArray()));
     }
 
     private static string ExtractMethod(string source, string signature)

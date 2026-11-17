@@ -21,13 +21,9 @@ public class ResourceRestorationTests
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
             root = root.Parent;
         root.Should().NotBeNull();
-        var stat = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
-            "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"))).GetRoot();
         var methods = StatHarnessSource.Methods(method => method.Identifier.ValueText is "GetMaxFP" or "GetMaxStamina" or "RestoreFP" or "RestoreStamina"
             or "GetCurrentFP" or "GetCurrentStamina" or "IsStaminaRestorationBlocked");
-        var constants = stat.DescendantNodes().OfType<FieldDeclarationSyntax>()
-            .Where(field => field.Declaration.Variables.Any(variable =>
-                variable.Identifier.ValueText is "FPPerWillpower" or "StaminaPerTwoMight"));
+        var constants = StatHarnessSource.Fields(name => name is "FPPerWillpower" or "StaminaPerTwoMight");
         var tick = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
                 "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SereneFocusStatusEffect.cs")))
             .GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()

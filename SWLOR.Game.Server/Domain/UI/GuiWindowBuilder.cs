@@ -76,6 +76,82 @@ namespace SWLOR.Game.Server.Domain.UI
         {
             var authoredElements = _activeWindow.Elements.ToList();
 
+            DefinePartials(authoredElements);
+
+            _activeWindow.Elements.Clear();
+
+            _activeWindow
+                .AddColumn(col =>
+                {
+                    col.AddRow(row =>
+                    {
+                        row.AddPartialView("%%WINDOW_MAIN_PARTIAL%%");
+                    });
+                });
+
+            var windowId = GuiWindowKey.BuildWindowId(_type);
+
+            // Surface layout shapes confirmed to fail NUI's client-side constraint
+            // solver, with a widget path - the client error itself carries no context.
+            // Every warning is a real defect; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
+            var layoutFindings = GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews);
+
+            if (GuiLayoutValidator.IsValidationOnlyBuild)
+            {
+                return new GuiConstructedWindow(
+                    _type,
+                    windowId,
+                    default,
+                    _activeWindow.Geometry,
+                    new Dictionary<string, Json>(),
+                    layoutFindings,
+                    new Dictionary<string, string>(),
+                    null)
+                {
+                    KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange,
+                    ViewModelType = typeof(T)
+                };
+            }
+
+            foreach (var finding in layoutFindings)
+            {
+                Log.WriteStructured(LogGroup.Server, "[NUI layout warning] {Finding}", finding);
+            }
+
+            var partialViews = new Dictionary<string, Json>();
+            var partialViewLayouts = new Dictionary<string, string>();
+            foreach (var (key, partial) in _activeWindow.PartialViews)
+            {
+                partialViews[key] = partial.ToJson();
+                partialViewLayouts[key] = JsonDump(partialViews[key]);
+            }
+
+            var json = _activeWindow.Build();
+
+            DumpWireJson(windowId, json, partialViewLayouts);
+
+            RegisterAllElementEvents();
+
+            var constructedWindow = new GuiConstructedWindow(
+                _type,
+                windowId,
+                json,
+                _activeWindow.Geometry,
+                partialViews,
+                layoutFindings,
+                partialViewLayouts,
+                null);
+            constructedWindow.KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange;
+            constructedWindow.ViewModelType = typeof(T);
+
+            return constructedWindow;
+        }
+
+        /// <summary>
+        /// Defines the standard main partial around the authored elements, and the two modal partials every window can show.
+        /// </summary>
+        private void DefinePartials(List<IGuiWidget> authoredElements)
+        {
             _activeWindow
                 .DefineStandardMainPartial(authoredElements)
                 .DefinePartialView("%%WINDOW_MODAL%%", group =>
@@ -174,57 +250,10 @@ namespace SWLOR.Game.Server.Domain.UI
                         });
                     });
                 });
+        }
 
-            _activeWindow.Elements.Clear();
-
-            _activeWindow
-                .AddColumn(col =>
-                {
-                    col.AddRow(row =>
-                    {
-                        row.AddPartialView("%%WINDOW_MAIN_PARTIAL%%");
-                    });
-                });
-
-            var windowId = GuiWindowKey.BuildWindowId(_type);
-
-            // Surface layout shapes confirmed to fail NUI's client-side constraint
-            // solver, with a widget path - the client error itself carries no context.
-            // Every warning is a real defect; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
-            var layoutFindings = GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews);
-
-            if (GuiLayoutValidator.IsValidationOnlyBuild)
-            {
-                return new GuiConstructedWindow(
-                    _type,
-                    windowId,
-                    default,
-                    _activeWindow.Geometry,
-                    new Dictionary<string, Json>(),
-                    layoutFindings,
-                    new Dictionary<string, string>(),
-                    null)
-                {
-                    KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange,
-                    ViewModelType = typeof(T)
-                };
-            }
-
-            foreach (var finding in layoutFindings)
-            {
-                Log.WriteStructured(LogGroup.Server, "[NUI layout warning] {Finding}", finding);
-            }
-
-            var partialViews = new Dictionary<string, Json>();
-            var partialViewLayouts = new Dictionary<string, string>();
-            foreach (var (key, partial) in _activeWindow.PartialViews)
-            {
-                partialViews[key] = partial.ToJson();
-                partialViewLayouts[key] = JsonDump(partialViews[key]);
-            }
-
-            var json = _activeWindow.Build();
-
+        private void DumpWireJson(string windowId, Json json, Dictionary<string, string> partialViewLayouts)
+        {
             // Dump the exact wire JSON for layout debugging (see Readmes/NuiLayoutRules.md,
             // "Diagnosing a client-side layout error"). Lands in the Server log group.
             var environment = ApplicationSettings.Get().ServerEnvironment;
@@ -247,22 +276,6 @@ namespace SWLOR.Game.Server.Domain.UI
                         partialJson);
                 }
             }
-
-            RegisterAllElementEvents();
-
-            var constructedWindow = new GuiConstructedWindow(
-                _type,
-                windowId,
-                json,
-                _activeWindow.Geometry,
-                partialViews,
-                layoutFindings,
-                partialViewLayouts,
-                null);
-            constructedWindow.KeepsOpenOnAreaChange = _activeWindow.KeepsOpenOnAreaChange;
-            constructedWindow.ViewModelType = typeof(T);
-
-            return constructedWindow;
         }
     }
 }

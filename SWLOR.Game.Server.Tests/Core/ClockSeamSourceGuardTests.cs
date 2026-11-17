@@ -28,6 +28,7 @@ public class ClockSeamSourceGuardTests
         "Domain/Abilities/AbilityBuilder.cs",
         "Service/Craft.cs",
         "Domain/Crafting/CraftService.cs",
+        "Domain/Crafting/CraftDeviceService.cs",
         "Native/PairedRangedPresentation.cs",
         "Native/OnAIActionAttackObject.cs",
         "NativeSinks/OnAIActionAttackObjectSink.cs",

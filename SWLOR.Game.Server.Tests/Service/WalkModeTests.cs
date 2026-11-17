@@ -18,12 +18,6 @@ public class WalkModeTests
     [OneTimeSetUp]
     public void CompileProductionMovementMethods()
     {
-        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln")))
-            root = root.Parent;
-        root.Should().NotBeNull();
-        var stat = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root!.FullName,
-            "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"))).GetRoot();
         var methodNames = new HashSet<string>
         {
             "IsWalkModeEnabled", "ClearWalkModeBeforeDMPossessionChange", "ToggleWalkMode", "RestoreWalkMode", "ApplyCreatureMovementRate", "GetMovementSpeedMultiplier",
@@ -31,9 +25,8 @@ public class WalkModeTests
         };
         var methods = StatHarnessSource.Methods(method => methodNames.Contains(method.Identifier.Text)).ToArray();
         methods.Should().HaveCount(methodNames.Count);
-        var fields = stat.DescendantNodes().OfType<FieldDeclarationSyntax>().Where(field =>
-            field.Declaration.Variables.Any(variable => variable.Identifier.Text.Contains("Walk", StringComparison.Ordinal) ||
-                variable.Identifier.Text.Contains("MovementSpeed", StringComparison.Ordinal)));
+        var fields = StatHarnessSource.Fields(name => name.Contains("Walk", StringComparison.Ordinal) ||
+            name.Contains("MovementSpeed", StringComparison.Ordinal));
         var source = $$"""
             using System;
             using System.Collections.Generic;

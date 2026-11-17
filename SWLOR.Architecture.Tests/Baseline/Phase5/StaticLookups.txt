@@ -312,8 +312,9 @@ SWLOR.Game.Server.Tests/Domain/Companions/DroidEquipmentDiagnosticsServiceTests.
 SWLOR.Game.Server.Tests/Domain/Companions/IncubationFieldNoteServiceTests.cs | 5
 SWLOR.Game.Server.Tests/Domain/Core/CommunicationChatTests.cs | 3
 SWLOR.Game.Server.Tests/Domain/Core/CommunicationCommsTests.cs | 2
+SWLOR.Game.Server.Tests/Domain/Crafting/CraftEnhancementPropertyServiceTests.cs | 4
 SWLOR.Game.Server.Tests/Domain/Crafting/CraftResearchExperimentServiceTests.cs | 3
-SWLOR.Game.Server.Tests/Domain/Crafting/CraftServiceTests.cs | 8
+SWLOR.Game.Server.Tests/Domain/Crafting/CraftServiceTests.cs | 7
 SWLOR.Game.Server.Tests/Domain/Creatures/AIServiceDecisionTests.cs | 3
 SWLOR.Game.Server.Tests/Domain/Creatures/CompanionControlServiceTests.cs | 11
 SWLOR.Game.Server.Tests/Domain/Creatures/NPCGroupServiceTests.cs | 3

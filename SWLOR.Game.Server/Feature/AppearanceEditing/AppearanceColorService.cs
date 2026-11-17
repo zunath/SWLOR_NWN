@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceEditing
             TintMapItemColor = tintMapItemColor;
         }
 
-        public static void SynchronizeCustomTintControlsToPaletteColor(IAppearanceEditorHost host, int colorId)
+        public void SynchronizeCustomTintControlsToPaletteColor(IAppearanceEditorHost host, int colorId)
         {
             if (!AppearanceTintEditorService.TryGetSelectedTintLayer(host, out var layerType))
                 return;

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
@@ -17,12 +16,12 @@ namespace SWLOR.Game.Server.Domain.Items
     {
         private const string AuditedVariable = "ITEM_TRASH_AUDITED";
 
-        private readonly IDMPresenceService _dmPresence;
+        private readonly IDMActorResolver _dmPresence;
         private readonly IDisguiseService _disguise;
         private readonly IItemService _item;
         private readonly IPlayerNameService _playerName;
 
-        public ItemTrashService(IDMPresenceService dmPresence, IDisguiseService disguise, IItemService item, IPlayerNameService playerName)
+        public ItemTrashService(IDMActorResolver dmPresence, IDisguiseService disguise, IItemService item, IPlayerNameService playerName)
         {
             _dmPresence = dmPresence;
             _disguise = disguise;

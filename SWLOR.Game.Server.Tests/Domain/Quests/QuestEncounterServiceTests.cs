@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Foundation;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -111,7 +112,7 @@ public class QuestEncounterServiceTests
         _world.Place(Activator, Cantina);
 
         _db = new InMemoryDBService();
-        _service = new QuestEncounterService(_db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>()), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.LazyFor<IQuestService>());
+        _service = new QuestEncounterService(_db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.For<ISpaceModeQuery>()), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.LazyFor<IQuestService>());
         _facadeScope = _facades.Install();
     }
 

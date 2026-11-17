@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
@@ -37,7 +36,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IDBService _db;
         private readonly ICacheService _cache;
         private readonly IGuiRefreshPublisher _gui;
-        private readonly IDMPresenceService _dmPresence;
+        private readonly IDMActorResolver _dmPresence;
         private readonly IPlayerNameService _playerName;
         private readonly IPlayerDescriptorService _playerDescriptor;
         private readonly IStatService _stat;
@@ -46,7 +45,7 @@ namespace SWLOR.Game.Server.Domain.Character
             IDBService db,
             ICacheService cache,
             IGuiRefreshPublisher gui,
-            IDMPresenceService dmPresence,
+            IDMActorResolver dmPresence,
             IPlayerNameService playerName,
             IPlayerDescriptorService playerDescriptor,
             IStatService stat)

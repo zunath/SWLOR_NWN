@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// <summary>
     /// City governance: the boot-time processing of every city, the Discord broadcasts about it, and the city level rules.
     /// </summary>
-    public interface IPropertyCityGovernanceService
+    public interface IPropertyCityGovernanceService : ICityUpgradeLookup
     {
         /// <summary>
         /// Posts an event of a city to the property broadcast Discord channel. Nothing happens when no webhook is configured.
@@ -51,14 +52,5 @@ namespace SWLOR.Game.Server.Domain.World
         /// <param name="level">The level to retrieve</param>
         /// <returns>The number of citizens required to level up the city.</returns>
         int GetCitizensRequiredForNextCityLevel(int level);
-
-        /// <summary>
-        /// Retrieves the effective upgrade level of a city, taking into account the city's overall level
-        /// into the calculation.
-        /// </summary>
-        /// <param name="cityId">The property Id of the city.</param>
-        /// <param name="upgradeType">The type of upgrade to check</param>
-        /// <returns>A value ranging between 0 and 5.</returns>
-        int GetEffectiveUpgradeLevel(string cityId, PropertyUpgradeType upgradeType);
     }
 }

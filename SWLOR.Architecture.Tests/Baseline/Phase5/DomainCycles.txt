@@ -17,12 +17,7 @@ Abilities <-> Combat | 2
 Abilities <-> Platform | 6
 Abilities content <-> Character content | 3
 Abilities content <-> Gameplay content | 4
-Administration <-> Character | 2
-Administration <-> Creatures | 2
 Administration <-> Foundation | 3
-Administration <-> Items | 2
-Administration <-> UI | 2
-Administration <-> World | 2
 Character <-> Combat | 2
 Character <-> Companions | 2
 Character <-> Creatures | 2
@@ -32,21 +27,16 @@ Character <-> Platform | 6
 Character <-> Quests | 2
 Character <-> Social | 2
 Combat <-> Creatures | 2
-Combat <-> Foundation | 3
 Combat <-> Items | 2
 Combat <-> Platform | 6
 Combat <-> Quests | 2
 Combat <-> Social | 2
-Combat <-> Space | 2
 Combat <-> World | 2
 Companions <-> Items | 2
 Crafting <-> Items | 2
-Crafting <-> World | 2
 Creatures <-> Foundation | 2
 Creatures <-> Platform | 5
-Economy <-> Items | 2
 Economy <-> Quests | 2
-Foundation <-> Items | 4
 Foundation <-> Platform | 9
 Foundation <-> UI | 5
 Foundation content <-> Gameplay content | 7

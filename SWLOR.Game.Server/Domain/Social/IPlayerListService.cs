@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Social;
 
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// rows resolved for each viewer, party controls, hostility, and tells. Static callers reach the
     /// container's instance of this interface through <c>GameServices.PlayerList</c>; the event handlers are on <see cref="PlayerListService"/>.
     /// </summary>
-    public interface IPlayerListService
+    public interface IPlayerListService : IPlayerListRefresh
     {
         /// <summary>
         /// Returns the flags of the identity a player is showing: their active disguise's, or their own.
@@ -69,11 +70,6 @@ namespace SWLOR.Game.Server.Domain.Social
         void RemoveFromParty(uint member);
 
         bool MakeLeader(uint leader, uint member);
-
-        /// <summary>
-        /// Refreshes every open player list on the next frame. Repeated requests in one frame refresh once.
-        /// </summary>
-        void QueueRefresh();
 
         void RefreshOnEnter();
 

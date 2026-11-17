@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Domain.Economy
 {
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.Economy
     /// The currencies a player holds. Static callers reach the container's instance of
     /// this interface through <c>GameServices.Currency</c>; the event handler is on <see cref="CurrencyService"/>.
     /// </summary>
-    public interface ICurrencyService
+    public interface ICurrencyService : ICurrencyBalance
     {
         /// <summary>
         /// When the module caches, cache all currency details into memory.
@@ -20,14 +21,6 @@ namespace SWLOR.Game.Server.Domain.Economy
         /// <param name="currencyType">The type of currency to retrieve.</param>
         /// <returns>The details about a currency.</returns>
         CurrencyAttribute GetCurrencyDetail(CurrencyType currencyType);
-
-        /// <summary>
-        /// Retrieves the amount of a specific currency held by a player.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="type">The type of currency to look for</param>
-        /// <returns>The amount of the currency held.</returns>
-        int GetCurrency(uint player, CurrencyType type);
 
         /// <summary>
         /// Gives a specific amount of a type of currency to a player.

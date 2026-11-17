@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Combat;
@@ -46,10 +45,10 @@ namespace SWLOR.Game.Server.Domain.Items
         public const int MatchBladeLightColor = -1;
 
         private readonly IDBService _db;
-        private readonly ICurrencyService _currency;
+        private readonly ICurrencyBalance _currency;
         private readonly IGuiService _gui;
 
-        public LightsaberWorkbenchService(IDBService db, ICurrencyService currency, IGuiService gui)
+        public LightsaberWorkbenchService(IDBService db, ICurrencyBalance currency, IGuiService gui)
         {
             _db = db;
             _currency = currency;

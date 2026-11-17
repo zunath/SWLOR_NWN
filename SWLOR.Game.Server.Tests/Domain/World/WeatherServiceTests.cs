@@ -91,7 +91,7 @@ public class WeatherServiceTests
         _world.ClearCalls();
         var db = new InMemoryDBService();
 
-        _ = new WeatherService(db, new WeatherWorld.StubPlanets(), new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>()), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatDamageTakenService>());
+        _ = new WeatherService(db, new WeatherWorld.StubPlanets(), new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.For<ISpaceModeQuery>()), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatDamageTakenService>());
 
         _world.Engine.Calls.Should().BeEmpty();
         db.Reads.Should().BeEmpty();

@@ -21,9 +21,9 @@ public class TwinPistolMasteryService : ITwinPistolMasteryService
 
     private readonly IDBService _db;
     private readonly IKeyItemService _keyItem;
-    private readonly IQuestService _quest;
+    private readonly IQuestAdvancer _quest;
 
-    public TwinPistolMasteryService(IDBService db, IKeyItemService keyItem, IQuestService quest)
+    public TwinPistolMasteryService(IDBService db, IKeyItemService keyItem, IQuestAdvancer quest)
     {
         _db = db;
         _keyItem = keyItem;

@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Foundation;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Administration;
@@ -31,7 +32,7 @@ public class DMPreferenceServiceTests
     {
         _world = new DMPossessionEngine();
         _db = new InMemoryDBService();
-        _service = new DMPreferenceService(_db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>()));
+        _service = new DMPreferenceService(_db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.For<ISpaceModeQuery>()));
     }
 
     [TearDown]

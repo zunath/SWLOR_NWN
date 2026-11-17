@@ -148,6 +148,9 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IAbilityImpactObserver" })
             // The stat split (P5-4d): the restore riders as the pools' listener, which Combat answers.
             .Concat(new[] { "IResourceRestoredListener" })
+            // The inversions of P5-15a: the lower-domain interfaces a higher service implements, and the two adapters Creatures answers.
+            .Concat(new[] { "IAreaLookup", "ICityUpgradeLookup", "IQuestAdvancer", "IConcealmentQuery", "ICurrencyBalance",
+                "IPlayerListRefresh", "IItemCacheInfo", "IPropertyIdLookup", "IDMActorResolver", "IDMWindowPresence", "IAIProfileDescription", "IDMSpawnPreparation" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

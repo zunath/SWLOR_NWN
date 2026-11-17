@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Combat;
@@ -30,8 +29,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly INamedAnimationService _namedAnimation;
         private readonly IMessagingService _messaging;
         private readonly IPlayerNameService _playerName;
-        private readonly IPropertyService _property;
-        private readonly IAreaService _area;
+        private readonly ICityUpgradeLookup _property;
+        private readonly IAreaLookup _area;
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly ICreatureRevivedListener[] _revivedListeners;
@@ -42,8 +41,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             INamedAnimationService namedAnimation,
             IMessagingService messaging,
             IPlayerNameService playerName,
-            IPropertyService property,
-            IAreaService area,
+            ICityUpgradeLookup property,
+            IAreaLookup area,
             IStatusEffectService statusEffect,
             ICombatRecorderService combatRecorder,
             IEnumerable<ICreatureRevivedListener> revivedListeners,

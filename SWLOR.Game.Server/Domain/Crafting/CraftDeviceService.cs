@@ -2,7 +2,6 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
-using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.NWN.API.NWNX;
@@ -20,11 +19,11 @@ namespace SWLOR.Game.Server.Domain.Crafting
     {
         private readonly IDBService _db;
         private readonly IGuiService _gui;
-        private readonly IPropertyService _property;
+        private readonly IPropertyIdLookup _property;
         private readonly ICraftResearchExperimentService _craftResearchExperiment;
         private readonly ICraftStyleEffectsService _craftStyleEffects;
 
-        public CraftDeviceService(IDBService db, IGuiService gui, IPropertyService property, ICraftResearchExperimentService craftResearchExperiment, ICraftStyleEffectsService craftStyleEffects)
+        public CraftDeviceService(IDBService db, IGuiService gui, IPropertyIdLookup property, ICraftResearchExperimentService craftResearchExperiment, ICraftStyleEffectsService craftStyleEffects)
         {
             _db = db;
             _gui = gui;

@@ -40,8 +40,8 @@ public class DeathServiceTests
     private INamedAnimationService _animationService = null!;
     private IMessagingService _messagingService = null!;
     private IPlayerNameService _namesService = null!;
-    private IPropertyService _propertyService = null!;
-    private IAreaService _areasService = null!;
+    private ICityUpgradeLookup _propertyService = null!;
+    private IAreaLookup _areasService = null!;
     private ScriptedProxy _animation = null!;
     private ScriptedProxy _messaging = null!;
     private ScriptedProxy _names = null!;
@@ -99,9 +99,9 @@ public class DeathServiceTests
         _namesService = ScriptedProxy.Create<IPlayerNameService>(out _names);
         _names.On("GetDisplayName", args => $"name{(uint)args[0]!}-{(uint)args[1]!}")
             .On("GetAuditName", args => $"audit-{(uint)args[0]!}");
-        _propertyService = ScriptedProxy.Create<IPropertyService>(out _property);
+        _propertyService = ScriptedProxy.Create<ICityUpgradeLookup>(out _property);
         _property.On("GetEffectiveUpgradeLevel", _ => 0);
-        _areasService = ScriptedProxy.Create<IAreaService>(out _areas);
+        _areasService = ScriptedProxy.Create<IAreaLookup>(out _areas);
         _areas.On("GetAreaByResref", _ => _areaValid ? Area : ObjectInvalid);
 
         _death = new TestDeath(_db, _animationService, _messagingService, _namesService, _propertyService, _areasService);
@@ -508,8 +508,8 @@ public class DeathServiceTests
             INamedAnimationService animation,
             IMessagingService messaging,
             IPlayerNameService names,
-            IPropertyService property,
-            IAreaService areas)
+            ICityUpgradeLookup property,
+            IAreaLookup areas)
             : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>(),
                 Array.Empty<ICreatureRevivedListener>(), FacadeForwarder.For<ICombatDamageTakenService>())
         {

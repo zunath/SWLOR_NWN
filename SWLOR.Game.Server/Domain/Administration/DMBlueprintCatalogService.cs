@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -31,9 +30,9 @@ namespace SWLOR.Game.Server.Domain.Administration
         private readonly Dictionary<(DMBlueprintCategory, DMBlueprintSource), DMPalette> _palettes = new();
 
         private readonly IDMPresenceService _presence;
-        private readonly ISpawnService _spawn;
+        private readonly IDMSpawnPreparation _spawn;
 
-        public DMBlueprintCatalogService(IDMPresenceService presence, ISpawnService spawn)
+        public DMBlueprintCatalogService(IDMPresenceService presence, IDMSpawnPreparation spawn)
         {
             _presence = presence;
             _spawn = spawn;

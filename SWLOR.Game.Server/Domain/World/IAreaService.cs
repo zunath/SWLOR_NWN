@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.World
 {
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// callers reach the container's instance through <c>GameServices.Area</c>; the event handlers are on
     /// <see cref="AreaService"/>.
     /// </summary>
-    public interface IAreaService
+    public interface IAreaService : IAreaLookup
     {
         /// <summary>
         /// Creates an area instance with the same event handlers as the startup areas.
@@ -32,25 +33,10 @@ namespace SWLOR.Game.Server.Domain.World
         void RemoveInstancesFromCache();
 
         /// <summary>
-        /// Retrieves an area by its resref. If the area does not exist, OBJECT_INVALID will be returned.
-        /// </summary>
-        /// <param name="resref">The resref to use for the search.</param>
-        /// <returns>The area ID or OBJECT_INVALID if area does not exist.</returns>
-        uint GetAreaByResref(string resref);
-
-        /// <summary>
         /// Retrieves list of all areas.
         /// </summary>
         /// <returns>AreasByResref cache.</returns>
         Dictionary<string, uint> GetAreas();
-
-        /// <summary>
-        /// Retrieves all of the players currently in the specified area.
-        /// If no players are in the area, an empty list will returned.
-        /// </summary>
-        /// <param name="area">The area to search by.</param>
-        /// <returns>A list of player objects</returns>
-        List<uint> GetPlayersInArea(uint area);
 
         /// <summary>
         /// When a player or DM enters an area, add them to the cache.

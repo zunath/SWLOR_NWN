@@ -75,7 +75,7 @@ public class CacheServiceTests
         _utilScope = UtilPluginRuntime.Override(_util);
 
         // The item service answers from the spawned item's blueprint, as the real one reads the item.
-        var items = ScriptedProxy.Create<IItemService>(out _itemScript);
+        var items = ScriptedProxy.Create<IItemCacheInfo>(out _itemScript);
         _itemScript
             .On("GetIconResref", arguments => _spawned[(uint)arguments[0]!].Icon)
             .On("IsLegacyItem", arguments => _spawned[(uint)arguments[0]!].Legacy)

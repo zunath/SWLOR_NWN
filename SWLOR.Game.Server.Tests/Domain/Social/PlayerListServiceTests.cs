@@ -858,7 +858,7 @@ public class PlayerListServiceTests
     private sealed class LandableDMPresenceService : DMPresenceService
     {
         public LandableDMPresenceService()
-            : base(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>())
+            : base(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.For<ISpaceModeQuery>())
         {
         }
 

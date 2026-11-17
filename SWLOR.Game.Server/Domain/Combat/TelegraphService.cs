@@ -3,7 +3,6 @@ using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Administration;
-using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.Engine;
@@ -29,9 +28,9 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Dictionary<uint, TelegraphShaderState> _sentShaderStates = new();
 
         private readonly IDMPresenceService _dmPresence;
-        private readonly IPartyService _party;
+        private readonly IPartyRoster _party;
 
-        public TelegraphService(IDMPresenceService dmPresence, IPartyService party)
+        public TelegraphService(IDMPresenceService dmPresence, IPartyRoster party)
         {
             _dmPresence = dmPresence;
             _party = party;

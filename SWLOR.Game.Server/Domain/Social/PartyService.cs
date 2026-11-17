@@ -20,9 +20,9 @@ namespace SWLOR.Game.Server.Domain.Social
     {
         private readonly IPartyRosterService _roster;
         private readonly Lazy<IAbilityAuraService> _abilityAura;
-        private readonly Lazy<ITelegraphService> _telegraph;
+        private readonly ITelegraphService _telegraph;
 
-        public PartyService(IPartyRosterService roster, Lazy<IAbilityAuraService> abilityAura, Lazy<ITelegraphService> telegraph)
+        public PartyService(IPartyRosterService roster, Lazy<IAbilityAuraService> abilityAura, ITelegraphService telegraph)
         {
             _roster = roster;
             _abilityAura = abilityAura;
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Domain.Social
             // Party members already standing in each other's auras never re-fire the aura enter event.
             _abilityAura.Value.EnrollPartyMemberInAuraRanges(creature);
 
-            _telegraph.Value.UpdateShadersForPlayers(GetAllPartyMembers(requester));
+            _telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));
         }
 
         [NWNEventHandler(ScriptName.OnAssociateAddBefore)]
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.Domain.Social
                 _roster.PartyLeaders[partyId] = _roster.Parties[partyId].First();
             }
 
-            _telegraph.Value.UpdateShadersForPlayers(affectedPartyMembers);
+            _telegraph.UpdateShadersForPlayers(affectedPartyMembers);
         }
 
         public List<uint> GetAllPartyMembers(uint creature) => _roster.GetAllPartyMembers(creature);

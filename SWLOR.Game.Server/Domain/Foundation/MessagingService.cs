@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -12,9 +11,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
     /// </summary>
     public class MessagingService : IMessagingService
     {
-        private readonly IStealthService _stealth;
+        private readonly IConcealmentQuery _stealth;
 
-        public MessagingService(IStealthService stealth)
+        public MessagingService(IConcealmentQuery stealth)
         {
             _stealth = stealth;
         }

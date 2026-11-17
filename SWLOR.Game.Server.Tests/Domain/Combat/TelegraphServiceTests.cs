@@ -154,7 +154,7 @@ public class TelegraphServiceTests
         var presence = ScriptedProxy.Create<IDMPresenceService>(out var presenceScript);
         presenceScript.On("GetControlledCreature", args => _controlled.GetValueOrDefault((uint)args[0]!, (uint)args[0]!));
         presenceScript.On("GetDM", args => _avatar.GetValueOrDefault((uint)args[0]!, (uint)args[0]!));
-        var party = ScriptedProxy.Create<IPartyService>(out var partyScript);
+        var party = ScriptedProxy.Create<IPartyRoster>(out var partyScript);
         partyScript.On("IsInParty", args =>
         {
             _partyChecks.Add(((uint)args[0]!, (uint)args[1]!));

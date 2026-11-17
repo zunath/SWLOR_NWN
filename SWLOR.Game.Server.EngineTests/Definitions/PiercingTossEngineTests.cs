@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         var bleed = StatusEffect.GetStatusEffect(target, typeof(BleedStatusEffect)) as BleedStatusEffect;
                         ctx.Assert(bleed != null, $"{label}: Bleed must remain after the impact.");
                         var ticks = (int)Math.Ceiling(duration / bleed.Frequency) + extensionSeconds / 6;
-                        ctx.Assert(bleed.DurationTicks == ticks, $"{label}: Bleed must have {ticks} damage ticks (had {bleed.DurationTicks}, frequency {bleed.Frequency}, extension seen by the rider {GameServices.CombatQueries.GetSkillSelectedStatAdjustment(source, SkillType.Throwing, StatType.AbilityDamageToBleedingTargetSkillType, StatType.BleedingTargetAbilityBleedDurationExtensionSeconds)}).");
+                        ctx.Assert(bleed.DurationTicks == ticks, $"{label}: Bleed must have {ticks} damage ticks (had {bleed.DurationTicks}, frequency {bleed.Frequency}).");
                         AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(1), target));
                         cases.Add((target, bleed, ticks, appliedAt, label, GetCurrentHitPoints(target)));
                     }

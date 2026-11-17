@@ -487,14 +487,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task CompanionRegeneration(EngineTestContext ctx)
         {
             var beast = ctx.SpawnCreature("nw_bandit001");
-            await ctx.WaitFrameAsync();
+            // Spawn initialization resets NPC pools to full some time after the first frame, which turned the 31 stamina
+            // this test sets into 32. Wait it out before setting them.
+            await ctx.DelaySecondsAsync(1f);
             Prepare(ctx, beast);
             ctx.SetNPCResources(beast, 10, 10);
             var maxFP = Stat.GetMaxFP(beast);
             var maxSTM = Stat.GetMaxStamina(beast);
-            // The creature's own heartbeat regenerates one stamina per tick whatever the beast delay says, so a tick
-            // landing between two awaits turned 31 into 32 (expected 31, was 32). The whole sequence runs inside one
-            // script call: nothing else can act on the creature until it returns.
+            // The creature's own heartbeat also regenerates stamina whatever the beast delay says, so the whole sequence
+            // runs inside one script call: nothing else can act on the creature until it returns.
             int fpDuringDelay = 0, stmDuringDelay = 0, stmAfterDelay = 0, fpCapped = 0, stmCapped = 0;
             await ctx.ExecuteInCreatureContextAsync(beast, () =>
             {

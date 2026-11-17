@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // An instance gets a new resref and none of the planet id the template received at boot, so it is a
                 // Viscara map only when its name carries the planet prefix. Copy such a map: resref-resolved prefab
                 // maps (nw_N instances of "[Prefab] ..." areas) have no planet, hence no weather (reported separately).
-                var prefix = Planet.GetPlanetByType(PlanetType.Viscara).Prefix;
+                const string prefix = "Viscara - "; // the planet prefix PlanetType.Viscara declares
                 var template = areas.FirstOrDefault(area => GetName(area).StartsWith(prefix));
                 ctx.Assert(GetIsObjectValid(template), $"A comparable outdoor map named \"{prefix}...\" exists to copy.");
                 var instance = ctx.CreateInstancedArea(GetResRef(template));

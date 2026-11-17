@@ -4,7 +4,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -22,7 +23,7 @@ public class TintMapSavedColorTests
             root = root.Parent;
         root.Should().NotBeNull();
         var method = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root.FullName,
-                "SWLOR.Game.Server", "Feature", "AppearanceDefinition", "TintMap", "TintMapService.cs")))
+                "SWLOR.Game.Server", "Domain", "Companions", "TintMapColorResolver.cs")))
             .GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "GetSavedColor")
             .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword),
@@ -32,13 +33,14 @@ public class TintMapSavedColorTests
         var source = $$"""
             using System.Collections.Generic;
             using System.Linq;
-            using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+            using SWLOR.Game.Server.Domain.Character;
+            using SWLOR.Game.Server.Domain.Companions;
             using SWLOR.NWN.API.NWScript.Enum;
             public static class SavedColorHarness
             {
                 public static readonly Dictionary<string, int> Locals = new();
                 public static bool ExplicitPreset;
-                {{method}}
+                {{method.ToString().Replace("TintMapOverrideLocals.GetItemTintOverrides(", "GetItemTintOverrides(")}}
                 private static int GetLocalInt(uint item, string name) => Locals.GetValueOrDefault(name);
                 private static ObjectType GetObjectType(uint item) => ObjectType.Item;
                 private static bool HasExplicitItemPresetColor(TintMapMaterialSelection selection,

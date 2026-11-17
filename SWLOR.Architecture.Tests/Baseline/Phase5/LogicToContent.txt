@@ -19,14 +19,10 @@ SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature.UsePerkFeat | 
 SWLOR.Game.Server/Domain/Abilities/QuickCastService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Abilities/TwinPistolAbilityService.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Feature.DMActions | 1
-SWLOR.Game.Server/Domain/Character/AppearanceRenderStateService.cs -> Feature/AppearanceDefinition | 4
-SWLOR.Game.Server/Domain/Character/IAppearanceRenderStateService.cs -> Feature/AppearanceDefinition | 4
-SWLOR.Game.Server/Domain/Character/ITintMapStateService.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Character/RobeModelRenderer.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefinition | 1
-SWLOR.Game.Server/Domain/Character/TintMapStateRevisionScope.cs -> Feature/AppearanceDefinition | 1
-SWLOR.Game.Server/Domain/Character/TintMapStateService.cs -> Feature/AppearanceDefinition | 3
 SWLOR.Game.Server/Domain/Combat/AbilityEffectScaling.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/StatusEffectDefinition | 12
@@ -65,8 +61,13 @@ SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs -> Feature/QuestDefi
 SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Companions/BeastStableCapacity.cs -> Feature/QuestDefinition | 1
-SWLOR.Game.Server/Domain/Companions/DroidService.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Companions/DroidService.cs -> Feature/StatusEffectDefinition | 1
+SWLOR.Game.Server/Domain/Companions/NeckModelRenderer.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Companions/PartSkinModelRenderer.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Companions/ShoulderModelRenderer.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Companions/TintMapApplyService.cs -> Feature/AppearanceDefinition | 2
+SWLOR.Game.Server/Domain/Companions/TintMapModelResolver.cs -> Feature/AppearanceDefinition | 1
+SWLOR.Game.Server/Domain/Companions/TintMapService.cs -> Feature/AppearanceDefinition | 4
 SWLOR.Game.Server/Domain/Crafting/CraftDeviceService.cs -> Feature/GuiDefinition | 2
 SWLOR.Game.Server/Domain/Crafting/Minigame/Circuit/CircuitStyles.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Crafting/Minigame/Forge/ForgeStyles.cs -> Feature/StatusEffectDefinition | 2
@@ -94,7 +95,6 @@ SWLOR.Game.Server/Domain/Social/PerformanceInspiredService.cs -> Feature/StatusE
 SWLOR.Game.Server/Domain/Social/PerformanceService.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Social/PerformanceWindowsService.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Feature/GuiDefinition | 1
-SWLOR.Game.Server/Domain/Space/SpaceService.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/UI/GuiService.cs -> Feature/GuiDefinition | 2
 SWLOR.Game.Server/Domain/World/NwnFishingFightWorld.cs -> Feature/GuiDefinition | 1
 SWLOR.Game.Server/Domain/World/PropertyStructurePlacementService.cs -> Feature/DialogDefinition | 1
@@ -113,6 +113,5 @@ SWLOR.Game.Server/Native/PairedRangedAttackCycle.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Native/PairedRangedPresentation.cs -> Feature.PistolAnimationRemap | 1
 SWLOR.Game.Server/Native/ResolveAttackRoll.cs -> Feature.UsePerkFeat | 1
 SWLOR.Game.Server/Native/WeaponAttackCycle.cs -> Feature.UsePerkFeat | 1
-SWLOR.Game.Server/NativeSinks/NeckAppearanceSerializationSink.cs -> Feature/AppearanceDefinition | 3
 SWLOR.Game.Server/NativeSinks/OnAIActionAttackObjectSink.cs -> Feature.TwinPistolEquipmentValidation | 1
 SWLOR.Game.Server/NativeSinks/OnAIActionAttackObjectSink.cs -> Feature.UsePerkFeat | 1

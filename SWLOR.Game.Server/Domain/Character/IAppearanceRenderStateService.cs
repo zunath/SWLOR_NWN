@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Domain.Character
@@ -6,9 +5,9 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <summary>
     /// The runtime state of the appearance renderers: the head scales captured while a helmet renders through the
     /// head, the model catalogs read from the 2DAs when the module loads, the armor part projections the native packet
-    /// writer reads, and the cache of which part preview pictures exist. The rendering logic stays in the
-    /// <c>HelmetModelRenderer</c>, <c>NeckModelRenderer</c>, <c>PartSkinModelRenderer</c>, <c>ShoulderModelRenderer</c>,
-    /// <c>RobeModelRenderer</c> and <c>AppearancePreview</c> Feature classes.
+    /// writer reads, and the cache of which part preview pictures exist. The rendering logic is in the Companions
+    /// <c>HelmetModelRenderer</c>, <c>NeckModelRenderer</c>, <c>PartSkinModelRenderer</c> and <c>ShoulderModelRenderer</c> classes,
+    /// the <c>RobeModelRenderer</c> beside this service, and the <c>AppearancePreview</c> Feature class.
     /// </summary>
     public interface IAppearanceRenderStateService
     {

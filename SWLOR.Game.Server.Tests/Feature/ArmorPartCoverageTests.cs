@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
 using SWLOR.NWN.API.NWScript.Enum;

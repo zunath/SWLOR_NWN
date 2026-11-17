@@ -41,13 +41,15 @@ Settled by the coordinator (2026-11-17), as recommended:
    `PeekAuthorizedTarget` (2) and `IsHostileAbilityTargetAuthorized` (2). Keeping them on `ICompanionControlService` would keep a
    forwarding layer over the authority part, which the split rules forbid. **Decision:** the 9 call sites change
    by `Apply-FacadeRemoval.ps1` (property name only), as P5-3 and P5-4 did for the same file; no logic changes.
-3. **D3. The window for P5-8e.** It edits `EnmityService.cs` (P5-7), `StealthService.cs` (P5-7's file, where P5-5 adds its
-   effect lifecycle subscription) and `EspionageInfiltrationService.cs` (P5-15a, which owns that file's Combat edges). P5-8e runs
+3. **D3. The window for P5-8e.** It edits `EnmityService.cs` (P5-7), `StealthService.cs` (P5-7's file; P5-5 only changes its
+   `IStatusEffectService` parameters and its `IsConcealed` body, see below) and `EspionageInfiltrationService.cs` (P5-15a, which owns that file's Combat edges). P5-8e runs
    when none of the three is running on its file: after P5-5 has merged, before P5-7 starts on Enmity, and after P5-15a's
    Espionage change. **Decision:** P5-8e, not P5-7, introduces the Combat-owned ports (the domain order names P5-7 as the
    introducer, but the code behind every port is P5-8's, and one PR that edits Enmity and Stealth once keeps P5-7's Enmity split
    on stable ports). If P5-7 gets to Enmity first, P5-7 makes the same call-site edits on the ports this guide names, and P5-8e
    shrinks to the Creatures side.
+   *Amended 2026-11-17:* the Stealth-subscription clause is gone because P5-5's part map (MaintainabilityRefactorStatusEffectSplit.md) makes Stealth's two
+   status effect reads pure engine reads (`ConcealmentRules`), so Stealth subscribes to nothing.
 
 Settled here (change only on a finding in review):
 
@@ -448,7 +450,7 @@ members by owner; `Apply-FacadeRemoval.ps1` rewrites them and `-Reverse` maps ma
 ## Order
 
 One pull request per row, serial (they share `ServiceRegistrations`, `GameServices.Creatures`, `ConvertedServices.json` and
-`AIService.cs`). Files other running items own: P5-5 `StatusEffectService.cs` (and its subscription in `StealthService.cs`);
+`AIService.cs`). Files other running items own: P5-5 `StatusEffectService.cs` (and constructor parameters in `StealthService.cs`);
 P5-7 the Combat services named in the Phase 5 guide (here `EnmityService.cs`); P5-15a the services no split covers (here
 `EspionageInfiltrationService.cs`). Only P5-8e touches any of them, and P5-8f touches `UsePerkFeat.cs` (D2).
 

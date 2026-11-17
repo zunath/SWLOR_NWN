@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
@@ -21,6 +20,7 @@ using Random = SWLOR.Game.Server.Domain.Foundation.Random;
 using Vector3 = System.Numerics.Vector3;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Companions;
 
 namespace SWLOR.Game.Server.Domain.Space
 {
@@ -76,6 +76,7 @@ namespace SWLOR.Game.Server.Domain.Space
         private readonly IRecastService _recast;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly ITintMapService _tintMap;
 
         public SpaceService(
             IAbilityAuraService abilityAura,
@@ -93,7 +94,8 @@ namespace SWLOR.Game.Server.Domain.Space
             IRaceService race,
             IRecastService recast,
             IStatService stat,
-            IStatusEffectService statusEffect)
+            IStatusEffectService statusEffect,
+            ITintMapService tintMap)
         {
             _abilityAura = abilityAura;
             _abilityCooldownVisual = abilityCooldownVisual;
@@ -111,6 +113,7 @@ namespace SWLOR.Game.Server.Domain.Space
             _recast = recast;
             _stat = stat;
             _statusEffect = statusEffect;
+            _tintMap = tintMap;
         }
 
         /// <summary>
@@ -1196,7 +1199,7 @@ namespace SWLOR.Game.Server.Domain.Space
             HelmetModelRenderer.SetHeadScale(player, headScale);
 
             // Reapply material colors after the client rebuilds the character model.
-            TintMapService.QueueRefresh(player);
+            _tintMap.QueueRefresh(player);
         }
 
         /// <summary>

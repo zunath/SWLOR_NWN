@@ -73,7 +73,7 @@ public class SpaceModeQueryTests
         var space = new SpaceService(
             abilityAura: null!, abilityCooldownVisual: null!, ai: null!, area: null!, db: _db, enmity: null!, gui: null!,
             messaging: null!, perk: null!, planet: null!, playerName: null!, property: null!, race: null!, recast: null!,
-            stat: null!, statusEffect: null!);
+            stat: null!, statusEffect: null!, tintMap: null!);
         var query = new SpaceModeQuery(_db);
 
         foreach (var creature in new[] { Pilot, Walker, Unrecorded, Npc, Dm })

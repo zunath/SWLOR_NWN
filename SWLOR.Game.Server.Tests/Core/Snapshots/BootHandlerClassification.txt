@@ -58,11 +58,11 @@ mod_cache_bef (44)
   Rerun       SWLOR.Game.Server.Domain.World.WeatherService.LoadData
   Rerun       SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration
   Rerun       SWLOR.Game.Server.Feature.UnarmedMastery.Register
-  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.NeckModelRenderer.Load
-  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.PartSkinModelRenderer.Load
-  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.RobeModelRenderer.Load
-  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.ShoulderModelRenderer.Load
-  Rerun       SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapMaterialRegistry.Load
+  Rerun       SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadNeckCatalog
+  Rerun       SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadPartSkinCatalog
+  Rerun       SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadRobeCatalog
+  Rerun       SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadShoulderCatalog
+  Rerun       SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadMaterials
 
 mod_cache_aft (15)
   Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData

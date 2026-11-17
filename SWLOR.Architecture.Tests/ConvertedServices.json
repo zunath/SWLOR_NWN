@@ -114,6 +114,7 @@
     { "name": "Telegraph", "domain": "Combat" },
     { "name": "TemporaryStatModifier", "domain": "Combat" },
     { "name": "TileMagic", "domain": "Foundation" },
+    { "name": "TintMap", "domain": "Companions", "extras": [ { "class": "TintMapApply" }, { "class": "TintMapCarry" }, { "part": "TintMapCatalog" }, { "class": "TintMapCreatureColor" }, { "part": "TintMapDroidOverride" }, { "class": "TintMapItemColor" } ] },
     { "name": "TintMapState", "domain": "Character" },
     { "name": "Traps", "domain": "World" },
     { "name": "TwinPistolAbility", "domain": "Abilities" },

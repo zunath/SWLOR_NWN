@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Domain.Character
@@ -26,7 +25,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>> _materialsByModel =
             new(StringComparer.OrdinalIgnoreCase);
-        private TintMapEquipmentMaterialIndex _equipmentMaterialIndex = TintMapEquipmentMaterialIndex.Empty;
+        private TintMapEquipmentMaterialIndex _equipmentMaterialIndex = TintMapEquipmentMaterialIndex.CreateEmpty();
 
         public (Guid Lineage, IReadOnlyDictionary<TintMapStateRevisionScope, int> Revisions) RegisterPendingItemColorCarry(
             uint sourceItem,

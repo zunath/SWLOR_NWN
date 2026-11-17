@@ -20,7 +20,7 @@ may have moved). If master or the branch changes the file first, map the ranges 
 ## Decisions
 
 Settled by the coordinator (2026-11-17) after the review of the first draft; change only on a finding in review. The nine decisions the draft asked
-for are recorded under Settled decisions (end of this guide). Only the freeze start and one holder are open.
+for are recorded under Settled decisions (end of this guide). Only the freeze start is open.
 
 - **The split is layered by who calls what, with the stay-part at the bottom.** `StatusEffectService` stays as the trackers, the
   reads and the removal (about 800 lines, 4 services). Everything that applies, refreshes, announces, reapplies or reacts to
@@ -393,19 +393,18 @@ holder stays at 10 or fewer. No holder gains a `Lazy<>`.
 | `PerformanceInspiredService` | 1, 3, 4 | 1 | 3 | |
 | `PvpCombatService` | 1, 3 | 2 | 3 | |
 | `CraftStyleEffectsService` | 1, 3 | 2 | 3 | |
-| `DeathService` | 1, 3 | 10 | 11 | **open item** |
+| `DeathService` | 1, 3 | 10 | 11 | accepted, P5-7 removes (decision 10) |
 
 Other changes: `CapstoneProofService` 3 -> 4 (it takes `IStatusEffectService` to register). `AIService` (15) uses only part 1 and stays at 15.
 `StatService`, `CreatureStatService`, `ResistanceService`, `PerkService`, `CompanionControlService` and the Stat, Mimicry and Space holders use
 part 1 only and are unchanged except that their `Lazy<>` may go plain. What was done to keep holders at 10 or fewer: `ClearStatusEffectsOnDeath`
 stays in part 1 (it was going to the session part), so `DeathService` needs two parts, not three.
 
-**One holder still crosses 10: `DeathService` (Combat, not P5-7's), 10 -> 11.** It calls `GetCreatureStatusEffects` and `ClearStatusEffectsOnDeath`
+**`DeathService` (Combat) crosses 10 (10 -> 11), accepted (decision 10).** It calls `GetCreatureStatusEffects` and `ClearStatusEffectsOnDeath`
 (part 1) and `ApplyStatusEffect` for `KnockdownStatusEffect` and `SubdualPenaltyStatusEffect` (part 3, lines 114-115). No member can move to a part it
 already holds, because it holds no other status effect part, and putting `ApplyStatusEffect` on `IStatusEffectService` would be a forwarding layer. The
 ways out are to drop one of its other ten services in a pull request that may touch `DeathService` (none is related to this item), or to accept 11 until
-the Combat split reaches it. See Open decisions.
-
+the Combat split reaches it. 
 ## Callers
 
 Counts are call sites (server, content, tests, engine tests together) by destination.
@@ -541,7 +540,7 @@ The coordinator reviewed the first draft and settled its nine decisions; the gui
 
 1. **Holder growth:** accepted only for the four P5-7-owned Combat holders already over the limit (`CombatHitEffectsService`, `CombatDamageTakenService`,
    `CombatAbilityImpactService`, `CombatAbilityActivationService`); each is recorded in the PR that causes it and P5-7 removes it. Every other holder stays
-   at 10 or fewer (Holders table; `DeathService` is the open item).
+   at 10 or fewer (Holders table; `DeathService` is decision 10).
 2. **Duration and Application stay separate parts.**
 3. **Effect keys for Combat belong to P5-7.** P5-5 keeps the `Type` APIs it moves unchanged.
 4. **Listeners:** small interfaces registered as lists, the existing pattern (`IStatEffectListener` stays; `IStatusEffectMeleeListener` and
@@ -554,10 +553,11 @@ The coordinator reviewed the first draft and settled its nine decisions; the gui
 9. **P5-8:** P5-8d merged (`737210cdd`, #3446); the `AIService` and `CompanionControlService` rows are rechecked against the feature tip (Combat ports
    section); P5-8e runs after P5-5.
 
+10. **`DeathService` (Combat) 10 -> 11 is accepted in P5-5f,** the PR that gives it `IStatusEffectApplicationService`, like the four P5-7 holders: recorded
+   in that PR with P5-7 named as the remover (P5-7's item list now names `DeathService`). The `ClearStatusEffectsOnDeath` cut change (it stays in part 1)
+   is approved.
+
 ## Open decisions
 
 1. **Freeze start.** P5-5c to P5-5h run under a master freeze that starts when the owner confirms it; P5-5b (tests only) needs none.
    Recommended: confirm before P5-5c starts, so that master's edits to `Service/StatusEffect.cs` stop for the six moving PRs.
-2. **`DeathService` crosses 10 (10 -> 11).** Numbers in the Holders section. Recommended: accept 11 until the Combat split reaches `DeathService`,
-   recorded in P5-5f (the PR that gives it `IStatusEffectApplicationService`) as an accepted exception with that item named as the remover; the
-   alternative is a prior change that drops an unrelated service from it, which is outside this item.

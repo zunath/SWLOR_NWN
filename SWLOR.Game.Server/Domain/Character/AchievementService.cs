@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Domain.Character;
@@ -17,25 +16,21 @@ namespace SWLOR.Game.Server.Domain.Character
     /// </summary>
     public class AchievementService : IAchievementService
     {
-        // The name the GUI id reservation has always been made under (nameof of the former facade, Service.Achievement).
-        private const string GuiReservationName = "Achievement";
-
         private readonly IDBService _db;
-        private readonly IGuiService _gui;
+        private readonly IAchievementNotification _notification;
         private readonly Dictionary<AchievementType, AchievementAttribute> _activeAchievements = new Dictionary<AchievementType, AchievementAttribute>();
-        private IdReservation _idReservation;
 
-        public AchievementService(IDBService db, IGuiService gui)
+        public AchievementService(IDBService db, IAchievementNotification notification)
         {
             _db = db;
-            _gui = gui;
+            _notification = notification;
         }
 
         [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void ReserveGuiIds()
         {
-            _idReservation = _gui.ReserveIds(GuiReservationName, 6);
+            _notification.ReserveIds();
         }
 
         [BootPhase(BootReload.Rerun)]
@@ -72,20 +67,8 @@ namespace SWLOR.Game.Server.Domain.Character
             if (!dbPlayer.Settings.DisplayAchievementNotification) return;
 
             var achievement = _activeAchievements[achievementType];
-            DisplayAchievementNotificationWindow(player, achievement.Name);
+            _notification.Display(player, achievement.Name);
             PlayerPlugin.PlaySound(player, "gui_prompt", OBJECT_INVALID);
-        }
-
-        public void DisplayAchievementNotificationWindow(uint player, string name)
-        {
-            const int WindowX = 4;
-            const int WindowY = 4;
-            const int WindowWidth = 26;
-
-            var centerWindowX = _gui.CenterStringInWindow(name, WindowX, WindowWidth);
-            PostString(player, "Achievement Unlocked", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, GuiService.ColorWhite, GuiService.ColorYellow, _idReservation.StartId,GuiService.TextName);
-            PostString(player, " " + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, GuiService.ColorWhite, GuiService.ColorYellow, _idReservation.StartId + 1, GuiService.TextName);
-            _gui.DrawWindow(player, _idReservation.StartId + 2, ScreenAnchor.TopRight, WindowX, WindowY, WindowWidth, 4);
         }
 
         public AchievementAttribute GetAchievement(AchievementType type)

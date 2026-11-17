@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Domain.Administration
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     /// The kinds of blueprints the DM creator can spawn. Values are stored as combo box option values.

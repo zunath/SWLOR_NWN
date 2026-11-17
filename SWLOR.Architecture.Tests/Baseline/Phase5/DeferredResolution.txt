@@ -49,4 +49,3 @@ SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Character (down) | 2
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> Space (down) | 1
 SWLOR.Game.Server/Domain/Social/PlayerListService.cs -> World (down) | 1
 SWLOR.Game.Server/Domain/World/AreaService.cs -> World (inside) | 1
-SWLOR.Game.Server/Domain/World/MusicService.cs -> Social (up) | 1

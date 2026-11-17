@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {

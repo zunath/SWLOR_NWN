@@ -68,7 +68,7 @@ public class DMCreatorFavoriteServiceTests
         _world.AddPlayer(DM, isDM: true);
         _world.Possess(DM, Creature, possessionType);
         var record = new DMCreatorFavorites { Id = RecordId };
-        record.Blueprints.Add(new DMFavoriteBlueprint(Blueprint("rodian")));
+        record.Blueprints.Add(Blueprint("rodian").ToFavorite());
         _db.With(record);
 
         _service.Get(DM).Should().BeSameAs(record.Blueprints);
@@ -104,8 +104,8 @@ public class DMCreatorFavoriteServiceTests
     {
         _world.AddPlayer(DM, isDM: true);
         var record = new DMCreatorFavorites { Id = RecordId };
-        record.Blueprints.Add(new DMFavoriteBlueprint(Blueprint("rodian")));
-        record.Blueprints.Add(new DMFavoriteBlueprint(Blueprint("twilek")));
+        record.Blueprints.Add(Blueprint("rodian").ToFavorite());
+        record.Blueprints.Add(Blueprint("twilek").ToFavorite());
         _db.With(record);
 
         var change = _service.Toggle(DM, Blueprint("RODIAN"), out var favorites);
@@ -121,7 +121,7 @@ public class DMCreatorFavoriteServiceTests
         _world.AddPlayer(DM, isDM: true);
         _service.Toggle(DM, Blueprint("rodian"), out _);
         var otherSession = new DMCreatorFavorites { Id = RecordId };
-        otherSession.Blueprints.AddRange(new[] { new DMFavoriteBlueprint(Blueprint("rodian")), new DMFavoriteBlueprint(Blueprint("twilek")) });
+        otherSession.Blueprints.AddRange(new[] { Blueprint("rodian").ToFavorite(), Blueprint("twilek").ToFavorite() });
         _db.With(otherSession);
 
         _service.Toggle(DM, Blueprint("wookiee"), out var favorites);
@@ -135,7 +135,7 @@ public class DMCreatorFavoriteServiceTests
         _world.AddPlayer(DM, isDM: true);
         var record = new DMCreatorFavorites { Id = RecordId };
         for (var index = 0; index < DMFavoriteList.MaxFavorites; index++)
-            record.Blueprints.Add(new DMFavoriteBlueprint(Blueprint("blueprint" + index)));
+            record.Blueprints.Add(Blueprint("blueprint" + index).ToFavorite());
         _db.With(record);
 
         var change = _service.Toggle(DM, Blueprint("one_too_many"), out var favorites);

@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Domain.Administration
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     /// Matches the native creator's palettes: Custom is the module and hak blueprints, Standard is the base game's.

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -34,6 +35,10 @@ public class InvertedInterfaceRegistrationTests
         (typeof(IPropertyIdLookup), typeof(IPropertyService)),
         (typeof(IDMActorResolver), typeof(IDMPresenceService)),
         (typeof(IDMWindowPresence), typeof(IDMPresenceService)),
+        (typeof(IEspionageEnmityQuery), typeof(IEnmityService)),
+        (typeof(IEspionageStealthQuery), typeof(IStealthService)),
+        (typeof(IRecastDelays), typeof(IRecastService)),
+        (typeof(IBeastCorpseInfo), typeof(IBeastMasteryService)),
         (typeof(IAIProfileDescription), typeof(IAIService)),
         (typeof(IDMSpawnPreparation), typeof(ISpawnObjectService)),
     };
@@ -68,5 +73,13 @@ public class InvertedInterfaceRegistrationTests
         var host = Build();
 
         host.Provider.GetRequiredService<IItemCacheInfo>().Should().BeOfType<ItemCacheInfo>();
+    }
+
+    [Test]
+    public void The_achievement_notification_is_drawn_by_the_UI_domain()
+    {
+        var host = Build();
+
+        host.Provider.GetRequiredService<IAchievementNotification>().Should().BeOfType<AchievementNotificationWindow>();
     }
 }

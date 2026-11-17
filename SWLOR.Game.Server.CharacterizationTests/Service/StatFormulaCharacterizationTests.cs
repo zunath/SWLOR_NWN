@@ -3,6 +3,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.CharacterizationTests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.CharacterizationTests.Service;
@@ -50,14 +51,14 @@ public class StatFormulaCharacterizationTests
             (nameof(StatService.BaseSTM), typeof(int), StatService.BaseSTM),
             (nameof(StatService.BeastNaturalRegenStatDivisor), typeof(int), StatService.BeastNaturalRegenStatDivisor),
             (nameof(StatService.BeastNaturalStaminaRegenDelaySeconds), typeof(float), StatService.BeastNaturalStaminaRegenDelaySeconds),
-            (nameof(StatService.DefaultMeleeDeflectionChanceCap), typeof(int), StatService.DefaultMeleeDeflectionChanceCap),
-            (nameof(StatService.DefaultRangedDeflectionChanceCap), typeof(int), StatService.DefaultRangedDeflectionChanceCap),
+            (nameof(CombatRatingService.DefaultMeleeDeflectionChanceCap), typeof(int), CombatRatingService.DefaultMeleeDeflectionChanceCap),
+            (nameof(CombatRatingService.DefaultRangedDeflectionChanceCap), typeof(int), CombatRatingService.DefaultRangedDeflectionChanceCap),
             (nameof(StatService.MaximumCombatReadinessPercent), typeof(int), StatService.MaximumCombatReadinessPercent),
-            (nameof(StatService.MaximumDeflectionChanceCap), typeof(int), StatService.MaximumDeflectionChanceCap),
-            (nameof(StatService.MaximumGuardChance), typeof(int), StatService.MaximumGuardChance),
+            (nameof(CombatRatingService.MaximumDeflectionChanceCap), typeof(int), CombatRatingService.MaximumDeflectionChanceCap),
+            (nameof(CombatRatingService.MaximumGuardChance), typeof(int), CombatRatingService.MaximumGuardChance),
             (nameof(StatService.MaximumMovementSpeedMultiplier), typeof(float), StatService.MaximumMovementSpeedMultiplier),
             (nameof(StatService.MaximumNPCDetection), typeof(int), StatService.MaximumNPCDetection),
-            (nameof(StatService.MaximumShieldDeflectionChance), typeof(int), StatService.MaximumShieldDeflectionChance),
+            (nameof(CombatRatingService.MaximumShieldDeflectionChance), typeof(int), CombatRatingService.MaximumShieldDeflectionChance),
             (nameof(StatService.MinimumMovementSpeedMultiplier), typeof(float), StatService.MinimumMovementSpeedMultiplier),
             (nameof(StatService.SuppressNaturalRegenVariable), typeof(string), StatService.SuppressNaturalRegenVariable),
         };
@@ -137,7 +138,7 @@ public class StatFormulaCharacterizationTests
             "Raw Attack: 8 plus 2 per level plus the stat plus the bonus.");
 
         foreach (var row in RatingGrid())
-            table.Add(row[0], row[1], row[2], Stat.GetAttack(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], CombatRating.GetAttack(row[0], row[1], row[2]));
 
         Snapshot.Verify("Stat", "GetAttack", table);
     }
@@ -150,7 +151,7 @@ public class StatFormulaCharacterizationTests
             "Raw Accuracy: 8 plus 2 per level plus the stat plus the bonus.");
 
         foreach (var row in RatingGrid())
-            table.Add(row[0], row[1], row[2], Stat.GetAccuracy(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], CombatRating.GetAccuracy(row[0], row[1], row[2]));
 
         Snapshot.Verify("Stat", "GetAccuracy", table);
     }
@@ -163,7 +164,7 @@ public class StatFormulaCharacterizationTests
             "Raw Evasion: 8 plus 2 per level plus the stat plus the bonus.");
 
         foreach (var row in RatingGrid())
-            table.Add(row[0], row[1], row[2], Stat.GetEvasion(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], CombatRating.GetEvasion(row[0], row[1], row[2]));
 
         Snapshot.Verify("Stat", "GetEvasion", table);
     }
@@ -186,7 +187,7 @@ public class StatFormulaCharacterizationTests
                      new[] { 0, 1 }))
         {
             table.Add(row[0], row[1], row[2], row[3], row[4] == 1,
-                Stat.GetEvasion(row[0], row[1], row[2], row[3], row[4] == 1));
+                CombatRating.GetEvasion(row[0], row[1], row[2], row[3], row[4] == 1));
         }
 
         Snapshot.Verify("Stat", "GetEvasionWithNativeArmor", table);
@@ -207,7 +208,7 @@ public class StatFormulaCharacterizationTests
                      new[] { -1, 0, 1, 5, 10, 33, 60, 100 },
                      new[] { -20, 0, 15, 100 }))
         {
-            table.Add(row[0], row[1], row[2], Stat.CalculateDefense(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], CombatRating.CalculateDefense(row[0], row[1], row[2]));
         }
 
         Snapshot.Verify("Stat", "CalculateDefense", table);

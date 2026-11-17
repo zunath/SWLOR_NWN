@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public static int CalculateAttack(BeastDetail detail, BeastLevel level, Beast beast)
         {
-            return Stat.GetAttack(
+            return CombatRating.GetAttack(
                 beast.Level,
                 level.Stats[detail.DamageStat],
                 CalculateAttackBonus(level, beast));
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public static int CalculateAccuracy(BeastDetail detail, BeastLevel level, Beast beast)
         {
-            return Stat.GetAccuracy(
+            return CombatRating.GetAccuracy(
                 beast.Level,
                 level.Stats[detail.AccuracyStat],
                 CalculateAccuracyBonus(level, beast));
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public static int CalculateEvasion(BeastLevel level, Beast beast)
         {
-            return Stat.GetEvasion(
+            return CombatRating.GetEvasion(
                 beast.Level,
                 level.Stats[AbilityType.Agility],
                 CalculateEvasionBonus(level, beast));
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Domain.Companions
 
         public static int CalculateDefense(BeastLevel level, Beast beast, CombatDamageType damageType)
         {
-            return Stat.CalculateDefense(
+            return CombatRating.CalculateDefense(
                 level.Stats[damageType.GetDefenseAbilityType()],
                 beast.Level,
                 BeastResistanceCalculator.CalculateDefenseBonus(level, beast, damageType));

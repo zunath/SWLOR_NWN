@@ -16,8 +16,8 @@ public class CharacterSheetStatCoverageTests
         // Defense fold theirs into the Attributes tab the same way, so they belong on the Stats tab too.
         viewModel.Should().Contain("AddStat(\"Accuracy %\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment))");
         viewModel.Should().Contain("AddStat(\"Evasion %\", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment))");
-        viewModel.Should().Contain("AddStat(\"Physical DEF %\", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Physical))");
-        viewModel.Should().Contain("AddStat(\"Force DEF %\", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Force))");
+        viewModel.Should().Contain("AddStat(\"Physical DEF %\", FormatPercent(CombatRating.GetDefensePercentAdjustment(_target, CombatDamageType.Physical))");
+        viewModel.Should().Contain("AddStat(\"Force DEF %\", FormatPercent(CombatRating.GetDefensePercentAdjustment(_target, CombatDamageType.Force))");
     }
 
     [Test]

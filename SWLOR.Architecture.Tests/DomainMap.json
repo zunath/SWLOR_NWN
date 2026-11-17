@@ -36,7 +36,8 @@
         "Telegraph", "Targeting", "QueuedAttackAnimation",
         "WeaponAttackEligibility", "WeaponDelay", "OrdinaryAttackTraits",
         "PairedRangedTraits", "MeleeTechnique", "TwinPistolEquipment",
-        "TwinPistolMastery", "PowerGloveEquipment", "Stealth", "Death", "Poisons", "BattleGrid"
+        "TwinPistolMastery", "PowerGloveEquipment", "Stealth", "Death", "Poisons", "BattleGrid",
+        "CombatRating"
       ],
       "featureFolders": []
     },

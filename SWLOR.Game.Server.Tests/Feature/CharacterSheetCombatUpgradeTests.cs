@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -60,7 +61,7 @@ public class CharacterSheetCombatUpgradeTests
     {
         var root = FindRepositoryRoot().FullName;
         var viewModel = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs"));
-        viewModel.Should().Contain("Stat.GetAttackPercentAdjustment(_target, SkillType.Force)");
+        viewModel.Should().Contain("CombatRating.GetAttackPercentAdjustment(_target, SkillType.Force)");
         var stats = StatSource.Read();
         ExtractMethod(stats, "private int ApplyPostAttackStatusModifiers(")
             .Should().Contain("GetAttackPercentAdjustment(creature, skillType)");
@@ -86,8 +87,8 @@ public class CharacterSheetCombatUpgradeTests
 
         viewModel.Should().Contain("public int PhysicalDefense");
         viewModel.Should().Contain("public int ForceDefense");
-        viewModel.Should().Contain("PhysicalDefense = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);");
-        viewModel.Should().Contain("ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);");
+        viewModel.Should().Contain("PhysicalDefense = CombatRating.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);");
+        viewModel.Should().Contain("ForceDefense = CombatRating.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);");
         viewModel.Should().NotContain("StatusResistances");
         viewModel.Should().NotContain("DefenseElemental");
 
@@ -99,7 +100,7 @@ public class CharacterSheetCombatUpgradeTests
         definition.Should().Contain("\"Force Acc.\", model => model.ForceAccuracy");
         viewModel.Should().Contain("public int WeaponAccuracy");
         viewModel.Should().Contain("public int ForceAccuracy");
-        viewModel.Should().Contain("WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);");
+        viewModel.Should().Contain("WeaponAccuracy = CombatRating.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);");
         viewModel.Should().Contain("public string OffHandAccuracy");
         viewModel.Should().Contain("return GetIsObjectValid(weapon) && Item.IsAttackWeaponType(GetBaseItemType(weapon)) ? weapon : OBJECT_INVALID;");
         viewModel.Should().Contain("var hasOffhandAttack = GetIsObjectValid(offhandAttackWeapon);");
@@ -145,7 +146,7 @@ public class CharacterSheetCombatUpgradeTests
         var refresh = ExtractMethod(source, "private void RefreshEquipmentStats()");
         refresh.Should().Contain("var offhandAttackWeapon = GetOffhandAttackWeapon();");
         refresh.Should().Contain("AttackTooltip = FormatOffHandTooltip(AttackDescription, hasOffhandAttack");
-        refresh.Should().Contain("Stat.GetAttack(_target, GetEquipmentDamageAbility(_target, offhandAttackWeapon),");
+        refresh.Should().Contain("CombatRating.GetAttack(_target, GetEquipmentDamageAbility(_target, offhandAttackWeapon),");
         refresh.Should().Contain("Skill.GetWeaponSkill(_target, offhandAttackWeapon)).ToString()");
         ExtractMethod(source, "private uint GetOffhandAttackWeapon()")
             .Should().Contain("TwinPistolEquipment.GetCompanionWeapon(_target)")
@@ -216,16 +217,16 @@ public class CharacterSheetCombatUpgradeTests
 
         beastBranch.Should().Contain("mainHand = GetItemInSlot(InventorySlot.CreatureLeft, _target);");
         beastBranch.Should().NotContain("InventorySlot.CreatureArmor",
-            "Stat.GetAccuracy already adds the skin's Accuracy through the NPC stats");
+            "CombatRating.GetAccuracy already adds the skin's Accuracy through the NPC stats");
     }
 
     [Test]
     public void ForceAccuracy_IgnoresWeaponStatOverrideButRetainsWeaponAccuracyBonus()
     {
-        var applyItemProperty = typeof(StatService).GetMethod(
+        var applyItemProperty = typeof(CombatRatingService).GetMethod(
             "ApplyAccuracyItemProperty",
             BindingFlags.NonPublic | BindingFlags.Instance);
-        var service = RuntimeHelpers.GetUninitializedObject(typeof(StatService));
+        var service = RuntimeHelpers.GetUninitializedObject(typeof(CombatRatingService));
 
         applyItemProperty.Should().NotBeNull();
 

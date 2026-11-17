@@ -136,7 +136,7 @@ public class RareLootBalanceTests : SkillFacadeFixture
             var offense = changes.Any(x => x.Type == ItemPropertyType.ForceAttack)
                 ? ItemPropertyType.ForceAttack : ItemPropertyType.Attack;
             var subtype = offense == ItemPropertyType.ForceAttack ? EnhancementSubType.ForceAttack : EnhancementSubType.Attack;
-            var baseAttack = Stat.GetAttack(rare.Level, 20, 0);
+            var baseAttack = CombatRating.GetAttack(rare.Level, 20, 0);
             var comparisons = new List<double>();
             foreach (var recipe in Recipes.Where(r => r.EnhancementType == RecipeEnhancementType.Weapon))
             {

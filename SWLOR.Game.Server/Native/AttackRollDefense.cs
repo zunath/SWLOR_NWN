@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Native
     {
         internal static int GetDefenderEvasion(CNWSCreature attacker, CNWSCreature defender, SkillType abilitySkillType)
         {
-            var defenderEvasion = Stat.GetEvasionNative(defender, abilitySkillType);
+            var defenderEvasion = CombatRating.GetEvasionNative(defender, abilitySkillType);
             defenderEvasion = GameServices.CombatDamageModifiers.ApplySideAttackEvasionIgnore(
                 attacker.m_idSelf,
                 defender.m_idSelf,
@@ -63,19 +63,19 @@ namespace SWLOR.Game.Server.Native
 
         private static (DeflectionSource Source, int Chance) GetDeflectionChance(CNWSCreature defender, uint attackType)
         {
-            var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);
+            var shieldDeflection = CombatRating.GetShieldDeflectionChanceNative(defender);
             if (shieldDeflection > 0)
                 return (DeflectionSource.Shield, shieldDeflection);
 
             if (attackType == (uint)AttackType.Ranged)
             {
-                var rangedDeflection = Stat.GetRangedDeflectionChanceNative(defender);
+                var rangedDeflection = CombatRating.GetRangedDeflectionChanceNative(defender);
                 return rangedDeflection > 0
                     ? (DeflectionSource.Ranged, rangedDeflection)
                     : (DeflectionSource.None, 0);
             }
 
-            var meleeDeflection = Stat.GetMeleeDeflectionChanceNative(defender);
+            var meleeDeflection = CombatRating.GetMeleeDeflectionChanceNative(defender);
             if (meleeDeflection > 0)
                 return (DeflectionSource.Melee, meleeDeflection);
 

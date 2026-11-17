@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Native
             if (attacker == null)
                 return damageProfile;
 
-            var mightModifier = Math.Max(0, Stat.GetStatValueNative(attacker, AbilityType.Might));
+            var mightModifier = Math.Max(0, CombatRating.GetStatValueNative(attacker, AbilityType.Might));
             if (mightModifier <= 0)
                 return damageProfile;
 

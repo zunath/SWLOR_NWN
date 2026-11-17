@@ -29,7 +29,7 @@ public static class AbilityInternals
         var impactState = new AbilityImpactStore();
         var magnitude = new CombatAbilityMagnitudeService(impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>());
         var darkForce = new AbilityDarkForceService(impactState, null!, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatResourcesService>());
-        var damageInput = new AbilityDamageInputService(impactState, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatActivityService>(),
+        var damageInput = new AbilityDamageInputService(impactState, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatRatingService>(), FacadeForwarder.For<ICombatActivityService>(),
             FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), magnitude, null!);
         var damageDelivery = new AbilityDamageDeliveryService(null!, null!, darkForce, FacadeForwarder.For<ICombatFeedbackService>(),

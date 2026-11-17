@@ -27,9 +27,9 @@ namespace SWLOR.Game.Server.Native
             var target = CNWSCreature.FromPointer(pTarget);
             var damageType = damageProfile.DamageType;
             var defenderAbility = damageType.GetDefenseAbilityType();
-            var defenderStat = Stat.GetStatValueNative(target, defenderAbility);
+            var defenderStat = CombatRating.GetStatValueNative(target, defenderAbility);
             var damagePower = DamageRollMitigation.ResolveDamagePower(attacker, target, bOffHand);
-            var defense = Stat.GetDefenseNative(target, damageType, defenderAbility);
+            var defense = CombatRating.GetDefenseNative(target, damageType, defenderAbility);
             defense = GameServices.CombatDamageModifiers.ApplyStatusSourceDefenseModifiers(attacker.m_idSelf, target.m_idSelf, defense);
             defense = GameServices.CombatDamageTaken.ApplyIncomingPhysicalToForceDefenseConversion(
                 target.m_idSelf,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Native
                 () => GameServices.CombatDamageModifiers.ApplyStatusSourceDefenseModifiers(
                     attacker.m_idSelf,
                     target.m_idSelf,
-                    Stat.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
+                    CombatRating.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             defense = GameServices.CombatDamageModifiers.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
             // Discarded swings must not burn one-shot buffs or advance cycle counters — the engine
             // rolls damage for attacks it then throws away, so every consuming rider gates on the

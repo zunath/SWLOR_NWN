@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatAbilityHitService _abilityHit;
         private readonly ICombatHitEffectsService _hitEffects;
         private readonly IStatService _stat;
+        private readonly ICombatRatingService _combatRating;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly ICombatRecorderService _combatRecorder;
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatAbilityHitService abilityHit,
             ICombatHitEffectsService hitEffects,
             IStatService stat,
+            ICombatRatingService combatRating,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
             ICombatRecorderService combatRecorder,
@@ -73,6 +75,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _abilityHit = abilityHit;
             _hitEffects = hitEffects;
             _stat = stat;
+            _combatRating = combatRating;
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
             _combatRecorder = combatRecorder;
@@ -987,7 +990,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 !IsHostileAttackSource(defender, attacker))
                 return damage;
 
-            var guardChance = _stat.GetGuardChance(defender);
+            var guardChance = _combatRating.GetGuardChance(defender);
             if (guardChance <= 0 || Random.D100(1) > guardChance)
                 return damage;
 
@@ -1142,11 +1145,11 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             const CombatDamageType damageType = CombatDamageType.Physical;
             var damageAbility = GetGuardRetaliationDamageAbility(source, skillType);
-            var attack = _stat.GetAttack(source, damageAbility, skillType);
+            var attack = _combatRating.GetAttack(source, damageAbility, skillType);
             attack = _damageModifiers.ApplyTargetStatusAttackModifiers(source, target, attack, skillType);
             var attackStat = GetAbilityScore(source, damageAbility);
             var defenseAbility = damageType.GetDefenseAbilityType();
-            var defense = _stat.GetDefense(target, damageType, defenseAbility);
+            var defense = _combatRating.GetDefense(target, damageType, defenseAbility);
             defense = _damageModifiers.ApplyStatusSourceDefenseModifiers(source, target, defense);
             defense = ApplyIncomingPhysicalToForceDefenseConversion(
                 target,
@@ -1155,7 +1158,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 () => _damageModifiers.ApplyStatusSourceDefenseModifiers(
                     source,
                     target,
-                    _stat.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
+                    _combatRating.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             var defenderStat = GetAbilityScore(target, defenseAbility);
 
             return CalculateDamage(

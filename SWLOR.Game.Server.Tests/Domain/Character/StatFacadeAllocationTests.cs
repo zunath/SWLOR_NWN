@@ -40,6 +40,7 @@ public class StatFacadeAllocationTests
     public void BuildContainer() => _container = new FacadeContainer(services =>
     {
         services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>());
+        services.Replace(ServiceDescriptor.Singleton<ICombatRatingService, AllocationCombatRatingService>());
     });
 
     [OneTimeTearDown]
@@ -73,7 +74,7 @@ public class StatFacadeAllocationTests
 
     // The pins are grouped by the part of the stat split that each member goes to (Readmes/MaintainabilityRefactorStatSplit.md)
     // and still read through Stat: the pull request that moves a part points its group at the part's GameServices property and
-    // registers the part's allocation double.
+    // registers the part's allocation double (part 5, CombatRating, since P5-4c).
 
     /// <summary>
     /// Part 1, <c>StatService</c> (stays): the stat adjustment read, the metadata, the equipment action read, the pools, the NPC
@@ -146,17 +147,17 @@ public class StatFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += Stat.GetAttack(10, 10, 1)).Should().Be(0);
-        Allocated(() => sink += Stat.GetAccuracy(10, 10, 1)).Should().Be(0);
-        Allocated(() => sink += Stat.GetEvasion(10, 10, 1)).Should().Be(0);
-        Allocated(() => sink += Stat.GetEvasion(10, 10, 1, 4, false)).Should().Be(0);
-        Allocated(() => sink += Stat.CalculateDefense(10, 10, 1)).Should().Be(0);
-        Allocated(() => sink += Stat.GetAttackPercentAdjustment(Creature, SkillType.Force)).Should().Be(0);
-        Allocated(() => sink += Stat.GetDefensePercentAdjustment(Creature, CombatDamageType.Physical)).Should().Be(0);
-        Allocated(() => sink += Stat.GetGuardChance(Creature)).Should().Be(0);
-        Allocated(() => sink += Stat.GetMeleeDeflectionChance(Creature)).Should().Be(0);
-        Allocated(() => sink += Stat.GetRangedDeflectionChance(Creature)).Should().Be(0);
-        Allocated(() => sink += Stat.GetShieldDeflectionChance(Creature)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetAttack(10, 10, 1)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetAccuracy(10, 10, 1)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetEvasion(10, 10, 1)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetEvasion(10, 10, 1, 4, false)).Should().Be(0);
+        Allocated(() => sink += CombatRating.CalculateDefense(10, 10, 1)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetAttackPercentAdjustment(Creature, SkillType.Force)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetDefensePercentAdjustment(Creature, CombatDamageType.Physical)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetGuardChance(Creature)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetMeleeDeflectionChance(Creature)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetRangedDeflectionChance(Creature)).Should().Be(0);
+        Allocated(() => sink += CombatRating.GetShieldDeflectionChance(Creature)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
@@ -177,6 +178,7 @@ public class StatFacadeAllocationTests
     public void TheReadsThatBuildAnNpcsStatsAllocateTheSameThroughTheFacadeAsTheInstance()
     {
         var instance = _container.Get<IStatService>();
+        var rating = _container.Get<ICombatRatingService>();
         var sink = 0;
 
         void SameCost(Action throughTheFacade, Action direct)
@@ -188,11 +190,11 @@ public class StatFacadeAllocationTests
         }
 
         SameCost(() => sink += Stat.GetMaxFP(Creature), () => sink += instance.GetMaxFP(Creature));
-        SameCost(() => sink += Stat.GetDefense(Creature, CombatDamageType.Physical, AbilityType.Vitality),
-            () => sink += instance.GetDefense(Creature, CombatDamageType.Physical, AbilityType.Vitality));
-        SameCost(() => sink += Stat.GetAttack(Creature, AbilityType.Might, SkillType.Force),
-            () => sink += instance.GetAttack(Creature, AbilityType.Might, SkillType.Force));
-        SameCost(() => sink += Stat.GetEvasion(Creature, SkillType.Invalid), () => sink += instance.GetEvasion(Creature, SkillType.Invalid));
+        SameCost(() => sink += CombatRating.GetDefense(Creature, CombatDamageType.Physical, AbilityType.Vitality),
+            () => sink += rating.GetDefense(Creature, CombatDamageType.Physical, AbilityType.Vitality));
+        SameCost(() => sink += CombatRating.GetAttack(Creature, AbilityType.Might, SkillType.Force),
+            () => sink += rating.GetAttack(Creature, AbilityType.Might, SkillType.Force));
+        SameCost(() => sink += CombatRating.GetEvasion(Creature, SkillType.Invalid), () => sink += rating.GetEvasion(Creature, SkillType.Invalid));
         GC.KeepAlive(sink);
     }
 
@@ -255,16 +257,14 @@ public class StatFacadeAllocationTests
             IPlayerFeedbackService playerFeedback,
             IStatusEffectService statusEffect,
             IMimicryTraitStatsService mimicryTraitStats,
-            ITwinPistolEquipmentService twinPistolEquipment,
-            IItemService item,
             IRecastService recast,
             ICompanionLookup beastMastery,
             IPvpCombatService pvpCombat,
             IPerkService perk,
             ISkillService skill,
             ITemporaryStatModifierService temporaryStatModifier)
-            : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, twinPistolEquipment, item, recast, beastMastery, pvpCombat,
-                perk, skill, temporaryStatModifier, FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
+            : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, recast, beastMastery, pvpCombat,
+                perk, skill, temporaryStatModifier, FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
         {
         }
 

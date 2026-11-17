@@ -168,19 +168,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             CombatDamageType damageType, int observed, bool? wasCritical)
         {
             var defenseAbility = damageType.GetDefenseAbilityType();
-            var defense = Stat.GetDefense(target, damageType, defenseAbility);
+            var defense = CombatRating.GetDefense(target, damageType, defenseAbility);
             var defenderStat = GetAbilityScore(target, defenseAbility);
             var damage = baseDamage + GameServices.CombatAbilityBonus.GetAbilityDamageBonus(caster, SkillType.Espionage);
             var minimumCritical = wasCritical == true ? CombatRules.StandardCriticalRating : 0;
             var maximumCritical = wasCritical == false ? 0 : CombatRules.StandardCriticalRating;
             var (perceptionMinimum, _) = CombatRules.CalculateDamageRange(
-                Stat.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
+                CombatRating.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
                 GetAbilityScore(caster, AbilityType.Perception), defense, defenderStat, minimumCritical);
             var (_, perceptionMaximum) = CombatRules.CalculateDamageRange(
-                Stat.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
+                CombatRating.GetAttack(caster, AbilityType.Perception, SkillType.Espionage), damage,
                 GetAbilityScore(caster, AbilityType.Perception), defense, defenderStat, maximumCritical);
             var (_, mightMaximum) = CombatRules.CalculateDamageRange(
-                Stat.GetAttack(caster, AbilityType.Might, SkillType.Espionage), damage,
+                CombatRating.GetAttack(caster, AbilityType.Might, SkillType.Espionage), damage,
                 GetAbilityScore(caster, AbilityType.Might), defense, defenderStat, CombatRules.StandardCriticalRating);
 
             ctx.Assert(perceptionMinimum > mightMaximum,

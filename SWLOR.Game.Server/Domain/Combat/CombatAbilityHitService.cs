@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatDamageModifiersService _damageModifiers;
         private readonly IStatService _stat;
+        private readonly ICombatRatingService _combatRating;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IAbilityImpactState _impactState;
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatActivityService combatActivity,
             ICombatDamageModifiersService damageModifiers,
             IStatService stat,
+            ICombatRatingService combatRating,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState impactState,
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _combatActivity = combatActivity;
             _damageModifiers = damageModifiers;
             _stat = stat;
+            _combatRating = combatRating;
             _statusEffect = statusEffect;
             _temporaryStatModifier = temporaryStatModifier;
             _impactState = impactState;
@@ -236,7 +239,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return true;
 
             var accuracy = GetAbilityAccuracy(attacker, defender, skillType, skillLevelOverride, statOverride) + accuracyFlatAdjustment;
-            var evasion = _stat.GetEvasion(defender, SkillType.Invalid, skillType);
+            var evasion = _combatRating.GetEvasion(defender, SkillType.Invalid, skillType);
             evasion = _damageModifiers.ApplySideAttackEvasionIgnore(attacker, defender, skillType, evasion);
 
             var modifier = hitChancePercentAdjustment + GetAbilityHitOrCriticalAdjustment(
@@ -291,7 +294,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var weapon = _queries.GetRelevantSkillWeapon(attacker, skillType);
             var usesForceAccuracy = skillType == SkillType.Force;
             var accuracyStatOverride = usesForceAccuracy ? AbilityType.Willpower : statOverride;
-            var accuracy = _stat.GetAccuracy(
+            var accuracy = _combatRating.GetAccuracy(
                 attacker,
                 weapon,
                 accuracyStatOverride,

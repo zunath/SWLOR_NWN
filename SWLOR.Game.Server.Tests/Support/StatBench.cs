@@ -152,7 +152,8 @@ public sealed partial class StatBench : IDisposable
         var pvp = ScriptedProxy.Create<IPvpCombatService>(out var pvpProxy);
         pvpProxy.On("GetHealingReductionPercent", _ => PvpHealingReduction);
 
-        Service = new TestStatService(this, db, recorder, feedback, statusEffect, mimicryTraitStats, twinPistol, item, recast, beastMastery, pvp);
+        Service = new TestStatService(this, db, recorder, feedback, statusEffect, mimicryTraitStats, recast, beastMastery, pvp);
+        CombatRating = new TestCombatRatingService(this, db, item, twinPistol, Service);
     }
 
     public StatEngine Engine { get; }
@@ -188,8 +189,11 @@ public sealed partial class StatBench : IDisposable
     /// <summary>Part 3, <c>StatRecordService</c>: the gear-fed player records and the Combat Readiness equipment.</summary>
     public TestStatService Record => Service;
 
-    /// <summary>Part 5, <c>CombatRatingService</c> (Combat): Attack, Accuracy, Defense, Evasion and the deflection and Guard chances.</summary>
-    public TestStatService CombatRating => Service;
+    /// <summary>
+    /// Part 5, <c>CombatRatingService</c> (Combat, P5-4c): Attack, Accuracy, Defense, Evasion and the deflection and Guard chances.
+    /// It reads the stat adjustment, the NPC stats and the pools through <see cref="Service"/>.
+    /// </summary>
+    public TestCombatRatingService CombatRating { get; }
 
     /// <summary>Part 6, <c>CombatDeflectionReactionService</c> (Combat): what a deflection triggers.</summary>
     public TestStatService DeflectionReaction => Service;

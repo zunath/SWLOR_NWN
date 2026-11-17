@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         private readonly IAbilityImpactState _impactState;
         private readonly IStatService _stat;
+        private readonly ICombatRatingService _combatRating;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatQueriesService _queries;
         private readonly ICombatAbilityBonusService _abilityBonus;
@@ -36,6 +37,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         public AbilityDamageInputService(
             IAbilityImpactState impactState,
             IStatService stat,
+            ICombatRatingService combatRating,
             ICombatActivityService combatActivity,
             ICombatQueriesService queries,
             ICombatAbilityBonusService abilityBonus,
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         {
             _impactState = impactState;
             _stat = stat;
+            _combatRating = combatRating;
             _combatActivity = combatActivity;
             _queries = queries;
             _abilityBonus = abilityBonus;
@@ -435,11 +438,11 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.GetStatAdjustment(creature, stat);
 
-        protected virtual int GetAttack(uint creature, AbilityType abilityType, SkillType skillType) => _stat.GetAttack(creature, abilityType, skillType);
+        protected virtual int GetAttack(uint creature, AbilityType abilityType, SkillType skillType) => _combatRating.GetAttack(creature, abilityType, skillType);
 
-        protected virtual int GetAttack(int level, int stat, int bonus) => _stat.GetAttack(level, stat, bonus);
+        protected virtual int GetAttack(int level, int stat, int bonus) => _combatRating.GetAttack(level, stat, bonus);
 
-        protected virtual int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType) => _stat.GetDefense(creature, type, abilityType);
+        protected virtual int GetDefense(uint creature, CombatDamageType type, AbilityType abilityType) => _combatRating.GetDefense(creature, type, abilityType);
 
         protected virtual NPCStats GetNPCStats(uint npc) => _stat.GetNPCStats(npc);
 

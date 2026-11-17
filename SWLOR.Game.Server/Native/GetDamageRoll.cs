@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Native
                 var attackerStatType = explicitProfile?.DamageAbility ?? DamageRollWeapon.GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
                 var weaponDeltaCap = DamageRollWeapon.GetWeaponDeltaCap(weapon);
 
-                var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
+                var attackerStat = CombatRating.GetStatValueNative(attacker, attackerStatType);
 
                 // Handle negative attributes
                 if (attackerStat > AttributeNegativeThreshold)
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Native
                 // Force-typed swings (e.g. Imbuement Stance) use Force Attack so the attack side lines up
                 // with the Force Defense the damage is mitigated against.
                 var useForceAttack = damageProfile.DamageType == CombatDamageType.Force;
-                var attackerAttack = weapon == null ? 0 : Stat.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem,
+                var attackerAttack = weapon == null ? 0 : CombatRating.GetAttackNative(attacker, (BaseItem)weapon.m_nBaseItem,
                     attackerStatType, useForceAttack, weaponSkillType);
                 var totalDamage = 0;
 

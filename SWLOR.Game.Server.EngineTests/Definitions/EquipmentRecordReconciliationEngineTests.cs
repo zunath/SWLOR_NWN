@@ -464,8 +464,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         });
 
         private static int ForceGap(uint player) =>
-            Stat.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower) -
-            Stat.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality);
+            CombatRating.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower) -
+            CombatRating.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality);
 
         private static void AssertRecord(EngineTestContext ctx, uint player, int physical, int force, int evasion, int fp, int stamina, string because)
         {

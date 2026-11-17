@@ -125,8 +125,8 @@ public static class PowerGloveKatarParityEngineTests
             var totals = Totals(player);
             result = new Measurement(EquipmentPredicates.HasDualWield(actor), totals.Attack, totals.MaxHP, totals.MaxStamina,
                 WeaponDamage.GetAbilityDMG(actor, main, SkillType.Unarmed),
-                Stat.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 1)),
-                Stat.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 2)),
+                CombatRating.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 1)),
+                CombatRating.GetAccuracyNative(native, WeaponAttackCycle.GetAttackWeapon(native, 2)),
                 Sample(0), Sample(1), GameServices.CombatAttackTiming.CalculateAttackDelay(actor));
         });
         return result;

@@ -111,5 +111,20 @@ namespace SWLOR.Game.Server.Domain.Character
         {
             return 8 + (2 * level) + stat + bonus;
         }
+
+        /// <summary>
+        /// Raises or lowers a value by a percent, rounding the change up (the rule the ratings, the pools and the healing
+        /// adjustments share; a private member of <c>StatService</c> until the stat split, P5-4c).
+        /// </summary>
+        public static int ApplyPercentAdjustment(int value, int percentAdjustment)
+        {
+            if (percentAdjustment == 0)
+                return value;
+
+            var delta = (int)Math.Ceiling(value * (Math.Abs(percentAdjustment) / 100f));
+            return percentAdjustment > 0
+                ? value + delta
+                : value - delta;
+        }
     }
 }

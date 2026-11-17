@@ -128,7 +128,7 @@ public class TankThreatTests
         var stamina = ability.Requirements.OfType<AbilityRequirementStamina>().Sum(requirement => requirement.RequiredSTM);
         (stamina * usesPerMinute).Should().BeLessThanOrEqualTo(12, "the low-use floor spends at most 12 of MGT 20's 30 STM/min");
         (usesPerMinute * ability.RecastDelay(1)).Should().BeLessThanOrEqualTo(60);
-        var attack = Stat.GetAttack(50, 20, 0);
+        var attack = CombatRating.GetAttack(50, 20, 0);
         var tankAttack = attack * (100 + stance.StatGroup.Stats[StatType.AttackPercentAdjustment]) / 100;
         var offenseAttack = attack * 125 / 100;
         double Damage(int value, int power)
@@ -191,7 +191,7 @@ public class TankThreatTests
             var secondaryCost = offensiveAbility.Requirements.OfType<AbilityRequirementStamina>().Sum(cost => cost.RequiredSTM);
             var spending = primaryRate * stamina + secondaryRate * secondaryCost;
             spending.Should().BeLessThanOrEqualTo(recovery);
-            var enemyDefense = Stat.GetAttack(50, might, 0);
+            var enemyDefense = CombatRating.GetAttack(50, might, 0);
             double Rotation(int multiplier, int penalty, int haste, int percent, bool duplicate)
             {
                 var power = enemyDefense * (100 + penalty) / 100;

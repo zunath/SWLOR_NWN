@@ -138,13 +138,15 @@ public class CombatAbilityHitServiceTests
             .On(nameof(ICombatDamageModifiersService.GetBackAttackCriticalRateAdjustment), _ => _backCritical);
         var stat = ScriptedProxy.Create<IStatService>(out var statCalls);
         statCalls
-            .On(nameof(IStatService.GetStatAdjustment), args => _stats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)))
-            .On(nameof(IStatService.GetAccuracy), args =>
+            .On(nameof(IStatService.GetStatAdjustment), args => _stats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)));
+        var rating = ScriptedProxy.Create<ICombatRatingService>(out var ratingCalls);
+        ratingCalls
+            .On(nameof(ICombatRatingService.GetAccuracy), args =>
             {
                 _log.Add($"Accuracy {args[0]} {args[1]} {args[2]} {args[3]} {args[4]} {args[5]}");
                 return _accuracy;
             })
-            .On(nameof(IStatService.GetEvasion), args =>
+            .On(nameof(ICombatRatingService.GetEvasion), args =>
             {
                 _log.Add($"Evasion {args[0]} {args[1]} {args[2]}");
                 return _evasion;
@@ -175,7 +177,7 @@ public class CombatAbilityHitServiceTests
             return null;
         });
 
-        _service = new CombatAbilityHitService(queries, resources, suppression, activity, modifiers, stat, statusEffect, temporary,
+        _service = new CombatAbilityHitService(queries, resources, suppression, activity, modifiers, stat, rating, statusEffect, temporary,
             ability, perk, traits);
     }
 

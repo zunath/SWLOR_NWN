@@ -59,8 +59,8 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         WieldWeapon(Npc);
         SetStat(Npc, StatType.MeleeDeflection, 95);
         SetStat(Npc, StatType.RangedDeflection, 95);
-        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(StatService.DefaultMeleeDeflectionChanceCap);
-        CombatRating.GetRangedDeflectionChance(Npc).Should().Be(StatService.DefaultRangedDeflectionChanceCap);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(CombatRatingService.DefaultMeleeDeflectionChanceCap);
+        CombatRating.GetRangedDeflectionChance(Npc).Should().Be(CombatRatingService.DefaultRangedDeflectionChanceCap);
 
         SetStat(Npc, StatType.MeleeDeflectionChanceCap, 10);
         SetStat(Npc, StatType.RangedDeflectionChanceCap, 20);
@@ -68,7 +68,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         CombatRating.GetRangedDeflectionChance(Npc).Should().Be(70);
 
         SetStat(Npc, StatType.MeleeDeflectionChanceCap, -40);
-        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(StatService.DefaultMeleeDeflectionChanceCap);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(CombatRatingService.DefaultMeleeDeflectionChanceCap);
 
         SetStat(Npc, StatType.RangedDeflectionChanceCap, 999);
         CombatRating.GetRangedDeflectionChance(Npc).Should().Be(95);
@@ -90,7 +90,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         CombatRating.GetShieldDeflectionChance(Npc).Should().Be(17);
 
         SetStat(Npc, StatType.ShieldDeflection, 500);
-        CombatRating.GetShieldDeflectionChance(Npc).Should().Be(StatService.MaximumShieldDeflectionChance);
+        CombatRating.GetShieldDeflectionChance(Npc).Should().Be(CombatRatingService.MaximumShieldDeflectionChance);
     }
 
     [TestCase(20, 20)]

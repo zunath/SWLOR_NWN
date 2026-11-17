@@ -16,16 +16,14 @@ internal sealed class AllocationStatService : StatService
         IPlayerFeedbackService playerFeedback,
         IStatusEffectService statusEffect,
         IMimicryTraitStatsService mimicryTraitStats,
-        ITwinPistolEquipmentService twinPistolEquipment,
-        IItemService item,
         IRecastService recast,
         ICompanionLookup beastMastery,
         IPvpCombatService pvpCombat,
         IPerkService perk,
         ISkillService skill,
         ITemporaryStatModifierService temporaryStatModifier)
-        : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, twinPistolEquipment, item, recast, beastMastery, pvpCombat,
-            perk, skill, temporaryStatModifier, FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
+        : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, recast, beastMastery, pvpCombat,
+            perk, skill, temporaryStatModifier, FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
     {
     }
 
@@ -34,14 +32,4 @@ internal sealed class AllocationStatService : StatService
     protected override int GetTemporaryStatAdjustment(uint creature, StatType stat) => 0;
 
     protected override bool IsDroid(uint creature) => false;
-
-    protected override int GetNearbyStatusTargetAttackAdjustment(uint creature) => 0;
-
-    protected override int GetLowHPAttackAdjustment(uint creature) => 0;
-
-    protected override int GetLowFPAttackAdjustment(uint creature) => 0;
-
-    protected override SkillType GetWeaponSkill(uint creature, uint weapon) => SkillType.Invalid;
-
-    protected override bool IsRangedDamageSkill(SkillType skillType) => false;
 }

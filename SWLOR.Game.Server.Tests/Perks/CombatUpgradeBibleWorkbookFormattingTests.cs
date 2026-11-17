@@ -225,9 +225,9 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             .ToDictionary(row => row["A"], StringComparer.Ordinal);
 
         AssertStatRange(stats, "Combat Readiness", 0, StatService.MaximumCombatReadinessPercent);
-        AssertStatRange(stats, "Shield Deflection", 0, StatService.MaximumShieldDeflectionChance);
-        AssertStatRange(stats, "Melee / Ranged Deflection", 0, StatService.MaximumDeflectionChanceCap);
-        AssertStatRange(stats, "Guard", 0, StatService.MaximumGuardChance);
+        AssertStatRange(stats, "Shield Deflection", 0, CombatRatingService.MaximumShieldDeflectionChance);
+        AssertStatRange(stats, "Melee / Ranged Deflection", 0, CombatRatingService.MaximumDeflectionChanceCap);
+        AssertStatRange(stats, "Guard", 0, CombatRatingService.MaximumGuardChance);
         AssertStatRange(stats, "Critical Rate", CombatRules.MinimumCriticalRate, CombatRules.MaximumCriticalRate);
         AssertStatRange(stats, "Critical Damage", 0, CombatRules.MaximumCriticalDamagePercentAdjustment);
         AssertStatRange(
@@ -260,7 +260,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             0,
             CombatRules.MaximumCombinedDamageReductionPercent);
 
-        stats["Melee / Ranged Deflection"]["K"].Should().Contain($"independent default chance cap of {StatService.DefaultMeleeDeflectionChanceCap}%");
+        stats["Melee / Ranged Deflection"]["K"].Should().Contain($"independent default chance cap of {CombatRatingService.DefaultMeleeDeflectionChanceCap}%");
         stats["Melee / Ranged Deflection"]["K"].Should().Contain("activated combat abilities or Force powers");
         stats["Shield Deflection"]["K"].Should().Contain("completely replaces Melee and Ranged Deflection");
         stats["Guard"]["K"].Should().Contain($"reduces damage by {CombatDamageTakenService.BaseGuardDamageReductionPercent}% by default");

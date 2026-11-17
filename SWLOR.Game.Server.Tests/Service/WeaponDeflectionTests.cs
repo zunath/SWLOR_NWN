@@ -28,9 +28,9 @@ public class WeaponDeflectionTests
     [Test]
     public void WeaponDeflectionStats_HaveIndependentCapsAndSourceSpecificRiders()
     {
-        StatService.DefaultMeleeDeflectionChanceCap.Should().Be(50);
-        StatService.DefaultRangedDeflectionChanceCap.Should().Be(50);
-        StatService.MaximumDeflectionChanceCap.Should().Be(100);
+        CombatRatingService.DefaultMeleeDeflectionChanceCap.Should().Be(50);
+        CombatRatingService.DefaultRangedDeflectionChanceCap.Should().Be(50);
+        CombatRatingService.MaximumDeflectionChanceCap.Should().Be(100);
         Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflection).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionChanceCap).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.RangedDeflection).Should().Be(DeflectionSource.Ranged);
@@ -78,9 +78,9 @@ public class WeaponDeflectionTests
         source.Should().Contain("weaponSkillType == SkillType.Invalid");
         source.Should().Contain("GameServices.CombatDamageTaken.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf)");
         source.Should().NotContain("!GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf) ||");
-        source.Should().Contain("var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);");
-        source.Should().Contain("Stat.GetRangedDeflectionChanceNative(defender)");
-        source.Should().Contain("Stat.GetMeleeDeflectionChanceNative(defender)");
+        source.Should().Contain("var shieldDeflection = CombatRating.GetShieldDeflectionChanceNative(defender);");
+        source.Should().Contain("CombatRating.GetRangedDeflectionChanceNative(defender)");
+        source.Should().Contain("CombatRating.GetMeleeDeflectionChanceNative(defender)");
         source.Should().Contain("Stat.ApplyDeflectionEffectsNative(defender, source)");
         source.Should().Contain("deflectionSource == DeflectionSource.Ranged");
         source.Should().Contain("CombatRules.GetDeflectionResultName(source)");
@@ -101,8 +101,8 @@ public class WeaponDeflectionTests
         combatSource.Should().Contain("!HasRecentDeflection(attacker, requiredSource, window)");
         combatSource.Should().NotContain("HasRecentDeflection(attacker, DeflectionSource.Ranged, window)");
 
-        source.IndexOf("var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);", StringComparison.Ordinal)
-            .Should().BeLessThan(source.IndexOf("Stat.GetRangedDeflectionChanceNative(defender)", StringComparison.Ordinal));
+        source.IndexOf("var shieldDeflection = CombatRating.GetShieldDeflectionChanceNative(defender);", StringComparison.Ordinal)
+            .Should().BeLessThan(source.IndexOf("CombatRating.GetRangedDeflectionChanceNative(defender)", StringComparison.Ordinal));
     }
 
     [Test]

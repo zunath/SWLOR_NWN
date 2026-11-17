@@ -105,6 +105,7 @@ public class CombatDamageTakenServiceTests
             ICombatAbilityHitService abilityHit,
             ICombatHitEffectsService hitEffects,
             IStatService stat,
+            ICombatRatingService combatRating,
             IStatusEffectService statusEffect,
             ITemporaryStatModifierService temporaryStatModifier,
             ICombatRecorderService combatRecorder,
@@ -112,7 +113,7 @@ public class CombatDamageTakenServiceTests
             IEnmityService enmity,
             IMessagingService messaging,
             IPlayerNameService playerName)
-            : base(feedback, queries, resources, attackTiming, combatActivity, damageModifiers, abilityHit, hitEffects, stat,
+            : base(feedback, queries, resources, attackTiming, combatActivity, damageModifiers, abilityHit, hitEffects, stat, combatRating,
                 statusEffect, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName, FacadeForwarder.LazyFor<ICombatService>())
         {
             _log = log;
@@ -313,23 +314,25 @@ public class CombatDamageTakenServiceTests
             .On(nameof(IStatService.GetStatSources), args => _sources.TryGetValue(((uint)args[0]!, (StatType)args[1]!), out var found)
                 ? found
                 : Array.Empty<StatAdjustmentSource>())
-            .On(nameof(IStatService.GetGuardChance), _ => _guardChance)
-            .On(nameof(IStatService.GetAttack), args =>
-            {
-                _log.Add($"Attack {args[0]} {args[1]} {args[2]}");
-                return 100;
-            })
-            .On(nameof(IStatService.GetDefense), args =>
-            {
-                _log.Add($"Defense {args[0]} {args[1]} {args[2]}");
-                return (CombatDamageType)args[1]! == CombatDamageType.Force ? 40 : 60;
-            })
             .On(nameof(IStatService.GetStatTypeDeflectionSource), args => _deflectionSources.GetValueOrDefault((StatType)args[0]!))
             .On(nameof(IStatService.GetGrantedDeflectionStatType), args => _grantedDeflections.GetValueOrDefault((StatType)args[0]!, StatType.Invalid))
             .On(nameof(IStatService.RestoreFP), args =>
             {
                 _log.Add($"RestoreFP {args[0]} {args[1]}");
                 return _restoredFP;
+            });
+        var rating = ScriptedProxy.Create<ICombatRatingService>(out var ratingCalls);
+        ratingCalls
+            .On(nameof(ICombatRatingService.GetGuardChance), _ => _guardChance)
+            .On(nameof(ICombatRatingService.GetAttack), args =>
+            {
+                _log.Add($"Attack {args[0]} {args[1]} {args[2]}");
+                return 100;
+            })
+            .On(nameof(ICombatRatingService.GetDefense), args =>
+            {
+                _log.Add($"Defense {args[0]} {args[1]} {args[2]}");
+                return (CombatDamageType)args[1]! == CombatDamageType.Force ? 40 : 60;
             });
         var statusEffect = ScriptedProxy.Create<IStatusEffectService>(out var statusCalls);
         statusCalls
@@ -403,7 +406,7 @@ public class CombatDamageTakenServiceTests
         playerNameCalls.On(nameof(IPlayerNameService.GetColoredDisplayName), args => $"<{args[0]}:{args[1]}>");
 
         return new TestDamageTaken(_log, () => _calculated, feedback, queries, resources, timing, activity, modifiers, abilityHit, hitEffects,
-            stat, statusEffect, temporary, recorder, pvp, enmity, messaging, playerName);
+            stat, rating, statusEffect, temporary, recorder, pvp, enmity, messaging, playerName);
     }
 
     [TearDown]

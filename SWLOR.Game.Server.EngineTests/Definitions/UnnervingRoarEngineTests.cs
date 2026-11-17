@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             // A rat's own Evasion is too low to tell a 30% cut from a smaller one.
             TemporaryStatModifier.Add(target, StatType.Evasion, 200, 60f);
-            var evasionBefore = Stat.GetEvasion(target, SkillType.Invalid);
+            var evasionBefore = CombatRating.GetEvasion(target, SkillType.Invalid);
             ctx.Assert(evasionBefore >= 150, $"The target starts with high Evasion: {evasionBefore}");
 
             // Every hit roll misses, so only an impact without one can apply the debuff.
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(null);
             }
 
-            var evasionAfter = Stat.GetEvasion(target, SkillType.Invalid);
+            var evasionAfter = CombatRating.GetEvasion(target, SkillType.Invalid);
             ctx.Log($"Target Evasion {evasionBefore} before, {evasionAfter} while Unnerved.");
             ctx.AssertEqual(-30, Stat.GetStatAdjustment(target, StatType.EvasionPercentAdjustment),
                 "Unnerved is the target's only Evasion percent adjustment");

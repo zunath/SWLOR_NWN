@@ -837,7 +837,7 @@ public class NPCEnemyBalanceAuditTests
 
             var naturalAc = GetInt(utc.RootElement, "NaturalAC");
             naturalAc.Should().Be(0, $"{target.Resref} must not hide extra Evasion outside its Bible stat skin");
-            Stat.GetEvasion(target.Level, target.Agility, target.Evasion + naturalAc * 5)
+            CombatRating.GetEvasion(target.Level, target.Agility, target.Evasion + naturalAc * 5)
                 .Should()
                 .Be(target.EffectiveEvasion, $"{target.Resref} effective Evasion must include any serialized NaturalAC contribution");
         }

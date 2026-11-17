@@ -22,25 +22,25 @@ public static class MimicryTraitPotencyEngineTests
         record.EquippedTechniques.AddRange(new[] { FeatType.IronCarapaceTechnique, FeatType.ChitinGuardTechnique });
         DB.Set(record);
         AssertDefense(ctx, player, 12, 20, 15);
-        var physicalBefore = Stat.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality);
-        var forceBefore = Stat.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower);
+        var physicalBefore = CombatRating.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality);
+        var forceBefore = CombatRating.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower);
         var fireBefore = Resistance.GetResistance(player, ResistanceType.Fire);
 
         var overload = AbilityCatalog.GetAbilityDetail(FeatType.Overload);
         await ctx.ExecuteInCreatureContextAsync(player, () => overload.ImpactAction(player, player, 1, GetLocation(player)));
         ctx.Assert(StatusEffect.HasStatusEffect<OverloadStatusEffect>(player), "the real capstone applies Overload");
         AssertDefense(ctx, player, 18, 30, 23);
-        ctx.Assert(Stat.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality) > physicalBefore,
+        ctx.Assert(CombatRating.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality) > physicalBefore,
             "the character sheet's Physical DEF getter increases");
-        ctx.Assert(Stat.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower) > forceBefore,
+        ctx.Assert(CombatRating.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower) > forceBefore,
             "the character sheet's Force DEF getter increases");
         ctx.AssertEqual(fireBefore + 10, Resistance.GetResistance(player, ResistanceType.Fire), "boost reaches total resistance");
         ctx.AssertEqual(50, Stat.GetStatAdjustment(player, StatType.MimicryPotencyPercent), "direct damage potency remains 50%");
 
         await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<OverloadStatusEffect>(player), 16f, "12-second Overload expiry");
         AssertDefense(ctx, player, 12, 20, 15);
-        ctx.AssertEqual(physicalBefore, Stat.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality), "Physical DEF is restored");
-        ctx.AssertEqual(forceBefore, Stat.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower), "Force DEF is restored");
+        ctx.AssertEqual(physicalBefore, CombatRating.GetDefense(player, CombatDamageType.Physical, AbilityType.Vitality), "Physical DEF is restored");
+        ctx.AssertEqual(forceBefore, CombatRating.GetDefense(player, CombatDamageType.Force, AbilityType.Willpower), "Force DEF is restored");
         ctx.SetResultDetail("Actual Overload impact and expiry: Iron Carapace + Chitin Guard defense 12% -> 18% -> 12%, Fire/Poison 20 -> 30 -> 20, Trauma 15 -> 23 -> 15; total defense and resistance getters verified.");
     }
 

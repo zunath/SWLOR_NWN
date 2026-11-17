@@ -17,7 +17,10 @@ using SWLOR.Game.Server.Composition;
 
 namespace SWLOR.Game.Server.Tests.Domain.Character;
 
-/// <summary>Each one-line call into unconverted code still reaches the code it wraps.</summary>
+/// <summary>
+/// Each one-line call into unconverted code still reaches the code it wraps: the stat service's and, since P5-4c, those of part 5
+/// of the stat split, <c>CombatRatingService</c>.
+/// </summary>
 [NonParallelizable]
 public class StatServiceDefaultSeamsTests
 {
@@ -28,6 +31,7 @@ public class StatServiceDefaultSeamsTests
     private IDisposable _engineScope = null!;
     private FakeNWScript _engine = null!;
     private DefaultSeams _seams = null!;
+    private DefaultRatingSeams _ratingSeams = null!;
 
     [OneTimeSetUp]
     public void BuildFacades() => _facades = new FacadeContainer();
@@ -43,9 +47,10 @@ public class StatServiceDefaultSeamsTests
         _engineScope = NWScriptRuntime.Override(_engine);
         _seams = new DefaultSeams(
             _facades.Get<IDBService>(), _facades.Get<ICombatRecorderService>(), _facades.Get<IPlayerFeedbackService>(),
-            _facades.Get<IStatusEffectService>(), _facades.Get<IMimicryTraitStatsService>(), _facades.Get<ITwinPistolEquipmentService>(),
-            _facades.Get<IItemService>(), _facades.Get<IRecastService>(), _facades.Get<ICompanionLookup>(),
-            _facades.Get<IPvpCombatService>());
+            _facades.Get<IStatusEffectService>(), _facades.Get<IMimicryTraitStatsService>(), _facades.Get<IRecastService>(),
+            _facades.Get<ICompanionLookup>(), _facades.Get<IPvpCombatService>());
+        _ratingSeams = new DefaultRatingSeams(
+            _facades.Get<IDBService>(), _facades.Get<IItemService>(), _facades.Get<ITwinPistolEquipmentService>(), _facades.Get<IStatService>());
     }
 
     [TearDown]
@@ -86,17 +91,17 @@ public class StatServiceDefaultSeamsTests
         Skill.LoadMappings();
 
         _seams.SkillDetails(SkillType.Smithery).Should().BeSameAs(Skill.GetSkillDetails(SkillType.Smithery));
-        _seams.BaseItemSkill(BaseItem.Longsword).Should().Be(Skill.GetSkillTypeByBaseItem(BaseItem.Longsword));
+        _ratingSeams.BaseItemSkill(BaseItem.Longsword).Should().Be(Skill.GetSkillTypeByBaseItem(BaseItem.Longsword));
         _seams.DefenseDamageTypes().Should().Equal(GameServices.CombatDamageCatalog.GetDefenseDamageTypes());
-        _seams.IsRanged(SkillType.Pistol).Should().BeTrue();
-        _seams.IsRanged(SkillType.Vibroblade).Should().BeFalse();
+        _ratingSeams.IsRanged(SkillType.Pistol).Should().BeTrue();
+        _ratingSeams.IsRanged(SkillType.Vibroblade).Should().BeFalse();
     }
 
     [Test]
     public void TheWeaponAbilityReads_ReachCombat()
     {
-        _seams.DamageAbility(Creature, BaseItem.Longsword).Should().Be(GameServices.CombatQueries.GetWeaponDamageAbilityType(Creature, BaseItem.Longsword));
-        _seams.AccuracyAbility(Creature, BaseItem.Longsword).Should().Be(GameServices.CombatQueries.GetWeaponAccuracyAbilityType(Creature, BaseItem.Longsword));
+        _ratingSeams.DamageAbility(Creature, BaseItem.Longsword).Should().Be(GameServices.CombatQueries.GetWeaponDamageAbilityType(Creature, BaseItem.Longsword));
+        _ratingSeams.AccuracyAbility(Creature, BaseItem.Longsword).Should().Be(GameServices.CombatQueries.GetWeaponAccuracyAbilityType(Creature, BaseItem.Longsword));
     }
 
     [Test]
@@ -118,15 +123,15 @@ public class StatServiceDefaultSeamsTests
     [Test]
     public void TheAttackAdjustments_ReachCombat()
     {
-        _seams.NearbyAdjustment(Creature).Should().Be(0);
-        _seams.LowHPAdjustment(Creature).Should().Be(0);
-        _seams.LowFPAdjustment(Creature).Should().Be(0);
+        _ratingSeams.NearbyAdjustment(Creature).Should().Be(0);
+        _ratingSeams.LowHPAdjustment(Creature).Should().Be(0);
+        _ratingSeams.LowFPAdjustment(Creature).Should().Be(0);
     }
 
     [Test]
     public void GetWeaponSkill_ReachesTheSkillService()
     {
-        _seams.WeaponSkill(Creature, 700).Should().Be(Skill.GetWeaponSkill(Creature, 700));
+        _ratingSeams.WeaponSkill(Creature, 700).Should().Be(Skill.GetWeaponSkill(Creature, 700));
     }
 
     [Test]
@@ -150,13 +155,11 @@ public class StatServiceDefaultSeamsTests
             IPlayerFeedbackService playerFeedback,
             IStatusEffectService statusEffect,
             IMimicryTraitStatsService mimicryTraitStats,
-            ITwinPistolEquipmentService twinPistolEquipment,
-            IItemService item,
             IRecastService recast,
             ICompanionLookup beastMastery,
             IPvpCombatService pvpCombat)
-            : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, twinPistolEquipment, item, recast, beastMastery, pvpCombat,
-                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageModifiersService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatQueriesService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
+            : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, recast, beastMastery, pvpCombat,
+                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
         {
         }
 
@@ -173,27 +176,11 @@ public class StatServiceDefaultSeamsTests
 
         public SkillAttribute SkillDetails(SkillType skill) => GetSkillDetails(skill);
 
-        public SkillType BaseItemSkill(BaseItem item) => GetSkillTypeByBaseItem(item);
-
         public IReadOnlyList<CombatDamageType> DefenseDamageTypes() => GetDefenseDamageTypes();
-
-        public bool IsRanged(SkillType skill) => IsRangedDamageSkill(skill);
-
-        public AbilityType DamageAbility(uint creature, BaseItem item) => GetWeaponDamageAbilityType(creature, item);
-
-        public AbilityType AccuracyAbility(uint creature, BaseItem item) => GetWeaponAccuracyAbilityType(creature, item);
 
         public bool CallIsDroid(uint creature) => IsDroid(creature);
 
         public void ScheduleLimitCheck(uint creature) => ScheduleTemporaryHitPointLimitCheck(creature);
-
-        public int NearbyAdjustment(uint creature) => GetNearbyStatusTargetAttackAdjustment(creature);
-
-        public int LowHPAdjustment(uint creature) => GetLowHPAttackAdjustment(creature);
-
-        public int LowFPAdjustment(uint creature) => GetLowFPAttackAdjustment(creature);
-
-        public SkillType WeaponSkill(uint creature, uint weapon) => GetWeaponSkill(creature, weapon);
 
         public void FPRestored(uint creature) => ApplyFPRestoredEffects(creature);
 
@@ -210,5 +197,31 @@ public class StatServiceDefaultSeamsTests
             GrantNextAutoAttackCriticalRateBonus(creature, skill, critical, seconds);
 
         public void NextNoDelay(uint creature, SkillType skill, int seconds) => GrantNextAbilityNoDelay(creature, skill, seconds);
+    }
+
+    // Part 5 of the stat split (P5-4c): the rating seams with their default bodies.
+    private sealed class DefaultRatingSeams : CombatRatingService
+    {
+        public DefaultRatingSeams(IDBService db, IItemService item, ITwinPistolEquipmentService twinPistolEquipment, IStatService stat)
+            : base(db, FacadeForwarder.For<ISkillService>(), item, twinPistolEquipment, FacadeForwarder.For<ICombatQueriesService>(),
+                FacadeForwarder.For<ICombatDamageModifiersService>(), stat)
+        {
+        }
+
+        public SkillType BaseItemSkill(BaseItem item) => GetSkillTypeByBaseItem(item);
+
+        public bool IsRanged(SkillType skill) => IsRangedDamageSkill(skill);
+
+        public AbilityType DamageAbility(uint creature, BaseItem item) => GetWeaponDamageAbilityType(creature, item);
+
+        public AbilityType AccuracyAbility(uint creature, BaseItem item) => GetWeaponAccuracyAbilityType(creature, item);
+
+        public int NearbyAdjustment(uint creature) => GetNearbyStatusTargetAttackAdjustment(creature);
+
+        public int LowHPAdjustment(uint creature) => GetLowHPAttackAdjustment(creature);
+
+        public int LowFPAdjustment(uint creature) => GetLowFPAttackAdjustment(creature);
+
+        public SkillType WeaponSkill(uint creature, uint weapon) => GetWeaponSkill(creature, weapon);
     }
 }

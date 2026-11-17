@@ -342,8 +342,8 @@ public class PlayerGuideContentTests : SkillFacadeFixture
         text.Should().Contain("stance changes to ordinary weapon auto-attack damage apply after it");
         text.Should().Contain("Reductions from Leadership abilities, Guard, and elemental resistance are applied separately");
         text.Should().Contain($"at most {CombatDamageTakenService.MaximumGuardDamageReductionPercent} percent");
-        text.Should().Contain($"up to {StatService.MaximumDeflectionChanceCap} percent");
-        text.Should().Contain($"Shield Deflection stops at {StatService.MaximumShieldDeflectionChance} percent");
+        text.Should().Contain($"up to {CombatRatingService.MaximumDeflectionChanceCap} percent");
+        text.Should().Contain($"Shield Deflection stops at {CombatRatingService.MaximumShieldDeflectionChance} percent");
         text.Should().Contain($"stop at {ResistanceRules.MaximumResistance - 1} percent for players");
         text.Should().Contain("Movement speed stops at 150 percent of normal");
         text.Should().Contain($"lasts at most {StatusEffectRules.MaximumHardCrowdControlDurationSeconds} seconds");

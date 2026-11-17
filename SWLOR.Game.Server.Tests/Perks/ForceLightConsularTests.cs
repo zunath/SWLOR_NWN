@@ -244,15 +244,15 @@ public class ForceLightConsularTests
                            item.GetProperty("Subtype").GetProperty("value").GetInt32() == subtype)
             .Sum(item => item.GetProperty("CostValue").GetProperty("value").GetInt32());
         var level = SkinValue(99);
-        var attackerAccuracy = Stat.GetAccuracy(level, attackerWillpower, 0);
-        var attackerAttack = Stat.GetAttack(level, attackerWillpower, 0);
+        var attackerAccuracy = CombatRating.GetAccuracy(level, attackerWillpower, 0);
+        var attackerAttack = CombatRating.GetAttack(level, attackerWillpower, 0);
         var squellbugHP = SkinValue(96);
         squellbugHP.Should().Be(CreatureValue("MaxHitPoints"));
-        var squellbugEvasion = Stat.GetEvasion(level, CreatureValue("Int"), SkinValue(117) + CreatureValue("NaturalAC"));
+        var squellbugEvasion = CombatRating.GetEvasion(level, CreatureValue("Int"), SkinValue(117) + CreatureValue("NaturalAC"));
         var squellbugVitality = CreatureValue("Con");
         var squellbugWillpower = CreatureValue("Wis");
-        var squellbugPhysicalDefense = Stat.CalculateDefense(squellbugVitality, level, SkinValue(94, 1));
-        var squellbugForceDefense = Stat.CalculateDefense(squellbugWillpower, level, SkinValue(94, 2));
+        var squellbugPhysicalDefense = CombatRating.CalculateDefense(squellbugVitality, level, SkinValue(94, 1));
+        var squellbugForceDefense = CombatRating.CalculateDefense(squellbugWillpower, level, SkinValue(94, 2));
         foreach (var abilityType in abilitySources)
         {
             var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / $"{abilityType.Name}.cs").FullName);

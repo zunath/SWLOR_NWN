@@ -68,8 +68,8 @@ public class AIServiceSeamTests
 
         _service.DefaultHighestEnmityTarget(Enemy).Should().Be(Foe);
         _service.DefaultHighestEnmityTarget(Friend).Should().Be(Invalid);
-        _service.DefaultEnmityTable(Enemy).Should().BeEquivalentTo(new Dictionary<uint, int> { [Friend] = 5, [Foe] = 9 });
-        _service.DefaultHasProximityEnmity(Friend, Enemy).Should().BeFalse();
+        _service.Service.DefaultEnmityTable(Enemy).Should().BeEquivalentTo(new Dictionary<uint, int> { [Friend] = 5, [Foe] = 9 });
+        _service.Aggro.DefaultHasProximityEnmity(Friend, Enemy).Should().BeFalse();
     }
 
     [Test]
@@ -80,12 +80,12 @@ public class AIServiceSeamTests
             [Enemy] = new Dictionary<uint, int> { [Friend] = 5, [Foe] = 9 }
         });
 
-        _service.DefaultRemoveEnmity(Foe, Enemy);
-        _service.DefaultEnmityTable(Enemy).Keys.Should().Equal(Friend);
-        _service.DefaultRemoveTrackedProximityEnmity(Friend, Enemy).Should().BeFalse("nothing tracked it as proximity enmity");
+        _service.Service.DefaultRemoveEnmity(Foe, Enemy);
+        _service.Service.DefaultEnmityTable(Enemy).Keys.Should().Equal(Friend);
+        _service.Aggro.DefaultRemoveTrackedProximityEnmity(Friend, Enemy).Should().BeFalse("nothing tracked it as proximity enmity");
 
-        _service.DefaultClearEnmityTable(Enemy);
-        _service.DefaultEnmityTable(Enemy).Should().BeEmpty();
+        _service.Service.DefaultClearEnmityTable(Enemy);
+        _service.Service.DefaultEnmityTable(Enemy).Should().BeEmpty();
     }
 
     [Test]
@@ -93,10 +93,10 @@ public class AIServiceSeamTests
     {
         var creature = _bench.AddCreature("creature", _bench.AddArea("area"));
 
-        _service.DefaultIsControlledCompanion(creature.Id).Should().BeFalse();
-        _service.DefaultIsControlledCompanion(Invalid).Should().BeFalse();
-        _service.DefaultAreCompanionAbilitiesEnabled(creature.Id).Should().BeTrue("a creature the companion rules do not know has its abilities");
-        _service.DefaultResolveHostileAbilityTarget(creature.Id, new AbilityDetail(), Invalid, Friend).Should().Be(Invalid);
+        _service.Action.DefaultIsControlledCompanion(creature.Id).Should().BeFalse();
+        _service.Action.DefaultIsControlledCompanion(Invalid).Should().BeFalse();
+        _service.Action.DefaultAreCompanionAbilitiesEnabled(creature.Id).Should().BeTrue("a creature the companion rules do not know has its abilities");
+        _service.Action.DefaultResolveHostileAbilityTarget(creature.Id, new AbilityDetail(), Invalid, Friend).Should().Be(Invalid);
     }
 
     [Test]

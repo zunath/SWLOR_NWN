@@ -50,13 +50,13 @@ public class AIServiceAggroTests : AIServiceTestBase
     private void Enter(AISim entering)
     {
         Bench.EnteringObject = entering.Id;
-        Service.CreatureAggroEnter();
+        Aggro.CreatureAggroEnter();
     }
 
     private void Exit(AISim exiting)
     {
         Bench.ExitingObject = exiting.Id;
-        Service.CreatureAggroExit();
+        Aggro.CreatureAggroExit();
     }
 
     [Test]
@@ -114,7 +114,7 @@ public class AIServiceAggroTests : AIServiceTestBase
         Bench.BlockSight(_player.Id, Npc.Id);
         Enter(_player);
         Bench.EnteringObject = Invalid;
-        Service.CreatureAggroEnter();
+        Aggro.CreatureAggroEnter();
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -239,12 +239,12 @@ public class AIServiceAggroTests : AIServiceTestBase
     [Test]
     public void A_stealth_detection_acquires_aggro_like_the_aura_does_and_only_for_creatures_with_AI()
     {
-        Service.TryAcquireAggroAfterDetection(Npc.Id, _player.Id);
+        Aggro.TryAcquireAggroAfterDetection(Npc.Id, _player.Id);
         Bench.Trace().Should().Contain(Proximity(_player, Npc));
 
         Bench.ClearCalls();
         Npc.AILevel = AILevel.VeryLow;
-        Service.TryAcquireAggroAfterDetection(Npc.Id, _player.Id);
+        Aggro.TryAcquireAggroAfterDetection(Npc.Id, _player.Id);
         Bench.Trace().Should().BeEmpty();
     }
 
@@ -253,7 +253,7 @@ public class AIServiceAggroTests : AIServiceTestBase
     {
         _player.Dead = true;
 
-        Service.TryAcquireAggroAfterDetection(Npc.Id, _player.Id);
+        Aggro.TryAcquireAggroAfterDetection(Npc.Id, _player.Id);
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -261,9 +261,9 @@ public class AIServiceAggroTests : AIServiceTestBase
     [Test]
     public void A_stealth_detection_of_the_creature_itself_or_an_invisible_player_does_nothing()
     {
-        Service.TryAcquireAggroAfterDetection(Npc.Id, Npc.Id);
+        Aggro.TryAcquireAggroAfterDetection(Npc.Id, Npc.Id);
         _player.Effects.Add(EffectTypeScript.Invisibility);
-        Service.TryAcquireAggroAfterDetection(Npc.Id, _player.Id);
+        Aggro.TryAcquireAggroAfterDetection(Npc.Id, _player.Id);
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -315,7 +315,7 @@ public class AIServiceAggroTests : AIServiceTestBase
         Exit(_player);
         Npc.AILevel = AILevel.Medium;
         Bench.ExitingObject = Invalid;
-        Service.CreatureAggroExit();
+        Aggro.CreatureAggroExit();
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -359,7 +359,7 @@ public class AIServiceAggroTests : AIServiceTestBase
         Bench.Self = ally.Id;
         Perceive(Npc, seen: true, vanished: false);
 
-        Service.CreatureDeath();
+        Events.CreatureDeath();
         Bench.Self = Npc.Id;
         Enter(_player);
 

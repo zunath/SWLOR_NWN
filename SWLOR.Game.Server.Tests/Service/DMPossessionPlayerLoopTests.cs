@@ -1,6 +1,7 @@
 using System.Collections;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 using static SWLOR.Game.Server.Tests.Service.DMPossessionHarness;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -76,7 +77,7 @@ public class DMPossessionPlayerLoopTests
                 {
                     public bool IsControlledByDM(uint player) => DMPresence.IsControlledByDM(player);
                 }
-                {{InstanceMethod("Domain/Creatures/AIService.cs", "ShouldUseCombatLeash")}}
+                {{InstanceMethod(CreaturesSource.RelativePath("ShouldUseCombatLeash"), "ShouldUseCombatLeash")}}
             }
 
             public static class Mimicry

@@ -16,9 +16,11 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// The AI instance with the calls into services that are not converted yet under the test's control. The enmity
 /// tables are a model kept here (<see cref="Tables"/>, <see cref="Proximity"/>); every other call is written into the
 /// bench's call list as a note, in order with the engine calls, and answered with the delegate or set the test
-/// configured.
+/// configured. The seams are in partial files by the part whose code calls them (<c>TestAIService.Service.cs</c>, <c>.Events</c>,
+/// <c>.Aggro</c>, <c>.Decision</c> and <c>.Action</c>; <c>.Shared</c> holds the seams several parts call), so a part that leaves
+/// <see cref="AIService"/> takes its file with it.
 /// </summary>
-public sealed class TestAIService : AIService
+public sealed partial class TestAIService : AIService
 {
     private readonly AIBench _bench;
 
@@ -82,139 +84,22 @@ public sealed class TestAIService : AIService
         set.Add(creature);
     }
 
-    protected override IEnumerable<Type> GetProfileDefinitionTypes() => Definitions;
+    // One accessor per part of the AI split (Readmes/MaintainabilityRefactorCreaturesSplit.md). Each is this instance until
+    // its part moves; the tests call the accessor of the part that owns the member, so a later pull request changes only
+    // the accessor.
 
-    protected override uint GetHighestEnmityTarget(uint enemy) =>
-        Tables.TryGetValue(enemy, out var table) && table.Count > 0 ? table.MaxBy(entry => entry.Value).Key : AIBench.Invalid;
+    /// <summary>The core: profiles, flags, the ally cache and the leash (part AI-1).</summary>
+    public TestAIService Service => this;
 
-    protected override uint GetHighestEnmityAttackTarget(uint enemy)
-    {
-        _bench.Engine.Note($"GetHighestEnmityAttackTarget({enemy})");
-        if (!Tables.TryGetValue(enemy, out var table))
-            return AIBench.Invalid;
+    /// <summary>The creature event handlers (part AI-2).</summary>
+    public TestAIService Events => this;
 
-        foreach (var (creature, _) in table.OrderByDescending(entry => entry.Value))
-        {
-            if (_bench.IsValid(creature) && !_bench.Get(creature).Dead)
-                return creature;
-        }
+    /// <summary>The aggro-aura handlers and proximity enmity (part AI-3).</summary>
+    public TestAIService Aggro => this;
 
-        return AIBench.Invalid;
-    }
+    /// <summary>The trigger throttle, phase and boss timer (part AI-4).</summary>
+    public TestAIService Decision => this;
 
-    protected override Dictionary<uint, int> GetEnmityTable(uint enemy) =>
-        Tables.TryGetValue(enemy, out var table) ? new Dictionary<uint, int>(table) : new Dictionary<uint, int>();
-
-    protected override void AttackHighestEnmityTarget(uint creature)
-    {
-        _bench.Engine.Note($"AttackHighestEnmityTarget({creature})");
-        Attacked[creature] = GetHighestEnmityTarget(creature);
-    }
-
-    protected override void ResumeAttackAfterActionsCleared(uint creature) =>
-        _bench.Engine.Note($"ResumeAttackAfterActionsCleared({creature})");
-
-    protected override void IssueAttackCommand(uint creature, uint target) =>
-        _bench.Engine.Note($"IssueAttackCommand({creature}, {target})");
-
-    /// <summary>Runs while an enemys enmity table is cleared, as the status effects removed by a leash reset do.</summary>
-    public Action<uint>? WhenEnmityIsCleared { get; set; }
-
-    protected override void ClearEnmityTable(uint enemy)
-    {
-        _bench.Engine.Note($"ClearEnmityTable({enemy})");
-        Tables.Remove(enemy);
-        Proximity.Remove(enemy);
-        WhenEnmityIsCleared?.Invoke(enemy);
-    }
-
-    protected override void RemoveEnmity(uint creature, uint enemy)
-    {
-        _bench.Engine.Note($"RemoveEnmity({creature}, {enemy})");
-        if (Tables.TryGetValue(enemy, out var table))
-            table.Remove(creature);
-        if (Proximity.TryGetValue(enemy, out var set))
-            set.Remove(creature);
-    }
-
-    protected override void ModifyEnmity(uint creature, uint enemy, int amount)
-    {
-        _bench.Engine.Note($"ModifyEnmity({creature}, {enemy}, {amount})");
-        SetEnmity(enemy, creature, (Tables.TryGetValue(enemy, out var table) && table.TryGetValue(creature, out var current) ? current : 0) + amount);
-    }
-
-    protected override bool HasProximityEnmity(uint creature, uint enemy) =>
-        Proximity.TryGetValue(enemy, out var set) && set.Contains(creature);
-
-    protected override void ModifyProximityEnmity(uint creature, uint enemy, int amount)
-    {
-        _bench.Engine.Note($"ModifyProximityEnmity({creature}, {enemy}, {amount})");
-        SetProximityEnmity(enemy, creature, amount);
-    }
-
-    protected override bool RemoveTrackedProximityEnmity(uint creature, uint enemy)
-    {
-        _bench.Engine.Note($"RemoveTrackedProximityEnmity({creature}, {enemy})");
-        if (!HasProximityEnmity(creature, enemy))
-            return false;
-
-        Proximity[enemy].Remove(creature);
-        Tables[enemy].Remove(creature);
-        return true;
-    }
-
-    protected override void RestoreNPCStats(bool outOfCombatRegen) =>
-        _bench.Engine.Note($"RestoreNPCStats({(outOfCombatRegen ? "true" : "false")})");
-
-    protected override void LoadNPCStats() => _bench.Engine.Note("LoadNPCStats()");
-
-    protected override void ApplyCreatureMovementRate(uint creature) =>
-        _bench.Engine.Note($"ApplyCreatureMovementRate({creature})");
-
-    protected override bool TryBeginInfiltration(uint player, uint npc)
-    {
-        _bench.Engine.Note($"TryBeginInfiltration({player}, {npc})");
-        return InfiltrationBegins.Contains(player);
-    }
-
-    protected override void CompleteInfiltration(uint player, uint npc) =>
-        _bench.Engine.Note($"CompleteInfiltration({player}, {npc})");
-
-    protected override bool CanAcquireAggro(uint observer, uint target)
-    {
-        _bench.Engine.Note($"CanAcquireAggro({observer}, {target})");
-        return !HiddenFromAggro.Contains(target);
-    }
-
-    protected override bool IsControlledCompanion(uint creature) => ControlledCompanions.Contains(creature);
-
-    protected override bool AreCompanionAbilitiesEnabled(uint companion) => !CompanionsWithoutAbilities.Contains(companion);
-
-    protected override uint ResolveHostileAbilityTarget(uint companion, AbilityDetail ability, uint authorizedTarget, uint selectedTarget)
-    {
-        _bench.Engine.Note($"ResolveHostileAbilityTarget({companion}, {authorizedTarget}, {selectedTarget})");
-        return ResolveHostile(companion, authorizedTarget, selectedTarget);
-    }
-
-    protected override int GetPerkLevel(uint creature, PerkType perkType) => PerkLevel;
-
-    protected override bool CanActivateAbility(uint activator, uint target, FeatType feat, int effectiveLevel, Location targetLocation)
-    {
-        _bench.Engine.Note($"CanActivateAbility({activator}, {target}, {feat}, {effectiveLevel})");
-        return CanActivate(activator, target, feat);
-    }
-
-    protected override bool TryUseAbility(uint creature, uint target, FeatType feat, Location targetLocation)
-    {
-        _bench.Engine.Note($"TryUseAbility({creature}, {target}, {feat})");
-        return AbilityUsed(creature, target, feat);
-    }
-
-    protected override bool MayHaveScriptType(uint creature, EffectTypeScript effectType) => MayHaveEffect;
-
-    /// <summary>The context reads the static enmity tables for its target, so they are made to hold this model first.</summary>
-    protected override void UseAttackableEnmityTarget(AIContext context) => RealEnmityTables.Replace(Tables);
-
-    /// <summary>The instance's own search for profile definitions, for the test that proves it finds the server's.</summary>
-    public IEnumerable<Type> FindDefinitionsWithTheOriginalSearch() => base.GetProfileDefinitionTypes();
+    /// <summary>The action scoring, targeting and execution (part AI-5).</summary>
+    public TestAIService Action => this;
 }

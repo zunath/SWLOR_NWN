@@ -59,7 +59,7 @@ public class AIServiceIdleTests : AIServiceTestBase
             Service.SetEnmity(Npc.Id, _fighter.Id, 10);
         Bench.ClearCalls();
 
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
         Bench.RunAssigned(Npc.Id);
 
         return new Commands(

@@ -290,11 +290,11 @@ public class AIServiceLeashTests : AIServiceTestBase
         Bench.AssignedTo(Npc.Id).Should().HaveCount(1);
 
         Npc.Action = ActionType.MoveToPoint;
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
         Bench.AssignedTo(Npc.Id).Should().HaveCount(1, "the creature is already walking home");
 
         Npc.Action = ActionType.Invalid;
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
         Bench.AssignedTo(Npc.Id).Should().HaveCount(2, "a stopped walk is queued again");
     }
 
@@ -328,7 +328,7 @@ public class AIServiceLeashTests : AIServiceTestBase
         Npc.HitPoints = 40;
         Bench.ClearCalls();
 
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
 
         Evading.Should().BeFalse();
         Bench.Locals.Has(Npc.Id, RestorePlot).Should().BeFalse();
@@ -400,7 +400,7 @@ public class AIServiceLeashTests : AIServiceTestBase
         TryStart(_respawner);
         Bench.Creatures.ClearCalls();
 
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
 
         Evading.Should().BeTrue();
         Bench.Creatures.CountOf("SetMovementRate").Should().Be(1, "the fast return is applied again");
@@ -501,12 +501,12 @@ public class AIServiceLeashTests : AIServiceTestBase
         Bench.LastAttacker = _fighter.Id;
         Bench.LastDamager = _fighter.Id;
 
-        Service.CreaturePhysicalAttacked();
-        Service.CreatureDamaged();
-        Service.CreatureAggroEnter();
+        Events.CreaturePhysicalAttacked();
+        Events.CreatureDamaged();
+        Aggro.CreatureAggroEnter();
         Bench.EnteringObject = _fighter.Id;
         Bench.AreaOfEffectCreator = Npc.Id;
-        Service.CreatureAggroEnter();
+        Aggro.CreatureAggroEnter();
 
         Bench.Trace().Should().BeEmpty("an evading creature starts no fight");
     }
@@ -518,7 +518,7 @@ public class AIServiceLeashTests : AIServiceTestBase
         TryStart(_respawner);
         Bench.ClearCalls();
 
-        Service.CreatureCombatRoundEnd();
+        Events.CreatureCombatRoundEnd();
 
         Bench.Trace().Should().BeEmpty();
         Bench.Engine.CallsTo("ExecuteScript").Should().BeEmpty();
@@ -538,7 +538,7 @@ public class AIServiceLeashTests : AIServiceTestBase
         Npc.Position = At(60f);
         Threat(_respawner, 90);
 
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
 
         Evading.Should().BeTrue();
         Notes("AttackHighestEnmityTarget").Should().Be(1, "only the call that ends every heartbeat");
@@ -550,7 +550,7 @@ public class AIServiceLeashTests : AIServiceTestBase
         Npc.InCombat = true;
         Npc.Position = At(60f);
 
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
 
         Evading.Should().BeTrue();
     }

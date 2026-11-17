@@ -334,18 +334,17 @@ public static class PowerGloveFitEngineTests
             SetCreatureBodyPart(CreaturePart.LeftHand, 250, wearer);
             ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
             AssertSelectedHand("pmh0_handl250", CreaturePart.LeftHand, "l");
-            AssertPair(ctx, right, left, 1f, "An unmeasured fallback hand releases both fitted scales");
-            AssertNoGripLocals(ctx, right, "Incomplete wide main hand");
-            AssertNoGripLocals(ctx, left, "Incomplete wide companion");
+            // An unmeasured natural hand fits like the species' standard hand (master #3180): the wide Human pair.
+            AssertGripPair(ctx, right, left, FitVector.Zero, "pmh2_handr001", "pmh2_handl001", 119,
+                "An unmeasured fallback hand fits like the species standard hand");
 
             var missingPart = Enumerable.Range(3, 253).First(part =>
                 !ModelResource.Exists($"pmh2_handl{part:D3}") && !ModelResource.Exists($"pmh0_handl{part:D3}"));
             SetCreatureBodyPart(CreaturePart.LeftHand, missingPart, wearer);
             ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
             AssertSelectedHand($"pmh2_handl{missingPart:D3}", CreaturePart.LeftHand, "l");
-            AssertPair(ctx, right, left, 1f, "Missing wide and normal hands release both fitted scales");
-            AssertNoGripLocals(ctx, right, "Missing wide main hand");
-            AssertNoGripLocals(ctx, left, "Missing wide companion");
+            AssertGripPair(ctx, right, left, FitVector.Zero, "pmh2_handr001", "pmh2_handl001", 119,
+                "Missing wide and normal hands fit like the species standard hand");
 
             SetBody(wearer, AppearanceType.Cathar, 201, 201);
             ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
@@ -357,7 +356,7 @@ public static class PowerGloveFitEngineTests
 
         void AssertSelectedHand(string expected, CreaturePart part, string side)
         {
-            var actual = (((string Worn, string Natural))typeof(PowerGloveFit)
+            var actual = (((string Worn, string Natural, string Standard))typeof(PowerGloveFit)
                 .GetMethod("GetHandModels", BindingFlags.Static | BindingFlags.NonPublic)!
                 .Invoke(null, new object[] { wearer, part, side })!).Worn;
             ctx.AssertEqual(expected, actual, "Selected " + side + " hand resource");
@@ -435,13 +434,10 @@ public static class PowerGloveFitEngineTests
                     ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
                     ctx.AssertEqual(250, GetCreatureBodyPart(unmeasuredPart, wearer),
                         label + " appearance refresh retains the unmeasured hand ID");
-                    AssertPair(ctx, right, left, 1f, label + " either unmeasured hand restores both authored scales");
-                    AssertVector(ctx, ReadPartTranslation(right), authored,
-                        label + " incomplete pair releases the known or unknown main offset");
-                    AssertVector(ctx, ReadPartTranslation(left), authored,
-                        label + " incomplete pair releases the known or unknown companion offset");
-                    AssertNoGripLocals(ctx, right, label + " incomplete main");
-                    AssertNoGripLocals(ctx, left, label + " incomplete companion");
+                    // An unmeasured natural hand fits like the species' standard hand (master #3180), here the
+                    // measured Cathar hand, so the pair keeps the measured fit instead of releasing it.
+                    AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,
+                        label + " an unmeasured hand fits like the species standard hand");
                     SetCreatureBodyPart(unmeasuredPart, 201, wearer);
                     ExecuteScript(ScriptName.OnAppearanceEdit, wearer);
                     AssertGripPair(ctx, right, left, authored, "pmo0_handr201", "pmo0_handl201", appearance,

@@ -60,7 +60,13 @@ public class StatusEffectSourceTests
     [Test]
     public void ACallThroughAFieldOfAPartInterfaceLosesItsReceiver()
     {
-        const string Text = "class C { private readonly IStatusEffectService _core; void M() { _core.RemoveCreature(1); _other.Do(2); } }";
+        const string Text = """
+        class C
+        {
+            private readonly IStatusEffectService _core;
+            void M() { _core.RemoveCreature(1); _other.Do(2); }
+        }
+        """;
 
         var normalised = StatSource.Normalise(Text, StatusEffectSource.PartInterfaces);
 

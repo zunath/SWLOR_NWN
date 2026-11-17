@@ -116,12 +116,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
                 EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, 6);
                 var editor = BindEditor(creature);
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)();
                 ctx.Assert(editor.IsCustomTintEditable, "RGB safety fixture has a tintable armor material.");
                 editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(205, 228, 197);
                 editor.OnMouseUpTintPicker()();
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
                 editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(1, 17, 91);
                 editor.OnMouseUpTintPicker()();
@@ -185,8 +185,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await AssignedAsync(ctx, creature, () =>
                 {
                     var editor = BindEditor(creature);
-                    editor.OnClickColorTarget(copyToRight ? AppearanceEditorViewModel.ColorTarget.LeftForearm :
-                        AppearanceEditorViewModel.ColorTarget.RightForearm, AppearanceArmorColor.Leather2)();
+                    editor.OnClickColorTarget(copyToRight ? AppearanceColorTarget.LeftForearm :
+                        AppearanceColorTarget.RightForearm, AppearanceArmorColor.Leather2)();
                     ctx.Assert(editor.IsCustomTintEditable, "The source forearm has a custom Leather2 channel.");
                     editor.OnMouseDownTintPicker()();
                     editor.SelectedTintColor = new GuiColor(1, 17, 91);
@@ -420,7 +420,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                              AppearanceArmorColor.Leather1, AppearanceArmorColor.Leather2,
                              AppearanceArmorColor.Metal1, AppearanceArmorColor.Metal2 })
                 {
-                    editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                    editor.OnClickColorTarget(AppearanceColorTarget.Global, channel)();
                     editor.OnClickColorPalette(77)();
                 }
                 // Catalogued robes render through their generated root with or without RGB.

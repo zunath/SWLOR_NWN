@@ -3938,42 +3938,42 @@
     "Line": 2744,
     "Member": "OnClickSaveSettings",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(_target, ColorToken.Green(\"Appearance settings saved successfully.\"))"
+    "Call": "SendMessageToPC(_session.Target, ColorToken.Green(\"Appearance settings saved successfully.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
     "Line": 226,
     "Member": "OnClickNewOutfit",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(limit < WardrobeService.MaxSlotLimit\n                    ? $\"Your wardrobe holds {limit} outfits. {WardrobeService.ExpansionHint}\"\n                    : $\"Your wardrobe holds {limit} outfits.\", _target, false)"
+    "Call": "FloatingTextStringOnCreature(limit < WardrobeService.MaxSlotLimit\n                    ? $\"Your wardrobe holds {limit} outfits. {WardrobeService.ExpansionHint}\"\n                    : $\"Your wardrobe holds {limit} outfits.\", _session.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
     "Line": 285,
     "Member": "OnClickStoreOutfit",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(message, _target, false)"
+    "Call": "FloatingTextStringOnCreature(message, _session.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
     "Line": 314,
     "Member": "OnClickUndoOutfit",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(message, _target, false)"
+    "Call": "FloatingTextStringOnCreature(message, _session.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
     "Line": 327,
     "Member": "WearOutfit",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(message, _target, false)"
+    "Call": "FloatingTextStringOnCreature(message, _session.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs",
     "Line": 333,
     "Member": "WearOutfit",
     "Delivery": "Retained",
-    "Call": "FloatingTextStringOnCreature(string.IsNullOrEmpty(message) ? $\"Now wearing {outfit.Name}.\" : message, _target, false)"
+    "Call": "FloatingTextStringOnCreature(string.IsNullOrEmpty(message) ? $\"Now wearing {outfit.Name}.\" : message, _session.Target, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.PartBrowser.cs",

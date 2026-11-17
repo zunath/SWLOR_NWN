@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentAssertions;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.GuiDefinition;
@@ -281,9 +282,7 @@ public class AppearancePreviewTests
             .Invoke(null, new object[] { region, custom })!;
 
     private static GuiRectangle BuildPaletteRegion(int colorId) =>
-        (GuiRectangle)typeof(AppearanceEditorViewModel)
-            .GetMethod("BuildPaletteRegion", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { colorId })!;
+        ArmorColorRegionCatalog.BuildPaletteRegion(colorId);
 
     private static GuiRectangle PlaceBeside(GuiRectangle editor, float width, float height,
         float screenWidth, float screenHeight, float scale) =>

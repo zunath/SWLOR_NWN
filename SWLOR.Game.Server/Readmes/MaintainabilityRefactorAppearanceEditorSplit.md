@@ -1,6 +1,6 @@
 # Maintainability Refactor: AppearanceEditorViewModel Split (P5-16e)
 
-Part map only. Nothing is built yet; the owner reviews this first. Base: `origin/feature/maintainability-refactor` at
+Part map, approved by the owner with the decisions in section 6; PR 1 is built (section 7). Base: `origin/feature/maintainability-refactor` at
 `c153dd169`. Limits come from [MaintainabilityRefactorPhase5.md](MaintainabilityRefactorPhase5.md): 1,000 lines and 10 services
 per type, 150 lines per method, no partial-class or chunked-method tricks. Line counts below are from a syntax outline of the
 six partial files (ranges rounded to about 10); the build report gives exact numbers.
@@ -110,7 +110,7 @@ Proving no behavior change, per PR:
 1. Before PR 1, a throwaway generator run on the base commit writes `AppearanceEditorColorMappings.txt`: every (target, channel) with its
    property name and initial region, the matching `Selected`, `Tint` and `Custom` names, and the order `Initialize` publishes them. It is committed
    as a test fixture. After the split a test rebuilds the same text from `ArmorColorRegionCatalog` and compares byte for byte. This includes the
-   existing quirk that `LeftForearm` Cloth and Metal channels map to the `Robe*` regions, which the catalog keeps literally.
+   fact that every target maps to the regions of its own name (there is no cross-mapping).
 2. Dye and tint code is not touched: the diff of `Domain/Companions/TintMap*`, `Module/` and `SWLOR_Haks` is empty (checked with `git diff --stat`
    against the base), and moved method bodies are moved verbatim (a normalized-body comparison of old and new text per moved method, run as a script and attached to the PR).
 3. Engine tests above run before and after with identical pass sets. `AppearanceEditorEngineTests` already covers palette, RGB, copy and inheritance reset.
@@ -141,3 +141,33 @@ Open decisions (recommendation first):
 4. Three PRs, not one. **Recommended: three.**
 5. Outfit service in `Domain/Items` unless an outfit service already exists there at build time. **Recommended: check first, reuse if present.**
 6. Static helpers (`TintMap*`, `EquippedItemAppearance`) stay static until P5-12; no conversion in this item. **Recommended: yes.**
+
+## 6. Owner decisions (2026-11-17)
+
+1. The 480 per-channel properties go, once the framework's name-based `Get`/`Set` was confirmed to be the same code path and a
+   binding-identity test proves the bindings and values unchanged. 2. No one-line property reformatting: if the view model is
+   still over 1,000 lines after the real moves, another responsibility moves out, or the numbers go to the owner. 3. The
+   `LoadAppearances` boot handler stays on the view model. 4. Three PRs, built and gated one at a time. 5. `TintMap*` and
+   `EquippedItemAppearance` stay static until P5-12. `AppearanceOutfitService`: look for an existing outfit owner first.
+   `IAppearanceBindingSink` goes in the domain of the services (below Feature). The view model's constructor follows
+   `MaintainabilityRefactorContentInjection.md`. Client captures of the eight editor states before, after PR 1 and after PR 3.
+
+## 7. PR 1 as built
+
+- `ArmorColorRegionCatalog` and `ArmorColorRegion` (`Feature/AppearanceDefinition/ItemAppearance`): the swatches are generated
+  from the 20 targets and 6 channels in publishing order, with the four binding names each. The map's "literal table" was not
+  needed: the old table was regular (name = target + channel), and the fixture proves it.
+- `AppearanceColorTarget` (`Domain/Character`): the editor's `ColorTarget` enum moved out of the view model so the catalog and
+  the later services can name it.
+- `WeaponAppearanceCatalog` and `AppearanceItemEligibility` are static types in `Feature/AppearanceDefinition/ItemAppearance`,
+  not services: they use only NWScript and the internal `IWeaponAppearanceDefinition`, `ArmorAppearanceCatalog` and
+  `TrainingSaberCatalog` of the Feature layer, which a Domain type may not reference. The view model keeps its constructor
+  until PR 2, where the first injected service arrives.
+- `AppearanceEditorSession` (`Feature/GuiDefinition/ViewModel`): the 41 per-window fields. It stays in Feature for the same
+  reason (it holds `AppearancePreviewView`, `AppearanceEditorSlot` and `PlayerOutfit`).
+- The window definition binds swatches by expression. `GuiHelper<T>.GetPropertyName` now also accepts a call to the view
+  model's `GetBindingValue<T>("Name")`, which names a binding that has no declared property (an additive change to shared GUI
+  code; declared properties take the old path).
+- Proof: `ArmorColorRegionCatalogTests` (mapping and the 480 declared names against a fixture captured on the base commit) and
+  `AppearanceEditorBindingIdentityEngineTests` (every binding name, order and JSON value through the opening and 16 colour steps,
+  against a transcript captured on the base commit).

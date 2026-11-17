@@ -18,13 +18,13 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
     private void Exit(uint player = Player)
     {
         Bench.Engine.SetReturn("GetExitingObject", player);
-        Service.OnPlayerExit();
+        Session.OnPlayerExit();
     }
 
     private void Enter(uint player)
     {
         Bench.Engine.SetReturn("GetEnteringObject", player);
-        Service.OnPlayerEnter();
+        Session.OnPlayerEnter();
     }
 
     /// <summary>The same player id on a new object handle, as a reconnect gives.</summary>
@@ -305,9 +305,9 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
     {
         Bench.Engine.SetReturn("OBJECT_SELF", Target);
 
-        Service.OnApplyStatusEffect();
+        Native.OnApplyStatusEffect();
         var tracker = Service.GetCreatureStatusEffects(Target);
-        Service.OnApplyStatusEffect();
+        Native.OnApplyStatusEffect();
 
         Service.GetCreatureStatusEffects(Target).Should().BeSameAs(tracker);
     }
@@ -320,7 +320,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", Target);
         LastScriptEffectTag(tag);
 
-        Service.OnRemoveStatusEffect();
+        Native.OnRemoveStatusEffect();
 
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeFalse();
         Bench.Engine.CallsTo("DelayCommand").Should().BeEmpty();
@@ -332,7 +332,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", Target);
         LastScriptEffectTag(string.Empty);
 
-        Service.OnRemoveStatusEffect();
+        Native.OnRemoveStatusEffect();
 
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeFalse();
     }
@@ -343,7 +343,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         var effect = Applied<ProbeEffect>(Target, Caster);
         LastScriptEffectTag(effect.Id);
 
-        Service.OnRemoveNWNStatusEffect(Target);
+        Native.OnRemoveNWNStatusEffect(Target);
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeTrue("the check waits for native removal to settle");
 
         Bench.NativeTags.Add(effect.Id);
@@ -355,7 +355,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.RunDeferred("DelayCommand");
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeTrue("the first callback ran only once");
 
-        Service.OnRemoveNWNStatusEffect(Target);
+        Native.OnRemoveNWNStatusEffect(Target);
         Bench.RunDeferred("DelayCommand");
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeFalse();
         Bench.Engine.CallsTo("DelayCommand").Where(call => (float)call.Arguments[0]! == 0f).Should().HaveCount(2);
@@ -367,7 +367,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         var effect = Applied<ProbeEffect>(Target, Caster);
         LastScriptEffectTag(string.Empty, effect.Id);
 
-        Service.OnRemoveNWNStatusEffect(Target);
+        Native.OnRemoveNWNStatusEffect(Target);
         Bench.RunDeferred("DelayCommand");
 
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeFalse();
@@ -381,7 +381,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.Engine.OnRemoveEffectByTag = (creature, tags) =>
         {
             if (tags.Contains(effect.Id))
-                Service.OnRemoveNWNStatusEffect(creature);
+                Native.OnRemoveNWNStatusEffect(creature);
         };
 
         Service.RemoveStatusEffect(Target, typeof(ProbeEffect));
@@ -390,7 +390,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
             .Should().BeEmpty("the service caused this removal and has already handled it");
 
         Bench.Engine.OnRemoveEffectByTag = null;
-        Service.OnRemoveNWNStatusEffect(Target);
+        Native.OnRemoveNWNStatusEffect(Target);
         Bench.Engine.CallsTo("DelayCommand").Where(call => (float)call.Arguments[0]! == 0f)
             .Should().ContainSingle("the suppression ends with the removal");
     }
@@ -405,7 +405,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         LastScriptEffectTag(tag);
         Now = Start.AddSeconds(1);
 
-        Service.OnStatusEffectInterval();
+        Native.OnStatusEffectInterval();
 
         Log.Should().Equal($"Tick:{ticking.Name}:{Target}");
         passive.IsFlaggedForRemoval.Should().BeFalse();
@@ -418,7 +418,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.Dead.Add(Target);
         LastScriptEffectTag(string.Empty);
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
 
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeFalse();
         Bench.Engine.CallsTo("RemoveEffectByTag").Should().ContainSingle();
@@ -426,7 +426,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.Dead.Clear();
         Bench.Invalid.Add(Bystander);
         Bench.Engine.ClearCalls();
-        Service.OnNWNStatusEffectInterval(Bystander);
+        Native.OnNWNStatusEffectInterval(Bystander);
         Bench.Engine.CallsTo("RemoveEffectByTag").Should().ContainSingle();
     }
 
@@ -435,7 +435,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
     {
         LastScriptEffectTag(string.Empty);
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
 
         Bench.Engine.CallsTo("RemoveEffectByTag")
             .Should().ContainSingle(call => ((string[])call.Arguments[1]!).Contains("STATUS_EFFECT"));
@@ -449,7 +449,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         LastScriptEffectTag(first.Id);
         Now = Start.AddSeconds(1);
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
 
         Log.Should().Equal($"Tick:{first.Name}:{Target}");
     }
@@ -461,7 +461,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.Dead.Add(Target);
         LastScriptEffectTag(effect.Id);
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
 
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeFalse();
         Log.Should().NotContain(line => line.StartsWith("Nearby:"));
@@ -473,13 +473,13 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.Engine.SetReturn("HasEffectByTag", true);
         LastScriptEffectTag("orphan");
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
         Bench.Engine.CallsTo("RemoveEffectByTag")
             .Should().ContainSingle(call => ((string[])call.Arguments[1]!).Contains("orphan"));
 
         Bench.Engine.ClearCalls();
         Applied<ProbeEffect>(Target, Caster);
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
         Bench.Engine.CallsTo("RemoveEffectByTag")
             .Should().ContainSingle(call => ((string[])call.Arguments[1]!).Contains("orphan"));
     }
@@ -490,13 +490,13 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         Bench.Dead.Add(Target);
         LastScriptEffectTag("orphan");
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
         Bench.Engine.CallsTo("RemoveEffectByTag")
             .Should().ContainSingle(call => ((string[])call.Arguments[1]!).Contains("orphan"), "the creature has no tracker");
 
         Bench.Engine.ClearCalls();
         Applied<ProbeEffect>(Target, Caster);
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
         Bench.Engine.CallsTo("RemoveEffectByTag")
             .Should().ContainSingle(call => ((string[])call.Arguments[1]!).Contains("orphan"), "the tracker does not know the tag");
     }
@@ -509,7 +509,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         LastScriptEffectTag(effect.Id);
         Now = Start.AddSeconds(1);
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
 
         Log.Should().BeEmpty();
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeTrue();
@@ -520,13 +520,13 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
     {
         LastScriptEffectTag("orphan");
 
-        Service.OnRemoveNWNStatusEffect(Target);
+        Native.OnRemoveNWNStatusEffect(Target);
         Bench.RunDeferred("DelayCommand");
         Bench.Engine.CallsTo("RemoveEffectByTag").Should().BeEmpty();
 
         Applied<ProbeEffect>(Target, Caster);
         Bench.Engine.ClearCalls();
-        Service.OnRemoveNWNStatusEffect(Target);
+        Native.OnRemoveNWNStatusEffect(Target);
         Bench.RunDeferred("DelayCommand");
         Bench.Engine.CallsTo("RemoveEffectByTag").Should().BeEmpty();
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeTrue();
@@ -540,7 +540,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         LastScriptEffectTag(effect.Id);
         Now = Start.AddSeconds(1);
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
 
         Log.Should().NotContain(line => line.StartsWith("Tick:"));
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeFalse();
@@ -553,7 +553,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         LastScriptEffectTag(effect.Id);
         Now = Start.AddSeconds(1);
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
 
         Log.Should().ContainInOrder($"Tick:{effect.Name}:{Target}", $"Nearby:{Target}:name-{Target}'s {effect.Name} effect has worn off.");
         Service.HasEffect(typeof(ProbeEffect), Target).Should().BeFalse();
@@ -566,7 +566,7 @@ public class StatusEffectServiceLifecycleTests : StatusEffectServiceTestBase
         LastScriptEffectTag(effect.Id);
         Now = Start.AddSeconds(1);
 
-        Service.OnNWNStatusEffectInterval(Target);
+        Native.OnNWNStatusEffectInterval(Target);
 
         Bench.Engine.CallsTo("RemoveEffectByTag")
             .Should().ContainSingle(call => ((string[])call.Arguments[1]!).Contains(effect.Id), "it is not on the tick list");

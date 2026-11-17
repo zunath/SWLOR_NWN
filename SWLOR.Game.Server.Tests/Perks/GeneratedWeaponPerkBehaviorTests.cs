@@ -636,8 +636,7 @@ public class GeneratedWeaponPerkBehaviorTests
         abilitySource.Should().Contain("BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence,",
             "recurring impacts must not consume a new activation's pending attack bonuses");
 
-        var statusEffectSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var statusEffectSource = StatusEffectSource.Read();
         statusEffectSource.Should().Contain("effect.IsFlaggedForRemoval");
         statusEffectSource.Should().Contain("effect.SendsWornOffMessage");
         statusEffectSource.Should().Contain("TryGetLimitedAttackDelayReduction(");
@@ -689,8 +688,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var root = FindRepositoryRoot();
         var nativeAttackSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "NativeSinks", "OnAIActionAttackObjectSink.cs"));
-        var statusEffectSource = File.ReadAllText(Path.Combine(
-            root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var statusEffectSource = StatusEffectSource.Read();
 
         var beginSwing = nativeAttackSource.IndexOf(
             "StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);",
@@ -1543,7 +1541,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var abilitySource = AbilitySource.Read();
         var usePerkFeatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         var nativeAttackSource = NativeCombatSource.AttackRoll();
-        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var statusEffectSource = StatusEffectSource.Read();
         statusEffectSource += File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectRules.cs"));
         var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
         var linkerSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "LinkCombatUpgradeFeatSpells.ps1"));
@@ -1914,7 +1912,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusSourceContains(root, "GuardedStatusEffect.cs", "GameServices.CombatDamageTaken.ApplyLowHPGuardEffectFromProtectedTarget(Source, defender, damage)");
 
         var combatSource = CombatSource.Read();
-        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var statusEffectSource = StatusEffectSource.Read();
         combatSource.Should().Contain("_statusEffect.OnGuardedHit(defender, attacker, preventedDamage)");
         statusEffectSource.Should().Contain("OfType<IGuardedHitStatusEffect>()");
 

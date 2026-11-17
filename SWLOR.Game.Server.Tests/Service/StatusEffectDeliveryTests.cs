@@ -75,10 +75,7 @@ public class StatusEffectDeliveryTests
     [Test]
     public void ControlResistanceFeedback_IsBuiltAfterBothRuntimeDurationConstraints()
     {
-        var root = FindRepositoryRoot();
-        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))).GetRoot();
-        var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var method = StatusEffectSource.Nodes<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "ApplyStatusEffectInternal");
         var feedback = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Single(node => node.Expression.ToString() == "BuildDurationResistanceMessage");
@@ -97,9 +94,7 @@ public class StatusEffectDeliveryTests
     [Test]
     public void ChildStatusApplication_PreservesItsInheritedAbilityOrigin()
     {
-        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))).GetRoot();
-        var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var method = StatusEffectSource.Nodes<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "ApplyStatusEffectInternal");
         var origin = method.DescendantNodes().OfType<AssignmentExpressionSyntax>()
             .Single(node => node.Left.ToString() == "statusEffect.OriginatingAbility");
@@ -111,9 +106,7 @@ public class StatusEffectDeliveryTests
     [Test]
     public void DurationRefresh_AppliesOutgoingBonusesBeforeResistanceWithoutRestartingTicks()
     {
-        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))).GetRoot();
-        var method = syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var method = StatusEffectSource.Nodes<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "RefreshStatusEffectDuration");
         var calls = method.DescendantNodes().OfType<InvocationExpressionSyntax>().ToArray();
         var outgoing = calls.Single(call => call.Expression.ToString() == "ApplyOutgoingStatusDurationAdjustments");
@@ -128,8 +121,7 @@ public class StatusEffectDeliveryTests
     [Test]
     public void ForceAffinity_DoesNotAlterStatusDuration()
     {
-        var root = FindRepositoryRoot();
-        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var statusEffectSource = StatusEffectSource.Read();
         var abilitySource = AbilitySource.Read();
 
         statusEffectSource.Should().NotContain("ApplyActiveForceAffinityDurationAdjustment");
@@ -140,9 +132,7 @@ public class StatusEffectDeliveryTests
     public void SubdualSelfApplication_IsPassedToBothControlBudgetClamps()
     {
         var root = FindRepositoryRoot();
-        var statusSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
-        var calls = CSharpSyntaxTree.ParseText(statusSource).GetRoot().DescendantNodes()
-            .OfType<InvocationExpressionSyntax>()
+        var calls = StatusEffectSource.Nodes<InvocationExpressionSyntax>()
             .Where(call => call.Expression.ToString() == "ClampHardCrowdControlDurationTicks").ToArray();
         calls.Should().HaveCount(2);
         calls.Should().OnlyContain(call => call.ArgumentList.Arguments.Any(arg =>

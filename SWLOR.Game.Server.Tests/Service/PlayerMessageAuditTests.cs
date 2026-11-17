@@ -49,12 +49,13 @@ public class PlayerMessageAuditTests
     public void GameplayOutcomes_CannotBeHiddenBehindDiagnostics()
     {
         var root = FindRepositoryRoot();
-        var files = new[] { "Domain/Space/SpaceService.cs", "Domain/Character/StatusEffectService.cs",
+        var files = new[] { "Domain/Space/SpaceService.cs",
             "Domain/Quests/FactionService.cs", "Domain/Economy/GuildService.cs", "Domain/Character/SkillService.cs", "Domain/Companions/BeastMasteryService.cs",
             "Domain/Quests/QuestObjectives.cs", "Domain/Quests/KillTargetObjective.cs", "Feature/RoleplayXP.cs", "Domain/Abilities/MimicryService.cs",
             "Domain/World/FishingService.cs", "Domain/World/WeatherService.cs", "Feature/ScavengePoint.cs",
             "Feature/StatusEffectDefinition/GuardedStatusEffect.cs" }
             .Select(relative => Path.Combine(root, "SWLOR.Game.Server", relative)).ToList();
+        files.AddRange(StatusEffectSource.Paths());
         files.AddRange(AbilitySource.Paths());
         files.AddRange(Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server", "Feature", "ShipModuleDefinition"), "*.cs"));
 
@@ -190,8 +191,7 @@ public class PlayerMessageAuditTests
     [Test]
     public void StatusValidationFailures_RemainVisibleInProduction()
     {
-        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs");
-        var failureCalls = ReadCalls(file).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
+        var failureCalls = StatusEffectSource.Paths().SelectMany(ReadCalls).Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>()
             .FirstOrDefault()?.Identifier.ValueText == "SendStatusEffectFailure").ToArray();
         failureCalls.Should().Contain(call => MethodName(call) == "SendMessageToPC");
         failureCalls.Should().NotContain(call => MethodName(call) == "SendDiagnosticToPlayer");

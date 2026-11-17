@@ -36,7 +36,7 @@ public class StatusEffectServiceRestartTests : StatusEffectServiceTestBase
         Applied<ProbeEffect>(Online, Online, Stance);
         Bench.Db.With(new Player { Id = "uuid-500" });
 
-        Service.SaveTogglesForRestart();
+        Session.SaveTogglesForRestart();
 
         Bench.Db.Saved.Should().ContainSingle().Which.Should().BeOfType<Player>()
             .Which.TogglesToRestore.Should().Equal(nameof(ProbeEffect));
@@ -48,7 +48,7 @@ public class StatusEffectServiceRestartTests : StatusEffectServiceTestBase
         Applied<ProbeEffect>(Online, Online);
         Bench.Db.With(new Player { Id = "uuid-500" });
 
-        Service.SaveTogglesForRestart();
+        Session.SaveTogglesForRestart();
 
         Bench.Db.Saved.Should().BeEmpty();
     }
@@ -58,12 +58,12 @@ public class StatusEffectServiceRestartTests : StatusEffectServiceTestBase
     {
         Applied<ProbeEffect>(Online, Online, Stance);
 
-        Service.SaveTogglesForRestart();
+        Session.SaveTogglesForRestart();
         Bench.Db.Saved.Should().BeEmpty();
 
         Bench.Db.With(new Player { Id = "uuid-500" });
         Bench.Dms.Add(Online);
-        Service.SaveTogglesForRestart();
+        Session.SaveTogglesForRestart();
         Bench.Db.Saved.Should().BeEmpty();
     }
 
@@ -72,11 +72,11 @@ public class StatusEffectServiceRestartTests : StatusEffectServiceTestBase
     {
         Applied<ProbeEffect>(LoggedOut, LoggedOut, Stance);
         Bench.Engine.SetReturn("GetExitingObject", LoggedOut);
-        Service.OnPlayerExit();
+        Session.OnPlayerExit();
         Bench.Engine.SetReturn("GetFirstPC", Invalid);
         Bench.Db.With(new Player { Id = "uuid-501" });
 
-        Service.SaveTogglesForRestart();
+        Session.SaveTogglesForRestart();
 
         Bench.Db.Saved.Should().ContainSingle().Which.Id.Should().Be("uuid-501");
     }
@@ -84,10 +84,10 @@ public class StatusEffectServiceRestartTests : StatusEffectServiceTestBase
     private void StartLoginWith(params string[] toggles)
     {
         Bench.Db.With(new Player { Id = "uuid-502", TogglesToRestore = toggles.ToList() });
-        Service.DefinitionTypes = new[] { typeof(ProbeEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(ProbeEffect) };
+        Catalog.CacheData();
         Bench.Engine.SetReturn("GetEnteringObject", Returning);
-        Service.OnPlayerEnter();
+        Session.OnPlayerEnter();
         Bench.Engine.SetReturnHandler("GetCurrentHitPoints", _ => 10);
     }
 
@@ -95,7 +95,7 @@ public class StatusEffectServiceRestartTests : StatusEffectServiceTestBase
     {
         var detail = new AbilityDetail();
         detail.StatusEffectTypesRemovedOnPerkRefund.Add(typeof(ProbeEffect));
-        Service.AbilityDetails[ToggleFeat] = detail;
+        Bench.AbilityDetails[ToggleFeat] = detail;
         if (known)
             Bench.KnownFeats.Add((Returning, ToggleFeat));
     }

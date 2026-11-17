@@ -119,6 +119,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             ctx.AssertEqual(now.Active, now.Objects.Count, "every active spawn is exactly one object in the area (no area spawned twice)");
             ctx.AssertEqual(now.Active, now.SpawnIds, "no two objects share a spawn id");
+            var spawnedInArea = new HashSet<uint>(now.Objects);
+            ctx.Assert(now.ActiveObjects.SetEquals(spawnedInArea),
+                $"the registry's active spawns are the spawned objects standing in the area; only in the registry: [{string.Join(", ", now.ActiveObjects.Except(spawnedInArea))}], only in the area: [{string.Join(", ", spawnedInArea.Except(now.ActiveObjects))}]");
             ctx.Assert(now.Objects.Count >= objectsBefore, $"no spawned object was lost ({now.Objects.Count} of {objectsBefore})");
             ctx.AssertEqual(activeBefore + queuedBefore, now.Active + now.Queued, "active plus queued spawns of the area are unchanged");
 

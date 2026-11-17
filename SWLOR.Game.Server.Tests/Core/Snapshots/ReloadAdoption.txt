@@ -20,7 +20,7 @@ db_loaded SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterDatabaseLoad
   nothing: Nothing reads the migration state after boot, and the host's schema gate refuses a build that needs a server migration.
 mod_content_chg SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
   nothing: The walkmeshes it stored stay in Redis; the rerun RetrieveWalkmeshes reads them.
-mod_cache_bef SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
+mod_cache_bef SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.StoreSpawns
   adopt AdoptSpawns carry CarrySpawns
 mod_cache_aft SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterCacheLoaded
   adopt CheckCharacterVersion
@@ -57,13 +57,13 @@ mod_cache_aft SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
 
 == ADOPTED STATE ==
 SWLOR.Game.Server.Domain.Abilities.MimicryService._techniqueDescriptions
-SWLOR.Game.Server.Domain.Creatures.SpawnService._activeSpawnsByArea
-SWLOR.Game.Server.Domain.Creatures.SpawnService._allSpawnsByArea
-SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedAreaDespawns
-SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedResourceDespawns
-SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedSpawns
-SWLOR.Game.Server.Domain.Creatures.SpawnService._queuedSpawnsByArea
-SWLOR.Game.Server.Domain.Creatures.SpawnService._spawns
+SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._activeSpawnsByArea
+SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._allSpawnsByArea
+SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._queuedAreaDespawns
+SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._queuedResourceDespawns
+SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._queuedSpawns
+SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._queuedSpawnsByArea
+SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._spawns
 SWLOR.Game.Server.Domain.Economy.GuildService.<DateTasksLoaded>k__BackingField
 SWLOR.Game.Server.Domain.Economy.GuildService._activeGuildTasks
 SWLOR.Game.Server.Domain.Economy.GuildService._activeGuildTasksByRank
@@ -85,7 +85,7 @@ SWLOR.Game.Server.Domain.World.WeatherService._pattern
 SWLOR.Game.Server.Domain.World.WeatherService._regions
 
 == REROLLED STATE ==
-SWLOR.Game.Server.Domain.Creatures.SpawnService._spawnTables
+SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._spawnTables
 SWLOR.Game.Server.Domain.UI.GuiService._elementEvents
 SWLOR.Game.Server.Domain.UI.GuiService._windowTemplates
 SWLOR.Game.Server.Domain.World.FishingService._fishResrefsByLocation

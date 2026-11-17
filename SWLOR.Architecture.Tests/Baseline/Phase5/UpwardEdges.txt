@@ -46,7 +46,6 @@ SWLOR.Game.Server/Domain/Creatures/AIService.cs: Creatures -> Social | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> Character | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> UI | 6
 SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs: Foundation -> Character | 3
-SWLOR.Game.Server/Domain/Foundation/WalkmeshService.cs: Foundation -> Creatures | 2
 SWLOR.Game.Server/Domain/Items/EquipmentPredicates.cs: Items -> Combat | 3
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Combat | 7
 SWLOR.Game.Server/Domain/Items/ItemService.cs: Items -> Crafting | 3

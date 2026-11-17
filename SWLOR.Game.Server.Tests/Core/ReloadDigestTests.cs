@@ -177,14 +177,14 @@ public class ReloadDigestTests
         {
             "SWLOR.Game.Server.Domain.Foundation.CacheService.ItemNamesByResref",
             "SWLOR.Game.Server.Domain.UI.GuiService._windowTypesByKey",
-            "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawnTablesLoaded",
+            "SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._spawnTablesLoaded",
             "SWLOR.Game.Server.Domain.Crafting.CraftService._recipes",
             "SWLOR.Game.Server.Domain.Economy.GuildService._activeGuilds",
         });
         first.Select(line => line.Name).Should().NotContain(new[]
         {
-            "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawns",
-            "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawnTables",
+            "SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._spawns",
+            "SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._spawnTables",
             "SWLOR.Game.Server.Domain.UI.GuiService._playerWindows",
             "SWLOR.Game.Server.Domain.Creatures.SpawnService._ai",
         }, "adopted, rerolled and runtime state and other services have no cache digest");
@@ -237,7 +237,7 @@ public class ReloadDigestTests
         lines.Select(line => line.Name.Substring(0, line.Name.LastIndexOf('.'))).Distinct().Should().Contain(new[]
         {
             "SWLOR.Game.Server.Domain.Abilities.MimicryService",
-            "SWLOR.Game.Server.Domain.Creatures.SpawnService",
+            "SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService",
             "SWLOR.Game.Server.Domain.Economy.GuildService",
             "SWLOR.Game.Server.Domain.Space.SpaceService",
             "SWLOR.Game.Server.Domain.World.PropertyLoaderService",
@@ -249,7 +249,7 @@ public class ReloadDigestTests
             "the carried state is compared with the old build's at quiescence as the adopted state is (P4-15)");
         lines.Select(line => line.Name).Should().Contain(new[]
         {
-            "SWLOR.Game.Server.Domain.Creatures.SpawnService._spawns",
+            "SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService._spawns",
             "SWLOR.Game.Server.Domain.Economy.GuildService.DateTasksLoaded",
             "SWLOR.Game.Server.Feature.StoreManagement._stores",
             "SWLOR.Game.Server.Domain.Character.StatusEffectService._creatureEffects",

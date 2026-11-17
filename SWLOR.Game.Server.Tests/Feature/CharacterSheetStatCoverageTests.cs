@@ -136,7 +136,7 @@ public class CharacterSheetStatCoverageTests
     public void StatAndCombatServices_ExposeTheAccessorsTheCharacterSheetConsumes()
     {
         // The sheet reaches the stat service through GameServices.Stat, typed as its interface.
-        var stat = ReadService("Domain", "Character", "IStatService.cs");
+        var stat = StatSource.ReadInterfaces();
         var combat = CombatSource.Read();
 
         // The sheet must reuse these rather than re-deriving the shield bonus or the Guard clamp.
@@ -153,12 +153,6 @@ public class CharacterSheetStatCoverageTests
             "GuiDefinition",
             "ViewModel",
             "CharacterSheetViewModel.cs"));
-    }
-
-    private static string ReadService(params string[] path)
-    {
-        return File.ReadAllText(Path.Combine(
-            new[] { FindRepositoryRoot().FullName, "SWLOR.Game.Server" }.Concat(path).ToArray()));
     }
 
     private static DirectoryInfo FindRepositoryRoot()

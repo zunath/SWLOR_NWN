@@ -13,8 +13,8 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 namespace SWLOR.Game.Server.Domain.Crafting
 {
     /// <summary>
-    /// Crafting: the recipe, category and enhancement caches, recipe requirement checks, enhancement item properties, blueprint
-    /// details and the research cost formulas. Static callers reach the container's instance through <c>GameServices.Craft</c>; the event handlers are on <see cref="CraftService"/>.
+    /// Crafting: the recipe, category and enhancement caches and the recipe requirement checks. The enhancement item properties and the devices
+    /// are in their own services. Static callers reach the container's instance through <c>GameServices.Craft</c>; the event handlers are on <see cref="CraftService"/>.
     /// </summary>
     public interface ICraftService
     {
@@ -120,11 +120,6 @@ namespace SWLOR.Game.Server.Domain.Crafting
         Dictionary<RecipeCategoryType, RecipeCategoryAttribute> GetRecipeCategoriesBySkill(SkillType skill);
 
         /// <summary>
-        /// When a crafting device is used, display the recipe menu.
-        /// </summary>
-        void UseCraftingDevice();
-
-        /// <summary>
         /// Builds a recipe's detail for use within the NUI window.
         /// </summary>
         /// <param name="player">The player to build for.</param>
@@ -155,41 +150,6 @@ namespace SWLOR.Game.Server.Domain.Crafting
         /// <param name="level">The level to search by.</param>
         /// <returns>A recipe level detail.</returns>
         RecipeLevelDetail GetRecipeLevelDetail(int level);
-
-        /// <summary>
-        /// Builds an item property for a given enhancement type.
-        /// </summary>
-        /// <param name="subTypeId">The sub type of the enhancement</param>
-        /// <param name="amount">The amount to apply.</param>
-        /// <returns></returns>
-        IEnumerable<ItemProperty> BuildItemPropertiesForEnhancement(EnhancementSubType subTypeId, int amount, CombatDamageType damageType = CombatDamageType.Invalid);
-
-        ItemProperty BuildItemPropertyForEnhancement(EnhancementSubType subTypeId, int amount);
-
-        bool IsWeaponDamageEnhancement(EnhancementSubType subTypeId);
-
-        bool TryGetWeaponDamageTypeForEnhancement(EnhancementSubType subTypeId, CombatDamageType explicitDamageType, out CombatDamageType damageType);
-
-        /// <summary>
-        /// Applies an enhancement-provided item property onto a crafted item,
-        /// merging with any existing property of the same type. DMG amounts are
-        /// summed together; a conflicting WeaponDamageType is resolved by randomly
-        /// keeping one of the two rather than always favoring the latest one applied.
-        /// </summary>
-        void ApplyCraftedItemProperty(uint item, ItemProperty ip);
-
-        /// <summary>
-        /// Merges a crafted property into a list of properties by the rules <see cref="ApplyCraftedItemProperty"/> applies to an item:
-        /// a property of the same type (and subtype, when the incoming one has one) is summed into one, a weapon keeps one damage type,
-        /// and Force is never a weapon damage type. Working on a list lets a craft settle every property before any of them reaches
-        /// the item, so the item never has a property removed and re-added: a removal is not committed to the item's saved property
-        /// list until later, so a serialized form or copy taken in the same script would still carry the pre-merge property.
-        /// </summary>
-        void MergeCraftedItemProperty(List<ItemProperty> properties, ItemProperty ip);
-
-        void UseRefinery();
-
-        void UseResearchTerminal();
 
         /// <summary>
         /// Retrieves a blueprint detail object about an item.
@@ -231,14 +191,5 @@ namespace SWLOR.Game.Server.Domain.Crafting
         /// <param name="reductionBonus">The % reduction towards credit cost to research</param>
         /// <returns>The number of seconds to wait before the blueprint is researched to the next level.</returns>
         int CalculateBlueprintResearchSeconds(RecipeType recipe, int blueprintLevel, int reductionBonus);
-
-        /// <summary>
-        /// When a property is removed, also remove any associated research jobs.
-        /// </summary>
-        void OnRemoveProperty();
-
-        /// <summary>Applies the player's selected crafting styles again when they log in; the effects are not kept across a logout.</summary>
-        void RestoreCraftingStylesOnEnter();
-
     }
 }

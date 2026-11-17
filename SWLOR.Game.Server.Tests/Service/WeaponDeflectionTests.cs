@@ -108,7 +108,7 @@ public class WeaponDeflectionTests
     [Test]
     public void DeflectionRiders_PreserveGenericStaminaRestoreAndFilterForceGyreToRanged()
     {
-        var statSource = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatService.cs");
+        var statSource = StatSource.Read();
         var statRulesSource = ReadSource("SWLOR.Game.Server", "Domain", "Character", "StatRules.cs");
         var combatSource = CombatSource.Read();
         var abilitySource = ReadSource(

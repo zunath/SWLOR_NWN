@@ -7,7 +7,7 @@
 # Test-MaintainabilityParity.ps1 and Sync-MaintainabilityBranch.ps1 map master's name to the branch name before they compare
 # or place handlers. The branch name must be a line of SWLOR.Game.Server/Core/ScriptHandlerOrder.txt. List the rename in the
 # same pull request that makes it.
-SWLOR.Game.Server.Service.CraftService.CraftingStyleSelection.OnPlayerEnter SWLOR.Game.Server.Domain.Crafting.CraftService.RestoreCraftingStylesOnEnter
+SWLOR.Game.Server.Service.CraftService.CraftingStyleSelection.OnPlayerEnter SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.RestoreCraftingStylesOnEnter
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAreaExit SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerAreaExit
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.RenameToggleAbilitiesCommand SWLOR.Game.Server.Domain.Creatures.CompanionControlService.RenameToggleAbilitiesCommand
 SWLOR.Game.Server.Service.CompanionControlService.CompanionControl.OnOwnerAttacked SWLOR.Game.Server.Domain.Creatures.CompanionControlService.OnOwnerAttacked
@@ -184,14 +184,14 @@ SWLOR.Game.Server.Service.Enmity.HealingStarted SWLOR.Game.Server.Domain.Combat.
 SWLOR.Game.Server.Service.Enmity.PlayerDeath SWLOR.Game.Server.Domain.Combat.EnmityService.PlayerDeath
 SWLOR.Game.Server.Service.Enmity.PlayerExit SWLOR.Game.Server.Domain.Combat.EnmityService.PlayerExit
 SWLOR.Game.Server.Service.EquipmentUnequip.BeforeUnequip SWLOR.Game.Server.Domain.Items.EquipmentUnequipService.BeforeUnequip
-SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnEnter SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnEnter
-SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnExit SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnExit
-SWLOR.Game.Server.Service.ExtraHotbars.OpenBarsOnEnter SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.OpenBarsOnEnter
-SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnAcquire SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnAcquire
-SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnEquip SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnEquip
-SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnHeartbeat SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnHeartbeat
-SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnacquire SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnacquire
-SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnequip SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnequip
+SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnEnter SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.LockBarsOnEnter
+SWLOR.Game.Server.Service.ExtraHotbars.LockBarsOnExit SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.LockBarsOnExit
+SWLOR.Game.Server.Service.ExtraHotbars.OpenBarsOnEnter SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.OpenBarsOnEnter
+SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnAcquire SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnAcquire
+SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnEquip SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnEquip
+SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnHeartbeat SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnHeartbeat
+SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnacquire SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnUnacquire
+SWLOR.Game.Server.Service.ExtraHotbars.RefreshOnUnequip SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnUnequip
 SWLOR.Game.Server.Service.Faction.LoadFactions SWLOR.Game.Server.Domain.Quests.FactionService.LoadFactions
 SWLOR.Game.Server.Service.Fishing.CacheData SWLOR.Game.Server.Domain.World.FishingService.CacheData
 SWLOR.Game.Server.Service.Fishing.ClickFishingPoint SWLOR.Game.Server.Domain.World.FishingService.ClickFishingPoint
@@ -336,10 +336,10 @@ SWLOR.Game.Server.Service.Weather.LoadData SWLOR.Game.Server.Domain.World.Weathe
 SWLOR.Game.Server.Service.Weather.OnAreaEnter SWLOR.Game.Server.Domain.World.WeatherService.OnAreaEnter
 SWLOR.Game.Server.Service.Weather.OnModuleHeartbeat SWLOR.Game.Server.Domain.World.WeatherService.OnModuleHeartbeat
 SWLOR.Game.Server.Service.Craft.CacheData SWLOR.Game.Server.Domain.Crafting.CraftService.CacheData
-SWLOR.Game.Server.Service.Craft.UseCraftingDevice SWLOR.Game.Server.Domain.Crafting.CraftService.UseCraftingDevice
-SWLOR.Game.Server.Service.Craft.UseRefinery SWLOR.Game.Server.Domain.Crafting.CraftService.UseRefinery
-SWLOR.Game.Server.Service.Craft.UseResearchTerminal SWLOR.Game.Server.Domain.Crafting.CraftService.UseResearchTerminal
-SWLOR.Game.Server.Service.Craft.OnRemoveProperty SWLOR.Game.Server.Domain.Crafting.CraftService.OnRemoveProperty
+SWLOR.Game.Server.Service.Craft.UseCraftingDevice SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.UseCraftingDevice
+SWLOR.Game.Server.Service.Craft.UseRefinery SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.UseRefinery
+SWLOR.Game.Server.Service.Craft.UseResearchTerminal SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.UseResearchTerminal
+SWLOR.Game.Server.Service.Craft.OnRemoveProperty SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.OnRemoveProperty
 SWLOR.Game.Server.Service.Currency.CacheCurrencies SWLOR.Game.Server.Domain.Economy.CurrencyService.CacheCurrencies
 SWLOR.Game.Server.Service.CasinoSlot.OnUsed SWLOR.Game.Server.Domain.Economy.CasinoSlotService.OnUsed
 SWLOR.Game.Server.Service.Guild.LoadData SWLOR.Game.Server.Domain.Economy.GuildService.LoadData

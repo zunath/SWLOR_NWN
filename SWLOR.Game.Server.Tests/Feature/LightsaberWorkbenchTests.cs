@@ -217,7 +217,7 @@ public class LightsaberWorkbenchTests
         // same merge the enhancement slots use.
         var viewModel = File.ReadAllText(Path.Combine(serverRoot, "Feature", "GuiDefinition", "ViewModel", "LightsaberWorkbenchViewModel.cs"));
         viewModel.Should().Contain("LightsaberWorkbenchService.WeaponSubmissionTokenTag");
-        viewModel.Should().MatchRegex(@"ShouldTransferSubmissionProperty\([^;]*\)\)\s*continue;\s*Craft\.ApplyCraftedItemProperty\(item, ip\);");
+        viewModel.Should().MatchRegex(@"ShouldTransferSubmissionProperty\([^;]*\)\)\s*continue;\s*CraftEnhancementProperty.ApplyCraftedItemProperty\(item, ip\);");
 
         var cases = new (ItemPropertyType Type, int SubType, bool Transfers)[]
         {

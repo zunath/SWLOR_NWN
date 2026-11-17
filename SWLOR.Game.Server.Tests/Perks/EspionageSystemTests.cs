@@ -81,12 +81,7 @@ public class EspionageSystemTests
             .Should()
             .Be(0m, "even the strongest NPC must not automatically pierce maximum committed Stealth");
 
-        var statSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "StatService.cs"));
+        var statSource = StatSource.Read();
         statSource.Should().Contain("!GetIsDMPossessed(creature)",
             "DM-possessed creatures must retain uncapped staff Detection");
     }
@@ -401,7 +396,7 @@ public class EspionageSystemTests
     public void StealthStaminaDrain_CannotBeOutpacedOrLost()
     {
         var root = FindRepositoryRoot();
-        var statSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var statSource = StatSource.Method("RestoreStamina").ToString();
         var restoreStart = statSource.IndexOf("public int RestoreStamina(", StringComparison.Ordinal);
         var dbLookup = statSource.IndexOf("dbPlayer ??= _db.Get<Player>", restoreStart, StringComparison.Ordinal);
         var gate = statSource.IndexOf(

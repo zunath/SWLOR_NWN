@@ -73,7 +73,7 @@ public class AccuracyItemPropertyTests
     public void AccuracyReaders_UseOnlyTheCustomProperty()
     {
         var root = FindRepositoryRoot();
-        var stat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var stat = StatSource.Read();
 
         stat.Should().NotContain("ItemPropertyType.AccuracyBonus");
         stat.Should().NotContain("ItemPropertyType.EnhancementBonus");
@@ -83,7 +83,7 @@ public class AccuracyItemPropertyTests
 
         using (var engine = new PlayerEngine())
         {
-            CraftServices.Create().BuildItemPropertyForEnhancement(EnhancementSubType.Accuracy, 7);
+            CraftServices.CreateEnhancementProperties().BuildItemPropertyForEnhancement(EnhancementSubType.Accuracy, 7);
 
             engine.Engine.CountOf("ItemPropertyAttackBonus").Should().Be(0);
             var custom = engine.Engine.CallsTo("ItemPropertyCustom").Should().ContainSingle().Subject;

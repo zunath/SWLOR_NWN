@@ -22,7 +22,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.MaxHP = 300;
         Bench.NativeLevels = 2;
 
-        Service.AdjustPlayerMaxHP(record, PlayerCreature, 10);
+        CreatureStat.AdjustPlayerMaxHP(record, PlayerCreature, 10);
 
         record.MaxHP.Should().Be(310);
         Bench.Creature.CallsTo("SetMaxHitPointsByLevel").Select(call => ((int)call.Arguments[1]!, (int)call.Arguments[2]!))
@@ -37,7 +37,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.MaxHP = 2;
         Bench.NativeLevels = 3;
 
-        Service.AdjustPlayerMaxHP(record, PlayerCreature, -10);
+        CreatureStat.AdjustPlayerMaxHP(record, PlayerCreature, -10);
 
         record.MaxHP.Should().Be(-8);
         Bench.Creature.CallsTo("SetMaxHitPointsByLevel").Select(call => (int)call.Arguments[2]!).Should().Equal(1, 1, 1);
@@ -52,7 +52,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         Bench.CurrentHitPoints[PlayerCreature] = current;
         Bench.MaxHitPoints[PlayerCreature] = () => maximum;
 
-        Service.AdjustPlayerMaxHP(record, PlayerCreature, 0);
+        CreatureStat.AdjustPlayerMaxHP(record, PlayerCreature, 0);
 
         Bench.Engine.CountOf("SetCurrentHitPoints").Should().Be(lowered ? 1 : 0);
         if (lowered)
@@ -67,7 +67,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.TemporaryFoodHP = 30;
         Bench.Wear(PlayerCreature, InventorySlot.Chest, BaseItem.Armor, (ItemPropertyType.HPBonus, -1, 125));
 
-        Service.RefreshPlayerMaxHP(PlayerCreature).Should().BeTrue();
+        CreatureStat.RefreshPlayerMaxHP(PlayerCreature).Should().BeTrue();
 
         record.MaxHP.Should().Be(StatService.BaseHP + 125 + 30);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}", "LimitCheck:100", $"DB.Set:{PlayerUuid}");
@@ -80,7 +80,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.MaxHP = 5;
         record.TemporaryFoodHP = -30;
 
-        Service.RefreshPlayerMaxHP(PlayerCreature).Should().BeTrue();
+        CreatureStat.RefreshPlayerMaxHP(PlayerCreature).Should().BeTrue();
 
         record.MaxHP.Should().Be(StatService.BaseHP);
     }
@@ -91,7 +91,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         var record = Bench.AddPlayer();
         record.MaxHP = StatService.BaseHP;
 
-        Service.RefreshPlayerMaxHP(PlayerCreature).Should().BeFalse();
+        CreatureStat.RefreshPlayerMaxHP(PlayerCreature).Should().BeFalse();
 
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
     }
@@ -99,21 +99,21 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     [Test]
     public void RefreshPlayerMaxHP_SkipsAnythingButAPlayerWithARecord()
     {
-        Service.RefreshPlayerMaxHP(ObjectInvalid).Should().BeFalse();
+        CreatureStat.RefreshPlayerMaxHP(ObjectInvalid).Should().BeFalse();
         Bench.AddNpc();
-        Service.RefreshPlayerMaxHP(Npc).Should().BeFalse();
+        CreatureStat.RefreshPlayerMaxHP(Npc).Should().BeFalse();
 
         Bench.AddPlayer();
         Bench.Dms.Add(PlayerCreature);
-        Service.RefreshPlayerMaxHP(PlayerCreature).Should().BeFalse();
+        CreatureStat.RefreshPlayerMaxHP(PlayerCreature).Should().BeFalse();
         Bench.Dms.Clear();
         Bench.Possessed.Add(PlayerCreature);
-        Service.RefreshPlayerMaxHP(PlayerCreature).Should().BeFalse();
+        CreatureStat.RefreshPlayerMaxHP(PlayerCreature).Should().BeFalse();
         Bench.Possessed.Clear();
         Bench.Log.Should().BeEmpty();
 
         Bench.Records.Clear();
-        Service.RefreshPlayerMaxHP(PlayerCreature).Should().BeFalse();
+        CreatureStat.RefreshPlayerMaxHP(PlayerCreature).Should().BeFalse();
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
     }
 
@@ -124,7 +124,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         Bench.Wear(PlayerCreature, InventorySlot.Chest, BaseItem.Armor, (ItemPropertyType.HPBonus, -1, 10), (ItemPropertyType.Attack, -1, 99));
         Bench.Wear(PlayerCreature, InventorySlot.Arms, BaseItem.PowerGlove, (ItemPropertyType.HPBonus, -1, 7));
 
-        Service.GetEquippedHPBonus(PlayerCreature).Should().Be(24);
+        CreatureStat.GetEquippedHPBonus(PlayerCreature).Should().Be(24);
     }
 
     [Test]
@@ -135,7 +135,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         Bench.Wear(PlayerCreature, InventorySlot.Arms, BaseItem.PowerGlove, (ItemPropertyType.Stamina, -1, 7));
         Bench.Wear(PlayerCreature, InventorySlot.LeftHand, BaseItem.CompanionPistol, (ItemPropertyType.Evasion, -1, 100));
 
-        var totals = Service.GetEquippedStatTotals(PlayerCreature);
+        var totals = Record.GetEquippedStatTotals(PlayerCreature);
 
         totals.Evasion.Should().Be(10);
         totals.FP.Should().Be(3);
@@ -152,7 +152,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.Stamina = 90;
         Bench.Wear(PlayerCreature, InventorySlot.Chest, BaseItem.Armor, (ItemPropertyType.FP, -1, 5), (ItemPropertyType.Stamina, -1, 6));
 
-        var corrected = Service.RefreshPlayerEquipmentStats(PlayerCreature, EquipmentRecordStats.FP | EquipmentRecordStats.Stamina);
+        var corrected = Record.RefreshPlayerEquipmentStats(PlayerCreature, EquipmentRecordStats.FP | EquipmentRecordStats.Stamina);
 
         corrected.Should().Be(EquipmentRecordStats.FP | EquipmentRecordStats.Stamina);
         record.MaxFP.Should().Be(StatService.BaseFP + 5);
@@ -170,7 +170,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.FP = 500;
         record.Evasion = 1;
 
-        Service.RefreshPlayerEquipmentStats(PlayerCreature, EquipmentRecordStats.FP | EquipmentRecordStats.Evasion)
+        Record.RefreshPlayerEquipmentStats(PlayerCreature, EquipmentRecordStats.FP | EquipmentRecordStats.Evasion)
             .Should().Be(EquipmentRecordStats.Evasion);
 
         record.FP.Should().Be(500);
@@ -183,7 +183,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         var record = Bench.AddPlayer();
         record.Evasion = 0;
 
-        Service.RefreshPlayerEquipmentStats(PlayerCreature, EquipmentRecordStats.Evasion).Should().Be(EquipmentRecordStats.None);
+        Record.RefreshPlayerEquipmentStats(PlayerCreature, EquipmentRecordStats.Evasion).Should().Be(EquipmentRecordStats.None);
 
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
     }
@@ -192,20 +192,20 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     public void RefreshPlayerEquipmentStats_SkipsNothingSelectedAndAnythingButAPlayerWithARecord()
     {
         Bench.AddPlayer();
-        Service.RefreshPlayerEquipmentStats(PlayerCreature, EquipmentRecordStats.None).Should().Be(EquipmentRecordStats.None);
-        Service.RefreshPlayerEquipmentStats(ObjectInvalid).Should().Be(EquipmentRecordStats.None);
+        Record.RefreshPlayerEquipmentStats(PlayerCreature, EquipmentRecordStats.None).Should().Be(EquipmentRecordStats.None);
+        Record.RefreshPlayerEquipmentStats(ObjectInvalid).Should().Be(EquipmentRecordStats.None);
         Bench.AddNpc();
-        Service.RefreshPlayerEquipmentStats(Npc).Should().Be(EquipmentRecordStats.None);
+        Record.RefreshPlayerEquipmentStats(Npc).Should().Be(EquipmentRecordStats.None);
         Bench.Dms.Add(PlayerCreature);
-        Service.RefreshPlayerEquipmentStats(PlayerCreature).Should().Be(EquipmentRecordStats.None);
+        Record.RefreshPlayerEquipmentStats(PlayerCreature).Should().Be(EquipmentRecordStats.None);
         Bench.Dms.Clear();
         Bench.Possessed.Add(PlayerCreature);
-        Service.RefreshPlayerEquipmentStats(PlayerCreature).Should().Be(EquipmentRecordStats.None);
+        Record.RefreshPlayerEquipmentStats(PlayerCreature).Should().Be(EquipmentRecordStats.None);
         Bench.Possessed.Clear();
         Bench.Log.Should().BeEmpty();
 
         Bench.Records.Clear();
-        Service.RefreshPlayerEquipmentStats(PlayerCreature).Should().Be(EquipmentRecordStats.None);
+        Record.RefreshPlayerEquipmentStats(PlayerCreature).Should().Be(EquipmentRecordStats.None);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
     }
 
@@ -220,7 +220,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         totals.Add(ItemPropertyType.CPBonus, 1, 5);
         totals.Add(ItemPropertyType.Attack, -1, 6);
 
-        var corrected = Service.ApplyEquipmentStatTotals(record, totals, EquipmentRecordStats.All);
+        var corrected = Record.ApplyEquipmentStatTotals(record, totals, EquipmentRecordStats.All);
 
         corrected.Should().HaveFlag(EquipmentRecordStats.Defense);
         corrected.Should().HaveFlag(EquipmentRecordStats.Control);
@@ -234,7 +234,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.Attack.Should().Be(6);
         record.Resistances.Should().NotBeNull();
 
-        Service.ApplyEquipmentStatTotals(record, totals, EquipmentRecordStats.All).Should().Be(EquipmentRecordStats.None);
+        Record.ApplyEquipmentStatTotals(record, totals, EquipmentRecordStats.All).Should().Be(EquipmentRecordStats.None);
     }
 
     [Test]
@@ -242,7 +242,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     {
         var record = new Player { Attack = 9, Evasion = 9 };
 
-        Service.ApplyEquipmentStatTotals(record, new EquipmentStatTotals(), EquipmentRecordStats.Evasion)
+        Record.ApplyEquipmentStatTotals(record, new EquipmentStatTotals(), EquipmentRecordStats.Evasion)
             .Should().Be(EquipmentRecordStats.Evasion);
 
         record.Attack.Should().Be(9);
@@ -256,11 +256,11 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.MaxFP = 20;
         record.FP = 20;
 
-        Service.AdjustPlayerMaxFP(record, -5, PlayerCreature);
+        Record.AdjustPlayerMaxFP(record, -5, PlayerCreature);
         record.MaxFP.Should().Be(15);
         record.FP.Should().Be(15);
 
-        Service.AdjustPlayerMaxFP(record, -30, PlayerCreature);
+        Record.AdjustPlayerMaxFP(record, -30, PlayerCreature);
         record.MaxFP.Should().Be(-15);
         record.FP.Should().Be(0, "the maximum may go negative but the pool does not");
     }
@@ -272,11 +272,11 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.MaxStamina = 20;
         record.Stamina = 20;
 
-        Service.AdjustPlayerMaxSTM(record, -5, PlayerCreature);
+        Record.AdjustPlayerMaxSTM(record, -5, PlayerCreature);
         record.MaxStamina.Should().Be(15);
         record.Stamina.Should().Be(15);
 
-        Service.AdjustPlayerMaxSTM(record, -30, PlayerCreature);
+        Record.AdjustPlayerMaxSTM(record, -30, PlayerCreature);
         record.MaxStamina.Should().Be(-15);
         record.Stamina.Should().Be(0);
     }
@@ -290,11 +290,11 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         Bench.Dms.Add(PlayerCreature);
         Bench.Engine.SetReturn("OBJECT_SELF", PlayerCreature);
 
-        Service.ReapplyFoodHP();
+        CreatureStat.ReapplyFoodHP();
         record.TemporaryFoodHP.Should().Be(30);
 
         Bench.Dms.Clear();
-        Service.ReapplyFoodHP();
+        CreatureStat.ReapplyFoodHP();
         record.TemporaryFoodHP.Should().Be(0);
     }
 
@@ -305,7 +305,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.TemporaryFoodHP = 30;
         record.MaxHP = 100;
 
-        Service.ReapplyFoodHP(PlayerCreature);
+        CreatureStat.ReapplyFoodHP(PlayerCreature);
 
         record.MaxHP.Should().Be(70);
         record.TemporaryFoodHP.Should().Be(0);
@@ -320,7 +320,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.MaxHP = 100;
         Bench.ActiveFoodEffect = new SWLOR.Game.Server.Feature.StatusEffectDefinition.FoodStatusEffect();
 
-        Service.ReapplyFoodHP(PlayerCreature);
+        CreatureStat.ReapplyFoodHP(PlayerCreature);
 
         record.MaxHP.Should().Be(100);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
@@ -331,7 +331,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     {
         Bench.AddPlayer();
 
-        Service.ReapplyFoodHP(PlayerCreature);
+        CreatureStat.ReapplyFoodHP(PlayerCreature);
 
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
     }
@@ -346,7 +346,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         if (isDm)
             Bench.Dms.Add(Npc);
 
-        Service.ReapplyFoodHP(Npc);
+        CreatureStat.ReapplyFoodHP(Npc);
 
         Bench.Log.Should().BeEmpty();
     }
@@ -360,12 +360,12 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.RacialStat = AbilityType.Vitality;
         record.BaseStats[AbilityType.Might] = 8;
 
-        Service.ApplyPlayerStat(record, PlayerCreature, AbilityType.Vitality);
+        CreatureStat.ApplyPlayerStat(record, PlayerCreature, AbilityType.Vitality);
         Bench.Creature.CallsTo("SetRawAbilityScore").Last().Arguments.Should().Equal(PlayerCreature, AbilityType.Vitality, 14);
         Bench.Log.Should().Equal("LimitCheck:100");
 
         Bench.Log.Clear();
-        Service.ApplyPlayerStat(record, PlayerCreature, AbilityType.Might);
+        CreatureStat.ApplyPlayerStat(record, PlayerCreature, AbilityType.Might);
         Bench.Creature.CallsTo("SetRawAbilityScore").Last().Arguments.Should().Equal(PlayerCreature, AbilityType.Might, 8);
         Bench.Log.Should().BeEmpty();
     }
@@ -375,10 +375,10 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     {
         var record = Bench.AddPlayer();
 
-        Service.ApplyPlayerStat(record, PlayerCreature, AbilityType.Invalid);
-        Service.ApplyPlayerStat(record, ObjectInvalid, AbilityType.Might);
+        CreatureStat.ApplyPlayerStat(record, PlayerCreature, AbilityType.Invalid);
+        CreatureStat.ApplyPlayerStat(record, ObjectInvalid, AbilityType.Might);
         Bench.Dms.Add(PlayerCreature);
-        Service.ApplyPlayerStat(record, PlayerCreature, AbilityType.Might);
+        CreatureStat.ApplyPlayerStat(record, PlayerCreature, AbilityType.Might);
 
         Bench.Creature.CountOf("SetRawAbilityScore").Should().Be(0);
     }
@@ -390,7 +390,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         record.BaseStats[AbilityType.Might] = 5;
         record.UpgradedStats[AbilityType.Might] = 2;
 
-        Service.RestorePlayerAttributes(PlayerCreature);
+        CreatureStat.RestorePlayerAttributes(PlayerCreature);
 
         var scores = Bench.Creature.CallsTo("SetRawAbilityScore");
         scores.Should().HaveCount(record.BaseStats.Count);
@@ -401,13 +401,13 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     public void RestorePlayerAttributes_SkipsStaffAndNpcs()
     {
         Bench.AddNpc();
-        Service.RestorePlayerAttributes(Npc);
+        CreatureStat.RestorePlayerAttributes(Npc);
         Bench.AddPlayer();
         Bench.Dms.Add(PlayerCreature);
-        Service.RestorePlayerAttributes(PlayerCreature);
+        CreatureStat.RestorePlayerAttributes(PlayerCreature);
         Bench.Dms.Clear();
         Bench.Possessed.Add(PlayerCreature);
-        Service.RestorePlayerAttributes(PlayerCreature);
+        CreatureStat.RestorePlayerAttributes(PlayerCreature);
 
         Bench.Log.Should().BeEmpty();
     }
@@ -449,32 +449,32 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         var record = Bench.AddPlayer();
         Bench.Wear(PlayerCreature, InventorySlot.Chest, BaseItem.Armor, (ItemPropertyType.CombatReadiness, -1, 40));
 
-        Service.RefreshCombatReadinessEquipment(PlayerCreature);
+        Record.RefreshCombatReadinessEquipment(PlayerCreature);
         record.CombatReadiness.Should().Be(40, "the cap belongs to the read");
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}", $"DB.Set:{PlayerUuid}");
 
         Bench.Log.Clear();
-        Service.RefreshCombatReadinessEquipment(PlayerCreature);
+        Record.RefreshCombatReadinessEquipment(PlayerCreature);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
     }
 
     [Test]
     public void RefreshCombatReadinessEquipment_SkipsAnythingButAPlayerWithARecord()
     {
-        Service.RefreshCombatReadinessEquipment(ObjectInvalid);
+        Record.RefreshCombatReadinessEquipment(ObjectInvalid);
         Bench.AddNpc();
-        Service.RefreshCombatReadinessEquipment(Npc);
+        Record.RefreshCombatReadinessEquipment(Npc);
         Bench.AddPlayer();
         Bench.Dms.Add(PlayerCreature);
-        Service.RefreshCombatReadinessEquipment(PlayerCreature);
+        Record.RefreshCombatReadinessEquipment(PlayerCreature);
         Bench.Dms.Clear();
         Bench.Possessed.Add(PlayerCreature);
-        Service.RefreshCombatReadinessEquipment(PlayerCreature);
+        Record.RefreshCombatReadinessEquipment(PlayerCreature);
         Bench.Possessed.Clear();
         Bench.Log.Should().BeEmpty();
 
         Bench.Records.Clear();
-        Service.RefreshCombatReadinessEquipment(PlayerCreature);
+        Record.RefreshCombatReadinessEquipment(PlayerCreature);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}");
     }
 
@@ -486,7 +486,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         Bench.Wear(PlayerCreature, InventorySlot.Arms, BaseItem.PowerGlove, (ItemPropertyType.CombatReadiness, -1, 4));
         Bench.Wear(PlayerCreature, InventorySlot.LeftHand, BaseItem.CompanionPistol, (ItemPropertyType.CombatReadiness, -1, 100));
 
-        Service.GetEquippedCombatReadiness(PlayerCreature).Should().Be(11);
+        Record.GetEquippedCombatReadiness(PlayerCreature).Should().Be(11);
     }
 
     [Test]
@@ -494,20 +494,20 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     {
         var record = new Player();
 
-        Service.AdjustCombatReadiness(record, 1);
-        Service.AdjustHPRegen(record, 2);
-        Service.AdjustFPRegen(record, 3);
-        Service.AdjustSTMRegen(record, 4);
-        Service.AdjustEvasion(record, 5);
-        Service.AdjustStealth(record, 6);
-        Service.AdjustDetection(record, 7);
-        Service.AdjustTrapBonus(record, 8);
-        Service.AdjustTrapDisarm(record, 9);
-        Service.AdjustPoisonBonus(record, 10);
-        Service.AdjustLockpicking(record, 11);
-        Service.AdjustAttack(record, 12);
-        Service.AdjustAccuracy(record, 13);
-        Service.AdjustForceAttack(record, 14);
+        Record.AdjustCombatReadiness(record, 1);
+        Record.AdjustHPRegen(record, 2);
+        Record.AdjustFPRegen(record, 3);
+        Record.AdjustSTMRegen(record, 4);
+        Record.AdjustEvasion(record, 5);
+        Record.AdjustStealth(record, 6);
+        Record.AdjustDetection(record, 7);
+        Record.AdjustTrapBonus(record, 8);
+        Record.AdjustTrapDisarm(record, 9);
+        Record.AdjustPoisonBonus(record, 10);
+        Record.AdjustLockpicking(record, 11);
+        Record.AdjustAttack(record, 12);
+        Record.AdjustAccuracy(record, 13);
+        Record.AdjustForceAttack(record, 14);
 
         new[]
         {
@@ -521,9 +521,9 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     {
         var record = new Player();
 
-        Service.AdjustDefense(record, CombatDamageType.Physical, 3);
-        Service.AdjustDefense(record, CombatDamageType.Physical, 4);
-        Service.AdjustDefense(record, CombatDamageType.Fire, 9);
+        Record.AdjustDefense(record, CombatDamageType.Physical, 3);
+        Record.AdjustDefense(record, CombatDamageType.Physical, 4);
+        Record.AdjustDefense(record, CombatDamageType.Fire, 9);
 
         record.Defenses[CombatDamageType.Physical].Should().Be(7);
         record.Defenses.Should().NotContainKey(CombatDamageType.Fire);
@@ -534,12 +534,12 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     {
         var record = new Player();
 
-        Service.AdjustControl(record, SkillType.Smithery, 2);
-        Service.AdjustControl(record, SkillType.Smithery, 3);
-        Service.AdjustCraftsmanship(record, SkillType.Smithery, 4);
-        Service.AdjustCraftsmanship(record, SkillType.Smithery, 5);
-        Service.AdjustCPBonus(record, SkillType.Smithery, 6);
-        Service.AdjustCPBonus(record, SkillType.Smithery, 7);
+        Record.AdjustControl(record, SkillType.Smithery, 2);
+        Record.AdjustControl(record, SkillType.Smithery, 3);
+        Record.AdjustCraftsmanship(record, SkillType.Smithery, 4);
+        Record.AdjustCraftsmanship(record, SkillType.Smithery, 5);
+        Record.AdjustCPBonus(record, SkillType.Smithery, 6);
+        Record.AdjustCPBonus(record, SkillType.Smithery, 7);
 
         record.Control[SkillType.Smithery].Should().Be(5);
         record.Craftsmanship[SkillType.Smithery].Should().Be(9);

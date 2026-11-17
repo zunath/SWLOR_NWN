@@ -42,7 +42,7 @@ public class ForceWeaponEnhancementMigrationTests
     [TestCase(CombatDamageType.Electrical, CombatDamageType.Electrical)]
     public void CraftingRetiresOnlyForceConversion(CombatDamageType input, CombatDamageType expected)
     {
-        Craft.TryGetWeaponDamageTypeForEnhancement(EnhancementSubType.DMG, input, out var actual).Should().BeTrue();
+        CraftEnhancementProperty.TryGetWeaponDamageTypeForEnhancement(EnhancementSubType.DMG, input, out var actual).Should().BeTrue();
         actual.Should().Be(expected);
     }
 
@@ -229,8 +229,11 @@ public class ForceWeaponEnhancementMigrationTests
                 forceItems.Add(Path.GetFileName(path));
         }
         forceItems.Should().BeEmpty("Force conversion belongs to Imbuement Stance, including on NPC weapons");
-        File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Crafting", "BlueprintBonuses.cs"))
-            .Should().NotContain("CombatDamageType.Force");
+        foreach (var file in new[] { "BlueprintBonuses.cs", "BlueprintWeaponBonusTables.cs", "BlueprintArmorBonusTables.cs", "BlueprintFoodBonusTables.cs" })
+        {
+            File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Crafting", file))
+                .Should().NotContain("CombatDamageType.Force");
+        }
         File.ReadAllLines(Path.Combine(root, "SWLOR.CLI", "InputFiles", "enhancement_list.tsv"))
             .Should().NotContain(line => line.Split('\t').Last().Trim() == "Force");
     }

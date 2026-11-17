@@ -202,6 +202,8 @@ namespace SWLOR.Game.Server.Composition
 
             // Crafting
             services.AddSingleton<ICraftService, CraftService>();
+            services.AddSingleton<ICraftEnhancementPropertyService, CraftEnhancementPropertyService>();
+            services.AddSingleton<ICraftDeviceService, CraftDeviceService>();
             services.AddSingleton<ICraftMinigameRoutingService, CraftMinigameRoutingService>();
             services.AddSingleton<ICraftQuickCraftService, CraftQuickCraftService>();
             services.AddSingleton<ICraftResearchExperimentService, CraftResearchExperimentService>();
@@ -263,6 +265,11 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICommunicationService, CommunicationService>();
             services.AddSingleton<ICommunicationAudienceService, CommunicationAudienceService>();
             services.AddSingleton<ICommunicationMessageSplitService, CommunicationMessageSplitService>();
+            services.AddSingleton<IExtraHotbarsService, ExtraHotbarsService>();
+            services.AddSingleton<IExtraHotbarsEditService, ExtraHotbarsEditService>();
+            services.AddSingleton<IExtraHotbarsEquipService, ExtraHotbarsEquipService>();
+            services.AddSingleton<IExtraHotbarsStatusService, ExtraHotbarsStatusService>();
+            services.AddSingleton<IExtraHotbarsWindowService, ExtraHotbarsWindowService>();
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
             services.AddSingleton<IPartyService, PartyService>();
             services.AddSingleton<IPartyRosterService, PartyRosterService>();
@@ -286,7 +293,6 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerListService, PlayerListService>();
 
             // UI
-            services.AddSingleton<IExtraHotbarsService, ExtraHotbarsService>();
             services.AddSingleton<IGuiService, GuiService>();
             // The same instance, seen through the interface Foundation owns for the domains below the UI (P5-1g).
             services.AddSingleton<IGuiRefreshPublisher>(provider => provider.GetRequiredService<IGuiService>());

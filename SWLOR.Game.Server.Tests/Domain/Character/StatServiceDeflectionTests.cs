@@ -16,7 +16,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
     private uint WieldWeapon(uint creature, InventorySlot slot = InventorySlot.RightHand)
     {
         var weapon = Bench.Wear(creature, slot, BaseItem.Longsword);
-        Service.WeaponSkills[weapon] = SkillType.Vibroblade;
+        Bench.WeaponSkills[weapon] = SkillType.Vibroblade;
         return weapon;
     }
 
@@ -27,16 +27,16 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         SetStat(Npc, StatType.MeleeDeflection, 20);
         SetStat(Npc, StatType.RangedDeflection, 30);
 
-        Service.GetMeleeDeflectionChance(Npc).Should().Be(0);
-        Service.GetRangedDeflectionChance(Npc).Should().Be(0);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(0);
+        CombatRating.GetRangedDeflectionChance(Npc).Should().Be(0);
 
         WieldWeapon(Npc);
-        Service.GetMeleeDeflectionChance(Npc).Should().Be(20);
-        Service.GetRangedDeflectionChance(Npc).Should().Be(30);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(20);
+        CombatRating.GetRangedDeflectionChance(Npc).Should().Be(30);
 
         Bench.Wear(Npc, InventorySlot.LeftHand, BaseItem.SmallShield);
-        Service.GetMeleeDeflectionChance(Npc).Should().Be(0);
-        Service.GetRangedDeflectionChance(Npc).Should().Be(0);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(0);
+        CombatRating.GetRangedDeflectionChance(Npc).Should().Be(0);
     }
 
     [Test]
@@ -46,10 +46,10 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         SetStat(Npc, StatType.MeleeDeflection, 20);
 
         Bench.Wear(Npc, InventorySlot.RightHand, BaseItem.Armor);
-        Service.GetMeleeDeflectionChance(Npc).Should().Be(0, "an item with no weapon skill is not a weapon");
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(0, "an item with no weapon skill is not a weapon");
 
         WieldWeapon(Npc, InventorySlot.LeftHand);
-        Service.GetMeleeDeflectionChance(Npc).Should().Be(20);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(20);
     }
 
     [Test]
@@ -59,22 +59,22 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         WieldWeapon(Npc);
         SetStat(Npc, StatType.MeleeDeflection, 95);
         SetStat(Npc, StatType.RangedDeflection, 95);
-        Service.GetMeleeDeflectionChance(Npc).Should().Be(StatService.DefaultMeleeDeflectionChanceCap);
-        Service.GetRangedDeflectionChance(Npc).Should().Be(StatService.DefaultRangedDeflectionChanceCap);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(StatService.DefaultMeleeDeflectionChanceCap);
+        CombatRating.GetRangedDeflectionChance(Npc).Should().Be(StatService.DefaultRangedDeflectionChanceCap);
 
         SetStat(Npc, StatType.MeleeDeflectionChanceCap, 10);
         SetStat(Npc, StatType.RangedDeflectionChanceCap, 20);
-        Service.GetMeleeDeflectionChance(Npc).Should().Be(60);
-        Service.GetRangedDeflectionChance(Npc).Should().Be(70);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(60);
+        CombatRating.GetRangedDeflectionChance(Npc).Should().Be(70);
 
         SetStat(Npc, StatType.MeleeDeflectionChanceCap, -40);
-        Service.GetMeleeDeflectionChance(Npc).Should().Be(StatService.DefaultMeleeDeflectionChanceCap);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(StatService.DefaultMeleeDeflectionChanceCap);
 
         SetStat(Npc, StatType.RangedDeflectionChanceCap, 999);
-        Service.GetRangedDeflectionChance(Npc).Should().Be(95);
+        CombatRating.GetRangedDeflectionChance(Npc).Should().Be(95);
 
         SetStat(Npc, StatType.MeleeDeflection, -5);
-        Service.GetMeleeDeflectionChance(Npc).Should().Be(0);
+        CombatRating.GetMeleeDeflectionChance(Npc).Should().Be(0);
     }
 
     [Test]
@@ -83,14 +83,14 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         Bench.AddNpc();
         SetStat(Npc, StatType.ShieldDeflection, 10);
 
-        Service.GetShieldDeflectionChance(Npc).Should().Be(0, "no shield, no deflection");
+        CombatRating.GetShieldDeflectionChance(Npc).Should().Be(0, "no shield, no deflection");
 
         Bench.Wear(Npc, InventorySlot.LeftHand, BaseItem.SmallShield,
             (ItemPropertyType.ShieldDeflection, -1, 5), (ItemPropertyType.ShieldDeflection, -1, 2), (ItemPropertyType.Attack, -1, 90));
-        Service.GetShieldDeflectionChance(Npc).Should().Be(17);
+        CombatRating.GetShieldDeflectionChance(Npc).Should().Be(17);
 
         SetStat(Npc, StatType.ShieldDeflection, 500);
-        Service.GetShieldDeflectionChance(Npc).Should().Be(StatService.MaximumShieldDeflectionChance);
+        CombatRating.GetShieldDeflectionChance(Npc).Should().Be(StatService.MaximumShieldDeflectionChance);
     }
 
     [TestCase(20, 20)]
@@ -100,13 +100,13 @@ public class StatServiceDeflectionTests : StatServiceTestBase
     {
         SetStat(Npc, StatType.Guard, stat);
 
-        Service.GetGuardChance(Npc).Should().Be(expected);
+        CombatRating.GetGuardChance(Npc).Should().Be(expected);
     }
 
     [Test]
     public void ADeflectionWithNothingToDoStillTracksItAndGrantsNothing()
     {
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Melee);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Melee);
 
         Bench.Log.Should().Equal(
             "TrackDeflection:Melee",
@@ -128,7 +128,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         record.MaxFP = 100;
         record.MaxStamina = 100;
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Melee);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Melee);
 
         Bench.Log.Should().StartWith(new[]
         {
@@ -157,9 +157,9 @@ public class StatServiceDeflectionTests : StatServiceTestBase
     {
         SetStat(PlayerCreature, StatType.MeleeDeflectionStaminaRestore, 3);
         SetStat(PlayerCreature, StatType.MeleeDeflectionFPRestore, 2);
-        Service.StatTriggerAvailable = false;
+        Bench.StatTriggerAvailable = false;
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Melee);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Melee);
 
         Bench.Log.Should().Equal(
             "TrackDeflection:Melee",
@@ -176,7 +176,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         record.MaxStamina = 200;
         SetStat(PlayerCreature, StatType.DeflectionStaminaRestorePercent, 10);
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Ranged);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Ranged);
 
         record.Stamina.Should().Be(20);
         Bench.Log.Should().Contain("TriggerAttribution:DeflectionStaminaRestorePercent");
@@ -189,7 +189,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         SetStat(PlayerCreature, StatType.DeflectionEvasionPercentAdjustment, 5);
         SetStat(PlayerCreature, StatType.DeflectionEvasionEnmityPercentAdjustment, 6);
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
 
         Bench.Log.Should().ContainInOrder(
             "Temporary:EvasionPercentAdjustment:5:30:DeflectionEvasionPercentAdjustment",
@@ -203,7 +203,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         SetStat(PlayerCreature, StatType.DeflectionDefensePercentAdjustment, 6);
         SetStat(PlayerCreature, StatType.DeflectionForceDefensePercentAdjustment, 7);
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Ranged);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Ranged);
 
         Bench.Log.Should().ContainInOrder(
             "Temporary:EnmityPercentAdjustment:5:30:DeflectionEnmityPercentAdjustment",
@@ -217,7 +217,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         SetStat(PlayerCreature, StatType.DeflectionEvasionPercentAdjustment, 5);
         SetStat(PlayerCreature, StatType.DeflectionEnmityPercentAdjustment, 5);
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Melee);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Melee);
 
         Bench.Log.Should().NotContain(entry => entry.StartsWith("Temporary", StringComparison.Ordinal));
     }
@@ -229,21 +229,21 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         SetStat(PlayerCreature, StatType.DeflectionRecastReductionSeconds, 4);
         SetStat(PlayerCreature, StatType.DeflectionRecastReductionCooldownSeconds, 9);
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
         Bench.Log.Should().Contain("IsOnRecastDelay:Earthshatter");
         Bench.Log.Should().NotContain(entry => entry.StartsWith("TryTrigger", StringComparison.Ordinal));
         Bench.Log.Should().NotContain(entry => entry.StartsWith("ReduceRecastDelay", StringComparison.Ordinal));
 
         Bench.Log.Clear();
         Bench.OnRecastDelay = true;
-        Service.StatTriggerAvailable = false;
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
+        Bench.StatTriggerAvailable = false;
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
         Bench.Log.Should().ContainInOrder("IsOnRecastDelay:Earthshatter", "TryTrigger:DeflectionRecastReductionSeconds:9");
         Bench.Log.Should().NotContain(entry => entry.StartsWith("ReduceRecastDelay", StringComparison.Ordinal));
 
         Bench.Log.Clear();
-        Service.StatTriggerAvailable = true;
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
+        Bench.StatTriggerAvailable = true;
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
         Bench.Log.Should().ContainInOrder(
             "IsOnRecastDelay:Earthshatter",
             "TryTrigger:DeflectionRecastReductionSeconds:9",
@@ -258,7 +258,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         SetStat(PlayerCreature, StatType.DeflectionRecastReductionGroupId, group);
         SetStat(PlayerCreature, StatType.DeflectionRecastReductionSeconds, seconds);
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Shield);
 
         Bench.Log.Should().NotContain(entry => entry.StartsWith("IsOnRecastDelay", StringComparison.Ordinal));
     }
@@ -277,7 +277,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
         SetStat(PlayerCreature, StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment, 10);
         SetStat(PlayerCreature, StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds, 11);
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Ranged);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Ranged);
 
         Bench.Log.Should().Equal(
             "TrackDeflection:Ranged",
@@ -291,7 +291,7 @@ public class StatServiceDeflectionTests : StatServiceTestBase
     {
         SetStat(PlayerCreature, StatType.DeflectionNextSkillAbilitySkillType, 99999);
 
-        Service.ApplyDeflectionEffectsNative(null!, DeflectionSource.Ranged);
+        DeflectionReaction.ApplyDeflectionEffectsNative(null!, DeflectionSource.Ranged);
 
         Bench.Log.Should().Contain("NextSkillBonuses:Invalid:0:0:0");
     }

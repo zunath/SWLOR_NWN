@@ -6,12 +6,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     public class ShuttleStatusDialog: ConversationMenuDefinition
     {
         private IPlanetService Planet { get; }
-        private IShuttleService Shuttle { get; }
+        private IShuttleFlightService ShuttleFlight { get; }
 
-        public ShuttleStatusDialog(IPlanetService planet, IShuttleService shuttle)
+        public ShuttleStatusDialog(IPlanetService planet, IShuttleFlightService shuttle)
         {
             Planet = planet;
-            Shuttle = shuttle;
+            ShuttleFlight = shuttle;
         }
 
         private const string MainPageId = "MAIN_PAGE";
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var console = Owner;
 
-            if (!Shuttle.TryGetFlightInfo(console, out var destination, out var arrivalUtc))
+            if (!ShuttleFlight.TryGetFlightInfo(console, out var destination, out var arrivalUtc))
             {
                 page.Header = "This console is offline.";
                 return;

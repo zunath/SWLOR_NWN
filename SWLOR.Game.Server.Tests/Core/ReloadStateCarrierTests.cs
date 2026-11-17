@@ -40,7 +40,7 @@ public class ReloadStateCarrierTests
         ReloadStateCarrier.CarriedClasses(Game).Select(entry => entry.Type.Name).Should().Contain(new[]
         {
             nameof(StatusEffectService), nameof(PartyRosterService), nameof(AbilityAuraService), "CombatActivityService", "CombatPointService",
-            "EnmityService", nameof(PlayerNameService), "PvpCombatService", "TemporaryStatModifierService", nameof(ShuttleService),
+            "EnmityService", nameof(PlayerNameService), "PvpCombatService", "TemporaryStatModifierService", nameof(ShuttleStateService),
         });
     }
 

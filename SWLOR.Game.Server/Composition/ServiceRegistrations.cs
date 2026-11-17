@@ -326,7 +326,14 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPropertyStructurePlacementService, PropertyStructurePlacementService>();
             services.AddSingleton<IPropertyTerminalService, PropertyTerminalService>();
             services.AddSingleton<IPropertyService, PropertyService>();
+            services.AddSingleton<IShuttleArrivalService, ShuttleArrivalService>();
+            services.AddSingleton<IShuttleBoardingService, ShuttleBoardingService>();
+            services.AddSingleton<IShuttleClockService, ShuttleClockService>();
+            services.AddSingleton<IShuttleFlightService, ShuttleFlightService>();
+            services.AddSingleton<IShuttlePassengerService, ShuttlePassengerService>();
             services.AddSingleton<IShuttleService, ShuttleService>();
+            services.AddSingleton<IShuttleStateService, ShuttleStateService>();
+            services.AddSingleton<IShuttleTicketService, ShuttleTicketService>();
             services.AddSingleton<ITaxiService, TaxiService>();
             services.AddSingleton<ITrapsService, TrapsService>();
             services.AddSingleton<IWeatherService, WeatherService>();

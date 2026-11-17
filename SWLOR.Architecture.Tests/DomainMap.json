@@ -24,7 +24,7 @@
     },
     "UI": {
       "services": [
-        "Gui", "ExtraHotbar", "ExtraHotbars"
+        "Gui"
       ],
       "featureFolders": [
         "GuiDefinition"
@@ -126,7 +126,7 @@
     },
     "Social": {
       "services": [
-        "ChatCommand", "ChatPortraitTells", "Communication", "Party", "PlayerList", "ChatPortraitTell", "Performance"
+        "ChatCommand", "ChatPortraitTells", "Communication", "ExtraHotbar", "ExtraHotbars", "Party", "PlayerList", "ChatPortraitTell", "Performance"
       ],
       "featureFolders": [
         "ChatCommandDefinition"

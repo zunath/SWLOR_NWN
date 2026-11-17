@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var player = await PlayerAbilityFixture.CreateAsync(ctx);
             var record = DB.Get<Player>(player.Id);
-            var bars = ExtraHotbars.GetBars(record);
+            var bars = ExtraHotbarsWindow.GetBars(record);
             bars[0].SlotCount = 8;
             bars[0].Layout = ExtraHotbarLayout.Stacked;
             DB.Set(record);
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             void AssertSavedBar(int expectedSlots, ExtraHotbarLayout expectedLayout, string when)
             {
-                var bar = ExtraHotbars.GetBars(DB.Get<Player>(player.Id))[0];
+                var bar = ExtraHotbarsWindow.GetBars(DB.Get<Player>(player.Id))[0];
                 ctx.AssertEqual(expectedSlots, bar.SlotCount, $"saved slot count {when}");
                 ctx.AssertEqual(expectedLayout, bar.Layout, $"saved layout {when}");
             }

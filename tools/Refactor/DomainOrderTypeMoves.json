@@ -173,6 +173,8 @@
     { "type": "TemporaryStatModifierService", "from": "SWLOR.Game.Server.Domain.Combat", "to": "SWLOR.Game.Server.Domain.Character" },
     { "type": "ITemporaryStatModifierService", "from": "SWLOR.Game.Server.Domain.Combat", "to": "SWLOR.Game.Server.Domain.Character" },
     { "type": "ResistanceRules", "from": "SWLOR.Game.Server.Domain.Combat", "to": "SWLOR.Game.Server.Domain.Character" },
+    { "type": "ExtraHotbarsService", "from": "SWLOR.Game.Server.Domain.UI", "to": "SWLOR.Game.Server.Domain.Social" },
+    { "type": "IExtraHotbarsService", "from": "SWLOR.Game.Server.Domain.UI", "to": "SWLOR.Game.Server.Domain.Social" },
   ],
   "textExcludes": [
     "SWLOR.Game.Server/Readmes/Maintainability*",

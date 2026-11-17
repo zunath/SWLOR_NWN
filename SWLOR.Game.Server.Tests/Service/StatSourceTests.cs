@@ -65,6 +65,53 @@ public class StatSourceTests
         StatSource.Normalise(PartUser, new HashSet<string>(StringComparer.Ordinal)).Should().Be(PartUser);
     }
 
+    private static readonly string ShadowingUser = Lines(
+        "namespace SWLOR.Game.Server.Domain.Combat",
+        "{",
+        "    public class CombatRatingService : ICombatRatingService",
+        "    {",
+        "        private readonly IStatPoolService _pool;",
+        "",
+        "        private int FromParameter(IOtherService _pool) => _pool.GetMaxFP();",
+        "",
+        "        private int FromLocal(uint creature)",
+        "        {",
+        "            var _pool = Find(creature);",
+        "            return _pool.GetMaxFP();",
+        "        }",
+        "",
+        "        private int FromLambda(uint creature) => Apply(_pool => _pool.GetMaxStamina(creature));",
+        "",
+        "        private int FromPattern(object source) => source is IOtherService _pool ? _pool.GetCurrentFP() : 0;",
+        "",
+        "        private int FromField(uint creature)",
+        "        {",
+        "            Apply(other => other.GetMaxStamina(creature));",
+        "            return this._pool.GetCurrentStamina(creature) + _pool.ReduceFP(creature);",
+        "        }",
+        "    }",
+        "}");
+
+    [Test]
+    public void ACallThroughANameThatShadowsTheFieldKeepsItsReceiver()
+    {
+        var text = StatSource.Normalise(ShadowingUser, Parts);
+
+        text.Should().Contain("private int FromParameter(IOtherService _pool) => _pool.GetMaxFP();", "a parameter shadows the field");
+        text.Should().Contain("            return _pool.GetMaxFP();", "a local shadows the field");
+        text.Should().Contain("Apply(_pool => _pool.GetMaxStamina(creature));", "a lambda parameter shadows the field");
+        text.Should().Contain("source is IOtherService _pool ? _pool.GetCurrentFP() : 0;", "a pattern variable shadows the field");
+    }
+
+    [Test]
+    public void ACallOnTheFieldLosesItsReceiverWithOrWithoutThis()
+    {
+        var text = StatSource.Normalise(ShadowingUser, Parts);
+
+        text.Should().Contain("            return GetCurrentStamina(creature) + ReduceFP(creature);");
+        text.Should().Contain("            Apply(other => other.GetMaxStamina(creature));", "another name in a sibling lambda is not the field");
+    }
+
     [Test]
     public void AChangedConditionOrArgumentStillFailsANeedle()
     {

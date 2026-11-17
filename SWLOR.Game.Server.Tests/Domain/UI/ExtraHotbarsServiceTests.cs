@@ -60,12 +60,27 @@ public class ExtraHotbarsServiceTests
 
     private sealed record ItemInfo(string Resref, string Name, string Uuid, BaseItem Type, bool Ranged = false, int Stack = 1);
 
-    private sealed class TestHotbars : ExtraHotbarsService
+    /// <summary>
+    /// The extra hotbars as the container builds them: the main service and its parts, each wired to the next. The calls into static
+    /// code that is not converted yet (abilities, quick cast, perks, targeting, the equipment storage) are answered by subclasses
+    /// that record what they were asked, so a test reads one object.
+    /// </summary>
+    private sealed class TestHotbars
     {
         public TestHotbars(IDBService db, IGuiService gui, IChatCommandService chat, IItemService item)
-            : base(db, gui, chat, item, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<ICraftMinigameRoutingService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IQuickCastService>(), FacadeForwarder.For<ITargetingService>(), FacadeForwarder.For<ITwinPistolEquipmentService>())
         {
+            Window = new ExtraHotbarsWindowService(db, gui);
+            Edit = new ExtraHotbarsEditService(db, gui, Window, FacadeForwarder.For<IQuickCastService>());
+            Status = new ExtraHotbarsStatusService(gui);
+            Equip = new TestEquip(this, item, FacadeForwarder.For<ITwinPistolEquipmentService>(), Status);
+            Main = new TestMain(this, chat, Status, Equip);
         }
+
+        public ExtraHotbarsWindowService Window { get; }
+        public ExtraHotbarsEditService Edit { get; }
+        public ExtraHotbarsStatusService Status { get; }
+        public ExtraHotbarsEquipService Equip { get; }
+        public ExtraHotbarsService Main { get; }
 
         public Dictionary<FeatType, AbilityDetail> Abilities { get; } = new();
         public HashSet<FeatType> Known { get; } = new();
@@ -81,38 +96,97 @@ public class ExtraHotbarsServiceTests
         public List<(ObjectType Types, string Message, Action<uint> Action, bool Ground)> Targeting { get; } = new();
         public List<(FeatType Feat, FeatType Alias)> Casts { get; } = new();
 
-        protected override IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Abilities;
-        protected override bool IsFeatRegistered(FeatType feat) => Abilities.ContainsKey(feat);
-        protected override AbilityDetail GetAbilityDetail(FeatType feat) => Abilities[feat];
-        protected override bool KnowsFeat(uint player, FeatType feat) => Known.Contains(feat);
-        protected override FeatType GetDisplayedFeat(uint player, FeatType feat) => Displayed.GetValueOrDefault(feat, feat);
+        public GuiWindowType GetWindowType(int barIndex) => Window.GetWindowType(barIndex);
+        public int GetBarIndex(GuiWindowType windowType) => Window.GetBarIndex(windowType);
+        public List<ExtraHotbar> GetBars(Player dbPlayer) => Window.GetBars(dbPlayer);
+        public ExtraHotbar GetBar(uint player, int barIndex) => Window.GetBar(player, barIndex);
+        public bool IsUnlocked(uint player) => Window.IsUnlocked(player);
+        public void OpenBarsOnEnter() => Window.OpenBarsOnEnter();
+        public void LockBarsOnEnter() => Window.LockBarsOnEnter();
+        public void LockBarsOnExit() => Window.LockBarsOnExit();
+        public void ApplyVisibility(uint player) => Window.ApplyVisibility(player);
+        public void SetUnlocked(uint player, bool isUnlocked) => Window.SetUnlocked(player, isUnlocked);
+        public void UpdateBar(uint player, int barIndex, Action<ExtraHotbar> change) => Edit.UpdateBar(player, barIndex, change);
+        public void AssignAbility(uint player, int barIndex, int slotIndex, FeatType feat) => Edit.AssignAbility(player, barIndex, slotIndex, feat);
+        public void AssignItem(uint player, int barIndex, int slotIndex, uint item) => Edit.AssignItem(player, barIndex, slotIndex, item);
+        public void AssignEquipment(uint player, int barIndex, int slotIndex, uint mainHand, uint offHand) => Edit.AssignEquipment(player, barIndex, slotIndex, mainHand, offHand);
+        public void AssignChatCommand(uint player, int barIndex, int slotIndex, string command) => Edit.AssignChatCommand(player, barIndex, slotIndex, command);
+        public void AssignActionMode(uint player, int barIndex, int slotIndex, ActionMode mode) => Edit.AssignActionMode(player, barIndex, slotIndex, mode);
+        public void ClearSlot(uint player, int barIndex, int slotIndex) => Edit.ClearSlot(player, barIndex, slotIndex);
+        public void UseSlot(uint player, ExtraHotbarSlot slot) => Main.UseSlot(player, slot);
+        public List<FeatType> GetKnownAbilities(uint player) => Main.GetKnownAbilities(player);
+        public string GetAbilityIcon(FeatType feat) => Main.GetAbilityIcon(feat);
+        public List<ActionMode> GetAvailableActionModes(uint player) => Main.GetAvailableActionModes(player);
+        public string GetActionModeName(ActionMode mode) => Main.GetActionModeName(mode);
+        public string GetActionModeIcon(ActionMode mode) => Main.GetActionModeIcon(mode);
+        public List<uint> GetUsableItems(uint player) => Main.GetUsableItems(player);
+        public uint FindItem(uint player, string resref) => Main.FindItem(player, resref);
+        public int CountItems(uint player, string resref) => Main.CountItems(player, resref);
+        public (uint MainHand, uint OffHand) PlanHands(uint currentMainHand, uint currentOffHand, uint mainHand, uint offHand, Func<uint, uint, bool> canPairHands) =>
+            Equip.PlanHands(currentMainHand, currentOffHand, mainHand, offHand, canPairHands);
+        public bool IsEquipped(uint player, uint mainHand, uint offHand) => Equip.IsEquipped(player, mainHand, offHand);
+        public (uint MainHand, uint OffHand) FindEquipItems(uint player, ExtraHotbarSlot slot) => Equip.FindEquipItems(player, slot);
+        public (uint MainHand, uint OffHand) FindEquipItems(ExtraHotbarSlot slot, List<uint> items) => Equip.FindEquipItems(slot, items);
+        public List<uint> GetHandItems(uint player) => Equip.GetHandItems(player);
+        public bool CanHoldInMainHand(uint item) => Equip.CanHoldInMainHand(item);
+        public bool CanHoldInOffHand(uint item) => Equip.CanHoldInOffHand(item);
+        public bool CanPairHands(uint mainHand, uint offHand) => Equip.CanPairHands(mainHand, offHand);
+        public (uint MainHand, uint OffHand) PickHandItem(uint mainHand, uint offHand, uint item, bool canMainHand, bool canOffHand, Func<uint, uint, bool> canPairHands) =>
+            Equip.PickHandItem(mainHand, offHand, item, canMainHand, canOffHand, canPairHands);
+        public void RefreshOnAcquire() => Status.RefreshOnAcquire();
+        public void RefreshOnUnacquire() => Status.RefreshOnUnacquire();
+        public void RefreshOnEquip() => Status.RefreshOnEquip();
+        public void RefreshOnUnequip() => Status.RefreshOnUnequip();
+        public void RefreshOnHeartbeat() => Status.RefreshOnHeartbeat();
 
-        protected override bool TryCast(uint player, FeatType alias, out string error)
+        private sealed class TestMain : ExtraHotbarsService
         {
-            Casts.Add((alias, alias));
-            error = CastError;
-            return CastResult;
+            private readonly TestHotbars _owner;
+
+            public TestMain(TestHotbars owner, IChatCommandService chat, IExtraHotbarsStatusService status, IExtraHotbarsEquipService equip)
+                : base(chat, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IQuickCastService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ITargetingService>(), status, equip) => _owner = owner;
+
+            protected override int GetStealthPerkLevel(uint player) => _owner.StealthLevel;
+            protected override IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _owner.Abilities;
+            protected override bool IsFeatRegistered(FeatType feat) => _owner.Abilities.ContainsKey(feat);
+            protected override AbilityDetail GetAbilityDetail(FeatType feat) => _owner.Abilities[feat];
+            protected override bool KnowsFeat(uint player, FeatType feat) => _owner.Known.Contains(feat);
+            protected override FeatType GetDisplayedFeat(uint player, FeatType feat) => _owner.Displayed.GetValueOrDefault(feat, feat);
+
+            protected override bool TryCast(uint player, FeatType alias, out string error)
+            {
+                _owner.Casts.Add((alias, alias));
+                error = _owner.CastError;
+                return _owner.CastResult;
+            }
+
+            protected override bool TryUseAbility(uint activator, uint target, FeatType feat, Location targetLocation)
+            {
+                _owner.Used.Add((activator, target, feat, targetLocation));
+                return true;
+            }
+
+            protected override void EnterTargetingMode(uint player, ObjectType objectType, string message, Action<uint> selectionAction, bool allowsLocationTarget = false) =>
+                _owner.Targeting.Add((objectType, message, selectionAction, allowsLocationTarget));
         }
 
-        protected override bool IsAnyCraftWindowOpen(uint player) => CraftOpen;
-        protected override int GetStealthPerkLevel(uint player) => StealthLevel;
-
-        protected override bool TryUseAbility(uint activator, uint target, FeatType feat, Location targetLocation)
+        private sealed class TestEquip : ExtraHotbarsEquipService
         {
-            Used.Add((activator, target, feat, targetLocation));
-            return true;
-        }
+            private readonly TestHotbars _owner;
 
-        protected override void EnterTargetingMode(uint player, ObjectType objectType, string message, Action<uint> selectionAction, bool allowsLocationTarget = false) =>
-            Targeting.Add((objectType, message, selectionAction, allowsLocationTarget));
+            public TestEquip(TestHotbars owner, IItemService item, ITwinPistolEquipmentService twinPistol, IExtraHotbarsStatusService status)
+                : base(item, twinPistol, FacadeForwarder.For<ICraftMinigameRoutingService>(), status) => _owner = owner;
 
-        protected override bool TryUnequip(uint player, uint item, InventorySlot slot, bool allowRecoveryBag)
-        {
-            if (PutAwayThrows)
-                throw new InvalidOperationException("no room");
+            protected override bool IsAnyCraftWindowOpen(uint player) => _owner.CraftOpen;
 
-            PutAway.Add((item, slot));
-            return !Stuck.Contains(slot);
+            protected override bool TryUnequip(uint player, uint item, InventorySlot slot, bool allowRecoveryBag)
+            {
+                if (_owner.PutAwayThrows)
+                    throw new InvalidOperationException("no room");
+
+                _owner.PutAway.Add((item, slot));
+                return !_owner.Stuck.Contains(slot);
+            }
         }
     }
 
@@ -262,10 +336,10 @@ public class ExtraHotbarsServiceTests
     [Test]
     public void The_bar_constants_match_the_facade()
     {
-        ExtraHotbarsService.BarCount.Should().Be(3);
-        ExtraHotbarsService.MaxSlots.Should().Be(12);
-        ExtraHotbarsService.BarCount.Should().Be(ExtraHotbarsService.BarCount);
-        ExtraHotbarsService.MaxSlots.Should().Be(ExtraHotbarsService.MaxSlots);
+        ExtraHotbarsWindowService.BarCount.Should().Be(3);
+        ExtraHotbarsWindowService.MaxSlots.Should().Be(12);
+        ExtraHotbarsWindowService.BarCount.Should().Be(ExtraHotbarsWindowService.BarCount);
+        ExtraHotbarsWindowService.MaxSlots.Should().Be(ExtraHotbarsWindowService.MaxSlots);
     }
 
     [Test]

@@ -22,7 +22,7 @@ public class ResearchPerkRegressionTests
         var canResearchRecipe = ExtractMethod(
             craft,
             "public bool CanPlayerResearchRecipe(uint player, RecipeType recipeType)");
-        var useResearchTerminal = ExtractMethod(craft, "public void UseResearchTerminal()");
+        var useResearchTerminal = ExtractMethod(ReadSource("Domain", "Crafting", "CraftDeviceService.cs"), "public void UseResearchTerminal()");
         var researchViewModel = ReadSource("Feature", "GuiDefinition", "ViewModel", "ResearchViewModel.cs");
         var buildJob = ExtractMethod(
             researchViewModel,
@@ -56,7 +56,7 @@ public class ResearchPerkRegressionTests
     [Test]
     public void ResearchTerminalMessages_NameResearchJobsAndNoRetiredPerks()
     {
-        var craft = ReadSource("Domain", "Crafting", "CraftService.cs");
+        var craft = ReadSource("Domain", "Crafting", "CraftDeviceService.cs");
         var useResearchTerminal = ExtractMethod(craft, "public void UseResearchTerminal()");
 
         useResearchTerminal.Should().Contain("Another player's research job is active. This job will complete in: {completionTime}.");

@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryHitPointEffects.ApplyFlat(npc, SecondKey, 3767, 60f);
             ctx.AssertEqual(Limit, GetCurrentHitPoints(npc), "reported HP before the maximum rises");
 
-            Stat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
+            CreatureStat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
             ctx.AssertEqual(MaximumNPCHitPoints, GetMaxHitPoints(npc), "raised HP budget");
             ctx.Assert(GetCurrentHitPoints(npc) > 0 && !GetIsDead(npc), "Raising the maximum must not read the NPC as dead.");
 
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             StatusEffect.ApplyStatusEffect(npc, npc,
                 new GuardiansResolveStatusEffect(shield, TemporaryHitPointEffects.GetGrantGeneration(npc, key)), 60f);
 
-            Stat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
+            CreatureStat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
             await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(npc, key) == Headroom,
                 3f, "the pool to be trimmed under the raised maximum");
             ctx.AssertEqual(Headroom, TemporaryHitPointEffects.GetGrantedAmount(npc, key), "recorded grant after the trim");
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Spawn initialization loads skin HP a frame after creation.
             await ctx.WaitFrameAsync();
             ctx.SuppressNPCNaturalRegen(npc);
-            Stat.SetNPCMaxHitPoints(npc, maximumHitPoints, true);
+            CreatureStat.SetNPCMaxHitPoints(npc, maximumHitPoints, true);
             SetImmortal(npc, immortal);
             ctx.AssertEqual(maximumHitPoints, GetMaxHitPoints(npc), "NPC HP budget");
             ctx.AssertEqual(maximumHitPoints, GetCurrentHitPoints(npc), "NPC starts at full HP");

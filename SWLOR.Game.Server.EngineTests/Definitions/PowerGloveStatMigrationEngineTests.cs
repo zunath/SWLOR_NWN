@@ -26,8 +26,8 @@ public static partial class MigrationEngineTests
         // Rebuild the fixture's oversized HP and STM pools from worn gear, so the file's level hit die holds the maximum.
         await ctx.ExecuteInCreatureContextAsync(owner, () =>
         {
-            Stat.RefreshPlayerEquipmentStats(owner);
-            Stat.RefreshPlayerMaxHP(owner);
+            StatRecord.RefreshPlayerEquipmentStats(owner);
+            CreatureStat.RefreshPlayerMaxHP(owner);
         });
         var baseline = ReadGloveTotals(DB.Get<Player>(fixture.Id));
         var glove = await PowerGlovePairEngineTests.CreateCarriedItem(ctx, owner, "t_pglove");
@@ -49,7 +49,7 @@ public static partial class MigrationEngineTests
         {
             // Before migration 25 the record and the file's levels counted the worn glove's HP once.
             var player = DB.Get<Player>(fixture.Id);
-            Stat.AdjustPlayerMaxHP(player, owner, -7);
+            CreatureStat.AdjustPlayerMaxHP(player, owner, -7);
             DB.Set(player);
             var legacy = SavedCharacterMigration.CopyRecord(player);
             legacy.Attack -= 5;

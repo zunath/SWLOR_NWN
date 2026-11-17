@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     ConfigureWeapon(weapon, CombatDamageType.Ice);
                     ctx.SuppressNPCNaturalRegen(target);
-                    Stat.SetNPCMaxHitPoints(target, 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                     ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
                     TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
                     ctx.MakeHostile(target);
@@ -681,7 +681,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             RemoveItemProperty(launcher, ip);
                     SetItemStackSize(ammunition, 50);
                     ctx.SuppressNPCNaturalRegen(target);
-                    Stat.SetNPCMaxHitPoints(target, 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                     ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
                     ctx.MakeHostile(target);
                     ctx.SetNPCResources(attacker, 100, 100);
@@ -1020,7 +1020,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ConfigureWeapon(main, CombatDamageType.Ice);
                 ConfigureWeapon(off, CombatDamageType.Poison);
                 ctx.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 90f);
                 TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 90f);
                 ctx.MakeHostile(target);

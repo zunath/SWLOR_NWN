@@ -30,7 +30,7 @@ internal static class SavedEquipmentStatEffects
                 if (record.FP < 0) record.FP = 0;
                 break;
             case ItemPropertyType.FPRegen:
-                Stat.AdjustFPRegen(record, signed);
+                StatRecord.AdjustFPRegen(record, signed);
                 break;
             case ItemPropertyType.Stamina:
                 record.MaxStamina += signed;
@@ -38,25 +38,25 @@ internal static class SavedEquipmentStatEffects
                 if (record.Stamina < 0) record.Stamina = 0;
                 break;
             case ItemPropertyType.STMRegen:
-                Stat.AdjustSTMRegen(record, signed);
+                StatRecord.AdjustSTMRegen(record, signed);
                 break;
             case ItemPropertyType.CombatReadiness:
                 // Player totals are refreshed from the equipped items after the change.
                 break;
             case ItemPropertyType.Attack:
-                Stat.AdjustAttack(record, signed);
+                StatRecord.AdjustAttack(record, signed);
                 break;
             case ItemPropertyType.Accuracy:
                 if (Item.IsAttackWeaponType(item.BaseItem) || item.BaseItem == BaseItem.CreatureItem)
                     break;
-                Stat.AdjustAccuracy(record, signed);
+                StatRecord.AdjustAccuracy(record, signed);
                 break;
             case ItemPropertyType.ForceAttack:
-                Stat.AdjustForceAttack(record, signed);
+                StatRecord.AdjustForceAttack(record, signed);
                 break;
             case ItemPropertyType.Defense:
                 if (((CombatDamageType)subtype).IsDefenseDamageType())
-                    Stat.AdjustDefense(record, (CombatDamageType)subtype, signed);
+                    StatRecord.AdjustDefense(record, (CombatDamageType)subtype, signed);
                 break;
             case ItemPropertyType.Resistance:
             {
@@ -66,38 +66,38 @@ internal static class SavedEquipmentStatEffects
                 break;
             }
             case ItemPropertyType.Evasion:
-                Stat.AdjustEvasion(record, signed);
+                StatRecord.AdjustEvasion(record, signed);
                 break;
             case ItemPropertyType.Control:
             {
                 var skill = GetCraftSkill(subtype);
                 if (skill != SkillType.Invalid)
-                    Stat.AdjustControl(record, skill, signed);
+                    StatRecord.AdjustControl(record, skill, signed);
                 break;
             }
             case ItemPropertyType.Craftsmanship:
-                Stat.AdjustCraftsmanship(record, GetCraftSkill(subtype), signed);
+                StatRecord.AdjustCraftsmanship(record, GetCraftSkill(subtype), signed);
                 break;
             case ItemPropertyType.CPBonus:
-                Stat.AdjustCPBonus(record, GetCraftSkill(subtype), signed);
+                StatRecord.AdjustCPBonus(record, GetCraftSkill(subtype), signed);
                 break;
             case ItemPropertyType.Stealth:
-                Stat.AdjustStealth(record, signed);
+                StatRecord.AdjustStealth(record, signed);
                 break;
             case ItemPropertyType.Detection:
-                Stat.AdjustDetection(record, signed);
+                StatRecord.AdjustDetection(record, signed);
                 break;
             case ItemPropertyType.TrapBonus:
-                Stat.AdjustTrapBonus(record, signed);
+                StatRecord.AdjustTrapBonus(record, signed);
                 break;
             case ItemPropertyType.Disarm:
-                Stat.AdjustTrapDisarm(record, signed);
+                StatRecord.AdjustTrapDisarm(record, signed);
                 break;
             case ItemPropertyType.PoisonBonus:
-                Stat.AdjustPoisonBonus(record, signed);
+                StatRecord.AdjustPoisonBonus(record, signed);
                 break;
             case ItemPropertyType.Lockpicking:
-                Stat.AdjustLockpicking(record, signed);
+                StatRecord.AdjustLockpicking(record, signed);
                 break;
         }
     }

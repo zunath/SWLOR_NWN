@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ObjectPlugin.AddToArea(target, city, GetPositionFromLocation(ctx.GetArenaLocation()));
             await ctx.WaitFrameAsync();
             SetPlotFlag(target, false);
-            Stat.SetNPCMaxHitPoints(target, 200, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 200, true);
             var hp = GetCurrentHitPoints(target);
             var knockdowns = CountKnockdowns(target);
             var bolt = weather.GetType().GetMethod("Thunderstorm", BindingFlags.Instance | BindingFlags.NonPublic)!;

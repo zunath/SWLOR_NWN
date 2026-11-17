@@ -60,7 +60,7 @@ mod_enter (57)
               Adds missing skills in Redis; the login already did.
   LoginOnly   SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
               Takes a pilot out of space at login; the players in space and the ship clones are carried.
-  LoginOnly   SWLOR.Game.Server.Domain.Character.StatService.ApplyPlayerStats
+  LoginOnly   SWLOR.Game.Server.Domain.Character.CreatureStatService.ApplyPlayerStats
               The movement rate and walk setting stay in the engine.
   LoginOnly   SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter
               Moves the effects held since logout back to the player; a reload carries the status effects themselves, and a rerun would take the food bonus off max HP.
@@ -170,7 +170,7 @@ mod_exit (45)
               Forgets the boarding time; the boarding times are carried.
   LogoutOnly  SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer
               Leaves the ship clone at logout; the players in space and the clones are carried.
-  LogoutOnly  SWLOR.Game.Server.Domain.Character.StatService.ForgetOutOfCombatMovementState
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.CreatureStatService.ForgetOutOfCombatMovementState
               Forgets a value the next movement refresh recomputes.
   LogoutOnly  SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerExit
               Holds the effects for the player's return and takes them off the creature; a reload carries the status effects of every creature instead.

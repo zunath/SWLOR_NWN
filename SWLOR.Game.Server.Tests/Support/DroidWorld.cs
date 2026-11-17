@@ -75,7 +75,7 @@ public sealed class DroidWorld : IDisposable
         RecastCalls = recast;
         Resistance = Proxy<IResistanceService>(out var resistance);
         ResistanceCalls = resistance;
-        Stat = Proxy<IStatService>(out var stat);
+        Stat = Proxy<ICreatureStatService>(out var stat);
         StatCalls = stat;
         StatusEffect = Proxy<IStatusEffectService>(out var statusEffect);
         StatusEffectCalls = statusEffect;
@@ -147,7 +147,7 @@ public sealed class DroidWorld : IDisposable
     public IRaceService Race { get; }
     public IRecastService Recast { get; }
     public IResistanceService Resistance { get; }
-    public IStatService Stat { get; }
+    public ICreatureStatService Stat { get; }
     public IStatusEffectService StatusEffect { get; }
     public ITwinPistolEquipmentService Twin { get; }
 

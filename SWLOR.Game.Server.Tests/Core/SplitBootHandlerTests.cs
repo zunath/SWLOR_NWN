@@ -33,6 +33,8 @@ public class SplitBootHandlerTests
     {
         // P5-4b, stat split part 4: the trait stats' cache handler splits out of Mimicry.CacheData.
         "SWLOR.Game.Server.Service.Mimicry.CacheData",
+        // P5-4e, stat split part 2: the stat effect listener's registration splits out of Stat.CacheData.
+        "SWLOR.Game.Server.Service.Stat.CacheData",
     };
 
     private static IReadOnlyList<string[]> Splits()

@@ -240,8 +240,8 @@ public class CombatUpgradeBibleWorkbookFormattingTests
         AssertStatRange(
             stats,
             "Movement Speed",
-            (decimal)StatService.MinimumMovementSpeedMultiplier,
-            (decimal)StatService.MaximumMovementSpeedMultiplier);
+            (decimal)CreatureStatService.MinimumMovementSpeedMultiplier,
+            (decimal)CreatureStatService.MaximumMovementSpeedMultiplier);
         AssertStatRange(
             stats,
             "Damage-Derived Healing per Hit",

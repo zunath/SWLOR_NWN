@@ -58,7 +58,7 @@ public static class SaberWardConversionEngineTests
                     SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "");
                     SetEventScript(creature, EventScript.Creature_OnEndCombatRound, "");
                     ctx.SuppressNPCNaturalRegen(creature);
-                    Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
                 }
                 // Large physical hits, so every hit's 30 percent share is at least one point.
                 BiowareXP2.IPSafeAddItemProperty(weapon, ItemPropertyCustom(ItemPropertyType.DMG, -1, 60),

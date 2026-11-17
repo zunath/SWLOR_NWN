@@ -40,6 +40,8 @@ namespace SWLOR.Game.Server.Domain.Character
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly HashSet<string> _suppressedStatusEffectRemovalIds = new();
         [ReloadState(ReloadStateKind.Runtime)]
+        private readonly List<IStatEffectListener> _statEffectListeners = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, int> _nativeAttackSwingDepth = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, List<Action>> _deferredNativeAttackStatusEffects = new();
@@ -253,6 +255,17 @@ namespace SWLOR.Game.Server.Domain.Character
         public void CacheData()
         {
             CacheStatusEffects();
+        }
+
+        /// <summary>
+        /// Registers who is told when a player's status effects are restored and when a stat-adjusting effect changes. The list holds
+        /// service instances, so a reload rebuilds it through the boot handler that registers the listener (it reruns before the
+        /// carried status effects are adopted).
+        /// </summary>
+        public void RegisterStatEffectListener(IStatEffectListener listener)
+        {
+            if (!_statEffectListeners.Contains(listener))
+                _statEffectListeners.Add(listener);
         }
 
         private void CacheStatusEffects()
@@ -2737,11 +2750,27 @@ namespace SWLOR.Game.Server.Domain.Character
                 .Where(w => typeof(StatusEffectBase).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
         }
 
-        protected virtual void ReapplyFoodHP(uint player) => _stat.Value.ReapplyFoodHP(player);
+        protected virtual void ReapplyFoodHP(uint player)
+        {
+            RequireStatEffectListeners();
+            foreach (var listener in _statEffectListeners)
+                listener.OnStatusEffectsRestored(player);
+        }
 
         protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _catalog.GetAllAbilityDetails();
 
-        protected virtual void ApplyCreatureMovementRate(uint creature) => _stat.Value.ApplyCreatureMovementRate(creature);
+        protected virtual void ApplyCreatureMovementRate(uint creature)
+        {
+            RequireStatEffectListeners();
+            foreach (var listener in _statEffectListeners)
+                listener.OnStatAdjustingEffectsChanged(creature);
+        }
+
+        private void RequireStatEffectListeners()
+        {
+            if (_statEffectListeners.Count == 0)
+                throw new InvalidOperationException("No stat effect listener is registered with the status effects.");
+        }
 
         protected virtual int GetCreatureStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
 

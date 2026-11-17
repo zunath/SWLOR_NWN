@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var enemy = ctx.SpawnCreature("nw_rat001", 2f);
             await ctx.WaitFrameAsync();
             ctx.SuppressNPCNaturalRegen(beast);
-            Stat.SetNPCMaxHitPoints(beast, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(beast, 1000, true);
             ctx.MakeHostile(enemy);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), enemy, 60f);
 

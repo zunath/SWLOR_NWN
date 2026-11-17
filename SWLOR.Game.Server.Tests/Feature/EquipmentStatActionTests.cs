@@ -361,7 +361,7 @@ public class EquipmentStatActionTests
     public void RefreshMaxHP_OnlyRunsForAnItemWithHPAndRefreshesWhatItCorrected()
     {
         IsPlayer();
-        _record.MaxHP = StatService.BaseHP;
+        _record.MaxHP = CreatureStatService.BaseHP;
 
         EquipmentStats.RefreshMaxHPAfterEquipmentChange();
         _refreshes.Should().BeEmpty();
@@ -371,7 +371,7 @@ public class EquipmentStatActionTests
         _items.Equip(Wearer, InventorySlot.Chest, Worn);
         EquipmentStats.RefreshMaxHPAfterEquipmentChange();
 
-        _record.MaxHP.Should().Be(StatService.BaseHP + 10);
+        _record.MaxHP.Should().Be(CreatureStatService.BaseHP + 10);
         _refreshes.Should().ContainSingle().Which.GetType().Name.Should().Be("PlayerStatusRefreshEvent");
     }
 
@@ -381,7 +381,7 @@ public class EquipmentStatActionTests
         IsPlayer();
         Give(ItemPropertyType.HPBonus, -1, 10);
         _items.Equip(Wearer, InventorySlot.Chest, Worn);
-        _record.MaxHP = StatService.BaseHP + 10;
+        _record.MaxHP = CreatureStatService.BaseHP + 10;
 
         EquipmentStats.RefreshMaxHPAfterEquipmentChange();
 
@@ -400,8 +400,8 @@ public class EquipmentStatActionTests
 
         EquipmentStats.RefreshEquipmentRecordsAfterEquipmentChange();
 
-        _record.MaxFP.Should().Be(StatService.BaseFP);
-        _record.MaxStamina.Should().Be(StatService.BaseSTM);
+        _record.MaxFP.Should().Be(StatRecordService.BaseFP);
+        _record.MaxStamina.Should().Be(StatRecordService.BaseSTM);
         _record.Evasion.Should().Be(9, "neither item feeds it");
         _refreshes.Should().HaveCount(2);
         _engine.CountOf("DeleteLocalInt").Should().Be(1);
@@ -411,7 +411,7 @@ public class EquipmentStatActionTests
     public void RefreshEquipmentRecords_RefreshesNothingWhenThePoolsAreRight()
     {
         IsPlayer();
-        _record.MaxFP = StatService.BaseFP;
+        _record.MaxFP = StatRecordService.BaseFP;
 
         EquipmentStats.RefreshEquipmentRecordsAfterEquipmentChange();
 

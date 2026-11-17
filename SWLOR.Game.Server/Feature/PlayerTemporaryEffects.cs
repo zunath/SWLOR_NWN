@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static void ReapplySpeed(uint player)
         {
-            Stat.ApplyCreatureMovementRate(player);
+            CreatureStat.ApplyCreatureMovementRate(player);
         }
 
         /// <summary>

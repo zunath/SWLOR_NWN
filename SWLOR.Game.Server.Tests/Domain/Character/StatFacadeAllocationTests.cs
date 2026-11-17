@@ -40,6 +40,7 @@ public class StatFacadeAllocationTests
     public void BuildContainer() => _container = new FacadeContainer(services =>
     {
         services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>());
+        services.Replace(ServiceDescriptor.Singleton<ICreatureStatService, AllocationCreatureStatService>());
         services.Replace(ServiceDescriptor.Singleton<ICombatRatingService, AllocationCombatRatingService>());
     });
 
@@ -120,11 +121,11 @@ public class StatFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += (int)Stat.GetMovementSpeedMultiplier(Creature)).Should().Be(0);
-        Allocated(() => sink += Stat.IsWalkModeEnabled(Creature) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += Stat.GetEquippedHPBonus(Creature)).Should().Be(0);
-        Allocated(() => sink += Stat.GetBeastNaturalRegenAmount(30)).Should().Be(0);
-        Allocated(() => sink += Stat.IsNaturalStaminaRegenerationAvailable(1, 2) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += (int)CreatureStat.GetMovementSpeedMultiplier(Creature)).Should().Be(0);
+        Allocated(() => sink += CreatureStat.IsWalkModeEnabled(Creature) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += CreatureStat.GetEquippedHPBonus(Creature)).Should().Be(0);
+        Allocated(() => sink += CreatureStat.GetBeastNaturalRegenAmount(30)).Should().Be(0);
+        Allocated(() => sink += CreatureStat.IsNaturalStaminaRegenerationAvailable(1, 2) ? 1 : 0).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
@@ -135,10 +136,10 @@ public class StatFacadeAllocationTests
         var player = new Player();
         var sink = 0;
 
-        Allocated(() => sink += Stat.GetEquippedCombatReadiness(Creature)).Should().Be(0);
-        Allocated(() => Stat.AdjustEvasion(player, 1)).Should().Be(0);
-        Allocated(() => Stat.AdjustAttack(player, 1)).Should().Be(0);
-        Allocated(() => Stat.AdjustCombatReadiness(player, 1)).Should().Be(0);
+        Allocated(() => sink += StatRecord.GetEquippedCombatReadiness(Creature)).Should().Be(0);
+        Allocated(() => StatRecord.AdjustEvasion(player, 1)).Should().Be(0);
+        Allocated(() => StatRecord.AdjustAttack(player, 1)).Should().Be(0);
+        Allocated(() => StatRecord.AdjustCombatReadiness(player, 1)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 

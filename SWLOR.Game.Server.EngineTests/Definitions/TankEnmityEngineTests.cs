@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 SetAILevel(owner.Creature, AILevel.VeryLow);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), owner.Creature, 120f);
                 ctx.SuppressNPCNaturalRegen(pet);
-                Stat.SetNPCMaxHitPoints(pet, 10000, true);
+                CreatureStat.SetNPCMaxHitPoints(pet, 10000, true);
                 ctx.SetNPCResources(pet, 100, 100);
                 var enemy = Spawn(ctx, 1f);
                 ctx.MakeHostile(enemy);
@@ -405,7 +405,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var creature = ctx.SpawnCreature("nw_bandit001", x, y);
             ctx.SuppressNPCNaturalRegen(creature);
-            Stat.SetNPCMaxHitPoints(creature, 10000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 10000, true);
             SetAILevel(creature, AILevel.VeryLow);
             SetLocalLocation(creature, "HOME_LOCATION", GetLocation(creature));
             ctx.SetNPCResources(creature, 100, 100);

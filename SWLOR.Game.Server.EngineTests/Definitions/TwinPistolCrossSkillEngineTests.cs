@@ -290,7 +290,7 @@ public static class TwinPistolCrossSkillEngineTests
                     foreach (var ip in properties) RemoveItemProperty(weapon, ip);
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DMG, -1, 80), weapon);
                     ctx.SuppressNPCNaturalRegen(target);
-                    Stat.SetNPCMaxHitPoints(target, 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                     ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 180f);
                     TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 180f, "CROSS_SKILL_NATIVE");
                     ctx.MakeHostile(target);
@@ -360,7 +360,7 @@ public static class TwinPistolCrossSkillEngineTests
         await ctx.ExecuteInCreatureContextAsync(actor, () =>
         {
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 40f);
             ctx.MakeHostile(target);
         });
@@ -414,7 +414,7 @@ public static class TwinPistolCrossSkillEngineTests
                     ctx.SetNPCPerkLevel(actor, PerkType.PairedVolley, 1);
                     CreaturePlugin.AddFeat(actor, FeatType.PairedVolley1);
                     ctx.SuppressNPCNaturalRegen(target);
-                    Stat.SetNPCMaxHitPoints(target, killingShot ? 1 : 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(target, killingShot ? 1 : 20000, true);
                     ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
                     ctx.MakeHostile(target);
                     _observedTarget = target;
@@ -498,7 +498,7 @@ public static class TwinPistolCrossSkillEngineTests
             CreaturePlugin.AddFeat(actor, FeatType.AkimboStance);
             CreaturePlugin.AddFeat(actor, FeatType.CrossfireStance);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 90f);
             ctx.MakeHostile(target);
             ctx.Assert(UsePerkFeat.TryUseAbility(actor, actor, FeatType.AkimboStance, GetLocation(actor)),

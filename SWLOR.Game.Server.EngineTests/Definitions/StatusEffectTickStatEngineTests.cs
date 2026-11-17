@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(1f);
             ctx.SuppressNPCNaturalRegen(npc);
             SetPlotFlag(npc, false);
-            Stat.SetNPCMaxHitPoints(npc, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(npc, 1000, true);
             ApplyAnchorEffect(ctx, npc);
             var baseline = Stat.GetStatAdjustment(npc, stat);
 

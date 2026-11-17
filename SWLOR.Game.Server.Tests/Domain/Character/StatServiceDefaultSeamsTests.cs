@@ -32,6 +32,8 @@ public class StatServiceDefaultSeamsTests
     private IDisposable _engineScope = null!;
     private FakeNWScript _engine = null!;
     private DefaultSeams _seams = null!;
+    private DefaultCreatureSeams _creatureSeams = null!;
+    private DefaultRecordSeams _recordSeams = null!;
     private DefaultRatingSeams _ratingSeams = null!;
     private DefaultDeflectionSeams _deflectionSeams = null!;
     private DefaultResourcesSeams _resourcesSeams = null!;
@@ -52,6 +54,10 @@ public class StatServiceDefaultSeamsTests
             _facades.Get<IDBService>(), _facades.Get<ICombatRecorderService>(), _facades.Get<IPlayerFeedbackService>(),
             _facades.Get<IStatusEffectService>(), _facades.Get<IMimicryTraitStatsService>(), _facades.Get<ICompanionLookup>(),
             _facades.Get<IResourceRestoredListener>());
+        _creatureSeams = new DefaultCreatureSeams(
+            _facades.Get<IDBService>(), _facades.Get<ICombatRecorderService>(), _facades.Get<ICompanionLookup>(),
+            _facades.Get<IStatusEffectService>(), _facades.Get<IStatService>());
+        _recordSeams = new DefaultRecordSeams(_facades.Get<IDBService>(), _facades.Get<IStatService>());
         _ratingSeams = new DefaultRatingSeams(
             _facades.Get<IDBService>(), _facades.Get<IItemService>(), _facades.Get<ITwinPistolEquipmentService>(), _facades.Get<IStatService>());
         _deflectionSeams = new DefaultDeflectionSeams(
@@ -105,7 +111,7 @@ public class StatServiceDefaultSeamsTests
 
         _seams.SkillDetails(SkillType.Smithery).Should().BeSameAs(Skill.GetSkillDetails(SkillType.Smithery));
         _ratingSeams.BaseItemSkill(BaseItem.Longsword).Should().Be(Skill.GetSkillTypeByBaseItem(BaseItem.Longsword));
-        _seams.DefenseDamageTypes().Should().Equal(GameServices.CombatDamageCatalog.GetDefenseDamageTypes());
+        _recordSeams.DefenseDamageTypes().Should().Equal(GameServices.CombatDamageCatalog.GetDefenseDamageTypes());
         _ratingSeams.IsRanged(SkillType.Pistol).Should().BeTrue();
         _ratingSeams.IsRanged(SkillType.Vibroblade).Should().BeFalse();
     }
@@ -120,7 +126,7 @@ public class StatServiceDefaultSeamsTests
     [Test]
     public void IsDroid_AsksTheDroidService()
     {
-        _seams.CallIsDroid(Creature).Should().BeFalse();
+        _creatureSeams.CallIsDroid(Creature).Should().BeFalse();
 
         _engine.CallsTo("GetResRef").Should().ContainSingle();
     }
@@ -128,7 +134,7 @@ public class StatServiceDefaultSeamsTests
     [Test]
     public void ScheduleTemporaryHitPointLimitCheck_AsksTheEffectsCode()
     {
-        _seams.ScheduleLimitCheck(Creature);
+        _creatureSeams.ScheduleLimitCheck(Creature);
 
         _engine.CallsTo("GetIsObjectValid").Should().ContainSingle("an invalid creature has nothing to check");
     }
@@ -186,15 +192,38 @@ public class StatServiceDefaultSeamsTests
 
         public SkillAttribute SkillDetails(SkillType skill) => GetSkillDetails(skill);
 
-        public IReadOnlyList<CombatDamageType> DefenseDamageTypes() => GetDefenseDamageTypes();
+        public void FPRestored(uint creature) => ApplyFPRestoredEffects(creature);
+
+        public void StaminaRestored(uint creature) => ApplyStaminaRestoredEffects(creature);
+    }
+
+    // Part 2 of the stat split (P5-4e): the creature stat seams with their default bodies.
+    private sealed class DefaultCreatureSeams : CreatureStatService
+    {
+        public DefaultCreatureSeams(
+            IDBService db,
+            ICharacterRecording combatRecorder,
+            ICompanionLookup companions,
+            IStatusEffectService statusEffect,
+            IStatService stat)
+            : base(db, combatRecorder, companions, statusEffect, stat)
+        {
+        }
 
         public bool CallIsDroid(uint creature) => IsDroid(creature);
 
         public void ScheduleLimitCheck(uint creature) => ScheduleTemporaryHitPointLimitCheck(creature);
+    }
 
-        public void FPRestored(uint creature) => ApplyFPRestoredEffects(creature);
+    // Part 3 of the stat split (P5-4e): the record seam with its default body.
+    private sealed class DefaultRecordSeams : StatRecordService
+    {
+        public DefaultRecordSeams(IDBService db, IStatService stat)
+            : base(db, stat)
+        {
+        }
 
-        public void StaminaRestored(uint creature) => ApplyStaminaRestoredEffects(creature);
+        public IReadOnlyList<CombatDamageType> DefenseDamageTypes() => GetDefenseDamageTypes();
     }
 
     // Part 6 of the stat split (P5-4d): the deflection reaction seams with their default bodies.

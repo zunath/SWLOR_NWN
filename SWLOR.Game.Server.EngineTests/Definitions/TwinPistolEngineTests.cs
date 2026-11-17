@@ -444,7 +444,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ReplaceWeaponProperty(companion, ItemPropertyType.WeaponDamageType,
                         ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Ice));
                     ctx.SuppressNPCNaturalRegen(target);
-                    Stat.SetNPCMaxHitPoints(target, 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                     ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 30f);
                     ctx.MakeHostile(target);
                     TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 30f, "TWIN_QUEUED");
@@ -783,7 +783,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ReplaceWeaponProperty(companion, ItemPropertyType.WeaponDamageType,
                     ItemPropertyCustom(ItemPropertyType.WeaponDamageType, (int)CombatDamageType.Ice));
                 ctx.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
                 TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 120f, "TWIN_FIXTURE");
                 ctx.MakeHostile(target);

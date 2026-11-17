@@ -36,12 +36,12 @@ internal static class CharacterRecalculation
         if (character.AppliesRecordEffects)
         {
             var record = character.Record;
-            record.MaxHP = StatService.BaseHP;
+            record.MaxHP = CreatureStatService.BaseHP;
             record.HPRegen = 0;
-            record.MaxFP = StatService.BaseFP;
+            record.MaxFP = StatRecordService.BaseFP;
             record.FP = SavedEquipmentStats.GetMaxFP(character);
             record.FPRegen = 0;
-            record.MaxStamina = StatService.BaseSTM;
+            record.MaxStamina = StatRecordService.BaseSTM;
             record.Stamina = SavedEquipmentStats.GetMaxStamina(character);
             record.STMRegen = 0;
             foreach (var (type, _) in Skill.GetActiveCraftingSkills())

@@ -529,7 +529,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var target in new[] { beast, ordinary })
             {
                 ctx.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 1000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
                 SetAILevel(target, AILevel.VeryLow);
                 ctx.MakeHostile(target);
             }
@@ -817,7 +817,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void PrepareStationaryCreature(EngineTestContext ctx, uint creature)
         {
             ctx.SuppressNPCNaturalRegen(creature);
-            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 60f);
         }
     }

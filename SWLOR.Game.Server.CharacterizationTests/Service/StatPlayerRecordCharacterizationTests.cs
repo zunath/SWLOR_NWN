@@ -34,27 +34,27 @@ public class StatPlayerRecordCharacterizationTests
 
     private static readonly (string Name, Action<Player, int> Adjust, Func<Player, int> Read)[] RecordAdjustments =
     {
-        (nameof(Stat.AdjustAccuracy), (player, amount) => Stat.AdjustAccuracy(player, amount), player => player.Accuracy),
-        (nameof(Stat.AdjustAttack), (player, amount) => Stat.AdjustAttack(player, amount), player => player.Attack),
-        (nameof(Stat.AdjustCombatReadiness), (player, amount) => Stat.AdjustCombatReadiness(player, amount), player => player.CombatReadiness),
-        (nameof(Stat.AdjustDetection), (player, amount) => Stat.AdjustDetection(player, amount), player => player.Detection),
-        (nameof(Stat.AdjustEvasion), (player, amount) => Stat.AdjustEvasion(player, amount), player => player.Evasion),
-        (nameof(Stat.AdjustForceAttack), (player, amount) => Stat.AdjustForceAttack(player, amount), player => player.ForceAttack),
-        (nameof(Stat.AdjustFPRegen), (player, amount) => Stat.AdjustFPRegen(player, amount), player => player.FPRegen),
-        (nameof(Stat.AdjustHPRegen), (player, amount) => Stat.AdjustHPRegen(player, amount), player => player.HPRegen),
-        (nameof(Stat.AdjustLockpicking), (player, amount) => Stat.AdjustLockpicking(player, amount), player => player.Lockpicking),
-        (nameof(Stat.AdjustPoisonBonus), (player, amount) => Stat.AdjustPoisonBonus(player, amount), player => player.PoisonBonus),
-        (nameof(Stat.AdjustSTMRegen), (player, amount) => Stat.AdjustSTMRegen(player, amount), player => player.STMRegen),
-        (nameof(Stat.AdjustStealth), (player, amount) => Stat.AdjustStealth(player, amount), player => player.Stealth),
-        (nameof(Stat.AdjustTrapBonus), (player, amount) => Stat.AdjustTrapBonus(player, amount), player => player.TrapBonus),
-        (nameof(Stat.AdjustTrapDisarm), (player, amount) => Stat.AdjustTrapDisarm(player, amount), player => player.TrapDisarm),
+        (nameof(StatRecord.AdjustAccuracy), (player, amount) => StatRecord.AdjustAccuracy(player, amount), player => player.Accuracy),
+        (nameof(StatRecord.AdjustAttack), (player, amount) => StatRecord.AdjustAttack(player, amount), player => player.Attack),
+        (nameof(StatRecord.AdjustCombatReadiness), (player, amount) => StatRecord.AdjustCombatReadiness(player, amount), player => player.CombatReadiness),
+        (nameof(StatRecord.AdjustDetection), (player, amount) => StatRecord.AdjustDetection(player, amount), player => player.Detection),
+        (nameof(StatRecord.AdjustEvasion), (player, amount) => StatRecord.AdjustEvasion(player, amount), player => player.Evasion),
+        (nameof(StatRecord.AdjustForceAttack), (player, amount) => StatRecord.AdjustForceAttack(player, amount), player => player.ForceAttack),
+        (nameof(StatRecord.AdjustFPRegen), (player, amount) => StatRecord.AdjustFPRegen(player, amount), player => player.FPRegen),
+        (nameof(StatRecord.AdjustHPRegen), (player, amount) => StatRecord.AdjustHPRegen(player, amount), player => player.HPRegen),
+        (nameof(StatRecord.AdjustLockpicking), (player, amount) => StatRecord.AdjustLockpicking(player, amount), player => player.Lockpicking),
+        (nameof(StatRecord.AdjustPoisonBonus), (player, amount) => StatRecord.AdjustPoisonBonus(player, amount), player => player.PoisonBonus),
+        (nameof(StatRecord.AdjustSTMRegen), (player, amount) => StatRecord.AdjustSTMRegen(player, amount), player => player.STMRegen),
+        (nameof(StatRecord.AdjustStealth), (player, amount) => StatRecord.AdjustStealth(player, amount), player => player.Stealth),
+        (nameof(StatRecord.AdjustTrapBonus), (player, amount) => StatRecord.AdjustTrapBonus(player, amount), player => player.TrapBonus),
+        (nameof(StatRecord.AdjustTrapDisarm), (player, amount) => StatRecord.AdjustTrapDisarm(player, amount), player => player.TrapDisarm),
     };
 
     private static readonly (string Name, Action<Player, SkillType, int> Adjust, Func<Player, Dictionary<SkillType, int>> Read)[] SkillAdjustments =
     {
-        (nameof(Stat.AdjustControl), (player, skill, amount) => Stat.AdjustControl(player, skill, amount), player => player.Control),
-        (nameof(Stat.AdjustCPBonus), (player, skill, amount) => Stat.AdjustCPBonus(player, skill, amount), player => player.CPBonus),
-        (nameof(Stat.AdjustCraftsmanship), (player, skill, amount) => Stat.AdjustCraftsmanship(player, skill, amount), player => player.Craftsmanship),
+        (nameof(StatRecord.AdjustControl), (player, skill, amount) => StatRecord.AdjustControl(player, skill, amount), player => player.Control),
+        (nameof(StatRecord.AdjustCPBonus), (player, skill, amount) => StatRecord.AdjustCPBonus(player, skill, amount), player => player.CPBonus),
+        (nameof(StatRecord.AdjustCraftsmanship), (player, skill, amount) => StatRecord.AdjustCraftsmanship(player, skill, amount), player => player.Craftsmanship),
     };
 
     [Test]
@@ -99,9 +99,9 @@ public class StatPlayerRecordCharacterizationTests
         foreach (var type in Enum.GetValues<CombatDamageType>().OrderBy(type => DefinitionCell.Id(type)))
         {
             var player = new Player();
-            Stat.AdjustDefense(player, type, 7);
+            StatRecord.AdjustDefense(player, type, 7);
             var afterFirst = DefenseText(player);
-            Stat.AdjustDefense(player, type, -2);
+            StatRecord.AdjustDefense(player, type, -2);
             table.Add(DefinitionCell.Id(type), type, afterFirst, DefenseText(player));
         }
 
@@ -256,7 +256,7 @@ public class StatPlayerRecordCharacterizationTests
                 foreach (var selection in selections)
                 {
                     var player = create();
-                    var corrected = Stat.ApplyEquipmentStatTotals(player, BuildTotals(properties), selection);
+                    var corrected = StatRecord.ApplyEquipmentStatTotals(player, BuildTotals(properties), selection);
                     table.Add(gearName, startName, selection, corrected, RecordText(player));
                 }
             }

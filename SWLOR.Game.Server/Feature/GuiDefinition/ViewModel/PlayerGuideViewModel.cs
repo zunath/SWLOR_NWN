@@ -812,7 +812,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Resistances",
                             $"Fire, Poison, Electrical, Ice, Mind, Mobility, Trauma, and Disruption resistance stop at {ResistanceRules.MaximumResistance - 1} percent for players. Only temporary immunity effects reach {ResistanceRules.MaximumResistance} percent."),
                         new ArticleBlock("Attack Speed and Movement",
-                            $"Attack speed bonuses shorten your attack delay by at most {CombatRules.MaximumAttackDelayAdjustmentPercent} percent, and slows lengthen it by at most {CombatRules.MaximumAttackDelayAdjustmentPercent} percent. Movement speed stops at {(int)Math.Round(StatService.MaximumMovementSpeedMultiplier * 100)} percent of normal, or 100 percent while walking."),
+                            $"Attack speed bonuses shorten your attack delay by at most {CombatRules.MaximumAttackDelayAdjustmentPercent} percent, and slows lengthen it by at most {CombatRules.MaximumAttackDelayAdjustmentPercent} percent. Movement speed stops at {(int)Math.Round(CreatureStatService.MaximumMovementSpeedMultiplier * 100)} percent of normal, or 100 percent while walking."),
                         new ArticleBlock("Combat Readiness",
                             $"Combat Readiness stops at {StatService.MaximumCombatReadinessPercent} percent."),
                         new ArticleBlock("Healing From Damage",

@@ -16,14 +16,16 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         private IMigrationService Migration { get; }
         private IOverflowStorageService OverflowStorage { get; }
         private IPerkService Perk { get; }
-        private IStatService Stat { get; }
+        private ICreatureStatService CreatureStat { get; }
+        private IStatRecordService StatRecord { get; }
 
-        public CharacterLoginRestoration(IMigrationService migration, IOverflowStorageService overflowStorage, IPerkService perk, IStatService stat)
+        public CharacterLoginRestoration(IMigrationService migration, IOverflowStorageService overflowStorage, IPerkService perk, ICreatureStatService creatureStat, IStatRecordService statRecord)
         {
             Migration = migration;
             OverflowStorage = overflowStorage;
             Perk = perk;
-            Stat = stat;
+            CreatureStat = creatureStat;
+            StatRecord = statRecord;
         }
 
         [NWNEventHandler(ScriptName.OnCharacterInitAfter)]
@@ -47,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>Restores the base attributes the record holds. The stat service reads the record and the engine.</summary>
         protected virtual void RestorePlayerAttributes(uint player)
         {
-            Stat.RestorePlayerAttributes(player);
+            CreatureStat.RestorePlayerAttributes(player);
         }
 
         /// <summary>Restores the native feats the record holds. The perk service reads the record and the engine.</summary>
@@ -59,19 +61,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
         /// <summary>Reconciles combat readiness with the worn equipment. The stat service reads the record and the engine.</summary>
         protected virtual void RefreshCombatReadinessEquipment(uint player)
         {
-            Stat.RefreshCombatReadinessEquipment(player);
+            StatRecord.RefreshCombatReadinessEquipment(player);
         }
 
         /// <summary>Recomputes the maximum hit points. The stat service reads the record and the engine.</summary>
         protected virtual void RefreshPlayerMaxHP(uint player)
         {
-            Stat.RefreshPlayerMaxHP(player);
+            CreatureStat.RefreshPlayerMaxHP(player);
         }
 
         /// <summary>Recomputes the equipment stats on the record. The stat service reads the record and the engine.</summary>
         protected virtual void RefreshPlayerEquipmentStats(uint player)
         {
-            Stat.RefreshPlayerEquipmentStats(player);
+            StatRecord.RefreshPlayerEquipmentStats(player);
         }
     }
 }

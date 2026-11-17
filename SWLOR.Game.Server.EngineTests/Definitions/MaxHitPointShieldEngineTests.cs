@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             foreach (var adjustment in new[] { 0, 50, -50 })
             {
-                await ctx.ExecuteInCreatureContextAsync(player, () => Stat.AdjustPlayerMaxHP(dbPlayer, player, adjustment));
+                await ctx.ExecuteInCreatureContextAsync(player, () => CreatureStat.AdjustPlayerMaxHP(dbPlayer, player, adjustment));
                 await ctx.WaitFrameAsync();
                 ctx.AssertEqual(wounded, ObjectPlugin.GetCurrentHitPoints(player), $"base HP after adjusting by {adjustment}");
                 ctx.AssertEqual(PlayerShieldHitPoints, TemporaryHitPointEffects.GetRemaining(player), $"shield after adjusting by {adjustment}");
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             // A real reduction below base HP still lowers base HP, and only base HP.
             ObjectPlugin.SetCurrentHitPoints(player, GetMaxHitPoints(player));
-            await ctx.ExecuteInCreatureContextAsync(player, () => Stat.AdjustPlayerMaxHP(dbPlayer, player, -100));
+            await ctx.ExecuteInCreatureContextAsync(player, () => CreatureStat.AdjustPlayerMaxHP(dbPlayer, player, -100));
             await ctx.WaitFrameAsync();
             ctx.AssertEqual(GetMaxHitPoints(player), ObjectPlugin.GetCurrentHitPoints(player), "base HP after a reduction below it");
             ctx.AssertEqual(PlayerShieldHitPoints, TemporaryHitPointEffects.GetRemaining(player), "shield after a reduction below base HP");
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             ctx.Assert(dbPlayer != null, "The player fixture must have a player record.");
             dbPlayer.MaxHP = PlayerRecordHitPoints;
-            await ctx.ExecuteInCreatureContextAsync(player, () => Stat.AdjustPlayerMaxHP(dbPlayer, player, 0));
+            await ctx.ExecuteInCreatureContextAsync(player, () => CreatureStat.AdjustPlayerMaxHP(dbPlayer, player, 0));
             await ctx.WaitFrameAsync();
             DB.Set(dbPlayer);
 

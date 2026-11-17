@@ -162,7 +162,7 @@ public class StatServiceNpcTests : StatServiceTestBase
     public void RestoreNPCStats_SkipsACreatureWithRegenerationSuppressed()
     {
         Bench.AddNpc();
-        Bench.SetLocal(Npc, StatService.SuppressNaturalRegenVariable, 1);
+        Bench.SetLocal(Npc, CreatureStatService.SuppressNaturalRegenVariable, 1);
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
 
         CreatureStat.RestoreNPCStats(true, Bench.Enmity);

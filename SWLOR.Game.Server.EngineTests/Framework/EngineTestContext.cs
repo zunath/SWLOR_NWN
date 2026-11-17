@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// </summary>
         public void SuppressNPCNaturalRegen(uint npc)
         {
-            SetLocalInt(npc, StatService.SuppressNaturalRegenVariable, 1);
+            SetLocalInt(npc, CreatureStatService.SuppressNaturalRegenVariable, 1);
         }
 
         /// <summary>

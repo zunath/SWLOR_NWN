@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = ctx.SpawnCreature(ActorResref, -0.5f);
             SetAILevel(caster, AILevel.VeryLow);
             await ctx.WaitFrameAsync();
-            Stat.SetNPCMaxHitPoints(caster, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(caster, 1000, true);
             ctx.SetResources(caster, 9999, 9999);
             ctx.SuppressNPCNaturalRegen(caster);
             ctx.SetNPCPerkLevel(caster, PerkType.Resuscitation, 1);

@@ -55,7 +55,7 @@
         "Stat", "Skill", "Perk", "StatusEffect", "Race", "Achievement", "Activity",
         "PlayerDescriptor", "PlayerName", "PlayerIntroduction", "Disguise",
         "EspionageInfiltration", "Language", "RoleplayXPDetection", "AppearanceRenderState", "TintMapState",
-        "TemporaryStatModifier", "MimicryTraitStats"
+        "TemporaryStatModifier", "MimicryTraitStats", "CreatureStat", "StatRecord"
       ],
       "featureFolders": [
         "PerkDefinition", "StatusEffectDefinition", "AppearanceDefinition"

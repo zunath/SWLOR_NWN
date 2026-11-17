@@ -94,7 +94,7 @@ public class StaminaSustainTests
     {
         const int trials = 200;
         double casts = 0, attempts = 0, stamina = 0, firstDeferred = 0, hits = 0;
-        var maximum = Stat.GetMaxStamina(StatService.BaseSTM, might, gear);
+        var maximum = Stat.GetMaxStamina(StatRecordService.BaseSTM, might, gear);
         for (var trial = 0; trial < trials; trial++)
         {
             var random = new System.Random(1729 + trial);

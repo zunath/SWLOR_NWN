@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Feature
         {
             // The native slots now describe the completed change. Reconciliation
             // also handles failed attempts and repeated events without delta drift.
-            Stat.RefreshCombatReadinessEquipment(OBJECT_SELF);
+            StatRecord.RefreshCombatReadinessEquipment(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Feature
                     continue;
 
                 // The status window refreshed before the change, from the uncorrected maximum.
-                if (Stat.RefreshPlayerMaxHP(OBJECT_SELF))
+                if (CreatureStat.RefreshPlayerMaxHP(OBJECT_SELF))
                     Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.HP));
                 return;
             }
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature
             var stats = GetRecordStats(item) | (EquipmentRecordStats)GetLocalInt(OBJECT_SELF, DisplacedRecordStatsVariable);
             DeleteLocalInt(OBJECT_SELF, DisplacedRecordStatsVariable);
 
-            var corrected = Stat.RefreshPlayerEquipmentStats(OBJECT_SELF, stats);
+            var corrected = StatRecord.RefreshPlayerEquipmentStats(OBJECT_SELF, stats);
             // The status window refreshed before the change, from the uncorrected maximums.
             if (corrected.HasFlag(EquipmentRecordStats.FP))
                 Gui.PublishRefreshEvent(OBJECT_SELF, new PlayerStatusRefreshEvent(PlayerStatusRefreshEvent.StatType.FP));
@@ -253,11 +253,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustPlayerMaxHP(dbPlayer, creature, amount);
+                    CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, amount);
                 }
                 else
                 {
-                    Stat.AdjustPlayerMaxHP(dbPlayer, creature, -amount);
+                    CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Feature
 
                 if (maxHP > 0)
                 {
-                    Stat.SetNPCMaxHitPoints(creature, maxHP);
+                    CreatureStat.SetNPCMaxHitPoints(creature, maxHP);
                 }
 
                 // Base HP only: the native getter includes temporary HP, which must not heal the NPC.
@@ -321,11 +321,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustPlayerMaxFP(dbPlayer, amount, creature);
+                    StatRecord.AdjustPlayerMaxFP(dbPlayer, amount, creature);
                 }
                 else
                 {
-                    Stat.AdjustPlayerMaxFP(dbPlayer, -amount, creature);
+                    StatRecord.AdjustPlayerMaxFP(dbPlayer, -amount, creature);
                 }
 
                 DB.Set(dbPlayer);
@@ -357,11 +357,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustFPRegen(dbPlayer, amount);
+                    StatRecord.AdjustFPRegen(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustFPRegen(dbPlayer, -amount);
+                    StatRecord.AdjustFPRegen(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -393,11 +393,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustPlayerMaxSTM(dbPlayer, amount, creature);
+                    StatRecord.AdjustPlayerMaxSTM(dbPlayer, amount, creature);
                 }
                 else
                 {
-                    Stat.AdjustPlayerMaxSTM(dbPlayer, -amount, creature);
+                    StatRecord.AdjustPlayerMaxSTM(dbPlayer, -amount, creature);
                 }
 
                 DB.Set(dbPlayer);
@@ -429,11 +429,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustSTMRegen(dbPlayer, amount);
+                    StatRecord.AdjustSTMRegen(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustSTMRegen(dbPlayer, -amount);
+                    StatRecord.AdjustSTMRegen(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -483,11 +483,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustAttack(dbPlayer, amount);
+                    StatRecord.AdjustAttack(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustAttack(dbPlayer, -amount);
+                    StatRecord.AdjustAttack(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -525,11 +525,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustAccuracy(dbPlayer, amount);
+                    StatRecord.AdjustAccuracy(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustAccuracy(dbPlayer, -amount);
+                    StatRecord.AdjustAccuracy(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -561,11 +561,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustForceAttack(dbPlayer, amount);
+                    StatRecord.AdjustForceAttack(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustForceAttack(dbPlayer, -amount);
+                    StatRecord.AdjustForceAttack(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -600,11 +600,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustDefense(dbPlayer, damageType, amount);
+                    StatRecord.AdjustDefense(dbPlayer, damageType, amount);
                 }
                 else
                 {
-                    Stat.AdjustDefense(dbPlayer, damageType, -amount);
+                    StatRecord.AdjustDefense(dbPlayer, damageType, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -742,11 +742,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustEvasion(dbPlayer, amount);
+                    StatRecord.AdjustEvasion(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustEvasion(dbPlayer, -amount);
+                    StatRecord.AdjustEvasion(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -778,11 +778,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustStealth(dbPlayer, amount);
+                    StatRecord.AdjustStealth(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustStealth(dbPlayer, -amount);
+                    StatRecord.AdjustStealth(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -814,11 +814,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustDetection(dbPlayer, amount);
+                    StatRecord.AdjustDetection(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustDetection(dbPlayer, -amount);
+                    StatRecord.AdjustDetection(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -850,11 +850,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustTrapBonus(dbPlayer, amount);
+                    StatRecord.AdjustTrapBonus(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustTrapBonus(dbPlayer, -amount);
+                    StatRecord.AdjustTrapBonus(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -886,11 +886,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustTrapDisarm(dbPlayer, amount);
+                    StatRecord.AdjustTrapDisarm(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustTrapDisarm(dbPlayer, -amount);
+                    StatRecord.AdjustTrapDisarm(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -922,11 +922,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustPoisonBonus(dbPlayer, amount);
+                    StatRecord.AdjustPoisonBonus(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustPoisonBonus(dbPlayer, -amount);
+                    StatRecord.AdjustPoisonBonus(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -958,11 +958,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustLockpicking(dbPlayer, amount);
+                    StatRecord.AdjustLockpicking(dbPlayer, amount);
                 }
                 else
                 {
-                    Stat.AdjustLockpicking(dbPlayer, -amount);
+                    StatRecord.AdjustLockpicking(dbPlayer, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -1018,11 +1018,11 @@ namespace SWLOR.Game.Server.Feature
 
                 if (isAdding)
                 {
-                    Stat.AdjustControl(dbPlayer, skillType, amount);
+                    StatRecord.AdjustControl(dbPlayer, skillType, amount);
                 }
                 else
                 {
-                    Stat.AdjustControl(dbPlayer, skillType, -amount);
+                    StatRecord.AdjustControl(dbPlayer, skillType, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -1068,11 +1068,11 @@ namespace SWLOR.Game.Server.Feature
                 }
                 if (isAdding)
                 {
-                    Stat.AdjustCraftsmanship(dbPlayer, skillType, amount);
+                    StatRecord.AdjustCraftsmanship(dbPlayer, skillType, amount);
                 }
                 else
                 {
-                    Stat.AdjustCraftsmanship(dbPlayer, skillType, -amount);
+                    StatRecord.AdjustCraftsmanship(dbPlayer, skillType, -amount);
                 }
 
                 DB.Set(dbPlayer);
@@ -1117,11 +1117,11 @@ namespace SWLOR.Game.Server.Feature
                 }
                 if (isAdding)
                 {
-                    Stat.AdjustCPBonus(dbPlayer, skillType, amount);
+                    StatRecord.AdjustCPBonus(dbPlayer, skillType, amount);
                 }
                 else
                 {
-                    Stat.AdjustCPBonus(dbPlayer, skillType, -amount);
+                    StatRecord.AdjustCPBonus(dbPlayer, skillType, -amount);
                 }
 
                 DB.Set(dbPlayer);

@@ -41,7 +41,7 @@ public static class UnarmedMasteryEngineTests
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 90f);
         });
         context.AssertEqual(45, Stat.GetNPCStats(target).Level, "The real hostile opponent qualifies for the accepted trial.");
-        Stat.SetNPCMaxHitPoints(target, 20000, true);
+        CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
         context.SuppressNPCNaturalRegen(target);
         SetAILevel(target, AILevel.VeryLow);
         TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 90f);
@@ -171,7 +171,7 @@ public static class UnarmedMasteryEngineTests
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 90f);
         });
         context.AssertEqual(45, Stat.GetNPCStats(target).Level, "The live opponent meets the trial's combat-level requirement.");
-        Stat.SetNPCMaxHitPoints(target, 20000, true);
+        CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
         context.SuppressNPCNaturalRegen(target);
         SetAILevel(target, AILevel.VeryLow);
         TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 90f);

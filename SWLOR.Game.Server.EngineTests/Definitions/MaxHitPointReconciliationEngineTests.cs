@@ -37,18 +37,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var ring = await CreateHitPointItemAsync(ctx, player, "absdef_l6", RingHitPoints);
 
             await EquipAsync(ctx, player, belt, InventorySlot.Belt);
-            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints, Record(player).MaxHP, "the record is rebuilt from its sources");
-            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints + 40 * perLevel, GetMaxHitPoints(player),
+            ctx.AssertEqual(CreatureStatService.BaseHP + BeltHitPoints, Record(player).MaxHP, "the record is rebuilt from its sources");
+            ctx.AssertEqual(CreatureStatService.BaseHP + BeltHitPoints + 40 * perLevel, GetMaxHitPoints(player),
                 "the 125 HP belt adds all of its HP to the naked maximum (355 for the reported character, not 200)");
 
             await EquipAsync(ctx, player, ring, InventorySlot.RightRing);
-            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints + RingHitPoints + 40 * perLevel, GetMaxHitPoints(player),
+            ctx.AssertEqual(CreatureStatService.BaseHP + BeltHitPoints + RingHitPoints + 40 * perLevel, GetMaxHitPoints(player),
                 "the 120 HP ring adds all of its HP (475 for the reported character, not 315)");
 
             await UnequipAsync(ctx, player, ring);
             await UnequipAsync(ctx, player, belt);
-            ctx.AssertEqual(StatService.BaseHP, Record(player).MaxHP, "unequipping returns the record to the base");
-            ctx.AssertEqual(StatService.BaseHP + 40 * perLevel, GetMaxHitPoints(player), "the naked maximum includes the 70 HP base (230 reported)");
+            ctx.AssertEqual(CreatureStatService.BaseHP, Record(player).MaxHP, "unequipping returns the record to the base");
+            ctx.AssertEqual(CreatureStatService.BaseHP + 40 * perLevel, GetMaxHitPoints(player), "the naked maximum includes the 70 HP base (230 reported)");
         }
 
         [EngineTest("Login rebuilds a drifted max HP record from worn gear and food", Category = Category, TimeoutSeconds = 60f)]
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PreparePlayer(ctx);
             var player = fixture.Creature;
-            await SetRecordAsync(ctx, player, StatService.BaseHP);
+            await SetRecordAsync(ctx, player, CreatureStatService.BaseHP);
             var belt = await CreateHitPointItemAsync(ctx, player, "advent_belt", BeltHitPoints);
             var ring = await CreateHitPointItemAsync(ctx, player, "absdef_l6", RingHitPoints);
             await EquipAsync(ctx, player, belt, InventorySlot.Belt);
@@ -70,10 +70,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await SetRecordAsync(ctx, player, DriftedRecordMaxHP + BeltHitPoints + RingHitPoints);
             ctx.AssertEqual(155 + 40 * perLevel, GetMaxHitPoints(player), "the drifted record hides 160 of the gear and food HP (315 reported)");
 
-            await ctx.ExecuteInCreatureContextAsync(player, () => Stat.RefreshPlayerMaxHP(player));
+            await ctx.ExecuteInCreatureContextAsync(player, () => CreatureStat.RefreshPlayerMaxHP(player));
             await ctx.WaitFrameAsync();
-            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints, Record(player).MaxHP, "the record is rebuilt at login");
-            ctx.AssertEqual(StatService.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints + 40 * perLevel, GetMaxHitPoints(player),
+            ctx.AssertEqual(CreatureStatService.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints, Record(player).MaxHP, "the record is rebuilt at login");
+            ctx.AssertEqual(CreatureStatService.BaseHP + BeltHitPoints + RingHitPoints + foodHitPoints + 40 * perLevel, GetMaxHitPoints(player),
                 "every source counts in full");
         }
 
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var record = Record(player);
             record.MaxHP = maxHP;
-            await ctx.ExecuteInCreatureContextAsync(player, () => Stat.AdjustPlayerMaxHP(record, player, 0));
+            await ctx.ExecuteInCreatureContextAsync(player, () => CreatureStat.AdjustPlayerMaxHP(record, player, 0));
             DB.Set(record);
             ObjectPlugin.SetCurrentHitPoints(player, GetMaxHitPoints(player));
             await ctx.WaitFrameAsync();

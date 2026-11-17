@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             ctx.MakeHostile(target);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 30000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 30000, true);
             SetAILevel(target, AILevel.VeryLow);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 390f);
 

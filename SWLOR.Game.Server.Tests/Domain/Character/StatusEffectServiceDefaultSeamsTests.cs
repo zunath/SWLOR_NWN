@@ -55,21 +55,49 @@ public class StatusEffectServiceDefaultSeamsTests
     }
 
     [Test]
-    public void ReapplyFoodHP_AsksStatWhichStopsAtANonPlayer()
+    public void ReapplyFoodHP_TellsTheRegisteredListener()
     {
+        var listener = new RecordingListener();
+        _defaults.RegisterStatEffectListener(listener);
+
         _defaults.CallReapplyFoodHP(Creature);
 
-        _engine.CountOf("GetIsPC").Should().Be(1);
-        _engine.CountOf("GetObjectUUID").Should().Be(0);
+        listener.Restored.Should().Equal(Creature);
+        listener.Changed.Should().BeEmpty();
     }
 
     [Test]
-    public void ApplyCreatureMovementRate_AsksStatWhichStopsAtAnInvalidCreature()
+    public void ApplyCreatureMovementRate_TellsTheRegisteredListener()
     {
+        var listener = new RecordingListener();
+        _defaults.RegisterStatEffectListener(listener);
+
         _defaults.CallApplyCreatureMovementRate(Creature);
 
-        _engine.CountOf("GetIsObjectValid").Should().Be(1);
-        _engine.CountOf("GetObjectType").Should().Be(0);
+        listener.Changed.Should().Equal(Creature);
+        listener.Restored.Should().BeEmpty();
+    }
+
+    [Test]
+    public void ARegisteredListenerIsKeptOnce()
+    {
+        var listener = new RecordingListener();
+        _defaults.RegisterStatEffectListener(listener);
+        _defaults.RegisterStatEffectListener(listener);
+
+        _defaults.CallApplyCreatureMovementRate(Creature);
+
+        listener.Changed.Should().Equal(Creature);
+    }
+
+    [Test]
+    public void ANoticeWithNoListenerRegisteredFailsAtOnce()
+    {
+        var restored = () => _defaults.CallReapplyFoodHP(Creature);
+        var changed = () => _defaults.CallApplyCreatureMovementRate(Creature);
+
+        restored.Should().Throw<InvalidOperationException>();
+        changed.Should().Throw<InvalidOperationException>();
     }
 
     [Test]
@@ -127,6 +155,17 @@ public class StatusEffectServiceDefaultSeamsTests
 
         _engine.CountOf("GetIsObjectValid").Should().Be(1);
         _engine.CountOf("AssignCommand").Should().Be(0);
+    }
+
+    private sealed class RecordingListener : IStatEffectListener
+    {
+        public List<uint> Restored { get; } = new();
+
+        public List<uint> Changed { get; } = new();
+
+        public void OnStatusEffectsRestored(uint player) => Restored.Add(player);
+
+        public void OnStatAdjustingEffectsChanged(uint creature) => Changed.Add(creature);
     }
 
     private sealed class Defaults : StatusEffectService

@@ -69,7 +69,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
 
         CreatureStat.RefreshPlayerMaxHP(PlayerCreature).Should().BeTrue();
 
-        record.MaxHP.Should().Be(StatService.BaseHP + 125 + 30);
+        record.MaxHP.Should().Be(CreatureStatService.BaseHP + 125 + 30);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}", "LimitCheck:100", $"DB.Set:{PlayerUuid}");
     }
 
@@ -82,14 +82,14 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
 
         CreatureStat.RefreshPlayerMaxHP(PlayerCreature).Should().BeTrue();
 
-        record.MaxHP.Should().Be(StatService.BaseHP);
+        record.MaxHP.Should().Be(CreatureStatService.BaseHP);
     }
 
     [Test]
     public void RefreshPlayerMaxHP_OfACorrectRecordWritesNothing()
     {
         var record = Bench.AddPlayer();
-        record.MaxHP = StatService.BaseHP;
+        record.MaxHP = CreatureStatService.BaseHP;
 
         CreatureStat.RefreshPlayerMaxHP(PlayerCreature).Should().BeFalse();
 
@@ -155,8 +155,8 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
         var corrected = Record.RefreshPlayerEquipmentStats(PlayerCreature, EquipmentRecordStats.FP | EquipmentRecordStats.Stamina);
 
         corrected.Should().Be(EquipmentRecordStats.FP | EquipmentRecordStats.Stamina);
-        record.MaxFP.Should().Be(StatService.BaseFP + 5);
-        record.MaxStamina.Should().Be(StatService.BaseSTM + 6);
+        record.MaxFP.Should().Be(StatRecordService.BaseFP + 5);
+        record.MaxStamina.Should().Be(StatRecordService.BaseSTM + 6);
         record.FP.Should().Be(15, "a lower maximum caps the current pool");
         record.Stamina.Should().Be(16);
         Bench.Log.Should().Equal($"DB.Get:{PlayerUuid}", $"DB.Set:{PlayerUuid}");
@@ -166,7 +166,7 @@ public class StatServiceEquipmentRecordTests : StatServiceTestBase
     public void RefreshPlayerEquipmentStats_LeavesAPoolAloneWhenItsRecordDidNotChange()
     {
         var record = Bench.AddPlayer();
-        record.MaxFP = StatService.BaseFP;
+        record.MaxFP = StatRecordService.BaseFP;
         record.FP = 500;
         record.Evasion = 1;
 

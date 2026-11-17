@@ -26,6 +26,4 @@ internal sealed class AllocationStatService : StatService
     protected override int GetPerkStatBonus(uint creature, StatType stat) => 0;
 
     protected override int GetTemporaryStatAdjustment(uint creature, StatType stat) => 0;
-
-    protected override bool IsDroid(uint creature) => false;
 }

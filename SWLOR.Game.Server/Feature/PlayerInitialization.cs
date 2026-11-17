@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature
                 GiveStartingTokens(initializing);
             AssignCharacterType(player, initializing);
             RegisterDefaultRespawnPoint(initializing);
-            Stat.ApplyCreatureMovementRate(player);
+            CreatureStat.ApplyCreatureMovementRate(player);
         }
 
         public static void InitializeNativeCombatStats(uint player)
@@ -270,9 +270,9 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
             // A failed first export can retry with an already initialized record.
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, StatService.BaseHP - dbPlayer.MaxHP);
-            Stat.AdjustPlayerMaxFP(dbPlayer, StatService.BaseFP - dbPlayer.MaxFP, player);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, StatService.BaseSTM - dbPlayer.MaxStamina, player);
+            CreatureStat.AdjustPlayerMaxHP(dbPlayer, player, CreatureStatService.BaseHP - dbPlayer.MaxHP);
+            StatRecord.AdjustPlayerMaxFP(dbPlayer, StatRecordService.BaseFP - dbPlayer.MaxFP, player);
+            StatRecord.AdjustPlayerMaxSTM(dbPlayer, StatRecordService.BaseSTM - dbPlayer.MaxStamina, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);

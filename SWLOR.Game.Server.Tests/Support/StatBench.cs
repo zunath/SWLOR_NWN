@@ -113,7 +113,12 @@ public sealed partial class StatBench : IDisposable
             .On("GetStatAdjustment", args => StatusStats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)))
             .On("GetStatSources", args => StatusSources.GetValueOrDefault((StatType)args[1]!, Array.Empty<StatAdjustmentSource>()))
             .On("GetStatusEffect", _ => ActiveFoodEffect)
-            .On("GetCreatureStatusEffects", _ => CreatureEffects);
+            .On("GetCreatureStatusEffects", _ => CreatureEffects)
+            .On("RegisterStatEffectListener", args =>
+            {
+                RegisteredListeners.Add((IStatEffectListener)args[0]!);
+                return null;
+            });
 
         var mimicryTraitStats = ScriptedProxy.Create<IMimicryTraitStatsService>(out var mimicryProxy);
         mimicryProxy
@@ -153,6 +158,8 @@ public sealed partial class StatBench : IDisposable
         pvpProxy.On("GetHealingReductionPercent", _ => PvpHealingReduction);
 
         Service = new TestStatService(this, db, recorder, feedback, statusEffect, mimicryTraitStats, beastMastery);
+        CreatureStat = new TestCreatureStatService(this, db, recorder, beastMastery, statusEffect, Service);
+        Record = new TestStatRecordService(db, Service);
         CombatRating = new TestCombatRatingService(this, db, item, twinPistol, Service);
         DeflectionReaction = new TestCombatDeflectionReactionService(this, recorder, recast, Service);
         Healing = new TestCombatResourcesService(this, Service, statusEffect, recorder, pvp, beastMastery);
@@ -182,14 +189,13 @@ public sealed partial class StatBench : IDisposable
     public TestStatService Service { get; }
 
     // One accessor per part of the stat split (Readmes/MaintainabilityRefactorStatSplit.md). A test calls each member through
-    // its part's accessor; until a part moves, its accessor is the one instance, and the pull request that moves the part points
-    // the accessor at the part's double without changing the tests.
+    // its part's accessor; each part is its own double, and they read the stat adjustment and the pools through Service.
 
     /// <summary>Part 2, <c>CreatureStatService</c>: movement, maximum HP and food HP, attributes, NPC loading and regeneration.</summary>
-    public TestStatService CreatureStat => Service;
+    public TestCreatureStatService CreatureStat { get; }
 
     /// <summary>Part 3, <c>StatRecordService</c>: the gear-fed player records and the Combat Readiness equipment.</summary>
-    public TestStatService Record => Service;
+    public TestStatRecordService Record { get; }
 
     /// <summary>
     /// Part 5, <c>CombatRatingService</c> (Combat, P5-4c): Attack, Accuracy, Defense, Evasion and the deflection and Guard chances.
@@ -260,6 +266,9 @@ public sealed partial class StatBench : IDisposable
     public int PvpHealingReduction { get; set; }
 
     public uint HighestEnmityTarget { get; set; } = ObjectInvalid;
+
+    /// <summary>Who registered with the status effect stand-in as the listener of its stat notices.</summary>
+    public List<IStatEffectListener> RegisteredListeners { get; } = new();
 
     public object? ActiveFoodEffect { get; set; }
 

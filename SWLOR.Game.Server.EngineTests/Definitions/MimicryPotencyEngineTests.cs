@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void PrepareCreature(EngineTestContext ctx, uint creature)
         {
             ctx.SuppressNPCNaturalRegen(creature);
-            Stat.SetNPCMaxHitPoints(creature, 20000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 120f);
         }
     }

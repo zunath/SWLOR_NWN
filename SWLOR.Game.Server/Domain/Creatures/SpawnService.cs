@@ -23,10 +23,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
     public class SpawnService : ISpawnService
     {
         private readonly IAIService _ai;
-        private readonly IStatService _stat;
+        private readonly ICreatureStatService _stat;
         private readonly IWalkmeshService _walkmesh;
 
-        public SpawnService(IAIService ai, IStatService stat, IWalkmeshService walkmesh)
+        public SpawnService(IAIService ai, ICreatureStatService stat, IWalkmeshService walkmesh)
         {
             _ai = ai;
             _stat = stat;

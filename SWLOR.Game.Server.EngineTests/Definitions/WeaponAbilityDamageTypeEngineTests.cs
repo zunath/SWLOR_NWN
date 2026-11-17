@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var creature in new[] { beast, target })
             {
                 ctx.SuppressNPCNaturalRegen(creature);
-                Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
                 SetAILevel(creature, AILevel.VeryLow);
             }
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var creature in new[] { caster, target })
             {
                 ctx.SuppressNPCNaturalRegen(creature);
-                Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
                 SetAILevel(creature, AILevel.VeryLow);
             }
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);

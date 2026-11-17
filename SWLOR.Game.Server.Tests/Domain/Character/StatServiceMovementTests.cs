@@ -76,7 +76,7 @@ public class StatServiceMovementTests : StatServiceTestBase
 
         Bench.Locals.Float(Npc, WalkRestore).Should().BeApproximately(1.3f, 0.001f);
         Bench.Locals.Float(Npc, WalkRestoreBase).Should().BeApproximately(1.3f, 0.001f);
-        Bench.Locals.Float(Npc, WalkRestoreMaximum).Should().Be(StatService.MaximumMovementSpeedMultiplier);
+        Bench.Locals.Float(Npc, WalkRestoreMaximum).Should().Be(CreatureStatService.MaximumMovementSpeedMultiplier);
     }
 
     [Test]
@@ -388,10 +388,10 @@ public class StatServiceMovementTests : StatServiceTestBase
         CreatureStat.GetMovementSpeedMultiplier(Npc).Should().BeApproximately(1.30f - 0.10f + 0.20f - 0.05f, 0.001f);
 
         SetStat(Npc, StatType.MovementSpeedPercentAdjustment, 500);
-        CreatureStat.GetMovementSpeedMultiplier(Npc).Should().Be(StatService.MaximumMovementSpeedMultiplier);
+        CreatureStat.GetMovementSpeedMultiplier(Npc).Should().Be(CreatureStatService.MaximumMovementSpeedMultiplier);
 
         SetStat(Npc, StatType.MovementSpeedPercentAdjustment, -500);
-        CreatureStat.GetMovementSpeedMultiplier(Npc).Should().Be(StatService.MinimumMovementSpeedMultiplier);
+        CreatureStat.GetMovementSpeedMultiplier(Npc).Should().Be(CreatureStatService.MinimumMovementSpeedMultiplier);
     }
 
     [Test]

@@ -29,6 +29,8 @@ public static class StatSource
     public static readonly IReadOnlyList<string> PartFiles = new[]
     {
         "SWLOR.Game.Server/Domain/Character/StatService.cs",
+        "SWLOR.Game.Server/Domain/Character/CreatureStatService.cs",
+        "SWLOR.Game.Server/Domain/Character/StatRecordService.cs",
         "SWLOR.Game.Server/Domain/Combat/CombatRatingService.cs",
         "SWLOR.Game.Server/Domain/Combat/CombatDeflectionReactionService.cs",
         // Part 7, the healing adjustments, joined the rest of the resources service (P5-4d).
@@ -42,6 +44,8 @@ public static class StatSource
     public static readonly IReadOnlyList<string> InterfaceFiles = new[]
     {
         "SWLOR.Game.Server/Domain/Character/IStatService.cs",
+        "SWLOR.Game.Server/Domain/Character/ICreatureStatService.cs",
+        "SWLOR.Game.Server/Domain/Character/IStatRecordService.cs",
         "SWLOR.Game.Server/Domain/Combat/ICombatRatingService.cs",
         "SWLOR.Game.Server/Domain/Combat/ICombatDeflectionReactionService.cs",
         "SWLOR.Game.Server/Domain/Combat/ICombatResourcesService.cs",
@@ -54,6 +58,8 @@ public static class StatSource
     public static readonly IReadOnlySet<string> PartInterfaces = new HashSet<string>(StringComparer.Ordinal)
     {
         "IStatService",
+        "ICreatureStatService",
+        "IStatRecordService",
         "ICombatRatingService",
         "ICombatDeflectionReactionService",
         "ICombatResourcesService"

@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var creature in new[] { caster, target })
             {
                 ctx.SuppressNPCNaturalRegen(creature);
-                Stat.SetNPCMaxHitPoints(creature, 10000, true);
+                CreatureStat.SetNPCMaxHitPoints(creature, 10000, true);
                 SetAILevel(creature, AILevel.VeryLow);
                 foreach (var perk in Enum.GetValues<PerkType>())
                     ctx.SetNPCPerkLevel(creature, perk, 0);

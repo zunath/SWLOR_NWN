@@ -63,7 +63,7 @@ public static class MeleeTechniqueLifecycleEngineTests
             context.SuppressNPCNaturalRegen(creature);
             SetAILevel(creature, AILevel.VeryLow);
         }
-        Stat.SetNPCMaxHitPoints(counterOwner, 20000, true);
+        CreatureStat.SetNPCMaxHitPoints(counterOwner, 20000, true);
         context.SetNPCResources(counterOwner, 100, 100);
         foreach (var perk in new[]
         {

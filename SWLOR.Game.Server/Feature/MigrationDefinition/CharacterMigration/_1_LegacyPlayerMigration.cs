@@ -63,13 +63,13 @@ internal sealed class _1_LegacyPlayerMigration : ICharacterMigration
     {
         var record = character.Record;
         // A record that already holds this change still has its maximum HP written to the file's levels.
-        character.AdjustPlayerMaxHP(character.AppliesRecordEffects ? StatService.BaseHP - record.MaxHP : 0);
+        character.AdjustPlayerMaxHP(character.AppliesRecordEffects ? CreatureStatService.BaseHP - record.MaxHP : 0);
         character.WriteInteger("BaseAttackBonus", 1, 0);
         if (!character.AppliesRecordEffects)
             return;
         record.BAB = 1;
-        record.MaxFP = StatService.BaseFP;
-        record.MaxStamina = StatService.BaseSTM;
+        record.MaxFP = StatRecordService.BaseFP;
+        record.MaxStamina = StatRecordService.BaseSTM;
         record.HP = character.GetCurrentHitPoints();
         record.FP = SavedEquipmentStats.GetMaxFP(character);
         record.Stamina = SavedEquipmentStats.GetMaxStamina(character);

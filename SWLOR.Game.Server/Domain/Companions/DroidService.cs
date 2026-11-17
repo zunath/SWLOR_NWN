@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly IRaceService _race;
         private readonly IRecastService _recast;
         private readonly IResistanceService _resistance;
-        private readonly IStatService _stat;
+        private readonly ICreatureStatService _stat;
         private readonly IStatusEffectService _statusEffect;
         private readonly ITwinPistolEquipmentService _twinPistolEquipment;
 
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             IRaceService race,
             IRecastService recast,
             IResistanceService resistance,
-            IStatService stat,
+            ICreatureStatService stat,
             IStatusEffectService statusEffect,
             ITwinPistolEquipmentService twinPistolEquipment)
         {

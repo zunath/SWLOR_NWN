@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Domain.Space
         private readonly IPropertyService _property;
         private readonly IRaceService _race;
         private readonly IRecastService _recast;
+        private readonly ICreatureStatService _creatureStat;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
 
@@ -92,6 +93,7 @@ namespace SWLOR.Game.Server.Domain.Space
             IPropertyService property,
             IRaceService race,
             IRecastService recast,
+            ICreatureStatService creatureStat,
             IStatService stat,
             IStatusEffectService statusEffect)
         {
@@ -109,6 +111,7 @@ namespace SWLOR.Game.Server.Domain.Space
             _property = property;
             _race = race;
             _recast = recast;
+            _creatureStat = creatureStat;
             _stat = stat;
             _statusEffect = statusEffect;
         }
@@ -991,7 +994,7 @@ namespace SWLOR.Game.Server.Domain.Space
 
             // Update player appearance to match that of the ship.
             SetCreatureAppearanceType(player, shipDetail.Appearance);
-            _stat.ApplyCreatureMovementRate(player);
+            _creatureStat.ApplyCreatureMovementRate(player);
 
             // Set active ship Id and serialize the player's hot bar.
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
@@ -1217,7 +1220,7 @@ namespace SWLOR.Game.Server.Domain.Space
 
             ClearCurrentTarget(player);
             RestoreCharacterAppearance(player, dbPlayer);
-            _stat.ApplyCreatureMovementRate(player);
+            _creatureStat.ApplyCreatureMovementRate(player);
             _enmity.RemoveCreatureEnmity(player);
 
             ClearShipModuleRecasts(player, dbPlayer);
@@ -2248,7 +2251,7 @@ namespace SWLOR.Game.Server.Domain.Space
                 // Exit space mode
                 ClearCurrentTarget(creature);
                 RestoreCharacterAppearance(creature, dbPlayer);
-                _stat.ApplyCreatureMovementRate(creature);
+                _creatureStat.ApplyCreatureMovementRate(creature);
                 _enmity.RemoveCreatureEnmity(creature);
 
                 // Remove all module feats from the player.

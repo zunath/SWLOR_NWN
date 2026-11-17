@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(1f);
             ctx.SetNPCResources(recipient, 100, 100);
             ctx.SuppressNPCNaturalRegen(recipient);
-            Stat.SetNPCMaxHitPoints(recipient, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(recipient, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(recipient, 100);
             Stat.ReduceStamina(recipient, Stat.GetCurrentStamina(recipient));
             TemporaryStatModifier.Add(recipient, StatType.HealingReceivedStaminaRestoreChance, 100, 60f);

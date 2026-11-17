@@ -19,6 +19,13 @@ namespace SWLOR.Game.Server.Domain.Character
         void CacheData();
 
         /// <summary>
+        /// Registers who is told when a player's status effects are restored and when a stat-adjusting effect changes
+        /// (<see cref="IStatEffectListener"/>). <c>CreatureStatService</c> registers itself at boot; notifying with no listener
+        /// registered throws, so a missing registration fails at once.
+        /// </summary>
+        void RegisterStatEffectListener(IStatEffectListener listener);
+
+        /// <summary>
         /// Creates a fresh instance of a registered status effect so a caller can set per-application options before applying it.
         /// </summary>
         IStatusEffect CreateStatusEffect(Type statusEffectClass);

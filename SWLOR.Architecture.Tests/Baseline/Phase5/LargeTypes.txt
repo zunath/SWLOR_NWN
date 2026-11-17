@@ -14,8 +14,7 @@ SWLOR.Game.Server.Domain.Abilities.MimicryService | 1307
 SWLOR.Game.Server.Domain.Character.PerkService | 1486
 SWLOR.Game.Server.Domain.Character.PlayerNameService | 1039
 SWLOR.Game.Server.Domain.Character.SkillService | 1142
-SWLOR.Game.Server.Domain.Character.StatService | 2088
-SWLOR.Game.Server.Domain.Character.StatusEffectService | 2804
+SWLOR.Game.Server.Domain.Character.StatusEffectService | 2833
 SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 1200
 SWLOR.Game.Server.Domain.Combat.CombatAbilityBonusService | 1061
 SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1689
@@ -24,7 +23,7 @@ SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService | 1643
 SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 1707
 SWLOR.Game.Server.Domain.Combat.CombatRecorderService | 1691
 SWLOR.Game.Server.Domain.Combat.EnmityService | 1244
-SWLOR.Game.Server.Domain.Companions.BeastMasteryService | 1232
+SWLOR.Game.Server.Domain.Companions.BeastMasteryService | 1235
 SWLOR.Game.Server.Domain.Companions.DroidService | 1195
 SWLOR.Game.Server.Domain.Crafting.BlueprintBonuses | 1002
 SWLOR.Game.Server.Domain.Crafting.CraftService | 1319
@@ -32,7 +31,7 @@ SWLOR.Game.Server.Domain.Creatures.AIService | 1874
 SWLOR.Game.Server.Domain.Creatures.CompanionControlService | 1090
 SWLOR.Game.Server.Domain.Creatures.SpawnService | 1208
 SWLOR.Game.Server.Domain.Items.ItemService | 1605
-SWLOR.Game.Server.Domain.Space.SpaceService | 2762
+SWLOR.Game.Server.Domain.Space.SpaceService | 2765
 SWLOR.Game.Server.Domain.UI.ExtraHotbarsService | 1020
 SWLOR.Game.Server.Domain.World.PropertyLoaderService | 1435
 SWLOR.Game.Server.Domain.World.PropertyService | 1637

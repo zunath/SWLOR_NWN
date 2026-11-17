@@ -225,7 +225,7 @@ public static class WeaponAbilityCrossSkillTraitEngineTests
                 SetEventScript(creature, EventScript.Creature_OnNotice, "");
                 SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "");
             }
-            SetPlotFlag(target, false); ctx.SuppressNPCNaturalRegen(target); Stat.SetNPCMaxHitPoints(target, 20000, true);
+            SetPlotFlag(target, false); ctx.SuppressNPCNaturalRegen(target); CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 55f); SetCommandable(false, target);
             TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 55f); ctx.MakeHostile(target);
         });

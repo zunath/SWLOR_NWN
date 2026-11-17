@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SuppressNPCNaturalRegen(creature);
             SetPlotFlag(creature, false);
             ctx.SetNPCResources(creature, 100, 100);
-            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(creature, 1000);
         }
     }

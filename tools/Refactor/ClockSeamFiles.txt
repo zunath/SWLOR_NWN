@@ -83,6 +83,7 @@ Domain/Character/StatusEffectSourceType.cs
 Domain/Character/StatusEffectStackType.cs
 Service/Stat.cs  # master-only (P2-ZD)
 Domain/Character/StatService.cs
+Domain/Character/CreatureStatService.cs
 Service/Perk.cs  # master-only (P2-ZD)
 Domain/Character/PerkService.cs
 Domain/Character/AbilityActivationType.cs

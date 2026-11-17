@@ -245,7 +245,7 @@ public static partial class MigrationEngineTests
         {
             // Keep native max HP below the fixture's per-level cap so every HP change is visible.
             var record = DB.Get<Player>(GetObjectUUID(player));
-            Stat.AdjustPlayerMaxHP(record, player, 150 - record.MaxHP);
+            CreatureStat.AdjustPlayerMaxHP(record, player, 150 - record.MaxHP);
             DB.Set(record);
             maxHP = GetMaxHitPoints(player);
             SetCurrentHitPoints(player, maxHP);

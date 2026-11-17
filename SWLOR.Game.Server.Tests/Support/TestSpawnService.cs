@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 public sealed class TestSpawnService : SpawnService
 {
     public TestSpawnService(DateTime now)
-        : base(FacadeForwarder.For<IAIService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IWalkmeshService>())
+        : base(FacadeForwarder.For<IAIService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IWalkmeshService>())
     {
         Now = now;
     }

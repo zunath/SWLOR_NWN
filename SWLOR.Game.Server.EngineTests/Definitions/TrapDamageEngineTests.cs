@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SuppressNPCNaturalRegen(creature);
                 SetAILevel(creature, AILevel.VeryLow);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 120f);
-                Stat.SetNPCMaxHitPoints(creature, 1000, true);
+                CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             }
             ctx.MakeHostile(target);
             ctx.AssertEqual(0, Stat.GetStatAdjustment(caster, StatType.TrapBonus), "Trap Bonus is isolated");

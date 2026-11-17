@@ -114,7 +114,7 @@ public static class EquipmentTypeMigration
                     SetLocalInt(owner, "FP", Math.Min(fp, Stat.GetMaxFP(owner)));
                     SetLocalInt(owner, "STAMINA", Math.Min(stamina, Stat.GetMaxStamina(owner)));
                 }
-                Stat.RefreshCombatReadinessEquipment(owner);
+                StatRecord.RefreshCombatReadinessEquipment(owner);
             }
         }
         return true;

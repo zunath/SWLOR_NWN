@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var creature = ctx.SpawnCreature(CreatureResref, xOffset, yOffset);
             await ctx.WaitFrameAsync();
             ctx.SuppressNPCNaturalRegen(creature);
-            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 600f);
             return creature;
         }

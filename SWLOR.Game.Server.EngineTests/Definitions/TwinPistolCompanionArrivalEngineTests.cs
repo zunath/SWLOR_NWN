@@ -387,7 +387,7 @@ public static class TwinPistolCompanionArrivalEngineTests
         SetEventScript(target, EventScript.Creature_OnMeleeAttacked, "");
         SetPlotFlag(target, false);
         ctx.SuppressNPCNaturalRegen(target);
-        Stat.SetNPCMaxHitPoints(target, 20000, true);
+        CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
         ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 30f);
         SetCommandable(false, target);
         TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 30f);

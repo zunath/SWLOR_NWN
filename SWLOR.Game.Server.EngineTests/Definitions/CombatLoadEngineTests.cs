@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var npc in npcs)
             {
                 SetAILevel(npc, AILevel.High);
-                Stat.SetNPCMaxHitPoints(npc, HitPoints, true);
+                CreatureStat.SetNPCMaxHitPoints(npc, HitPoints, true);
                 SetImmortal(npc, true);
                 ctx.SetNPCResources(npc, Resources, Resources);
                 foreach (var (perk, level) in PinnedPerks)
@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             for (var script = EventScript.Creature_OnHeartbeat; script <= EventScript.Creature_OnBlockedByDoor; script++)
                 SetEventScript(player, script, string.Empty);
             // Players regenerate normally; natural regeneration writes the player record.
-            DeleteLocalInt(player, StatService.SuppressNaturalRegenVariable);
+            DeleteLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable);
             fixture.Update(record =>
             {
                 foreach (var (feat, _) in Rotation)

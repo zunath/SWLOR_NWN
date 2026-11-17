@@ -18,7 +18,7 @@ db_loaded (1)
 mod_content_chg (1)
   BootOnly    SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
 
-mod_cache_bef (44)
+mod_cache_bef (45)
   Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityCatalogService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.CacheData
@@ -53,6 +53,7 @@ mod_cache_bef (44)
   Rerun       SWLOR.Game.Server.Domain.Creatures.SpawnService.LoadSpawnTables
   BootOnly    SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
   Rerun       SWLOR.Game.Server.Domain.Character.StatService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Character.CreatureStatService.RegisterStatEffectListener
   Rerun       SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData
   Rerun       SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
   Rerun       SWLOR.Game.Server.Domain.World.WeatherService.LoadData
@@ -137,5 +138,5 @@ app_shutdown (2)
 == TOTALS ==
 BootOnly    19
 NativeHook  15
-Rerun       79
+Rerun       80
 Retire      2

@@ -196,7 +196,7 @@ public static class TwinPistolFatalSaveEngineTests
             }
             SetPlotFlag(target, false);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 10000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 10000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 45f);
             SetCommandable(false, target);
             ctx.MakeHostile(target);

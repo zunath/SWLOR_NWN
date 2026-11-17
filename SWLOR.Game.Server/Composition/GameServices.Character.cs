@@ -62,11 +62,24 @@ namespace SWLOR.Game.Server.Composition
         public static ISkillService Skill => FacadeAccessor.Resolve<ISkillService>();
 
         /// <summary>
-        /// Stats: the FP and Stamina pools, the player records fed by worn gear, walk mode and movement rate, the ratings,
-        /// deflection and healing reactions, and NPC stat skins (the static facade <c>Stat</c> until P2-ZD). Its constants
-        /// are on <see cref="StatService"/>; the pure formulas are on <c>StatRules</c>.
+        /// Stats: the stat adjustment read, the FP and Stamina pools, NPC stat skins and the Detection, Stealth and crafting reads
+        /// (the static facade <c>Stat</c> until P2-ZD). Its constants are on <see cref="StatService"/>; the pure formulas are on
+        /// <c>StatRules</c>. The rest of the facade is <see cref="CreatureStat"/>, <see cref="StatRecord"/>,
+        /// <c>CombatRating</c>, <c>CombatDeflectionReaction</c> and <c>CombatResources</c>.
         /// </summary>
         public static IStatService Stat => FacadeAccessor.Resolve<IStatService>();
+
+        /// <summary>
+        /// Movement and walk mode, maximum HP and food HP, player attributes, NPC loading and regeneration (part 2 of the stat
+        /// split, P5-4e; until then members of <c>Stat</c>). Its constants are on <see cref="CreatureStatService"/>.
+        /// </summary>
+        public static ICreatureStatService CreatureStat => FacadeAccessor.Resolve<ICreatureStatService>();
+
+        /// <summary>
+        /// The player records fed by worn gear, the Combat Readiness equipment and the gear stat writers (part 3 of the stat
+        /// split, P5-4e; until then members of <c>Stat</c>). Its constants are on <see cref="StatRecordService"/>.
+        /// </summary>
+        public static IStatRecordService StatRecord => FacadeAccessor.Resolve<IStatRecordService>();
 
         /// <summary>
         /// Status effects: the catalog, applying, reading and removing them, and their ticks (the static

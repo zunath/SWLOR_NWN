@@ -250,7 +250,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             fixture.Update(record =>
             {
                 record.Perks[PerkType.ForceDrain] = 3;
-                Stat.AdjustPlayerMaxHP(record, source, 1000 - GetMaxHitPoints(source));
+                CreatureStat.AdjustPlayerMaxHP(record, source, 1000 - GetMaxHitPoints(source));
             });
             ObjectPlugin.SetCurrentHitPoints(source, 1);
             TemporaryStatModifier.Add(source, StatType.CombatReadinessPercent, 15, 30f);
@@ -526,7 +526,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             ctx.SuppressNPCNaturalRegen(creature);
             SetPlotFlag(creature, false);
-            Stat.SetNPCMaxHitPoints(creature, maximumHP, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, maximumHP, true);
             ObjectPlugin.SetCurrentHitPoints(creature, currentHP);
         }
     }

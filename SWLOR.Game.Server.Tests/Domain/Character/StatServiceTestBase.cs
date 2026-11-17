@@ -25,9 +25,9 @@ public abstract class StatServiceTestBase
 
     protected TestStatService Service => Bench.Service;
 
-    protected TestStatService CreatureStat => Bench.CreatureStat;
+    protected TestCreatureStatService CreatureStat => Bench.CreatureStat;
 
-    protected TestStatService Record => Bench.Record;
+    protected TestStatRecordService Record => Bench.Record;
 
     protected TestCombatRatingService CombatRating => Bench.CombatRating;
 

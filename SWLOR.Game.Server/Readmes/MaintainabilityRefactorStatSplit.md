@@ -189,7 +189,7 @@ Part 1 is at the limit (10 services) and has about 50 lines of headroom; master'
   for `IsPlayerBeast` only (143), and Character's `ICompanionLookup.IsPlayerBeast` (`CompanionLookup`, no constructor
   dependencies) has the same body over the same `BEAST_TYPE` variable. P5-4e switches `CapstoneProofService` to
   `ICompanionLookup`; a scan of the constructor graph then finds no plain path from parts 1 and 2 to `BeastMasteryService`, which
-  takes both as plain parameters, and its stat `Lazy<>` goes (3 -> 2). `LazyDependencyCycleTests` confirms it in the pull request.
+  takes both as plain parameters, and all its `Lazy<>` go (P5-4e Progress, which corrects the first count of 3 -> 2). `LazyDependencyCycleTests` confirms it in the pull request.
 - **4. Mimicry traits, a Character store (rule 1), named as a service** (P5-4b, below), as the approved rows say (domain order 361, 365, 385, 491-492; Ability split
   245). `MimicryService.GetStatBonus` and `GetStatSources` are called only by the stat read. The store holds the trait tables,
   `GetStatBonus`, `GetStatSources` and `GetSetBonusPotency`, and reads `Player.EquippedTechniques` and `AbilityDetail`, both at
@@ -253,7 +253,7 @@ count that grows is one the coordinator accepted (or below the limit), recorded 
 | `AbilityDamageInputService` (10) | 1, 5 | 10 -> 11, a new line, accepted; recorded in c; removed by P5-16 |
 | `SpaceService` (16) | 1, 2 | +1, accepted; recorded in e; removed by P5-6 |
 | `CharacterSheetViewModel` (19, lookups) | 1, 2, 5 | 19 -> 21, accepted; recorded in c and e; removed by P5-14 and P5-16 |
-| `BeastMasteryService` (13, 3 down `Lazy<>`) | 1, 2 | both plain once `CapstoneProofService` takes `ICompanionLookup` (e): `Lazy<>` 3 -> 2, services 13 -> 14, accepted; recorded in e; removed by P5-10 |
+| `BeastMasteryService` (13, 3 down `Lazy<>`) | 1, 2 | both plain once `CapstoneProofService` takes `ICompanionLookup` (e): services 13 -> 14, accepted; recorded in e; removed by P5-10. Measured in e: the swap made all four of its `Lazy<>` needless (the guide first said 3 -> 2), so it has none |
 
 ## Callers
 
@@ -497,6 +497,82 @@ code, on the same recorder instance). Where the pull request differs from the ma
   sets the deflection reactions' payload stats (the engine's deflection tests check the rolls and the ability-granted deflections);
   `StatServiceDeflectionTests` covers the reactions through the part's double.
 
+### P5-4e (parts 2 and 3 leave; the listener; the capstone swap)
+
+Parts 2 and 3 moved verbatim: `StatService` is 988 lines with the same 10 services and 0 up `Lazy<>` (3,358 at the start, 2,088 after
+P5-4d), and `CreatureStatService` (679 lines, 5 services) and `StatRecordService` (544 lines, 2 services) hold the rest, each behind its
+interface (`ICreatureStatService`, `IStatRecordService`), a converted service of Character (`ConvertedServices.json`,
+`DomainMap.json`) with a `GameServices` property (`CreatureStat`, `StatRecord`). Their 22 calls back into part 1 (`GetStatAdjustment`,
+`GetMaxFP`, `GetMaxStamina`, `GetNPCSkinMaxHP`) go through `IStatService`; nothing else in the moved code changed. Part 1 keeps
+`GetNPCSkinMaxHP` (the map has it there; `LoadNPCStats` reads it through the interface) and no member of it calls part 2 or 3, so neither
+needed to be injected into it. Where the pull request differs from the map or adds to it:
+
+- **The listener.** `IStatEffectListener` (`OnStatusEffectsRestored`, `OnStatAdjustingEffectsChanged`) is Character's; `CreatureStatService`
+  implements it (`OnStatusEffectsRestored` is `ReapplyFoodHP(player)`, `OnStatAdjustingEffectsChanged` is `ApplyCreatureMovementRate`) and
+  `RegisterStatEffectListener`, `[BootPhase(BootReload.Rerun)]` on `OnModuleCacheBefore`, registers it with
+  `IStatusEffectService.RegisterStatEffectListener`. `StatusEffectService` keeps its two seams (`ReapplyFoodHP`, `ApplyCreatureMovementRate`) as
+  the places that notify; the list `_statEffectListeners` is `[ReloadState(Runtime)]`, a notice with no listener throws
+  `InvalidOperationException`, and registering the same instance twice keeps one entry. Its `Lazy<IStatService>` serves the three
+  `GetStatAdjustment` sites. The unit-test bench of `StatusEffectService` overrides both seams, so it needs no stand-in; the default-seam tests
+  register a recording listener.
+- **Handlers.** The five moved handlers' lines in `HandlerRenames.txt`, `ScriptHandlerOrder.txt` and the session classification name
+  `CreatureStatService`; the new `CreatureStatService.RegisterStatEffectListener` is a split line (`Stat.CacheData` -> `StatService.CacheData`
+  and the new handler, both `Rerun`), stands right after `StatService.CacheData` in the manifest, and `ServiceSplitMasterHandlers` in
+  `SplitBootHandlerTests` lists master's `Stat.CacheData`. `mod_cache_bef` is 45 handlers in `BootHandlerClassification.txt`.
+- **State.** `_outOfCombatMovementCombatState` moved to `CreatureStatService`. It is `[ReloadState(Runtime)]`, which no reload carries, so it
+  needs no `[ReloadCarriedFrom]` (that attribute names a former owner of a `Carried` field); `_summedEquipmentRecords` is a readonly table.
+- **Constants.** The ones only a part uses moved with it (`CreatureStatService`: `BaseHP`, `BeastNaturalRegenStatDivisor`,
+  `MinimumMovementSpeedMultiplier`, `MaximumMovementSpeedMultiplier`, `SuppressNaturalRegenVariable` and the walk and speed privates;
+  `StatRecordService`: `BaseFP`, `BaseSTM`). `MaximumNPCHitPoints` and `BeastNaturalStaminaRegenAvailableAtVariable` are read by part 1 as well,
+  so they stay in `StatService` as `internal const` and part 2 reads them as `StatService.<name>`. `RemovedFacades.json` gives the seven moved
+  constants their new owner, and the text references `StatService.<constant>` (server, engine tests, unit tests, the characterization
+  test, whose `nameof` names are unchanged) read the new owner; the tool rewrites `Stat.<constant>` only.
+- **The facades.** `RemovedFacades.json` moves 21 names to a `CreatureStat` list and 25 to a `StatRecord` list of the `Stat` entry
+  (`Apply-FacadeRemoval.ps1` rewrote 271 call sites in 81 files, among them `EquipmentStats` 42, `SavedEquipmentStatEffects` 16 and the stat
+  tests; a second run changes nothing). No member changed its signature, so none left the lists. Injected holders were repointed by hand (the
+  compiler found them): `DroidService` and `SpawnService` take `ICreatureStatService` instead of `IStatService`, `AIService`'s
+  `Lazy<IStatService>` is `Lazy<ICreatureStatService>`, `SpaceService` takes `ICreatureStatService` beside `IStatService`,
+  `CharacterLoginRestoration` takes `ICreatureStatService` and `IStatRecordService` in place of `IStatService` (4 -> 5), and
+  `BeastMasteryService` takes `IStatService` and `ICreatureStatService` plainly.
+- **The capstone swap and `BeastMasteryService`.** `CapstoneProofService` takes `ICompanionLookup` instead of `IBeastMasteryService` (same
+  `IsPlayerBeast` body, checked); `Domain/Quests -> Domain/Companions` is no longer a domain edge and left `CrossDomainEdges.txt`.
+  `LazyDependencyCycleTests` then found four of `BeastMasteryService`'s `Lazy<>` needless, not only the stat one the map named: the stat,
+  `IPerkService`, `IStatusEffectService` and `ICompanionControlService` parameters are plain (each cycle ran through `StatusEffectService ->
+  CapstoneProofService -> BeastMasteryService`), so it has 0 `Lazy<>` and 14 services (13 plus the part 2 service, accepted in the holder table).
+  The holder table's "Lazy<> 3 -> 2" counted the stat one only.
+- **Accepted growth, recorded here as the holder table says:** `BeastMasteryService` 13 -> 14 (removed by P5-10), `SpaceService` 16 -> 17
+  (removed by P5-6) and `CharacterSheetViewModel` 20 -> 21 lookups (removed by P5-14 and P5-16). `CharacterLoginRestoration` 4 -> 5 is under the
+  limit; `DroidService` and `SpawnService` keep their counts. No holder gained a `Lazy<>`, and four needless ones went.
+- **Tests:** `TestStatService.Creature.cs` and `.Record.cs` became `TestCreatureStatService` and `TestStatRecordService`, the parts' doubles over
+  the bench's stand-ins with the stat double as their `IStatService`; the bench's and the test base's `CreatureStat` and `Record`
+  accessors return them. `AllocationCreatureStatService` answers the movement seam without allocating and is registered in the two
+  allocation test classes (the 48 pins are unchanged). `StatServiceDefaultSeamsTests` runs part 2's and part 3's seams on subclasses,
+  `CreatureStatListenerTests` covers the registration and the two notices, `StatusEffectServiceDefaultSeamsTests` the notices and the empty
+  list, and `StatSource` adds the two part files and their interfaces. The `CraftSim` needles read `StatRecord.AdjustControl(...)`,
+  `StatRecord.AdjustCraftsmanship(...)` and `StatRecord.AdjustCPBonus(...)`; `EquipmentStats.cs` keeps its line count, so the cited lines hold.
+- **Baselines:** `ServicesPerType.txt` (`BeastMasteryService` 14, `SpaceService` 17, `CharacterSheetViewModel` 21; 298 -> 301 services),
+  `LargeTypes.txt` (`StatService` left the list, `StatusEffectService` 2,833, `SpaceService` 2,765, `BeastMasteryService` 1,235; 64,674 -> 62,621 lines),
+  `DeferredResolution.txt` (the two `BeastMasteryService` lines gone, `AIService` names `ICreatureStatService`; 46 -> 44 lines, 64 -> 60
+  parameters), `LogicToContent.txt` (`StatService.cs -> Feature/AbilityDefinition` became `CreatureStatService.cs`, the
+  `TemporaryHitPointEffects` seam), `CrossDomainEdges.txt` (the `Domain/Quests -> Domain/Companions` edge gone; counts kept).
+  `EdgesIntoCoreAndPlatform.txt` changed in counts only and was kept.
+- **Readings:** CombatSim's team-fight, solo-boss, twin-pistol-barrage and twin-pistol-crossfire reports (seed 1, 50 runs, Markdown and JSON) and its ability table are
+  byte-identical to the base's (`de36ec741`). The unit suite (`SWLOR.Game.Server.Tests`, `scripts/ci/run-unit-tests.sh`, the CI exclusions) passed 18,477 with 3 skipped
+  (the opt-in `Measure_*` tests); the full suite with no exclusions ran 18,603 and failed 151 before the fixes below: 123 read the `SWLOR_Haks` folders the sparse
+  checkout lacks (all on the CI exclusion list, 121 in P5-4d) and 28 were mine, fixed in this pull request (the Roslyn harnesses of `MaxHitPointsReconciliationTests`
+  and `CombatReadinessEquipmentTests` alias `CreatureStat` and `StatRecord` to their stand-ins as they alias `Stat`, and a text needle of
+  `PlayerAttributeRestorationTests` reads `CreatureStat.ApplyPlayerStat`). `SWLOR.Game.Server.CharacterizationTests` 148, `SWLOR.CombatSim.Tests` 895 and
+  `SWLOR.CraftSim.Tests` 1,097 pass, and `SWLOR.Architecture.Tests` passes 297. Coverage (the scripted run): `Domain/Character` 84.9% (floor 83), `Domain/Combat` 96.8% (floor 95),
+  `CreatureStatService` 289 of 289 lines, `StatRecordService` 176 of 177, `StatService` 354 of 388 (the native NPC skin read, `GetNPCStatsNative`, runs only in the engine,
+  as it did before the move). Engine runs, base (`de36ec741`) and branch side by side on the same packed module and haks
+  (`StatusEffect|CapstoneProof|VitalityHitPoints|StaminaRecovery|WalkMode|MaxHitPoint|HitPointLimit|EquipmentRecordReconciliation|LootStatRevision|Food|Regen|DroidCombat|PlayerInitialization|EquipmentTypeMigration|WeaponStatOverrides`, 124 tests):
+  the base passed 120 and failed 3, the branch passed 119 and failed 4. Three fail on both (Foundry loot migration, Piercing Toss Bleed ticks, Toxin and Shock
+  damage reduction); the branch's fourth is the companion natural regeneration stamina delay (expected 31, was 32), which alternates on both sides (four
+  reruns of that test alone: the base failed 2 of 4 and the branch 1 of 4; it failed on the bases of P5-4b and P5-4c). The reload check
+  (`scripts/run-hot-reload-check.sh --reloads 2 --engine-filter HotReloadPlayers`, which keeps a player holding Hobble, a movement-speed effect, across two
+  reloads) passed on both sides: every receipt Applied, `OnCarriedStateAdopted` reached the registered listener without the empty-list exception, and the digests
+  matched (cache 252 on the branch against 253 on the base: `_summedEquipmentRecords`, an unmarked field of `StatService`, moved to a class with no rerun handler).
+
 ## Test plan
 
 Each pull request builds the solution; runs `SWLOR.Architecture.Tests` and regenerates the Phase 5 baselines with
@@ -523,8 +599,8 @@ ratings, deflection, healing, regeneration and walk mode. P5-4e runs the reload 
   rerun boot handlers before adoption. Run the reload checks in b and e.
 - **Handler order.** Eight moved handler lines keep their places (`RefreshOutOfCombatMovementRate` on every player heartbeat,
   `PurgeAllExpired` on the module heartbeat); the two added handlers stand right after the master handler they split.
-- **Text readers outside tests.** `SWLOR.CraftSim/Legacy/LegacySource.cs` looks for `Stat.AdjustControl(...)`,
-  `Stat.AdjustCraftsmanship(...)` and `Stat.AdjustCPBonus(...)` in content (e). `PlayerMessageAudit.json`'s two `StatService.cs`
+- **Text readers outside tests.** `SWLOR.CraftSim/Legacy/LegacySource.cs` looks for `StatRecord.AdjustControl(...)`,
+  `StatRecord.AdjustCraftsmanship(...)` and `StatRecord.AdjustCPBonus(...)` in content (e, done). `PlayerMessageAudit.json`'s two `StatService.cs`
   rows stay keyed there (the pools stay). `ClockSeamFiles.txt` gains `CreatureStatService.cs` (e), which reads `Clock.UtcNow`.
 - **Master porting.** Master changed `Service/Stat.cs` and `StatService.cs` 46 times since 2026-10-10; from P5-4b each sync ports
   master's edits by the range table. Part 1 has about 50 lines of headroom under 1,000. `feature/space-revamp`'s `SpaceService`

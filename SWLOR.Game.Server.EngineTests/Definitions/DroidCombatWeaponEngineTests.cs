@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var enemy = ctx.SpawnCreature("nar_thief", 5f);
                 await ctx.WaitFrameAsync();
                 SetPlotFlag(enemy, false);
-                Stat.SetNPCMaxHitPoints(enemy, 30000, true);
+                CreatureStat.SetNPCMaxHitPoints(enemy, 30000, true);
                 ObjectPlugin.SetCurrentHitPoints(enemy, 30000);
                 SetImmortal(enemy, true);
                 ctx.MakeHostile(enemy);
@@ -434,7 +434,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await Transfer(ctx, owner, rifle, droid);
                 await Equip(ctx, droid, rifle, InventorySlot.RightHand);
 
-                Stat.SetNPCMaxHitPoints(droid, 30000, true);
+                CreatureStat.SetNPCMaxHitPoints(droid, 30000, true);
                 ObjectPlugin.SetCurrentHitPoints(droid, 30000);
                 SetImmortal(droid, true);
                 SetLocalBool(droid, CombatProbe, true);
@@ -445,7 +445,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     !GetIsObjectValid(GetItemInSlot(InventorySlot.CreatureRight, enemy)))
                     await ctx.EquipItemAsync(enemy, "b_longsword", InventorySlot.RightHand);
                 SetPlotFlag(enemy, false);
-                Stat.SetNPCMaxHitPoints(enemy, 30000, true);
+                CreatureStat.SetNPCMaxHitPoints(enemy, 30000, true);
                 ObjectPlugin.SetCurrentHitPoints(enemy, 30000);
                 SetImmortal(enemy, true);
                 ctx.MakeHostile(enemy);

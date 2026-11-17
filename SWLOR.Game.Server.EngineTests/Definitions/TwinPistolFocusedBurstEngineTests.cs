@@ -401,7 +401,7 @@ public static class TwinPistolFocusedBurstEngineTests
             }
             SetPlotFlag(target, false);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 40f);
             SetCommandable(false, target);
             TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 40f);

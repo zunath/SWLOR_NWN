@@ -613,6 +613,17 @@ public class PerformanceAudienceServiceTests
     }
 
     [Test]
+    public void The_watching_registers_itself_as_the_listener_of_the_replaced_music_notice()
+    {
+        _musicScript.On("RegisterMusicReplacedListener", _ => null);
+
+        _watching.RegisterMusicReplacedListener();
+
+        _musicScript.Calls.Should().ContainSingle(call => call.Member == "RegisterMusicReplacedListener")
+            .Which.Arguments.Single().Should().BeSameAs(_watching);
+    }
+
+    [Test]
     public void LeavingTheModuleAndForgettingTheBandSong()
     {
         Perform(MusicianId, PerformanceKind.Music);
@@ -622,8 +633,8 @@ public class PerformanceAudienceServiceTests
         Tick(0);
         _played.Should().HaveCount(1);
 
-        _watching.ForgetBandSong(WatcherId);
-        _watching.ForgetBandSong(9999);
+        _watching.OnPlayerMusicReplaced(WatcherId);
+        _watching.OnPlayerMusicReplaced(9999);
         Tick();
         _played.Should().HaveCount(2, "the band song is sent again after it was forgotten");
 

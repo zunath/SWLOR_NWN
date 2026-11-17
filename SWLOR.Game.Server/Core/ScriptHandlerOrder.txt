@@ -129,6 +129,7 @@ mod_load  # run by the engine as the module OnModuleLoad event, which EventRegis
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.LoadAppearances
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel.LoadCategories
   action      SWLOR.Game.Server.Domain.World.CoxxionBaseDoorsService.LoadDoors
+  action      SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.RegisterMusicReplacedListener
 
 == OTHER SCRIPTS (alphabetical; the registry never reads its script names in order) ==
 

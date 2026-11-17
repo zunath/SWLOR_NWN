@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// <see cref="PerformanceAudienceService"/>'s own, moved here unchanged. The watcher and performer states and the tick
     /// number are this instance's own, and so are the handlers that interrupt watching.
     /// </summary>
-    public class PerformanceWatchingService : IPerformanceWatchingService
+    public class PerformanceWatchingService : IPerformanceWatchingService, IMusicReplacedListener
     {
         private readonly IPerformanceWindowsService _windows;
         private readonly IMusicService _music;
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Domain.Social
         public void StopWatchingOnAreaEnter()
         {
             var player = GetEnteringObject();
-            ForgetBandSong(player);
+            OnPlayerMusicReplaced(player);
             if (_states.TryGetValue(player, out var state))
                 StopWatching(state);
         }
@@ -213,10 +213,21 @@ namespace SWLOR.Game.Server.Domain.Social
         }
 
         /// <summary>
+        /// Gives the music this service as the listener of its replaced-music notice. A reload rebuilds the list through this
+        /// boot handler, which reruns with the other module load handlers.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleLoad)]
+        public void RegisterMusicReplacedListener()
+        {
+            _music.RegisterMusicReplacedListener(this);
+        }
+
+        /// <summary>
         /// Something else replaced the player's music, such as their own music player, so the band song they follow is
         /// sent again at the next tick.
         /// </summary>
-        public void ForgetBandSong(uint player)
+        public void OnPlayerMusicReplaced(uint player)
         {
             if (_states.TryGetValue(player, out var state))
             {

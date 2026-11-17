@@ -50,12 +50,6 @@ namespace SWLOR.Game.Server.Domain.Social
         /// <summary>A musician picked another song in the Perform window; the band's audience hears it at the next tick.</summary>
         void SetPerformerSong(uint performer, int trackId);
 
-        /// <summary>
-        /// Something else replaced the player's music, such as their own music player, so the band song they follow is
-        /// sent again at the next tick.
-        /// </summary>
-        void ForgetBandSong(uint player);
-
         /// <summary>The number of the audience tick that is running, or ran last.</summary>
         int TickNumber { get; }
 

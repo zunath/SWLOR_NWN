@@ -11,8 +11,14 @@ keys; every other animated node carries orientation keys. Two shared tool parts 
 shock prod on `toolr` and the blaster on `tooll`. A tool rests at its socket fully extended and is retracted by
 sliding it back by its length plus 0.02 m, so the socket sits one tool length in front of the body face.
 
+Every chassis also carries one fishing rod and its line (`rod`, `rodline`), built here from plain geometry with a small
+colour map (`c_astro_rod`). Held items are not drawn on the simple model type, so the rod is part of the model. It is
+longer than any body is deep, so it is stowed by scale, not by sliding: it rests at a thousandth of its size on a socket
+at the front of the body, and only the fishing clips (`cfish*`) scale it up. The line is one metre long and its scale is
+its length; each fishing key states where the lure is and the line's angle and length follow from the rod's pitch.
+
 Node tree (supermodel and chassis): <model> > rootdummy > torso > {body, head > headconjure, impact, handconjure, rhand,
-lhand, toolr_socket > toolr, tooll_socket > tooll}; rootdummy > {legl, legr}.
+lhand, toolr_socket > toolr, tooll_socket > tooll, rod_socket > rod > rodline}; rootdummy > {legl, legr}.
 
 Manifest (schema_version 1, paths relative to the manifest, every source needs its sha256):
   supermodel: model name of the shared animation model (c_astromech)
@@ -720,11 +726,16 @@ def dummy(name, parent, position=None):
     return lines + ['endnode']
 
 
-def trimesh(name, parent, position, mesh, material):
-    lines = [f'node trimesh {name}', f'  parent {parent}', f'  position {f(position)}', '  orientation 0 0 1 0',
-             '  ambient 1 1 1', '  diffuse 1 1 1', '  specular 0 0 0', '  shininess 1', '  shadow 1', '  render 1',
-             '  tilefade 0', f'  bitmap {material}', f'  materialname {material}', '  renderhint NormalAndSpecMapped',
-             f"  verts {len(mesh['verts'])}"]
+def trimesh(name, parent, position, mesh, material, plain=False, scale=None):
+    """`plain` is a part with a colour map only (no normal map, no shadow); `scale` is the node's resting scale."""
+    lines = [f'node trimesh {name}', f'  parent {parent}', f'  position {f(position)}', '  orientation 0 0 1 0']
+    if scale is not None:
+        lines.append('  scale %.6g' % scale)
+    lines += ['  ambient 1 1 1', '  diffuse 1 1 1', '  specular 0 0 0', '  shininess 1', f'  shadow {0 if plain else 1}',
+              '  render 1', '  tilefade 0', f'  bitmap {material}', f'  materialname {material}']
+    if not plain:
+        lines.append('  renderhint NormalAndSpecMapped')
+    lines += [f"  verts {len(mesh['verts'])}"]
     lines += ['    ' + f(v) for v in mesh['verts']]
     lines += [f"  normals {len(mesh['normals'])}"] + ['    ' + f(n) for n in mesh['normals']]
     lines += [f"  tverts {len(mesh['uvs'])}"] + ['    %.6g %.6g 0' % uv for uv in mesh['uvs']]
@@ -745,6 +756,8 @@ def supermodel_geometry(model):
     lines += dummy('rhand', 'torso', (0.13, 0.27, -0.2)) + dummy('lhand', 'torso', (-0.13, 0.27, -0.2))
     for tool, x in (('toolr', 0.1), ('tooll', -0.1)):
         lines += dummy(tool + '_socket', 'torso', (x, 0.4, -0.1)) + dummy(tool, tool + '_socket', (0, 0, 0))
+    lines += dummy('rod_socket', 'torso', (0, 0.25, 0)) + dummy('rod', 'rod_socket', (0, 0, 0))
+    lines += dummy('rodline', 'rod', (0, ROD_LENGTH, 0))
     lines += dummy('legl', 'rootdummy', (-0.25, 0, 0.2)) + dummy('legr', 'rootdummy', (0.25, 0, 0.2))
     return lines
 
@@ -761,6 +774,103 @@ def attachment_dummies():
     return lines + dummy('rhand', 'torso', (0.13, 0.27, -0.2)) + dummy('lhand', 'torso', (-0.13, 0.27, -0.2))
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Fishing rod (plain Python). Every chassis carries the same rod and line, shrunk to nothing at rest. Only the fishing
+# clips scale them up, so no chassis needs room to stow a rod longer than its body.
+# ---------------------------------------------------------------------------------------------------------------------
+
+ROD_TEXTURE = 'c_astro_rod'
+ROD_LENGTH = 1.1        # metres from the socket to the tip, along the rod's +Y
+ROD_HIDDEN = 0.001      # node scale while stowed
+ROD_SWATCH = {'dark': 0.125, 'pole': 0.375, 'line': 0.625, 'lure': 0.875}   # texture columns (u); v is 0.5
+ROD_COLORS = {'dark': (40, 42, 48), 'pole': (196, 202, 210), 'line': (236, 240, 244), 'lure': (220, 56, 34)}
+
+
+def _flat_polygon(mesh, points, inside, swatch):
+    """Add a flat convex polygon facing away from `inside`."""
+    a, b, c = points[0], points[1], points[2]
+    u, v = tuple(b[i] - a[i] for i in range(3)), tuple(c[i] - a[i] for i in range(3))
+    normal = (u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0])
+    size = math.sqrt(sum(n * n for n in normal))
+    normal = tuple(n / size for n in normal)
+    if sum(normal[i] * (a[i] - inside[i]) for i in range(3)) < 0:
+        points, normal = points[::-1], tuple(-n for n in normal)
+    start = len(mesh['verts'])
+    for point in points:
+        mesh['verts'].append(tuple(point))
+        mesh['normals'].append(normal)
+        mesh['uvs'].append((ROD_SWATCH[swatch], 0.5))
+    mesh['faces'] += [(start, start + i, start + i + 1) for i in range(1, len(points) - 1)]
+
+
+def _prism(mesh, axis, start, end, centre, radius_start, radius_end, sides, swatch):
+    """A capped prism along `axis` (0 = X, 1 = Y) from `start` to `end`; `centre` is its place on the other two axes."""
+    def ring(along, radius):
+        points = []
+        for i in range(sides):
+            angle = 2 * math.pi * i / sides
+            a, b = centre[0] + radius * math.cos(angle), centre[1] + radius * math.sin(angle)
+            points.append((along, a, b) if axis == 0 else (a, along, b))
+        return points
+
+    first, last = ring(start, radius_start), ring(end, radius_end)
+    middle = (start + end) / 2
+    inside = (middle, centre[0], centre[1]) if axis == 0 else (centre[0], middle, centre[1])
+    for i in range(sides):
+        j = (i + 1) % sides
+        _flat_polygon(mesh, [first[i], first[j], last[j], last[i]], inside, swatch)
+    _flat_polygon(mesh, first, inside, swatch)
+    _flat_polygon(mesh, last, inside, swatch)
+
+
+def _empty_mesh():
+    return {'verts': [], 'normals': [], 'uvs': [], 'faces': []}
+
+
+def rod_mesh():
+    """The rod, based at the origin and lying along +Y: a grip, a tapered pole, a reel under the grip and three guides."""
+    mesh = _empty_mesh()
+    # Thicker than a real rod: at the game's camera distance a true-to-life pole is a hairline.
+    _prism(mesh, 1, -0.06, 0.2, (0, 0), 0.034, 0.034, 8, 'dark')
+    _prism(mesh, 1, 0.2, ROD_LENGTH, (0, 0), 0.022, 0.009, 6, 'pole')
+    _prism(mesh, 0, -0.028, 0.028, (0.11, -0.085), 0.065, 0.065, 10, 'pole')
+    _prism(mesh, 0, 0.028, 0.07, (0.14, -0.085), 0.014, 0.014, 6, 'dark')
+    for along in (0.45, 0.75, 1.05):
+        _prism(mesh, 1, along - 0.012, along + 0.012, (0, -0.03), 0.018, 0.018, 6, 'dark')
+    return mesh
+
+
+def rod_line_mesh():
+    """One metre of line along +Y with the lure on its far end. The clips scale it to the length the cast needs."""
+    mesh = _empty_mesh()
+    _prism(mesh, 1, 0.0, 1.0, (0, 0), 0.0045, 0.0045, 4, 'line')
+    _prism(mesh, 1, 0.965, 1.0, (0, 0), 0.006, 0.03, 8, 'lure')
+    _prism(mesh, 1, 1.0, 1.03, (0, 0), 0.03, 0.006, 8, 'line')
+    return mesh
+
+
+def rod_socket(body_bounds):
+    """Where the rod comes out: the middle of the body's front face, four fifths of the way up, just under the surface."""
+    lo, hi = body_bounds
+    return (0.0, hi[1] - 0.05, lo[2] + 0.8 * (hi[2] - lo[2]))
+
+
+def rod_nodes(body_bounds):
+    lines = dummy('rod_socket', 'torso', rod_socket(body_bounds))
+    lines += trimesh('rod', 'rod_socket', (0, 0, 0), rod_mesh(), ROD_TEXTURE, plain=True, scale=ROD_HIDDEN)
+    return lines + trimesh('rodline', 'rod', (0, ROD_LENGTH, 0), rod_line_mesh(), ROD_TEXTURE, plain=True)
+
+
+def write_rod_texture(resources):
+    """The rod's colour map (four flat columns) as an uncompressed TGA, and the material that binds it."""
+    width, height = 64, 16
+    order = sorted(ROD_SWATCH, key=ROD_SWATCH.get)
+    row = b''.join(bytes(ROD_COLORS[order[x * len(order) // width]][::-1]) for x in range(width))
+    header = struct.pack('<BBBHHBHHHHBB', 0, 0, 2, 0, 0, 0, 0, 0, width, height, 24, 0)
+    (resources / (ROD_TEXTURE + '.tga')).write_bytes(header + row * height)
+    (resources / (ROD_TEXTURE + '.mtr')).write_text(f'texture0 {ROD_TEXTURE}\n', encoding='ascii')
+
+
 def gr2_chassis_text(item, supermodel, pivots, meshes, socket):
     """GR2 chassis geometry: the arm on `toolr` when there is one, empty dummies for every other tool node."""
     model, texture = item['model'], item['material']
@@ -775,6 +885,7 @@ def gr2_chassis_text(item, supermodel, pivots, meshes, socket):
     else:
         lines += dummy('toolr_socket', 'torso', (0, 0, 0)) + dummy('toolr', 'toolr_socket', (0, 0, 0))
     lines += dummy('tooll_socket', 'torso', (0, 0, 0)) + dummy('tooll', 'tooll_socket', (0, 0, 0))
+    lines += rod_nodes(mesh_bounds(meshes['body']['verts']))
     lines += trimesh('legl', 'rootdummy', pivots['legl'], meshes['legl'], texture)
     lines += trimesh('legr', 'rootdummy', pivots['legr'], meshes['legr'], texture)
     return '\n'.join(lines + [f'endmodelgeom {model}', f'donemodel {model}']) + '\n'
@@ -792,6 +903,7 @@ def chassis_text(item, supermodel, pivots, meshes, tool_meshes):
     for tool, name in (('prod', 'toolr'), ('blaster', 'tooll')):
         lines += dummy(name + '_socket', 'torso', item['sockets'][name])
         lines += trimesh(name, name + '_socket', (0, 0, 0), tool_meshes[tool]['mesh'], tool_meshes[tool]['texture'])
+    lines += rod_nodes(mesh_bounds(meshes['body']['verts']))
     lines += trimesh('legl', 'rootdummy', pivots['legl'], meshes['legl'], material)
     lines += trimesh('legr', 'rootdummy', pivots['legr'], meshes['legr'], material)
     return '\n'.join(lines + [f'endmodelgeom {model}', f'donemodel {model}']) + '\n'
@@ -809,10 +921,88 @@ LIE = 82          # degrees on its back
 LIE_Z = 0.27      # lift so the back rests on the ground
 THRUST = 0.12     # prod slide beyond its rest position at the hit
 ANIM_NODES = [('rootdummy', None), ('torso', 'rootdummy'), ('head', 'torso'), ('legl', 'rootdummy'), ('legr', 'rootdummy'),
-              ('toolr', 'toolr_socket'), ('tooll', 'tooll_socket')]
+              ('toolr', 'toolr_socket'), ('tooll', 'tooll_socket'), ('rod', 'rod_socket'), ('rodline', 'rod')]
 POSITION_NODES = ('rootdummy', 'toolr', 'tooll')
-SOCKET_PARENTS = {'toolr_socket': 'torso', 'tooll_socket': 'torso'}
-LOOPING_CLIPS = ('cpause1', 'cpause2', 'cwalk', 'cwalkinj', 'crun', 'creadyr', 'creadyl', 'ccastoutlp', 'cgetmidlp', 'cgetlowlp')
+# The rod and its line are the only scaled nodes: stowed at ROD_HIDDEN, full size in the fishing clips. The line's scale
+# is its length in metres.
+SCALE_NODES = {'rod': ROD_HIDDEN, 'rodline': 1.0}
+SOCKET_PARENTS = {'toolr_socket': 'torso', 'tooll_socket': 'torso', 'rod_socket': 'torso'}
+LOOPING_CLIPS = ('cpause1', 'cpause2', 'cwalk', 'cwalkinj', 'crun', 'creadyr', 'creadyl', 'ccastoutlp', 'cgetmidlp', 'cgetlowlp',
+                 'cfishlp', 'cfishreel', 'cfishgive', 'cfishhold', 'cfishlandlp')
+# Fishing. The server maps the work animation (`cgetmid`, then `cgetmidlp` looping) to one of these pairs for the length
+# of a fishing action: the cast and the wait, or a short entry and the loop of a line action.
+FISHING_CLIPS = ('cfish', 'cfishlp', 'cfishin', 'cfishreel', 'cfishgive', 'cfishhold', 'cfishland', 'cfishlandlp')
+LURE_REST = (2.4, -0.75)   # where the lure floats: metres ahead of the rod socket and metres above it (it is below)
+
+
+def line_to(rod_pitch, lure):
+    """Length and pitch (relative to the rod) of the line that puts the lure on `lure` = (ahead, up) from the socket."""
+    angle = math.radians(rod_pitch)
+    ahead, up = lure[0] - ROD_LENGTH * math.cos(angle), lure[1] - ROD_LENGTH * math.sin(angle)
+    return math.hypot(ahead, up), math.degrees(math.atan2(up, ahead)) - rod_pitch
+
+
+def fishing_tracks(keys, **tracks):
+    """Rod and line tracks from (time, rod pitch above level, lure, rod scale) keys. `lure` is a point (ahead, up) from the
+    socket, or ('dir', pitch above level, length) for a line leaving the tip in a stated direction. Other node tracks
+    pass through. Line angles are written so that each key is the short way round from the one before it."""
+    rod = {'rot': [], 'scale': []}
+    line = {'rot': [], 'scale': []}
+    for time, pitch, lure, scale in keys:
+        length, relative = (lure[2], lure[1] - pitch) if lure[0] == 'dir' else line_to(pitch, lure)
+        if line['rot']:
+            relative += 360 * round((line['rot'][-1][2] - relative) / 360)
+        rod['rot'].append((time, X, pitch))
+        rod['scale'].append((time, scale))
+        line['rot'].append((time, X, relative))
+        line['scale'].append((time, length))
+    return dict(tracks, rod=rod, rodline=line)
+
+
+def fishing_clips():
+    rest = LURE_REST
+    hang = ('dir', -90, 0.3)
+    return [
+        # The cast: the rod comes out, swings back over the dome, whips forward with the lure trailing over the top, and
+        # the lure flies out to the water.
+        clip('cfish', 2.0, fishing_tracks(
+            [(0, 30, hang, ROD_HIDDEN), (0.35, 40, hang, 1), (0.9, 120, hang, 1), (1.02, 75, ('dir', -190, 0.4), 1),
+             (1.15, 25, ('dir', -354, 0.8), 1), (1.45, 32, (2.3, 0.1), 1), (1.75, 42, rest, 1), (2.0, 45, rest, 1)],
+            torso={'rot': [(0, X, 0), (0.35, X, 0), (0.9, X, 9), (1.15, X, -7), (1.6, X, -2), (2.0, X, 0)]},
+            head={'rot': [(0, Z, 0), (0.9, Z, 12), (1.15, Z, 0), (2.0, Z, 0)]},
+            rootdummy={'pos': [(0, (0, 0, 0)), (0.9, (0, -0.03, 0)), (1.15, (0, 0.05, 0)), (1.6, (0, 0, 0)), (2.0, (0, 0, 0))]})),
+        # The wait: the rod held out, the lure bobbing, a twitch of the tip now and then.
+        clip('cfishlp', 4.0, fishing_tracks(
+            [(0, 45, rest, 1), (1.0, 43, (rest[0], rest[1] - 0.03), 1), (2.0, 45, rest, 1), (2.6, 45, (rest[0], rest[1] + 0.02), 1),
+             (2.8, 53, (rest[0] - 0.12, rest[1]), 1), (3.1, 45, (rest[0] - 0.05, rest[1] - 0.03), 1), (4.0, 45, rest, 1)],
+            torso={'rot': [(0, X, 0), (2.0, X, 2), (2.8, X, 4), (4.0, X, 0)]},
+            head={'rot': [(0, Z, 0), (1.0, Z, 22), (2.0, Z, 0), (3.0, Z, -22), (4.0, Z, 0)]})),
+        # Line actions start from the held rod.
+        clip('cfishin', 0.3, fishing_tracks([(0, 45, rest, 1), (0.3, 45, rest, 1)])),
+        clip('cfishreel', 1.0, fishing_tracks(
+            [(0, 50, (2.2, rest[1]), 1), (0.4, 72, (1.95, rest[1]), 1), (0.6, 72, (1.95, rest[1]), 1), (1.0, 50, (2.2, rest[1]), 1)],
+            torso={'rot': [(0, X, 4), (0.4, X, 10), (0.6, X, 10), (1.0, X, 4)]},
+            head={'rot': [(0, Z, 0), (0.25, Z, 8), (0.75, Z, -8), (1.0, Z, 0)]})),
+        clip('cfishgive', 1.2, fishing_tracks(
+            [(0, 28, (2.5, rest[1]), 1), (0.6, 22, (2.8, rest[1]), 1), (1.2, 28, (2.5, rest[1]), 1)],
+            torso={'rot': [(0, X, -5), (0.6, X, -7), (1.2, X, -5)]})),
+        clip('cfishhold', 1.0, fishing_tracks(
+            [(0, 58, (2.3, rest[1]), 1), (0.25, 60, (2.28, rest[1] + 0.03), 1), (0.5, 57, (2.3, rest[1]), 1),
+             (0.75, 59, (2.32, rest[1] - 0.03), 1), (1.0, 58, (2.3, rest[1]), 1)],
+            torso={'rot': [(0, X, 6), (1.0, X, 6)]},
+            rootdummy={'rot': [(0, Y, 0), (0.25, Y, 1.5), (0.75, Y, -1.5), (1.0, Y, 0)]})),
+        # Landing the fish: the rod is hauled upright, the catch swings in on a short line, and the droid hops.
+        clip('cfishland', 1.6, fishing_tracks(
+            [(0, 50, (2.2, rest[1]), 1), (0.35, 95, (1.2, -0.2), 1), (0.8, 85, (0.4, 0.1), 1), (1.2, 80, (0.55, 0.25), 1),
+             (1.6, 80, (0.45, 0.25), 1)],
+            torso={'rot': [(0, X, 4), (0.35, X, 12), (0.8, X, 6), (1.6, X, 3)]},
+            rootdummy={'pos': [(0, (0, 0, 0)), (0.8, (0, 0, 0)), (0.95, (0, 0, 0.05)), (1.1, (0, 0, 0)), (1.6, (0, 0, 0))]})),
+        clip('cfishlandlp', 1.4, fishing_tracks(
+            [(0, 80, (0.45, 0.25), 1), (0.35, 80, (0.55, 0.27), 1), (0.7, 80, (0.45, 0.25), 1), (1.05, 80, (0.35, 0.27), 1),
+             (1.4, 80, (0.45, 0.25), 1)],
+            torso={'rot': [(0, X, 3), (1.4, X, 3)]},
+            head={'rot': [(0, Z, 0), (0.35, Z, 30), (1.05, Z, -30), (1.4, Z, 0)]})),
+    ]
 MELEE_CLIPS = ('ca1slashl', 'ca1slashr', 'ca1stab', 'cclosel', 'ccloseh', 'creach')
 
 
@@ -927,7 +1117,7 @@ def clip_specs(tool_lengths):
             'rootdummy': {'pos': [(0, (0, 0, 0)), (0.3, (0, 0, 0.06)), (0.5, (0, 0, 0)), (0.8, (0, 0, 0.06)), (1.0, (0, 0, 0)), (1.7, (0, 0, 0))]},
             'head': {'rot': [(0, Z, 0), (0.85, Z, 180), (1.7, Z, 360)]}}),
     ]
-    return clips
+    return clips + fishing_clips()
 
 
 def format_clip(spec, model, tool_lengths):
@@ -950,7 +1140,11 @@ def format_clip(spec, model, tool_lengths):
             lines += [f'    positionkey {len(pos)}'] + ['      %.4g %s' % (t, f(p)) for t, p in pos] + ['    endlist']
         rot = track.get('rot') or [(0, Z, 0), (length, Z, 0)]
         lines += [f'    orientationkey {len(rot)}'] + ['      %.4g %s %.6g' % (t, f(axis), math.radians(deg)) for t, axis, deg in rot]
-        lines += ['    endlist', '  endnode']
+        lines += ['    endlist']
+        if node in SCALE_NODES:
+            scale = track.get('scale') or [(0, SCALE_NODES[node]), (length, SCALE_NODES[node])]
+            lines += [f'    scalekey {len(scale)}'] + ['      %.4g %.6g' % key for key in scale] + ['    endlist']
+        lines += ['  endnode']
     return lines + [f"doneanim {spec['name']} {model}"]
 
 
@@ -1285,6 +1479,7 @@ def export_all(manifest, manifest_dir, out, weapon, only=None, addon_root=None):
     blaster = meshy.load_module('import_blaster_model', REPO / 'tools/ImportBlasterModel.py') if any(
         chassis_kind(c) == 'gr2' for c in manifest['chassis']) else None
     shutil.rmtree(shared.parent / 'image_cache', ignore_errors=True)
+    write_rod_texture(shared)
     (shared / (manifest['supermodel'] + '.mdl')).write_text(supermodel_text(manifest['supermodel'], tool_lengths), encoding='ascii')
     reports = []
     for item in manifest['chassis']:

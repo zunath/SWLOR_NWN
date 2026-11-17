@@ -21,12 +21,13 @@ EXPECTED_CLIPS = [
     'cpause1', 'cpause2', 'cwalk', 'crun', 'creadyr', 'creadyl', 'ca1slashl', 'ca1slashr', 'ca1stab', 'cclosel', 'ccloseh',
     'creach', 'cdodges', 'cdodgelr', 'cparryl', 'cparryr', 'cdamages', 'cdamagel', 'cdamager', 'ckdbck', 'ckdbckps',
     'ckdbckdie', 'cdead', 'cgustandb', 'cguptokdb', 'ctaunt', 'cconjure1', 'ccastout', 'ccastoutlp', 'cspasm', 'chturnl',
-    'chturnr', 'cvictory', 'cwalkinj', 'cgetmid', 'cgetmidlp', 'cgetlow', 'cgetlowlp']
+    'chturnr', 'cvictory', 'cwalkinj', 'cgetmid', 'cgetmidlp', 'cgetlow', 'cgetlowlp',
+    'cfish', 'cfishlp', 'cfishin', 'cfishreel', 'cfishgive', 'cfishhold', 'cfishland', 'cfishlandlp']
 WORK_CLIPS = {'cgetmid', 'cgetmidlp', 'cgetlow', 'cgetlowlp'}
 
 
 def parse_clips(text):
-    """{clip: {'length', 'events', 'nodes': {node: {'position': [(t, ...)], 'orientation': [(t, ...)]}}}}"""
+    """{clip: {'length', 'events', 'nodes': {node: {'position': [(t, ...)], 'orientation': [(t, ...)], 'scale': [(t, s)]}}}}"""
     clips, clip, node, block = {}, None, None, None
     for raw in text.splitlines():
         parts = raw.split()
@@ -38,7 +39,7 @@ def parse_clips(text):
             clip['events'].append((float(parts[1]), parts[2]))
         elif parts[0] == 'node':
             node = clip['nodes'].setdefault(parts[2], {})
-        elif parts[0] in ('positionkey', 'orientationkey'):
+        elif parts[0] in ('positionkey', 'orientationkey', 'scalekey'):
             block = node.setdefault(parts[0][:-3], [])
         elif parts[0] == 'endlist':
             block = None
@@ -156,7 +157,7 @@ class ClipTests(unittest.TestCase):
                 if parent != 'NULL':
                     self.assertIn(parent, declared, f'{name}: {node} hangs from undeclared {parent}')
                 declared.add(node)
-            self.assertTrue({'toolr', 'tooll', 'toolr_socket', 'tooll_socket'} <= declared, name)
+            self.assertTrue({'toolr', 'tooll', 'toolr_socket', 'tooll_socket', 'rod_socket', 'rod', 'rodline'} <= declared, name)
 
     def test_whole_shells_stay_in_one_segment(self):
         """A shell that straddles a threshold goes to the side holding its area-weighted centroid."""
@@ -255,6 +256,56 @@ class ClipTests(unittest.TestCase):
                         last = last[:4] + (last[4] % math.tau,)
                     self.assertEqual(first[1:], last[1:], f'{name}/{node}/{kind}')
 
+    def test_the_rod_is_stowed_outside_the_fishing_clips(self):
+        self.assertEqual(sorted(astro.FISHING_CLIPS), sorted(name for name in self.clips if name.startswith('cfish')))
+        for name, clip in self.clips.items():
+            scales = [k[1] for k in clip['nodes']['rod']['scale']]
+            if name not in astro.FISHING_CLIPS:
+                self.assertEqual(set(scales), {astro.ROD_HIDDEN}, name)
+            elif name == 'cfish':
+                self.assertEqual(scales[0], astro.ROD_HIDDEN, 'the cast starts with the rod stowed')
+                self.assertEqual(set(scales[1:]), {1.0})
+            else:
+                self.assertEqual(set(scales), {1.0}, name)
+
+    def lure_point(self, clip, index):
+        """Where the lure is at a key, as (ahead, up) from the rod socket."""
+        rod = clip['nodes']['rod']['orientation'][index]
+        line = clip['nodes']['rodline']['orientation'][index]
+        length = clip['nodes']['rodline']['scale'][index][1]
+        self.assertEqual(rod[1:4], (1.0, 0.0, 0.0))
+        self.assertEqual(line[1:4], (1.0, 0.0, 0.0))
+        pitch = rod[4]
+        return (astro.ROD_LENGTH * math.cos(pitch) + length * math.cos(pitch + line[4]),
+                astro.ROD_LENGTH * math.sin(pitch) + length * math.sin(pitch + line[4]))
+
+    def test_the_cast_ends_and_the_wait_holds_the_lure_on_the_water(self):
+        for name, index in (('cfish', -1), ('cfishlp', 0), ('cfishlp', -1), ('cfishin', 0)):
+            ahead, up = self.lure_point(self.clips[name], index)
+            self.assertAlmostEqual(ahead, astro.LURE_REST[0], places=4, msg=name)
+            self.assertAlmostEqual(up, astro.LURE_REST[1], places=4, msg=name)
+        # Reeling pulls the lure in, giving line lets it out, and landing brings it to the droid.
+        self.assertLess(self.lure_point(self.clips['cfishreel'], 1)[0], self.lure_point(self.clips['cfishreel'], 0)[0])
+        self.assertGreater(self.lure_point(self.clips['cfishgive'], 1)[0], self.lure_point(self.clips['cfishgive'], 0)[0])
+        self.assertLess(self.lure_point(self.clips['cfishland'], -1)[0], 0.6)
+
+    def test_the_cast_winds_back_before_it_whips_forward(self):
+        pitches = [math.degrees(k[4]) for k in self.clips['cfish']['nodes']['rod']['orientation']]
+        peak = pitches.index(max(pitches))
+        self.assertGreater(max(pitches), 100, 'the rod swings back past upright')
+        self.assertLess(min(pitches[peak:]), 35, 'and whips down toward the water')
+
+    def test_line_keys_take_the_short_way_round(self):
+        for name in astro.FISHING_CLIPS:
+            angles = [k[4] for k in self.clips[name]['nodes']['rodline']['orientation']]
+            for before, after in zip(angles, angles[1:]):
+                self.assertLess(abs(after - before), math.pi, name)
+
+    def test_fishing_clips_keep_the_tools_in(self):
+        for name in astro.FISHING_CLIPS:
+            self.assertEqual({round(k[2], 6) for k in self.clips[name]['nodes']['toolr']['position']},
+                             {round(astro.retract_offset(TOOL_LENGTHS['prod']), 6)}, name)
+
     def test_clip_lengths_follow_the_tool_lengths(self):
         longer = parse_clips(astro.clips_text('c_astromech', {'prod': 0.6, 'blaster': 0.3}))
         keys = {k[0]: k[2] for k in longer['ca1stab']['nodes']['toolr']['position']}
@@ -268,7 +319,8 @@ class ClipTests(unittest.TestCase):
         nodes = re.findall(r'^node dummy (\S+)\n  parent (\S+)', geometry, re.M)
         parents = dict(nodes)
         for node, parent in (('toolr', 'toolr_socket'), ('tooll', 'tooll_socket'), ('toolr_socket', 'torso'), ('head', 'torso'),
-                             ('legl', 'rootdummy'), ('torso', 'rootdummy'), ('headconjure', 'head')):
+                             ('legl', 'rootdummy'), ('torso', 'rootdummy'), ('headconjure', 'head'), ('rod_socket', 'torso'),
+                             ('rod', 'rod_socket'), ('rodline', 'rod')):
             self.assertEqual(parents[node], parent)
         self.assertEqual(text.count('newanim '), len(EXPECTED_CLIPS))
         self.assertTrue(text.rstrip().endswith('donemodel c_astromech'))
@@ -463,6 +515,60 @@ class TintAndPltTests(unittest.TestCase):
             self.assertIn(f'c_astro_prod{suffix}\n', text)
 
 
+def signed_volume(mesh):
+    total = 0.0
+    for a, b, c in mesh['faces']:
+        p, q, r = mesh['verts'][a], mesh['verts'][b], mesh['verts'][c]
+        total += (p[0] * (q[1] * r[2] - q[2] * r[1]) - p[1] * (q[0] * r[2] - q[2] * r[0]) + p[2] * (q[0] * r[1] - q[1] * r[0])) / 6
+    return total
+
+
+class RodTests(unittest.TestCase):
+    def test_the_rod_lies_along_y_from_the_socket_to_the_tip(self):
+        mesh = astro.rod_mesh()
+        lo, hi = astro.mesh_bounds(mesh['verts'])
+        self.assertAlmostEqual(hi[1], astro.ROD_LENGTH)
+        self.assertLess(lo[1], 0, 'the grip starts inside the body')
+        self.assertLess(max(hi[0], -lo[0], hi[2], -lo[2]), 0.16, 'thin: a rod, not a plank')
+
+    def test_the_line_is_one_metre_so_its_scale_is_its_length(self):
+        mesh = astro.rod_line_mesh()
+        lo, hi = astro.mesh_bounds(mesh['verts'])
+        self.assertEqual(lo[1], 0.0)
+        self.assertAlmostEqual(hi[1], 1.03, msg='one metre of line and the back half of the lure')
+
+    def test_meshes_are_well_formed_and_face_outward(self):
+        for mesh in (astro.rod_mesh(), astro.rod_line_mesh()):
+            count = len(mesh['verts'])
+            self.assertEqual(len(mesh['normals']), count)
+            self.assertEqual(len(mesh['uvs']), count)
+            self.assertTrue(all(0 <= i < count for face in mesh['faces'] for i in face))
+            for normal in mesh['normals']:
+                self.assertAlmostEqual(sum(n * n for n in normal), 1.0, places=6)
+            self.assertGreater(signed_volume(mesh), 0, 'closed parts wound outward have a positive volume')
+            self.assertTrue({uv[0] for uv in mesh['uvs']} <= set(astro.ROD_SWATCH.values()))
+
+    def test_the_socket_is_on_the_front_of_the_body_under_the_dome(self):
+        bounds = ((-0.25, -0.28, -0.7), (0.25, 0.28, 0.05))
+        socket = astro.rod_socket(bounds)
+        self.assertEqual(socket[0], 0.0)
+        self.assertAlmostEqual(socket[1], 0.23)
+        self.assertAlmostEqual(socket[2], -0.1)
+
+    def test_the_texture_is_a_small_power_of_two_tga_bound_by_its_material(self):
+        with tempfile.TemporaryDirectory() as folder:
+            astro.write_rod_texture(Path(folder))
+            data = (Path(folder) / 'c_astro_rod.tga').read_bytes()
+            self.assertEqual((Path(folder) / 'c_astro_rod.mtr').read_text(), 'texture0 c_astro_rod\n')
+        width, height = int.from_bytes(data[12:14], 'little'), int.from_bytes(data[14:16], 'little')
+        self.assertEqual((data[2], width, height, data[16]), (2, 64, 16, 24))
+        self.assertEqual(len(data), 18 + width * height * 3)
+        # Each swatch column holds its colour (stored blue, green, red) at the u the meshes use.
+        for name, u in astro.ROD_SWATCH.items():
+            x = int(u * width)
+            self.assertEqual(tuple(data[18 + x * 3:18 + x * 3 + 3][::-1]), astro.ROD_COLORS[name], name)
+
+
 class ChassisTextTests(unittest.TestCase):
     def build(self):
         item = good_manifest()['chassis'][0]
@@ -478,9 +584,17 @@ class ChassisTextTests(unittest.TestCase):
         parents = dict(re.findall(r'^node (?:dummy|trimesh) (\S+)\n  parent (\S+)', text, re.M))
         for node, parent in (('rootdummy', 'c_astro_01'), ('torso', 'rootdummy'), ('body', 'torso'), ('head', 'torso'),
                              ('toolr_socket', 'torso'), ('toolr', 'toolr_socket'), ('tooll_socket', 'torso'),
-                             ('tooll', 'tooll_socket'), ('legl', 'rootdummy'), ('legr', 'rootdummy'), ('headconjure', 'head')):
+                             ('tooll', 'tooll_socket'), ('legl', 'rootdummy'), ('legr', 'rootdummy'), ('headconjure', 'head'),
+                             ('rod_socket', 'torso'), ('rod', 'rod_socket'), ('rodline', 'rod')):
             self.assertEqual(parents[node], parent)
-        self.assertEqual(text.count('node trimesh'), 6)
+        self.assertEqual(text.count('node trimesh'), 8)
+
+    def test_the_rod_is_built_in_and_stowed(self):
+        text = self.build()
+        self.assertRegex(text, r'node trimesh rod\n  parent rod_socket\n  position 0 0 0\n  orientation 0 0 1 0\n  scale 0\.001\n')
+        self.assertRegex(text, r'node trimesh rodline\n  parent rod\n  position 0 1\.1 0\n')
+        self.assertEqual(text.count('bitmap c_astro_rod\n'), 2)
+        self.assertEqual(text.count('  shadow 0\n'), 2, 'the rod and its line cast no shadow')
 
     def test_materials(self):
         text = self.build()

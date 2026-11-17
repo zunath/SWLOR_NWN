@@ -3,6 +3,9 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.CraftService.Minigame.Line;
 using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -228,11 +231,52 @@ public class AstromechContentFitTests
 
         // The authored working animations are humanoid clips; an astromech plays its own working motion in their place.
         var named = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "NamedAnimation.cs"));
-        named.Should().Contain("AssignCommand(creature, () => ActionPlayAnimation(AstromechAnimations.Work, 1f, duration));");
-        named.Should().Contain("AssignCommand(creature, () => PlayAnimation(AstromechAnimations.Work, 1f, duration));");
+        named.Should().Contain("AstromechWorkAnimation.Queue(creature, clip, duration);");
+        named.Should().Contain("AstromechWorkAnimation.Play(creature, clip, duration);");
+        var work = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "AstromechService", "AstromechWorkAnimation.cs"));
+        work.Should().Contain("ActionPlayAnimation(AstromechAnimations.Work, 1f, duration);");
+        work.Should().Contain("AssignCommand(creature, () => PlayAnimation(AstromechAnimations.Work, 1f, duration));");
 
         var export = File.ReadAllText(Path.Combine(Root, "tools", "AstromechCreatureExport.py"));
         export.Should().Contain("for name, lean in (('cgetmid', -5), ('cgetlow', -16)):");
+    }
+
+    [Test]
+    public void AnAstromech_FishesWithItsBuiltInRod()
+    {
+        // Held items are not drawn on the chassis, so the rod is part of the model and only the fishing clips bring it out.
+        var export = File.ReadAllText(Path.Combine(Root, "tools", "AstromechCreatureExport.py"));
+        var declared = System.Text.RegularExpressions.Regex.Match(export, @"FISHING_CLIPS = \(([^)]*)\)").Groups[1].Value
+            .Split(',').Select(name => name.Trim().Trim('\'')).ToHashSet();
+        declared.Should().HaveCount(8);
+
+        var used = new HashSet<string>();
+        foreach (var clip in new[]
+                 {
+                     Fishing.GetFishingAnimation(6), Fishing.GetFishingAnimation(7), Fishing.GetFishingAnimation(8),
+                     WorkAnimation.ForFishing(LineActionIds.Reel), WorkAnimation.ForFishing(LineActionIds.GiveLine),
+                     WorkAnimation.ForFishing(LineActionIds.Hold), WorkAnimation.FishLanded
+                 })
+        {
+            AstromechAnimations.TryGetRodClips(clip, out var rod).Should().BeTrue(clip.Name);
+            used.Add(rod.Entry);
+            used.Add(rod.Loop);
+        }
+
+        // Every rod clip the exporter writes is played, and every clip played is one it writes.
+        used.Should().BeEquivalentTo(declared);
+        used.Should().OnlyContain(name => name.Length <= 16, "an object animation replacement name has 16 characters");
+
+        // Crafting and gathering clips keep the tool arm.
+        AstromechAnimations.TryGetRodClips(WorkAnimation.ForGathering(GatheringAction.Survey), out _).Should().BeFalse();
+        AstromechAnimations.TryGetRodClips(null, out _).Should().BeFalse();
+
+        // The work animation's own clips are the ones swapped, and the swap is undone when the action ends.
+        var work = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "AstromechService", "AstromechWorkAnimation.cs"));
+        work.Should().Contain("public const string EntrySource = \"cgetmid\";");
+        work.Should().Contain("public const string LoopSource = \"cgetmidlp\";");
+        work.Should().Contain("DelayCommand(duration + ReleaseGraceSeconds, () => Release(creature, token))");
+        AstromechAnimations.Work.Should().Be(Animation.LoopingGetMid);
     }
 
     private static string FindRepositoryRoot()

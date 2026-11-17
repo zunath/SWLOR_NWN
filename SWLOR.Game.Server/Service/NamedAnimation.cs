@@ -25,8 +25,9 @@ public static class NamedAnimation
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
         if (Astromech.IsAstromech(creature))
         {
-            // The authored clips are humanoid motions. An astromech works with its tool arm out for the same time.
-            AssignCommand(creature, () => ActionPlayAnimation(AstromechAnimations.Work, 1f, duration));
+            // The authored clips are humanoid motions. An astromech works with its tool arm out for the same time,
+            // or with its rod when the clip is a fishing one.
+            AstromechWorkAnimation.Queue(creature, clip, duration);
             return;
         }
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
@@ -63,9 +64,9 @@ public static class NamedAnimation
         var duration = Validate(clip, durationSeconds);
         if (Astromech.IsAstromech(creature))
         {
-            // The authored clips are humanoid motions. An astromech works with its tool arm out for the same time;
-            // no mapping is reserved, so there is no token to stop.
-            AssignCommand(creature, () => PlayAnimation(AstromechAnimations.Work, 1f, duration));
+            // The authored clips are humanoid motions. An astromech works with its tool arm out for the same time,
+            // or with its rod when the clip is a fishing one. It releases its own mapping, so there is no token to stop.
+            AstromechWorkAnimation.Play(creature, clip, duration);
             return null;
         }
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;

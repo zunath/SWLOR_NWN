@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.AstromechService
@@ -23,7 +24,8 @@ namespace SWLOR.Game.Server.Service.AstromechService
 
         /// <summary>
         /// The motion an astromech makes while it works at something (crafting, gathering, fishing, using an item):
-        /// its tool arm out, probing. It stands in for the authored humanoid working animations.
+        /// its tool arm out, probing. It stands in for the authored humanoid working animations. While it fishes, the
+        /// same animation plays the rod clips instead (<see cref="AstromechWorkAnimation"/>).
         /// </summary>
         public const Animation Work = Animation.LoopingGetMid;
 
@@ -49,9 +51,31 @@ namespace SWLOR.Game.Server.Service.AstromechService
             Animation.FireForgetSpasm
         };
 
+        /// <summary>
+        /// The chassis clips (entry, then loop) that stand in for an authored fishing clip. The chassis carries a rod that
+        /// only these clips bring out: the cast and the wait, the three line actions, and landing the fish.
+        /// </summary>
+        private static readonly Dictionary<string, (string Entry, string Loop)> RodClips = new()
+        {
+            [AuthoredAnimation.Fishing6.Name] = ("cfish", "cfishlp"),
+            [AuthoredAnimation.Fishing7.Name] = ("cfish", "cfishlp"),
+            [AuthoredAnimation.Fishing8.Name] = ("cfish", "cfishlp"),
+            [AuthoredAnimation.Reel.Name] = ("cfishin", "cfishreel"),
+            [AuthoredAnimation.GiveLine.Name] = ("cfishin", "cfishgive"),
+            [AuthoredAnimation.HoldRod.Name] = ("cfishin", "cfishhold"),
+            [AuthoredAnimation.LandFish.Name] = ("cfishland", "cfishlandlp")
+        };
+
         public static bool CanPlay(Animation animation)
         {
             return Supported.Contains(animation);
+        }
+
+        /// <summary>True when the authored clip is a fishing clip, with the chassis rod clips that replace it.</summary>
+        public static bool TryGetRodClips(AnimationClip clip, out (string Entry, string Loop) clips)
+        {
+            clips = default;
+            return clip != null && RodClips.TryGetValue(clip.Name, out clips);
         }
     }
 }

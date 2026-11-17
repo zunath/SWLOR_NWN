@@ -27,11 +27,6 @@ namespace SWLOR.Game.Server.Domain.Character
         void GiveAchievement(uint player, AchievementType achievementType);
 
         /// <summary>
-        /// Displays the achievement notification window with the achievement's name and description.
-        /// </summary>
-        void DisplayAchievementNotificationWindow(uint player, string name);
-
-        /// <summary>
         /// Retrieves an achievement detail by its type.
         /// </summary>
         /// <param name="type">The type of achievement to retrieve.</param>

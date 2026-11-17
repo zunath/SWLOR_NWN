@@ -319,7 +319,7 @@ public static partial class MigrationEngineTests
         var checkedParts = Enumerable.Range(0, parts.Length)
             .Where(index => everyPart || revision.Current[index] != revision.Previous[index]).ToArray();
         ctx.AssertEqual(string.Join(",", checkedParts.Select(index => revision.Current[index])),
-            string.Join(",", checkedParts.Select(index => parts[index])), $"{GetResRef(item)} uses its catalog appearance");
+            string.Join(",", checkedParts.Select(index => parts[index])), $"{GetResRef(item)} uses its catalog appearance (parts {string.Join(",", checkedParts)} of {string.Join(",", parts)})");
     }
 
     private static int[] AppearanceParts(uint item) =>

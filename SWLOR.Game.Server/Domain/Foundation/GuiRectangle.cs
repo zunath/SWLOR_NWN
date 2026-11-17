@@ -1,7 +1,7 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.NWN.API.Engine;
 
-namespace SWLOR.Game.Server.Domain.UI.Component
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     public class GuiRectangle
     {

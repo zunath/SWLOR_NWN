@@ -127,7 +127,7 @@ public class MusicServiceTests
         private readonly InMemoryDBService _store;
 
         public MusicWithKeyItems(InMemoryDBService db)
-            : base(db, FacadeForwarder.For<IKeyItemService>(), FacadeForwarder.LazyFor<IPerformanceWatchingService>(), FacadeForwarder.For<IPropertyService>())
+            : base(db, FacadeForwarder.For<IKeyItemService>(), FacadeForwarder.For<IPropertyService>())
         {
             _store = db;
         }
@@ -173,11 +173,54 @@ public class MusicServiceTests
     [Test]
     public void The_constructor_builds_the_song_tables_without_touching_the_engine()
     {
-        var service = new MusicService(new InMemoryDBService(), FacadeForwarder.For<IKeyItemService>(), FacadeForwarder.LazyFor<IPerformanceWatchingService>(), FacadeForwarder.For<IPropertyService>());
+        var service = new MusicService(new InMemoryDBService(), FacadeForwarder.For<IKeyItemService>(), FacadeForwarder.For<IPropertyService>());
 
         service.GetCollectibleSongs().Should().HaveCount(new MusicSongCatalog().Songs.Count);
         _engine.Calls.Should().BeEmpty();
         _plugin.Calls.Should().BeEmpty();
+    }
+
+    // ---- the replaced-music notice
+
+    private sealed class MusicWithNotice : MusicService
+    {
+        public MusicWithNotice()
+            : base(new InMemoryDBService(), FacadeForwarder.For<IKeyItemService>(), FacadeForwarder.For<IPropertyService>())
+        {
+        }
+
+        public void Replace(uint player) => ForgetBandSong(player);
+    }
+
+    private sealed class RecordingListener : IMusicReplacedListener
+    {
+        public List<uint> Told { get; } = new();
+
+        public void OnPlayerMusicReplaced(uint player) => Told.Add(player);
+    }
+
+    [Test]
+    public void A_replaced_track_is_told_to_every_registered_listener_once()
+    {
+        var service = new MusicWithNotice();
+        var first = new RecordingListener();
+        var second = new RecordingListener();
+        service.RegisterMusicReplacedListener(first);
+        service.RegisterMusicReplacedListener(first);
+        service.RegisterMusicReplacedListener(second);
+
+        service.Replace(Player);
+
+        first.Told.Should().Equal(Player);
+        second.Told.Should().Equal(Player);
+    }
+
+    [Test]
+    public void A_replaced_track_with_no_listener_registered_is_not_an_error()
+    {
+        var service = new MusicWithNotice();
+
+        FluentActions.Invoking(() => service.Replace(Player)).Should().NotThrow();
     }
 
     // ---- the ambientmusic.2da song list

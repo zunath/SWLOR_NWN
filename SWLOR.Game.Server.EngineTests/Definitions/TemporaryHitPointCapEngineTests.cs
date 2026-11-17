@@ -87,7 +87,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(raisedCap, TemporaryHitPointEffects.GetRemaining(target), "the pool fills the raised cap");
 
             await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<FoodStatusEffect>(target), 6f, "the food to wear off");
-            ctx.Assert(GetMaxHitPoints(target) < raisedMaximum, $"max HP drops when the food wears off (now {GetMaxHitPoints(target)})");
+            // The max HP recalculation follows the removal a frame or more later, longer under load.
+            await ctx.WaitUntilAsync(() => GetMaxHitPoints(target) < raisedMaximum, 6f,
+                $"max HP to drop when the food wears off (raised to {raisedMaximum}, now {GetMaxHitPoints(target)})");
             // Well inside the 6-second heartbeat that would otherwise catch it.
             await ctx.WaitUntilAsync(
                 () => TemporaryHitPointEffects.GetRemaining(target) == TemporaryHitPointEffects.GetMaximumTotal(target),

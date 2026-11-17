@@ -13,7 +13,7 @@ using System;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>Replaces the base game's stealth detection with a single opposed check per observer/target pair.</summary>
-    public interface IStealthService : IConcealmentQuery
+    public interface IStealthService : IConcealmentQuery, IEspionageStealthQuery
     {
         /// <summary>
         /// Baseline stealth is only usable by characters with the Stealth perk and only out of
@@ -69,11 +69,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// A player already in stealth keeps their own stealth and its rules.
         /// </summary>
         bool CanReceiveGrantedStealth(bool isPlayer, bool isDead, bool isInCombat, bool isInStealth);
-
-        /// <summary>
-        /// Returns whether the creature's current stealth window was granted by another player.
-        /// </summary>
-        bool HasGrantedStealth(uint creature);
 
         /// <summary>
         /// The granting caster's Stealth perk bonus, used in place of the member's own.
@@ -149,11 +144,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// spots on a natural 20, so stealth is never absolute against a player.
         /// </summary>
         bool IsCloudedDetectionRollSuccessful(int detectionDie, bool playerObserver);
-
-        /// <summary>
-        /// Returns whether the observer cannot spot stealth (for example under Cloud Mind).
-        /// </summary>
-        bool IsStealthDetectionBlocked(uint observer);
 
         int GetCloseRangeDetectionBonus(bool closeRange);
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Domain.UI.Component

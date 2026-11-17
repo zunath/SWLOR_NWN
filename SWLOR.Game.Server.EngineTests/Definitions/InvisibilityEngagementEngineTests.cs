@@ -26,6 +26,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var struck = arena.Spawn(ActorResref, 10f, 270f);
             var secondEnemy = arena.Spawn(ActorResref, 6f, 90f);
             var enemies = new[] { (Creature: struck, Label: "the struck enemy"), (Creature: secondEnemy, Label: "the second enemy") };
+            // Arm the caster while nobody is hostile: with the enemies fighting it, the unequip of its starting weapon
+            // queued behind combat actions and timed out under load.
+            await ctx.WaitFrameAsync();
+            await ctx.EquipItemAsync(caster, VibroknifeResref, InventorySlot.RightHand);
             foreach (var (enemy, _) in enemies)
             {
                 ctx.MakeHostile(enemy);
@@ -38,7 +42,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             ctx.SetResources(caster, ResourcePool, ResourcePool);
             CreaturePlugin.AddFeat(caster, FeatType.EscapeArtist1);
-            await ctx.EquipItemAsync(caster, VibroknifeResref, InventorySlot.RightHand);
             ctx.SuppressNPCNaturalRegen(caster);
             foreach (var (enemy, _) in enemies)
                 ctx.SuppressNPCNaturalRegen(enemy);

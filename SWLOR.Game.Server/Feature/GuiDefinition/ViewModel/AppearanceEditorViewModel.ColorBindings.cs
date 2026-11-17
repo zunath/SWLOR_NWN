@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel

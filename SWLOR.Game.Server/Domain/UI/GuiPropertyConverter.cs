@@ -1,5 +1,6 @@
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.Engine;
 

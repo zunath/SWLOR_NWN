@@ -87,6 +87,7 @@ public static class TwinPistolCompanionArrivalEngineTests
         var sampledHaste = -1;
         var sampledConverging = true;
         bool? arrivedConverging = null;
+        var convergingSamplesDone = false;
         PairedRangedTraitState traitState = null;
         HashSet<long> attemptsAfterLaunch = null;
         try
@@ -131,8 +132,20 @@ public static class TwinPistolCompanionArrivalEngineTests
                 }));
                 // The six-second idle cleanup can clear Converging Fire again, so read it within a
                 // frame of the arrival this launch scheduled instead of after the test's own wait.
-                AssignCommand(GetModule(), () => DelayCommand(flight + .01f, () =>
-                    arrivedConverging = StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) != null));
+                // Under load the arrival can land a few frames after its due time, so sample over the half second that
+                // follows (the idle cleanup is six seconds away): a landed hit shows Converging Fire in at least one
+                // sample, a discarded one in none.
+                var arrivalSamples = new[] { .01f, .05f, .1f, .2f, .35f, .5f };
+                foreach (var offset in arrivalSamples)
+                {
+                    var last = offset == arrivalSamples[^1];
+                    AssignCommand(GetModule(), () => DelayCommand(flight + offset, () =>
+                    {
+                        var present = StatusEffect.GetStatusEffect<ConvergingFireStatusEffect>(actor) != null;
+                        arrivedConverging = (arrivedConverging ?? false) || present;
+                        if (last) convergingSamplesDone = true;
+                    }));
+                }
                 DiscardTarget(ctx, actor, target, outcome, departure, flight);
             });
             await WaitFrames(ctx, () => sampledAt > 0, "the native half-flight reward sample");
@@ -147,7 +160,7 @@ public static class TwinPistolCompanionArrivalEngineTests
             ctx.AssertEqual(0, sampledHaste, "Akimbo grants no ordinary-hit Haste before arrival");
             ctx.Assert(!sampledConverging, "Converging Fire grants no landed-hit progress before arrival");
             await ctx.DelaySecondsAsync(flight + .15f);
-            await WaitFrames(ctx, () => arrivedConverging.HasValue, "the Converging Fire sample after arrival");
+            await WaitFrames(ctx, () => convergingSamplesDone, "the Converging Fire samples after arrival");
             var landed = outcome == "arrival";
             ctx.AssertEqual(stamina + (landed ? 1 : 0), Stat.GetCurrentStamina(actor), "Only an arriving hit restores stamina once");
             ctx.AssertEqual(landed ? 1 : 0, Points(actor, target, SkillType.TwinPistol), "Only an arriving hit grants its captured weapon contribution once");

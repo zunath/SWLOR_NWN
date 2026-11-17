@@ -70,7 +70,7 @@ public class LootServiceTests
 
         _engine = new FakeNWScript();
         _locals = new LocalVariables(_engine);
-        _service = new TestLootService(ScriptedProxy.Create<IBeastMasteryService>(out _)) { Definitions = new[] { typeof(SampleDefinition) } };
+        _service = new TestLootService(ScriptedProxy.Create<IBeastCorpseInfo>(out _)) { Definitions = new[] { typeof(SampleDefinition) } };
 
         _engine.SetReturnHandler("GetIsObjectValid", arguments => _valid.Contains((uint)arguments[0]!));
         _engine.SetReturnHandler("CreateItemOnObject", _ => NewObject());
@@ -128,8 +128,8 @@ public class LootServiceTests
     /// <summary>The registry with the search for loot table definitions and the calls into services that need a server answered by the test.</summary>
     private sealed class TestLootService : LootService
     {
-        public TestLootService(IBeastMasteryService beastMastery)
-            : base(beastMastery, FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
+        public TestLootService(IBeastCorpseInfo beastCorpse)
+            : base(beastCorpse, FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IStatService>())
         {
         }
 
@@ -148,7 +148,7 @@ public class LootServiceTests
         protected override int GetStatAdjustment(uint creature, StatType stat) =>
             StatAdjustments.GetValueOrDefault((creature, stat));
 
-        protected override BeastDetail GetBeastDetail(BeastType type) => Beasts[type];
+        protected override string GetBeastName(BeastType type) => Beasts[type].Name;
     }
 
     /// <summary>Small tables that cover a single item, gold, a mix of common and rare items, rare tables and a spawn action.</summary>

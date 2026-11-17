@@ -223,16 +223,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         public static async Task PickerHydrationPreservesSkin(EngineTestContext ctx)
         {
             var civilian = await SpawnCivilianAsync(ctx);
+            var nativeSkin = 0;
+            var savedTint = 0;
+            AppearanceEditorViewModel editor = null;
+            var stateName = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin);
             await RunAssignedAsync(ctx, civilian, () =>
             {
-                var nativeSkin = GetColor(civilian, ColorChannel.Skin);
-                var stateName = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin);
-                var savedTint = GetLocalInt(civilian, stateName);
-                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 800, 900) };
+                nativeSkin = GetColor(civilian, ColorChannel.Skin);
+                savedTint = GetLocalInt(civilian, stateName);
+                editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 800, 900) };
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
                     new AppearanceEditorPayload(civilian), OBJECT_INVALID);
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(0, 0, 0), userGesture: false);
                 InvokePrivate(editor, "FlushPendingPickerColor");
+            });
+            // A watched color is held for 0.1 s so a click that follows it can claim it (StageTintPickerColor).
+            // Hydration is never claimed: a player's first click comes later, so wait the hold out first.
+            await ctx.DelaySecondsAsync(0.5f);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
                 editor.OnMouseDownTintPicker()();
                 editor.OnMouseUpTintPicker()();
                 ctx.AssertEqual(nativeSkin, GetColor(civilian, ColorChannel.Skin), "Click without a watched update retains native skin");
@@ -691,7 +700,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(final.ToStoredValue(), GetLocalInt(item, stateName), "Release applies the last sample");
                 AssertTintInput(ctx, editor, final, "Released drag");
                 ctx.Assert(!publications.Contains(nameof(editor.SelectedTintColor)), "A deferred batch must not echo into the client picker");
-                ctx.Assert(publications.Count <= 6, "One global color edit must not republish all 120 swatches");
+                // One edit republishes the edited channel's swatches (global and part tint, custom flag, region), the palette
+                // selection and the three RGB text fields: nine bindings. A flood would publish one binding per swatch.
+                ctx.Assert(publications.Count <= 12,
+                    $"One global color edit must not republish all 120 swatches (published {publications.Count}: {string.Join(", ", publications.Names)})");
                 publications.Clear();
                 InvokePrivate(editor, "FlushPendingPickerColor");
                 ctx.AssertEqual(0, publications.Count, "An older scheduled flush cannot replay the released color");
@@ -726,7 +738,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     civilian, replacement, TintMapLayerType.Leather2),
                     "A late picker callback cannot revert the replacement tint");
             });
-            ctx.SetResultDetail("120 samples coalesced into one exact RGB commit, at most six bindings, and no picker echo. Release/late flush, newer text input and target switches cannot replay stale colors. Incoming client events and timer advancement are synthesized.");
+            ctx.SetResultDetail("120 samples coalesced into one exact RGB commit, at most twelve bindings, and no picker echo. Release/late flush, newer text input and target switches cannot replay stale colors. Incoming client events and timer advancement are synthesized.");
         }
 
         [EngineTest("Appearance editor persists exact RGB through native material transport and reopening", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
@@ -1354,6 +1366,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             public bool Contains(string property) => _values.ContainsKey(property);
             public int Count => _values.Count;
+            public IEnumerable<string> Names => _values.Keys;
 
             public IReadOnlyDictionary<string, JToken> SnapshotWithoutGeometry() => _values
                 .Where(pair => pair.Key != nameof(AppearanceEditorViewModel.Geometry))

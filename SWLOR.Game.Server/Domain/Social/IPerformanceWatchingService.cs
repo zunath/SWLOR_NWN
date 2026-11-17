@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.World;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.Character;
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// interrupts watching (a new area, leaving range, combat, death, a performance starting, a band losing a member). A
     /// part of the Performance audience; its handlers are on <see cref="PerformanceWatchingService"/>.
     /// </summary>
-    public interface IPerformanceWatchingService
+    public interface IPerformanceWatchingService : IMusicReplacedListener
     {
         /// <summary>
         /// Gives a leaving watcher back the Inspired time frozen while they watched. Disconnect-before runs ahead of
@@ -49,12 +50,6 @@ namespace SWLOR.Game.Server.Domain.Social
 
         /// <summary>A musician picked another song in the Perform window; the band's audience hears it at the next tick.</summary>
         void SetPerformerSong(uint performer, int trackId);
-
-        /// <summary>
-        /// Something else replaced the player's music, such as their own music player, so the band song they follow is
-        /// sent again at the next tick.
-        /// </summary>
-        void ForgetBandSong(uint player);
 
         /// <summary>The number of the audience tick that is running, or ran last.</summary>
         int TickNumber { get; }

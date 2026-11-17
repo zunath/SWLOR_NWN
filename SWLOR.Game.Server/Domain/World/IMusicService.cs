@@ -16,6 +16,12 @@ namespace SWLOR.Game.Server.Domain.World
     public interface IMusicService : IAbilityImpactObserver
     {
         /// <summary>
+        /// Registers who is told when a player's music is replaced by something other than a performance.
+        /// Registering the same listener twice keeps one entry.
+        /// </summary>
+        void RegisterMusicReplacedListener(IMusicReplacedListener listener);
+
+        /// <summary>
         /// When the module loads, read the ambientmusic.2da file for all active songs.
         /// Add these to the cache.
         /// </summary>

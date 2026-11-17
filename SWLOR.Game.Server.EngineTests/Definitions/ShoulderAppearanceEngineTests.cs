@@ -41,7 +41,7 @@ public static class ShoulderAppearanceEngineTests
             var colors = Enumerable.Range(0, 120).Select(i => GetItemAppearance(armor, ItemAppearanceType.ArmorColor, i)).ToArray();
             for (var cycle = 0; cycle < 2; cycle++)
             foreach (var style in new[] { 6, 13, 140, 141, 185, 256, 258, 260 })
-            foreach (var robe in new[] { 200, 1, 0 })
+            foreach (var robe in new[] { 200, 3, 0 })
             {
                 EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, style);
                 EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder, style);
@@ -56,7 +56,7 @@ public static class ShoulderAppearanceEngineTests
                     if (robe == 0)
                         ctx.AssertEqual((ushort)style, projected, "Removing the robe restores the base shoulder");
                     else
-                        ctx.Assert(projected >= 1000, "A robe skeleton uses its remapped shoulder skin");
+                        ctx.Assert(projected >= 1000, $"A robe skeleton uses its remapped shoulder skin (style {style}, robe {robe}, {part}: {projected}, stored robe {GetItemAppearance(armor, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe)})");
                 }
                 ctx.Assert(colors.SequenceEqual(packet.Colors.Select(v => (int)v)), "All armor dyes survive projection");
                 ctx.AssertEqual(creature, item.m_oidPossessor, "Packet serialization preserves armor ownership");

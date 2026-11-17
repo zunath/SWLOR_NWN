@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 

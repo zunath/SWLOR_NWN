@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
@@ -22,9 +21,9 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly PlayerIntroductionInbox _inbox = new();
         private readonly IPlayerNameService _playerName;
         private readonly IDisguiseService _disguise;
-        private readonly IRecastService _recast;
+        private readonly IRecastDelays _recast;
 
-        public PlayerIntroductionService(IPlayerNameService playerName, IDisguiseService disguise, IRecastService recast)
+        public PlayerIntroductionService(IPlayerNameService playerName, IDisguiseService disguise, IRecastDelays recast)
         {
             _playerName = playerName;
             _disguise = disguise;

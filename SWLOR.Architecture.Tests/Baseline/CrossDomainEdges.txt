@@ -99,8 +99,7 @@ Domain/Character -> Domain/Social | 8
 Feature/AppearanceDefinition -> Domain/Social | 1
 Feature/StatusEffectDefinition -> Domain/Social | 4
 
-# Character -> UI (2 edges)
-Domain/Character -> Domain/UI | 17
+# Character -> UI (1 edge)
 Feature/AppearanceDefinition -> Domain/UI | 41
 
 # Combat -> Abilities (2 edges)
@@ -240,9 +239,6 @@ Domain/Economy -> Domain/World | 7
 # Foundation -> Abilities (1 edge)
 Feature/MigrationDefinition -> Domain/Abilities | 4
 
-# Foundation -> Administration (1 edge)
-Platform/Entity -> Domain/Administration | 4
-
 # Foundation -> Character (4 edges)
 Domain/Foundation -> Domain/Character | 36
 Feature/DialogDefinition -> Domain/Character | 19
@@ -283,13 +279,12 @@ Feature/SnippetDefinition -> Domain/Quests | 8
 # Foundation -> Space (1 edge)
 Feature/DialogDefinition -> Domain/Space | 13
 
-# Foundation -> UI (6 edges)
+# Foundation -> UI (5 edges)
 Domain/Foundation -> Domain/UI | 6
 Domain/Foundation -> Feature/GuiDefinition | 3
 Feature/DialogDefinition -> Domain/UI | 12
 Feature/DialogDefinition -> Feature/GuiDefinition | 3
 Feature/SnippetDefinition -> Feature/GuiDefinition | 2
-Platform/Entity -> Domain/UI | 4
 
 # Foundation -> World (1 edge)
 Feature/DialogDefinition -> Domain/World | 52
@@ -603,7 +598,8 @@ Feature/GuiDefinition -> Feature/AbilityDefinition | 4
 # UI -> Administration (1 edge)
 Feature/GuiDefinition -> Domain/Administration | 113
 
-# UI -> Character (2 edges)
+# UI -> Character (3 edges)
+Domain/UI -> Domain/Character | 1
 Feature/GuiDefinition -> Domain/Character | 162
 Feature/GuiDefinition -> Feature/AppearanceDefinition | 89
 
@@ -667,9 +663,6 @@ Feature/PropertyLayoutDefinition -> Domain/Economy | 2
 
 # World -> Items (1 edge)
 Domain/World -> Domain/Items | 5
-
-# World -> Social (1 edge)
-Domain/World -> Domain/Social | 9
 
 # World -> Space (2 edges)
 Domain/World -> Domain/Space | 6

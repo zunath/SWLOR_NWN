@@ -19,7 +19,8 @@ may have moved). If master or the branch changes the file first, map the ranges 
 
 ## Decisions
 
-Settled here (change only on a finding in review):
+Settled by the coordinator (2026-11-17) after the review of the first draft; change only on a finding in review. The nine decisions the draft asked
+for are recorded under Settled decisions (end of this guide). Only the freeze start and one holder are open.
 
 - **The split is layered by who calls what, with the stay-part at the bottom.** `StatusEffectService` stays as the trackers, the
   reads and the removal (about 800 lines, 4 services). Everything that applies, refreshes, announces, reapplies or reacts to
@@ -32,13 +33,17 @@ Settled here (change only on a finding in review):
     read and the icon tables (precedent: `CreatureAIRules`, `ResistanceRules`, `PowerGloveStatCopies.For`);
   - rule 2, a port: `IStatusResistance`, the one query the apply path needs that is not pure (its provider needs only the
     trackers, so plain injection builds without a cycle);
-  - rule 3, notices: one Character-owned `IStatusEffectListener` that folds in P5-4e's `IStatEffectListener` (the Stat split
-    promised "P5-5 folds the listener into its effect lifecycle events").
+  - rule 3, notices: small Character-owned listener interfaces, one per subscriber group, each with its own list in part 1 and a boot
+    registration (the P5-4e pattern of `IStatEffectListener`, which stays as it is). The `IEnumerable<...>` constructor pattern of
+    `IAbilityImpactObserver` and `ICreatureRevivedListener` cannot be used here: every implementer holds part 1 or part 3 (it reads or
+    applies status effects), so a part that took the implementers by constructor would sit in a cycle. Where a listener does not use a
+    notice its method is empty, as `IAbilityImpactObserver` says. The server has one default interface member
+    (`ICharacterMigration.MigratePlayerData`); this split adds none.
 - **The carried keys stay where they can.** `_creatureEffects` stays in `StatusEffectService` (key unchanged); only
   `_loggedOutPlayerEffects` moves, with `[ReloadCarriedFrom]`.
 - **No `Lazy<>`, `Func<>` or late lookup is added.** All three `Lazy<>` parameters of the service go.
 - **Content references are not removed here** except the three logic-to-content or logic-to-Native seams that stay behind their
-  one-line seams (State, below). The 115-member `Combat -> Feature/StatusEffectDefinition` edge is open decision 3.
+  one-line seams (State, below). The 115-member `Combat -> Feature/StatusEffectDefinition` edge is settled decision 3 (P5-7).
 
 ## What the code is
 
@@ -67,18 +72,18 @@ listener stand-in. One method is over 150 lines: `ApplyStatusEffectInternal` (74
 | `IResistanceService` | Combat | 6 | resistance type and ticks in apply, restart, refresh | `IStatusResistance` (Character-owned port), part D |
 | `IPvpCombatService` | Combat | 1 | `IsPlayerAgainstPlayer` in apply | static `PlayerControlRules`, part D |
 | `IStealthService` | Combat | 2 | `IsConcealed` in the apply and worn-off announcements | static `ConcealmentRules`, parts A and core |
-| `IMeleeTechniqueService` | Combat | 3 | `OnStanceChanged` x2 (removal), `PrepareDirectDamage` (damage notice) | `IStatusEffectListener` notices, parts core and CE |
+| `IMeleeTechniqueService` | Combat | 3 | `OnStanceChanged` x2 (removal), `PrepareDirectDamage` (damage notice) | `IStatusEffectMeleeListener` notices, parts core and CE |
 | `ICharacterRecording` | Character | 6 | `RecordStatusApplied` in restart, extend, refresh | part D |
 | `IMessagingService` | Foundation | 2 | application and worn-off nearby messages | parts A and core |
 | `IPlayerNameService` | Character | 3 | the same two messages | parts A and core |
 | `IGuiRefreshPublisher` | Foundation | 3 | received, removed, stat-adjustment refresh | parts A, D and core |
-| `ICapstoneProofService` | Quests | 1 | `RecordStatusEffect` after a successful apply | `IStatusEffectListener` notice, part A |
+| `ICapstoneProofService` | Quests | 1 | `RecordStatusEffect` after a successful apply | `IStatusEffectAppliedListener` notice, part A |
 | `IDBService` | Foundation | 4 | toggles saved and restored | part SS |
 | `IQuickCastService` | Abilities | 1 | `KnowsFeat` for toggles | static `FeatKnowledgeRules`, part SS |
 | `Lazy<IStatService>` | Character (inside) | 1 | `GetStatAdjustment` seam (outgoing adjustments, limited attack) | plain `IStatService` in parts D and CE |
 | `IAbilityCatalog` | Character | 1 | known toggle ability search | part SS |
 | `IActiveAbilityImpact` | Character | 1 | `GetActiveAbilityImpactSummary` seam | part A |
-| `Lazy<ICombatAbilityImpactService>` | Combat (up) | 2 | stamina drain, hostile party buff notices | `IStatusEffectListener` notices, part A |
+| `Lazy<ICombatAbilityImpactService>` | Combat (up) | 2 | stamina drain, hostile party buff notices | `IStatusEffectAppliedListener` notices, part A |
 | `Lazy<ICombatAttackTimingService>` | Combat (up) | 1 | `IsAttackDelayReductionSuppressed` | its one-line body moves down into part CE (a stat read) |
 
 ## Parts
@@ -147,7 +152,8 @@ result is no plain path from `StatService`, `CreatureStatService`, `PerkService`
     `RemoveStatusEffectsWithStat` 14, `RemoveStatusEffectsWithNegativeStat` 14, `ConsumeStatusEffectStat` 4,
     `SetStatusEffectStat` 6, `RemoveStatusEffectFromAllTargetsBySource` 20, `RemoveStatusEffectsFromAllTargetsBySource` 45,
     `RemoveStatusEffectsFromAllTargetsWhenSourceExits` 33, `RemoveOtherStanceStatuses` 18, `RemoveOtherCommandStatuses` 26,
-    `RemoveNonPersistentStatusEffects` 7, `RemoveTrackedNWNEffects` 10, `PublishStatusEffectRemovedRefresh` 4.
+    `RemoveNonPersistentStatusEffects` 7, `RemoveTrackedNWNEffects` 10, `PublishStatusEffectRemovedRefresh` 4, `ClearStatusEffectsOnDeath` 9 (it calls `RemoveAllStatusEffects` and `RemoveCreature`, both part 1, so
+    it stays there and `DeathService` needs no session part).
 - **2 Catalog:** `CacheData` 9, `CacheStatusEffects` 18, `CreateStatusEffect` 10, `TryCreateStatusEffect` 12,
   `HasStatusEffectDefinition` 4, `GetStatusEffectName` 6, `GetStatusEffectSourceType` 6, `GetStatusEffectsFromIcon` (icon) 7,
   `GetStatusEffectTypes` seam 6, `StatusEffectMetadata` 22 (nested struct). `GetEffectTypeFromIcon` 6 and `GetAbilityTypeBuffed` 6
@@ -171,7 +177,7 @@ result is no plain path from `StatService`, `CreatureStatService`, `PerkService`
   `TryGetLimitedAttackDelayReduction` 29, `TryGetLimitedAttackNoDelay` 26, seam `IsAttackDelayReductionSuppressed` (a stat read
   after the move).
 - **7 Session:** `OnPlayerEnter` 26, `OnPlayerExit` 28, `OnCarriedStateAdopted` 32, `SaveTogglesForRestart` 17, `SaveToggles` 17,
-  `RestoreSavedToggles` 28, `FindKnownToggleAbility` 10, `ClearStatusEffectsOnDeath` 9, `ReassignSelfSourcedEffects` 8,
+  `RestoreSavedToggles` 28, `FindKnownToggleAbility` 10, `ReassignSelfSourcedEffects` 8,
   `ReconcileLoggedOutEffects` 23, `NotifyStatusEffectsRestored` 7, nested `LoggedOutStatusEffects` 14, seam `GetAllAbilityDetails` 1.
 - **s1 `StatusEffectRules`** (58 lines today) gains `ShouldAnnounceNearby` 8, `BuildDurationResistanceMessage` 28,
   `FormatDurationSeconds` 7, `ClampConvertedControlDurationTicks` 7 and `GetRefreshTickAnchor` 9, which are pure; the three
@@ -212,7 +218,7 @@ application before and after.
   hot read families (`HasStatusEffect` 276 sites, `GetStatusEffect` 162, `GetCreatureStatusEffects` 112, `HasEffect` 48,
   `RemoveStatusEffect` 117) and the stat read (`GetStatAdjustment`, 0 allocations, pinned) keep their receiver. At about 800
   lines it has 20% headroom; each sync checks master's additions to it.
-- **3 and 4 are separate** so part 3 stays at 8 services. Merging them (open decision 2) puts the merged part at exactly 10.
+- **3 and 4 are separate** so part 3 stays at 8 services. Merging them (settled decision 2) puts the merged part at exactly 10.
 - **5 is the effect's script side.** The three handlers are the scripts the native effect runs (apply, remove, interval); they
   call part 1's removal (an expired or dispelled effect), so the part sits above part 1. `_suppressedStatusEffectRemovalIds` stays
   in part 1: `RemoveNativeStatusEffect` adds and removes the id around the engine call and the remove handler (part 5) only reads it
@@ -281,7 +287,7 @@ them (`Read-HandlerRenames` takes several branch names for a split).
 | (new) `RegisterStatusEffectListener` | `OnModuleCacheBefore` | `MeleeTechniqueService` | after 56 | line 320 | `Rerun` |
 | (new) `RegisterStatusEffectListener` | `OnModuleCacheBefore` | `CombatAbilityImpactService` | after the one above | line 320 | `Rerun` |
 | (new) `RegisterStatusEffectListener` | `OnModuleCacheBefore` | `CapstoneProofService` | after the one above | line 320 | `Rerun` |
-| `CreatureStatService.RegisterStatEffectListener` | `OnModuleCacheBefore` | renamed `RegisterStatusEffectListener`, same class | 55 | line 313 (edit the branch name) | `Rerun` |
+| `CreatureStatService.RegisterStatEffectListener` | `OnModuleCacheBefore` | unchanged (the stat listener keeps its interface and handler) | 55 | line 313, unchanged | `Rerun` |
 | `OnPlayerEnter` | `OnModuleEnter` | `StatusEffectSessionService.OnPlayerEnter` | 764 | line 323 | `LoginOnly` (`PlayerSessionClassification.txt` 65) |
 | `OnPlayerExit` | `OnModuleExit` | `StatusEffectSessionService.OnPlayerExit` | 834 | line 324 | `LogoutOnly` (175) |
 | `OnApplyStatusEffect` | `status_apply` | `StatusEffectNativeService.OnApplyStatusEffect` | 1128 | line 321 | - |
@@ -293,7 +299,7 @@ The renames line after P5-5c and P5-5d reads:
 `SWLOR.Game.Server.Service.StatusEffect.CacheData SWLOR.Game.Server.Domain.Character.StatusEffectCatalogService.CacheData
 SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RegisterStatusEffectListener
 SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService.RegisterStatusEffectListener
-SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListener` (one line).
+SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListener` (one line). The three handlers call `RegisterMeleeListener` and `RegisterAppliedListener` on `IStatusEffectService`.
 
 - **Order inside `OnModuleCacheBefore` is not load-bearing:** the registrations only fill a list the first notice reads, and the status
   catalog reads no listener. A reload runs rerun boot handlers before adoption (`ServerBootstrapper.RebuildAfterReload`), so the
@@ -318,15 +324,15 @@ SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListene
 | `IStealthService.IsConcealed` (2) | static `ConcealmentRules` (rule 2) | c |
 | `IQuickCastService.KnowsFeat` | static beside `QuickCastFeatMap` in Foundation (rule 2) | c |
 | `Lazy<ICombatAttackTimingService>` | body down: a stat read in part 6 (rule 2); the up `Lazy<>` goes | c |
-| `IMeleeTechniqueService` (3) | `IStatusEffectListener.OnStanceChanged(creature)` and `OnBeforeDirectDamage(attacker, defender, deliveryType)`; `MeleeTechniqueService` implements and registers (rule 3) | d |
-| `Lazy<ICombatAbilityImpactService>` (2) | `OnStatusApplied(source, creature, categories)` (the stamina drain) and `OnHostileDebuffApplied(source, ability)` (the party buff); `CombatAbilityImpactService` implements and registers (rule 3); the second up `Lazy<>` goes | d |
-| `ICapstoneProofService` | `OnStatusEffectApplied(source, creature, type, ability)`; `CapstoneProofService` implements and registers (rule 3) | d |
-| `IStatEffectListener` (Stat split) | folded into `IStatusEffectListener` (`OnStatusEffectsRestored`, `OnStatAdjustingEffectsChanged`); `CreatureStatService` implements | d |
+| `IMeleeTechniqueService` (3) | `IStatusEffectMeleeListener.OnStanceChanged(creature)` and `OnBeforeDirectDamage(attacker, defender, deliveryType)`; `MeleeTechniqueService` implements and registers (rule 3) | d |
+| `Lazy<ICombatAbilityImpactService>` (2) | `IStatusEffectAppliedListener.OnStatusApplied(source, creature, categories)` (the stamina drain) and `OnHostileDebuffApplied(source, ability)` (the party buff); `CombatAbilityImpactService` implements and registers (rule 3); the second up `Lazy<>` goes | d |
+| `ICapstoneProofService` | `IStatusEffectAppliedListener.OnApplicationCompleted(source, creature, type, ability)`, fired where `RecordCapstoneProof` runs; `CapstoneProofService` implements it (the other two notices empty) and registers (rule 3); it gains `IStatusEffectService` (3 -> 4 services) | d |
+| `IStatEffectListener` (Stat split) | unchanged; its list sits beside the two new lists in part 1 | d |
 | `Lazy<IStatService>` (inside Character) | plain `IStatService` in parts 4 and 6: `StatService` depends on part 1 only, so no plain path leads back | g |
 | `AppliedEffects` (Native) | stays behind its seam (1 member); P5-16b | - |
 | `TemporaryHitPointEffects` (content) | stays behind its seam in part 5; P5-12 (the `LogicToContent.txt` line is re-keyed to `StatusEffectNativeService.cs`) | h |
 | `Feature.GuiDefinition.RefreshEvent` using | stale (the three events are `Domain/Foundation`); the using goes with the moved code | c-h |
-| `Combat -> Feature/StatusEffectDefinition` (115 members in Combat, 186 references in all) | **kept** (open decision 3) | - |
+| `Combat -> Feature/StatusEffectDefinition` (115 members in Combat, 186 references in all) | **kept**, P5-7 designs the keys (settled decision 3) | - |
 
 After P5-5: `StatusEffectService.cs` has no Combat, Abilities or Quests reference (23 members removed from `UpwardEdges.txt`, plus the
 `StatusEffectRules.cs` line); the new files are Character-only except the Native seam. No `Lazy<>`, `Func<>` or late lookup is added.
@@ -345,10 +351,13 @@ domain order says P5-15 breaks if this item does not (P5-5h tries first).
 
 - **P5-8e (Combat ports, after P5-5 and P5-15a, before P5-7).** P5-5 runs first and edits `MeleeTechniqueService`, `StealthService`,
   `PvpCombatService`, `ResistanceService`, `AIService` and `CompanionControlService` only for their `IStatusEffectService`
-  parameters and the three registrations; P5-8e then edits `StealthService.cs` and `EnmityService.cs` on top. **This map does not
+  parameters and the three registrations (rechecked at `c153dd169`, after P5-8d merged as #3446: `AIService` already takes Combat's
+  `IPartyRoster`, `SpawnObjectService` exists, and `AIService` (15) and `CompanionControlService` use only part 1, so P5-5h only turns their
+  `Lazy<IStatusEffectService>` plain, in whichever P5-8 part file holds it then); P5-8e then edits `StealthService.cs` and `EnmityService.cs` on top. **This map does not
   need the "effect lifecycle subscription in `StealthService`" that the Creatures split's D3 and the domain order name:** Stealth's
-  two uses are pure engine reads, so Stealth gets `ConcealmentRules` and a one-line body, not a listener. D3 can drop that clause.
-  The listener list lives in part 1 (not in a Combat service), so P5-8e's own `IStealthAggroListener` list is independent.
+  two uses are pure engine reads, so Stealth gets `ConcealmentRules` and a one-line body, not a listener (D3 drops that clause in the
+  same commit as this amendment). The listener lists live in part 1 (not in a Combat service), so P5-8e's own `IStealthAggroListener`
+  list is independent. P5-8e runs after P5-5 has merged.
 - **P5-7.** `CombatAbilityImpactService`, `CombatHitEffectsService`, `CombatDamageTakenService` and `CombatAbilityActivationService` are
   P5-7's files and holders (below). P5-5 edits each for fields, parameters and call receivers only; P5-7 then splits them. The
   three Combat registrations add a method and a handler to `MeleeTechniqueService` and `CombatAbilityImpactService`, about 12 lines each.
@@ -359,24 +368,43 @@ domain order says P5-15 breaks if this item does not (P5-5h tries first).
 ## Holders of `IStatusEffectService`
 
 41 files in `Domain/` take `IStatusEffectService` (tests not counted). 19 of them use members of more than one new part and gain one to
-three services; the other 22 keep one. Every service count that
-grows is one the coordinator is asked to accept (open decision 1); no holder gains a `Lazy<>`.
+three services; the other 22 keep one. Counts are the guard's (distinct constructor services plus `GameServices` lookups), measured from the
+constructors at `c153dd169`; the method reproduces the baseline's 13, 14, 17 and 18. Coordinator decision (2026-11-17): growth is accepted only
+for the four P5-7-owned Combat holders that are already over the limit; each is recorded in the PR that causes it, and P5-7 removes it. Every other
+holder stays at 10 or fewer. No holder gains a `Lazy<>`.
 
-| Holder | Parts used | Services now | After |
-|---|---|---:|---:|
-| `CombatHitEffectsService` | 1, 3, 4, 6 | 17 | 20 |
-| `CombatDamageTakenService` | 1, 3, 6 | 18 | 20 |
-| `CombatAbilityImpactService` | 1, 3, 4 | 14 | 16 |
-| `CombatAbilityActivationService` | 1, 3 | 13 | 14 |
-| `AbilityAuraService` | 1, 2, 3 | 10 or fewer | +2 |
-| `DeathService` | 1, 3, 7 | 10 or fewer | +2 |
-| `OrdinaryAttackTraitsService`, `PairedRangedTraitsService`, `PoisonsService`, `PerformanceInspiredService` | 1, 3, 4 | 10 or fewer | +2 each |
-| `AbilityStatusApplicationService`, `CombatActivityService`, `CombatAttackTimingService`, `CombatDamageModifiersService`, `CombatSuppressionService`, `MeleeTechniqueService`, `PvpCombatService`, `StealthService`, `CraftStyleEffectsService` | 1 and one of 3, 6 | 10 or fewer | +1 each |
+| Holder | Parts used | Services now | After | Rule |
+|---|---|---:|---:|---|
+| `CombatHitEffectsService` | 1, 3, 4, 6 | 17 | 20 | accepted, P5-7 removes |
+| `CombatDamageTakenService` | 1, 3, 6 | 18 | 20 | accepted, P5-7 removes |
+| `CombatAbilityImpactService` | 1, 3, 4 | 14 | 16 | accepted, P5-7 removes |
+| `CombatAbilityActivationService` | 1, 3 | 13 | 14 | accepted, P5-7 removes |
+| `CombatActivityService` | 1, 3 | 9 | 10 | at the limit |
+| `CombatDamageModifiersService` | 1, 3 | 8 | 9 | |
+| `CombatAttackTimingService` | 1, 6 | 7 | 8 | |
+| `PairedRangedTraitsService` | 1, 3, 4 | 6 | 8 | |
+| `MeleeTechniqueService` | 1, 3 | 6 | 7 | |
+| `StealthService` | 1, 3 | 6 | 7 | |
+| `AbilityAuraService` | 1, 2, 3 | 4 | 6 | |
+| `AbilityStatusApplicationService` | 1, 3 | 4 | 5 | |
+| `CombatSuppressionService` | 1, 3 | 4 | 5 | |
+| `OrdinaryAttackTraitsService` | 1, 3, 4 | 2 | 4 | |
+| `PoisonsService` | 1, 3, 4 | 2 | 4 | |
+| `PerformanceInspiredService` | 1, 3, 4 | 1 | 3 | |
+| `PvpCombatService` | 1, 3 | 2 | 3 | |
+| `CraftStyleEffectsService` | 1, 3 | 2 | 3 | |
+| `DeathService` | 1, 3 | 10 | 11 | **open item** |
 
-The first four are already over the limit and are P5-7's (each shrinks there). The guard counts the others: a holder that crosses 10
-gets a `ServicesPerType.txt` line, recorded in the pull request that causes it. `AIService` (15) uses only part 1, so it stays at 15.
-`StatService`, `CreatureStatService`, `ResistanceService`, `PerkService`, `CompanionControlService` and the Stat, Mimicry and Space
-holders use part 1 only and are unchanged except that their `Lazy<>` may go plain.
+Other changes: `CapstoneProofService` 3 -> 4 (it takes `IStatusEffectService` to register). `AIService` (15) uses only part 1 and stays at 15.
+`StatService`, `CreatureStatService`, `ResistanceService`, `PerkService`, `CompanionControlService` and the Stat, Mimicry and Space holders use
+part 1 only and are unchanged except that their `Lazy<>` may go plain. What was done to keep holders at 10 or fewer: `ClearStatusEffectsOnDeath`
+stays in part 1 (it was going to the session part), so `DeathService` needs two parts, not three.
+
+**One holder still crosses 10: `DeathService` (Combat, not P5-7's), 10 -> 11.** It calls `GetCreatureStatusEffects` and `ClearStatusEffectsOnDeath`
+(part 1) and `ApplyStatusEffect` for `KnockdownStatusEffect` and `SubdualPenaltyStatusEffect` (part 3, lines 114-115). No member can move to a part it
+already holds, because it holds no other status effect part, and putting `ApplyStatusEffect` on `IStatusEffectService` would be a forwarding layer. The
+ways out are to drop one of its other ten services in a pull request that may touch `DeathService` (none is related to this item), or to accept 11 until
+the Combat split reaches it. See Open decisions.
 
 ## Callers
 
@@ -389,7 +417,7 @@ Counts are call sites (server, content, tests, engine tests together) by destina
 | `IStatusEffectCombatEventService` | about 100 | notices 40, swing scope 34, limited attack 17, guarded hit 5 |
 | `IStatusEffectDurationService` | about 52 | refresh 23, restart 15, extend 14 |
 | `IStatusEffectCatalogService` | about 27 and 14 test `CacheData` calls | create, definition, name, source type, icon search |
-| `IStatusEffectSessionService` | about 12 | `SaveTogglesForRestart`, `ClearStatusEffectsOnDeath`, enter and exit in tests |
+| `IStatusEffectSessionService` | about 7 | `SaveTogglesForRestart`, enter and exit in tests |
 | `IStatusEffectNativeService` | about 25 | mostly tests (`OnNWNStatusEffectInterval` 14, `OnRemoveNWNStatusEffect` 7) |
 | static rules (`StatusEffectRules`, `StatusEffectIconMap`) | about 61 | pure duration members, the two icon lookups; tests and CombatSim |
 
@@ -445,7 +473,7 @@ The same layout as the Stat split's P5-4a: the test suite learns where each memb
     (moves with the type), `PvpCombatServiceTests`, `StealthServiceTests`, `ResistanceServiceTests`, `MeleeTechniqueServiceTests`,
     `QuickCast...` tests, and `Phase5DebtTests`/`DomainMapTests` in `SWLOR.Architecture.Tests` (baselines regenerated each PR);
   - new: `StatusEffectSourceTests`, an adoption-order test (part 1 before part 7), a carry test with one text feeding two classes,
-    a listener-empty test (throws), the apply-order characterization for the eight steps, and `IStatusResistanceTests` (the port answers
+    a listener-empty test (each list throws when it notifies empty, as the stat list does), the apply-order characterization for the eight steps, and `IStatusResistanceTests` (the port answers
     what `ResistanceService` answers);
   - engine tests: `StatusEffectEngineTests`, `StatusEffectRefreshInPlaceEngineTests`, `StatusEffectTickStatEngineTests`,
     `Characterization/StatusEffectScenarios` and `HotReloadPlayersEngineTests` (a player with effects through a reload and a logout), filtered
@@ -468,7 +496,7 @@ the diff in the PR, not the tree.
 | P5-5a | This guide | 0 | 16 | 2 | the guide, README, Phase 5 link |
 | P5-5b | Test groundwork: `StatusEffectSource`, bench accessors, double partials, seam tests, allocation pins grouped, reflection users re-pointed; no production code | 0 | 16 | 2 | `Tests/Support/*` (6), 18 source-reading tests, 10 `Domain/Character/StatusEffect*Tests`, `StatSourceTests` guard line |
 | P5-5c | Leaves and statics: catalog (`CacheData` handler moves), `StatusEffectIconMap`, `LeadershipDamageReductionRules`, pure members into `StatusEffectRules`, `ConcealmentRules`, `PlayerControlRules`, `PvpCombatRules` and `QuickCastFeatMap` type moves, `IStatusResistance`, the suppression read down; renames line 320 | 390 | 13 | 1 | `StatusEffectService.cs`, `StatusEffectRules.cs`, 4 new Character files, `StealthService.cs`, `PvpCombatService.cs`, `QuickCastService.cs`, `ResistanceService.cs` and its interface, `DomainOrderTypeMoves.json`, `ServiceRegistrations.cs`, `GameServices.Character.cs`, `ScriptHandlerOrder.txt`, `HandlerRenames.txt`, `ClockSeamFiles.txt`, `ConvertedServices.json`, `DomainMap.json`, `RemovedFacades.json`, call sites (about 90) |
-| P5-5d | `IStatusEffectListener` (folds `IStatEffectListener`), the notices, and the three registrations on `MeleeTechniqueService`, `CombatAbilityImpactService`, `CapstoneProofService`; `CreatureStatService` renames its handler | +40 | 10 | 0 | `StatusEffectService.cs`, `IStatEffectListener.cs` -> `IStatusEffectListener.cs`, the four implementers, `ScriptHandlerOrder.txt`, `HandlerRenames.txt` (313, 320), `BootHandlerClassification.txt`, test bench |
+| P5-5d | `IStatusEffectMeleeListener` and `IStatusEffectAppliedListener`, their lists and notices in part 1, and the three registrations on `MeleeTechniqueService`, `CombatAbilityImpactService`, `CapstoneProofService` | +40 | 10 | 0 | `StatusEffectService.cs`, the two new listener interfaces, the three implementers, `ScriptHandlerOrder.txt`, `HandlerRenames.txt` (320), `BootHandlerClassification.txt`, test bench |
 | P5-5e | Part 7 `StatusEffectSessionService`; `[ReloadCarriedFrom]`; adoption-order test; 12 callers | 270 | 8 | 0 | `StatusEffectService.cs`, new part and interface, `ScriptHandlerOrder.txt`, `HandlerRenames.txt` (323, 324), `PlayerSessionClassification.txt`, `ReloadAdoption.txt`, `ReloadCarryHistory.txt`, `ClockSeamFiles.txt`, `PlayerMessageAudit.json` (none), tests |
 | P5-5f | Part 3 `StatusEffectApplicationService` with the `ApplyStatusEffectInternal` cut; the apply timing and refresh still in part 1 behind promoted members; about 460 callers; the 19 holders gain the `StatusEffectApplication` parameter | 410 | 7 | 0 | `StatusEffectService.cs`, new part, `ServiceRegistrations.cs`, `GameServices.Character.cs`, `RemovedFacades.json`, `PlayerMessageAudit.json` (7 rows re-keyed), `LongMethods.txt`, 19 holders, about 460 call sites in content and tests |
 | P5-5g | Parts 4 and 6; `IStatService` plain in both; call sites for refresh, restart, extend and the notices | 685 | 4 | 0 | `StatusEffectService.cs`, two new parts, holders `CombatHitEffectsService`, `CombatAbilityImpactService`, `CombatDamageTakenService`, `PoisonsService`, `OrdinaryAttackTraitsService`, `PairedRangedTraitsService`, `PerformanceInspiredService`, `AbilityDamageDeliveryService`, `AbilityImpactLifecycleService`, `CombatAttackTimingService`, about 150 call sites |
@@ -484,8 +512,9 @@ tool's. P5-5c is the one that edits other items' files (Stealth, Pvp, QuickCast,
 
 ## Master freeze
 
-P5-5 runs under a master freeze (the owner has not yet said whether the P5-4 freeze carries over; open decision 8). The freeze starts when
-P5-5c starts, because that PR moves code out of the service file, and ends when P5-5h merges. The master files whose edits would need hand porting
+P5-5c to P5-5h run under a master freeze that starts when the owner confirms it (the owner has not answered whether the P5-4 freeze carries over;
+this guide does not state that a freeze is in force). P5-5b is tests only and needs no freeze. The freeze, once confirmed, covers the work from P5-5c,
+the first PR that moves code out of the service file, to the merge of P5-5h. The master files whose edits would need hand porting
 (master `88f02ed6a`, local ref):
 
 - `SWLOR.Game.Server/Service/StatusEffect.cs` (2,695 lines, 27 commits since 2026-10-10): master edits to it port by the range table of
@@ -506,34 +535,29 @@ That is 19 files (1 + 17 + 1). Content edits that only call the service merge wi
 (`Service/StatusEffectService/*`, `Feature/StatusEffectDefinition/*`), which this split does not move. Master's later syncs run the mechanical
 scripts first and port the service range by hand with a Port log row.
 
+## Settled decisions (coordinator, 2026-11-17)
+
+The coordinator reviewed the first draft and settled its nine decisions; the guide above is written to them.
+
+1. **Holder growth:** accepted only for the four P5-7-owned Combat holders already over the limit (`CombatHitEffectsService`, `CombatDamageTakenService`,
+   `CombatAbilityImpactService`, `CombatAbilityActivationService`); each is recorded in the PR that causes it and P5-7 removes it. Every other holder stays
+   at 10 or fewer (Holders table; `DeathService` is the open item).
+2. **Duration and Application stay separate parts.**
+3. **Effect keys for Combat belong to P5-7.** P5-5 keeps the `Type` APIs it moves unchanged.
+4. **Listeners:** small interfaces registered as lists, the existing pattern (`IStatEffectListener` stays; `IStatusEffectMeleeListener` and
+   `IStatusEffectAppliedListener` are added; a notice an implementer does not use is empty). No default interface members. The server has one
+   (`ICharacterMigration.MigratePlayerData`), so they are not unknown, but nothing here needs them.
+5. **Resistance is the port `IStatusResistance`,** not a push.
+6. **Statics:** `PvpCombatRules`, `PlayerControlRules` and `ConcealmentRules` in Character beside `StatusEffectRules`; `QuickCastFeatMap` in Foundation.
+7. **P5-8e's D3:** no Stealth subscription is needed; D3 in the Creatures split drops that clause (done in this commit).
+8. **The freeze** is below under Open decisions (not yet confirmed).
+9. **P5-8:** P5-8d merged (`737210cdd`, #3446); the `AIService` and `CompanionControlService` rows are rechecked against the feature tip (Combat ports
+   section); P5-8e runs after P5-5.
+
 ## Open decisions
 
-For the coordinator, each with a recommendation.
-
-1. **Holder growth.** 19 holders gain one to three services (table above; four are P5-7's and already over the limit: 17 -> 20, 18 -> 20,
-   14 -> 16, 13 -> 14). Recommended: accept, record each in the PR that causes it, and have P5-7 remove the four. Alternative: keep `Remove` and
-   `Apply` on one interface, which puts that part over the line limit (about 1,200 lines).
-2. **Merge part 4 (Duration) into part 3 (Application)?** It saves a service in 6 holders (`CombatAbilityImpactService`, `CombatHitEffectsService`,
-   `OrdinaryAttackTraitsService`, `PairedRangedTraitsService`, `PoisonsService`, `PerformanceInspiredService`), at the cost of a merged part of about
-   810 lines with exactly 10 services and no headroom. Recommended: keep them separate.
-3. **Effect keys for Combat (the 115-member `Combat -> Feature/StatusEffectDefinition` edge).** The domain order gives P5-5 the job of naming the
-   effects logic must recognise. About 40 effect types are named from `Domain/` (Bleed 11, Poison 10, Exposed 9, Sunder 8, Disoriented 7, ContainmentNet 7,
-   Rest 6, OpeningAttackReady 6, Infection 6, ForceDisruption 6, ...) in 16 files, mostly P5-7's; `ApplyStatusEffect<T>`, `RemoveStatusEffect<T>` and
-   `HasStatusEffect<T>` key on the concrete type, so a capability interface (which works for `GetStatusEffect<T>`, as the food check showed) does not
-   replace them. Recommended: P5-5 does not do it; P5-7's part maps design the keys per Combat part, because Combat's callers are rewritten there anyway
-   and a vocabulary built now would be edited twice. P5-5 only guarantees the `Type` APIs it moves keep their signatures. If you prefer the domain order's
-   text, it becomes a ninth PR (P5-5i) that touches 16 Combat files before P5-7 starts.
-4. **One listener interface with default members, or small ones.** `IStatusEffectListener` has six notices; each implementer overrides only its own.
-   Recommended: one interface with default (no-op) interface members. Check the repository's style first; the fallback, as the Ability split did, is empty
-   methods registered as the same instance. Separate interfaces (stat, melee, impact, proof) mean four lists in part 1.
-5. **Resistance as a port, not a push.** `IStatusResistance` is a query computed per call from the stat read, the mimicry bonus and the trackers; a push
-   (rule 1) would store a per-creature value that changes with every stat. Recommended: the port. It adds no construction cycle once part 1 stays at
-   the bottom.
-6. **Where the moved-down statics live.** `PvpCombatRules`, `PlayerControlRules` and `ConcealmentRules` in Character beside `StatusEffectRules` (their only
-   Character user); `QuickCastFeatMap` in Foundation (Abilities, Combat and Character read it). Recommended as written.
-7. **P5-8e's D3.** This map needs no subscription in `StealthService` (above). Recommended: the Creatures split's D3 drops "P5-5 adds its effect lifecycle
-   subscription" and says only that P5-5 edits Stealth's constructor and `IsConcealed` body before P5-8e.
-8. **Master freeze.** Does the P5-4 freeze carry into P5-5 (the status file's Next actions item 1 waits on it)? Recommended: yes, from P5-5c to P5-5h; P5-5b
-   (tests only) can run before the freeze is announced.
-9. **P5-5 and the in-flight P5-8.** P5-5f and P5-5h edit `AIService` and `CompanionControlService` for a receiver. Recommended: schedule those two edits after
-   P5-8's running PR merges, or let P5-8 take the receiver change on its own part files (they already hold `Lazy<IStatusEffectService>`).
+1. **Freeze start.** P5-5c to P5-5h run under a master freeze that starts when the owner confirms it; P5-5b (tests only) needs none.
+   Recommended: confirm before P5-5c starts, so that master's edits to `Service/StatusEffect.cs` stop for the six moving PRs.
+2. **`DeathService` crosses 10 (10 -> 11).** Numbers in the Holders section. Recommended: accept 11 until the Combat split reaches `DeathService`,
+   recorded in P5-5f (the PR that gives it `IStatusEffectApplicationService`) as an accepted exception with that item named as the remover; the
+   alternative is a prior change that drops an unrelated service from it, which is outside this item.

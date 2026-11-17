@@ -339,8 +339,8 @@ Where the pull request differs from the map:
   `ICombatQueriesService`); each cycle ran `... -> StatService -> EnmityService -> CompanionControlService`. They are plain
   parameters now (a Lazy is built once and its `Value` read per call, so a call is the same interface call without the read).
   `EnmityService` leaves the `Lazy<>` holders of the holder table (37 types, 10 of them lazy), and the P5-3d note that
-  `CompanionControlService` keeps its `Lazy<IAbilityActivationService>` until P5-7 and P5-8 no longer holds: the stat half of its
-  cycle was the enmity parameter.
+  `CompanionControlService` keeps a `Lazy<IAbilityActivationService>` no longer holds: that `Lazy<>` was `AIService`'s, and P5-8
+  (AI-5, `MaintainabilityRefactorCreaturesSplit.md`) makes it plain.
 - **Part 8 stays in P5-4d,** as the order table says. In b it would add `IResourceRestoredListener` while
   `Lazy<ICombatResourcesService>` still serves `TryUseStatTrigger` (19 services, not 18).
 - **The type moves** are three `DomainOrderTypeMoves.json` entries (`SWLOR.TypeMoves` moved the files, added the usings and

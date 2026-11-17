@@ -24,14 +24,14 @@ file first, map the ranges through the diff.
 
 ## Decisions
 
-Needs the owner (each has a recommendation; none blocks P5-8b to P5-8d):
+Settled by the coordinator (2026-11-17), as recommended:
 
 1. **D1. The Enmity and leash cycle.** `EnmityService` calls `TryStartCombatLeashEvade` at six sites in four methods
    (`ModifyEnmity` 391, `TryTaunt` 449, `AttackTargetIfNeeded` 884, `IssueAttackCommand` 936, 945 and 959), and the leash code
    calls back into Enmity (`ClearEnmityTable`, `GetEnmityTable`, `RemoveEnmity`,
    `AttackHighestEnmityTarget`). An interface owned by Combat does not break that: the container still has to build Enmity
    before the leash and the leash before Enmity. It is the only plain path left behind the last `Lazy<IEnmityService>` and
-   `Lazy<IEspionageInfiltrationService>` (the second one reaches `AIService` only through Enmity). **Recommendation:** P5-8
+   `Lazy<IEspionageInfiltrationService>` (the second one reaches `AIService` only through Enmity). **Decision:** P5-8
    leaves `AIService.Lazy<IEnmityService>` (and the Espionage one until g) in place, and records them as the last two. P5-7's
    Enmity part map then puts the table reads and writes (`GetEnmityTable`, `ClearEnmityTable`, `RemoveEnmity`) in a part that
    never calls the leash, and turns the leash's one call back up (`AttackHighestEnmityTarget` in `TryKeepFightingWithinLeash`)
@@ -39,13 +39,12 @@ Needs the owner (each has a recommendation; none blocks P5-8b to P5-8d):
 2. **D2. `UsePerkFeat` call text.** The Phase 5 order holds content types named in P5-16 untouched. `UsePerkFeat` calls three
    members that leave `ICompanionControlService` in P5-8f: `IsRegisteredCompanion` (5 sites, lines 50, 103, 282, 298, 845),
    `PeekAuthorizedTarget` (2) and `IsHostileAbilityTargetAuthorized` (2). Keeping them on `ICompanionControlService` would keep a
-   forwarding layer over the authority part, which the split rules forbid. **Recommendation:** allow the 9 call sites to change
-   by `Apply-FacadeRemoval.ps1` (property name only), as P5-3 and P5-4 did for the same file; no logic changes. If refused,
-   P5-8f moves behind P5-16.
+   forwarding layer over the authority part, which the split rules forbid. **Decision:** the 9 call sites change
+   by `Apply-FacadeRemoval.ps1` (property name only), as P5-3 and P5-4 did for the same file; no logic changes.
 3. **D3. The window for P5-8e.** It edits `EnmityService.cs` (P5-7), `StealthService.cs` (P5-7's file, where P5-5 adds its
    effect lifecycle subscription) and `EspionageInfiltrationService.cs` (P5-15a, which owns that file's Combat edges). P5-8e runs
    when none of the three is running on its file: after P5-5 has merged, before P5-7 starts on Enmity, and after P5-15a's
-   Espionage change. **Recommendation:** P5-8e, not P5-7, introduces the Combat-owned ports (the domain order names P5-7 as the
+   Espionage change. **Decision:** P5-8e, not P5-7, introduces the Combat-owned ports (the domain order names P5-7 as the
    introducer, but the code behind every port is P5-8's, and one PR that edits Enmity and Stealth once keeps P5-7's Enmity split
    on stable ports). If P5-7 gets to Enmity first, P5-7 makes the same call-site edits on the ports this guide names, and P5-8e
    shrinks to the Creatures side.
@@ -71,7 +70,7 @@ Settled here (change only on a finding in review):
 - **Content references are not removed here.** `UsePerkFeat`, `RestStatusEffect` and `AppliedEffects` stay behind their
   `protected virtual` seams in the part that calls them; the `LogicToContent.txt` lines move with the code. P5-2 removes them
   (it follows P5-7).
-- **Accepted growth** (needs the coordinator's nod in the pull request that causes it): `AIService` 15 -> 16 services in
+- **Accepted growth:** the coordinator accepted `AIService` 15 -> 16 services in
   P5-8f, until P5-8g removes four. No other holder grows (Holders, below).
 
 ## What the code is
@@ -541,7 +540,7 @@ keeps the characterization snapshots unchanged. Parity is the coordinator's gate
 ## Risks
 
 - **D1 stays open until P5-7.** `AIService` keeps one `Lazy<IEnmityService>` until the Enmity part map is written; P5-8 does not
-  close the Phase 5 target 4 on its own. The guide's recommendation is the least change that closes it.
+  close the Phase 5 target 4 on its own. D1 is the least change that closes it.
 - **Hot path.** `ProcessTrigger` runs on every creature heartbeat and combat round. The split adds interface calls
   (decision to action, events to decision, aggro to decision) and removes `Lazy<>.Value` reads. The measured pull request is h.
 - **Stealth notice.** A missing registration would silently stop detection aggro; the empty-list `InvalidOperationException` makes

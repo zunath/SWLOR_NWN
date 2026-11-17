@@ -725,7 +725,6 @@ SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/EquippedItemAppear
 SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/HornFit.cs | 1
 SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/PowerGloveFit.cs | 4
 SWLOR.Game.Server/Feature/AppearanceDefinition/Preview/AppearancePreview.cs | 2
-SWLOR.Game.Server/Feature/AppearanceEditing/IAppearanceEditorHost.cs | 1
 SWLOR.Game.Server/Feature/AreaConfiguration.cs | 2
 SWLOR.Game.Server/Feature/ArmorDisplay.cs | 10
 SWLOR.Game.Server/Feature/Auditing.cs | 10

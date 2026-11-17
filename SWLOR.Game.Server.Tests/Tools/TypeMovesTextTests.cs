@@ -80,6 +80,20 @@ public class TypeMovesTextTests
         new TextRewriter(Data).RewriteCSharp("class C { }\n", ref count).Should().Be("class C { }\n");
     }
 
+    [Test]
+    public void A_reload_carry_attribute_keeps_the_former_name()
+    {
+        const string source = "class C\n{\n    [ReloadCarriedFrom(\"SWLOR.Game.Server.Service.Gauge\")]\n    int A;\n"
+                              + "    [Hosting.ReloadCarriedFromAttribute(\"SWLOR.Game.Server.Service.Gauge\")]\n    int B;\n    string D = \"SWLOR.Game.Server.Service.Gauge\";\n}\n";
+        var count = 0;
+
+        var text = new TextRewriter(Data).RewriteCSharp(source, ref count);
+
+        text.Should().Be("class C\n{\n    [ReloadCarriedFrom(\"SWLOR.Game.Server.Service.Gauge\")]\n    int A;\n"
+                         + "    [Hosting.ReloadCarriedFromAttribute(\"SWLOR.Game.Server.Service.Gauge\")]\n    int B;\n    string D = \"SWLOR.Game.Server.Domain.Gadgets.Gauge\";\n}\n");
+        count.Should().Be(1);
+    }
+
     [TestCase("using System;\nusing System.Linq;\nusing SWLOR.Game.Server.Core;\nusing SWLOR.Game.Server.Service;\n\nclass C { }\n",
         "using System;\nusing System.Linq;\nusing SWLOR.Game.Server.Core;\nusing SWLOR.Game.Server.Domain.Gadgets;\n\nclass C { }\n",
         TestName = "System first and sorted: the new using goes to its place")]

@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Tests.Support;
 

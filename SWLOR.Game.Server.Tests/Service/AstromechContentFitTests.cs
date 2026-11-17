@@ -277,6 +277,14 @@ public class AstromechContentFitTests
         work.Should().Contain("public const string LoopSource = \"cgetmidlp\";");
         work.Should().Contain("DelayCommand(duration + ReleaseGraceSeconds, () => Release(creature, token))");
         AstromechAnimations.Work.Should().Be(Animation.LoopingGetMid);
+
+        // The caller can end the motion early (a cancelled cast, a craft that ends): the play hands back a token, and
+        // stopping it stows the rod or draws the tool arm in at once instead of when the clip's time is up.
+        var named = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "NamedAnimation.cs"));
+        named.Should().Contain("return AstromechWorkAnimation.Play(creature, clip, duration);");
+        named.Should().Contain("? AstromechWorkAnimation.StopIfCurrent(creature, token)");
+        work.Should().Contain("public static string Play(uint creature, AnimationClip clip, float duration)");
+        work.Should().Contain("public static bool StopIfCurrent(uint creature, string token)");
     }
 
     private static string FindRepositoryRoot()

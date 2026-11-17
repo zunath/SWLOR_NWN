@@ -65,9 +65,8 @@ public static class NamedAnimation
         if (Astromech.IsAstromech(creature))
         {
             // The authored clips are humanoid motions. An astromech works with its tool arm out for the same time,
-            // or with its rod when the clip is a fishing one. It releases its own mapping, so there is no token to stop.
-            AstromechWorkAnimation.Play(creature, clip, duration);
-            return null;
+            // or with its rod when the clip is a fishing one. Its token ends the motion through StopIfCurrent.
+            return AstromechWorkAnimation.Play(creature, clip, duration);
         }
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
         var nativeHold = holdMode is NamedAnimationHold.Auto or NamedAnimationHold.LiftInPlace
@@ -110,7 +109,9 @@ public static class NamedAnimation
     public static bool CanLoop(uint creature) => AbilityAnimationEquipment.ReadHold(creature) == AnimationWeaponHold.None;
 
     /// <summary>Stops only this caller's playback, preserving a newer animation started by an ability.</summary>
-    public static bool StopIfCurrent(uint creature, string token) => Playback.StopIfCurrent(creature, token);
+    public static bool StopIfCurrent(uint creature, string token) => Astromech.IsAstromech(creature)
+        ? AstromechWorkAnimation.StopIfCurrent(creature, token)
+        : Playback.StopIfCurrent(creature, token);
 
     /// <summary>Previews a native one-shot with the same stop and supersession ownership as named clips.</summary>
     public static string PlayNativePreview(uint creature, Animation animation, float speed = 1f)

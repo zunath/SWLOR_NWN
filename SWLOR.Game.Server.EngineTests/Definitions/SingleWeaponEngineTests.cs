@@ -171,8 +171,9 @@ public static class SingleWeaponEngineTests
         AbilityImpactLifecycle.BeginAbilityImpact(player.Creature, ability);
         try
         {
-            var impact = ServiceInternals.Call<IAbilityService>("GetTrackedAbilityImpact", player.Creature);
-            var capturedDamage = (int?)impact.GetType().GetProperty("TriggeringWeaponDamage").GetValue(impact);
+            var impact = ((IAbilityImpactState)CompositionRoot.ServerHost.Provider.GetService(typeof(IAbilityImpactState)))
+                .GetTrackedAbilityImpact(player.Creature);
+            var capturedDamage = impact.TriggeringWeaponDamage;
             ctx.AssertEqual(39, capturedDamage.Value, "Weapon ability captures combined rating at impact start");
             var getThrowDamage = typeof(ThrowLightsaberAbilityDefinition).GetMethod("GetEquippedWeaponDamageAdjustment",
                 BindingFlags.NonPublic | BindingFlags.Static);

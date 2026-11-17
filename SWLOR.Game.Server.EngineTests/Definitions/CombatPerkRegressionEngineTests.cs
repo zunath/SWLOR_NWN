@@ -492,19 +492,33 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCResources(beast, 10, 10);
             var maxFP = Stat.GetMaxFP(beast);
             var maxSTM = Stat.GetMaxStamina(beast);
-            SetLocalInt(beast, "FP", maxFP - 1);
-            SetLocalInt(beast, "STAMINA", maxSTM - 1);
-            DeleteLocalInt(beast, CreatureStatService.SuppressNaturalRegenVariable);
-            SetLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT", DateTime.UtcNow.AddMinutes(1).Ticks.ToString());
-            await ctx.ExecuteInCreatureContextAsync(beast, () => CreatureStat.RestoreBeastStats());
-            ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP regenerates while stamina is delayed");
-            ctx.AssertEqual(maxSTM - 1, Stat.GetCurrentStamina(beast), "Spending stamina delays its regeneration");
-            DeleteLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT");
-            await ctx.ExecuteInCreatureContextAsync(beast, () => CreatureStat.RestoreBeastStats());
-            ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina regenerates when its delay expires");
-            await ctx.ExecuteInCreatureContextAsync(beast, () => CreatureStat.RestoreBeastStats());
-            ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP stays capped");
-            ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina stays capped");
+            // The creature's own heartbeat regenerates one stamina per tick whatever the beast delay says, so a tick
+            // landing between two awaits turned 31 into 32 (expected 31, was 32). The whole sequence runs inside one
+            // script call: nothing else can act on the creature until it returns.
+            int fpDuringDelay = 0, stmDuringDelay = 0, stmAfterDelay = 0, fpCapped = 0, stmCapped = 0;
+            await ctx.ExecuteInCreatureContextAsync(beast, () =>
+            {
+                SetLocalInt(beast, "FP", maxFP - 1);
+                SetLocalInt(beast, "STAMINA", maxSTM - 1);
+                DeleteLocalInt(beast, CreatureStatService.SuppressNaturalRegenVariable);
+                // The delay is read against the game clock, which another test may have moved off the wall clock.
+                SetLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT", SWLOR.Game.Server.Core.Clock.UtcNow.AddMinutes(1).Ticks.ToString());
+                CreatureStat.RestoreBeastStats();
+                fpDuringDelay = Stat.GetCurrentFP(beast);
+                stmDuringDelay = Stat.GetCurrentStamina(beast);
+                DeleteLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT");
+                CreatureStat.RestoreBeastStats();
+                stmAfterDelay = Stat.GetCurrentStamina(beast);
+                CreatureStat.RestoreBeastStats();
+                fpCapped = Stat.GetCurrentFP(beast);
+                stmCapped = Stat.GetCurrentStamina(beast);
+                SetLocalInt(beast, CreatureStatService.SuppressNaturalRegenVariable, 1);
+            });
+            ctx.AssertEqual(maxFP, fpDuringDelay, "FP regenerates while stamina is delayed");
+            ctx.AssertEqual(maxSTM - 1, stmDuringDelay, "Spending stamina delays its regeneration");
+            ctx.AssertEqual(maxSTM, stmAfterDelay, "Stamina regenerates when its delay expires");
+            ctx.AssertEqual(maxFP, fpCapped, "FP stays capped");
+            ctx.AssertEqual(maxSTM, stmCapped, "Stamina stays capped");
         }
 
         [EngineTest("Beast defensive buffs retain their full reduction and Force Suppression reports the combined penalty", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]

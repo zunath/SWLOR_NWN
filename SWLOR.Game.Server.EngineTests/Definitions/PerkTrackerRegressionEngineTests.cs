@@ -154,10 +154,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 "explicit source exclusion must override party membership");
             StatusEffect.ApplyStatusEffect(caster, caster, new WardenWallStanceStatusEffect(), 60f);
             await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect)), 10f, "the wall to reach the nearby ally");
-            foreach (var stat in new[] { StatType.PhysicalDefensePercentAdjustment, StatType.ForceDefensePercentAdjustment })
+            // The stance grants a shared Physical and Force defense aura stat of 10 (it stopped writing the two separate
+            // stats in the 2026-10-05 Mimicry balance); the aura gives each nearby ally the same 10.
+            ctx.AssertEqual(10, Stat.GetStatAdjustment(caster, StatType.PhysicalAndForceDefenseAuraPercentAdjustment), "caster aura defense is not doubled by its own aura");
+            ctx.AssertEqual(10, Stat.GetStatAdjustment(ally, StatType.PhysicalAndForceDefenseAuraPercentAdjustment), "ally aura defense");
+            foreach (var type in new[] { CombatDamageType.Physical, CombatDamageType.Force })
             {
-                ctx.AssertEqual(20, Stat.GetStatAdjustment(caster, stat), $"caster {stat} is not doubled by its own aura");
-                ctx.AssertEqual(20, Stat.GetStatAdjustment(ally, stat), $"ally {stat}");
+                ctx.AssertEqual(10, CombatRating.GetDefensePercentAdjustment(caster, type), $"caster {type} defense adjustment");
+                ctx.AssertEqual(10, CombatRating.GetDefensePercentAdjustment(ally, type), $"ally {type} defense adjustment");
             }
             ctx.Assert(!StatusEffect.HasStatusEffect(caster, typeof(WardenWallStanceAuraStatusEffect)), "caster must not receive its own aura effect");
             ctx.Assert(!StatusEffect.HasStatusEffect(outsider, typeof(WardenWallStanceAuraStatusEffect)), "wall excludes a nonparty neighbor");

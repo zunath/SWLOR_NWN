@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     wildernessAreas++;
                 }
             }
-            ctx.AssertEqual(31, protectedAreas, "All authored outdoor settlement and faction base markers survive module packing");
+            ctx.AssertEqual(38, protectedAreas, "All authored outdoor settlement and faction base markers survive module packing");
             ctx.AssertEqual(2, wildernessAreas, "Both wilderness controls were loaded");
 
             var city = ctx.CreateInstancedArea("tat_tocheemain");
@@ -100,7 +101,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     areas.Add(area);
                 }
                 ctx.Assert(areas.Count >= 10, "Need several comparable outdoor maps to exercise shared storm selection.");
-                var instance = ctx.CreateInstancedArea(GetResRef(areas[0]));
+                // An instance gets a new resref and none of the planet id the template received at boot, so it is a
+                // Viscara map only when its name carries the planet prefix. Copy such a map: resref-resolved prefab
+                // maps (nw_N instances of "[Prefab] ..." areas) have no planet, hence no weather (reported separately).
+                var prefix = Planet.GetPlanetByType(PlanetType.Viscara).Prefix;
+                var template = areas.FirstOrDefault(area => GetName(area).StartsWith(prefix));
+                ctx.Assert(GetIsObjectValid(template), $"A comparable outdoor map named \"{prefix}...\" exists to copy.");
+                var instance = ctx.CreateInstancedArea(GetResRef(template));
                 areas.Add(instance);
 
                 int? storm = null;

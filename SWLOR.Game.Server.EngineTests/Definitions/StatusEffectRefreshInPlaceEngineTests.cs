@@ -61,6 +61,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             ctx.SetNPCResources(target, 100, 100);
+            // A natural regeneration tick during the 1.5 s wait would refill the drained stamina (116 seen as 119).
+            ctx.SuppressNPCNaturalRegen(target);
             TemporaryStatModifier.Add(caster, StatType.StatusAppliedTargetStaminaDrainRequiredCategory, (int)StatusEffectCategory.Control, 60f);
             TemporaryStatModifier.Add(caster, StatType.StatusAppliedTargetStaminaDrain, 3, 60f);
             TemporaryStatModifier.Add(caster, StatType.StatusAppliedTargetStaminaDrainCooldownSeconds, 1, 60f);

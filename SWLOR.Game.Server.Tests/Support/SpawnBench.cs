@@ -59,8 +59,8 @@ public sealed class SpawnBench : IDisposable
 
     // One accessor per part of the Spawn split; each is the one instance until its part moves.
     public TestSpawnService Runtime => Service.Runtime;
-    public TestSpawnService Registry => Service.Registry;
-    public TestSpawnService Objects => Service.Objects;
+    public TestSpawnRegistryService Registry => Service.Registry;
+    public TestSpawnObjectService Objects => Service.Objects;
 
     /// <summary>The game hour <c>GetTimeHour</c> answers.</summary>
     public int GameHour { get; set; } = 12;

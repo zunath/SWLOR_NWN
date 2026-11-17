@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
     public static class SpawnInternals
     {
         /// <summary>The interfaces of the Spawn parts, the service itself first; a part that moves adds its interface here.</summary>
-        private static readonly Type[] Parts = { typeof(ISpawnService) };
+        private static readonly Type[] Parts = { typeof(ISpawnService), typeof(ISpawnRegistryService), typeof(ISpawnObjectService) };
 
         private const BindingFlags Private = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 

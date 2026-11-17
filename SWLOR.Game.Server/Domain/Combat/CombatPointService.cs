@@ -4,8 +4,6 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Social;
-using SWLOR.Game.Server.Domain.Space;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.NWN.API.NWNX;
@@ -25,21 +23,21 @@ namespace SWLOR.Game.Server.Domain.Combat
     {
         private readonly IDBService _db;
         private readonly IEnmityService _enmity;
-        private readonly IPartyService _party;
+        private readonly IPartyRoster _party;
         private readonly ICompanionLookup _companions;
         private readonly ISkillService _skill;
         private readonly IStatService _stat;
 
-        private readonly Lazy<ISpaceService> _space;
+        private readonly ISpaceModeQuery _space;
 
         public CombatPointService(
             IDBService db,
             IEnmityService enmity,
-            IPartyService party,
+            IPartyRoster party,
             ICompanionLookup companions,
             ISkillService skill,
             IStatService stat,
-            Lazy<ISpaceService> space)
+            ISpaceModeQuery space)
         {
             _db = db;
             _enmity = enmity;
@@ -529,6 +527,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         protected virtual NPCStats GetNPCStats(uint npc) => _stat.GetNPCStats(npc);
 
         /// <summary>The unconverted <c>Space</c> service.</summary>
-        protected virtual bool IsPlayerInSpaceMode(uint player) => _space.Value.IsPlayerInSpaceMode(player);
+        protected virtual bool IsPlayerInSpaceMode(uint player) => _space.IsPlayerInSpaceMode(player);
     }
 }

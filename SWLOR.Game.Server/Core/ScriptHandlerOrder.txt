@@ -49,8 +49,8 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Character.SkillService.CacheXPChartData
   action      SWLOR.Game.Server.Domain.Foundation.SnippetService.CacheData
   action      SWLOR.Game.Server.Domain.Space.SpaceService.LoadSpaceSystem
-  action      SWLOR.Game.Server.Domain.Creatures.SpawnService.LoadSpawnTables
-  action      SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
+  action      SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.LoadSpawnTables
+  action      SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.StoreSpawns
   action      SWLOR.Game.Server.Domain.Character.StatService.CacheData
   action      SWLOR.Game.Server.Domain.Character.CreatureStatService.RegisterStatEffectListener
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData
@@ -467,7 +467,7 @@ dm_possfull_bef
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnDMPossess
 
 dm_spwnobj_aft
-  action      SWLOR.Game.Server.Domain.Creatures.SpawnService.DMSpawnCreature
+  action      SWLOR.Game.Server.Domain.Creatures.SpawnObjectService.DMSpawnCreature
   action      SWLOR.Game.Server.Feature.DMActions.OnDMSpawnObject
 
 dna_extract_used

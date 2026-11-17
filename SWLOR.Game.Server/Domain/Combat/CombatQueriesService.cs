@@ -3,7 +3,6 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Items;
-using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -28,7 +27,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
-        private readonly IPartyService _party;
+        private readonly IPartyRoster _party;
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
         private readonly IItemService _item;
@@ -37,7 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         public CombatQueriesService(
             IStatService stat,
             IStatusEffectService statusEffect,
-            IPartyService party,
+            IPartyRoster party,
             ISkillService skill,
             IPerkService perk,
             IItemService item,

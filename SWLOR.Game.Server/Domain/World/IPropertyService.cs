@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Domain.World
     /// Maintenance and deletion, access, structure placement and the terminals are <see cref="IPropertyMaintenanceService"/>,
     /// <see cref="IPropertyAccessService"/>, <see cref="IPropertyStructurePlacementService"/> and <see cref="IPropertyTerminalService"/>.
     /// </summary>
-    public interface IPropertyService
+    public interface IPropertyService : IPropertyIdLookup
     {
         void BroadcastCityUpkeepPaid(WorldProperty city);
 
@@ -35,14 +35,6 @@ namespace SWLOR.Game.Server.Domain.World
         /// <param name="obj">The object to assign</param>
         /// <param name="propertyId">The property Id to assign.</param>
         void AssignPropertyId(uint obj, string propertyId);
-
-        /// <summary>
-        /// Retrieves the assigned property Id assigned to a specific object.
-        /// Returns an empty string if not found.
-        /// </summary>
-        /// <param name="obj">The object to check.</param>
-        /// <returns>The property Id or an empty string if not found.</returns>
-        string GetPropertyId(uint obj);
 
         /// <summary>
         /// Registers an area instance to a given property Id.

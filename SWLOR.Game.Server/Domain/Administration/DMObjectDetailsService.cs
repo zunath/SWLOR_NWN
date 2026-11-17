@@ -4,9 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Items;
-using SWLOR.Game.Server.Domain.World;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.NWN.API.Engine;
@@ -40,16 +38,16 @@ namespace SWLOR.Game.Server.Domain.Administration
         private List<string> _factionNames;
 
         private readonly IDMBlueprintCatalogService _catalog;
-        private readonly IAIService _ai;
-        private readonly IAreaService _area;
+        private readonly IAIProfileDescription _ai;
+        private readonly IAreaLookup _area;
         private readonly ICacheService _cache;
         private readonly IItemService _item;
         private readonly IStatService _stat;
 
         public DMObjectDetailsService(
             IDMBlueprintCatalogService catalog,
-            IAIService ai,
-            IAreaService area,
+            IAIProfileDescription ai,
+            IAreaLookup area,
             ICacheService cache,
             IItemService item,
             IStatService stat)
@@ -262,7 +260,7 @@ namespace SWLOR.Game.Server.Domain.Administration
                 GetAbilityScore(creature, AbilityType.Willpower),
                 GetAbilityScore(creature, AbilityType.Social)));
             lines.Add($"Race: {GetRaceName((int)GetRacialType(creature))}   Gender: {GetGenderName((int)GetGender(creature))}");
-            lines.Add($"AI: {_ai.GetAIProfile(creature)}");
+            lines.Add($"AI: {_ai.DescribeAIProfile(creature)}");
             AddFlags(lines, (GetPlotFlag(creature), "Plot"), (GetImmortal(creature), "Immortal"), (GetIsDMPossessed(creature), "DM possessed"));
 
             var lootTables = ReadLocalVariables(creature, LootTablePrefix);

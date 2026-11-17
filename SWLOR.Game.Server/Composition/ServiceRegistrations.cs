@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAnimationPlayerService, AnimationPlayerService>();
             services.AddSingleton<IAuthorizationService, AuthorizationService>();
             services.AddSingleton<IBackgroundJobService, BackgroundJobService>();
+            services.AddSingleton<IItemCacheInfo, ItemCacheInfo>();
             services.AddSingleton<ICacheService, CacheService>();
             services.AddSingleton<IConversationMenuService, ConversationMenuService>();
             services.AddSingleton<IConversationService, ConversationService>();
@@ -117,6 +118,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IDMPlayerDirectoryService, DMPlayerDirectoryService>();
             services.AddSingleton<IDMPreferenceService, DMPreferenceService>();
             services.AddSingleton<IDMPresenceService, DMPresenceService>();
+            // The same instance, seen through the DM avatar read the disguise and the item trash own (P5-15a).
+            services.AddSingleton<IDMActorResolver>(provider => provider.GetRequiredService<IDMPresenceService>());
+            services.AddSingleton<IDMWindowPresence>(provider => provider.GetRequiredService<IDMPresenceService>());
 
             // Character
             services.AddSingleton<IAchievementService, AchievementService>();
@@ -190,6 +194,8 @@ namespace SWLOR.Game.Server.Composition
             // The same instance, seen through the listener the pools in Character own (P5-4d).
             services.AddSingleton<IResourceRestoredListener>(provider => provider.GetRequiredService<IResourceRestoredEffectsService>());
             services.AddSingleton<IStealthService, StealthService>();
+            // The same instance, seen through the concealment read the messaging owns (P5-15a).
+            services.AddSingleton<IConcealmentQuery>(provider => provider.GetRequiredService<IStealthService>());
             services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
             services.AddSingleton<ITwinPistolEquipmentService, TwinPistolEquipmentService>();
@@ -233,14 +239,20 @@ namespace SWLOR.Game.Server.Composition
 
             // Creatures
             services.AddSingleton<IAIService, AIService>();
+            services.AddSingleton<IAIProfileDescription>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICompanionControlService, CompanionControlService>();
             services.AddSingleton<INPCGroupService, NPCGroupService>();
+            services.AddSingleton<ISpawnRegistryService, SpawnRegistryService>();
+            services.AddSingleton<ISpawnObjectService, SpawnObjectService>();
+            services.AddSingleton<IDMSpawnPreparation>(provider => provider.GetRequiredService<ISpawnObjectService>());
             services.AddSingleton<ISpawnService, SpawnService>();
 
             // Economy
             services.AddSingleton<IBankService, BankService>();
             services.AddSingleton<ICasinoSlotService, CasinoSlotService>();
             services.AddSingleton<ICurrencyService, CurrencyService>();
+            // The same instance, seen through the balance read the lightsaber workbench owns (P5-15a).
+            services.AddSingleton<ICurrencyBalance>(provider => provider.GetRequiredService<ICurrencyService>());
             services.AddSingleton<IGuildService, GuildService>();
             services.AddSingleton<IGuildTaskXpService, GuildTaskXpService>();
             services.AddSingleton<IPlayerMarketService, PlayerMarketService>();
@@ -267,6 +279,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAbilityImpactObserver>(provider => provider.GetRequiredService<ICapstoneProofService>());
             services.AddSingleton<IFactionService, FactionService>();
             services.AddSingleton<IQuestService, QuestService>();
+            // The same instance, seen through the quest advance the twin pistol trials own (P5-15a).
+            services.AddSingleton<IQuestAdvancer>(provider => provider.GetRequiredService<IQuestService>());
             services.AddSingleton<IQuestContractBoardService, QuestContractBoardService>();
             services.AddSingleton<IQuestEncounterService, QuestEncounterService>();
 
@@ -306,6 +320,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPerformanceFlourishService, PerformanceFlourishService>();
             services.AddSingleton<IPerformanceWatchingWindowService, PerformanceWatchingWindowService>();
             services.AddSingleton<IPlayerListService, PlayerListService>();
+            // The same instance, seen through the refresh request the holocom owns (P5-15a).
+            services.AddSingleton<IPlayerListRefresh>(provider => provider.GetRequiredService<IPlayerListService>());
 
             // UI
             services.AddSingleton<IGuiService, GuiService>();
@@ -314,6 +330,8 @@ namespace SWLOR.Game.Server.Composition
 
             // World
             services.AddSingleton<IAreaService, AreaService>();
+            // The same instance, seen through the area reads death and the DM tools own (P5-15a).
+            services.AddSingleton<IAreaLookup>(provider => provider.GetRequiredService<IAreaService>());
             services.AddSingleton<ICoxxionBaseDoorsService, CoxxionBaseDoorsService>();
             services.AddSingleton<IFishingService, FishingService>();
             services.AddSingleton<IFishingFightsService, FishingFightsService>();
@@ -325,6 +343,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlanetService, PlanetService>();
             services.AddSingleton<IPropertyCatalogService, PropertyCatalogService>();
             services.AddSingleton<IPropertyCityGovernanceService, PropertyCityGovernanceService>();
+            // The same instance, seen through the city upgrade read the death penalty owns (P5-15a).
+            services.AddSingleton<ICityUpgradeLookup>(provider => provider.GetRequiredService<IPropertyCityGovernanceService>());
             services.AddSingleton<IPropertyLoaderService, PropertyLoaderService>();
             services.AddSingleton<IPropertyLoadRegistryService, PropertyLoadRegistryService>();
             services.AddSingleton<IPropertySpawnService, PropertySpawnService>();
@@ -334,6 +354,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPropertyStructurePlacementService, PropertyStructurePlacementService>();
             services.AddSingleton<IPropertyTerminalService, PropertyTerminalService>();
             services.AddSingleton<IPropertyService, PropertyService>();
+            // The same instance, seen through the property id lookup the craft device terminals own (P5-15a).
+            services.AddSingleton<IPropertyIdLookup>(provider => provider.GetRequiredService<IPropertyService>());
             services.AddSingleton<IShuttleArrivalService, ShuttleArrivalService>();
             services.AddSingleton<IShuttleBoardingService, ShuttleBoardingService>();
             services.AddSingleton<IShuttleClockService, ShuttleClockService>();

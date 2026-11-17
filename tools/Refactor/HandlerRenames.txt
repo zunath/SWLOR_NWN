@@ -35,8 +35,8 @@ SWLOR.Game.Server.Service.AI.CreatureUserDefined SWLOR.Game.Server.Domain.Creatu
 SWLOR.Game.Server.Service.AI.DMToggleAIAfter SWLOR.Game.Server.Domain.Creatures.AIService.DMToggleAIAfter
 SWLOR.Game.Server.Service.AI.RemoveFromAlliesCache SWLOR.Game.Server.Domain.Creatures.AIService.RemoveFromAlliesCache
 SWLOR.Game.Server.Service.NPCGroup.CacheData SWLOR.Game.Server.Domain.Creatures.NPCGroupService.CacheData
-SWLOR.Game.Server.Service.Spawn.CacheData SWLOR.Game.Server.Domain.Creatures.SpawnService.LoadSpawnTables SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
-SWLOR.Game.Server.Service.Spawn.DMSpawnCreature SWLOR.Game.Server.Domain.Creatures.SpawnService.DMSpawnCreature
+SWLOR.Game.Server.Service.Spawn.CacheData SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.LoadSpawnTables SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.StoreSpawns
+SWLOR.Game.Server.Service.Spawn.DMSpawnCreature SWLOR.Game.Server.Domain.Creatures.SpawnObjectService.DMSpawnCreature
 SWLOR.Game.Server.Service.Spawn.ProcessSpawnSystem SWLOR.Game.Server.Domain.Creatures.SpawnService.ProcessSpawnSystem
 SWLOR.Game.Server.Service.Spawn.QueueDespawnArea SWLOR.Game.Server.Domain.Creatures.SpawnService.QueueDespawnArea
 SWLOR.Game.Server.Service.Spawn.QueueRespawn SWLOR.Game.Server.Domain.Creatures.SpawnService.QueueRespawn

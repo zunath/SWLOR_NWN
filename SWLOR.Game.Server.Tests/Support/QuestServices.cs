@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 public static class QuestServices
 {
     /// <summary>A quest encounter instance with the real DM presence.</summary>
-    public static QuestEncounterService CreateEncounters(IDBService db) => new(db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>()), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.LazyFor<IQuestService>());
+    public static QuestEncounterService CreateEncounters(IDBService db) => new(db, new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.For<ISpaceModeQuery>()), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.LazyFor<IQuestService>());
 
     /// <summary>A quest registry with its own quest encounters, both over the given database.</summary>
     public static QuestService Create(IDBService db) => new(db, CreateEncounters(db), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<ICacheService>(), FacadeForwarder.For<IConversationService>(), FacadeForwarder.For<IEnmityService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IPerkService>());

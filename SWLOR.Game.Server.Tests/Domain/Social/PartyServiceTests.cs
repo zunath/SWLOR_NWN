@@ -60,7 +60,7 @@ public class PartyServiceTests
         _events.SetReturnHandler("GetEventData", arguments => _eventObjects[(string)arguments[0]!].ToString("x"));
 
         _roster = new PartyRosterService();
-        _service = new PartyService(_roster, FacadeForwarder.LazyFor<IAbilityAuraService>(), FacadeForwarder.LazyFor<ITelegraphService>());
+        _service = new PartyService(_roster, FacadeForwarder.LazyFor<IAbilityAuraService>(), FacadeForwarder.For<ITelegraphService>());
         // Aura code that runs when the party changes reads this roster (P5-3c); with no aura active it reaches nothing else.
         // A party change refreshes the telegraph colors; what these tests prove is the party cache, so that is a stand-in.
         var telegraph = ScriptedProxy.Create<ITelegraphService>(out var telegraphScript);
@@ -390,7 +390,7 @@ public class PartyServiceTests
     public void Each_instance_keeps_its_own_caches()
     {
         Accept(Second, Leader);
-        var other = new PartyService(new PartyRosterService(), FacadeForwarder.LazyFor<IAbilityAuraService>(), FacadeForwarder.LazyFor<ITelegraphService>());
+        var other = new PartyService(new PartyRosterService(), FacadeForwarder.LazyFor<IAbilityAuraService>(), FacadeForwarder.For<ITelegraphService>());
 
         other.GetAllPartyMembers(Leader).Should().Equal(Leader);
     }

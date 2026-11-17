@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Vector3 = System.Numerics.Vector3;
 
-namespace SWLOR.Game.Server.Domain.Creatures
+namespace SWLOR.Game.Server.Domain.Foundation
 {
     /// <summary>
     /// Answers whether any object lies within a fixed radius of a point, so random spawn points keep clear of objects.

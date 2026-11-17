@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Foundation;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Administration;
@@ -59,7 +60,7 @@ public class HoloComServiceTests
     private sealed class TestHoloCom : HoloComService
     {
         public TestHoloCom(IPlayerListService playerList)
-            : base(playerList, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>(), FacadeForwarder.LazyFor<ISpaceService>())
+            : base(playerList, FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>(), FacadeForwarder.For<ISpaceModeQuery>())
         {
         }
 
@@ -300,7 +301,7 @@ public class HoloComServiceTests
     {
         _service.StartCall(Alice, Bob);
 
-        var other = new HoloComService((IPlayerListService)RecordingProxy.Create(typeof(IPlayerListService), out _), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>(), FacadeForwarder.LazyFor<ISpaceService>());
+        var other = new HoloComService((IPlayerListService)RecordingProxy.Create(typeof(IPlayerListService), out _), FacadeForwarder.For<IDMPresenceService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStealthService>(), FacadeForwarder.For<ISpaceModeQuery>());
         other.StartCall(Carol, Bob);
 
         _locals.Int(Carol, Token).Should().Be(1, "the token counter lives on the instance, not in a static field");

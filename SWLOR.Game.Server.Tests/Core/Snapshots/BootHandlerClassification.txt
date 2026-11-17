@@ -50,8 +50,8 @@ mod_cache_bef (45)
   Rerun       SWLOR.Game.Server.Domain.Character.SkillService.CacheXPChartData
   Rerun       SWLOR.Game.Server.Domain.Foundation.SnippetService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Space.SpaceService.LoadSpaceSystem
-  Rerun       SWLOR.Game.Server.Domain.Creatures.SpawnService.LoadSpawnTables
-  BootOnly    SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
+  Rerun       SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.LoadSpawnTables
+  BootOnly    SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.StoreSpawns
   Rerun       SWLOR.Game.Server.Domain.Character.StatService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.CreatureStatService.RegisterStatEffectListener
   Rerun       SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData

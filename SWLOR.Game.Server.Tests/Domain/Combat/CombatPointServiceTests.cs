@@ -107,7 +107,7 @@ public class CombatPointServiceTests
         enmityScript.On("GetEnmityTowardsAllEnemies", args =>
             _enmityOf.TryGetValue((uint)args[0]!, out var table) ? new Dictionary<uint, int>(table) : new Dictionary<uint, int>());
         enmityScript.On("HasNonProximityEnmity", args => _nonProximity.Contains(((uint)args[0]!, (uint)args[1]!)));
-        var party = ScriptedProxy.Create<IPartyService>(out var partyScript);
+        var party = ScriptedProxy.Create<IPartyRoster>(out var partyScript);
         partyScript.On("GetAllPartyMembersWithinRange", _ => _partyMembers);
         var beast = ScriptedProxy.Create<ICompanionLookup>(out var beastScript);
         beastScript.On("IsPlayerBeast", args => _playerBeasts.Contains((uint)args[0]!));
@@ -536,8 +536,8 @@ public class CombatPointServiceTests
 
     private sealed class TestCombatPoint : CombatPointService
     {
-        public TestCombatPoint(IDBService db, IEnmityService enmity, IPartyService party, ICompanionLookup beastMastery)
-            : base(db, enmity, party, beastMastery, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.LazyFor<ISpaceService>())
+        public TestCombatPoint(IDBService db, IEnmityService enmity, IPartyRoster party, ICompanionLookup beastMastery)
+            : base(db, enmity, party, beastMastery, FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ISpaceModeQuery>())
         {
         }
 

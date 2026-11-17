@@ -13,7 +13,7 @@ using System;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>Replaces the base game's stealth detection with a single opposed check per observer/target pair.</summary>
-    public interface IStealthService
+    public interface IStealthService : IConcealmentQuery
     {
         /// <summary>
         /// Baseline stealth is only usable by characters with the Stealth perk and only out of
@@ -121,11 +121,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// </summary>
         bool IsHiddenByStealth(uint observer, uint target);
 
-        /// <summary>
-        /// Returns whether the creature is hidden from other players: in stealth or invisible. Signals
-        /// that would tell nearby players such a creature is there go only to the creature itself.
-        /// </summary>
-        bool IsConcealed(uint creature);
 
         /// <summary>
         /// Returns whether a creature has an invisibility effect.

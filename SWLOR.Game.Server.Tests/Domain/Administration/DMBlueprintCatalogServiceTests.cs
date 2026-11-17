@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Foundation;
 using System.Numerics;
 using System.Text.Json.Nodes;
 using FluentAssertions;
@@ -65,7 +66,7 @@ public class DMBlueprintCatalogServiceTests
         _utilScope = UtilPluginRuntime.Override(_util);
         _objectScope = ObjectPluginRuntime.Override(_objectPlugin);
         _world.Engine.SetReturnHandler("GetStringByStrRef", arguments => "text " + arguments[0]);
-        _service = new DMBlueprintCatalogService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>()), FacadeForwarder.For<ISpawnService>());
+        _service = new DMBlueprintCatalogService(new DMPresenceService(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.For<ISpaceModeQuery>()), FacadeForwarder.For<IDMSpawnPreparation>());
     }
 
     [TearDown]

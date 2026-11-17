@@ -318,6 +318,13 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPropertyCatalogService, PropertyCatalogService>();
             services.AddSingleton<IPropertyCityGovernanceService, PropertyCityGovernanceService>();
             services.AddSingleton<IPropertyLoaderService, PropertyLoaderService>();
+            services.AddSingleton<IPropertyLoadRegistryService, PropertyLoadRegistryService>();
+            services.AddSingleton<IPropertySpawnService, PropertySpawnService>();
+            services.AddSingleton<IPropertyLoadReloadService, PropertyLoadReloadService>();
+            services.AddSingleton<IPropertyMaintenanceService, PropertyMaintenanceService>();
+            services.AddSingleton<IPropertyAccessService, PropertyAccessService>();
+            services.AddSingleton<IPropertyStructurePlacementService, PropertyStructurePlacementService>();
+            services.AddSingleton<IPropertyTerminalService, PropertyTerminalService>();
             services.AddSingleton<IPropertyService, PropertyService>();
             services.AddSingleton<IShuttleService, ShuttleService>();
             services.AddSingleton<ITaxiService, TaxiService>();

@@ -78,6 +78,7 @@ public class ReloadAdoptionTests
             .ToHashSet();
         // The adoption steps that delegate keep their state in the class they delegate to.
         owners.Add(typeof(SWLOR.Game.Server.Domain.World.PropertyLoaderService));
+        owners.Add(typeof(SWLOR.Game.Server.Domain.World.PropertyLoadRegistryService));
 
         var strays = AdoptedFields()
             .Select(field => field.DeclaringType)

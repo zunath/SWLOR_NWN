@@ -1,53 +1,16 @@
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Domain.World;
-using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// Instance loading: the registry of property area instances, their load states, failures and waiting players, the
-    /// queue that loads them, and spawning a property into the game world.
+    /// Instance loading: the queue that loads instanced properties a few at a time, the startup load of the world properties and
+    /// the load diagnostics. The registry of the instances and their load states is <see cref="IPropertyLoadRegistryService"/>, spawning a
+    /// property is <see cref="IPropertySpawnService"/> and the hot reload of the loader is <see cref="IPropertyLoadReloadService"/>.
     /// </summary>
     public interface IPropertyLoaderService
     {
-        /// <summary>
-        /// Assigns a property Id as a local variable to a specific object.
-        /// </summary>
-        /// <param name="obj">The object to assign</param>
-        /// <param name="propertyId">The property Id to assign.</param>
-        void AssignPropertyId(uint obj, string propertyId);
-
-        /// <summary>
-        /// Retrieves the assigned property Id assigned to a specific object.
-        /// Returns an empty string if not found.
-        /// </summary>
-        /// <param name="obj">The object to check.</param>
-        /// <returns>The property Id or an empty string if not found.</returns>
-        string GetPropertyId(uint obj);
-
-        /// <summary>
-        /// Registers an area instance to a given property Id.
-        /// </summary>
-        /// <param name="propertyId">The property Id</param>
-        /// <param name="instance">The area instance to register</param>
-        /// <param name="layoutType">The layout of the property.</param>
-        void RegisterInstance(string propertyId, uint instance, PropertyLayoutType layoutType);
-
-        /// <summary>
-        /// Retrieves the current load state for an instanced property.
-        /// </summary>
-        /// <param name="propertyId">The property Id to check.</param>
-        /// <returns>The current property load state.</returns>
-        PropertyLoadState GetPropertyLoadState(string propertyId);
-
-        /// <summary>
-        /// Retrieves the last failure associated with a property load.
-        /// </summary>
-        /// <param name="propertyId">The property Id to check.</param>
-        /// <returns>The failure message or an empty string.</returns>
-        string GetPropertyLoadFailure(string propertyId);
-
         /// <summary>
         /// Retrieves runtime load diagnostics for all instanced properties.
         /// </summary>
@@ -55,39 +18,11 @@ namespace SWLOR.Game.Server.Domain.World
         List<PropertyLoadDiagnostic> GetPropertyLoadDiagnostics();
 
         /// <summary>
-        /// Retrieves a loaded property instance without throwing if it is not ready.
-        /// </summary>
-        /// <param name="propertyId">The property Id to retrieve.</param>
-        /// <param name="instance">The loaded property instance.</param>
-        /// <returns>true if the instance is fully loaded; otherwise false.</returns>
-        bool TryGetLoadedInstance(string propertyId, out PropertyInstance instance);
-
-        /// <summary>
-        /// Records the load state of a property. Nothing happens for a blank property Id.
-        /// </summary>
-        /// <param name="propertyId">The property Id.</param>
-        /// <param name="state">The new load state.</param>
-        void SetPropertyLoadState(string propertyId, PropertyLoadState state);
-
-        /// <summary>
         /// Determines whether an instanced property is loaded when a player first enters it rather than at startup.
         /// </summary>
         /// <param name="property">The property to check.</param>
         /// <returns>true if the property loads on demand; otherwise false.</returns>
         bool IsPropertyOnDemand(WorldProperty property);
-
-        /// <summary>
-        /// Tells the players waiting for a property whether it is ready or could not be loaded, and stops them waiting;
-        /// while the property is still loading they are told to try again shortly and keep waiting.
-        /// </summary>
-        /// <param name="propertyId">The property Id.</param>
-        void NotifyPropertyLoadWaitersForStaff(string propertyId);
-
-        /// <summary>
-        /// Tells a player that the property could not be loaded.
-        /// </summary>
-        /// <param name="player">The player to tell.</param>
-        void SendPropertyLoadFailedMessage(uint player);
 
         /// <summary>
         /// Retrieves a usable property instance or starts loading it if it is not ready.
@@ -119,50 +54,6 @@ namespace SWLOR.Game.Server.Domain.World
         void LoadProperties();
 
         /// <summary>
-        /// Retrieves a placeable associated with a property Id.
-        /// </summary>
-        /// <param name="propertyId">The property Id to search for</param>
-        /// <returns>A placeable or OBJECT_INVALID if not found.</returns>
-        uint GetPlaceableByPropertyId(string propertyId);
-
-        /// <summary>
-        /// When a player enters a property instance, add them to the list of players.
-        /// </summary>
-        void EnterPropertyInstance();
-
-        /// <summary>
-        /// Shows a property's description to a player arriving from outside it. Coming back to the property's area, such as after a
-        /// reload, does not repeat it.
-        /// </summary>
-        void ShowPropertyDescription();
-
-        /// <summary>
-        /// Shows a structure's player-given name on its placeable. A structure that still has its catalog name keeps its template's.
-        /// </summary>
-        void ApplyStructureWorldName(uint placeable, WorldProperty structure);
-
-        /// <summary>
-        /// When a player exits a property instance, remove them from the list of players.
-        /// </summary>
-        void ExitPropertyInstance();
-
-        /// <summary>
-        /// Spawns the property into the game world.
-        /// For structures, this means spawning a placeable at the location.
-        /// For cities, starships, apartments, and buildings this means spawning area instances.
-        /// </summary>
-        /// <param name="property">The property to spawn into the world.</param>
-        /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
-        void SpawnIntoWorld(WorldProperty property, uint area);
-
-        /// <summary>
-        /// Remembers the placeable that was spawned for a structure property.
-        /// </summary>
-        /// <param name="propertyId">The structure's property Id.</param>
-        /// <param name="placeable">The placeable in the game world.</param>
-        void RegisterStructurePlaceable(string propertyId, uint placeable);
-
-        /// <summary>
         /// Forgets everything the loader knows about a property that is being deleted: its instance, load state,
         /// failure, waiting players, queued load and placeable.
         /// </summary>
@@ -170,18 +61,22 @@ namespace SWLOR.Game.Server.Domain.World
         void ForgetProperty(string propertyId);
 
         /// <summary>
-        /// When a hot reload quiesces this build: leaves the loader's bookkeeping on the module (load states, failures, the
-        /// players waiting for a load, the queued loads and world structures, the startup progress), which the world cannot
-        /// tell, for the next build's <see cref="AdoptLiveProperties"/>. It changes nothing.
+        /// When a hot reload quiesces this build: the queued loads and world structures and the startup progress, for
+        /// <see cref="RestoreQueueState"/> in the next build.
         /// </summary>
-        void CarryLoadState();
+        /// <returns>The carried bookkeeping of the queue.</returns>
+        JObject CarryQueueState();
 
         /// <summary>
-        /// On a hot reload, in place of the boot's <see cref="LoadProperties"/>: registers the property instances, structure
-        /// placeables and starport docks that are in the world, takes the carried bookkeeping and resumes the queued loads where
-        /// the old build left them. It runs no upkeep, election or lease clean-up, spawns nothing that is already in the world and
-        /// writes nothing to Redis.
+        /// On a hot reload: takes back the queued loads, world structures and startup progress the old build carried.
         /// </summary>
-        void AdoptLiveProperties();
+        /// <param name="carry">The carry the reload service read.</param>
+        void RestoreQueueState(JObject carry);
+
+        /// <summary>
+        /// Starts the load processor when queued loads or world structures remain after an adoption.
+        /// </summary>
+        /// <returns>The number of queued instance loads and of queued world structures.</returns>
+        (int Jobs, int WorldStructures) ResumeQueuedLoads();
     }
 }

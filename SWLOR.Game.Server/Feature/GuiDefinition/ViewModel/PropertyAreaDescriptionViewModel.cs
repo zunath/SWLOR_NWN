@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSave() => () =>
         {
-            if (!Property.HasPropertyPermission(Player, _propertyId, PropertyPermissionType.ChangeDescription))
+            if (!PropertyAccess.HasPropertyPermission(Player, _propertyId, PropertyPermissionType.ChangeDescription))
             {
                 FloatingTextStringOnCreature("You do not have permission to change this description.", Player, false);
                 return;

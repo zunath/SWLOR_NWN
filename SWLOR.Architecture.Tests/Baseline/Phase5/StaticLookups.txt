@@ -146,7 +146,7 @@ SWLOR.Game.Server.EngineTests/Definitions/MimicryDescriptionEngineTests.cs | 4
 SWLOR.Game.Server.EngineTests/Definitions/MimicryLoadoutEngineTests.cs | 36
 SWLOR.Game.Server.EngineTests/Definitions/MimicryObservationEngineTests.cs | 21
 SWLOR.Game.Server.EngineTests/Definitions/MimicryPotencyEngineTests.cs | 28
-SWLOR.Game.Server.EngineTests/Definitions/MimicryTraitPotencyEngineTests.cs | 32
+SWLOR.Game.Server.EngineTests/Definitions/MimicryTraitPotencyEngineTests.cs | 30
 SWLOR.Game.Server.EngineTests/Definitions/MusicCollectionEngineTests.cs | 53
 SWLOR.Game.Server.EngineTests/Definitions/PairedHandWeightEngineTests.cs | 5
 SWLOR.Game.Server.EngineTests/Definitions/PairedRangedConversionEngineTests.cs | 22
@@ -298,6 +298,7 @@ SWLOR.Game.Server.Tests/Domain/Character/StatFacadeAllocationTests.cs | 57
 SWLOR.Game.Server.Tests/Domain/Character/StatRulesTests.cs | 11
 SWLOR.Game.Server.Tests/Domain/Character/StatServiceDefaultSeamsTests.cs | 12
 SWLOR.Game.Server.Tests/Domain/Character/StatusEffectFacadeAllocationTests.cs | 41
+SWLOR.Game.Server.Tests/Domain/Character/TemporaryStatModifierFacadeAllocationTests.cs | 9
 SWLOR.Game.Server.Tests/Domain/Combat/CombatDamageCatalogServiceTests.cs | 7
 SWLOR.Game.Server.Tests/Domain/Combat/CombatDamageTakenServiceTests.cs | 1
 SWLOR.Game.Server.Tests/Domain/Combat/CombatFacadeAllocationTests.cs | 307
@@ -306,7 +307,6 @@ SWLOR.Game.Server.Tests/Domain/Combat/CombatServiceTests.cs | 2
 SWLOR.Game.Server.Tests/Domain/Combat/MeleeTechniqueServiceTests.cs | 3
 SWLOR.Game.Server.Tests/Domain/Combat/OrdinaryAttackTraitsServiceTests.cs | 8
 SWLOR.Game.Server.Tests/Domain/Combat/QueuedAttackAnimationServiceTests.cs | 10
-SWLOR.Game.Server.Tests/Domain/Combat/TemporaryStatModifierFacadeAllocationTests.cs | 9
 SWLOR.Game.Server.Tests/Domain/Companions/BeastMasteryServiceTests.cs | 10
 SWLOR.Game.Server.Tests/Domain/Companions/DroidEquipmentDiagnosticsServiceTests.cs | 5
 SWLOR.Game.Server.Tests/Domain/Companions/IncubationFieldNoteServiceTests.cs | 5

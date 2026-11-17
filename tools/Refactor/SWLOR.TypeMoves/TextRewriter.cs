@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SWLOR.TypeMoves;
 
@@ -14,6 +15,7 @@ namespace SWLOR.TypeMoves;
 /// <item>a file path, <c>Service/Log.cs</c> (or with <c>\</c>), becomes <c>Domain/Foundation/Log.cs</c>;</item>
 /// <item>a path built from literals, <c>"Service", "Log.cs"</c>, becomes <c>"Domain", "Foundation", "Log.cs"</c>.</item>
 /// </list>
+/// A string literal that is an argument of <c>[ReloadCarriedFrom]</c> keeps its former name: it says where a carried field used to live.
 /// Each type has its own source namespace; a path or literals name a moved file only with that file's own source folder.
 /// </summary>
 internal sealed class TextRewriter
@@ -68,7 +70,7 @@ internal sealed class TextRewriter
         var local = 0;
         foreach (var token in root.DescendantTokens())
         {
-            if (IsStringToken(token))
+            if (IsStringToken(token) && !IsReloadCarriedFromArgument(token))
                 Collect(text, token.Span, edits, literal: true, ref local);
 
             foreach (var trivia in token.LeadingTrivia.Concat(token.TrailingTrivia))
@@ -172,6 +174,12 @@ internal sealed class TextRewriter
         SyntaxKind.StringLiteralToken or SyntaxKind.InterpolatedStringTextToken or SyntaxKind.SingleLineRawStringLiteralToken or
         SyntaxKind.MultiLineRawStringLiteralToken or SyntaxKind.Utf8StringLiteralToken or SyntaxKind.Utf8SingleLineRawStringLiteralToken or
         SyntaxKind.Utf8MultiLineRawStringLiteralToken;
+
+    /// <summary>A literal argument of <c>[ReloadCarriedFrom]</c>, which names where a field lived before and so keeps its former name.</summary>
+    private static bool IsReloadCarriedFromArgument(SyntaxToken token) =>
+        token.Parent is LiteralExpressionSyntax { Parent: AttributeArgumentSyntax { Parent: AttributeArgumentListSyntax { Parent: AttributeSyntax attribute } } } &&
+        (attribute.Name is QualifiedNameSyntax qualified ? qualified.Right : attribute.Name) is SimpleNameSyntax name &&
+        name.Identifier.ValueText is "ReloadCarriedFrom" or "ReloadCarriedFromAttribute";
 
     private static bool IsComment(SyntaxTrivia trivia) => trivia.Kind() is
         SyntaxKind.SingleLineCommentTrivia or SyntaxKind.MultiLineCommentTrivia or SyntaxKind.SingleLineDocumentationCommentTrivia or

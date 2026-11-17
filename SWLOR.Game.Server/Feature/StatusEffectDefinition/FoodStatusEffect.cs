@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class FoodStatusEffect : StatusEffectBase
+    public sealed class FoodStatusEffect : StatusEffectBase, IFoodStatusEffect
     {
         public FoodEffectData Food { get; }
         public override string Name => "Food";

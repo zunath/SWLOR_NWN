@@ -72,6 +72,7 @@ mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript,
   action      SWLOR.Game.Server.Domain.Companions.IncubationFieldNoteService.LoadDisplayText
   action      SWLOR.Game.Server.Domain.Foundation.MigrationService.AfterCacheLoaded
   action      SWLOR.Game.Server.Domain.Abilities.MimicryService.CacheData
+  action      SWLOR.Game.Server.Domain.Character.MimicryTraitStatsService.CacheData
   action      SWLOR.Game.Server.Domain.Character.PerkService.CachePerkFeatData
   action      SWLOR.Game.Server.Domain.Abilities.AnimationPreviewCatalog.CacheCategories
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterUnequipGuard
@@ -837,7 +838,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Crafting.ProspectingSessionsService.AbandonOnExit
   action      SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.ForgetExitingPlayer
   action      SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnExit
-  action      SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.ClearExitingObject
+  action      SWLOR.Game.Server.Domain.Character.TemporaryStatModifierService.ClearExitingObject
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientDisconnection
   action      SWLOR.Game.Server.Feature.CraftingInterruptions.StopQuickCraftOnLogout
@@ -861,7 +862,7 @@ mod_gui_event
 mod_heartbeat
   action      SWLOR.Game.Server.Domain.Combat.CombatActivityService.PurgeInvalidOffensiveActivity
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RefreshAll
-  action      SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.PurgeAllExpired
+  action      SWLOR.Game.Server.Domain.Character.TemporaryStatModifierService.PurgeAllExpired
   action      SWLOR.Game.Server.Native.PairedRangedPresentation.RemoveAbandonedAnchors
   action      SWLOR.Game.Server.Native.WeaponAttackAnimation.ClearInactive
 

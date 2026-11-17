@@ -613,7 +613,7 @@ public class MimicryTests
     // The declaration tests above prove traits carry data, but not that the data is ever read. The
     // stat and resistance pipelines are where a trait actually becomes a bonus, and deleting either
     // hook would silently zero every trait while leaving all the declaration tests green. A true
-    // runtime assertion is not possible here -- Mimicry.GetStatBonus calls GetIsPC and DB.Get, and
+    // runtime assertion is not possible here -- MimicryTraitStats.GetStatBonus calls GetIsPC and DB.Get, and
     // this suite has no engine or database -- so the integration points are pinned at the source
     // level, matching how CombatDamageTests guards its own wiring.
     [Test]
@@ -624,7 +624,7 @@ public class MimicryTests
         var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResistanceService.cs"));
         var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "MimicryService.cs"));
 
-        statSource.Should().Contain("_mimicry.GetStatBonus(creature, stat)",
+        statSource.Should().Contain("_mimicryTraitStats.GetStatBonus(creature, stat, this)",
             "equipped trait stats reach the player only through the stat pipeline");
         resistanceSource.Should().Contain("_mimicry.GetResistanceBonus(creature, type)",
             "equipped trait resistances reach the player only through the resistance pipeline");
@@ -1201,19 +1201,19 @@ public class MimicryTests
     public void Mimicry_SetBonusPotencyRewardsSharedDamageTypes()
     {
         AbilityCatalog.CacheData();
-        GameServices.Mimicry.CacheData();
+        GameServices.MimicryTraitStats.CacheData();
 
-        GameServices.Mimicry.GetSetBonusPotency(new Player()).Should().Be(0, "an empty loadout has no resonance");
+        GameServices.MimicryTraitStats.GetSetBonusPotency(new Player()).Should().Be(0, "an empty loadout has no resonance");
 
         var singles = new Player();
         singles.EquippedTechniques.Add(FeatType.ToxicSpitTechnique);  // Poison
         singles.EquippedTechniques.Add(FeatType.FrostSpitTechnique);  // Ice
-        GameServices.Mimicry.GetSetBonusPotency(singles).Should().Be(0, "no damage type has two equipped techniques");
+        GameServices.MimicryTraitStats.GetSetBonusPotency(singles).Should().Be(0, "no damage type has two equipped techniques");
 
         var pair = new Player();
         pair.EquippedTechniques.Add(FeatType.ToxicSpitTechnique);   // Poison
         pair.EquippedTechniques.Add(FeatType.ToxicCloudTechnique);  // Poison
-        GameServices.Mimicry.GetSetBonusPotency(pair).Should().Be(5, "two techniques share the Poison damage type");
+        GameServices.MimicryTraitStats.GetSetBonusPotency(pair).Should().Be(5, "two techniques share the Poison damage type");
     }
 
     [Test]

@@ -25,6 +25,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>One infiltration attempt per player and hostile pair (the static facade <c>EspionageInfiltration</c> until P2-ZE).</summary>
         public static IEspionageInfiltrationService EspionageInfiltration => FacadeAccessor.Resolve<IEspionageInfiltrationService>();
 
+        /// <summary>
+        /// The stats the equipped Mimicry traits and the elemental resonance add, which the stat read reads (part 4 of the stat
+        /// split, P5-4b; until then <c>Mimicry.GetStatBonus</c>, <c>GetStatSources</c> and <c>GetSetBonusPotency</c>).
+        /// </summary>
+        public static IMimicryTraitStatsService MimicryTraitStats => FacadeAccessor.Resolve<IMimicryTraitStatsService>();
+
         /// <summary>Languages: translators, the active language and mastering them (the static facade <c>Language</c> until P2-ZE).</summary>
         public static ILanguageService Language => FacadeAccessor.Resolve<ILanguageService>();
 
@@ -68,6 +74,12 @@ namespace SWLOR.Game.Server.Composition
         /// <c>StatusEffectRules</c>.
         /// </summary>
         public static IStatusEffectService StatusEffect => FacadeAccessor.Resolve<IStatusEffectService>();
+
+        /// <summary>
+        /// Timed stat modifiers a creature carries (the facade <c>Service.TemporaryStatModifier</c> until P2-ZG). Combat and content
+        /// write them and the stat read reads them, so they are Character's (P5-4b).
+        /// </summary>
+        public static ITemporaryStatModifierService TemporaryStatModifier => FacadeAccessor.Resolve<ITemporaryStatModifierService>();
 
         /// <summary>The runtime state of the tint maps (pending equipment-swap color carries and material tables) (the static facade <c>TintMapState</c> until P2-ZE).</summary>
         public static ITintMapStateService TintMapState => FacadeAccessor.Resolve<ITintMapStateService>();

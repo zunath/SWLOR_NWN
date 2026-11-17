@@ -9,6 +9,7 @@ using SWLOR.NWN.API.Testing;
 using PlayerEntity = SWLOR.Game.Server.Entity.Player;
 using SWLOR.Game.Server.Composition;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 

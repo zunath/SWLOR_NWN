@@ -125,6 +125,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IDisguiseService, DisguiseService>();
             services.AddSingleton<IEspionageInfiltrationService, EspionageInfiltrationService>();
             services.AddSingleton<ILanguageService, LanguageService>();
+            services.AddSingleton<IMimicryTraitStatsService, MimicryTraitStatsService>();
             services.AddSingleton<IPerkService, PerkService>();
             services.AddSingleton<IPlayerDescriptorService, PlayerDescriptorService>();
             services.AddSingleton<IPlayerIntroductionService, PlayerIntroductionService>();
@@ -134,6 +135,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ISkillService, SkillService>();
             services.AddSingleton<IStatService, StatService>();
             services.AddSingleton<IStatusEffectService, StatusEffectService>();
+            services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
             services.AddSingleton<ITintMapStateService, TintMapStateService>();
         }
 
@@ -183,7 +185,6 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IStealthService, StealthService>();
             services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();
-            services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
             services.AddSingleton<ITwinPistolEquipmentService, TwinPistolEquipmentService>();
             services.AddSingleton<ITwinPistolMasteryService, TwinPistolMasteryService>();
             services.AddSingleton<IWeaponAttackEligibilityService, WeaponAttackEligibilityService>();

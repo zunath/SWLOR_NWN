@@ -1835,7 +1835,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
 
         protected virtual bool RemoveTrackedProximityEnmity(uint creature, uint enemy) => _enmity.Value.RemoveProximityEnmity(creature, enemy);
 
-        protected virtual void RestoreNPCStats(bool outOfCombatRegen) => _stat.Value.RestoreNPCStats(outOfCombatRegen);
+        protected virtual void RestoreNPCStats(bool outOfCombatRegen) => _stat.Value.RestoreNPCStats(outOfCombatRegen, _enmity.Value);
 
         protected virtual void LoadNPCStats() => _stat.Value.LoadNPCStats();
 

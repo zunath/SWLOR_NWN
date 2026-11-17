@@ -46,10 +46,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         // Source NPC feat -> the technique feat it teaches.
         private readonly Dictionary<FeatType, FeatType> _techniqueByNpcFeat = new();
 
-        // Stat -> the trait feats that adjust it, and by how much. Inverted at cache time so the stat
-        // pipeline (a hot path) only walks traits that are relevant to the stat being queried.
-        private readonly Dictionary<StatType, Dictionary<FeatType, int>> _traitStatsByStat = new();
-
         // Resistance -> the trait feats that adjust it, and by how much.
         private readonly Dictionary<ResistanceType, Dictionary<FeatType, int>> _traitResistancesByResistance = new();
 
@@ -107,8 +103,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private const int BaseSlotsWithAnalyzer = 2;
         private const int SlotsPerAnalyzerMemoryLevel = 2;
         private const int OverclockedAnalyzerSlotBonus = 2;
-        private const int ResonancePotencyPerTechnique = 5;
-        private const int ResonancePotencyCap = 20;
         private const int AnalysisXPPercent = 5;
         private const int MaximumAnalysisXPPerCreature = 30;
         private readonly int MaximumMimicryRank = SkillType.Mimicry.GetAttribute<SkillType, SkillAttribute>().MaxRank;
@@ -140,7 +134,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _techniqueByNpcFeat.Clear();
             _techniqueIcons.Clear();
             _techniqueDescriptions.Clear();
-            _traitStatsByStat.Clear();
             _traitResistancesByResistance.Clear();
 
             if (!_witnessSweepScheduled)
@@ -161,17 +154,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
                 if (!detail.IsMimicryTrait)
                     continue;
-
-                foreach (var (stat, amount) in detail.MimicryTraitStats)
-                {
-                    if (!_traitStatsByStat.TryGetValue(stat, out var statContributors))
-                    {
-                        statContributors = new Dictionary<FeatType, int>();
-                        _traitStatsByStat[stat] = statContributors;
-                    }
-
-                    statContributors[feat] = amount;
-                }
 
                 foreach (var (resistance, amount) in detail.MimicryTraitResistances)
                 {
@@ -208,73 +190,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         }
 
         /// <summary>
-        /// Returns each equipped trait's stat payload with the parameters declared by that trait.
-        /// </summary>
-        public IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
-        {
-            if (!_traitStatsByStat.ContainsKey(payloadStat) ||
-                !GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
-                return Array.Empty<StatAdjustmentSource>();
-
-            var player = _db.Get<Player>(GetObjectUUID(creature));
-            if (player == null)
-                return Array.Empty<StatAdjustmentSource>();
-
-            var potency = GetStatAdjustment(creature, StatType.MimicryTraitPotencyPercent);
-            List<StatAdjustmentSource> sources = null;
-            foreach (var feat in player.EquippedTechniques)
-            {
-                if (_techniques.TryGetValue(feat, out var detail) && detail.IsMimicryTrait &&
-                    detail.MimicryTraitStats.TryGetValue(payloadStat, out var value) && value != 0)
-                {
-                    sources ??= new List<StatAdjustmentSource>();
-                    var stats = potency == 0
-                        ? detail.MimicryTraitStats
-                        : ScaleTraitStats(detail.MimicryTraitStats, potency);
-                    sources.Add(new StatAdjustmentSource($"trait:{(int)feat}", stats));
-                }
-            }
-            return (IReadOnlyList<StatAdjustmentSource>)sources ?? Array.Empty<StatAdjustmentSource>();
-        }
-
-        /// <summary>
-        /// Sums equipped trait adjustments and the elemental-resonance set bonus. These belong
-        /// to the loadout rather than status effects that could be cleared on death.
-        /// </summary>
-        public int GetStatBonus(uint creature, StatType stat)
-        {
-            var hasStatContributors = _traitStatsByStat.TryGetValue(stat, out var contributors);
-
-            if (!hasStatContributors && stat != StatType.MimicryPotencyPercent)
-                return 0;
-
-            if (!GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
-                return 0;
-
-            var dbPlayer = _db.Get<Player>(GetObjectUUID(creature));
-            if (dbPlayer == null)
-                return 0;
-
-            var bonus = stat == StatType.MimicryPotencyPercent
-                ? GetSetBonusPotency(dbPlayer)
-                : 0;
-
-            if (!hasStatContributors)
-                return bonus;
-
-            var potency = stat == StatType.MimicryTraitPotencyPercent
-                ? 0
-                : GetStatAdjustment(creature, StatType.MimicryTraitPotencyPercent);
-            foreach (var feat in dbPlayer.EquippedTechniques)
-            {
-                if (contributors.TryGetValue(feat, out var amount))
-                    bonus += ScaleTraitBonus(amount, potency);
-            }
-
-            return bonus;
-        }
-
-        /// <summary>
         /// Sums the resistance adjustments contributed by a creature's equipped Mimicry traits.
         /// </summary>
         public int GetResistanceBonus(uint creature, ResistanceType resistance)
@@ -294,23 +209,10 @@ namespace SWLOR.Game.Server.Domain.Abilities
             foreach (var feat in dbPlayer.EquippedTechniques)
             {
                 if (contributors.TryGetValue(feat, out var amount))
-                    bonus += ScaleTraitBonus(amount, potency);
+                    bonus += MimicryTraitRules.ScaleTraitBonus(amount, potency);
             }
 
             return bonus;
-        }
-
-        private int ScaleTraitBonus(int amount, int potency)
-        {
-            return amount + (int)Math.Ceiling(amount * (potency / 100f));
-        }
-
-        private Dictionary<StatType, int> ScaleTraitStats(IReadOnlyDictionary<StatType, int> stats, int potency)
-        {
-            var scaled = new Dictionary<StatType, int>(stats.Count);
-            foreach (var (stat, amount) in stats)
-                scaled[stat] = ScaleTraitBonus(amount, potency);
-            return scaled;
         }
 
         /// <summary>
@@ -730,35 +632,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 : 0;
 
             return BaseSlotsWithAnalyzer + memoryLevel * SlotsPerAnalyzerMemoryLevel + capstoneBonus;
-        }
-
-        /// <summary>
-        /// Damage-type loadout set bonus ("elemental resonance"): equipping multiple active
-        /// techniques sharing a damage type grants scaling technique potency. Each damage type with
-        /// at least two equipped techniques contributes (count - 1) * <see cref="ResonancePotencyPerTechnique"/>
-        /// percent, summed across types and capped at <see cref="ResonancePotencyCap"/>. Passive
-        /// traits have no damage element and do not contribute.
-        /// </summary>
-        public int GetSetBonusPotency(Player dbPlayer)
-        {
-            if (dbPlayer == null)
-                return 0;
-
-            var countsByElement = new Dictionary<CombatDamageType, int>();
-            foreach (var feat in dbPlayer.EquippedTechniques)
-            {
-                if (!_techniques.TryGetValue(feat, out var detail) || detail.MimicryElement == CombatDamageType.Invalid)
-                    continue;
-
-                countsByElement.TryGetValue(detail.MimicryElement, out var count);
-                countsByElement[detail.MimicryElement] = count + 1;
-            }
-
-            var potency = countsByElement.Values
-                .Where(count => count >= 2)
-                .Sum(count => (count - 1) * ResonancePotencyPerTechnique);
-
-            return potency > ResonancePotencyCap ? ResonancePotencyCap : potency;
         }
 
         /// <summary>

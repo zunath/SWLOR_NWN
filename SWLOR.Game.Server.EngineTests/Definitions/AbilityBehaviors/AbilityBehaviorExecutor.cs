@@ -209,12 +209,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     {
                         ctx.Assert(!GetHasFeat(behaviorCase.Feat, caster), "passive traits are not granted as active feats");
                         foreach (var stat in ability.MimicryTraitStats)
-                            ctx.AssertEqual(stat.Value, GameServices.Mimicry.GetStatBonus(caster, stat.Key), $"equipped {stat.Key} bonus");
+                            ctx.AssertEqual(stat.Value, TraitStatBonus(caster, stat.Key), $"equipped {stat.Key} bonus");
                         foreach (var resistance in ability.MimicryTraitResistances)
                             ctx.AssertEqual(resistance.Value, GameServices.Mimicry.GetResistanceBonus(caster, resistance.Key), $"equipped {resistance.Key} resistance");
                         ctx.Assert(GameServices.Mimicry.UnequipTechnique(caster, behaviorCase.Feat), "passive trait unequips");
                         foreach (var stat in ability.MimicryTraitStats)
-                            ctx.AssertEqual(0, GameServices.Mimicry.GetStatBonus(caster, stat.Key), $"removed {stat.Key} bonus");
+                            ctx.AssertEqual(0, TraitStatBonus(caster, stat.Key), $"removed {stat.Key} bonus");
                         foreach (var resistance in ability.MimicryTraitResistances)
                             ctx.AssertEqual(0, GameServices.Mimicry.GetResistanceBonus(caster, resistance.Key), $"removed {resistance.Key} resistance");
                         return;
@@ -938,6 +938,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     $"the activator to move within {behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.Value:0.##}m of the target");
             }
         }
+
+        // The trait stat read takes the stat reader it scales Trait Potency with; the stat service passes itself.
+        private static int TraitStatBonus(uint caster, StatType stat) => GameServices.MimicryTraitStats.GetStatBonus(caster, stat, Stat);
 
         /// <summary>
         /// Destroys the loot-corpse placeable Loot.ProcessCorpse spawned for a killed

@@ -23,8 +23,8 @@ public class StatServiceNpcTests : StatServiceTestBase
             (ItemPropertyType.NPCLevel, -1, 10),
             (ItemPropertyType.Defense, (int)CombatDamageType.Physical, 1),
             (ItemPropertyType.Defense, (int)CombatDamageType.Physical, 2),
-            (ItemPropertyType.Resistance, (int)ResistanceType.Fire, 3),
-            (ItemPropertyType.Resistance, (int)ResistanceType.Fire, 4),
+            (ItemPropertyType.Resistance, (int)ResistanceType.Fire, 30),
+            (ItemPropertyType.Resistance, (int)ResistanceType.Fire, 104),
             (ItemPropertyType.NPCSkill, (int)SkillType.Vibroblade, 5),
             (ItemPropertyType.Attack, -1, 6),
             (ItemPropertyType.Accuracy, -1, 7),
@@ -39,7 +39,7 @@ public class StatServiceNpcTests : StatServiceTestBase
 
         stats.Level.Should().Be(10);
         stats.Defenses[CombatDamageType.Physical].Should().Be(3);
-        stats.Resistances[ResistanceType.Fire].Should().Be(70, "the bench decodes a cost table value as ten times itself");
+        stats.Resistances[ResistanceType.Fire].Should().Be(26, "ResistanceRules decodes a cost table value above 100 as a vulnerability (104 is -4)");
         stats.Skills[SkillType.Vibroblade].Should().Be(5);
         stats.Attack.Should().Be(6);
         stats.Accuracy.Should().Be(7);
@@ -147,7 +147,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
         Bench.Recording = true;
 
-        CreatureStat.RestoreNPCStats(false);
+        CreatureStat.RestoreNPCStats(false, null);
 
         Bench.Locals.Int(Npc, "FP").Should().Be(11);
         Bench.Locals.Int(Npc, "STAMINA").Should().Be(20);
@@ -165,7 +165,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.SetLocal(Npc, StatService.SuppressNaturalRegenVariable, 1);
         Bench.Engine.SetReturn("OBJECT_SELF", Npc);
 
-        CreatureStat.RestoreNPCStats(true);
+        CreatureStat.RestoreNPCStats(true, Bench.Enmity);
 
         Bench.Log.Should().BeEmpty();
         Bench.Engine.CountOf("EffectHeal").Should().Be(0);
@@ -179,7 +179,7 @@ public class StatServiceNpcTests : StatServiceTestBase
         Bench.CurrentHitPoints[Npc] = 50;
         Bench.MaxHitPoints[Npc] = () => 200;
 
-        CreatureStat.RestoreNPCStats(true);
+        CreatureStat.RestoreNPCStats(true, Bench.Enmity);
 
         Bench.Engine.CallsTo("EffectHeal").Single().Arguments[0].Should().Be(20);
         Bench.Engine.CountOf("ApplyEffectToObject").Should().Be(1);
@@ -202,7 +202,7 @@ public class StatServiceNpcTests : StatServiceTestBase
             Bench.HighestEnmityTarget = 777;
         }
 
-        CreatureStat.RestoreNPCStats(true);
+        CreatureStat.RestoreNPCStats(true, Bench.Enmity);
 
         Bench.Engine.CountOf("EffectHeal").Should().Be(0);
     }

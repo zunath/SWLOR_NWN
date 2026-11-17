@@ -33,8 +33,7 @@ SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Combat | 3
 SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs: Character -> Combat | 4
 SWLOR.Game.Server/Domain/Character/PlayerNameService.cs: Character -> Social | 8
 SWLOR.Game.Server/Domain/Character/SkillService.cs: Character -> Combat | 3
-SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Abilities | 4
-SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Combat | 40
+SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Combat | 25
 SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Items | 4
 SWLOR.Game.Server/Domain/Character/StatusEffectRules.cs: Character -> Combat | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Abilities | 3

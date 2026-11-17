@@ -1142,7 +1142,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         [NWNEventHandler(ScriptName.OnDroidHeartbeat)]
         public void DroidOnHeartbeat()
         {
-            _stat.RestoreNPCStats(false);
+            _stat.RestoreNPCStats(false, null);
             _companionControl.ProcessHeartbeat(OBJECT_SELF);
         }
 

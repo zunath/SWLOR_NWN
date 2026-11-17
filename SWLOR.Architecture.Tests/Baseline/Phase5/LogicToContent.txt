@@ -21,7 +21,6 @@ SWLOR.Game.Server/Domain/Abilities/TwinPistolAbilityService.cs -> Feature.UsePer
 SWLOR.Game.Server/Domain/Administration/DMBlueprintCatalogService.cs -> Feature.DMActions | 1
 SWLOR.Game.Server/Domain/Character/RobeModelRenderer.cs -> Feature/AppearanceDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatService.cs -> Feature/AbilityDefinition | 1
-SWLOR.Game.Server/Domain/Character/StatService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/AbilityEffectScaling.cs -> Feature/AbilityDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs -> Feature/AbilityDefinition | 1

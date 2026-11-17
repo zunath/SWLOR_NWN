@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
@@ -70,20 +70,16 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly ICharacterRecording _combatRecorder;
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly IStatusEffectService _statusEffect;
-        private readonly IMimicryService _mimicry;
+        private readonly IMimicryTraitStatsService _mimicryTraitStats;
         private readonly ITwinPistolEquipmentService _twinPistolEquipment;
-        private readonly IPowerGloveEquipmentService _powerGloveEquipment;
         private readonly IItemService _item;
         private readonly IRecastService _recast;
         private readonly ICompanionLookup _companions;
-        private readonly IEnmityService _enmity;
-        private readonly IResistanceService _resistance;
         private readonly IPvpCombatService _pvpCombat;
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly Lazy<ICombatAttackTimingService> _attackTiming;
-        private readonly ICombatDamageCatalogService _damageCatalog;
         private readonly Lazy<ICombatDamageModifiersService> _damageModifiers;
         private readonly Lazy<ICombatDamageTakenService> _damageTaken;
         private readonly Lazy<ICombatQueriesService> _queries;
@@ -94,20 +90,16 @@ namespace SWLOR.Game.Server.Domain.Character
             ICharacterRecording combatRecorder,
             IPlayerFeedbackService playerFeedback,
             IStatusEffectService statusEffect,
-            IMimicryService mimicry,
+            IMimicryTraitStatsService mimicryTraitStats,
             ITwinPistolEquipmentService twinPistolEquipment,
-            IPowerGloveEquipmentService powerGloveEquipment,
             IItemService item,
             IRecastService recast,
             ICompanionLookup companions,
-            IEnmityService enmity,
-            IResistanceService resistance,
             IPvpCombatService pvpCombat,
             IPerkService perk,
             ISkillService skill,
             ITemporaryStatModifierService temporaryStatModifier,
             Lazy<ICombatAttackTimingService> attackTiming,
-            ICombatDamageCatalogService damageCatalog,
             Lazy<ICombatDamageModifiersService> damageModifiers,
             Lazy<ICombatDamageTakenService> damageTaken,
             Lazy<ICombatQueriesService> queries,
@@ -117,20 +109,16 @@ namespace SWLOR.Game.Server.Domain.Character
             _combatRecorder = combatRecorder;
             _playerFeedback = playerFeedback;
             _statusEffect = statusEffect;
-            _mimicry = mimicry;
+            _mimicryTraitStats = mimicryTraitStats;
             _twinPistolEquipment = twinPistolEquipment;
-            _powerGloveEquipment = powerGloveEquipment;
             _item = item;
             _recast = recast;
             _companions = companions;
-            _enmity = enmity;
-            _resistance = resistance;
             _pvpCombat = pvpCombat;
             _perk = perk;
             _skill = skill;
             _temporaryStatModifier = temporaryStatModifier;
             _attackTiming = attackTiming;
-            _damageCatalog = damageCatalog;
             _damageModifiers = damageModifiers;
             _damageTaken = damageTaken;
             _queries = queries;
@@ -621,7 +609,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             // Player returned after the server restarted. They no longer have the food status effect.
             // Reduce their HP by the amount tracked in the DB.
-            if (dbPlayer.TemporaryFoodHP > 0 && _statusEffect.GetStatusEffect<FoodStatusEffect>(player) == null)
+            if (dbPlayer.TemporaryFoodHP > 0 && _statusEffect.GetStatusEffect<IFoodStatusEffect>(player) == null)
             {
                 AdjustPlayerMaxHP(dbPlayer, player, -dbPlayer.TemporaryFoodHP);
                 dbPlayer.TemporaryFoodHP = 0;
@@ -726,7 +714,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 if (!GetIsObjectValid(item))
                     continue;
 
-                var copies = _powerGloveEquipment.GetEquipmentStatCopies(GetBaseItemType(item));
+                var copies = PowerGloveStatCopies.For(GetBaseItemType(item));
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
                     if (GetItemPropertyType(ip) == ItemPropertyType.HPBonus)
@@ -783,7 +771,7 @@ namespace SWLOR.Game.Server.Domain.Character
                     continue;
 
                 var baseItem = GetBaseItemType(item);
-                var copies = _powerGloveEquipment.GetEquipmentStatCopies(baseItem);
+                var copies = PowerGloveStatCopies.For(baseItem);
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
                     for (var copy = 0; copy < copies; copy++)
@@ -1241,7 +1229,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 if (!GetIsObjectValid(item) || GetBaseItemType(item) == BaseItem.CompanionPistol)
                     continue;
 
-                var copies = _powerGloveEquipment.GetEquipmentStatCopies(GetBaseItemType(item));
+                var copies = PowerGloveStatCopies.For(GetBaseItemType(item));
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
                     if (GetItemPropertyType(ip) == ItemPropertyType.CombatReadiness)
@@ -2650,7 +2638,7 @@ namespace SWLOR.Game.Server.Domain.Character
             var perks = GetPerkStatSources(creature, payloadStat);
             var effects = _statusEffect.GetStatSources(creature, payloadStat);
             var temporary = GetTemporaryStatSources(creature, payloadStat);
-            var traits = _mimicry.GetStatSources(creature, payloadStat);
+            var traits = _mimicryTraitStats.GetStatSources(creature, payloadStat, this);
             var count = perks.Count + effects.Count + temporary.Count + traits.Count;
             if (count == 0) return Array.Empty<StatAdjustmentSource>();
             if (count == perks.Count) return perks;
@@ -2686,7 +2674,7 @@ namespace SWLOR.Game.Server.Domain.Character
         {
             var statusAdjustment = _statusEffect.GetStatAdjustment(creature, stat);
             var perkAdjustment = GetPerkStatBonus(creature, stat);
-            var mimicryTraitAdjustment = _mimicry.GetStatBonus(creature, stat);
+            var mimicryTraitAdjustment = _mimicryTraitStats.GetStatBonus(creature, stat, this);
 
             return AggregateStatAdjustment(
                 stat,
@@ -2881,7 +2869,7 @@ namespace SWLOR.Game.Server.Domain.Character
                     if (!npcStats.Resistances.ContainsKey(resistanceType))
                         npcStats.Resistances[resistanceType] = 0;
 
-                    npcStats.Resistances[resistanceType] += _resistance.DecodeItemPropertyCostTableValue(
+                    npcStats.Resistances[resistanceType] += ResistanceRules.DecodeItemPropertyCostTableValue(
                         GetItemPropertyCostTableValue(ip));
                 }
                 else if (type == ItemPropertyType.NPCSkill)
@@ -2950,7 +2938,7 @@ namespace SWLOR.Game.Server.Domain.Character
                         if (!npcStats.Resistances.ContainsKey(resistanceType))
                             npcStats.Resistances[resistanceType] = 0;
 
-                        npcStats.Resistances[resistanceType] += _resistance.DecodeItemPropertyCostTableValue(
+                        npcStats.Resistances[resistanceType] += ResistanceRules.DecodeItemPropertyCostTableValue(
                             prop.m_nCostTableValue);
                     }
                     else if (prop.m_nPropertyName == (ushort)ItemPropertyType.NPCSkill)
@@ -3183,9 +3171,11 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// Restores an NPC's STM and FP.
         /// </summary>
-        public void RestoreNPCStats(bool outOfCombatRegen)
+        /// <param name="outOfCombatRegen">Also heals a tenth of maximum HP while the NPC is out of combat with nobody on its enmity table.</param>
+        /// <param name="enmity">Who the NPC hates most; read only when <paramref name="outOfCombatRegen"/> is true, so other callers pass null.</param>
+        public void RestoreNPCStats(bool outOfCombatRegen, IEnmityTargetQuery enmity)
         {
-            RestoreNPCStats(outOfCombatRegen, false);
+            RestoreNPCStats(outOfCombatRegen, false, enmity);
         }
 
         /// <summary>
@@ -3195,7 +3185,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// </summary>
         public void RestoreBeastStats()
         {
-            RestoreNPCStats(false, true);
+            RestoreNPCStats(false, true, null);
         }
 
         public bool IsNaturalStaminaRegenerationAvailable(long availableAtTicks, long currentTicks)
@@ -3212,7 +3202,7 @@ namespace SWLOR.Game.Server.Domain.Character
             return 1 + Math.Max(0, attribute) / BeastNaturalRegenStatDivisor;
         }
 
-        private void RestoreNPCStats(bool outOfCombatRegen, bool isBeast)
+        private void RestoreNPCStats(bool outOfCombatRegen, bool isBeast, IEnmityTargetQuery enmity)
         {
             var self = OBJECT_SELF;
             if (GetLocalInt(self, SuppressNaturalRegenVariable) != 0)
@@ -3257,7 +3247,7 @@ namespace SWLOR.Game.Server.Domain.Character
             {
                 // If out of combat - restore HP at 10% per tick.
                 if (!GetIsInCombat(self) &&
-                    !GetIsObjectValid(_enmity.GetHighestEnmityTarget(self)) &&
+                    !GetIsObjectValid(enmity.GetHighestEnmityTarget(self)) &&
                     GetCurrentHitPoints(self) < GetMaxHitPoints(self))
                 {
                     var hpToHeal = GetMaxHitPoints(self) * 0.1f;
@@ -3320,7 +3310,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual SkillAttribute GetSkillDetails(SkillType skillType) => _skill.GetSkillDetails(skillType);
 
-        protected virtual IReadOnlyList<CombatDamageType> GetDefenseDamageTypes() => _damageCatalog.GetDefenseDamageTypes();
+        protected virtual ImmutableArray<CombatDamageType> GetDefenseDamageTypes() => DamageTableDefaults.GetDefenseDamageTypes();
 
         protected virtual void ApplyFPRestoredEffects(uint creature) => _resources.Value.ApplyFPRestoredEffects(creature);
 

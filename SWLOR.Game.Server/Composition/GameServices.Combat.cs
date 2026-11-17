@@ -115,9 +115,6 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Ground telegraphs (the facade <c>Service.Telegraph</c> until P2-ZH).</summary>
         public static ITelegraphService Telegraph => FacadeAccessor.Resolve<ITelegraphService>();
 
-        /// <summary>Timed stat modifiers a creature carries (the facade <c>Service.TemporaryStatModifier</c> until P2-ZG).</summary>
-        public static ITemporaryStatModifierService TemporaryStatModifier => FacadeAccessor.Resolve<ITemporaryStatModifierService>();
-
         /// <summary>Twin pistol pair equipment (the facade <c>Service.TwinPistolEquipment</c> until P2-ZH).</summary>
         public static ITwinPistolEquipmentService TwinPistolEquipment => FacadeAccessor.Resolve<ITwinPistolEquipmentService>();
 

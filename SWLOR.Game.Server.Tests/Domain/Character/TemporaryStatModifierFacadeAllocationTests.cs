@@ -7,7 +7,7 @@ using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.Testing;
 using static SWLOR.Game.Server.Composition.GameServices;
 
-namespace SWLOR.Game.Server.Tests.Domain.Combat;
+namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
 /// <c>TemporaryStatModifier.GetStatAdjustment</c> runs on every <c>Stat.GetStatAdjustment</c>. The static path

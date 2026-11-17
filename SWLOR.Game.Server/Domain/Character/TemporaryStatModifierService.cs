@@ -2,21 +2,19 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.UI;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 
-namespace SWLOR.Game.Server.Domain.Combat
+namespace SWLOR.Game.Server.Domain.Character
 {
     public class TemporaryStatModifierService : ITemporaryStatModifierService
     {
         private const string DefaultGroup = "";
 
         [ReloadState(ReloadStateKind.Carried)]
+        [ReloadCarriedFrom("SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService")]
         private readonly Dictionary<uint, List<TemporaryModifier>> _modifiers = new();
-        private readonly IGuiService _gui;
+        private readonly IGuiRefreshPublisher _gui;
 
-        public TemporaryStatModifierService(IGuiService gui)
+        public TemporaryStatModifierService(IGuiRefreshPublisher gui)
         {
             _gui = gui;
         }

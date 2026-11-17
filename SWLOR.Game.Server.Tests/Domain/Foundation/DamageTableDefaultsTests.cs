@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 
@@ -16,6 +17,16 @@ public class DamageTableDefaultsTests
         defenses.Values.Should().OnlyContain(value => value == 0);
         DamageTableDefaults.CreateDefaultDefenseValues(7).Values.Should().OnlyContain(value => value == 7);
         DamageTableDefaults.CreateDefaultDefenseValues().Should().NotBeSameAs(defenses);
+    }
+
+    [Test]
+    public void DefenseDamageTypes_AreTheCatalogsListInEnumOrder()
+    {
+        var catalog = new CombatDamageCatalogService(null!, null!);
+        catalog.LoadDamageTypes();
+
+        DamageTableDefaults.GetDefenseDamageTypes().Should().Equal(CombatDamageType.Physical, CombatDamageType.Force);
+        DamageTableDefaults.GetDefenseDamageTypes().Should().Equal(catalog.GetDefenseDamageTypes());
     }
 
     [Test]

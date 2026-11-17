@@ -36,8 +36,7 @@
         "Telegraph", "Targeting", "QueuedAttackAnimation",
         "WeaponAttackEligibility", "WeaponDelay", "OrdinaryAttackTraits",
         "PairedRangedTraits", "MeleeTechnique", "TwinPistolEquipment",
-        "TwinPistolMastery", "PowerGloveEquipment", "Stealth", "Death", "Poisons", "BattleGrid",
-        "TemporaryStatModifier"
+        "TwinPistolMastery", "PowerGloveEquipment", "Stealth", "Death", "Poisons", "BattleGrid"
       ],
       "featureFolders": []
     },
@@ -54,7 +53,8 @@
       "services": [
         "Stat", "Skill", "Perk", "StatusEffect", "Race", "Achievement", "Activity",
         "PlayerDescriptor", "PlayerName", "PlayerIntroduction", "Disguise",
-        "EspionageInfiltration", "Language", "RoleplayXPDetection", "AppearanceRenderState", "TintMapState"
+        "EspionageInfiltration", "Language", "RoleplayXPDetection", "AppearanceRenderState", "TintMapState",
+        "TemporaryStatModifier", "MimicryTraitStats"
       ],
       "featureFolders": [
         "PerkDefinition", "StatusEffectDefinition", "AppearanceDefinition"

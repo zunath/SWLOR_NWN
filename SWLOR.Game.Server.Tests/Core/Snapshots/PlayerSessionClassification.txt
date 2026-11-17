@@ -188,7 +188,7 @@ mod_exit (45)
               Forgets the watcher in memory, which goes with the old build.
   Quiesce     SWLOR.Game.Server.Domain.World.FishingFightsService.AbandonOnExit -> AbandonFor
               A fishing fight cannot be carried, so it ends as at logout and the busy flag clears instead of sticking.
-  LogoutOnly  SWLOR.Game.Server.Domain.Combat.TemporaryStatModifierService.ClearExitingObject
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.TemporaryStatModifierService.ClearExitingObject
               Drops the player's temporary modifiers; they are carried.
   Quiesce     SWLOR.Game.Server.Native.PairedRangedPresentation.OnExit -> ReleaseFor
               The muzzle anchors are tracked only in the old build, so they are destroyed as at logout instead of being left in the world.

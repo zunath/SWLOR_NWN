@@ -24,17 +24,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         void CacheData();
 
         /// <summary>
-        /// Returns each equipped trait's stat payload with the parameters declared by that trait.
-        /// </summary>
-        IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat);
-
-        /// <summary>
-        /// Sums equipped trait adjustments and the elemental-resonance set bonus. These belong
-        /// to the loadout rather than status effects that could be cleared on death.
-        /// </summary>
-        int GetStatBonus(uint creature, StatType stat);
-
-        /// <summary>
         /// Sums the resistance adjustments contributed by a creature's equipped Mimicry traits.
         /// </summary>
         int GetResistanceBonus(uint creature, ResistanceType resistance);
@@ -108,15 +97,6 @@ namespace SWLOR.Game.Server.Domain.Abilities
         /// Returns the maximum number of technique slots available to a player's database record.
         /// </summary>
         int GetMaxSlots(Player dbPlayer);
-
-        /// <summary>
-        /// Damage-type loadout set bonus ("elemental resonance"): equipping multiple active
-        /// techniques sharing a damage type grants scaling technique potency. Each damage type with
-        /// at least two equipped techniques contributes (count - 1) * <see cref="ResonancePotencyPerTechnique"/>
-        /// percent, summed across types and capped at <see cref="ResonancePotencyCap"/>. Passive
-        /// traits have no damage element and do not contribute.
-        /// </summary>
-        int GetSetBonusPotency(Player dbPlayer);
 
         /// <summary>
         /// Returns the number of technique slots currently used by a player's equipped techniques.

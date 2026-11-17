@@ -1064,8 +1064,8 @@ public class EnmityServiceTests
             IPartyService party,
             IHoloComService holoCom,
             ICompanionLookup beastMastery)
-            : base(ai, activity, party, holoCom, beastMastery, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IStealthService>(),
-                FacadeForwarder.For<ICompanionControlService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
+            : base(ai, activity, party, holoCom, beastMastery, FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStealthService>(),
+                FacadeForwarder.For<ICompanionControlService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatAttackTimingService>(), FacadeForwarder.For<ICombatQueriesService>())
         {
         }
 

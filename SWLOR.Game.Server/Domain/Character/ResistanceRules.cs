@@ -4,7 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 
-namespace SWLOR.Game.Server.Domain.Combat
+namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The pure rules of resistances: limits, how a resistance turns into a damage multiplier, and the item property

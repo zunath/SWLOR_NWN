@@ -7,10 +7,12 @@ using static SWLOR.Game.Server.Tests.Core.ScriptHandlerTestSupport;
 namespace SWLOR.Game.Server.Tests.Core;
 
 /// <summary>
-/// The boot handlers P4-8 split, each into a part a hot reload reruns and a boot-only part. A split is a line of
-/// <c>tools/Refactor/HandlerRenames.txt</c> with several branch names (master's one handler, then its parts in run order);
-/// the parts must stand together in the manifest where master's handler stood, so the boot runs them back to back in
-/// the old handler's place, and the parity run maps master's one handler onto them.
+/// The handlers the branch split. A split is a line of <c>tools/Refactor/HandlerRenames.txt</c> with several branch names
+/// (master's one handler, then its parts in run order); the parts must stand together in the manifest where master's
+/// handler stood, so the boot runs them back to back in the old handler's place, and the parity run maps master's one
+/// handler onto them. There are two kinds: the boot splits of P4-8, each into a part a hot reload reruns and a boot-only
+/// part, and the service splits, where a service split moves part of a handler into the new service and every part keeps
+/// one BootReload class, so a hot reload treats the handler as before.
 /// </summary>
 [TestFixture]
 public class SplitBootHandlerTests
@@ -26,6 +28,13 @@ public class SplitBootHandlerTests
         "SWLOR.Game.Server.Feature.StoreManagement.ProcessStores",
     };
 
+    // Service splits. Add each later service split here.
+    private static readonly string[] ServiceSplitMasterHandlers =
+    {
+        // P5-4b, stat split part 4: the trait stats' cache handler splits out of Mimicry.CacheData.
+        "SWLOR.Game.Server.Service.Mimicry.CacheData",
+    };
+
     private static IReadOnlyList<string[]> Splits()
     {
         var path = Path.Combine(ClockSeamSources.FindRepositoryRoot(), "tools", "Refactor", "HandlerRenames.txt");
@@ -38,9 +47,9 @@ public class SplitBootHandlerTests
     }
 
     [Test]
-    public void The_split_lines_are_the_seven_mixed_boot_handlers()
+    public void The_split_lines_are_the_mixed_boot_handlers_and_the_service_splits()
     {
-        Splits().Select(names => names[0]).Should().BeEquivalentTo(SplitMasterHandlers);
+        Splits().Select(names => names[0]).Should().BeEquivalentTo(SplitMasterHandlers.Concat(ServiceSplitMasterHandlers));
     }
 
     [Test]
@@ -71,10 +80,24 @@ public class SplitBootHandlerTests
             .GroupBy(ScriptHandlerManifest.HandlerName)
             .ToDictionary(group => group.Key, group => group.First());
 
-        foreach (var names in Splits())
+        foreach (var names in Splits().Where(names => SplitMasterHandlers.Contains(names[0])))
         {
             var classes = names.Skip(1).Select(name => handlers[name].GetCustomAttribute<BootPhaseAttribute>()!.Reload).ToList();
             classes.Should().BeEquivalentTo(new[] { BootReload.Rerun, BootReload.BootOnly }, names[0]);
+        }
+    }
+
+    [Test]
+    public void The_parts_of_a_service_split_all_have_the_same_boot_reload_class()
+    {
+        var handlers = MethodsOf(GameAssembly).Where(IsHandler)
+            .GroupBy(ScriptHandlerManifest.HandlerName)
+            .ToDictionary(group => group.Key, group => group.First());
+
+        foreach (var names in Splits().Where(names => ServiceSplitMasterHandlers.Contains(names[0])))
+        {
+            var classes = names.Skip(1).Select(name => handlers[name].GetCustomAttribute<BootPhaseAttribute>()!.Reload).Distinct().ToList();
+            classes.Should().ContainSingle($"the parts of {names[0]} must not change how a hot reload treats it");
         }
     }
 }

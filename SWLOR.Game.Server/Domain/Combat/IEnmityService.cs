@@ -1,9 +1,13 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.Game.Server.Domain.Combat
 {
-    /// <summary>Who each enemy hates and why: the enmity tables, the attack commands that follow the highest target, and the taunt, healing and damage rules that feed them.</summary>
-    public interface IEnmityService
+    /// <summary>
+    /// Who each enemy hates and why: the enmity tables, the attack commands that follow the highest target, and the taunt, healing
+    /// and damage rules that feed them. <see cref="IEnmityTargetQuery.GetHighestEnmityTarget"/> is Character's question.
+    /// </summary>
+    public interface IEnmityService : IEnmityTargetQuery
     {
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
@@ -55,14 +59,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         /// <param name="enemy">The enemy to use for retrieval</param>
         /// <returns>A dictionary containing an enemy's enmity table.</returns>
         Dictionary<uint, int> GetEnmityTable(uint enemy);
-
-        /// <summary>
-        /// Retrieves the creature with the highest amount of enmity.
-        /// If this cannot be determined, OBJECT_INVALID will be returned.
-        /// </summary>
-        /// <param name="enemy">The enemy to retrieve the highest target for.</param>
-        /// <returns>The target with the highest enmity</returns>
-        uint GetHighestEnmityTarget(uint enemy);
 
         /// <summary>
         /// Retrieves the creature with the highest amount of enmity that the enemy can attack.

@@ -147,9 +147,6 @@ Domain/Combat -> Domain/Social | 18
 # Combat -> Space (1 edge)
 Domain/Combat -> Domain/Space | 3
 
-# Combat -> UI (1 edge)
-Domain/Combat -> Domain/UI | 3
-
 # Combat -> World (1 edge)
 Domain/Combat -> Domain/World | 8
 
@@ -356,9 +353,7 @@ Feature.UnarmedTechniqueProfile -> Domain/Character | 2
 Feature.UnarmedTechniqueProfile -> Feature/StatusEffectDefinition | 1
 Feature.UsePerkFeat -> Domain/Character | 22
 
-# Gameplay -> Combat (18 edges)
-Feature.CivilianPatrol -> Domain/Combat | 2
-Feature.EchaniTempleMonks -> Domain/Combat | 2
+# Gameplay -> Combat (16 edges)
 Feature.EquipmentRestrictions -> Domain/Combat | 3
 Feature.EquipmentStats -> Domain/Combat | 3
 Feature.KatarAnimationRemap -> Domain/Combat | 2

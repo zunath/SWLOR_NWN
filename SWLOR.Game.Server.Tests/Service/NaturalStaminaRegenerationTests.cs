@@ -109,7 +109,7 @@ public class NaturalStaminaRegenerationTests
         var stat = StatSource.Read();
 
         // That the beast heartbeat calls Stat.RestoreBeastStats is pinned by BeastMasteryServiceTests.
-        stat.Should().Contain("RestoreNPCStats(false, true);");
+        stat.Should().Contain("RestoreNPCStats(false, true, null);");
         stat.Should().Contain("_companions.IsPlayerBeast(creature)");
 
         var restoreBeastStats = StatSource.Method("RestoreBeastStats").ToString();

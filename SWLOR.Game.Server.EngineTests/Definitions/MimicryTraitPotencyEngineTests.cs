@@ -56,7 +56,7 @@ public static class MimicryTraitPotencyEngineTests
         var before = Stat.GetStatSources(player, StatType.PhysicalDefensePercentAdjustment)
             .Single(source => source.Key == $"trait:{(int)FeatType.IronCarapaceTechnique}");
         StatusEffect.ApplyStatusEffect(player, player, new OverloadStatusEffect(), 30f);
-        ctx.AssertEqual(12, GameServices.Mimicry.GetStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "only equipped Iron Carapace contributes");
+        ctx.AssertEqual(12, TraitStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "only equipped Iron Carapace contributes");
         var boosted = Stat.GetStatSources(player, StatType.PhysicalDefensePercentAdjustment)
             .Single(source => source.Key == before.Key);
         ctx.AssertEqual(12, boosted[StatType.PhysicalDefensePercentAdjustment], "source payload agrees with aggregate");
@@ -72,13 +72,16 @@ public static class MimicryTraitPotencyEngineTests
         record.EquippedTechniques.Add(FeatType.IronCarapaceTechnique);
         DB.Set(record);
         StatusEffect.RemoveStatusEffect<OverloadStatusEffect>(player);
-        ctx.AssertEqual(8, GameServices.Mimicry.GetStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "removal restores base trait stats immediately");
+        ctx.AssertEqual(8, TraitStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "removal restores base trait stats immediately");
     }
+
+    // The trait stat read takes the stat reader it scales Trait Potency with; the stat service passes itself.
+    private static int TraitStatBonus(uint player, StatType stat) => GameServices.MimicryTraitStats.GetStatBonus(player, stat, Stat);
 
     private static void AssertDefense(EngineTestContext ctx, uint player, int defense, int elementalResistance, int trauma)
     {
-        ctx.AssertEqual(defense, GameServices.Mimicry.GetStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "trait Physical DEF percent");
-        ctx.AssertEqual(defense, GameServices.Mimicry.GetStatBonus(player, StatType.ForceDefensePercentAdjustment), "trait Force DEF percent");
+        ctx.AssertEqual(defense, TraitStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "trait Physical DEF percent");
+        ctx.AssertEqual(defense, TraitStatBonus(player, StatType.ForceDefensePercentAdjustment), "trait Force DEF percent");
         ctx.AssertEqual(elementalResistance, GameServices.Mimicry.GetResistanceBonus(player, ResistanceType.Fire), "trait Fire Resistance");
         ctx.AssertEqual(elementalResistance, GameServices.Mimicry.GetResistanceBonus(player, ResistanceType.Poison), "trait Poison Resistance");
         ctx.AssertEqual(trauma, GameServices.Mimicry.GetResistanceBonus(player, ResistanceType.Trauma), "trait Trauma Resistance");

@@ -677,7 +677,9 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>
         /// Restores an NPC's STM and FP.
         /// </summary>
-        void RestoreNPCStats(bool outOfCombatRegen);
+        /// <param name="outOfCombatRegen">Also heals a tenth of maximum HP while the NPC is out of combat with nobody on its enmity table.</param>
+        /// <param name="enmity">Who the NPC hates most; read only when <paramref name="outOfCombatRegen"/> is true, so other callers pass null.</param>
+        void RestoreNPCStats(bool outOfCombatRegen, IEnmityTargetQuery enmity);
 
         /// <summary>
         /// Restores a beast's FP and STM. Each heartbeat restores 1 + WIL/10 FP and 1 + MGT/10 STM.

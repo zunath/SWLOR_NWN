@@ -239,12 +239,13 @@ namespace SWLOR.Game.Server.Composition
 
             // Creatures
             services.AddSingleton<IAIService, AIService>();
-            services.AddSingleton<IAIProfileDescription, AIProfileDescription>();
+            services.AddSingleton<IAIProfileDescription>(provider => provider.GetRequiredService<IAIService>());
             services.AddSingleton<ICompanionControlService, CompanionControlService>();
             services.AddSingleton<INPCGroupService, NPCGroupService>();
             services.AddSingleton<ISpawnRegistryService, SpawnRegistryService>();
+            services.AddSingleton<ISpawnObjectService, SpawnObjectService>();
+            services.AddSingleton<IDMSpawnPreparation>(provider => provider.GetRequiredService<ISpawnObjectService>());
             services.AddSingleton<ISpawnService, SpawnService>();
-            services.AddSingleton<IDMSpawnPreparation, DMSpawnPreparation>();
 
             // Economy
             services.AddSingleton<IBankService, BankService>();

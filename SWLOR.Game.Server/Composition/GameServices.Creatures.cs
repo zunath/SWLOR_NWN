@@ -18,5 +18,8 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>The spawn tables, the registered spawns and the spawn reload carry.</summary>
         public static ISpawnRegistryService SpawnRegistry => FacadeAccessor.Resolve<ISpawnRegistryService>();
+
+        /// <summary>Creating the object of a spawn and preparing DM-spawned creatures.</summary>
+        public static ISpawnObjectService SpawnObject => FacadeAccessor.Resolve<ISpawnObjectService>();
     }
 }

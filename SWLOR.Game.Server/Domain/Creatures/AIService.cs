@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Domain.Creatures;
@@ -39,7 +38,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private const string LeashEvadeRestoreMovementRateVariable = "AI_LEASH_EVADE_RESTORE_MOVEMENT_RATE";
         private const string LeashEvadeReturnQueuedVariable = "AI_LEASH_EVADE_RETURN_QUEUED";
 
-        private readonly IPartyService _party;
+        private readonly IPartyRoster _party;
         private readonly ICompanionLookup _companions;
         private readonly IDMPresenceService _dmPresence;
         private readonly Lazy<IAbilityActivationService> _activation;
@@ -63,7 +62,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Dictionary<FeatType, AITargetSelector> _defaultTargetSelectors = new();
 
         public AIService(
-            IPartyService party,
+            IPartyRoster party,
             ICompanionLookup companions,
             IDMPresenceService dmPresence,
             Lazy<IAbilityActivationService> activation,
@@ -408,6 +407,11 @@ namespace SWLOR.Game.Server.Domain.Creatures
         public AIProfileType GetAIProfile(uint creature)
         {
             return GetProfileType(creature);
+        }
+
+        public string DescribeAIProfile(uint creature)
+        {
+            return GetAIProfile(creature).ToString();
         }
 
         /// <summary>

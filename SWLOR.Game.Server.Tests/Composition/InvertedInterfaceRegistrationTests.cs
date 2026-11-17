@@ -34,6 +34,8 @@ public class InvertedInterfaceRegistrationTests
         (typeof(IPropertyIdLookup), typeof(IPropertyService)),
         (typeof(IDMActorResolver), typeof(IDMPresenceService)),
         (typeof(IDMWindowPresence), typeof(IDMPresenceService)),
+        (typeof(IAIProfileDescription), typeof(IAIService)),
+        (typeof(IDMSpawnPreparation), typeof(ISpawnObjectService)),
     };
 
     private static ContainerHost Build()
@@ -61,12 +63,10 @@ public class InvertedInterfaceRegistrationTests
     }
 
     [Test]
-    public void The_adapters_in_Creatures_answer_the_Administration_interfaces()
+    public void The_adapter_in_Creatures_answers_the_item_cache_interface()
     {
         var host = Build();
 
-        host.Provider.GetRequiredService<IAIProfileDescription>().Should().BeOfType<AIProfileDescription>();
-        host.Provider.GetRequiredService<IDMSpawnPreparation>().Should().BeOfType<DMSpawnPreparation>();
         host.Provider.GetRequiredService<IItemCacheInfo>().Should().BeOfType<ItemCacheInfo>();
     }
 }

@@ -1,4 +1,5 @@
 #nullable enable
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using System.Numerics;
 using SWLOR.Game.Server.Domain.Administration;
@@ -43,7 +44,7 @@ public sealed class AIBench : IDisposable
         Creatures = new FakeCreaturePlugin();
         EventsPlugin = new FakeEventsPlugin();
         Profiler = new FakeProfilerPlugin();
-        Party = ScriptedProxy.Create<IPartyService>(out var party);
+        Party = ScriptedProxy.Create<IPartyRoster>(out var party);
         PartyScript = party.On("GetAllPartyMembers", arguments => PartyMembers(Convert.ToUInt32(arguments[0])));
         BeastMastery = ScriptedProxy.Create<ICompanionLookup>(out var beasts);
         BeastMasteryScript = beasts
@@ -73,7 +74,7 @@ public sealed class AIBench : IDisposable
     public TestAIService Decision => Service.Decision;
     public TestAIService Action => Service.Action;
 
-    public IPartyService Party { get; }
+    public IPartyRoster Party { get; }
     public ScriptedProxy PartyScript { get; }
     public ICompanionLookup BeastMastery { get; }
     public ScriptedProxy BeastMasteryScript { get; }

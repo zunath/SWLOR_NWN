@@ -171,6 +171,15 @@ public class AIServiceDecisionTests : AIServiceTestBase
     // ---- the profile of a creature ----------------------------------------------------------------------------------
 
     [Test]
+    public void The_profile_description_prints_the_profile_the_creature_runs()
+    {
+        Service.DescribeAIProfile(Npc.Id).Should().Be("Generic");
+
+        Bench.PlayerBeasts.Add(Npc.Id);
+        Service.DescribeAIProfile(Npc.Id).Should().Be("BeastCompanion");
+    }
+
+    [Test]
     public void A_creature_with_no_profile_set_uses_the_generic_one_a_beast_the_beast_one_and_a_droid_the_droid_one()
     {
         Service.GetAIProfile(Npc.Id).Should().Be(AIProfileType.Generic);

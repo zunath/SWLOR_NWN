@@ -1,4 +1,4 @@
-using SWLOR.Game.Server.Domain.Creatures;
+using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Domain.Creatures
@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
     /// decision engine (profiles, per-creature state, action selection). Static callers reach the container's
     /// instance through <c>GameServices.AI</c>; the event handlers are on <see cref="AIService"/>.
     /// </summary>
-    public interface IAIService
+    public interface IAIService : IAIProfileDescription
     {
         /// <summary>
         /// When the module cache is built, the AI profiles of every profile definition are loaded and validated.

@@ -40,6 +40,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             { 3495, "RangedBoost2" },
         };
 
+        /// <summary>
+        /// Replacements retired when droids lost their saber skills. Their recipe IDs stay reserved for saved
+        /// characters, but no recipe is registered for them, so a blueprint for one could not be used or even
+        /// named. Migration expands a legacy boost into its remaining alternatives only.
+        /// </summary>
+        private static readonly HashSet<string> RetiredRecipeNames = new()
+        {
+            "DroidLightsaberBoost1",
+            "DroidSaberstaffBoost1",
+            "DroidLightsaberBoost2",
+            "DroidSaberstaffBoost2",
+        };
+
         internal static readonly Dictionary<string, int> NewRecipeIdsByName = new()
         {
             { "DroidVibrobladeBoost1", 4799 },
@@ -123,6 +136,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
         public static IEnumerable<int> GetReplacementRecipeIds(IEnumerable<string> recipeNames)
         {
             return recipeNames
+                .Where(recipeName => !RetiredRecipeNames.Contains(recipeName))
                 .Select(recipeName => NewRecipeIdsByName[recipeName])
                 .Distinct();
         }

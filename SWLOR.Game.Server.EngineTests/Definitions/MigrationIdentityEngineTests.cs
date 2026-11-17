@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var arguments = new object[] { saved, null, null, true };
                 ctx.AssertEqual(true, (bool)expand.Invoke(null, arguments), "A legacy recipe still expands");
                 var variants = (List<string>)arguments[1];
-                ctx.AssertEqual(3, variants.Count, "The legacy one-handed boost has three replacements");
+                ctx.AssertEqual(2, variants.Count, "The legacy one-handed boost has two registered replacements");
                 for (var index = 0; index < variants.Count; index++)
                 {
                     ctx.AssertEqual(4799 + index, (int)Invoke("StoredObjectData", "ReadRootInteger", variants[index], "BLUEPRINT_RECIPE_ID"),

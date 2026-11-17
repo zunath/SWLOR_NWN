@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Invoke("ServerMigration.StoredItemDataMigration", "MigrateDroidItems", controller);
                 ctx.Log("Checking the expanded serialized blueprints.");
                 var droid = JsonConvert.DeserializeObject<ConstructedDroid>(GetLocalString(controller, "CONSTRUCTED_DROID"));
-                ctx.AssertEqual(3, droid.Inventory.Count, "Expanded droid blueprint count");
+                ctx.AssertEqual(2, droid.Inventory.Count, "Expanded droid blueprint count");
                 var recipes = new List<int>();
                 foreach (var pair in droid.Inventory)
                 {
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     recipes.Add(GetLocalInt(item, "BLUEPRINT_RECIPE_ID"));
                     ctx.AssertEqual(pair.Key, GetLocalString(item, "DROID_ITEM_ID"), "Droid item identity");
                 }
-                ctx.Assert(recipes.OrderBy(value => value).SequenceEqual(new[] { 4799, 4800, 4801 }), "All replacement recipes should survive.");
+                ctx.Assert(recipes.OrderBy(value => value).SequenceEqual(new[] { 4799, 4800 }), "Every registered replacement recipe should survive; the retired saber recipe is skipped.");
             });
         }
 
@@ -364,7 +364,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var recipes = new List<int>();
             for (var item = GetFirstItemInInventory(container); GetIsObjectValid(item); item = GetNextItemInInventory(container))
                 recipes.Add(GetLocalInt(item, "BLUEPRINT_RECIPE_ID"));
-            ctx.Assert(recipes.OrderBy(value => value).SequenceEqual(new[] { 4799, 4800, 4801 }), $"A migrated container should hold exactly all three new blueprints; found: {string.Join(", ", recipes)}.");
+            ctx.Assert(recipes.OrderBy(value => value).SequenceEqual(new[] { 4799, 4800 }), $"A migrated container should hold exactly the two registered new blueprints; found: {string.Join(", ", recipes)}.");
         }
     }
 }

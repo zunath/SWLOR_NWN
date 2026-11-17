@@ -74,9 +74,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                     // Recreate an interrupted expansion: one alternative persisted, the
                     // other did not, and the source still contains its legacy recipe.
-                    DB.Delete<InventoryItem>($"{bank.Id}-recipe-4801");
-                    DB.Delete<MarketItem>($"{market.Id}-recipe-4801");
-                    DB.Delete<ResearchJob>($"{job.Id}-recipe-4801");
+                    DB.Delete<InventoryItem>($"{bank.Id}-recipe-4800");
+                    DB.Delete<MarketItem>($"{market.Id}-recipe-4800");
+                    DB.Delete<ResearchJob>($"{job.Id}-recipe-4800");
                     DB.Set(originals[0].ToObject<InventoryItem>());
                     DB.Set(originals[1].ToObject<MarketItem>());
                     DB.Set(originals[2].ToObject<ResearchJob>());
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 finally
                 {
-                    foreach (var suffix in new[] { "", "-recipe-4800", "-recipe-4801" })
+                    foreach (var suffix in new[] { "", "-recipe-4800" })
                     {
                         DB.Delete<InventoryItem>(bank.Id + suffix);
                         DB.Delete<MarketItem>(market.Id + suffix);
@@ -100,10 +100,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 void AssertRecords()
                 {
-                    ctx.AssertEqual(bankCount + 3, DB.SearchCount(new DBQuery<InventoryItem>()), "Exactly three bank variants");
-                    ctx.AssertEqual(marketCount + 3, DB.SearchCount(new DBQuery<MarketItem>()), "Exactly three market variants");
-                    ctx.AssertEqual(jobCount + 3, DB.SearchCount(new DBQuery<ResearchJob>()), "Exactly three research variants");
-                    foreach (var recipe in new[] { 4799, 4800, 4801 })
+                    ctx.AssertEqual(bankCount + 2, DB.SearchCount(new DBQuery<InventoryItem>()), "Exactly two bank variants");
+                    ctx.AssertEqual(marketCount + 2, DB.SearchCount(new DBQuery<MarketItem>()), "Exactly two market variants");
+                    ctx.AssertEqual(jobCount + 2, DB.SearchCount(new DBQuery<ResearchJob>()), "Exactly two research variants");
+                    foreach (var recipe in new[] { 4799, 4800 })
                     {
                         var suffix = recipe == 4799 ? "" : $"-recipe-{recipe}";
                         var savedBank = ReadPersisted<InventoryItem>(bank.Id + suffix);
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual((RecipeType)recipe, savedJob.Recipe, "Research target agrees with its serialized blueprint");
                     }
                     var savedCategory = ReadPersisted<WorldPropertyCategory>(category.Id);
-                    ctx.AssertEqual(3, savedCategory.Items.Count, "All property storage alternatives");
+                    ctx.AssertEqual(2, savedCategory.Items.Count, "All registered property storage alternatives");
                     var recipes = new List<int>();
                     foreach (var item in savedCategory.Items.Values)
                     {
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(11, item.Quantity, "Property stack quantity");
                         ctx.AssertEqual(GetName(nativeItem), item.Name, "Property blueprint display name");
                     }
-                    ctx.Assert(recipes.OrderBy(id => id).SequenceEqual(new[] { 4799, 4800, 4801 }), "Distinct property recipes");
+                    ctx.Assert(recipes.OrderBy(id => id).SequenceEqual(new[] { 4799, 4800 }), "Distinct property recipes");
                 }
             });
         }

@@ -36,14 +36,14 @@ public sealed class SpawnBench : IDisposable
     {
         Engine = new FakeNWScript();
         Locals = new LocalVariables(Engine);
-        Objects = new FakeObjectPlugin();
+        ObjectPlugin = new FakeObjectPlugin();
         Areas = new FakeAreaPlugin();
         Creatures = new FakeCreaturePlugin();
         Events = new FakeEventsPlugin();
         Service = new TestSpawnService(now);
         InstallEngine();
         _scopes.Add(NWScriptRuntime.Override(Engine));
-        _scopes.Add(ObjectPluginRuntime.Override(Objects));
+        _scopes.Add(ObjectPluginRuntime.Override(ObjectPlugin));
         _scopes.Add(AreaPluginRuntime.Override(Areas));
         _scopes.Add(CreaturePluginRuntime.Override(Creatures));
         _scopes.Add(EventsPluginRuntime.Override(Events));
@@ -51,11 +51,16 @@ public sealed class SpawnBench : IDisposable
 
     public FakeNWScript Engine { get; }
     public LocalVariables Locals { get; }
-    public FakeObjectPlugin Objects { get; }
+    public FakeObjectPlugin ObjectPlugin { get; }
     public FakeAreaPlugin Areas { get; }
     public FakeCreaturePlugin Creatures { get; }
     public FakeEventsPlugin Events { get; }
     public TestSpawnService Service { get; }
+
+    // One accessor per part of the Spawn split; each is the one instance until its part moves.
+    public TestSpawnService Runtime => Service.Runtime;
+    public TestSpawnService Registry => Service.Registry;
+    public TestSpawnService Objects => Service.Objects;
 
     /// <summary>The game hour <c>GetTimeHour</c> answers.</summary>
     public int GameHour { get; set; } = 12;
@@ -270,18 +275,18 @@ public sealed class SpawnBench : IDisposable
             if (sim != null)
                 sim.EventScripts[(EventScript)arguments[1]!] = (string)arguments[2]!;
             if ((EventScript)arguments[1]! == EventScript.Creature_OnSpawnIn)
-                ConversationWasPrivateWhenTheSpawnScriptWasSet = Objects.CountOf("SetConversationPrivate") > 0;
+                ConversationWasPrivateWhenTheSpawnScriptWasSet = ObjectPlugin.CountOf("SetConversationPrivate") > 0;
             return 1;
         });
 
-        Objects.SetReturnHandler("Serialize", arguments =>
+        ObjectPlugin.SetReturnHandler("Serialize", arguments =>
         {
             var source = Sim(arguments[0])!;
             var key = "serialized:" + source.Id;
             _serialized[key] = source;
             return key;
         });
-        Objects.SetReturnHandler("Deserialize", arguments =>
+        ObjectPlugin.SetReturnHandler("Deserialize", arguments =>
         {
             var source = _serialized[(string)arguments[0]!];
             var created = Add(new SpawnSim { Type = source.Type, Tag = source.Tag, ResRef = source.ResRef });

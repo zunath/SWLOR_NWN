@@ -166,7 +166,7 @@ public class CompanionControlServiceTests
 
     private void Register(bool preserve = false)
     {
-        _service.Initialize(_companion.Id, preserve);
+        _service.Control.Initialize(_companion.Id, preserve);
         Engine.ClearCalls();
         _triggers.Clear();
         _service.InterruptedActivations.Clear();
@@ -177,7 +177,7 @@ public class CompanionControlServiceTests
     private void Say(AssociateCommand command)
     {
         Handle(command);
-        _service.HandleConversation(_companion.Id);
+        _service.Control.HandleConversation(_companion.Id);
     }
 
     // ----- registry -----
@@ -185,27 +185,27 @@ public class CompanionControlServiceTests
     [Test]
     public void A_companion_is_controlled_only_with_a_player_master_and_a_droid_or_a_beast_body()
     {
-        _service.IsControlledCompanion(Invalid).Should().BeFalse();
-        _service.IsControlledCompanion(_master.Id).Should().BeFalse("it has no master");
-        _service.IsControlledCompanion(_companion.Id).Should().BeTrue();
+        _service.Store.IsControlledCompanion(Invalid).Should().BeFalse();
+        _service.Store.IsControlledCompanion(_master.Id).Should().BeFalse("it has no master");
+        _service.Store.IsControlledCompanion(_companion.Id).Should().BeTrue();
 
         _service.Droids.Clear();
-        _service.IsControlledCompanion(_companion.Id).Should().BeFalse("it is neither a droid nor a beast");
+        _service.Store.IsControlledCompanion(_companion.Id).Should().BeFalse("it is neither a droid nor a beast");
         _bench.PlayerBeasts.Add(_companion.Id);
-        _service.IsControlledCompanion(_companion.Id).Should().BeTrue();
+        _service.Store.IsControlledCompanion(_companion.Id).Should().BeTrue();
 
         _companion.Master = _enemy.Id;
-        _service.IsControlledCompanion(_companion.Id).Should().BeFalse("its master is not a player");
+        _service.Store.IsControlledCompanion(_companion.Id).Should().BeFalse("its master is not a player");
     }
 
     [Test]
     public void Initializing_registers_the_companion_and_sends_it_to_follow_its_master()
     {
-        _service.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
+        _service.Store.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
 
-        _service.Initialize(_companion.Id);
+        _service.Control.Initialize(_companion.Id);
 
-        _service.IsRegisteredCompanion(_companion.Id).Should().BeTrue();
+        _service.Store.IsRegisteredCompanion(_companion.Id).Should().BeTrue();
         Engine.CountOf("SetAssociateListenPatterns").Should().Be(1);
         ExpectFollowIssued(2f, cleared: true);
     }
@@ -213,7 +213,7 @@ public class CompanionControlServiceTests
     [Test]
     public void Initializing_can_keep_the_action_queue()
     {
-        _service.Initialize(_companion.Id, true);
+        _service.Control.Initialize(_companion.Id, true);
 
         ExpectFollowIssued(2f, cleared: false);
     }
@@ -235,9 +235,9 @@ public class CompanionControlServiceTests
     {
         _service.Droids.Clear();
 
-        _service.Initialize(_companion.Id);
+        _service.Control.Initialize(_companion.Id);
 
-        _service.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
+        _service.Store.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
         Engine.CountOf("SetAssociateListenPatterns").Should().Be(0);
     }
 
@@ -246,26 +246,26 @@ public class CompanionControlServiceTests
     {
         Register();
 
-        _service.Clear(_companion.Id);
+        _service.Control.Clear(_companion.Id);
 
-        _service.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
+        _service.Store.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
         _cleared.Should().Equal(_companion.Id);
     }
 
     [Test]
     public void The_mode_defaults_to_follow_and_asking_for_it_registers_the_companion()
     {
-        _service.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
+        _service.Store.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
 
-        _service.IsRegisteredCompanion(_companion.Id).Should().BeTrue();
+        _service.Store.IsRegisteredCompanion(_companion.Id).Should().BeTrue();
     }
 
     [Test]
     public void Abilities_are_enabled_for_an_unregistered_companion_and_by_default()
     {
-        _service.AreAbilitiesEnabled(_companion.Id).Should().BeTrue();
+        _service.Store.AreAbilitiesEnabled(_companion.Id).Should().BeTrue();
         Register();
-        _service.AreAbilitiesEnabled(_companion.Id).Should().BeTrue();
+        _service.Store.AreAbilitiesEnabled(_companion.Id).Should().BeTrue();
     }
 
     // ----- conversation commands -----
@@ -277,12 +277,12 @@ public class CompanionControlServiceTests
         Handle(AssociateCommand.GuardMaster);
 
         _bench.LastSpeaker = _enemy.Id;
-        _service.HandleConversation(_companion.Id).Should().BeFalse();
+        _service.Control.HandleConversation(_companion.Id).Should().BeFalse();
 
         _bench.LastSpeaker = _master.Id;
         _service.Droids.Clear();
-        _service.HandleConversation(_companion.Id).Should().BeFalse();
-        _service.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
+        _service.Control.HandleConversation(_companion.Id).Should().BeFalse();
+        _service.Store.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
     }
 
     [Test]
@@ -291,7 +291,7 @@ public class CompanionControlServiceTests
         Register();
         _listenPattern = 5;
 
-        _service.HandleConversation(_companion.Id).Should().BeFalse();
+        _service.Control.HandleConversation(_companion.Id).Should().BeFalse();
     }
 
     [Test]
@@ -300,7 +300,7 @@ public class CompanionControlServiceTests
         Register();
         Handle(AssociateCommand.ToggleStealth);
 
-        _service.HandleConversation(_companion.Id).Should().BeFalse();
+        _service.Control.HandleConversation(_companion.Id).Should().BeFalse();
     }
 
     [TestCase(AssociateCommand.FollowMaster, CompanionMode.Follow, "Following you.", 2f)]
@@ -311,9 +311,9 @@ public class CompanionControlServiceTests
         Register();
         Handle(command);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
-        _service.GetMode(_companion.Id).Should().Be(mode);
+        _service.Store.GetMode(_companion.Id).Should().Be(mode);
         Messages().Should().Equal($"Droid: {response}");
         _service.InterruptedActivations.Should().Equal(_companion.Id);
         var assigned = _bench.AssignedTo(_companion.Id);
@@ -329,9 +329,9 @@ public class CompanionControlServiceTests
         Register();
         Handle(AssociateCommand.StandGround);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
-        _service.GetMode(_companion.Id).Should().Be(CompanionMode.StandGround);
+        _service.Store.GetMode(_companion.Id).Should().Be(CompanionMode.StandGround);
         Messages().Should().Equal("Droid: Holding this position.");
         _bench.AssignedTo(_companion.Id).Should().HaveCount(1, "only the clear");
     }
@@ -343,7 +343,7 @@ public class CompanionControlServiceTests
         _unseen.Add((_enemy.Id, _companion.Id));
         Handle(AssociateCommand.AttackNearest);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         Messages().Should().Equal("Droid: No visible enemy is within 15 meters.");
         _triggers.Should().BeEmpty();
@@ -357,11 +357,11 @@ public class CompanionControlServiceTests
         _bench.MakeEnemies(_companion.Id, farEnemy.Id);
         Handle(AssociateCommand.AttackNearest);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         Messages().Should().Equal("Droid: Attacking Raider, then returning to Follow.");
         _triggers.Should().ContainSingle().Which.Should().Be((AITriggerType.CombatRound, _enemy.Id, true, _companion.Id));
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
     }
 
     [Test]
@@ -371,7 +371,7 @@ public class CompanionControlServiceTests
         _enemy.Position = new System.Numerics.Vector3(30f, 0f, 0f);
         Handle(AssociateCommand.AttackNearest);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         Messages().Should().Equal("Droid: No visible enemy is within 15 meters.");
     }
@@ -385,7 +385,7 @@ public class CompanionControlServiceTests
         _enemy.Position = new System.Numerics.Vector3(0f, 0f, 0f);
         Handle(AssociateCommand.AttackNearest);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         Messages().Should().Equal("Droid: No visible enemy is within 15 meters.");
     }
@@ -396,7 +396,7 @@ public class CompanionControlServiceTests
         Register();
         Handle(AssociateCommand.HealMaster);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         Messages().Should().Equal("Droid: You do not need healing.");
     }
@@ -410,7 +410,7 @@ public class CompanionControlServiceTests
         Engine.ClearCalls();
         Handle(AssociateCommand.HealMaster);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         Messages().Should().Equal("Droid: Unable to heal: abilities are disabled.");
     }
@@ -423,7 +423,7 @@ public class CompanionControlServiceTests
         _supportAbility = "Medical Probe";
         Handle(AssociateCommand.HealMaster);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         Messages().Should().Equal("Droid: Using Medical Probe on you, then returning to Follow.");
     }
@@ -435,7 +435,7 @@ public class CompanionControlServiceTests
         _master.HitPoints = 10;
         Handle(AssociateCommand.HealMaster);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         Messages().Should().Equal("Droid: Unable to heal you: no compatible healing ability is ready.");
     }
@@ -446,16 +446,16 @@ public class CompanionControlServiceTests
         Register();
         Handle(AssociateCommand.ToggleAbilities);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
-        _service.AreAbilitiesEnabled(_companion.Id).Should().BeFalse();
+        _service.Store.AreAbilitiesEnabled(_companion.Id).Should().BeFalse();
         _service.Dequeued.Should().Equal(_companion.Id);
         Messages().Should().Equal("Droid: Abilities disabled; basic attacks only.");
 
         Engine.ClearCalls();
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
-        _service.AreAbilitiesEnabled(_companion.Id).Should().BeTrue();
+        _service.Store.AreAbilitiesEnabled(_companion.Id).Should().BeTrue();
         _service.Dequeued.Should().HaveCount(1);
         Messages().Should().Equal("Droid: Abilities enabled.");
     }
@@ -467,14 +467,14 @@ public class CompanionControlServiceTests
         _lastHostileActor = _enemy.Id;
         Handle(AssociateCommand.MasterUnderAttack);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         _triggers.Should().ContainSingle().Which.Target.Should().Be(_enemy.Id);
 
         _triggers.Clear();
         _goingToBeAttackedBy = _enemy.Id;
         Handle(AssociateCommand.MasterGoingtobeAttacked);
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
         _triggers.Should().ContainSingle().Which.Target.Should().Be(_enemy.Id);
     }
 
@@ -485,10 +485,10 @@ public class CompanionControlServiceTests
         _attackTargets[_master.Id] = _enemy.Id;
         Handle(AssociateCommand.MasterAttackedOther);
 
-        _service.HandleConversation(_companion.Id).Should().BeTrue();
+        _service.Control.HandleConversation(_companion.Id).Should().BeTrue();
 
         _triggers.Should().ContainSingle().Which.Target.Should().Be(_enemy.Id);
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
     }
 
     [TestCase(AssociateCommand.MasterFailedLockpick)]
@@ -500,7 +500,7 @@ public class CompanionControlServiceTests
         Register();
         Handle(command);
 
-        _service.HandleConversation(_companion.Id).Should().BeFalse();
+        _service.Control.HandleConversation(_companion.Id).Should().BeFalse();
 
         _service.InterruptedActivations.Should().Equal(_companion.Id);
     }
@@ -512,18 +512,18 @@ public class CompanionControlServiceTests
     {
         Register();
 
-        _service.RegisterDefensiveThreat(_companion.Id, Invalid);
-        _service.RegisterDefensiveThreat(_companion.Id, _companion.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, Invalid);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _companion.Id);
         _enemy.HitPoints = 0;
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
         var neutral = _bench.AddCreature("Neutral", _area);
-        _service.RegisterDefensiveThreat(_companion.Id, neutral.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, neutral.Id);
         _enemy.HitPoints = 10;
         _enemy.Area = _bench.AddArea("elsewhere");
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
         _service.Droids.Clear();
         _enemy.Area = _area;
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
 
         _triggers.Should().BeEmpty();
     }
@@ -534,10 +534,10 @@ public class CompanionControlServiceTests
         Register();
         _actionIssued = true;
 
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
 
         _triggers.Should().ContainSingle().Which.Should().Be((AITriggerType.CombatRound, _enemy.Id, true, _companion.Id));
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
     }
 
     [Test]
@@ -549,10 +549,10 @@ public class CompanionControlServiceTests
         var second = _bench.AddCreature("Second", _area, 3f);
         _bench.MakeEnemies(_companion.Id, second.Id);
 
-        _service.RegisterDefensiveThreat(_companion.Id, second.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, second.Id);
 
         _triggers.Should().BeEmpty();
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id, "the attack nearest order comes first");
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id, "the attack nearest order comes first");
     }
 
     [Test]
@@ -560,12 +560,12 @@ public class CompanionControlServiceTests
     {
         Register();
         _actionIssued = true;
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
         _service.Now = _service.Now.AddSeconds(30);
 
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
 
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
     }
 
     [Test]
@@ -573,7 +573,7 @@ public class CompanionControlServiceTests
     {
         Register();
 
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
 
         _triggers.Should().ContainSingle().Which.Should().Be((AITriggerType.CombatRound, _enemy.Id, false, _companion.Id));
     }
@@ -582,16 +582,16 @@ public class CompanionControlServiceTests
     public void An_owner_attack_is_ignored_for_a_stranger_an_invalid_target_or_during_attack_nearest()
     {
         Register();
-        _service.RegisterOwnerAttack(_companion.Id, Invalid);
+        _service.Control.RegisterOwnerAttack(_companion.Id, Invalid);
         _triggers.Should().BeEmpty();
 
         Say(AssociateCommand.AttackNearest);
         _triggers.Clear();
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
         _triggers.Should().BeEmpty();
 
         _service.Droids.Clear();
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
         _triggers.Should().BeEmpty();
     }
 
@@ -603,14 +603,14 @@ public class CompanionControlServiceTests
         Register();
         _companion.Action = ActionType.MoveToPoint;
 
-        _service.BeginExplicitOrder(_companion.Id);
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.BeginExplicitOrder(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
         _triggers.Should().BeEmpty();
         _service.InterruptedActivations.Should().Equal(_companion.Id);
 
         _service.Now = _service.Now.AddSeconds(31);
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _triggers.Should().ContainSingle();
     }
 
@@ -619,16 +619,16 @@ public class CompanionControlServiceTests
     {
         Register();
         _companion.Action = ActionType.MoveToPoint;
-        _service.BeginExplicitOrder(_companion.Id, 0.1f);
-        _service.CancelExplicitOrder(_companion.Id);
-        _service.CancelExplicitOrder(_master.Id);
+        _service.Control.BeginExplicitOrder(_companion.Id, 0.1f);
+        _service.Control.CancelExplicitOrder(_companion.Id);
+        _service.Control.CancelExplicitOrder(_master.Id);
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _triggers.Should().ContainSingle();
 
         _service.Droids.Clear();
         _service.InterruptedActivations.Clear();
-        _service.BeginExplicitOrder(_companion.Id);
+        _service.Control.BeginExplicitOrder(_companion.Id);
         _service.InterruptedActivations.Should().BeEmpty();
     }
 
@@ -637,12 +637,12 @@ public class CompanionControlServiceTests
     {
         Register();
         _service.Busy.Add(_companion.Id);
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _triggers.Should().BeEmpty();
 
         _service.Busy.Clear();
         _service.Droids.Clear();
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _triggers.Should().BeEmpty();
     }
 
@@ -652,7 +652,7 @@ public class CompanionControlServiceTests
         Register();
         _companion.Action = ActionType.MoveToPoint;
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
         _triggers.Should().ContainSingle().Which.Target.Should().Be(Invalid);
         _bench.AssignedTo(_companion.Id).Should().HaveCount(1);
@@ -664,7 +664,7 @@ public class CompanionControlServiceTests
         Register();
         _companion.Action = ActionType.Follow;
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
         _bench.AssignedTo(_companion.Id).Should().BeEmpty();
     }
@@ -677,12 +677,12 @@ public class CompanionControlServiceTests
         Engine.ClearCalls();
         _companion.Action = ActionType.MoveToPoint;
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _bench.AssignedTo(_companion.Id).Should().HaveCount(1);
 
         Engine.ClearCalls();
         _companion.Action = ActionType.CastSpell;
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _bench.AssignedTo(_companion.Id).Should().BeEmpty("casting is not interrupted");
     }
 
@@ -695,11 +695,11 @@ public class CompanionControlServiceTests
         _service.Now = _service.Now.AddSeconds(30);
         Engine.ClearCalls();
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
         Messages().Should().Contain("Droid: Unable to reach the target; returning to Follow.");
-        _service.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
+        _service.Store.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
     }
 
     [Test]
@@ -709,14 +709,14 @@ public class CompanionControlServiceTests
         _actionIssued = true;
         Say(AssociateCommand.GuardMaster);
         _attackTargets[_enemy.Id] = _master.Id;
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
         _service.Now = _service.Now.AddSeconds(30);
         Engine.ClearCalls();
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
-        _service.GetMode(_companion.Id).Should().Be(CompanionMode.Guard);
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
+        _service.Store.GetMode(_companion.Id).Should().Be(CompanionMode.Guard);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
         Messages().Should().Contain("Droid: Unable to reach the target; remaining in Guard.");
     }
 
@@ -725,14 +725,14 @@ public class CompanionControlServiceTests
     {
         Register();
         _actionIssued = true;
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
         _service.Now = _service.Now.AddSeconds(30);
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _service.Now = _service.Now.AddSeconds(30);
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
     }
 
     [Test]
@@ -740,40 +740,40 @@ public class CompanionControlServiceTests
     {
         Register();
         _actionIssued = true;
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
         _service.Now = _service.Now.AddSeconds(4);
         _service.OffensiveAt[_companion.Id] = _service.Now;
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _service.Now = _service.Now.AddSeconds(4);
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
     }
 
     [Test]
     public void A_target_out_of_the_tether_is_no_longer_authorized()
     {
         Register();
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
         _enemy.Position = new System.Numerics.Vector3(40f, 0f, 0f);
 
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
     }
 
     [Test]
     public void A_threat_that_is_no_longer_attacking_lapses_after_the_timeout()
     {
         Register();
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
         _attackTargets[_enemy.Id] = _master.Id;
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _attackTargets.Remove(_enemy.Id);
         _service.Now = _service.Now.AddSeconds(10);
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
     }
 
     [Test]
@@ -782,12 +782,12 @@ public class CompanionControlServiceTests
         Register();
         var close = _bench.AddCreature("Close", _area, 2f);
         _bench.MakeEnemies(_companion.Id, close.Id);
-        _service.RegisterDefensiveThreat(_companion.Id, close.Id);
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, close.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
         _attackTargets[_enemy.Id] = _master.Id;
 
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
         _triggers.Last().Target.Should().Be(_enemy.Id);
     }
 
@@ -795,16 +795,16 @@ public class CompanionControlServiceTests
     public void A_pending_defensive_reaction_is_processed_once()
     {
         Register();
-        _service.TryProcessPendingDefensiveReaction(_master.Id).Should().BeFalse();
-        _service.TryProcessPendingDefensiveReaction(_companion.Id).Should().BeFalse();
+        _service.Control.TryProcessPendingDefensiveReaction(_master.Id).Should().BeFalse();
+        _service.Control.TryProcessPendingDefensiveReaction(_companion.Id).Should().BeFalse();
 
         _service.Busy.Add(_companion.Id);
-        _service.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
+        _service.Control.RegisterDefensiveThreat(_companion.Id, _enemy.Id);
         _service.Busy.Clear();
 
-        _service.TryProcessPendingDefensiveReaction(_companion.Id).Should().BeTrue();
+        _service.Control.TryProcessPendingDefensiveReaction(_companion.Id).Should().BeTrue();
         _triggers.Should().ContainSingle().Which.Bypass.Should().BeTrue();
-        _service.TryProcessPendingDefensiveReaction(_companion.Id).Should().BeFalse();
+        _service.Control.TryProcessPendingDefensiveReaction(_companion.Id).Should().BeFalse();
     }
 
     // ----- resting -----
@@ -816,7 +816,7 @@ public class CompanionControlServiceTests
         _service.BusyTypes[_companion.Id] = ActivityStatusType.Resting;
         _service.RestEffect.Add(_companion.Id);
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
         _service.RestEffect.Should().BeEmpty();
         _service.ClearedBusy.Should().BeEmpty();
@@ -828,7 +828,7 @@ public class CompanionControlServiceTests
         Register();
         _service.BusyTypes[_companion.Id] = ActivityStatusType.Resting;
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
         _service.ClearedBusy.Should().Equal(_companion.Id);
     }
@@ -840,7 +840,7 @@ public class CompanionControlServiceTests
         _service.BusyTypes[_companion.Id] = ActivityStatusType.Resting;
         _service.BusyTypes[_master.Id] = ActivityStatusType.Resting;
 
-        _service.ProcessCombatRound(_companion.Id);
+        _service.Control.ProcessCombatRound(_companion.Id);
 
         _service.ClearedBusy.Should().BeEmpty();
     }
@@ -853,9 +853,9 @@ public class CompanionControlServiceTests
         Register();
         _service.Droids.Clear();
 
-        _service.ProcessHeartbeat(_companion.Id);
+        _service.Control.ProcessHeartbeat(_companion.Id);
 
-        _service.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
+        _service.Store.IsRegisteredCompanion(_companion.Id).Should().BeFalse();
         _cleared.Should().Equal(_companion.Id);
     }
 
@@ -866,14 +866,14 @@ public class CompanionControlServiceTests
         Say(AssociateCommand.GuardMaster);
         _triggers.Clear();
 
-        _service.ProcessHeartbeat(_companion.Id);
-        _service.GetMode(_companion.Id).Should().Be(CompanionMode.Guard);
+        _service.Control.ProcessHeartbeat(_companion.Id);
+        _service.Store.GetMode(_companion.Id).Should().Be(CompanionMode.Guard);
         _triggers.Should().ContainSingle();
 
         _master.Area = _bench.AddArea("other");
-        _service.ProcessHeartbeat(_companion.Id);
+        _service.Control.ProcessHeartbeat(_companion.Id);
 
-        _service.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
+        _service.Store.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
     }
 
     [Test]
@@ -882,13 +882,13 @@ public class CompanionControlServiceTests
         Register();
         _companion.Action = ActionType.MoveToPoint;
 
-        _service.ResumeModePosition(_companion.Id);
+        _service.Control.ResumeModePosition(_companion.Id);
 
         _bench.AssignedTo(_companion.Id).Should().HaveCount(1);
 
         Engine.ClearCalls();
         _service.Droids.Clear();
-        _service.ResumeModePosition(_companion.Id);
+        _service.Control.ResumeModePosition(_companion.Id);
         _bench.AssignedTo(_companion.Id).Should().BeEmpty();
     }
 
@@ -899,7 +899,7 @@ public class CompanionControlServiceTests
         _companion.Action = ActionType.MoveToPoint;
         _service.Busy.Add(_companion.Id);
 
-        _service.ResumeModePosition(_companion.Id);
+        _service.Control.ResumeModePosition(_companion.Id);
 
         _bench.AssignedTo(_companion.Id).Should().BeEmpty();
     }
@@ -912,7 +912,7 @@ public class CompanionControlServiceTests
         _companion.Master = Invalid;
         _companion.Action = ActionType.MoveToPoint;
 
-        _service.ResumeModePosition(_companion.Id);
+        _service.Control.ResumeModePosition(_companion.Id);
 
         _bench.AssignedTo(_companion.Id).Should().BeEmpty();
     }
@@ -922,7 +922,7 @@ public class CompanionControlServiceTests
     {
         Register();
 
-        _service.ResetOwnerCompanionToFollow(Invalid);
+        _service.Control.ResetOwnerCompanionToFollow(Invalid);
 
         Messages().Should().BeEmpty();
         _bench.AssignedTo(_companion.Id).Should().BeEmpty();
@@ -934,14 +934,14 @@ public class CompanionControlServiceTests
         Register();
         Say(AssociateCommand.GuardMaster);
 
-        _service.ResetOwnerCompanionToFollow(_master.Id);
+        _service.Control.ResetOwnerCompanionToFollow(_master.Id);
 
-        _service.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
+        _service.Store.GetMode(_companion.Id).Should().Be(CompanionMode.Follow);
 
         Say(AssociateCommand.GuardMaster);
         _associates[_master.Id] = _enemy.Id;
-        _service.ResetOwnerCompanionToFollow(_master.Id);
-        _service.GetMode(_companion.Id).Should().Be(CompanionMode.Guard, "the associate is not a controlled companion");
+        _service.Control.ResetOwnerCompanionToFollow(_master.Id);
+        _service.Store.GetMode(_companion.Id).Should().Be(CompanionMode.Guard, "the associate is not a controlled companion");
     }
 
     // ----- ability authorization -----
@@ -962,41 +962,41 @@ public class CompanionControlServiceTests
     [Test]
     public void A_hostile_ability_needs_an_authorized_target()
     {
-        _service.ResolveHostileAbilityTarget(_companion.Id, Ability(), Invalid, _enemy.Id).Should().Be(Invalid);
-        _service.ResolveHostileAbilityTarget(_companion.Id, Ability(), _enemy.Id, _enemy.Id).Should().Be(_enemy.Id);
-        _service.ResolveHostileAbilityTarget(_companion.Id, Ability(), _enemy.Id, _master.Id).Should().Be(Invalid);
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, Ability(), Invalid, _enemy.Id).Should().Be(Invalid);
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, Ability(), _enemy.Id, _enemy.Id).Should().Be(_enemy.Id);
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, Ability(), _enemy.Id, _master.Id).Should().Be(Invalid);
     }
 
     [Test]
     public void A_self_origin_area_is_authorized_only_inside_its_reach_and_the_same_area()
     {
         var ability = Ability(true, Targeting(AbilityTargetingShapeType.Sphere, AbilityTargetingFlags.OriginOnSelf, 10f));
-        _service.ResolveHostileAbilityTarget(_companion.Id, ability, _enemy.Id, _companion.Id).Should().Be(_companion.Id);
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, ability, _enemy.Id, _companion.Id).Should().Be(_companion.Id);
 
         _enemy.Position = new System.Numerics.Vector3(30f, 0f, 0f);
-        _service.ResolveHostileAbilityTarget(_companion.Id, ability, _enemy.Id, _companion.Id).Should().Be(Invalid);
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, ability, _enemy.Id, _companion.Id).Should().Be(Invalid);
 
         _enemy.Position = new System.Numerics.Vector3(3f, 0f, 0f);
         _enemy.Area = _bench.AddArea("away");
-        _service.ResolveHostileAbilityTarget(_companion.Id, ability, _enemy.Id, _companion.Id).Should().Be(Invalid);
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, ability, _enemy.Id, _companion.Id).Should().Be(Invalid);
     }
 
     [Test]
     public void An_area_ability_selected_on_the_companion_follows_the_targeting_rules()
     {
-        _service.ResolveHostileAbilityTarget(_companion.Id, Ability(true, null, 10f), _enemy.Id, _companion.Id)
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, Ability(true, null, 10f), _enemy.Id, _companion.Id)
             .Should().Be(_companion.Id, "no targeting: the declared max range decides");
-        _service.ResolveHostileAbilityTarget(_companion.Id, Ability(true, null, 2f), _enemy.Id, _companion.Id)
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, Ability(true, null, 2f), _enemy.Id, _companion.Id)
             .Should().Be(Invalid);
 
         var cone = Ability(true, Targeting(AbilityTargetingShapeType.Cone, AbilityTargetingFlags.None));
-        _service.ResolveHostileAbilityTarget(_companion.Id, cone, _enemy.Id, _companion.Id).Should().Be(Invalid);
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, cone, _enemy.Id, _companion.Id).Should().Be(Invalid);
 
         var placed = Ability(true, Targeting(AbilityTargetingShapeType.Sphere, AbilityTargetingFlags.None));
-        _service.ResolveHostileAbilityTarget(_companion.Id, placed, _enemy.Id, _companion.Id).Should().Be(Invalid);
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, placed, _enemy.Id, _companion.Id).Should().Be(Invalid);
 
         _enemy.Area = _bench.AddArea("away");
-        _service.ResolveHostileAbilityTarget(_companion.Id, Ability(true, null, 10f), _enemy.Id, _companion.Id).Should().Be(Invalid);
+        _service.Authority.ResolveHostileAbilityTarget(_companion.Id, Ability(true, null, 10f), _enemy.Id, _companion.Id).Should().Be(Invalid);
     }
 
     [Test]
@@ -1005,24 +1005,24 @@ public class CompanionControlServiceTests
         Register();
         var ability = Ability();
 
-        _service.IsHostileAbilityTargetAuthorized(_companion.Id, ability, _enemy.Id).Should().BeFalse();
+        _service.Authority.IsHostileAbilityTargetAuthorized(_companion.Id, ability, _enemy.Id).Should().BeFalse();
 
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
-        _service.IsHostileAbilityTargetAuthorized(_companion.Id, ability, _enemy.Id).Should().BeTrue();
-        _service.IsHostileAbilityTargetAuthorized(_companion.Id, ability, _master.Id).Should().BeFalse();
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Authority.IsHostileAbilityTargetAuthorized(_companion.Id, ability, _enemy.Id).Should().BeTrue();
+        _service.Authority.IsHostileAbilityTargetAuthorized(_companion.Id, ability, _master.Id).Should().BeFalse();
     }
 
     [Test]
     public void An_attack_command_is_allowed_for_an_unregistered_companion_and_only_at_the_authorized_target()
     {
-        _service.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeTrue();
+        _service.Authority.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeTrue();
 
         Register();
-        _service.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeFalse();
+        _service.Authority.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeFalse();
 
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
-        _service.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeTrue();
-        _service.CanIssueAttackCommand(_companion.Id, _master.Id).Should().BeFalse();
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Authority.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeTrue();
+        _service.Authority.CanIssueAttackCommand(_companion.Id, _master.Id).Should().BeFalse();
     }
 
     // ----- stand ground -----
@@ -1040,16 +1040,16 @@ public class CompanionControlServiceTests
     public void Standing_ground_authorizes_a_target_inside_weapon_reach_only()
     {
         StandGround();
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid, "the enemy is 5 meters away, beyond reach 2.25");
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid, "the enemy is 5 meters away, beyond reach 2.25");
 
         _service.WeaponRange = 20f;
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
-        _service.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeTrue();
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
+        _service.Authority.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeTrue();
 
         _service.WeaponRange = 1f;
-        _service.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeFalse();
+        _service.Authority.CanIssueAttackCommand(_companion.Id, _enemy.Id).Should().BeFalse();
     }
 
     [Test]
@@ -1067,15 +1067,15 @@ public class CompanionControlServiceTests
         _service.Registered[feat + 4] = new AbilityDetail { Name = "Strike", IsHostileAbility = true, ActivationType = AbilityActivationType.Weapon };
         _service.UsableFeats.Add(feat + 1);
 
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
 
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
 
         _service.UsableFeats.Clear();
         _service.UsableFeats.Add(feat);
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(_enemy.Id);
         _service.UsableFeats.Clear();
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
     }
 
     [Test]
@@ -1090,9 +1090,9 @@ public class CompanionControlServiceTests
         _service.Registered[feat + 1] = Ability(true, Targeting(AbilityTargetingShapeType.Sphere, AbilityTargetingFlags.OriginOnSelf, 1f));
         _service.Registered[feat + 2] = Ability();
         _service.UsableFeats.UnionWith(new[] { feat, feat + 1 });
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
 
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
     }
 
     [Test]
@@ -1104,9 +1104,9 @@ public class CompanionControlServiceTests
         _service.Registered[feat] = Ability();
         _service.UsableFeats.Add(feat);
         Say(AssociateCommand.ToggleAbilities);
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
 
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
     }
 
     [Test]
@@ -1117,16 +1117,16 @@ public class CompanionControlServiceTests
         _service.Feats[_companion.Id] = new List<FeatType> { feat, feat + 9 };
         _service.Registered[feat] = Ability();
         _service.UsableFeats.Add(feat);
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
         _service.AbilityLookups = 0;
 
-        _service.PeekAuthorizedTarget(_companion.Id);
-        _service.PeekAuthorizedTarget(_companion.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id);
 
         _service.AbilityLookups.Should().Be(0, "the list built by the owner attack is still current");
 
         _service.Feats[_companion.Id] = new List<FeatType> { feat };
-        _service.PeekAuthorizedTarget(_companion.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id);
         _service.AbilityLookups.Should().Be(1, "the known feats changed");
     }
 
@@ -1141,10 +1141,10 @@ public class CompanionControlServiceTests
         _service.Registered[feat] = ability;
         _service.UsableFeats.Add(feat);
         _service.PerkLevels[PerkType.Invalid + 1] = 3;
-        _service.RegisterOwnerAttack(_companion.Id, _enemy.Id);
+        _service.Control.RegisterOwnerAttack(_companion.Id, _enemy.Id);
         _service.UsedLevels.Clear();
 
-        _service.PeekAuthorizedTarget(_companion.Id);
+        _service.Authority.PeekAuthorizedTarget(_companion.Id);
 
         _service.UsedLevels.Should().Equal(3);
     }
@@ -1199,38 +1199,38 @@ public class CompanionControlServiceTests
     {
         Register();
         _bench.LastAttacker = _enemy.Id;
-        _service.OnOwnerAttacked();
+        _service.Control.OnOwnerAttacked();
         _triggers.Should().ContainSingle().Which.Target.Should().Be(_enemy.Id);
 
-        _service.ResetOwnerCompanionToFollow(_master.Id);
+        _service.Control.ResetOwnerCompanionToFollow(_master.Id);
         _triggers.Clear();
         _bench.LastDamager = _enemy.Id;
-        _service.OnOwnerDamaged();
+        _service.Control.OnOwnerDamaged();
         _triggers.Should().ContainSingle();
 
-        _service.ResetOwnerCompanionToFollow(_master.Id);
+        _service.Control.ResetOwnerCompanionToFollow(_master.Id);
         _triggers.Clear();
         _lastSpellHarmful = true;
         _lastSpellCaster = _enemy.Id;
-        _service.OnHostileSpellCastAtOwner();
+        _service.Control.OnHostileSpellCastAtOwner();
         _triggers.Should().ContainSingle();
 
         _triggers.Clear();
         _lastSpellHarmful = false;
-        _service.OnHostileSpellCastAtOwner();
+        _service.Control.OnHostileSpellCastAtOwner();
         _triggers.Should().BeEmpty();
 
-        _service.ResetOwnerCompanionToFollow(_master.Id);
+        _service.Control.ResetOwnerCompanionToFollow(_master.Id);
         _triggers.Clear();
         _attackTargets[_master.Id] = _enemy.Id;
-        _service.OnOwnerCombatRound();
+        _service.Control.OnOwnerCombatRound();
         _triggers.Should().ContainSingle();
 
         _bench.ExitingObject = _master.Id;
-        _service.OnOwnerAreaExit();
-        _service.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
+        _service.Control.OnOwnerAreaExit();
+        _service.Authority.PeekAuthorizedTarget(_companion.Id).Should().Be(Invalid);
         _bench.ExitingObject = _enemy.Id;
-        _service.OnOwnerAreaExit();
+        _service.Control.OnOwnerAreaExit();
     }
 
     // ----- construction -----
@@ -1251,82 +1251,5 @@ public class CompanionControlServiceTests
     public void The_facade_constant_is_the_instance_constant()
     {
         CompanionControlService.AssociateAbilitiesLabelStrRef.Should().Be(CompanionControlService.AssociateAbilitiesLabelStrRef);
-    }
-}
-
-/// <summary>
-/// The companion control instance with the calls into the services that are not converted yet answered by the test,
-/// and the clock set by the test.
-/// </summary>
-public sealed class TestCompanionControl : CompanionControlService
-{
-    public TestCompanionControl(IAIService ai, ICompanionLookup beastMastery)
-        : base(ai, beastMastery, FacadeForwarder.For<IAbilityActivationService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActivityService>(), FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<IPlayerNameService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatQueriesService>())
-    {
-    }
-
-    public DateTime Now { get; set; } = new(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
-    public HashSet<uint> Droids { get; } = new();
-    public HashSet<uint> Busy { get; } = new();
-    public Dictionary<uint, ActivityStatusType> BusyTypes { get; } = new();
-    public HashSet<uint> RestEffect { get; } = new();
-    public List<uint> ClearedBusy { get; } = new();
-    public List<uint> InterruptedActivations { get; } = new();
-    public List<uint> Dequeued { get; } = new();
-    public Dictionary<uint, DateTime> OffensiveAt { get; } = new();
-    public float WeaponRange { get; set; } = 5f;
-    public Dictionary<uint, List<FeatType>> Feats { get; } = new();
-    public Dictionary<FeatType, AbilityDetail> Registered { get; } = new();
-    public HashSet<FeatType> UsableFeats { get; } = new();
-    public Dictionary<PerkType, int> PerkLevels { get; } = new();
-    public List<int> UsedLevels { get; } = new();
-    public int AbilityLookups { get; set; }
-
-    protected override DateTime UtcNow() => Now;
-
-    protected override bool IsDroid(uint creature) => Droids.Contains(creature);
-
-    protected override bool IsBusy(uint target) => Busy.Contains(target);
-
-    protected override ActivityStatusType GetBusyType(uint target) =>
-        BusyTypes.GetValueOrDefault(target, ActivityStatusType.Invalid);
-
-    protected override void ClearBusy(uint target) => ClearedBusy.Add(target);
-
-    protected override bool HasRestStatusEffect(uint creature) => RestEffect.Contains(creature);
-
-    protected override void RemoveRestStatusEffect(uint creature) => RestEffect.Remove(creature);
-
-    protected override bool InterruptAbilityActivation(uint activator)
-    {
-        InterruptedActivations.Add(activator);
-        return false;
-    }
-
-    protected override void DequeueWeaponAbility(uint creature) => Dequeued.Add(creature);
-
-    protected override string GetDisplayName(uint observer, uint target) => GetName(target);
-
-    protected override DateTime GetLastOffensiveActivityAt(uint creature) =>
-        OffensiveAt.GetValueOrDefault(creature);
-
-    protected override SkillType GetEquippedWeaponSkillType(uint creature) => SkillType.Invalid;
-
-    protected override float GetWeaponEngagementRange(SkillType skill) => WeaponRange;
-
-    protected override int GetPerkLevel(uint creature, PerkType perkType) => PerkLevels.GetValueOrDefault(perkType);
-
-    protected override bool IsFeatRegistered(FeatType feat) => Registered.ContainsKey(feat);
-
-    protected override AbilityDetail GetAbilityDetail(FeatType feat)
-    {
-        AbilityLookups++;
-        return Registered[feat];
-    }
-
-    protected override bool CanUseAbility(uint activator, uint target, FeatType feat, int effectiveLevel, Location targetLocation)
-    {
-        UsedLevels.Add(effectiveLevel);
-        return UsableFeats.Contains(feat);
     }
 }

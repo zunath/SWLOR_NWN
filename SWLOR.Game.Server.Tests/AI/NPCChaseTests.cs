@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 using SWLOR.Game.Server.Tests.Service;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.AI;
 
@@ -20,7 +21,7 @@ public class NPCChaseTests
         // Execute the production event and threat-cleanup methods with engine boundaries
         // replaced by observable commands. No live NWN VM is available in unit tests.
         // The blocked handler is the AI instance's method, borrowed as a static one (DMPossessionHarness.InstanceMethod).
-        var aiMethods = DMPossessionHarness.InstanceMethod("Domain/Creatures/AIService.cs", "CreatureBlocked");
+        var aiMethods = DMPossessionHarness.InstanceMethod(CreaturesSource.RelativePath("CreatureBlocked"), "CreatureBlocked");
         // The enmity instance's methods, borrowed as static ones (DMPossessionHarness.InstanceMethod).
         var enmityMethods = ExtractMethods(
             "AttackHighestEnmityTarget", "GetHighestEnmityTarget", "GetEnmityTable",

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -25,7 +26,14 @@ namespace SWLOR.Game.Server.Service
         private const string ReturnEventIdVariable = "HOSTED_EVENT_RETURN_EVENT_ID";
 
         private static readonly HashSet<string> OutOfCharacterAreaResrefs = new() { "ooc_area", "char_migration", "spending_area" };
+        // Written by the background service (DiscordEventSync.SnapshotKey): the Discord server's Events tab.
+        private const string DiscordSnapshotKey = "swlor:discord:scheduled-events";
+        private const string DiscordCreatedBy = "Discord";
+        private const int DiscordPostColor = 3447003;
+
         private static readonly Dictionary<string, HostedEvent> Events = new();
+        // Discord event ID -> the start time of the occurrence a DM cancelled or ended in game.
+        private static readonly Dictionary<string, DateTime> DiscordDismissals = new();
         private static bool _sweepScheduled;
 
         [NWNEventHandler(ScriptName.OnModuleLoad)]
@@ -34,6 +42,12 @@ namespace SWLOR.Game.Server.Service
             Events.Clear();
             foreach (var hostedEvent in DB.Search(new DBQuery<HostedEvent>().AddPaging(500, 0)))
                 Events[hostedEvent.Id] = hostedEvent;
+
+            DiscordDismissals.Clear();
+            foreach (var dismissal in DB.Search(new DBQuery<DiscordEventDismissal>().AddPaging(500, 0)))
+                DiscordDismissals[dismissal.Id] = dismissal.ScheduledStartUtc;
+
+            SyncFromDiscord();
 
             if (!_sweepScheduled)
             {
@@ -84,6 +98,18 @@ namespace SWLOR.Game.Server.Service
             out HostedEvent saved)
         {
             saved = null;
+            var synced = GetEvent(eventId);
+            if (DiscordEventImport.IsSyncedFromDiscord(synced))
+            {
+                // Discord owns the name, host, time and description until a DM starts the event.
+                synced.IsJoinOpen = isJoinOpen;
+                synced.AnnounceOnStart = announceOnStart;
+                Store(synced);
+                Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} updated the options of Discord event '{synced.Name}' ({synced.Id}).");
+                saved = synced;
+                return string.Empty;
+            }
+
             var error = HostedEventRules.ValidateDetails(name, hostName, description, startText, zone, out var startUtc);
             if (!string.IsNullOrEmpty(error))
                 return error;
@@ -184,7 +210,10 @@ namespace SWLOR.Game.Server.Service
             Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} started event '{hostedEvent.Name}' ({hostedEvent.Id}).");
 
             if (hostedEvent.AnnounceOnStart)
+            {
                 Announce(hostedEvent);
+                PostStartToDiscord(hostedEvent);
+            }
 
             return string.Empty;
         }
@@ -201,6 +230,7 @@ namespace SWLOR.Game.Server.Service
 
             var wasRunning = hostedEvent.Status == HostedEventStatus.Running;
             Remove(hostedEvent);
+            DismissDiscordEvent(hostedEvent);
             Log.Write(LogGroup.DM, $"{DMPresence.DescribeDM(dm)} {(wasRunning ? "ended" : "cancelled")} event '{hostedEvent.Name}' ({hostedEvent.Id}).");
 
             if (wasRunning)
@@ -359,10 +389,13 @@ namespace SWLOR.Game.Server.Service
 
         private static void SweepEvents()
         {
+            SyncFromDiscord();
+
             var now = DateTime.UtcNow;
             foreach (var hostedEvent in Events.Values.Where(e => HostedEventRules.IsExpired(e, now)).ToList())
             {
                 Remove(hostedEvent);
+                DismissDiscordEvent(hostedEvent);
                 Log.Write(LogGroup.DM, $"Event '{hostedEvent.Name}' ({hostedEvent.Id}) expired and was removed.");
                 if (hostedEvent.Status == HostedEventStatus.Running)
                     TellParticipantsEnded(hostedEvent);
@@ -370,6 +403,97 @@ namespace SWLOR.Game.Server.Service
 
             // Keeps the start countdowns in open windows current.
             RefreshWindows();
+        }
+
+        /// <summary>
+        /// Lists new Discord events, copies changes to the ones no DM has started, and removes those Discord no longer lists.
+        /// Does nothing until the background service has stored a snapshot.
+        /// </summary>
+        private static void SyncFromDiscord()
+        {
+            List<DiscordScheduledEvent> discordEvents;
+            try
+            {
+                discordEvents = DiscordEventImport.Parse(DB.StringGet(DiscordSnapshotKey));
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(ex, "Could not read the Discord event snapshot.");
+                return;
+            }
+
+            if (discordEvents == null)
+                return;
+
+            var plan = DiscordEventImport.Plan(discordEvents, Events.Values, DiscordDismissals);
+            foreach (var discord in plan.Create)
+            {
+                var hostedEvent = new HostedEvent { CreatedBy = DiscordCreatedBy };
+                DiscordEventImport.Apply(hostedEvent, discord);
+                Events[hostedEvent.Id] = hostedEvent;
+                DB.Set(hostedEvent);
+                Log.Write(LogGroup.DM, $"Listed Discord event '{hostedEvent.Name}' ({hostedEvent.Id}, Discord {discord.Id}).");
+            }
+
+            foreach (var (hostedEvent, discord) in plan.Update)
+            {
+                DiscordEventImport.Apply(hostedEvent, discord);
+                DB.Set(hostedEvent);
+            }
+
+            foreach (var hostedEvent in plan.Remove)
+            {
+                Events.Remove(hostedEvent.Id);
+                DB.Delete<HostedEvent>(hostedEvent.Id);
+                Log.Write(LogGroup.DM, $"Removed Discord event '{hostedEvent.Name}' ({hostedEvent.Id}): Discord no longer lists it.");
+            }
+
+            foreach (var discordId in plan.DropDismissals)
+            {
+                DiscordDismissals.Remove(discordId);
+                DB.Delete<DiscordEventDismissal>(discordId);
+            }
+
+            if (plan.Create.Count > 0 || plan.Update.Count > 0 || plan.Remove.Count > 0)
+                RefreshWindows();
+        }
+
+        // A Discord event a DM cancelled or ended stays off the list until Discord moves it to another start time.
+        private static void DismissDiscordEvent(HostedEvent hostedEvent)
+        {
+            if (string.IsNullOrEmpty(hostedEvent.DiscordEventId))
+                return;
+
+            DiscordDismissals[hostedEvent.DiscordEventId] = hostedEvent.ScheduledStartUtc;
+            DB.Set(new DiscordEventDismissal
+            {
+                Id = hostedEvent.DiscordEventId,
+                ScheduledStartUtc = hostedEvent.ScheduledStartUtc,
+            });
+        }
+
+        private static void PostStartToDiscord(HostedEvent hostedEvent)
+        {
+            var url = ApplicationSettings.Get().EventWebhookUrl;
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            var action = HostedEventRules.IsJoinable(hostedEvent) ? "join" : "see the details";
+            var message = $"Event started: {hostedEvent.Name}, hosted by {hostedEvent.HostName}. Type /events in game to {action}.";
+            _ = PostToDiscordAsync(url, message);
+        }
+
+        private static async Task PostToDiscordAsync(string url, string message)
+        {
+            try
+            {
+                if (!await BackgroundJob.EnqueueDiscordWebhook(url, "SWLOR Events", message, DiscordPostColor))
+                    Log.Write(LogGroup.Error, $"Could not queue the Discord post: {message}");
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(ex, "Could not queue the Discord post: {Message}", message);
+            }
         }
 
         private static void Announce(HostedEvent hostedEvent)

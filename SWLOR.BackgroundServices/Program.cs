@@ -2,6 +2,7 @@ using Serilog;
 using SWLOR.BackgroundServices.Configuration;
 using SWLOR.BackgroundServices.BackgroundJobs;
 using SWLOR.BackgroundServices.BackgroundJobs.Handlers;
+using SWLOR.BackgroundServices.DiscordEvents;
 using SWLOR.BackgroundServices.Infrastructure;
 
 Log.Logger = new LoggerConfiguration()
@@ -23,6 +24,7 @@ var handlers = new Dictionary<string, IBackgroundJobHandler>(StringComparer.Ordi
 
 var processor = new BackgroundJobProcessor(handlers, new BackgroundJobFailureHandler(settings, logger), logger);
 var worker = new BackgroundJobWorker(settings, processor, logger);
+var discordEventSync = new DiscordEventSync(settings, httpClient, logger);
 
 using var shutdown = new CancellationTokenSource();
 
@@ -36,7 +38,7 @@ AppDomain.CurrentDomain.ProcessExit += (_, _) => shutdown.Cancel();
 
 try
 {
-    await worker.RunAsync(shutdown.Token);
+    await Task.WhenAll(worker.RunAsync(shutdown.Token), discordEventSync.RunAsync(shutdown.Token));
 }
 finally
 {

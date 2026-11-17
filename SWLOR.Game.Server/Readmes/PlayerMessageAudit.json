@@ -1856,7 +1856,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/DMSettingsViewModel.cs",
-    "Line": 157,
+    "Line": 137,
     "Member": "SaveSetting",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(_dm, ColorToken.Red(\"Your DM settings could not be saved.\"))"
@@ -5027,28 +5027,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 229,
+    "Line": 259,
     "Member": "SendEveryoneBack",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"The host sent you back from {hostedEvent.Name}.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 289,
+    "Line": 319,
     "Member": "Join",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Green($\"Traveling to {hostedEvent.Name}. Use /leaveevent or the Events window to go back.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 385,
+    "Line": 509,
     "Member": "Announce",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(DMPresence.GetControlledCreature(player), message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/HostedEvents.cs",
-    "Line": 392,
+    "Line": 516,
     "Member": "TellParticipantsEnded",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Cyan($\"{hostedEvent.Name} has ended. Use /leaveevent when you are ready to go back.\"))"

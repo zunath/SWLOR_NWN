@@ -18,6 +18,9 @@ namespace SWLOR.Game.Server.Entity
         public bool IsJoinOpen { get; set; }
         public bool AnnounceOnStart { get; set; }
 
+        // The Discord Events tab entry this event was listed from, or empty for an event made in game.
+        public string DiscordEventId { get; set; }
+
         // Empty when the DM has not set an arrival point; players cannot join until one is set.
         public string ArrivalAreaResref { get; set; }
         public float ArrivalX { get; set; }
@@ -36,6 +39,7 @@ namespace SWLOR.Game.Server.Entity
             CreatedBy = string.Empty;
             Status = HostedEventStatus.Scheduled;
             ArrivalAreaResref = string.Empty;
+            DiscordEventId = string.Empty;
             AnnounceOnStart = true;
             IsJoinOpen = true;
             ParticipantPlayerIds = new HashSet<string>();

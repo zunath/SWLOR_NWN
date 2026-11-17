@@ -69,21 +69,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 BeamVisualEffect = beamVisualEffect;
                 MarkerObject = OBJECT_INVALID;
                 AreaIndicatorId = string.Empty;
+                // The cast's stamina cost context ends with the cast, but its pulses land later: each pulse runs
+                // inside the context of the activation that scheduled it, so its hit rewards share that
+                // activation's paid stamina and a recast of the same ability keeps its own.
+                var inCostContext = Combat.CaptureAbilityStaminaCostContext(
+                    activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability) ?? (impact => impact());
                 if (IsAreaPulse && !HasShotVisual)
                 {
-                    ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
+                    var applyAreaPulse = Ability.CaptureRepeatedAbilityImpact(activator,
                         () => ApplyAreaHostilePulse(this), baseDamage: baseDamage);
+                    ApplyPulse = () => inCostContext(applyAreaPulse);
                 }
                 else if (IsAreaPulse)
                 {
-                    CreateAreaImpactBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
+                    var createBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
                         target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
+                    CreateAreaImpactBatch = count =>
+                    {
+                        var applyShot = createBatch(count);
+                        return target => inCostContext(() => applyShot(target));
+                    };
                     ApplyPulse = () => ApplyAreaHostileShots(this);
                 }
                 else
                 {
-                    ApplyTargetImpact = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
+                    var applyTargetPulse = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
                         target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
+                    ApplyTargetImpact = target => inCostContext(() => applyTargetPulse(target));
                     ApplyPulse = () => ApplySingleHostilePulse(this);
                 }
             }
@@ -113,7 +125,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public Action<uint> ApplyTargetImpact { get; }
             public Func<int, Action<uint>> CreateAreaImpactBatch { get; }
             public int PendingProjectileImpacts { get; set; }
-            public Action ReleaseStaminaCostContext { get; set; }
         }
 
         public static void ApplyPowerSurge(uint activator, uint target)
@@ -534,10 +545,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             emitters.Add(emitter);
-            // The cast's stamina cost context ends with the cast; scheduled pulses keep it so their hit
-            // rewards still share the stamina this activation paid.
-            emitter.ReleaseStaminaCostContext = Combat.DeferAbilityStaminaCostContextUntilReleased(
-                emitter.Activator, Ability.GetActiveAbilityImpactSummary(emitter.Activator)?.Ability);
             RefreshFieldEngineerPulseEmitterIndicator(emitter);
 
             EnsureFieldEngineerPulseEmitterMarker(emitter);
@@ -710,8 +717,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 DestroyObject(emitter.MarkerObject);
             }
-
-            ReleaseFieldEngineerStaminaCostContext(emitter);
         }
 
         private static void ApplySingleHostilePulseImpact(FieldEngineerPulseEmitter emitter, uint target)
@@ -865,10 +870,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static void RemoveFieldEngineerPulseEmitter(FieldEngineerPulseEmitter emitter)
         {
             if (!_activeFieldEngineerPulseEmitters.TryGetValue(emitter.Activator, out var emitters))
-            {
-                ReleaseFieldEngineerStaminaCostContext(emitter);
                 return;
-            }
 
             emitters.Remove(emitter);
             if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
@@ -879,23 +881,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             if (emitters.Count <= 0)
                 _activeFieldEngineerPulseEmitters.Remove(emitter.Activator);
-
-            ReleaseFieldEngineerStaminaCostContext(emitter);
-        }
-
-        /// <summary>Releases the cast's stamina cost context once the emitter has ended and its last shot has landed.</summary>
-        private static void ReleaseFieldEngineerStaminaCostContext(FieldEngineerPulseEmitter emitter)
-        {
-            if (emitter.ReleaseStaminaCostContext == null ||
-                emitter.PendingProjectileImpacts > 0 ||
-                IsFieldEngineerEmitterTracked(emitter))
-            {
-                return;
-            }
-
-            var release = emitter.ReleaseStaminaCostContext;
-            emitter.ReleaseStaminaCostContext = null;
-            release();
         }
 
         private static uint GetNearestHostileCreature(uint activator, Location location, float radius)

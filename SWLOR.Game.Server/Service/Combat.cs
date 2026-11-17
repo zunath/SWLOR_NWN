@@ -10676,29 +10676,31 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Keeps this activation's stamina cost context for recurring impacts, such as scheduled device pulses,
-        /// so their hits still share the stamina the activation paid. Returns a release that is safe to call more
-        /// than once and leaves a later activation's context alone, or null when the activation paid no stamina.
+        /// Captures this activation's stamina cost context for impacts that land after the cast ends, such as
+        /// scheduled device pulses. Returns a wrapper that runs an impact with that activation's context in place,
+        /// so its hit rewards share the stamina the activation paid and a later activation of the same ability
+        /// cannot be charged for them. Returns null when the activation paid no stamina.
         /// </summary>
-        public static Action DeferAbilityStaminaCostContextUntilReleased(uint creature, AbilityDetail ability)
+        public static Action<Action> CaptureAbilityStaminaCostContext(uint creature, AbilityDetail ability)
         {
             if (!TryGetAbilityStaminaCostState(creature, ability, out var state))
                 return null;
 
-            state.DeferredImpactCount++;
-            var released = false;
-            return () =>
+            var key = (creature, ability);
+            return impact =>
             {
-                if (released)
-                    return;
-
-                released = true;
-                state.DeferredImpactCount = Math.Max(0, state.DeferredImpactCount - 1);
-                if (state.DeferredImpactCount == 0 &&
-                    _abilityStaminaCosts.TryGetValue((creature, ability), out var current) &&
-                    ReferenceEquals(current, state))
+                _abilityStaminaCosts.TryGetValue(key, out var current);
+                _abilityStaminaCosts[key] = state;
+                try
                 {
-                    _abilityStaminaCosts.Remove((creature, ability));
+                    impact();
+                }
+                finally
+                {
+                    if (current == null)
+                        _abilityStaminaCosts.Remove(key);
+                    else
+                        _abilityStaminaCosts[key] = current;
                 }
             };
         }

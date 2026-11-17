@@ -251,6 +251,7 @@ namespace SWLOR.CombatSim.Engine
                         _combatants.Add(combatant);
                     }
 
+                    RequireOpenToBodyFrame(spec);
                     foreach (var use in spec.Abilities)
                     {
                         ResolveUse(use);

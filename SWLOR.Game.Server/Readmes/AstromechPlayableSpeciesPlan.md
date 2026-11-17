@@ -342,7 +342,7 @@ The owner asked for a contributor's set of seven astromech models to be added, m
 
 **Not done or not verified**
 
-- The sounds are plain WAV. The project's other sounds are MP3-compressed, which needs `ffmpeg`; it is not installed on this machine, and the sound manifest has not been refreshed for the new files.
+- The sounds were plain WAV in this phase. The follow-up pass compressed them like the project's other sounds (see Phase 5).
 - Nobody has listened to the voice set critically; the owner has the preview file.
 - The chassis was checked as the player character and as a spawned NPC standing still; the NPC was not filmed fighting.
 - Death and get-up were seen as the knockdown pose only in this phase. The follow-up pass (see Phase 5) filmed the fall, the recovery and movement on the production model.
@@ -422,7 +422,7 @@ Built on 2026-11-16 on the same branch. The owner asked for the work to be finis
 
 - Mirrored abilities and perks reused their source's icons, and shared status effects showed the source's name. Both are fixed in the follow-up pass (see Phase 5).
 - Recipes and the store entries were checked by tests and module data, not crafted or bought in the client. The follow-up pass did both and found the store entries had never reached the game (see Phase 5).
-- No CombatSim run was made for the astromech: every number is its source's, and the parity tests hold that.
+- No CombatSim run was made in this phase. The follow-up pass added the astromech to the simulator and ran it (see Phase 5).
 
 ## Phase 4 results
 
@@ -487,7 +487,9 @@ The gaps the first pass left were closed, and client checks found two defects th
 - **Ship crew:** the socket was run on a Republic Bomber (Hypermatter Injector, which asks the astromech for the fuel capsule) and a Republic Gunship (Repair Field Generator, shields 26 to 55 of 66). A Republic Hammerhead (Large) refuses the socket and seats the astromech as Gunner.
 - **Hidden at a station (defect found in the client):** after boarding from the ship's interior the astromech's model could stay drawn on top of the ship. The hide effect is now sent again when an astromech arrives beside the ship.
 - **Movement and knockdown:** rolling, the fall and the recovery were filmed on the production model.
-- **Tests fixed:** the two quest tests that read a line `Quest.cs` no longer has, and the disguise audit harness.
+- **Tests fixed:** the two quest tests that read a line `Quest.cs` no longer has, the disguise audit harness, and the Mon Cala starlane test (the 204-quest merge added four NPCs to `moncaladaccityex` without their comment entries; the four entries are added).
+- **Voice set:** the 49 astromech voice sounds are MP3-compressed by `SWLOR_Haks/tools/CompressSoundResources.py` (manifest `tools/SoundCompressionManifestAstromech.json`), with `ffmpeg` run from the client image. The loop audit passes; it now reads Module files that hold Windows-1252 bytes.
+- **CombatSim:** the simulator knows the astromech. A combatant has a `bodyFrame`, and a scenario that gives a body an ability or perk it cannot train is refused. Astromech abilities use the effect model of the ability they copy (`Data/AstromechMirrors.cs`, read from the generator's configuration), and `AggressionRoutine` is accepted as a stance. Two scenarios were added. Results at seed 11: the Shock Prod duel against the Staff Crusher build it copies is 51% to 49% over 3,000 runs, and swapping the sides swaps the numbers exactly, so the two-point lean is team order; the support pair with an astromech healer against the First Aid pair is 34% to 39% over 1,000 runs and mirrors exactly when swapped. A mirrored build deals the same damage and heals the same amount as its source in a fixed-seed test.
 
 **Left as they are, on purpose**
 
@@ -500,8 +502,8 @@ The gaps the first pass left were closed, and client checks found two defects th
 
 - Release notes: the release-notes process covers changes merged into the default branch, and this branch is not merged. The Player Guide topic and the pull request description hold the player-facing text until then.
 - The play test on the test server is the owner's step.
-- An astromech NPC was not filmed fighting, and the sounds are still plain WAV (no `ffmpeg` on this machine).
-- No CombatSim run was made for the astromech: every number is its source's, and the parity tests hold that.
+- The compressed voice set was validated by decoding every file; it was not listened to in the client, whose stock container has no audio.
+- The simulator does not model the Rifle line, so the Blaster Mount line has no weapon-formula scenario; it can be run with calibrated damage profiles like any Rifle build.
 
 ## Phases
 

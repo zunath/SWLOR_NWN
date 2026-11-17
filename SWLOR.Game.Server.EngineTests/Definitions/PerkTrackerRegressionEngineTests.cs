@@ -374,13 +374,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 Stat.ReduceStamina(caster, 50);
                 stamina = Stat.GetCurrentStamina(caster);
+                // Hit rewards refund the stamina this activation paid, so record the cost as the activation does.
+                Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 50);
                 Ability.BeginAbilityImpact(caster, area);
                 try
                 {
                     ScheduleChannel(CombatDamageType.Physical, 6f);
                     ScheduleChannel(CombatDamageType.Electrical, 6f);
                 }
-                finally { Ability.EndAbilityImpact(caster); }
+                finally
+                {
+                    Ability.EndAbilityImpact(caster);
+                    // The cast ends here; the scheduled channels must keep the paid cost for their later pulses.
+                    Combat.CompleteAbilityStaminaCostContext(caster, area);
+                }
             });
             Combat.GrantNextAbilityDamageBonus(caster, (int)PerkType.KillzoneBeacon, 100, 30);
 
@@ -407,6 +414,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(firstHP - 8, GetCurrentHitPoints(first), "later ticks do not restart the once-per-cast bonus");
             ctx.AssertEqual(100, Combat.ConsumeNextAbilityDamageBonus(caster, PerkType.KillzoneBeacon), "scheduled ticks leave the next activation's bonus untouched");
             ctx.Assert(Ability.GetActiveAbilityImpactSummary(caster) == null, "scheduled impacts leave no active tracker");
+            ctx.AssertEqual(0, Combat.GetAbilityStaminaPaid(caster, area), "the cost context ends with the last channel");
 
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {

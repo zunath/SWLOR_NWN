@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private const string LeashEvadeRestoreMovementRateVariable = "AI_LEASH_EVADE_RESTORE_MOVEMENT_RATE";
         private const string LeashEvadeReturnQueuedVariable = "AI_LEASH_EVADE_RETURN_QUEUED";
 
-        private readonly IAIPartyQuery _party;
+        private readonly IPartyRoster _party;
         private readonly ICompanionLookup _companions;
         private readonly IDMPresenceService _dmPresence;
         private readonly Lazy<IAbilityActivationService> _activation;
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Dictionary<FeatType, AITargetSelector> _defaultTargetSelectors = new();
 
         public AIService(
-            IAIPartyQuery party,
+            IPartyRoster party,
             ICompanionLookup companions,
             IDMPresenceService dmPresence,
             Lazy<IAbilityActivationService> activation,

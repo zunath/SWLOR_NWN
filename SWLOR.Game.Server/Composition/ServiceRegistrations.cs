@@ -301,7 +301,6 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IExtraHotbarsWindowService, ExtraHotbarsWindowService>();
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
             services.AddSingleton<IPartyService, PartyService>();
-            services.AddSingleton<IAIPartyQuery>(provider => provider.GetRequiredService<IPartyService>());
             services.AddSingleton<IPartyRosterService, PartyRosterService>();
             // The same instance, seen through the interface Combat owns for the domains below Social (P5-3c).
             services.AddSingleton<IPartyRoster>(provider => provider.GetRequiredService<IPartyRosterService>());

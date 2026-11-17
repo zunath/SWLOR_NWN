@@ -207,6 +207,9 @@ Domain/Creatures -> Domain/Combat | 29
 # Creatures -> Gameplay (1 edge)
 Domain/Creatures -> Feature.UsePerkFeat | 3
 
+# Creatures -> Social (1 edge)
+Domain/Creatures -> Domain/Social | 3
+
 # Creatures -> UI (1 edge)
 Domain/Creatures -> Domain/UI | 1
 
@@ -539,8 +542,7 @@ Feature/ChatCommandDefinition -> Domain/Companions | 5
 Domain/Social -> Domain/Crafting | 5
 Feature/ChatCommandDefinition -> Domain/Crafting | 4
 
-# Social -> Creatures (2 edges)
-Domain/Social -> Domain/Creatures | 2
+# Social -> Creatures (1 edge)
 Feature/ChatCommandDefinition -> Domain/Creatures | 1
 
 # Social -> Gameplay (5 edges)

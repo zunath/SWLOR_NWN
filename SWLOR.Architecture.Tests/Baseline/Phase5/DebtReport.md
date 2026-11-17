@@ -189,7 +189,7 @@ Largest 15 of 103 (all in `LogicToContent.txt`):
 
 - 32 pairs of domains depend on each other: 28 between logic (9 of them with Foundation or Platform), 4 between content.
 - Foundation's logic is in a pair with 4 domains, Platform with 6.
-- Members both ways: 4,279.
+- Members both ways: 4,281.
 
 Largest 15 of 32 (all in `DomainCycles.txt`):
 

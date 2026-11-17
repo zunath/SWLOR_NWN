@@ -36,7 +36,6 @@ public class InvertedInterfaceRegistrationTests
         (typeof(IDMWindowPresence), typeof(IDMPresenceService)),
         (typeof(IAIProfileDescription), typeof(IAIService)),
         (typeof(IDMSpawnPreparation), typeof(ISpawnObjectService)),
-        (typeof(IAIPartyQuery), typeof(IPartyService)),
     };
 
     private static ContainerHost Build()

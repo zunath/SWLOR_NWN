@@ -150,7 +150,7 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "IResourceRestoredListener" })
             // The inversions of P5-15a: the lower-domain interfaces a higher service implements, and the two adapters Creatures answers.
             .Concat(new[] { "IAreaLookup", "ICityUpgradeLookup", "IQuestAdvancer", "IConcealmentQuery", "ICurrencyBalance",
-                "IPlayerListRefresh", "IItemCacheInfo", "IPropertyIdLookup", "IDMActorResolver", "IDMWindowPresence", "IAIProfileDescription", "IDMSpawnPreparation", "IAIPartyQuery" })
+                "IPlayerListRefresh", "IItemCacheInfo", "IPropertyIdLookup", "IDMActorResolver", "IDMWindowPresence", "IAIProfileDescription", "IDMSpawnPreparation" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

@@ -467,7 +467,7 @@ dm_possfull_bef
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnDMPossess
 
 dm_spwnobj_aft
-  action      SWLOR.Game.Server.Domain.Creatures.SpawnService.DMSpawnCreature
+  action      SWLOR.Game.Server.Domain.Creatures.SpawnObjectService.DMSpawnCreature
   action      SWLOR.Game.Server.Feature.DMActions.OnDMSpawnObject
 
 dna_extract_used

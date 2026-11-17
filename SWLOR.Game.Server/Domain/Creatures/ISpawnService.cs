@@ -56,18 +56,6 @@ namespace SWLOR.Game.Server.Domain.Creatures
         void ProcessQueuedSpawns();
 
         /// <summary>
-        /// When a DM spawns a creature, attach all required scripts to it.
-        /// </summary>
-        void DMSpawnCreature();
-
-        /// <summary>
-        /// Attaches the scripts and stat adjustments every DM-spawned creature receives.
-        /// Used by the native DM creator event and the NUI DM creator.
-        /// </summary>
-        /// <param name="creature">The creature a DM spawned.</param>
-        void PrepareDMSpawnedCreature(uint creature);
-
-        /// <summary>
         /// Registers an existing placeable as an active resource spawn from the given spawn table,
         /// with that table's natural despawn queued. Engine tests only.
         /// </summary>

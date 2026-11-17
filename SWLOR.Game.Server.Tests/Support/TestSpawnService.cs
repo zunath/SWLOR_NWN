@@ -1,6 +1,5 @@
 #nullable enable
-using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Foundation;
+
 using SWLOR.Game.Server.Domain.Creatures;
 
 namespace SWLOR.Game.Server.Tests.Support;
@@ -19,13 +18,30 @@ public sealed partial class TestSpawnService : SpawnService
     }
 
     private TestSpawnService(DateTime now, TestSpawnRegistryService registry)
-        : base(registry, FacadeForwarder.For<IAIService>(), FacadeForwarder.For<ICreatureStatService>(), FacadeForwarder.For<IWalkmeshService>())
+        : this(now, registry, new TestSpawnObjectService(now, registry))
     {
-        Now = now;
-        Registry = registry;
     }
 
-    public DateTime Now { get; set; }
+    private TestSpawnService(DateTime now, TestSpawnRegistryService registry, TestSpawnObjectService objects)
+        : base(registry, objects)
+    {
+        _now = now;
+        Registry = registry;
+        Objects = objects;
+    }
+
+    private DateTime _now;
+
+    /// <summary>The time the runtime and the object factory see.</summary>
+    public DateTime Now
+    {
+        get => _now;
+        set
+        {
+            _now = value;
+            Objects.Now = value;
+        }
+    }
 
     /// <summary>The spawn list definitions the module load finds (the registry's).</summary>
     public List<Type> Definitions => Registry.Definitions;
@@ -43,5 +59,5 @@ public sealed partial class TestSpawnService : SpawnService
     public TestSpawnRegistryService Registry { get; }
 
     /// <summary>Spawning an object and the DM spawn edge (part SP-3).</summary>
-    public TestSpawnService Objects => this;
+    public TestSpawnObjectService Objects { get; }
 }

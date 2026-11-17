@@ -282,6 +282,26 @@ public class SpawnServiceTests
     }
 
     [Test]
+    public void The_object_factory_default_clock_is_the_system_clock()
+    {
+        var before = DateTime.UtcNow;
+
+        var read = _service.Objects.ReadSystemClock();
+
+        read.Should().BeOnOrAfter(before).And.BeOnOrBefore(DateTime.UtcNow);
+    }
+
+    [Test]
+    public void The_object_factory_sees_the_clock_the_runtime_is_moved_to()
+    {
+        var later = Start.AddHours(3);
+
+        _service.Now = later;
+
+        _service.Objects.Now.Should().Be(later);
+    }
+
+    [Test]
     public void The_default_error_sink_writes_to_the_error_log_without_failing()
     {
         var write = () => _service.WriteToTheErrorLog("Spawn table WOODS has no spawn objects defined.");

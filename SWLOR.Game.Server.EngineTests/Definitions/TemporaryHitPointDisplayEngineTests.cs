@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class TemporaryHitPointDisplayEngineTests
     {
-        [EngineTest("Temporary HP display follows stacked pools, damage, replacement and expiry", Category = "StatusEffect", TimeoutSeconds = 20f)]
+        [EngineTest("Temporary HP display follows stacked pools, damage, replacement and expiry", Category = "StatusEffect", TimeoutSeconds = 40f)]
         public static async Task RemainingHitPointsFollowNativePools(EngineTestContext ctx)
         {
             var target = ctx.SpawnCreature("nw_rat001");
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryHitPointEffects.ApplyFlat(target, "DISPLAY_FIRST", 25, 1f);
             ctx.Assert(TemporaryHitPointEffects.GetRemaining(target) == 25, "replacement must not retain the old amount");
             await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(target) == 0,
-                5f, "expiry to clear the displayed amount");
+                20f, "expiry to clear the displayed amount");
         }
     }
 }

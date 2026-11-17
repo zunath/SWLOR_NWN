@@ -915,8 +915,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ClearAllActions();
                     JumpToLocation(ctx.GetArenaLocation(6f, 0f));
                 });
-                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f, 10f, "the DM to move away from the first player");
-                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, second.Creature) > 10f, 10f, "the DM to move away from the second player");
+                // The jump targets are 12 m and 14 m from the DM's, but the engine settles each jump on walkable
+                // ground, so the gap can land just under 10 m (9.9 m seen). Anything past 5 m shows the move; the
+                // bring-here wait below then proves both players reached the DM (< 3 m).
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 5f, 10f, "the DM to move away from the first player");
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, second.Creature) > 5f, 10f, "the DM to move away from the second player");
                 await InContext(ctx, dm.Creature, model.OnClickBringSelected());
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f &&
                                                GetDistanceBetween(dm.Creature, second.Creature) < 3f, 5f, "both selected players to be brought to the DM");

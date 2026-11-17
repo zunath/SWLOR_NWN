@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var root = (string)baseType.GetField("_rootPartial", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(editor)!;
                 var window = JObject.Parse(JsonDump(template.Window));
                 window["root"] = JToken.Parse(GuiLayoutComposer.Compose(template.PartialViewLayouts[root], layouts));
-                ctx.Assert(window.SelectTokens("$..id").Any(id => id.Value<string>() == "ae_tile_0"), "the exported production root contains the part browser's nested tile grid");
+                ctx.Assert(window.SelectTokens("$..id").Any(id => id.Value<string>() == "ae_part_preview"), "the exported production root contains the part picture that opens the part browser (its tile grid is a pop-up since #3033)");
                 snapshots.Add(new JObject
                 {
                     ["name"] = name,

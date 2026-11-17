@@ -276,9 +276,6 @@ Feature/MigrationDefinition -> Domain/Companions | 45
 # Foundation -> Crafting (1 edge)
 Feature/MigrationDefinition -> Domain/Crafting | 2
 
-# Foundation -> Creatures (1 edge)
-Domain/Foundation -> Domain/Creatures | 2
-
 # Foundation -> Economy (2 edges)
 Feature/DialogDefinition -> Domain/Economy | 10
 Feature/MigrationDefinition -> Domain/Economy | 2

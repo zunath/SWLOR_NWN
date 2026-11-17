@@ -285,8 +285,10 @@ public class SpawnServiceTests
     public void The_default_error_sink_writes_to_the_error_log_without_failing()
     {
         var write = () => _service.WriteToTheErrorLog("Spawn table WOODS has no spawn objects defined.");
+        var writeRegistry = () => _service.Registry.WriteToTheErrorLog("Spawn table WOODS has no spawn objects defined.");
 
         write.Should().NotThrow();
+        writeRegistry.Should().NotThrow();
     }
 
     [Test]
@@ -319,13 +321,13 @@ public class SpawnServiceTests
         EnterAndSpawn();
         var spawnedAtBoot = CreatedObjects().Count;
         spawnedAtBoot.Should().Be(3, "two rats and the hand-placed guard");
-        var before = AdoptedDigest(_service);
+        var before = AdoptedDigest(_service.Registry);
 
         _service.Registry.CarrySpawns();
         var calls = _bench.Engine.Calls.Count;
         var reloaded = Reload();
 
-        AdoptedDigest(reloaded).Should().Be(before, "the new build holds the registry the old one had");
+        AdoptedDigest(reloaded.Registry).Should().Be(before, "the new build holds the registry the old one had");
         _bench.Engine.Calls.Skip(calls).Select(call => call.Member)
             .Should().NotContain(new[] { "CreateObject", "DestroyObject", "SetLocalString" }, "adopting creates, destroys and marks nothing");
         _bench.ObjectPlugin.CountOf("Serialize").Should().Be(1, "only the boot captured the guard");
@@ -382,9 +384,9 @@ public class SpawnServiceTests
         return reloaded;
     }
 
-    private static ReloadDigestLine AdoptedDigest(SpawnService service)
+    private static ReloadDigestLine AdoptedDigest(SpawnRegistryService service)
     {
-        return new ReloadDigestHasher(typeof(SpawnService).Assembly).Describe(ReloadDigests.AdoptedKind, "spawns", typeof(SpawnService), service,
+        return new ReloadDigestHasher(typeof(SpawnService).Assembly).Describe(ReloadDigests.AdoptedKind, "spawns", typeof(SpawnRegistryService), service,
             field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted);
     }
 

@@ -203,6 +203,7 @@
     { "type": "ResistanceRules", "from": "SWLOR.Game.Server.Domain.Combat", "to": "SWLOR.Game.Server.Domain.Character" },
     { "type": "ExtraHotbarsService", "from": "SWLOR.Game.Server.Domain.UI", "to": "SWLOR.Game.Server.Domain.Social" },
     { "type": "IExtraHotbarsService", "from": "SWLOR.Game.Server.Domain.UI", "to": "SWLOR.Game.Server.Domain.Social" },
+    { "type": "SpawnClearanceGrid", "from": "SWLOR.Game.Server.Domain.Creatures", "to": "SWLOR.Game.Server.Domain.Foundation" },
   ],
   "textExcludes": [
     "SWLOR.Game.Server/Readmes/Maintainability*",

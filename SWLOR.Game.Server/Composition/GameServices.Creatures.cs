@@ -15,5 +15,8 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>Spawn tables, area spawning, despawning and respawn queues (the static class <c>Spawn</c> until P2-ZO).</summary>
         public static ISpawnService Spawn => FacadeAccessor.Resolve<ISpawnService>();
+
+        /// <summary>The spawn tables, the registered spawns and the spawn reload carry.</summary>
+        public static ISpawnRegistryService SpawnRegistry => FacadeAccessor.Resolve<ISpawnRegistryService>();
     }
 }

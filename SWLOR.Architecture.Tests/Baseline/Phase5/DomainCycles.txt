@@ -42,7 +42,6 @@ Combat <-> World | 2
 Companions <-> Items | 2
 Crafting <-> Items | 2
 Crafting <-> World | 2
-Creatures <-> Foundation | 2
 Creatures <-> Platform | 5
 Economy <-> Items | 2
 Economy <-> Quests | 2

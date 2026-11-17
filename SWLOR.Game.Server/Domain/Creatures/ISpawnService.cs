@@ -3,21 +3,10 @@ namespace SWLOR.Game.Server.Domain.Creatures
     /// <summary>
     /// The spawn system: spawn tables, hand-placed and table spawns per area, queued respawns and despawns. Static
     /// callers reach the container's instance through <c>GameServices.Spawn</c>; the event handlers are on
-    /// <see cref="SpawnService"/>.
+    /// <see cref="SpawnService"/>. The spawn tables and the registered spawns are <see cref="ISpawnRegistryService"/>.
     /// </summary>
     public interface ISpawnService
     {
-        /// <summary>
-        /// When the module loads, the spawn tables are loaded into the cache. Writes nothing; a hot reload runs it again.
-        /// </summary>
-        void LoadSpawnTables();
-
-        /// <summary>
-        /// At boot, right after <see cref="LoadSpawnTables"/>: the spawns of every area are stored and the hand-placed
-        /// creatures are destroyed so the spawn system places them.
-        /// </summary>
-        void StoreSpawns();
-
         /// <summary>
         /// When a player or DM enters an area with no active or queued spawns, every spawn of the area is queued.
         /// </summary>

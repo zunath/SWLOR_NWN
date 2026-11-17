@@ -235,6 +235,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IAIService, AIService>();
             services.AddSingleton<ICompanionControlService, CompanionControlService>();
             services.AddSingleton<INPCGroupService, NPCGroupService>();
+            services.AddSingleton<ISpawnRegistryService, SpawnRegistryService>();
             services.AddSingleton<ISpawnService, SpawnService>();
 
             // Economy

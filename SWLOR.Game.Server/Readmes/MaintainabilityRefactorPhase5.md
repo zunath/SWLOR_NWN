@@ -254,7 +254,7 @@ smaller.
 | P5-5 | Split `StatusEffectService` (master freeze) | P5-4 | Opus |
 | P5-6 | Split `SpaceService` | the other splits (owner decision 5) | Sonnet build, Opus review |
 | P5-7 | Combat services over the limits: `CombatHitEffects`, `CombatDamageTaken`, `CombatAbilityImpact`, `CombatRecorder` (and `CombatRecordSerializer.Write`), `CombatDamageModifiers`, `CombatAbilityActivation`, `CombatAbilityBonus`, `CombatAbilityHit`, `CombatService`, `Enmity` | P5-5 | Opus |
-| P5-8 | Creatures: `AIService`, `SpawnService`, `CompanionControlService` | P5-1 | Sonnet build, Opus review |
+| P5-8 | Creatures: `AIService`, `SpawnService`, `CompanionControlService` (part map [MaintainabilityRefactorCreaturesSplit.md](MaintainabilityRefactorCreaturesSplit.md)) | P5-1 | Sonnet build, Opus review |
 | P5-9 | Items and World: `ItemService`, `PropertyService`, `PropertyLoaderService`, `PropertyCityGovernanceService`, `ShuttleService`, `CraftService`, `BlueprintBonuses` | P5-1; `ItemService` after the other splits (owner decision 5) | Sonnet build, Opus review |
 | P5-10 | Character and Companions: `PerkService`, `SkillService`, `PlayerNameService`, `MimicryService`, `DroidService`, `BeastMasteryService` | P5-5; `DroidService` after the other splits (owner decision 5) | Sonnet build, Opus review |
 | P5-11 | Social, UI and Foundation: `CommunicationService`, `PerformanceAudienceService`, `PerformanceService`, `ExtraHotbarsService`, `GuiWindowBuilder`; `TintMapService` into `Domain` | P5-1 | Sonnet build, Opus review |

@@ -419,7 +419,17 @@ no `[ReloadCarriedFrom]` moved: part 5 holds no state. Where the pull request di
 - **`CombatParts.OtherServices` names `CombatRatingService`:** it is a `Combat*Service` in `Domain/Combat` but not a part of the
   `Combat` facade, so `CombatSource` and `CombatMembers` leave it out, as they do `CombatPointService` and `CombatRecorderService`.
 - **Readings:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs) and its
-  ability table are byte-identical to the base's (`5ae2b671d`).
+  ability table are byte-identical to the base's (`5ae2b671d`). The filtered engine run (ratings, deflection, Guard, attack, dual
+  wield, Twin Pistol, Power Glove, trap damage and the rotation balance tests, 301 tests, the same module and haks on both sides, run
+  side by side) failed 8 on the branch and 11 on the base. Seven fail on both (the crafting station floor, the dual wield shared
+  cadence, the Foundry loot migration, Warden Wall Stance, the Single Weapon rating capture, Piercing Toss Bleed ticks, Toxin and
+  Shock damage reduction); the branch's eighth, the Power Glove and Katar parity test, timed out under the paired load and passed
+  on a rerun of its category (9 of 9); the base also failed the companion stamina delay, the dual wield animation sequence, the
+  Hobble refresh and a Twin Pistol timeout, which passed on the branch. The paired `CombatLoad` runs shared the machine with two
+  other sessions' live stacks, so both sides ran saturated (9 to 15 fps): players 874 against 871 managed ms/s (base against
+  branch) and NPCs 698 against 711 in the first round, players 844 against 854 and NPCs 771 against 768 with the homes swapped.
+  Averaged, the sides are within 1% (players 859 against 863, NPCs 735 against 740), less than one side moved between rounds, and
+  the stat read's own time stayed at 86 to 89 ms/s in the player fight on both sides.
 
 ## Test plan
 

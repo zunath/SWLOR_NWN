@@ -29,6 +29,7 @@ public static class StatSource
     public static readonly IReadOnlyList<string> PartFiles = new[]
     {
         "SWLOR.Game.Server/Domain/Character/StatService.cs",
+        "SWLOR.Game.Server/Domain/Combat/CombatRatingService.cs",
     };
 
     /// <summary>
@@ -38,6 +39,7 @@ public static class StatSource
     public static readonly IReadOnlyList<string> InterfaceFiles = new[]
     {
         "SWLOR.Game.Server/Domain/Character/IStatService.cs",
+        "SWLOR.Game.Server/Domain/Combat/ICombatRatingService.cs",
     };
 
     /// <summary>
@@ -46,7 +48,8 @@ public static class StatSource
     /// </summary>
     public static readonly IReadOnlySet<string> PartInterfaces = new HashSet<string>(StringComparer.Ordinal)
     {
-        "IStatService"
+        "IStatService",
+        "ICombatRatingService"
     };
 
     private static readonly Lazy<IReadOnlyList<SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));

@@ -62,6 +62,12 @@ namespace SWLOR.Game.Server.Composition
         public static ICombatQueriesService CombatQueries => FacadeAccessor.Resolve<ICombatQueriesService>();
 
         /// <summary>
+        /// The Attack, Accuracy, Defense and Evasion ratings and the deflection and Guard chances (part 5 of the stat split,
+        /// P5-4c; until then <c>Stat.GetAttack</c>, <c>GetDefense</c>, <c>GetAccuracy</c>, <c>GetEvasion</c> and the chance reads).
+        /// </summary>
+        public static ICombatRatingService CombatRating => FacadeAccessor.Resolve<ICombatRatingService>();
+
+        /// <summary>
         /// The DM-toggled combat recorder (the facade <c>Service.CombatRecorder</c> until P2-ZG). The hooks read
         /// <c>CombatRecorder.IsRecording</c> first, through this property, which reads the same per-service slot the facade read.
         /// </summary>

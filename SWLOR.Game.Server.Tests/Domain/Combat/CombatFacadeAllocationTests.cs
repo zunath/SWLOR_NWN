@@ -35,10 +35,14 @@ public class CombatFacadeAllocationTests
     private FacadeContainer _container = null!;
     private IDisposable _installed = null!;
 
-    // The stat service answers its calls into unconverted code without allocating, so the part reads count only Combat.
+    // The stat service and its rating part answer their calls into unconverted code without allocating, so the part reads count
+    // only Combat.
     [OneTimeSetUp]
     public void BuildContainer() => _container = new FacadeContainer(services =>
-        services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>()));
+    {
+        services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>());
+        services.Replace(ServiceDescriptor.Singleton<ICombatRatingService, AllocationCombatRatingService>());
+    });
 
     [OneTimeTearDown]
     public void DisposeContainer() => _container.Dispose();
@@ -309,7 +313,10 @@ public class CombatFacadeAllocationTests
     private static TimingParts InstallTimingParts(List<IDisposable> scopes)
     {
         var container = new FacadeContainer(services =>
-            services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>()));
+        {
+            services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>());
+            services.Replace(ServiceDescriptor.Singleton<ICombatRatingService, AllocationCombatRatingService>());
+        });
         scopes.Add(container);
         scopes.Add(container.Install());
         scopes.Add(NWScriptRuntime.Override(StatReadEngine.Create(StatReadEngine.NpcAnswers())));

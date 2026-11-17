@@ -10,13 +10,14 @@
 # SWLOR.Game.Server/Readmes/MaintainabilityRefactorPhase5.md. Regenerate (this also rewrites DebtReport.md), then review the diff:
 # SWLOR_UPDATE_SNAPSHOTS=1 dotnet test SWLOR.Architecture.Tests --no-build
 
+SWLOR.Game.Server.Domain.Abilities.AbilityDamageInputService | 11
 SWLOR.Game.Server.Domain.Abilities.MimicryService | 11
-SWLOR.Game.Server.Domain.Character.StatService | 18
+SWLOR.Game.Server.Domain.Character.StatService | 14
 SWLOR.Game.Server.Domain.Character.StatusEffectService | 16
 SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 13
-SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService | 11
+SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService | 12
 SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 14
-SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService | 17
+SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService | 18
 SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 17
 SWLOR.Game.Server.Domain.Combat.CombatService | 12
 SWLOR.Game.Server.Domain.Combat.EnmityService | 12
@@ -27,5 +28,5 @@ SWLOR.Game.Server.Domain.Space.SpaceService | 17
 SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase | 21
 SWLOR.Game.Server.Feature.ChatCommandDefinition.CharacterChatCommand | 16
 SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand | 16
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 19
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 20
 SWLOR.Game.Server.Feature.UsePerkFeat | 31

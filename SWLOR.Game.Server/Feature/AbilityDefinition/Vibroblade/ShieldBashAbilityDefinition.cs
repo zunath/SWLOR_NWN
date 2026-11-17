@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             if (totalDamage <= 0)
                 return;
 
-            var physicalDefense = Stat.GetDefense(
+            var physicalDefense = CombatRating.GetDefense(
                 activator,
                 CombatDamageType.Physical,
                 AbilityType.Vitality);

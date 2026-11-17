@@ -365,6 +365,72 @@ Where the pull request differs from the map:
   Bleed ticks, Toxin and Shock damage reduction, the Foundry loot migration); the base also failed the companion stamina delay
   test, which passed on the branch.
 
+### P5-4c (the ratings move up to Combat)
+
+Part 5 moved verbatim: `CombatRatingService` behind `ICombatRatingService` (Combat, `GameServices.CombatRating`; 950 lines, 7
+services: `IDBService`, `ISkillService`, `IItemService`, `ITwinPistolEquipmentService`, `ICombatQueriesService`,
+`ICombatDamageModifiersService`, `IStatService`) holds the scripted and native Attack, Accuracy, Defense and Evasion reads,
+`GetStatValueNative`, the attack and defense percent adjustments, the six deflection chance reads, `GetGuardChance`, the caps, the
+weapon and shield helpers, the five deflection and Guard constants and its 8 seams. Its 40 calls into part 1 (28 of them
+`GetStatAdjustment`, the rest the NPC stat reads and the pools) go through `IStatService`, and its two Combat seams lost their
+`Lazy<>.Value`. `StatService` went 18 -> 14 services (`ITwinPistolEquipmentService`, `IItemService`, `Lazy<ICombatQueriesService>`
+and `Lazy<ICombatDamageModifiersService>` gone), 3,348 -> 2,430 lines, up `Lazy<>` 5 -> 3; `ApplyPercentAdjustment` is
+`StatRules.ApplyPercentAdjustment`, which the pools and the healing adjustments call too. No handler, no `[ReloadState]` field and
+no `[ReloadCarriedFrom]` moved: part 5 holds no state. Where the pull request differs from the map or adds to it:
+
+- **A converted service of Combat,** listed on its own in `ConvertedServices.json` and `DomainMap.json`, not as an `extras` part of
+  `Stat`'s entry: a part lives in its service's domain.
+- **The `Stat` facade is split in `RemovedFacades.json`.** Its `members` list the 19 part 5 names under `CombatRating` and the 89 names
+  left on `IStatService` under `Stat`, as the `Ability` entry does: the tool rewrites a call only for a listed name, so without the
+  `Stat` list a master file that calls only `Stat` members would not get its `GameServices` import on a sync. The five deflection and
+  Guard constants name `CombatRatingService`. `FacadeRemovalDataTests` checks the `Stat` entry against the two interfaces. P5-4d and
+  P5-4e move their parts' names out of the `Stat` list in the same way.
+- **Callers.** `Apply-FacadeRemoval.ps1` rewrote 131 call sites in 29 files: content (`CharacterSheetViewModel` 18,
+  `ShieldBashAbilityDefinition` 1), `Native` (`AttackRollDefense` 4, `DamageRollCreature` 3, `GetDamageRoll` 2, `AttackRollAccuracy`
+  1, `DamageRollWeapon` 1), the static helpers `BeastCombatStatCalculator` (4) and `WeaponShotProfile` (1), 12 engine test files (59),
+  7 unit test files and the characterization test (5); a second run changes nothing. `CombatDamageTakenService` (`GetGuardChance`,
+  `GetAttack`, `GetDefense` twice), `CombatAbilityHitService` (`GetEvasion`, `GetAccuracy`) and `AbilityDamageInputService` (its
+  `GetAttack` and `GetDefense` seams) take `ICombatRatingService`. `PlayerGuideViewModel` and the tests read the moved constants from
+  `CombatRatingService`; the characterization test keeps its `nameof` names, so its snapshot is unchanged.
+- **Accepted growth, recorded here as the holder table says:** `CombatDamageTakenService` 17 -> 18 services (and 1,640 -> 1,643
+  lines for the field, parameter and assignment) and `CombatAbilityHitService` 11 -> 12, both removed by P5-7;
+  `AbilityDamageInputService` 10 -> 11, a new `ServicesPerType.txt` line, removed by P5-16; `CharacterSheetViewModel` 19 -> 20 lookups
+  (`CombatRating` beside `Stat`; P5-4e takes it to 21), removed by P5-14 and P5-16. No holder gained a `Lazy<>`.
+- **Tests:** `TestStatService.CombatRating.cs` became `TestCombatRatingService`, the part's double, over the bench's database, item
+  and twin pistol stand-ins, with the stat double as its `IStatService`, so the rating tests see the same answers and the same log;
+  the bench's and the test base's `CombatRating` accessors return it. `AllocationCombatRatingService` answers the rating seams without
+  allocating and is registered beside `AllocationStatService` in `StatFacadeAllocationTests` and `CombatFacadeAllocationTests`; the
+  48 pins are unchanged and the rating group reads through `GameServices.CombatRating`. `StatServiceDefaultSeamsTests` runs the
+  part's seams on a `CombatRatingService` subclass, and the `CombatAbilityHitService` and `CombatDamageTakenService` tests answer the
+  ratings through an `ICombatRatingService` stand-in. `StatSource` adds the part's file, its interface and `ICombatRatingService`;
+  the tests that read the call sites by text follow the new receivers.
+- **Coverage:** the native reads (167 lines: `GetAttackNative`, `GetAccuracyNative`, `GetEvasionNative`, `GetDefenseNative`,
+  `GetStatValueNative` and the native chance and shield helpers) run only in the engine, as they did in `StatService`, so the unit
+  suite covers about 57% of the part. Measured against P5-4a's gate coverage, `Domain/Combat` goes from 97.8% to about 96.8% (floor
+  95) and `Domain/Character` from 83.7% to about 85.0% (floor 83).
+- **Baselines:** `ServicesPerType.txt` 19 -> 20 lines (302 -> 312 services: `StatService` 18 -> 14 and the growth above),
+  `LargeTypes.txt` (`StatService` 2,430, `CombatDamageTakenService` 1,643; 65,931 -> 65,016 lines), `DeferredResolution.txt`
+  (`StatService.cs -> Combat (up)` 5 -> 3; 69 -> 67 parameters), `UpwardEdges.txt` 166 -> 164 lines and 470 -> 456 members
+  (`StatService.cs` Character -> Combat 25 -> 15 and Character -> Items gone; the `Native` rating reads name Combat instead of
+  Character: `AttackRollDefense` Character 3 -> 2 and Combat 2 -> 3, `DamageRollWeapon` Combat 2 -> 3, `DamageRollCreature`'s
+  Character line gone). The domain-pair report's members both ways grow 5,271 -> 5,294, because the moved code references Character
+  from Combat now; no pair or cycle is added. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` gain and lose no edge
+  (counts kept).
+- **`CombatParts.OtherServices` names `CombatRatingService`:** it is a `Combat*Service` in `Domain/Combat` but not a part of the
+  `Combat` facade, so `CombatSource` and `CombatMembers` leave it out, as they do `CombatPointService` and `CombatRecorderService`.
+- **Readings:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs) and its
+  ability table are byte-identical to the base's (`5ae2b671d`). The filtered engine run (ratings, deflection, Guard, attack, dual
+  wield, Twin Pistol, Power Glove, trap damage and the rotation balance tests, 301 tests, the same module and haks on both sides, run
+  side by side) failed 8 on the branch and 11 on the base. Seven fail on both (the crafting station floor, the dual wield shared
+  cadence, the Foundry loot migration, Warden Wall Stance, the Single Weapon rating capture, Piercing Toss Bleed ticks, Toxin and
+  Shock damage reduction); the branch's eighth, the Power Glove and Katar parity test, timed out under the paired load and passed
+  on a rerun of its category (9 of 9); the base also failed the companion stamina delay, the dual wield animation sequence, the
+  Hobble refresh and a Twin Pistol timeout, which passed on the branch. The paired `CombatLoad` runs shared the machine with two
+  other sessions' live stacks, so both sides ran saturated (9 to 15 fps): players 874 against 871 managed ms/s (base against
+  branch) and NPCs 698 against 711 in the first round, players 844 against 854 and NPCs 771 against 768 with the homes swapped.
+  Averaged, the sides are within 1% (players 859 against 863, NPCs 735 against 740), less than one side moved between rounds, and
+  the stat read's own time stayed at 86 to 89 ms/s in the player fight on both sides.
+
 ## Test plan
 
 Each pull request builds the solution; runs `SWLOR.Architecture.Tests` and regenerates the Phase 5 baselines with

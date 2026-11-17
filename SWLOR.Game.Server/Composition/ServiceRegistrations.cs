@@ -162,6 +162,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatImpactGeometryService, CombatImpactGeometryService>();
             services.AddSingleton<ICombatPointService, CombatPointService>();
             services.AddSingleton<ICombatQueriesService, CombatQueriesService>();
+            services.AddSingleton<ICombatRatingService, CombatRatingService>();
             services.AddSingleton<ICombatRecorderService, CombatRecorderService>();
             // The same instance, seen through the interfaces the lower domains and the platform own (P5-1g).
             services.AddSingleton<ICombatRecording>(provider => provider.GetRequiredService<ICombatRecorderService>());

@@ -29,7 +29,7 @@ public abstract class StatServiceTestBase
 
     protected TestStatService Record => Bench.Record;
 
-    protected TestStatService CombatRating => Bench.CombatRating;
+    protected TestCombatRatingService CombatRating => Bench.CombatRating;
 
     protected TestStatService DeflectionReaction => Bench.DeflectionReaction;
 

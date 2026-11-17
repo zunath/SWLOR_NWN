@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Native
             var capturedOrdinaryAccuracy = queuedAbility == null
                 ? RangedWeaponAttackContext.GetProfile(attacker.m_idSelf)?.NativeAccuracy : null;
             var attackerAccuracy = capturedOrdinaryAccuracy ??
-                Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
+                CombatRating.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility);
             if (queuedAbility == null)
                 attackerAccuracy += techniqueAccuracy - Stat.GetStatAdjustment(attacker.m_idSelf, StatType.OrdinaryWeaponAccuracyPenalty);
             else

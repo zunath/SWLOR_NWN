@@ -616,13 +616,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
             var nativeWeapon = native.m_pInventory.GetItemInSlot((uint)slot);
-            var baseline = Stat.GetAccuracyNative(native, nativeWeapon);
-            var scriptBaseline = Stat.GetAccuracy(attacker, weapon, AbilityType.Invalid,
+            var baseline = CombatRating.GetAccuracyNative(native, nativeWeapon);
+            var scriptBaseline = CombatRating.GetAccuracy(attacker, weapon, AbilityType.Invalid,
                 GameServices.Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon)));
             var accuracy = ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 5);
             AddItemProperty(DurationType.Permanent, accuracy, weapon);
-            ctx.AssertEqual(baseline + 5, Stat.GetAccuracyNative(native, nativeWeapon), $"{GetBaseItemType(weapon)} native ACC counts once");
-            ctx.AssertEqual(scriptBaseline + 5, Stat.GetAccuracy(attacker, weapon, AbilityType.Invalid,
+            ctx.AssertEqual(baseline + 5, CombatRating.GetAccuracyNative(native, nativeWeapon), $"{GetBaseItemType(weapon)} native ACC counts once");
+            ctx.AssertEqual(scriptBaseline + 5, CombatRating.GetAccuracy(attacker, weapon, AbilityType.Invalid,
                 GameServices.Skill.GetSkillTypeByBaseItem(GetBaseItemType(weapon))), $"{GetBaseItemType(weapon)} script ACC counts once");
             RemoveItemProperty(weapon, accuracy);
         }
@@ -722,23 +722,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature();
                 var mainWeapon = native.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
                 var offWeapon = native.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
-                var mainBaseline = Stat.GetAccuracyNative(native, mainWeapon);
-                var offBaseline = Stat.GetAccuracyNative(native, offWeapon);
-                var mainScriptBaseline = Stat.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife);
-                var offScriptBaseline = Stat.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife);
+                var mainBaseline = CombatRating.GetAccuracyNative(native, mainWeapon);
+                var offBaseline = CombatRating.GetAccuracyNative(native, offWeapon);
+                var mainScriptBaseline = CombatRating.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife);
+                var offScriptBaseline = CombatRating.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife);
 
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 5), main);
                 AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 10), off);
-                ctx.AssertEqual(mainBaseline + 5, Stat.GetAccuracyNative(native, mainWeapon), "Main-hand ACC counts once, excluding off-hand ACC");
-                ctx.AssertEqual(offBaseline + 10, Stat.GetAccuracyNative(native, offWeapon), "Off-hand ACC counts once, excluding main-hand ACC");
-                ctx.AssertEqual(mainScriptBaseline + 5, Stat.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet main-hand accuracy agrees");
-                ctx.AssertEqual(offScriptBaseline + 10, Stat.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet off-hand accuracy agrees");
+                ctx.AssertEqual(mainBaseline + 5, CombatRating.GetAccuracyNative(native, mainWeapon), "Main-hand ACC counts once, excluding off-hand ACC");
+                ctx.AssertEqual(offBaseline + 10, CombatRating.GetAccuracyNative(native, offWeapon), "Off-hand ACC counts once, excluding main-hand ACC");
+                ctx.AssertEqual(mainScriptBaseline + 5, CombatRating.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet main-hand accuracy agrees");
+                ctx.AssertEqual(offScriptBaseline + 10, CombatRating.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet off-hand accuracy agrees");
 
                 TemporaryStatModifier.Add(attacker, StatType.Accuracy, 10, 30f);
-                ctx.AssertEqual(mainBaseline + 15, Stat.GetAccuracyNative(native, mainWeapon), "Stat-driven accuracy buffs affect the main hand once");
-                ctx.AssertEqual(offBaseline + 20, Stat.GetAccuracyNative(native, offWeapon), "Stat-driven accuracy buffs affect the off hand once");
-                ctx.AssertEqual(mainScriptBaseline + 15, Stat.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet main-hand accuracy includes the buff");
-                ctx.AssertEqual(offScriptBaseline + 20, Stat.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet off-hand accuracy includes the buff");
+                ctx.AssertEqual(mainBaseline + 15, CombatRating.GetAccuracyNative(native, mainWeapon), "Stat-driven accuracy buffs affect the main hand once");
+                ctx.AssertEqual(offBaseline + 20, CombatRating.GetAccuracyNative(native, offWeapon), "Stat-driven accuracy buffs affect the off hand once");
+                ctx.AssertEqual(mainScriptBaseline + 15, CombatRating.GetAccuracy(attacker, main, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet main-hand accuracy includes the buff");
+                ctx.AssertEqual(offScriptBaseline + 20, CombatRating.GetAccuracy(attacker, off, AbilityType.Invalid, SkillType.Vibroknife), "Character-sheet off-hand accuracy includes the buff");
             });
         }
 
@@ -928,10 +928,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     if (useShield)
                         TemporaryStatModifier.Add(defender, StatType.ShieldDeflection, 100, 60f);
                     var defenderNative = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(defender).AsNWSCreature();
-                    ctx.AssertEqual(useShield ? 0 : 100, Stat.GetMeleeDeflectionChanceNative(defenderNative),
+                    ctx.AssertEqual(useShield ? 0 : 100, CombatRating.GetMeleeDeflectionChanceNative(defenderNative),
                         "Shield replaces melee deflection rather than stacking with it");
-                    ctx.AssertEqual(useShield ? StatService.MaximumShieldDeflectionChance : 0,
-                        Stat.GetShieldDeflectionChanceNative(defenderNative), "Expected shield deflection chance");
+                    ctx.AssertEqual(useShield ? CombatRatingService.MaximumShieldDeflectionChance : 0,
+                        CombatRating.GetShieldDeflectionChanceNative(defenderNative), "Expected shield deflection chance");
 
                     var round = NWNXLib.g_pAppManager.m_pServerExoApp.GetGameObject(attacker).AsNWSCreature().m_pcCombatRound;
                     foreach (var attacks in new[] { 2, 6 })

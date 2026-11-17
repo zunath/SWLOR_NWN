@@ -522,8 +522,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 StatusEffect.RemoveAllStatusEffects(beast);
             }
             StatusEffect.ApplyStatusEffect(beast, beast, new ForceSuppressionStatusEffect(), 30f);
-            ctx.AssertEqual(-10, Stat.GetAttackPercentAdjustment(beast, SkillType.Vibroblade), "Physical Attack penalty");
-            ctx.AssertEqual(-25, Stat.GetAttackPercentAdjustment(beast, SkillType.Force), "Combined Force Attack penalty");
+            ctx.AssertEqual(-10, CombatRating.GetAttackPercentAdjustment(beast, SkillType.Vibroblade), "Physical Attack penalty");
+            ctx.AssertEqual(-25, CombatRating.GetAttackPercentAdjustment(beast, SkillType.Force), "Combined Force Attack penalty");
         }
 
         [EngineTest("Control-only Mimicry casts never gain direct damage from flat or potency bonuses", Category = "CombatPerkRegression", TimeoutSeconds = 30f)]

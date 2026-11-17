@@ -388,7 +388,7 @@ public class CombatDamageTests
         var attackSource = NativeCombatSource.AttackRoll();
         var statSource = StatSource.Read();
         attackSource.Should().Contain("GameServices.CombatQueries.GetAbilitySkillType(attacker.m_idSelf, queuedAbility)");
-        attackSource.Should().Contain("Stat.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility)");
+        attackSource.Should().Contain("CombatRating.GetAccuracyNative(attacker, weapon, abilitySkillType, accuracyAbility)");
         attackSource.Should().Contain("GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(attacker.m_idSelf, abilitySkillType)");
         GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Vibroblade).Should().Be(AbilityType.Perception);
         GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Rifle).Should().Be(AbilityType.Agility);
@@ -396,7 +396,7 @@ public class CombatDamageTests
         GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Force).Should().Be(AbilityType.Invalid);
         GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.BeastMastery).Should().Be(AbilityType.Invalid);
         GameServices.CombatQueries.GetQueuedAbilityAccuracyAbilityType(0, SkillType.Invalid).Should().Be(AbilityType.Invalid);
-        attackSource.Should().Contain("Stat.GetEvasionNative(defender, abilitySkillType)");
+        attackSource.Should().Contain("CombatRating.GetEvasionNative(defender, abilitySkillType)");
         attackSource.Should().Contain("GameServices.CombatDamageModifiers.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, abilitySkillType)");
         System.Text.RegularExpressions.Regex.IsMatch(attackSource,
             @"ApplySideAttackEvasionIgnore\(\s*attacker.m_idSelf,\s*defender.m_idSelf,\s*abilitySkillType,").Should().BeTrue();
@@ -917,9 +917,9 @@ public class CombatDamageTests
         whirlingGuardSource.Should().Contain("StatGroup.Stats[StatType.GuardRetaliationDMG] = 8;");
 
         var resolver = ExtractMethod(combatSource, "private static int ResolveGuardRetaliationDamage");
-        resolver.Should().Contain("_stat.GetAttack(source, damageAbility, skillType)");
+        resolver.Should().Contain("_combatRating.GetAttack(source, damageAbility, skillType)");
         resolver.Should().Contain("ApplyTargetStatusAttackModifiers(source, target, attack, skillType)");
-        resolver.Should().Contain("_stat.GetDefense(target, damageType, defenseAbility)");
+        resolver.Should().Contain("_combatRating.GetDefense(target, damageType, defenseAbility)");
         resolver.Should().Contain("ApplyStatusSourceDefenseModifiers(source, target, defense)");
         resolver.Should().Contain("return CalculateDamage(");
         resolver.Should().NotContain("ApplyCombatImpact");

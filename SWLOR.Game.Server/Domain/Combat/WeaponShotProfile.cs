@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                  property = GetNextItemProperty(weapon))
                 if (GetItemPropertyType(property) == ItemPropertyType.DamageStat)
                     ability = (AbilityType)GetItemPropertySubType(property);
-            var accuracy = Stat.GetAccuracy(actor, weapon, AbilityType.Agility, skill);
+            var accuracy = CombatRating.GetAccuracy(actor, weapon, AbilityType.Agility, skill);
             var powerAttackPenalty = GetActionMode(actor, ActionMode.PowerAttack) ? 5 :
                 GetActionMode(actor, ActionMode.ImprovedPowerAttack) ? 10 : 0;
             return new WeaponShotProfile(weapon, skill, WeaponDamage.GetEffectiveDMG(actor, weapon),

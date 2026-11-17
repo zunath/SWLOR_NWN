@@ -805,8 +805,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var effectiveDamage = WeaponDamage.GetEffectiveDMG(_target, item, itemDamage);
                 var dmg = effectiveDamage + GameServices.CombatQueries.GetMiscDMGBonus(_target, itemType);
                 var dmgText = $"{dmg} DMG";
-                var attack = Stat.GetAttack(_target, damageAbility, skill);
-                var defense = Stat.CalculateDefense(damageStat, skillRank, 0);
+                var attack = CombatRating.GetAttack(_target, damageAbility, skill);
+                var defense = CombatRating.CalculateDefense(damageStat, skillRank, 0);
                 var (min, max) = CombatRules.CalculateDamageRange(attack, dmg, damageStat, defense, damageStat, 0);
                 var ordinaryDamageBonus = PairedRangedTraits.GetOrdinaryDamagePercentAdjustment(_target, GetAttackTarget(_target));
                 var ordinaryDamageAdjustment = Stat.GetStatAdjustment(_target, StatType.OrdinaryAttackDamagePercentAdjustment);
@@ -889,30 +889,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var mainHandSkill = Skill.GetWeaponSkill(_target, mainHand);
-            Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
+            Attack = CombatRating.GetAttack(_target, damageStat, mainHandSkill);
             AttackTooltip = FormatOffHandTooltip(AttackDescription, hasOffhandAttack
-                ? Stat.GetAttack(_target, GetEquipmentDamageAbility(_target, offhandAttackWeapon),
+                ? CombatRating.GetAttack(_target, GetEquipmentDamageAbility(_target, offhandAttackWeapon),
                     Skill.GetWeaponSkill(_target, offhandAttackWeapon)).ToString()
                 : null);
-            ForceAttack = Stat.GetAttack(_target, AbilityType.Willpower, SkillType.Force);
-            PhysicalDefense = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
-            ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
+            ForceAttack = CombatRating.GetAttack(_target, AbilityType.Willpower, SkillType.Force);
+            PhysicalDefense = CombatRating.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
+            ForceDefense = CombatRating.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
-            WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            WeaponAccuracy = CombatRating.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
             if (GetIsObjectValid(mainHand) && Item.IsAttackWeaponType(GetBaseItemType(mainHand)))
                 WeaponAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target);
             var offhandAccuracy = hasOffhandAttack
-                ? Stat.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid) : 0;
+                ? CombatRating.GetAccuracy(_target, offhandAttackWeapon, AbilityType.Invalid, SkillType.Invalid) : 0;
             if (hasOffhandAttack)
                 offhandAccuracy += PairedRangedTraits.GetOrdinaryAccuracy(_target);
             OffHandAccuracy = hasOffhandAttack ? offhandAccuracy.ToString() : "-";
-            ForceAccuracy = Stat.GetAccuracy(
+            ForceAccuracy = CombatRating.GetAccuracy(
                 _target,
                 forceAccuracyWeapon,
                 AbilityType.Willpower,
                 SkillType.Force,
                 ignoreWeaponAccuracyStatOverride: true);
-            Evasion = Stat.GetEvasion(_target, SkillType.Invalid);
+            Evasion = CombatRating.GetEvasion(_target, SkillType.Invalid);
 
             RefreshResistances();
             RefreshCraftingStats();
@@ -1021,20 +1021,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("FP Regen", GetFPRegenValue().ToString(), "Amount of FP restored automatically by natural regeneration.");
             AddStat("STM Regen", GetStaminaRegenValue().ToString(), "Amount of STM restored automatically by natural regeneration.");
             AddStat("Combat Readiness", FormatPercent(Stat.GetCombatReadinessPercent(_target)), "Increases activated ability damage, healing, and temporary HP. Does not reduce cooldowns.");
-            AddStat("Melee Deflection", FormatPercent(Stat.GetMeleeDeflectionChance(_target)), "Chance to negate a hostile melee weapon auto-attack while wielding a weapon without a shield.");
-            AddStat("Ranged Deflection", FormatPercent(Stat.GetRangedDeflectionChance(_target)), "Chance to negate a hostile ranged weapon auto-attack while wielding a weapon without a shield.");
-            AddStat("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Chance to negate either a hostile melee or ranged weapon auto-attack while equipped with a shield. Shield Deflection replaces weapon deflection while the shield is equipped.");
-            AddStat("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage and increase enmity gain.");
+            AddStat("Melee Deflection", FormatPercent(CombatRating.GetMeleeDeflectionChance(_target)), "Chance to negate a hostile melee weapon auto-attack while wielding a weapon without a shield.");
+            AddStat("Ranged Deflection", FormatPercent(CombatRating.GetRangedDeflectionChance(_target)), "Chance to negate a hostile ranged weapon auto-attack while wielding a weapon without a shield.");
+            AddStat("Shield Deflection", FormatPercent(CombatRating.GetShieldDeflectionChance(_target)), "Chance to negate either a hostile melee or ranged weapon auto-attack while equipped with a shield. Shield Deflection replaces weapon deflection while the shield is equipped.");
+            AddStat("Guard", FormatPercent(CombatRating.GetGuardChance(_target)), "Chance to reduce damage and increase enmity gain.");
             AddStat("Guard Reduction", FormatPercent(GameServices.CombatDamageTaken.GetGuardDamageReductionPercent(_target)), "Amount of damage removed from a hit when Guard succeeds.");
             AddStat("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better.");
             AddStat("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better.");
-            AddStat("Physical DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Physical)), "Bonus or penalty applied to Physical DEF. Already included in the Physical DEF shown on the Attributes tab.");
-            AddStat("Force DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Force)), "Bonus or penalty applied to Force DEF. Already included in the Force DEF shown on the Attributes tab.");
+            AddStat("Physical DEF %", FormatPercent(CombatRating.GetDefensePercentAdjustment(_target, CombatDamageType.Physical)), "Bonus or penalty applied to Physical DEF. Already included in the Physical DEF shown on the Attributes tab.");
+            AddStat("Force DEF %", FormatPercent(CombatRating.GetDefensePercentAdjustment(_target, CombatDamageType.Force)), "Bonus or penalty applied to Force DEF. Already included in the Force DEF shown on the Attributes tab.");
             AddStat("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Direct percentage-point change to hit chance for weapon-skill and Force-skill ability hit checks only. Does not affect Mimicry abilities or the underlying Accuracy rating.");
             AddStat("Accuracy %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment)), "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance and is already included in the Main-hand Accuracy, Off-hand Accuracy, and Force Accuracy ratings shown on the Attributes tab.");
             AddStat("Evasion %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment)), "Bonus or penalty applied to Evasion. Already included in the Evasion shown on the Attributes tab.");
             AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "General bonus or penalty applied to Attack, including Force Attack.");
-            AddStat("Force Attack %", FormatPercent(Stat.GetAttackPercentAdjustment(_target, SkillType.Force)), "Combined general and Force-specific Attack bonus or penalty. Already included in Force Attack on the Attributes tab.");
+            AddStat("Force Attack %", FormatPercent(CombatRating.GetAttackPercentAdjustment(_target, SkillType.Force)), "Combined general and Force-specific Attack bonus or penalty. Already included in Force Attack on the Attributes tab.");
             var offhandWeapon = BeastMastery.IsPlayerBeast(_target) ? OBJECT_INVALID : GetOffhandAttackWeapon();
             AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), FormatOffHandTooltip(
                 "Increases the chance to score a critical hit. Actual chance varies by target Vitality.",

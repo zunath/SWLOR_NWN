@@ -223,11 +223,11 @@ public static class WeaponRotationBalanceEngineTests
             ctx.AssertEqual(TargetMaximumHP, GetCurrentHitPoints(target), "The NPC begins at its actual native maximum HP");
             // Preserve the former player defender's measured defense and evasion budgets.
             TemporaryStatModifier.Add(target, StatType.PhysicalDefense,
-                TargetDefense - Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 180f, "rotation-defense");
+                TargetDefense - CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 180f, "rotation-defense");
             TemporaryStatModifier.Add(target, StatType.Evasion,
-                TargetEvasion - Stat.GetEvasion(target, SkillType.Invalid), 180f, "rotation-evasion");
-            ctx.AssertEqual(TargetDefense, Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "The NPC preserves the reference defense budget");
-            ctx.AssertEqual(TargetEvasion, Stat.GetEvasion(target, SkillType.Invalid), "The NPC preserves the reference evasion budget");
+                TargetEvasion - CombatRating.GetEvasion(target, SkillType.Invalid), 180f, "rotation-evasion");
+            ctx.AssertEqual(TargetDefense, CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "The NPC preserves the reference defense budget");
+            ctx.AssertEqual(TargetEvasion, CombatRating.GetEvasion(target, SkillType.Invalid), "The NPC preserves the reference evasion budget");
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), target, 180f);
             SetAILevel(target, AILevel.VeryLow);
             SetCommandable(false, target);
@@ -355,10 +355,10 @@ public static class WeaponRotationBalanceEngineTests
                         effectiveAttackDelayMilliseconds = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(actor)),
                         capstone = capstone.ToString(), acceptedCapstoneCasts = casts[capstone],
                         requestedSeconds = requested, observedSeconds = clock.Elapsed.TotalSeconds,
-                        sourceAttack = Stat.GetAttack(actor, AbilityType.Perception, pistol ? SkillType.Pistol : SkillType.TwinPistol),
-                        targetDefense = Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality),
-                        sourceAccuracy = Stat.GetAccuracy(actor, main, AbilityType.Agility, pistol ? SkillType.Pistol : SkillType.TwinPistol),
-                        targetEvasion = Stat.GetEvasion(target, SkillType.Invalid),
+                        sourceAttack = CombatRating.GetAttack(actor, AbilityType.Perception, pistol ? SkillType.Pistol : SkillType.TwinPistol),
+                        targetDefense = CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality),
+                        sourceAccuracy = CombatRating.GetAccuracy(actor, main, AbilityType.Agility, pistol ? SkillType.Pistol : SkillType.TwinPistol),
+                        targetEvasion = CombatRating.GetEvasion(target, SkillType.Invalid),
                         targetKind = "NPC", targetBlueprint = GetResRef(target),
                         targetMaximumHP = GetMaxHitPoints(target), targetCurrentHP = GetCurrentHitPoints(target),
                         hpDamage = startingHP - GetCurrentHitPoints(target), attributedDamage = _attributedDamage,

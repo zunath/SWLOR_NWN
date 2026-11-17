@@ -114,8 +114,8 @@ public static class WeaponAttackScenarios
             await TwinPistolEquipmentEngineTests.WaitForPair(scenario, attacker, weapon);
         await scenario.WaitFrameAsync();
 
-        var fixture = $"accuracy {Stat.GetAccuracy(attacker, weapon, AbilityType.Invalid, SkillType.Invalid)}, " +
-                      $"evasion {Stat.GetEvasion(target, SkillType.Invalid)}, " +
+        var fixture = $"accuracy {CombatRating.GetAccuracy(attacker, weapon, AbilityType.Invalid, SkillType.Invalid)}, " +
+                      $"evasion {CombatRating.GetEvasion(target, SkillType.Invalid)}, " +
                       $"weapon DMG {WeaponDamage.GetEffectiveDMG(attacker, weapon)}, " +
                       $"base item {GetBaseItemType(weapon)}, properties{ItemDescription.DescribeProperties(weapon)}";
 

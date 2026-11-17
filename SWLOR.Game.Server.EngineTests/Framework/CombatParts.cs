@@ -13,11 +13,13 @@ namespace SWLOR.Game.Server.EngineTests.Framework
     {
         /// <summary>
         /// Services of the Combat domain whose names start with <c>Combat</c> but that are not parts of <c>Combat</c>:
-        /// they were converted on their own.
+        /// they were converted on their own, or came from another service (<c>CombatRatingService</c>, part 5 of the stat
+        /// split, P5-4c).
         /// </summary>
         public static readonly IReadOnlySet<string> OtherServices = new HashSet<string>(StringComparer.Ordinal)
         {
             "CombatPointService",
+            "CombatRatingService",
             "CombatRecorderService"
         };
 

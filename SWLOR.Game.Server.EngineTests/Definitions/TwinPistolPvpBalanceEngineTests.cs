@@ -52,8 +52,8 @@ public static class TwinPistolPvpBalanceEngineTests
             await PreparePlayer(ctx, defender.Creature, hostile: true);
             await PreparePlayer(ctx, fresh.Creature, hostile: true);
             await ctx.ExecuteInCreatureContextAsync(actor, () => PrepareNpc(ctx, npc));
-            ctx.AssertEqual(Stat.GetDefense(defender.Creature, CombatDamageType.Physical, AbilityType.Vitality),
-                Stat.GetDefense(fresh.Creature, CombatDamageType.Physical, AbilityType.Vitality),
+            ctx.AssertEqual(CombatRating.GetDefense(defender.Creature, CombatDamageType.Physical, AbilityType.Vitality),
+                CombatRating.GetDefense(fresh.Creature, CombatDamageType.Physical, AbilityType.Vitality),
                 "The original and fresh player targets have identical measured defenses");
 
             PvpCombat.SetCombatSecondsForTesting(actor, 0);
@@ -270,8 +270,8 @@ public static class TwinPistolPvpBalanceEngineTests
                 ctx.SuppressNPCNaturalRegen(target);
                 Stat.SetNPCMaxHitPoints(target, 30000, true);
                 TemporaryStatModifier.Add(target, StatType.PhysicalDefense,
-                    94 - Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 30f);
-                TemporaryStatModifier.Add(target, StatType.Evasion, 134 - Stat.GetEvasion(target, SkillType.Invalid), 30f);
+                    94 - CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 30f);
+                TemporaryStatModifier.Add(target, StatType.Evasion, 134 - CombatRating.GetEvasion(target, SkillType.Invalid), 30f);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneImmobilize(), target, 30f);
                 SetCommandable(false, target);
                 ctx.MakeHostile(target);
@@ -285,8 +285,8 @@ public static class TwinPistolPvpBalanceEngineTests
                 for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
                     ctx.Assert(GetEffectType(effect) is not EffectTypeScript.DamageReduction and not EffectTypeScript.DamageResistance,
                         "The fresh rotation target has no finite native physical absorption effects");
-                ctx.AssertEqual(94, Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "Actual rotation defense");
-                ctx.AssertEqual(134, Stat.GetEvasion(target, SkillType.Invalid), "Actual rotation evasion");
+                ctx.AssertEqual(94, CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), "Actual rotation defense");
+                ctx.AssertEqual(134, CombatRating.GetEvasion(target, SkillType.Invalid), "Actual rotation evasion");
                 ctx.AssertEqual(30000, GetMaxHitPoints(target), "Actual native rotation HP budget");
                 ctx.AssertEqual(0, TemporaryHitPointEffects.GetRemaining(target), "The fresh rotation target has no reactive shield");
                 ResetShot(ctx, actor, target);
@@ -536,7 +536,7 @@ public static class TwinPistolPvpBalanceEngineTests
         SetCommandable(false, target);
         TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 90f);
         TemporaryStatModifier.Add(target, StatType.PhysicalDefense,
-            94 - Stat.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 90f);
+            94 - CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 90f);
         ctx.MakeHostile(target);
     }
 

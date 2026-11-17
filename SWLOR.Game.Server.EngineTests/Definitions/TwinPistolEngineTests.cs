@@ -53,12 +53,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 await ctx.ExecuteInCreatureContextAsync(actor, () =>
                 {
-                    var mainAccuracy = Stat.GetAccuracy(actor, main, AbilityType.Agility, SkillType.TwinPistol);
-                    var companionAccuracy = Stat.GetAccuracy(actor, companion, AbilityType.Agility, SkillType.TwinPistol);
+                    var mainAccuracy = CombatRating.GetAccuracy(actor, main, AbilityType.Agility, SkillType.TwinPistol);
+                    var companionAccuracy = CombatRating.GetAccuracy(actor, companion, AbilityType.Agility, SkillType.TwinPistol);
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 7), main);
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Accuracy, -1, 19), companion);
-                    ctx.AssertEqual(mainAccuracy + 7, Stat.GetAccuracy(actor, main, AbilityType.Agility, SkillType.TwinPistol), "Main ACC counts only its own property");
-                    ctx.AssertEqual(companionAccuracy + 19, Stat.GetAccuracy(actor, companion, AbilityType.Agility, SkillType.TwinPistol), "Companion ACC counts only its own property");
+                    ctx.AssertEqual(mainAccuracy + 7, CombatRating.GetAccuracy(actor, main, AbilityType.Agility, SkillType.TwinPistol), "Main ACC counts only its own property");
+                    ctx.AssertEqual(companionAccuracy + 19, CombatRating.GetAccuracy(actor, companion, AbilityType.Agility, SkillType.TwinPistol), "Companion ACC counts only its own property");
                     ctx.Assert(WeaponShotProfile.Capture(actor, main, SkillType.TwinPistol).Damage !=
                                WeaponShotProfile.Capture(actor, companion, SkillType.TwinPistol).Damage,
                         "The fixture has independently budgeted gun damage");

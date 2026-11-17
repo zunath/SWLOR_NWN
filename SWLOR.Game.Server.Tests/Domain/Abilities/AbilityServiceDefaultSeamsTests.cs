@@ -78,8 +78,9 @@ public class AbilityServiceDefaultSeamsTests
             FacadeForwarder.For<ICombatAbilityBonusService>());
 
     private static AbilityDamageInputService DamageInputPart() =>
-        new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatActivityService>(),
-            FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(), FacadeForwarder.For<ICombatAbilityImpactService>(),
+        new(FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatRatingService>(),
+            FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<ICombatAbilityBonusService>(),
+            FacadeForwarder.For<ICombatAbilityImpactService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(),
             FacadeForwarder.For<ICombatAbilityMagnitudeService>(), FacadeForwarder.For<IResistanceService>());
 
@@ -290,7 +291,7 @@ public class AbilityServiceDefaultSeamsTests
     [Test]
     public void The_npc_attack_formula_is_stats()
     {
-        Run(DamageInputPart(), "GetAttack", 10, 12, 3).Should().Be(Stat.GetAttack(10, 12, 3));
+        Run(DamageInputPart(), "GetAttack", 10, 12, 3).Should().Be(CombatRating.GetAttack(10, 12, 3));
     }
 
     [Test]

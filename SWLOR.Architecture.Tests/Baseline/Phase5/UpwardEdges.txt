@@ -33,8 +33,7 @@ SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Combat | 3
 SWLOR.Game.Server/Domain/Character/PlayerIntroductionService.cs: Character -> Combat | 4
 SWLOR.Game.Server/Domain/Character/PlayerNameService.cs: Character -> Social | 8
 SWLOR.Game.Server/Domain/Character/SkillService.cs: Character -> Combat | 3
-SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Combat | 25
-SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Items | 4
+SWLOR.Game.Server/Domain/Character/StatService.cs: Character -> Combat | 15
 SWLOR.Game.Server/Domain/Character/StatusEffectRules.cs: Character -> Combat | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Abilities | 3
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Combat | 18
@@ -128,8 +127,8 @@ SWLOR.Game.Server/Native/AttackRollAccuracy.cs: Platform -> Items | 1
 SWLOR.Game.Server/Native/AttackRollCritical.cs: Platform -> Character | 3
 SWLOR.Game.Server/Native/AttackRollCritical.cs: Platform -> Combat | 2
 SWLOR.Game.Server/Native/AttackRollCritical.cs: Platform -> Foundation | 3
-SWLOR.Game.Server/Native/AttackRollDefense.cs: Platform -> Character | 3
-SWLOR.Game.Server/Native/AttackRollDefense.cs: Platform -> Combat | 2
+SWLOR.Game.Server/Native/AttackRollDefense.cs: Platform -> Character | 2
+SWLOR.Game.Server/Native/AttackRollDefense.cs: Platform -> Combat | 3
 SWLOR.Game.Server/Native/AttackRollDefense.cs: Platform -> Foundation | 3
 SWLOR.Game.Server/Native/AttackRollFeedback.cs: Platform -> Character | 3
 SWLOR.Game.Server/Native/AttackRollFeedback.cs: Platform -> Combat | 1
@@ -139,7 +138,6 @@ SWLOR.Game.Server/Native/AttackRollSettlement.cs: Platform -> Combat | 1
 SWLOR.Game.Server/Native/AttackRollSettlement.cs: Platform -> Foundation | 1
 SWLOR.Game.Server/Native/AttackSwing.cs: Platform -> Foundation | 1
 SWLOR.Game.Server/Native/CombatRecorderEffectHooks.cs: Platform -> Combat | 1
-SWLOR.Game.Server/Native/DamageRollCreature.cs: Platform -> Character | 1
 SWLOR.Game.Server/Native/DamageRollCreature.cs: Platform -> Combat | 1
 SWLOR.Game.Server/Native/DamageRollCreature.cs: Platform -> Foundation | 1
 SWLOR.Game.Server/Native/DamageRollHitEffects.cs: Platform -> Combat | 3
@@ -147,7 +145,7 @@ SWLOR.Game.Server/Native/DamageRollHitEffects.cs: Platform -> Foundation | 3
 SWLOR.Game.Server/Native/DamageRollMitigation.cs: Platform -> Combat | 2
 SWLOR.Game.Server/Native/DamageRollMitigation.cs: Platform -> Foundation | 2
 SWLOR.Game.Server/Native/DamageRollWeapon.cs: Platform -> Character | 1
-SWLOR.Game.Server/Native/DamageRollWeapon.cs: Platform -> Combat | 2
+SWLOR.Game.Server/Native/DamageRollWeapon.cs: Platform -> Combat | 3
 SWLOR.Game.Server/Native/DamageRollWeapon.cs: Platform -> Foundation | 2
 SWLOR.Game.Server/Native/DamageRollWeapon.cs: Platform -> Items | 1
 SWLOR.Game.Server/Native/GetDamageRoll.cs: Platform -> Character | 4

@@ -27,7 +27,7 @@ public class StatusEffectServiceReloadTests : StatusEffectServiceTestBase
         var running = Applied<ResumingProbe>(Target, Caster);
         Bench.NativeTags.Add(running.Id);
 
-        Service.OnCarriedStateAdopted();
+        Session.OnCarriedStateAdopted();
 
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().ContainSingle().Which.Should().BeSameAs(running);
         Log.Should().Contain($"Remove:Expired:{Target}:False", "its settle closure would have removed it");
@@ -41,7 +41,7 @@ public class StatusEffectServiceReloadTests : StatusEffectServiceTestBase
         Bench.Players.Add(Online);
         Bench.Engine.SetReturn("GetFirstPC", Online);
 
-        Service.OnCarriedStateAdopted();
+        Session.OnCarriedStateAdopted();
 
         Log.Should().Contain($"ApplyCreatureMovementRate:{Online}");
     }

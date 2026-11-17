@@ -17,11 +17,11 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     [Test]
     public void Restart_RefusesAMissingCreatureTypeOrDuration()
     {
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
 
         Applied<ProbeEffect>(Target, Caster, seconds: 5f);
-        Service.RestartStatusEffectDuration(Target, null!, Caster, 5f).Should().BeFalse();
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 0f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, null!, Caster, 5f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 0f).Should().BeFalse();
     }
 
     [Test]
@@ -29,10 +29,10 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     {
         Service.GetCreatureStatusEffects(Target);
         Applied<ProbeEffect>(Target, Caster, probe => probe.StackValue = StatusEffectStackType.UnlimitedStacking, 5f);
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Bystander, 5f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Bystander, 5f).Should().BeFalse();
 
         Applied<ProbeEffect>(Target, Caster, probe => probe.StackValue = StatusEffectStackType.UnlimitedStacking, 5f);
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
     }
 
     [Test]
@@ -40,13 +40,13 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     {
         var flagged = Applied<ProbeEffect>(Target, Caster, seconds: 5f);
         flagged.Flag();
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
 
         Applied<OtherProbeEffect>(Target, Caster);
-        Service.RestartStatusEffectDuration(Target, typeof(OtherProbeEffect), Caster, 5f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, typeof(OtherProbeEffect), Caster, 5f).Should().BeFalse();
 
         Applied<ThirdProbeEffect>(Target, Caster, probe => probe.CategoriesValue = StatusEffectCategory.HardCrowdControl, 5f);
-        Service.RestartStatusEffectDuration(Target, typeof(ThirdProbeEffect), Caster, 5f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, typeof(ThirdProbeEffect), Caster, 5f).Should().BeFalse();
     }
 
     [Test]
@@ -54,7 +54,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     {
         Bench.Hostile.Add((Target, Caster));
         Bench.Players.Add(Caster);
-        Service.Stats[(Caster, StatType.OutgoingDebuffDurationPercentAdjustment)] = 50;
+        Bench.Stats[(Caster, StatType.OutgoingDebuffDurationPercentAdjustment)] = 50;
         Bench.ResistedTicks = ticks => ticks - 1;
         Bench.Recording = true;
         var effect = Applied<ProbeEffect>(Target, Caster, probe => probe.CategoriesValue = StatusEffectCategory.Debuff, 5f);
@@ -62,7 +62,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         Now = Start.AddSeconds(3);
         Bench.Engine.ClearCalls();
 
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f).Should().BeTrue();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f).Should().BeTrue();
 
         effect.DurationTicks.Should().Be(14);
         effect.GetRemainingDurationSeconds(Now).Should().Be(14f);
@@ -80,11 +80,11 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         effect.AssignResistanceType(ResistanceType.Mind);
 
         Bench.Immune.Add((Target, ResistanceType.Mind));
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f).Should().BeFalse();
 
         Bench.Immune.Clear();
         Bench.ResistedTicks = _ => 0;
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f).Should().BeFalse();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f).Should().BeFalse();
         effect.DurationTicks.Should().Be(5);
     }
 
@@ -95,7 +95,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         effect.AssignResistanceType(ResistanceType.Mind);
         Bench.Hostile.Add((Target, source));
 
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), source, 10f).Should().BeTrue();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), source, 10f).Should().BeTrue();
 
         Log.Should().NotContain(line => line.StartsWith("HasImmunity"));
     }
@@ -106,7 +106,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         var effect = Applied<ProbeEffect>(Target, Caster, seconds: 5f);
         effect.AssignResistanceType(ResistanceType.Mind);
 
-        Service.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f).Should().BeTrue();
+        Duration.RestartStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f).Should().BeTrue();
 
         Log.Should().NotContain(line => line.StartsWith("HasImmunity"));
     }
@@ -114,11 +114,11 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     [Test]
     public void Extend_RefusesAMissingCreatureTypeOrDuration()
     {
-        Service.ExtendStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
+        Duration.ExtendStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
 
         Applied<ProbeEffect>(Target, Caster, seconds: 5f);
-        Service.ExtendStatusEffectDuration(Target, null!, Caster, 5f).Should().BeFalse();
-        Service.ExtendStatusEffectDuration(Target, typeof(ProbeEffect), Caster, -1f).Should().BeFalse();
+        Duration.ExtendStatusEffectDuration(Target, null!, Caster, 5f).Should().BeFalse();
+        Duration.ExtendStatusEffectDuration(Target, typeof(ProbeEffect), Caster, -1f).Should().BeFalse();
     }
 
     [Test]
@@ -131,13 +131,13 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         Now = Start.AddSeconds(2);
         Bench.Recording = true;
 
-        Service.ExtendStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 4f).Should().BeTrue();
+        Duration.ExtendStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 4f).Should().BeTrue();
 
         mine.GetRemainingDurationSeconds(Now).Should().Be(7f);
         theirs.GetRemainingDurationSeconds(Now).Should().Be(3f);
         Log.Should().ContainSingle(line => line.StartsWith("RecordStatusApplied"));
 
-        Service.ExtendStatusEffectDuration(Target, typeof(ThirdProbeEffect), Caster, 4f).Should().BeFalse("control cannot be extended");
+        Duration.ExtendStatusEffectDuration(Target, typeof(ThirdProbeEffect), Caster, 4f).Should().BeFalse("control cannot be extended");
         hard.GetRemainingDurationSeconds(Now).Should().Be(3f);
     }
 
@@ -147,7 +147,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         var mine = Applied<ProbeEffect>(Target, Caster, probe => probe.StackValue = StatusEffectStackType.UnlimitedStacking, 5f);
         var theirs = Applied<ProbeEffect>(Target, Bystander, probe => probe.StackValue = StatusEffectStackType.UnlimitedStacking, 5f);
 
-        Service.ExtendStatusEffectDuration(Target, typeof(ProbeEffect), Invalid, 4f).Should().BeTrue();
+        Duration.ExtendStatusEffectDuration(Target, typeof(ProbeEffect), Invalid, 4f).Should().BeTrue();
 
         mine.GetRemainingDurationSeconds(Now).Should().Be(9f);
         theirs.GetRemainingDurationSeconds(Now).Should().Be(9f);
@@ -156,11 +156,11 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     [Test]
     public void Refresh_RefusesAMissingCreatureTypeOrDuration()
     {
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeFalse();
 
         Applied<ProbeEffect>(Target, Caster, seconds: 5f);
-        Service.RefreshStatusEffectDuration(Target, null!, Caster, 5f).Should().BeFalse();
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 0f).Should().BeFalse();
+        Duration.RefreshStatusEffectDuration(Target, null!, Caster, 5f).Should().BeFalse();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 0f).Should().BeFalse();
     }
 
     [Test]
@@ -169,10 +169,10 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         var effect = Applied<ProbeEffect>(Target, Caster, seconds: 10f);
         Bench.Recording = true;
 
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeTrue();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 5f).Should().BeTrue();
         effect.GetRemainingDurationSeconds(Now).Should().Be(10f);
 
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 20f).Should().BeTrue();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 20f).Should().BeTrue();
         effect.GetRemainingDurationSeconds(Now).Should().Be(20f);
         Log.Count(line => line.StartsWith("RecordStatusApplied")).Should().Be(2);
     }
@@ -184,12 +184,12 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         Applied<OtherProbeEffect>(Target, Caster, seconds: 10f);
         Applied<ThirdProbeEffect>(Target, Caster, probe => probe.CategoriesValue = StatusEffectCategory.HardCrowdControl, 10f);
 
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Bystander, 20f).Should().BeFalse();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Bystander, 20f).Should().BeFalse();
         mine.GetRemainingDurationSeconds(Now).Should().Be(10f);
 
-        Service.RefreshStatusEffectDuration(Target, typeof(ThirdProbeEffect), Caster, 20f).Should().BeFalse();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ThirdProbeEffect), Caster, 20f).Should().BeFalse();
 
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Invalid, 20f).Should().BeTrue();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Invalid, 20f).Should().BeTrue();
         mine.GetRemainingDurationSeconds(Now).Should().Be(20f);
     }
 
@@ -200,7 +200,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         var effect = Applied<ProbeEffect>(Target, Caster, seconds: 5f);
         Bench.Immune.Add((Target, ResistanceType.Mind));
 
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 20f, ResistanceType.Mind).Should().BeFalse();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 20f, ResistanceType.Mind).Should().BeFalse();
 
         Bench.Messages.Should().Equal((Caster, "Your ability was resisted."));
         effect.GetRemainingDurationSeconds(Now).Should().Be(5f);
@@ -213,7 +213,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
         Applied<ProbeEffect>(Target, Caster, seconds: 5f);
         Bench.ResistedTicks = _ => 0;
 
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 20f, ResistanceType.Mind).Should().BeFalse();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 20f, ResistanceType.Mind).Should().BeFalse();
 
         Bench.Messages.Should().Equal((Caster, "Your ability was resisted."));
     }
@@ -222,11 +222,11 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     public void Refresh_UsesTheOutgoingBonusBeforeResistanceAndTheDamageTypeForResistance()
     {
         Bench.Hostile.Add((Target, Caster));
-        Service.Stats[(Caster, StatType.OutgoingDebuffDurationPercentAdjustment)] = 100;
+        Bench.Stats[(Caster, StatType.OutgoingDebuffDurationPercentAdjustment)] = 100;
         Bench.ResistedTicks = ticks => ticks + 2;
         var effect = Applied<ProbeEffect>(Target, Caster, probe => probe.CategoriesValue = StatusEffectCategory.Debuff, 5f);
 
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f, ResistanceType.Invalid, CombatDamageType.Fire).Should().BeTrue();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f, ResistanceType.Invalid, CombatDamageType.Fire).Should().BeTrue();
 
         Log.Should().Contain($"CalculateResistedTicks:{Target}:{ResistanceType.Fire}:20");
         effect.GetRemainingDurationSeconds(Now).Should().Be(22f);
@@ -237,10 +237,10 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     {
         Applied<ProbeEffect>(Target, Caster, seconds: 5f);
 
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f, ResistanceType.Mind).Should().BeTrue();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f, ResistanceType.Mind).Should().BeTrue();
         Bench.Invalid.Add(Caster);
         Bench.Hostile.Add((Target, Caster));
-        Service.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f, ResistanceType.Mind).Should().BeTrue();
+        Duration.RefreshStatusEffectDuration(Target, typeof(ProbeEffect), Caster, 10f, ResistanceType.Mind).Should().BeTrue();
 
         Log.Should().NotContain(line => line.StartsWith("HasImmunity"));
     }
@@ -369,7 +369,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     [Test]
     public void ATimedEffectWithNoLogicalDurationUsesItsTicks()
     {
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.ActivationValue = StatusEffectActivationType.Passive), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.ActivationValue = StatusEffectActivationType.Passive), 5f);
         Bench.Engine.CallsTo("ApplyEffectToObject").Single().Arguments[3].Should().Be(5f);
     }
 }

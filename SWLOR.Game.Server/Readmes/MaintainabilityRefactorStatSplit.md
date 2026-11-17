@@ -396,4 +396,4 @@ ratings, deflection, healing, regeneration and walk mode. P5-4e runs the reload 
   rows stay keyed there (the pools stay). `ClockSeamFiles.txt` gains `CreatureStatService.cs` (e), which reads `Clock.UtcNow`.
 - **Master porting.** Master changed `Service/Stat.cs` and `StatService.cs` 46 times since 2026-10-10; from P5-4b each sync ports
   master's edits by the range table. Part 1 has about 50 lines of headroom under 1,000. `feature/space-revamp`'s `SpaceService`
-  calls change property name only.
+  calls change property name only. Master's `Mimicry.GetStatBonus(creature, stat)` and `Mimicry.GetStatSources(creature, stat)` calls (its engine tests have several) are ported by hand to `GameServices.MimicryTraitStats.GetStatBonus(creature, stat, GameServices.Stat)` and `GetStatSources(...)` with the same added argument, because the stat reader is now an argument; `GetSetBonusPotency` kept its signature and is listed in `RemovedFacades.json`.

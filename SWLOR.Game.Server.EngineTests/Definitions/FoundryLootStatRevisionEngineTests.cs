@@ -133,11 +133,11 @@ public static partial class MigrationEngineTests
                 record.Version = 23;
                 DB.Set(record);
                 SetLocalInt(player, "PLAYER_MIGRATION_VERSION", 23);
-                ctx.AssertEqual(24, SavedCharacterMigration.Versions.Where(version => version > 23).Single(),
-                    "The last released character checkpoint schedules exactly one combined item migration");
+                ctx.AssertEqual(24, SavedCharacterMigration.Versions.Where(version => version > 23).Min(),
+                    "The checkpoint after 23 is the combined item migration; later checkpoints run after it in the same upgrade");
                 var result = SavedCharacterMigration.Upgrade(SavedCharacterMigration.SaveFile(player), record);
                 ctx.Assert(result != null, "The character upgrade converts the legacy equipment");
-                ctx.AssertEqual(24, result.Record.Version, "The player record checkpoint advances");
+                ctx.AssertEqual(SavedCharacterMigration.LatestVersion, result.Record.Version, "The player record checkpoint advances to the newest migration");
                 ctx.AssertEqual(baseline.MaxHP + 100, result.Record.MaxHP, "The persisted HP budget matches the equipment change");
                 ctx.AssertEqual(baselineAttack + 13, result.Record.Attack, "Legacy Attack is corrected in the same item visit");
                 var migrated = SavedCharacterMigration.FindItem(SavedCharacterMigration.Load(ctx, result), "grapple_bracer");

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     var model = OpenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
-                    ctx.AssertEqual("STAGE 3 COMPLETE", model.JobProgressTime, "The finished job shows its last stage complete");
+                    ctx.AssertEqual("Stage 3 complete", model.JobProgressTime, "The finished job shows its last stage complete");
                     ctx.Assert(model.IsCompleteJobEnabled, "Complete Job is enabled for a finished job");
 
                     model = ReopenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     running.DateCompleted = DateTime.UtcNow.AddMinutes(-5);
                     DB.Set(running);
                     model = ReopenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
-                    ctx.AssertEqual("STAGE 1 COMPLETE", model.JobProgressTime, "A finished early stage shows complete");
+                    ctx.AssertEqual("Stage 1 complete", model.JobProgressTime, "A finished early stage shows complete");
                     ctx.Assert(!model.IsCompleteJobEnabled, "Complete Job stays disabled until the last stage finishes");
                 });
             }

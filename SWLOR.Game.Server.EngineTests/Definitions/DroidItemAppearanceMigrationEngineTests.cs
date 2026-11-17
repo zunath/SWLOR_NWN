@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWNX;
@@ -49,8 +50,12 @@ public static partial class DroidInventoryEngineTests
             {
                 var worn = GetItemInSlot(InventorySlot.Chest, droid);
                 ctx.AssertEqual("dan_heavy_armor", GetResRef(worn), "Each summon restores the converted armor to its slot");
-                // A droid body cannot show the armor's neck or robe, so summoning clears those parts.
-                MigrationEngineTests.AssertCatalogAppearance(ctx, worn, everyPart: false);
+                // A droid body shows only its own part styles, so summoning repairs every part it cannot render to the
+                // body's first catalogued style (and clears the neck and robe). The migrated catalog appearance itself
+                // is verified on the saved item above; here the summoned armor must hold no part the body cannot show.
+                await ctx.ExecuteInCreatureContextAsync(droid, () =>
+                    ctx.Assert(!ArmorPartAppearance.RemoveUnavailableParts(droid, worn),
+                        "Summoning left no armor part that the droid body cannot render"));
                 ctx.AssertEqual(armorId, GetObjectUUID(worn), "Repeated save/reload preserves the armor's identity");
                 var carried = Items(droid).Where(item => GetResRef(item) == "raider_pistol").ToList();
                 ctx.AssertEqual(1, carried.Count, "Repeated save/reload keeps exactly one carried pistol");

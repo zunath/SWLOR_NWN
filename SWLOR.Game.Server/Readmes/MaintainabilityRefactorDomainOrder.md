@@ -902,6 +902,27 @@ Every direction that still points up in the approved order, logic and content ba
 | hook: Native -> Creatures | 1 | 1 | OnAIActionAttackObject -> IAIService (1) | move the hook logic into Combat services | P5-16b |
 | hook: Native -> Character content | 1 | 1 | ResolveAttackRoll -> EmbattledStatusEffect (1) | hook names content: move the helper (UsePerkFeat and others) into logic | P5-16 |
 
+### P5-15b: rows closed by the second half of P5-15a
+
+Appendix C above is the measurement before the inversions; these rows are closed on the branch since, with the fix used. Edges
+still open for P5-5, P5-6, P5-7, P5-8e to h, P5-9, P5-10, P5-12, P5-14 and P5-16b stay as the rows say.
+
+| Row (source -> target) | Fix used |
+|---|---|
+| Character -> Combat: `EspionageInfiltrationService` -> `IStealthService` and `IEnmityService` | Character owns `IEspionageStealthQuery` (with the combat entry window variable) and `IEspionageEnmityQuery`; `IStealthService` and `IEnmityService` extend them and the container hands Espionage the same instances (`IAIService` stays for P5-8e) |
+| Character -> Combat: `PlayerIntroductionService` -> `IRecastService` | Character owns `IRecastDelays` (the two calls the introduction makes); `IRecastService` extends it |
+| Character -> UI: `AchievementService` -> `IGuiService` | Character owns `IAchievementNotification`; `AchievementNotificationWindow` in UI draws it (the drawing moved unchanged) |
+| Items -> Companions: `LootService` -> `IBeastMasteryService`, `BeastDetail` | Items owns `IBeastCorpseInfo` (the corpse resref and variables, `GetBeastName`); `IBeastMasteryService` extends it; `BeastMasteryService` and `CompanionLookup` alias the constants |
+| World -> Social: `MusicService` -> `IPerformanceWatchingService` (the construction cycle and its `Lazy<>`) | supply rule 3: World owns the notice `IMusicReplacedListener`; `MusicService` keeps the list (`RegisterMusicReplacedListener`) and `PerformanceAudienceService.StartAudienceTick` (an `OnModuleLoad` boot handler, rerun on reload) registers `PerformanceWatchingService`, as `CreatureStatService` registers itself with the status effects. The music no longer names a Social service, so the container builds it first and the `Lazy<>` is plain gone |
+| Foundation -> UI: `Entity.Player` -> `GuiRectangle` | `GuiRectangle` moved down to Foundation (`DomainOrderTypeMoves.json`) |
+| Foundation -> Administration: `DMCreatorFavorites` -> `DMFavoriteBlueprint` | `DMFavoriteBlueprint`, `DMBlueprintCategory` and `DMBlueprintSource` moved down to Foundation; the reads that name a `DMBlueprint` (`ToFavorite`, `Matches`) became extension methods in `DMFavoriteBlueprints` (Administration) |
+
+Left open from the unlisted Character, Foundation and Items files: `ConversationService` and `PlayerFeedbackService` -> `IPlayerNameService`
+(P5-10 splits `PlayerNameService`; the Foundation-owned name lookup belongs with its parts), `ConversationService` -> `IGuiService`
+and `GuiPayloadBase` (needs a design decision: a window host owned by Foundation plus moving the payload type, and the
+conversation view model is content), `EquipmentStatTotals`, `EquipmentPredicates`, `PerkRequirementBeastRole`, `PerkRequirementQuest`
+and `KeyItemIcon` (static service lookups, P5-12 and P5-14), `SavedCharacter` -> `VitalityHitPoints` (P5-16b).
+
 ## Appendix D: Logic that names content, per entry
 
 Every `LogicToContent.txt` entry, members by hardest class (section 2). Same-domain entries are per file.

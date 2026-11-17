@@ -37,14 +37,14 @@ namespace SWLOR.Game.Server.Domain.World
 
         private readonly IDBService _db;
         private readonly IKeyItemService _keyItem;
-        private readonly Lazy<IPerformanceWatchingService> _performanceWatching;
         private readonly IPropertyService _property;
+        [ReloadState(ReloadStateKind.Runtime)]
+        private readonly List<IMusicReplacedListener> _musicReplacedListeners = new();
 
-        public MusicService(IDBService db, IKeyItemService keyItem, Lazy<IPerformanceWatchingService> performanceWatching, IPropertyService property)
+        public MusicService(IDBService db, IKeyItemService keyItem, IPropertyService property)
         {
             _db = db;
             _keyItem = keyItem;
-            _performanceWatching = performanceWatching;
             _property = property;
             _collectibleSongs = new MusicSongCatalog().Songs;
             _collectibleSongsByKeyItem = _collectibleSongs.ToDictionary(song => song.KeyItem);
@@ -212,9 +212,23 @@ namespace SWLOR.Game.Server.Domain.World
         // instead.
         protected virtual void GiveKeyItem(uint player, KeyItemType keyItem) => _keyItem.GiveKeyItem(player, keyItem);
 
-        // A performance audience remembers the band song it follows in static state; a test subclass records the call
-        // instead.
-        protected virtual void ForgetBandSong(uint player) => _performanceWatching.Value.ForgetBandSong(player);
+        /// <summary>
+        /// Registers who is told when a player's music is replaced. The list holds service instances, so a reload rebuilds it
+        /// through the boot handler that registers each listener.
+        /// </summary>
+        public void RegisterMusicReplacedListener(IMusicReplacedListener listener)
+        {
+            if (!_musicReplacedListeners.Contains(listener))
+                _musicReplacedListeners.Add(listener);
+        }
+
+        // A performance audience remembers the band song it follows; the listeners are told it was replaced, and a test
+        // subclass records the call instead.
+        protected virtual void ForgetBandSong(uint player)
+        {
+            foreach (var listener in _musicReplacedListeners)
+                listener.OnPlayerMusicReplaced(player);
+        }
 
         public Player ClearUncollectedMusicSettings(string playerId)
         {

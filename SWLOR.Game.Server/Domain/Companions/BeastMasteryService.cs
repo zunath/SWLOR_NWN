@@ -48,9 +48,9 @@ namespace SWLOR.Game.Server.Domain.Companions
         public const string HydrolaseResrefPrefix = "hydrolase_";
         public const string LyaseResrefPrefix = "lyase_";
         public const string IsomeraseResrefPrefix = "isomerase_";
-        public const string ExtractCorpseObjectResref = "extract_corpse";
+        public const string ExtractCorpseObjectResref = IBeastCorpseInfo.ExtractCorpseObjectResref;
         public const string BeastTypeVariable = CompanionLookup.BeastTypeVariable;
-        public const string BeastLevelVariable = "BEAST_LEVEL";
+        public const string BeastLevelVariable = IBeastCorpseInfo.BeastLevelVariable;
 
         private readonly IDBService _db;
         [ReloadState(ReloadStateKind.Runtime)]
@@ -176,6 +176,11 @@ namespace SWLOR.Game.Server.Domain.Companions
                     _incubationPercentages[row] = percentage;
                 }
             }
+        }
+
+        public string GetBeastName(BeastType type)
+        {
+            return GetBeastDetail(type).Name;
         }
 
         public BeastDetail GetBeastDetail(BeastType type)

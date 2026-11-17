@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// </summary>
     public class StealthService : IStealthService
     {
-        public const string CombatEntryWindowVariable = "STEALTH_COMBAT_ENTRY_WINDOW";
+        public const string CombatEntryWindowVariable = IEspionageStealthQuery.CombatEntryWindowVariable;
 
         private const string TimedExitActiveVariable = "STEALTH_TIMED_EXIT_ACTIVE";
         private const string GrantedStealthVariable = "STEALTH_GRANTED_WINDOW";

@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Capture(player.Creature, GuiWindowType.DMAdminTools, "admin-tools");
 
                 // /resetwindows closes other windows but keeps the toolbar, which stands in for the hidden native taskbar.
-                var resetWindows = new CharacterChatCommand().BuildChatCommands()["resetwindows"];
+                var resetWindows = new CharacterInfoChatCommand().BuildChatCommands()["resetwindows"];
                 await InContext(ctx, player.Creature, () =>
                     resetWindows.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
                 ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMToolbar), "/resetwindows keeps the DM toolbar open");
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, player.Creature, () => BattleGrid.Remove(area));
                 await InContext(ctx, player.Creature, () => BattleGrid.SetSettings(area, BattleGrid.DefaultSettings));
 
-                var command = new DMChatCommand().BuildChatCommands()["battlegrid"];
+                var command = new DMToolsChatCommand().BuildChatCommands()["battlegrid"];
                 ctx.Assert(command.ValidateArguments == null, "/battlegrid adds no check beyond the DM and Admin permission");
                 await InContext(ctx, player.Creature, () =>
                     command.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
@@ -915,8 +915,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ClearAllActions();
                     JumpToLocation(ctx.GetArenaLocation(6f, 0f));
                 });
-                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 10f, 10f, "the DM to move away from the first player");
-                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, second.Creature) > 10f, 10f, "the DM to move away from the second player");
+                // The jump targets are 12 m and 14 m from the DM's, but the engine settles each jump on walkable
+                // ground, so the gap can land just under 10 m (9.9 m seen). Anything past 5 m shows the move; the
+                // bring-here wait below then proves both players reached the DM (< 3 m).
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) > 5f, 10f, "the DM to move away from the first player");
+                await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, second.Creature) > 5f, 10f, "the DM to move away from the second player");
                 await InContext(ctx, dm.Creature, model.OnClickBringSelected());
                 await ctx.WaitUntilAsync(() => GetDistanceBetween(dm.Creature, target.Creature) < 3f &&
                                                GetDistanceBetween(dm.Creature, second.Creature) < 3f, 5f, "both selected players to be brought to the DM");

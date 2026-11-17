@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            var command = new CharacterChatCommand().BuildChatCommands()["walk"];
+            var command = new CharacterAppearanceChatCommand().BuildChatCommands()["walk"];
             try
             {
                 for (var cycle = 0; cycle < 2; cycle++)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             var player = fixture.Creature;
-            var commands = new CharacterChatCommand().BuildChatCommands();
+            var commands = new CharacterAppearanceChatCommand().BuildChatCommands();
             var command = commands["walk"];
             ctx.Assert(ReferenceEquals(command, commands["alwayswalk"]), "both walking aliases share the toggle");
 

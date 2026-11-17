@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Entity;
@@ -41,12 +40,12 @@ namespace SWLOR.Game.Server.Domain.Character
 
         private readonly IDBService _db;
         private readonly IAIService _ai;
-        private readonly IStealthService _stealth;
-        private readonly IEnmityService _enmity;
+        private readonly IEspionageStealthQuery _stealth;
+        private readonly IEspionageEnmityQuery _enmity;
         private readonly IStatService _stat;
         private readonly ISkillService _skill;
 
-        public EspionageInfiltrationService(IDBService db, IAIService ai, IStealthService stealth, IEnmityService enmity, IStatService stat, ISkillService skill)
+        public EspionageInfiltrationService(IDBService db, IAIService ai, IEspionageStealthQuery stealth, IEspionageEnmityQuery enmity, IStatService stat, ISkillService skill)
         {
             _db = db;
             _ai = ai;
@@ -303,7 +302,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 GetCurrentHitPoints(player) <= 0 ||
                 GetCurrentHitPoints(npc) <= 0 ||
                 !GetActionMode(player, ActionMode.Stealth) ||
-                GetLocalInt(player, StealthService.CombatEntryWindowVariable) != 0 ||
+                GetLocalInt(player, IEspionageStealthQuery.CombatEntryWindowVariable) != 0 ||
                 !IsBypassXpEligible(HasGrantedStealth(player), IsStealthDetectionBlocked(npc)) ||
                 HasNonProximityEnmityForCreature(player) ||
                 !_ai.IsCreatureAIEnabled(npc) ||

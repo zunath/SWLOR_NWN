@@ -464,11 +464,12 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrEmpty(hostedEvent.DiscordEventId))
                 return;
 
-            DiscordDismissals[hostedEvent.DiscordEventId] = hostedEvent.ScheduledStartUtc;
+            var occurrenceStart = DiscordEventImport.GetOccurrenceStart(hostedEvent);
+            DiscordDismissals[hostedEvent.DiscordEventId] = occurrenceStart;
             DB.Set(new DiscordEventDismissal
             {
                 Id = hostedEvent.DiscordEventId,
-                ScheduledStartUtc = hostedEvent.ScheduledStartUtc,
+                ScheduledStartUtc = occurrenceStart,
             });
         }
 

@@ -259,6 +259,27 @@ public class DiscordEventImportTests
     }
 
     [Test]
+    public void GetOccurrenceStart_KeepsDiscordsTimeAfterADMEditsAStartedEvent()
+    {
+        var running = Imported("1", HostedEventStatus.Running);
+        running.ScheduledStartUtc = Start.AddHours(3);
+
+        var occurrence = DiscordEventImport.GetOccurrenceStart(running);
+        var plan = DiscordEventImport.Plan(new[] { Listed("1") }, new List<HostedEvent>(), new Dictionary<string, DateTime> { ["1"] = occurrence });
+
+        occurrence.Should().Be(Start);
+        plan.Create.Should().BeEmpty();
+    }
+
+    [Test]
+    public void GetOccurrenceStart_UsesTheEventTimeForARecordWithoutADiscordTime()
+    {
+        var hostedEvent = new HostedEvent { DiscordEventId = "1", ScheduledStartUtc = Start };
+
+        DiscordEventImport.GetOccurrenceStart(hostedEvent).Should().Be(Start);
+    }
+
+    [Test]
     public void IsSyncedFromDiscord_OnlyForAnImportedEventNoDMHasStarted()
     {
         DiscordEventImport.IsSyncedFromDiscord(Imported("1")).Should().BeTrue();

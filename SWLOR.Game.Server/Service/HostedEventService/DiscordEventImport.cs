@@ -143,6 +143,15 @@ namespace SWLOR.Game.Server.Service.HostedEventService
             hostedEvent.HostName = discord.HostName;
             hostedEvent.Description = discord.Description;
             hostedEvent.ScheduledStartUtc = discord.StartUtc;
+            hostedEvent.DiscordStartUtc = discord.StartUtc;
+        }
+
+        /// <summary>
+        /// The Discord start time that identifies an imported event's occurrence, even after a DM edits the event's time.
+        /// </summary>
+        public static DateTime GetOccurrenceStart(HostedEvent hostedEvent)
+        {
+            return hostedEvent.DiscordStartUtc ?? hostedEvent.ScheduledStartUtc;
         }
 
         /// <summary>

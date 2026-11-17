@@ -20,6 +20,9 @@ namespace SWLOR.Game.Server.Entity
 
         // The Discord Events tab entry this event was listed from, or empty for an event made in game.
         public string DiscordEventId { get; set; }
+        // Discord's start time for the occurrence this event was listed from. Kept when a DM edits the start time
+        // after starting the event, so ending it hides that occurrence.
+        public DateTime? DiscordStartUtc { get; set; }
 
         // Empty when the DM has not set an arrival point; players cannot join until one is set.
         public string ArrivalAreaResref { get; set; }

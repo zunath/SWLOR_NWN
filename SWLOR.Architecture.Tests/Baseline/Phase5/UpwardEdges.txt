@@ -42,7 +42,6 @@ SWLOR.Game.Server/Domain/Combat/EnmityService.cs: Combat -> World | 3
 SWLOR.Game.Server/Domain/Combat/RecastService.cs: Combat -> Abilities | 4
 SWLOR.Game.Server/Domain/Combat/ResistanceService.cs: Combat -> Abilities | 3
 SWLOR.Game.Server/Domain/Combat/StealthService.cs: Combat -> Creatures | 4
-SWLOR.Game.Server/Domain/Creatures/AIService.cs: Creatures -> Social | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> Character | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> UI | 6
 SWLOR.Game.Server/Domain/Foundation/PlayerFeedbackService.cs: Foundation -> Character | 3

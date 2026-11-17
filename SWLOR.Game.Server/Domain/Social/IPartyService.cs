@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Creatures;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Domain.Social
@@ -6,7 +7,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// The party caches: who is in whose party and who leads it. Static callers reach the
     /// container's instance of this interface through <c>GameServices.Party</c>; the event handlers are on <see cref="PartyService"/>.
     /// </summary>
-    public interface IPartyService
+    public interface IPartyService : IAIPartyQuery
     {
         /// <summary>
         /// When a player accepts an invitation and the engine puts them in the inviter's party, add them to the caches.
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Domain.Social
         /// </summary>
         /// <param name="creature">The creature to check.</param>
         /// <returns>A list of party members.</returns>
-        List<uint> GetAllPartyMembers(uint creature);
+        new List<uint> GetAllPartyMembers(uint creature);
 
         /// <summary>
         /// Retrieves all of the members in a creature's party who are within the specified range from creature.

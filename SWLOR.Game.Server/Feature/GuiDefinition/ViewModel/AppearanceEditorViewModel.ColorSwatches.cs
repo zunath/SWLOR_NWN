@@ -1,6 +1,7 @@
 using System.Linq;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : colorId != 255 && _tintMapSelections.Any(selection =>
                     selection.ArmorPart == GetArmorModelType(target) &&
                     selection.GetPaletteSource(layer) == item && selection.Material.Layers.Contains(layer) &&
-                    TintMapService.TryGetCustomColor(selection, layer, out custom));
+                    TintMapColorResolver.TryGetCustomColor(selection, layer, out custom));
             var color = hasCustom ? custom : colorId == 255 ? default
                 : TintMapPaletteColors.GetColor(layer, colorId);
             var previous = Get<GuiColor>(name + "Tint");

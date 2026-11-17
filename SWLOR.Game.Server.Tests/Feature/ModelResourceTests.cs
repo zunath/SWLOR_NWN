@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AppearanceDefinition;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Feature;

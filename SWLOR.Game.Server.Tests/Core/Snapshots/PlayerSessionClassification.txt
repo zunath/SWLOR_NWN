@@ -112,7 +112,7 @@ mod_enter (57)
               A queued weapon ability's managed half (with the ability's callbacks) goes with the old build, so its engine half is cleared as a login clears it.
   LoginOnly   SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnLogin
               Ends rest at login; the carried rest status stays.
-  LoginOnly   SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEnter
+  LoginOnly   SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleEnter
               The tint state stays in the engine.
   LoginOnly   SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEnter
               The horn fit stays in the engine.

@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
+using SWLOR.Game.Server.Feature.AppearanceEditing;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -228,7 +229,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var nativeSkin = GetColor(civilian, ColorChannel.Skin);
                 var stateName = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin);
                 var savedTint = GetLocalInt(civilian, stateName);
-                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 800, 900) };
+                var editor = Content.Create<AppearanceEditorViewModel>();
+                editor.Geometry = new GuiRectangle(0, 0, 800, 900);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
                     new AppearanceEditorPayload(civilian), OBJECT_INVALID);
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(0, 0, 0), userGesture: false);
@@ -674,7 +676,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var item = GetItemInSlot(InventorySlot.Chest, civilian);
                 SeedInheritance(item);
                 ConfigureRgbArmor(item);
-                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 800, 900) };
+                var editor = Content.Create<AppearanceEditorViewModel>();
+                editor.Geometry = new GuiRectangle(0, 0, 800, 900);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
                     new AppearanceEditorPayload(civilian), OBJECT_INVALID);
                 editor.OnSelectEquipment()();
@@ -977,11 +980,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 InvokePrivate(editor, "FlushPendingPickerColor");
         }
 
+        /// <summary>The service instance the container injected into the editor.</summary>
+        internal static object ServiceOf(AppearanceEditorViewModel editor, Type serviceType) =>
+            editor.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic)
+                .Single(property => property.PropertyType == serviceType).GetValue(editor);
+
         internal static void InvokePrivate(AppearanceEditorViewModel editor, string method, params object[] arguments)
         {
-            var target = editor.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)
-                ?? throw new InvalidOperationException($"Appearance editor method {method} was not found.");
-            try { target.Invoke(editor, arguments); }
+            var target = editor.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic);
+            var receiver = (object)editor;
+            if (target == null)
+            {
+                // The editor's services hold the tint, color and part code; each takes the editor as its first argument.
+                foreach (var type in new[] { typeof(AppearanceTintEditorService), typeof(AppearanceColorService), typeof(AppearancePartEditService) })
+                {
+                    target = type.GetMethod(method, BindingFlags.Public | BindingFlags.Instance);
+                    if (target == null)
+                        continue;
+                    receiver = ServiceOf(editor, type);
+                    arguments = new object[] { editor }.Concat(arguments).ToArray();
+                    break;
+                }
+                if (target == null)
+                    throw new InvalidOperationException($"Appearance editor method {method} was not found.");
+            }
+            try { target.Invoke(receiver, arguments); }
             catch (TargetInvocationException exception) when (exception.InnerException != null)
             {
                 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
@@ -1036,7 +1059,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 SeedInheritance(GetItemInSlot(InventorySlot.Chest, civilian));
                 var armor = ReadArmor(civilian);
-                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 1200, 900) };
+                var editor = Content.Create<AppearanceEditorViewModel>();
+                editor.Geometry = new GuiRectangle(0, 0, 1200, 900);
                 using var publications = new BindingPublications(editor);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
                     new AppearanceEditorPayload(civilian), OBJECT_INVALID);
@@ -1084,7 +1108,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 SetLocalInt(civilian, savedCreatureTintName, savedCreatureTint);
                 var armor = ReadArmor(civilian);
                 var creatureColors = Enum.GetValues<ColorChannel>().Select(channel => GetColor(civilian, channel)).ToArray();
-                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 1240, 720) };
+                var editor = Content.Create<AppearanceEditorViewModel>();
+                editor.Geometry = new GuiRectangle(0, 0, 1240, 720);
                 var converter = new GuiPropertyConverter();
                 using var publications = new BindingPublications(editor);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
@@ -1557,7 +1582,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         internal static AppearanceEditorViewModel BindWithoutClient(uint target)
         {
             var geometry = new GuiRectangle(0, 0, 1200, 900);
-            var editor = new AppearanceEditorViewModel { Geometry = geometry };
+            var editor = Content.Create<AppearanceEditorViewModel>();
+            editor.Geometry = geometry;
             // Exercise the public hydration path without creating a window or connecting a PC.
             // The invalid viewer/zero token cannot send client updates; Target is the real NPC.
             editor.Bind(OBJECT_INVALID, 0, geometry, GuiWindowType.AppearanceEditor,

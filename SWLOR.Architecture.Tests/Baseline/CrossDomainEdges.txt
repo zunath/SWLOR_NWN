@@ -603,14 +603,17 @@ Feature/GuiDefinition -> Feature/AbilityDefinition | 4
 # UI -> Administration (1 edge)
 Feature/GuiDefinition -> Domain/Administration | 113
 
-# UI -> Character (2 edges)
+# UI -> Character (4 edges)
+Feature/AppearanceEditing -> Domain/Character | 24
+Feature/AppearanceEditing -> Feature/AppearanceDefinition | 6
 Feature/GuiDefinition -> Domain/Character | 162
 Feature/GuiDefinition -> Feature/AppearanceDefinition | 89
 
 # UI -> Combat (1 edge)
 Feature/GuiDefinition -> Domain/Combat | 58
 
-# UI -> Companions (1 edge)
+# UI -> Companions (2 edges)
+Feature/AppearanceEditing -> Domain/Companions | 39
 Feature/GuiDefinition -> Domain/Companions | 57
 
 # UI -> Crafting (1 edge)

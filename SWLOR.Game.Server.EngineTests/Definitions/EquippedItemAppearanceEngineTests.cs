@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceEditing;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI;
@@ -208,8 +209,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AssertForearmColors("copy commits the pending source value");
                     // Replay the delayed handlers after copying; neither may restore an older color.
                     editor.OnMouseUpTintPicker()();
-                    typeof(AppearanceEditorViewModel).GetMethod("CommitCustomTintComponents",
-                        BindingFlags.Instance | BindingFlags.NonPublic).Invoke(editor, null);
+                    ((AppearanceTintEditorService)AppearanceEditorEngineTests.ServiceOf(editor, typeof(AppearanceTintEditorService))).CommitCustomTintComponents(editor);
                     AssertForearmColors("late callbacks preserve both copied colors");
                 });
                 await AssertSettledAsync(ctx, before, observation, $"copy {(copyToRight ? "right" : "left")} {(typed ? "text" : "picker")}");
@@ -762,15 +762,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static AppearanceEditorViewModel BindEditor(uint creature)
         {
             var geometry = new GuiRectangle(0, 0, 1200, 900);
-            var editor = new AppearanceEditorViewModel { Geometry = geometry };
+            var editor = Content.Create<AppearanceEditorViewModel>();
+            editor.Geometry = geometry;
             editor.Bind(OBJECT_INVALID, 0, geometry, GuiWindowType.AppearanceEditor, new AppearanceEditorPayload(creature), OBJECT_INVALID);
             editor.OnSelectEquipment()();
             return editor;
         }
 
         private static void InvokeModify(AppearanceEditorViewModel editor, int index, int model, int color = -1) =>
-            typeof(AppearanceEditorViewModel).GetMethod("ModifyItemPart", BindingFlags.Instance | BindingFlags.NonPublic)
-                .Invoke(editor, new object[] { index, model, color });
+            ((AppearancePartEditService)AppearanceEditorEngineTests.ServiceOf(editor, typeof(AppearancePartEditService))).ModifyItemPart(editor, index, model, color);
 
         private static async Task AssignedAsync(EngineTestContext ctx, uint creature, Action action)
         {

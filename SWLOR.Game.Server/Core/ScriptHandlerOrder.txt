@@ -452,7 +452,7 @@ dm_poss_bef
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveToolbarOnPossession
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAvatarFadeOnRelease
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveSettingsOnPossession
-  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.CloseAppearanceWindowOnPossessionBefore
+  action      SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceEditorWindowHandlers.CloseAppearanceWindowOnPossessionBefore
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnDMPossess
 
 dm_possfull_bef
@@ -463,7 +463,7 @@ dm_possfull_bef
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveToolbarOnPossession
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAvatarFadeOnRelease
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveSettingsOnPossession
-  action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.CloseAppearanceWindowOnPossessionBefore
+  action      SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceEditorWindowHandlers.CloseAppearanceWindowOnPossessionBefore
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnDMPossess
 
 dm_spwnobj_aft

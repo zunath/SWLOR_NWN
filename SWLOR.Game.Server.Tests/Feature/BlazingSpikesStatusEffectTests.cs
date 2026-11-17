@@ -24,7 +24,7 @@ public class BlazingSpikesStatusEffectTests
     public void StatusEffectDamageNotifications_CarryDeliveryType()
     {
         var root = FindRepositoryRoot();
-        var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var statusEffectSource = StatusEffectSource.Read();
         var combatSource = CombatSource.Read();
         var forceDotSource = ReadStatusEffectSource("ForceDamageOverTimeStatusEffectBase.cs");
 

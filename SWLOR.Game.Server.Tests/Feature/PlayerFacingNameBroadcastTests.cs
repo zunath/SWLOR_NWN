@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using System.Text.Json;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -236,12 +237,7 @@ public class PlayerFacingNameBroadcastTests
         roleplayXpSource.Should().Contain("channel == ChatChannel.PlayerParty;");
         roleplayXpSource.Should().NotContain("channel == ChatChannel.PlayerShout");
 
-        var statusEffectSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "StatusEffectService.cs"));
+        var statusEffectSource = StatusEffectSource.Read();
         statusEffectSource.Should().Contain("_playerName.GetDisplayName(receiver, creature)");
         statusEffectSource.Should().Contain("_playerName.GetDisplayName(receiver, source)");
         statusEffectSource.Should().NotContain("var name = GetName(creature);");

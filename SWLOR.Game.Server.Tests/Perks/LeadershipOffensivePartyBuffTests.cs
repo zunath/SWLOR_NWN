@@ -210,7 +210,7 @@ public class LeadershipOffensivePartyBuffTests
         buff.Should().Contain("IsSuccessfulHostileAbilityImpact(ability, damage, statusApplied)");
         buff.Should().Contain("TryUseStatTrigger(activator, StatType.HostileAbilityPartyBuffDamagePercent, cooldown)");
         buff.Should().Contain("sequence.TryTriggerPartyBuff()");
-        var statuses = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var statuses = StatusEffectSource.Read();
         statuses.Should().Contain("source != creature && GetIsReactionTypeHostile(creature, source)");
         statuses.Should().Contain("ApplyHostileAbilityPartyBuff(source, GetActiveAbilityImpactSummary(source)?.Ability, 0, true);");
     }

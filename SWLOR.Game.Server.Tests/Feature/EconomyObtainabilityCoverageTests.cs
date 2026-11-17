@@ -152,6 +152,8 @@ public class EconomyObtainabilityCoverageTests
             "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
             "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs", "ShipSalvageItems.cs",
             "RevampComponentCatalog.cs", "RevampRewardCatalog.cs", "SpaceSlicingItems.cs",
+            // The astromech form of an item is handed out wherever a quest rewards the item it copies.
+            "AstromechItemTwins.Generated.cs",
         };
         var serverDir = Path.Combine(root, "SWLOR.Game.Server");
         // Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.

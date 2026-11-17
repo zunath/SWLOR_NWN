@@ -146,6 +146,11 @@ public class AstromechSocketTests
 
         // The pose is one the chassis has a clip for.
         AstromechAnimations.CanPlay(AstromechAnimations.Station).Should().BeTrue();
+
+        // An astromech at a station is hidden again once it arrives beside the ship; its client can drop the
+        // effect applied before the jump, which left the droid drawn on top of the ship.
+        ReadServerSource("Service", "SpaceCrewStations.cs").Should()
+            .Contain("if (hasPresence && Astromech.IsAstromech(crewMember))");
         AstromechAnimations.Station.Should().NotBe(Animation.LoopingSitChair);
 
         var dialog = ReadServerSource("Feature", "DialogDefinition", "CrewStationDialog.cs");

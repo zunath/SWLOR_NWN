@@ -8044,21 +8044,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCrewStations.cs",
-    "Line": 701,
+    "Line": 709,
     "Member": "LeaveCrewStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(pilot, $\"{PlayerName.GetDisplayName(pilot, player)} leaves {ShipCrewSeats.GetPostName(assignment.Seat)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCrewStations.cs",
-    "Line": 713,
+    "Line": 721,
     "Member": "LeaveCrewStation",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/SpaceCrewStations.cs",
-    "Line": 824,
+    "Line": 832,
     "Member": "CrewMemberDisconnected",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(assignment.Pilot, $\"{PlayerName.GetDisplayName(assignment.Pilot, player)} leaves {ShipCrewSeats.GetPostName(assignment.Seat)}.\")"

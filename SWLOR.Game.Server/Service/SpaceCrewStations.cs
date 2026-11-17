@@ -604,6 +604,14 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // An astromech is a single creature model, and its client does not always keep the hide effect across the
+            // jump into the ship's area: the droid then sat on top of the ship. Sending the effect again hides it.
+            if (hasPresence && Astromech.IsAstromech(crewMember))
+            {
+                RemoveEffectByTag(crewMember, CrewPresenceEffectTag);
+                hasPresence = false;
+            }
+
             // The crew member's own client still draws their character (it must stay visible to itself), so it
             // stood on top of the ship; cutscene invisibility keeps it from being drawn.
             if (!hasPresence)

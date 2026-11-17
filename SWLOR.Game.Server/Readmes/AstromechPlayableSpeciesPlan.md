@@ -345,7 +345,7 @@ The owner asked for a contributor's set of seven astromech models to be added, m
 - The sounds are plain WAV. The project's other sounds are MP3-compressed, which needs `ffmpeg`; it is not installed on this machine, and the sound manifest has not been refreshed for the new files.
 - Nobody has listened to the voice set critically; the owner has the preview file.
 - The chassis was checked as the player character and as a spawned NPC standing still; the NPC was not filmed fighting.
-- Death and get-up were seen as the knockdown pose only. Walk and run on the production model were not re-filmed (they were in Phase 0).
+- Death and get-up were seen as the knockdown pose only in this phase. The follow-up pass (see Phase 5) filmed the fall, the recovery and movement on the production model.
 - The other three chassis, portraits, and the camera height for this appearance are later work.
 
 ## Phase 2 results
@@ -389,7 +389,7 @@ Built on the Phase 1 branch and checked on 2026-11-16 in the real client, creati
 
 - Entering and leaving space as an astromech was not run in the client in this phase; Phase 4 ran it (the chosen chassis is restored).
 - The last workshop layout change (a taller chassis list so all eight names show without scrolling) was made after the final client pass.
-- Work animations (crafting, gathering, item use) have no clip on the chassis; the action runs and the model idles.
+- Work animations (crafting, gathering, item use) had no clip on the chassis in this phase; the follow-up pass (see Phase 5) added them.
 - The perks window listed humanoid-only lines to an astromech at the end of Phase 2; Phase 3 filters lines by body frame.
 
 ## Phase 3 results
@@ -420,8 +420,8 @@ Built on 2026-11-16 on the same branch. The owner asked for the work to be finis
 
 **Known gaps**
 
-- Mirrored abilities and perks reuse their source's icons, and shared status effects show the source's name (a Repair effect reads as its First Aid name).
-- Recipes and the store entries were checked by tests and module data, not crafted or bought in the client.
+- Mirrored abilities and perks reused their source's icons, and shared status effects showed the source's name. Both are fixed in the follow-up pass (see Phase 5).
+- Recipes and the store entries were checked by tests and module data, not crafted or bought in the client. The follow-up pass did both and found the store entries had never reached the game (see Phase 5).
 - No CombatSim run was made for the astromech: every number is its source's, and the parity tests hold that.
 
 ## Phase 4 results
@@ -454,8 +454,7 @@ A pilot plus an astromech at Engineering 50 and the crew cap, on its best routin
 
 **Not done or not verified**
 
-- A Large hull seat (Gunner, Engineer, Sensors) was not crewed by an astromech in the client; that path has no astromech-specific code beyond the stand-in pose, which was seen on the pilot's stand-in.
-- The socket was run on the Striker only, and the Repair Field Generator and Hypermatter Injector were not fired from it.
+- A Large hull seat, the socket on other hulls, and the Repair Field Generator and Hypermatter Injector were not run in this phase. The follow-up pass ran them (see Phase 5).
 - Ship registration, the party and the Crew Station permission were set up by a test driver, not through their windows. The test also left space through the driver, which is why the astromech is seen in orbit after the chassis restore.
 
 ## Phase 5 results
@@ -472,18 +471,37 @@ Done on 2026-11-16. Evidence is in `C:\Temp\astro-spike\phase5\evidence`.
   - An astromech could not hold a fishing rod, which closed fishing (Agriculture) and the Mon Cala rod quests. A fishing rod is now the one ordinary item an astromech equips. The rod equips in the client; a fishing attempt was not run.
 - **Engine tests:** the generated ability cases ran in the engine for the first time: Armaments 22 of 22 and Utility Systems 26 of 26 passed. A new socket test (`AstromechSocketEngineTests`) passes beside the existing crew station test.
 
-**Known gaps left for review** (optional content, none blocks play)
+**Follow-up pass (2026-11-16)**
 
-- Quest rewards and guild stores that are humanoid equipment are still given or sold to an astromech as they are: about 30 optional quest item rewards (including the all-weapon choice of one Viscara quest) and the Hunters Guild stores. The quests' XP and credits are unaffected.
-- Ordinary stores, the shuttle's starting-items merchant and its dialogue are not filtered for astromechs.
-- A disguise can still put a humanoid portrait or voice on a chassis.
-- The CZ-220 crafting step can make a knife the astromech cannot use; the other options are unaffected.
-- Humanoid capstone quests of closed skills are unreachable for an astromech, as intended.
+The gaps the first pass left were closed, and client checks found two defects the tests had not. Evidence is in `C:\Temp\astro-spike\phase5\evidence\followup` and `...\icons`.
+
+- **Quest rewards and guild gear:** a quest item reward gives an astromech the astromech form of a piece of humanoid equipment (`AstromechItemTwins`, `tools/GenerateAstromechRewards.py`): eleven quest reward modules, the Captain Shock Prod and Blaster Mount, and Hunter Shock Prods and Blaster Mounts I to V in the Hunters Guild stores. Each is a stat copy of its source with the Chassis or Armaments requirement. A reward with no astromech form (the other Captain weapons, a lightsaber crystal) is given as it is. Seen in the client: the reward selection of the Mandalorian Leader quest lists Captain Shock Prod for an astromech.
+- **Placed stores (defect found in the client):** a store placed in an area holds its own item list, so the gear added to the CZ-220 merchant blueprint in Phase 3 was never sold in the game. `tools/AstromechPlacedStores.py` now stocks the placed copies, and a test fails when a placed store lacks what its blueprint lists. Seen in the client: the CZ-220 merchant sells the Basic Shock Prod and Basic Blaster Mount and a Blaster Mount was bought; the Hunters Guild rank 3 store sells the Hunter tools.
+- **Icons:** the 62 astromech abilities have their own artwork (`ife_am_*`, SVG sources under `sw_ability_source/astromech`), with cooldown variants and manifest rows. Seen upright in the Perks window and on the hotbar.
+- **Status effect names:** an astromech ability applies the status effect of the ability it copies, so the two never stack. The effect now shows under the astromech name with its own icon row (`AstromechStatusEffectNames`, effecticons rows 526 to 539, `tools/StampAstromechStatusIcons.ps1`). Seen in the client: the status bar icon, its hover name, the apply and wear-off messages and the timer list read Deflector Field, Damper Field and Aggression Routine.
+- **Shuttle merchant:** Sal greets an astromech with the Chassis Workshop instead of the clothing store (`condition-player-is-astromech`, `action-open-chassis-workshop`). Seen in the client, with the final workshop layout.
+- **Disguises:** a disguise keeps the astromech voice; the editor lists only that voice. Seen in the client.
+- **Work animations:** the chassis has reach clips (`cgetmid`, `cgetlow`), and the authored humanoid working clips (`NamedAnimation`) play the astromech work motion. Seen in the client: the tool arm extends for both reach animations and while fishing.
+- **Fishing:** a cast at a fishing point in the Viscara cavern ran to its result.
+- **Crafting:** a Basic Shock Prod was crafted at an Engineering terminal through the Circuit Assembly window.
+- **Ship crew:** the socket was run on a Republic Bomber (Hypermatter Injector, which asks the astromech for the fuel capsule) and a Republic Gunship (Repair Field Generator, shields 26 to 55 of 66). A Republic Hammerhead (Large) refuses the socket and seats the astromech as Gunner.
+- **Hidden at a station (defect found in the client):** after boarding from the ship's interior the astromech's model could stay drawn on top of the ship. The hide effect is now sent again when an astromech arrives beside the ship.
+- **Movement and knockdown:** rolling, the fall and the recovery were filmed on the production model.
+- **Tests fixed:** the two quest tests that read a line `Quest.cs` no longer has, and the disguise audit harness.
+
+**Left as they are, on purpose**
+
+- Ordinary stores are not filtered: an astromech can carry, trade and sell humanoid gear, and the store window already marks what it cannot use.
+- The CZ-220 crafting step can make a knife the astromech cannot use; the quest collects it.
+- Humanoid capstone quests of closed skills are unreachable for an astromech.
+- Shared mechanic names (Daze, Hamstring, Suppression) are the same for every species.
 
 **Not done**
 
 - Release notes: the release-notes process covers changes merged into the default branch, and this branch is not merged. The Player Guide topic and the pull request description hold the player-facing text until then.
 - The play test on the test server is the owner's step.
+- An astromech NPC was not filmed fighting, and the sounds are still plain WAV (no `ffmpeg` on this machine).
+- No CombatSim run was made for the astromech: every number is its source's, and the parity tests hold that.
 
 ## Phases
 

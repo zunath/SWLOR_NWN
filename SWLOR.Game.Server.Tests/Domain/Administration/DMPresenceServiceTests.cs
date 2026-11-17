@@ -425,7 +425,7 @@ public class DMPresenceServiceTests
 internal sealed class LandingPresenceService : DMPresenceService
 {
     public LandingPresenceService()
-        : base(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.LazyFor<ISpaceService>())
+        : base(FacadeForwarder.LazyFor<IDMObjectSearchService>(), FacadeForwarder.LazyFor<IGuiService>(), FacadeForwarder.For<ISpaceModeQuery>())
     {
     }
 

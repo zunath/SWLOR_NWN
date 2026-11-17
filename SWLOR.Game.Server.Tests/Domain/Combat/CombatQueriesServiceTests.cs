@@ -127,8 +127,8 @@ public class CombatQueriesServiceTests
         var statusEffect = ScriptedProxy.Create<IStatusEffectService>(out var statusCalls);
         statusCalls.On(nameof(IStatusEffectService.GetCreatureStatusEffects), args =>
             _statuses.TryGetValue((uint)args[0]!, out var status) ? status : new CreatureStatusEffect());
-        var party = ScriptedProxy.Create<IPartyService>(out var partyCalls);
-        partyCalls.On(nameof(IPartyService.IsInParty), args => _parties.Contains(((uint)args[0]!, (uint)args[1]!)));
+        var party = ScriptedProxy.Create<IPartyRoster>(out var partyCalls);
+        partyCalls.On(nameof(IPartyRoster.IsInParty), args => _parties.Contains(((uint)args[0]!, (uint)args[1]!)));
         var skill = ScriptedProxy.Create<ISkillService>(out var skillCalls);
         skillCalls
             .On(nameof(ISkillService.GetWeaponSkill), args => _weaponSkills.GetValueOrDefault((uint)args[1]!, SkillType.Invalid))

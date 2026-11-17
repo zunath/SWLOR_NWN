@@ -20,6 +20,7 @@ public static class LazyDependencyCycles
             .Where(descriptor => !descriptor.ServiceType.IsGenericTypeDefinition && descriptor.ImplementationType != null)
             .GroupBy(descriptor => descriptor.ServiceType)
             .ToDictionary(group => group.Key, group => group.Last().ImplementationType!);
+        AddAliases(services, classes);
 
         var problems = new List<string>();
         foreach (var owner in classes.Values.Distinct())
@@ -45,6 +46,51 @@ public static class LazyDependencyCycles
         }
 
         return problems.OrderBy(problem => problem, StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>
+    /// Adds the interfaces Composition registers as another service's instance
+    /// (<c>AddSingleton&lt;ILower&gt;(provider =&gt; provider.GetRequiredService&lt;IService&gt;())</c>, the inversions of Readmes/MaintainabilityRefactorDomainOrder.md):
+    /// resolving ILower builds IService first, so a class that takes ILower reaches the class registered for IService. The factory
+    /// is run against a provider that only records the one type it asks for.
+    /// </summary>
+    private static void AddAliases(IServiceCollection services, Dictionary<Type, Type> classes)
+    {
+        foreach (var descriptor in services.Where(descriptor => descriptor.ImplementationType == null && descriptor.ImplementationFactory != null))
+        {
+            var recorder = new RequestRecorder();
+            try
+            {
+                descriptor.ImplementationFactory!(recorder);
+            }
+            catch (RequestRecorded)
+            {
+            }
+            catch
+            {
+                continue;
+            }
+
+            if (recorder.Requested != null && classes.TryGetValue(recorder.Requested, out var target) && !classes.ContainsKey(descriptor.ServiceType))
+                classes[descriptor.ServiceType] = target;
+        }
+    }
+
+    private sealed class RequestRecorded : Exception
+    {
+    }
+
+    private sealed class RequestRecorder : IServiceProvider, ISupportRequiredService
+    {
+        public Type? Requested { get; private set; }
+
+        public object? GetService(Type serviceType) => GetRequiredService(serviceType);
+
+        public object GetRequiredService(Type serviceType)
+        {
+            Requested = serviceType;
+            throw new RequestRecorded();
+        }
     }
 
     /// <summary>The direct (not lazy) constructor dependencies of a class that the collection registers.</summary>

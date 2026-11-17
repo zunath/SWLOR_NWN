@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.NWN.API.Engine;
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Administration
     /// DM avatar visibility and movement used by the NUI DM toolbar windows. Static callers reach
     /// the container's instance of this interface through <c>GameServices.DMPresence</c>.
     /// </summary>
-    public interface IDMPresenceService
+    public interface IDMPresenceService : IDMActorResolver, IDMWindowPresence
     {
         /// <summary>
         /// Returns true when the DM's avatar is visible to players (the native "Appear" state).
@@ -76,13 +77,6 @@ namespace SWLOR.Game.Server.Domain.Administration
         string DescribeDM(uint dm);
 
         /// <summary>
-        /// Returns the DM avatar behind a creature a DM possesses, or the object itself.
-        /// DM windows opened while possessing a creature belong to that creature's view.
-        /// </summary>
-        /// <param name="actor">A DM avatar or the creature they possess.</param>
-        uint GetDM(uint actor);
-
-        /// <summary>
         /// Returns the creature a DM is acting through: the creature they possess, or their avatar. Anything else,
         /// including any player from GetFirstPC/GetNextPC, is returned unchanged, so messages, chat, and shader
         /// updates sent to the result reach a possessing DM.
@@ -91,28 +85,10 @@ namespace SWLOR.Game.Server.Domain.Administration
         uint GetControlledCreature(uint actor);
 
         /// <summary>
-        /// Returns true when an object from GetFirstPC/GetNextPC belongs to a DM. GetFirstPC keeps returning a DM's
-        /// avatar while they possess a creature, and GetIsDM, GetIsDMPossessed, and GetIsPC are all false for the
-        /// avatar then, so the creature the player controls is checked too.
-        /// </summary>
-        /// <param name="player">An object returned by GetFirstPC or GetNextPC.</param>
-        bool IsControlledByDM(uint player);
-
-        /// <summary>
         /// Returns true when a DM's avatar, or a creature a DM possesses, is in the area.
         /// </summary>
         /// <param name="area">The area to check.</param>
         bool IsDMPresentInArea(uint area);
-
-        /// <summary>
-        /// Opens or closes a DM window on the creature the DM controls, keeping the DM avatar as the window's
-        /// owner, the way the /plctools and /music commands do for possessed creatures.
-        /// </summary>
-        /// <param name="actor">A DM avatar or the creature they possess.</param>
-        /// <param name="type">The window to toggle.</param>
-        /// <param name="payload">An optional payload for the window.</param>
-        /// <param name="tetherObject">An optional object the window closes away from, as in <c>Gui.TogglePlayerWindow</c>.</param>
-        void ToggleWindow(uint actor, GuiWindowType type, GuiPayloadBase payload = null, uint tetherObject = OBJECT_INVALID);
 
         /// <summary>
         /// Shows a DM window on the creature the DM controls, moving it from any object it was left on.
@@ -121,14 +97,6 @@ namespace SWLOR.Game.Server.Domain.Administration
         /// <param name="actor">A DM avatar or the creature they possess.</param>
         /// <param name="type">The window to show.</param>
         void ShowWindow(uint actor, GuiWindowType type);
-
-        /// <summary>
-        /// Returns every valid object a window can be shown on for whoever is acting: the actor itself and, for a DM,
-        /// the DM avatar and the creature the window was last opened on through <see cref="ToggleWindow"/>.
-        /// </summary>
-        /// <param name="actor">A player, a DM avatar, or the creature a DM possesses.</param>
-        /// <param name="type">The window.</param>
-        IEnumerable<uint> GetShownOn(uint actor, GuiWindowType type);
 
         /// <summary>
         /// Sends feedback to the DM on the creature they control, so it reaches them while they possess one.

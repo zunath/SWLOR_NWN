@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Entity;
 using SWLOR.NWN.API.NWNX;
 
@@ -18,9 +17,9 @@ namespace SWLOR.Game.Server.Domain.Foundation
     /// </summary>
     public class CacheService : ICacheService
     {
-        private readonly IItemService _item;
+        private readonly IItemCacheInfo _item;
 
-        public CacheService(IItemService item)
+        public CacheService(IItemCacheInfo item)
         {
             _item = item;
         }
@@ -132,7 +131,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// Stores the name, icon, and searchability of an individual item into the cache. An item is
         /// searchable when it follows the player market's listing rules (no containers, cursed, plot,
         /// or legacy items) and is not an NPC/creature/internal item per
-        /// <see cref="IItemService.IsEconomyRestricted(uint)"/>.
+        /// <see cref="IItemCacheInfo.IsEconomyRestricted(uint)"/>.
         /// </summary>
         /// <param name="resref">The resref of the item we want to cache.</param>
         private void CacheItemNameByResref(string resref)
@@ -153,7 +152,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
         /// Searches the cached item catalog for items whose name contains the given text. Matching is
         /// case-insensitive and runs against the in-memory name cache, so it is safe to call on demand.
         /// Results are limited to items eligible for player-facing economy surfaces: player-market
-        /// tradeable, and not an NPC/creature/internal item (see <see cref="IItemService.IsEconomyRestricted(uint)"/>).
+        /// tradeable, and not an NPC/creature/internal item (see <see cref="IItemCacheInfo.IsEconomyRestricted(uint)"/>).
         /// </summary>
         /// <param name="search">The partial name to search for. Whitespace/empty returns no results.</param>
         /// <param name="maxResults">The maximum number of results to return.</param>
@@ -209,7 +208,7 @@ namespace SWLOR.Game.Server.Domain.Foundation
 
         /// <summary>
         /// Retrieves the inventory icon resref of an item by its blueprint resref, using the same icon
-        /// rules as the player market (<see cref="IItemService.GetIconResref"/>). If the resref isn't cached
+        /// rules as the player market (<see cref="IItemCacheInfo.GetIconResref"/>). If the resref isn't cached
         /// (i.e. it wasn't part of the module's item palette at boot), the item is spawned once to capture it.
         /// </summary>
         /// <param name="resref">The item blueprint resref to look up.</param>

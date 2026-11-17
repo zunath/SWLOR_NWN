@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Quests;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Quests
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.Quests
     /// advancing quests, the item collector placeables and the kill and trigger progression. Static callers reach
     /// the container's instance of this interface through <c>GameServices.Quest</c>; the event handlers are on <see cref="QuestService"/>.
     /// </summary>
-    public interface IQuestService
+    public interface IQuestService : IQuestAdvancer
     {
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
@@ -102,15 +103,6 @@ namespace SWLOR.Game.Server.Domain.Quests
         bool AcceptQuest(uint player, uint questSource, string questId);
 
         bool CanAcceptQuest(uint player, string questId);
-
-        /// <summary>
-        /// Makes a player advance to the next state of the quest.
-        /// If there are no additional states, the quest will be treated as completed.
-        /// </summary>
-        /// <param name="player">The player who is advancing to the next state of the quest.</param>
-        /// <param name="questSource">The source of the quest. Typically an NPC or object.</param>
-        /// <param name="questId">The Id of the quest to advance.</param>
-        bool AdvanceQuest(uint player, uint questSource, string questId);
 
         /// <summary>
         /// Forces a player to open a collection placeable in which they will put items needed for the quest.

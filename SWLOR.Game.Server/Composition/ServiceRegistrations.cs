@@ -201,9 +201,18 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IDroidService, DroidService>();
             services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
             services.AddSingleton<IIncubationFieldNoteService, IncubationFieldNoteService>();
+            services.AddSingleton<ITintMapDroidOverrideService, TintMapDroidOverrideService>();
+            services.AddSingleton<ITintMapApplyService, TintMapApplyService>();
+            services.AddSingleton<ITintMapItemColorService, TintMapItemColorService>();
+            services.AddSingleton<ITintMapCarryService, TintMapCarryService>();
+            services.AddSingleton<ITintMapCatalogService, TintMapCatalogService>();
+            services.AddSingleton<ITintMapCreatureColorService, TintMapCreatureColorService>();
+            services.AddSingleton<ITintMapService, TintMapService>();
 
             // Crafting
             services.AddSingleton<ICraftService, CraftService>();
+            services.AddSingleton<ICraftEnhancementPropertyService, CraftEnhancementPropertyService>();
+            services.AddSingleton<ICraftDeviceService, CraftDeviceService>();
             services.AddSingleton<ICraftMinigameRoutingService, CraftMinigameRoutingService>();
             services.AddSingleton<ICraftQuickCraftService, CraftQuickCraftService>();
             services.AddSingleton<ICraftResearchExperimentService, CraftResearchExperimentService>();
@@ -265,6 +274,11 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICommunicationService, CommunicationService>();
             services.AddSingleton<ICommunicationAudienceService, CommunicationAudienceService>();
             services.AddSingleton<ICommunicationMessageSplitService, CommunicationMessageSplitService>();
+            services.AddSingleton<IExtraHotbarsService, ExtraHotbarsService>();
+            services.AddSingleton<IExtraHotbarsEditService, ExtraHotbarsEditService>();
+            services.AddSingleton<IExtraHotbarsEquipService, ExtraHotbarsEquipService>();
+            services.AddSingleton<IExtraHotbarsStatusService, ExtraHotbarsStatusService>();
+            services.AddSingleton<IExtraHotbarsWindowService, ExtraHotbarsWindowService>();
             services.AddSingleton<IChatPortraitTellsService, ChatPortraitTellsService>();
             services.AddSingleton<IPartyService, PartyService>();
             services.AddSingleton<IPartyRosterService, PartyRosterService>();
@@ -288,7 +302,6 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPlayerListService, PlayerListService>();
 
             // UI
-            services.AddSingleton<IExtraHotbarsService, ExtraHotbarsService>();
             services.AddSingleton<IGuiService, GuiService>();
             // The same instance, seen through the interface Foundation owns for the domains below the UI (P5-1g).
             services.AddSingleton<IGuiRefreshPublisher>(provider => provider.GetRequiredService<IGuiService>());
@@ -307,8 +320,22 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPropertyCatalogService, PropertyCatalogService>();
             services.AddSingleton<IPropertyCityGovernanceService, PropertyCityGovernanceService>();
             services.AddSingleton<IPropertyLoaderService, PropertyLoaderService>();
+            services.AddSingleton<IPropertyLoadRegistryService, PropertyLoadRegistryService>();
+            services.AddSingleton<IPropertySpawnService, PropertySpawnService>();
+            services.AddSingleton<IPropertyLoadReloadService, PropertyLoadReloadService>();
+            services.AddSingleton<IPropertyMaintenanceService, PropertyMaintenanceService>();
+            services.AddSingleton<IPropertyAccessService, PropertyAccessService>();
+            services.AddSingleton<IPropertyStructurePlacementService, PropertyStructurePlacementService>();
+            services.AddSingleton<IPropertyTerminalService, PropertyTerminalService>();
             services.AddSingleton<IPropertyService, PropertyService>();
+            services.AddSingleton<IShuttleArrivalService, ShuttleArrivalService>();
+            services.AddSingleton<IShuttleBoardingService, ShuttleBoardingService>();
+            services.AddSingleton<IShuttleClockService, ShuttleClockService>();
+            services.AddSingleton<IShuttleFlightService, ShuttleFlightService>();
+            services.AddSingleton<IShuttlePassengerService, ShuttlePassengerService>();
             services.AddSingleton<IShuttleService, ShuttleService>();
+            services.AddSingleton<IShuttleStateService, ShuttleStateService>();
+            services.AddSingleton<IShuttleTicketService, ShuttleTicketService>();
             services.AddSingleton<ITaxiService, TaxiService>();
             services.AddSingleton<ITrapsService, TrapsService>();
             services.AddSingleton<IWeatherService, WeatherService>();

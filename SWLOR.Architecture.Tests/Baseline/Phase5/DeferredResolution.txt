@@ -41,7 +41,6 @@ SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Character (down) |
 SWLOR.Game.Server/Domain/Companions/BeastMasteryService.cs -> Creatures (down) | 1
 SWLOR.Game.Server/Domain/Companions/DroidEquipmentDiagnosticsService.cs -> Companions (inside) | 1
 SWLOR.Game.Server/Domain/Companions/IncubationFieldNoteService.cs -> Companions (inside) | 1
-SWLOR.Game.Server/Domain/Crafting/CraftService.cs -> Crafting (inside) | 1
 SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Abilities (down) | 1
 SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Character (down) | 4
 SWLOR.Game.Server/Domain/Creatures/AIService.cs -> Combat (down) | 2

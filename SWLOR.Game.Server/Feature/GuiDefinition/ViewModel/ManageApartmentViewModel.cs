@@ -501,7 +501,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var apartment = GetApartment();
-            Property.EnterProperty(Player, apartment.Id);
+            PropertyAccess.EnterProperty(Player, apartment.Id);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
         };

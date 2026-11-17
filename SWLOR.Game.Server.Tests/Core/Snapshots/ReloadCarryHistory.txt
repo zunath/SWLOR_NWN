@@ -58,6 +58,10 @@ SWLOR.Game.Server.Domain.World.ShuttleService._announcedBoardings
 SWLOR.Game.Server.Domain.World.ShuttleService._boardingNotBeforeUtc
 SWLOR.Game.Server.Domain.World.ShuttleService._boardings
 SWLOR.Game.Server.Domain.World.ShuttleService._missedBoardings
+SWLOR.Game.Server.Domain.World.ShuttleStateService._announcedBoardings
+SWLOR.Game.Server.Domain.World.ShuttleStateService._boardingNotBeforeUtc
+SWLOR.Game.Server.Domain.World.ShuttleStateService._boardings
+SWLOR.Game.Server.Domain.World.ShuttleStateService._missedBoardings
 SWLOR.Game.Server.Domain.World.WeatherService._exposures
 SWLOR.Game.Server.Feature.StatusEffectDefinition.InspiredStatusEffect._lastOvationByPlayer
 SWLOR.Game.Server.Feature.StoreManagement._stores

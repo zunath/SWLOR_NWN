@@ -1,7 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Domain.Character;

@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.MigrationDefinition;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -173,15 +174,15 @@ public static partial class MigrationEngineTests
                 {
                     var sibling = selections.First(selection => selection.PaletteSource == armor &&
                         selection.ArmorPart == AppearanceArmor.Torso && selection.Material.Layers.Contains(layer));
-                    ctx.AssertEqual(originalColor, TintMapService.GetEffectiveDisplayColor(owner, pelvis, layer),
+                    ctx.AssertEqual(originalColor, TintMapColorResolver.GetEffectiveDisplayColor(owner, pelvis, layer),
                         "Migration preserves the old pelvis RGB");
-                    TintMapService.SetGlobalItemCustomColor(owner, selections, layer, newGlobalColor, armor);
-                    ctx.AssertEqual(originalColor, TintMapService.GetEffectiveDisplayColor(owner, pelvis, layer),
+                    TintMapItemColor.SetGlobalItemCustomColor(owner, selections, layer, newGlobalColor, armor);
+                    ctx.AssertEqual(originalColor, TintMapColorResolver.GetEffectiveDisplayColor(owner, pelvis, layer),
                         "Changing the item-wide RGB preserves the migrated pelvis override");
-                    ctx.AssertEqual(newGlobalColor, TintMapService.GetEffectiveDisplayColor(owner, sibling, layer),
+                    ctx.AssertEqual(newGlobalColor, TintMapColorResolver.GetEffectiveDisplayColor(owner, sibling, layer),
                         "A sibling formerly inheriting global RGB follows the new global color");
-                    TintMapService.ResetGlobalItemCustomColor(owner, selections, layer);
-                    ctx.AssertEqual(originalColor, TintMapService.GetEffectiveDisplayColor(owner, pelvis, layer),
+                    TintMapItemColor.ResetGlobalItemCustomColor(owner, selections, layer);
+                    ctx.AssertEqual(originalColor, TintMapColorResolver.GetEffectiveDisplayColor(owner, pelvis, layer),
                         "Resetting the global RGB preserves the migrated pelvis override");
                     ctx.AssertEqual(0, GetLocalInt(armor, TintMapVariable.GetName(sibling.Material.Resref, layer)),
                         "Resetting the global RGB restores the sibling's native palette inheritance");

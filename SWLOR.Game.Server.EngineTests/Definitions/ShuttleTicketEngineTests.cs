@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     BoardingTimes.Remove(passengerId);
                     // Yield to end the script context, clearing DB's per-context object cache.
                     await ctx.WaitFrameAsync();
-                    var saved = Shuttle.GetRide(passengerId);
+                    var saved = ShuttleTicket.GetRide(passengerId);
                     ctx.AssertEqual(ride.Id, saved.Id, "Reload keeps the same paid ticket");
                     ctx.AssertEqual(passengerId, saved.PlayerId, "Reload preserves ticket ownership");
                     ctx.AssertEqual(25, saved.FarePaid, "Reload preserves the refundable fare");
@@ -51,24 +51,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var login = departure.AddSeconds(-1);
                     Invoke("RestoreTicketedSession", passenger, login);
                     ctx.AssertEqual(login.AddSeconds(60), BoardingTimes[passengerId], "Every login grants a fresh full boarding-call interval");
-                    var advertised = Shuttle.GetNextDepartureUtc(origin, destination, passengerId);
+                    var advertised = ShuttleTicket.GetNextDepartureUtc(origin, destination, passengerId);
                     ctx.Assert(advertised >= login.AddSeconds(60), "Ticket status advertises an eligible departure");
                     await ctx.WaitFrameAsync();
-                    ctx.AssertEqual(ShuttleRideStatus.Ticketed, Shuttle.GetRide(passengerId).Status,
+                    ctx.AssertEqual(ShuttleRideStatus.Ticketed, ShuttleTicket.GetRide(passengerId).Status,
                         "A session reminder preserves the unboarded ticket");
                     ctx.AssertEqual(gold, GetGold(passenger), "Session recovery neither charges nor refunds credits");
                     ctx.AssertEqual(1L, DB.SearchCount(new DBQuery<ShuttleRide>().AddFieldSearch(nameof(ShuttleRide.PlayerId), passengerId, false)),
                         "Repeated recovery never duplicates a ticket");
                 }
 
-                ctx.Assert(Shuttle.RefundTicket(passenger), "The retained ticket can be cancelled before boarding");
+                ctx.Assert(ShuttleTicket.RefundTicket(passenger), "The retained ticket can be cancelled before boarding");
                 await ctx.WaitFrameAsync();
                 ctx.AssertEqual(gold + 25, GetGold(passenger), "Cancellation refunds only the fare");
-                ctx.Assert(Shuttle.GetRide(passengerId) == null, "Cancellation remains deleted after reload");
+                ctx.Assert(ShuttleTicket.GetRide(passengerId) == null, "Cancellation remains deleted after reload");
                 ctx.Assert(!BoardingTimes.ContainsKey(passengerId), "Cancellation clears automatic boarding eligibility");
-                ctx.Assert(!Shuttle.RefundTicket(passenger), "Cancellation cannot refund twice");
+                ctx.Assert(!ShuttleTicket.RefundTicket(passenger), "Cancellation cannot refund twice");
                 ctx.AssertEqual(gold + 25, GetGold(passenger), "Repeated cancellation never duplicates credits");
-                ctx.AssertEqual(otherId, Shuttle.GetRide(otherId).PlayerId, "Cancellation does not affect another passenger's ticket");
+                ctx.AssertEqual(otherId, ShuttleTicket.GetRide(otherId).PlayerId, "Cancellation does not affect another passenger's ticket");
                 ctx.SetResultDetail("NPC actors exercise saved ticket reminders and refunds; connected-client logout/login is not simulated.");
             }
             finally
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var confirmed = ShuttleSchedule.GetNextDepartureUtc(ride.Origin, ride.Destination, purchasedUtc);
                 ctx.AssertEqual(confirmed, ShuttleSchedule.GetNextDepartureUtc(ride.Origin, ride.Destination, purchasedUtc, BoardingTimes[playerId]),
                     "The confirmed departure is not moved to a later flight");
-                ctx.AssertEqual(ride.Id, Shuttle.GetRide(playerId).Id, "The paid ticket remains unchanged");
+                ctx.AssertEqual(ride.Id, ShuttleTicket.GetRide(playerId).Id, "The paid ticket remains unchanged");
             }
             finally
             {
@@ -152,9 +152,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     // path. Neither may consume the notice before this passenger logs in.
                     for (var recovery = 0; recovery < 2; recovery++)
                     {
-                        Invoke("DeliverOfflinePassenger", Shuttle.GetRide(playerId));
+                        Invoke("DeliverOfflinePassenger", ShuttleTicket.GetRide(playerId));
                         await ctx.WaitFrameAsync();
-                        var savedRide = Shuttle.GetRide(playerId);
+                        var savedRide = ShuttleTicket.GetRide(playerId);
                         ctx.AssertEqual(ride.Id, savedRide.Id, "Offline delivery preserves the pending arrival");
                         ctx.AssertEqual(playerId, savedRide.PlayerId, "The arrival remains owned by its passenger");
                         ctx.AssertEqual(ride.Destination, savedRide.Destination, "The destination survives reload");
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(landingPosition.Y, savedPlayer.LocationY, "Offline delivery saves landing Y");
                     }
 
-                    var redirectArguments = new object[] { passenger, Shuttle.GetRide(playerId), null };
+                    var redirectArguments = new object[] { passenger, ShuttleTicket.GetRide(playerId), null };
                     var redirect = (bool)ShuttleInternals.Invoke("TryGetRideLoginRedirect", redirectArguments);
                     ctx.AssertEqual(rebuildComplete, redirect, "Only rebuild-complete passengers receive a shuttle redirect");
                     if (rebuildComplete)
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     else
                         ctx.Assert(redirectArguments[2] == null, "A pending rebuild never receives a destination jump");
                     await ctx.WaitFrameAsync();
-                    ctx.Assert(Shuttle.GetRide(playerId) == null, "Login consumes the completed ride after announcing arrival");
+                    ctx.Assert(ShuttleTicket.GetRide(playerId) == null, "Login consumes the completed ride after announcing arrival");
                     ctx.AssertEqual(rebuildComplete, DB.Get<Player>(playerId).RebuildComplete, "Shuttle recovery preserves the rebuild requirement");
                     ctx.AssertEqual(gold, GetGold(passenger), "Arrival cannot refund a used fare");
                     ctx.AssertEqual("untouched_area", DB.Get<Player>(other.Id).LocationAreaResref,

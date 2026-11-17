@@ -6,12 +6,13 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Domain.UI.Component;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
@@ -1119,7 +1120,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
             var effectiveColors = selections
-                .Select(selection => TintMapService.GetEffectiveDisplayColor(
+                .Select(selection => TintMapColorResolver.GetEffectiveDisplayColor(
                     _target,
                     selection,
                     layerType))
@@ -1159,8 +1160,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return TintMapColor.TryFromStoredValue(
                     GetLocalInt(GetItem(), TintMapVariable.GetItemGlobalColorStateName(layer)), out color);
             var customColors = selections
-                .Where(selection => TintMapService.TryGetCustomColor(selection, layer, out _))
-                .Select(selection => TintMapService.GetEffectiveDisplayColor(_target, selection, layer))
+                .Where(selection => TintMapColorResolver.TryGetCustomColor(selection, layer, out _))
+                .Select(selection => TintMapColorResolver.GetEffectiveDisplayColor(_target, selection, layer))
                 .Distinct().ToList();
             color = customColors.Count == 1 ? customColors[0] : default;
             return customColors.Count == 1;
@@ -1245,12 +1246,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (!GetIsObjectValid(target) || !appearance && !GetIsObjectValid(item))
                     return;
                 if (appearance)
-                    TintMapService.SetCreatureCustomColor(target, selections, layerType, color);
+                    TintMapCreatureColor.SetCreatureCustomColor(target, selections, layerType, color);
                 else if (globalItem)
-                    TintMapService.SetGlobalItemCustomColor(target, selections, layerType, color, item);
+                    TintMapItemColor.SetGlobalItemCustomColor(target, selections, layerType, color, item);
                 else
                     foreach (var selection in selections)
-                        TintMapService.SetColor(target, selection, layerType, color);
+                        TintMapItemColor.SetColor(target, selection, layerType, color);
             };
         }
 
@@ -2351,7 +2352,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     selection.PaletteSource == item &&
                     selection.ArmorPart == armorPart)
                 .ToList();
-            var tintCarry = TintMapService.CaptureItemCustomColors(item, previousTintSelections);
+            var tintCarry = TintMapCarry.CaptureItemCustomColors(item, previousTintSelections);
             if (colorId > -1)
             {
                 EquippedItemAppearance.Set(item, ItemAppearanceType.WeaponColor, type, colorId);
@@ -2364,7 +2365,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             EquippedItemAppearance.Set(item, modelType, type, partId);
             // The original item stays equipped. Its new material keys are available now,
             // so carry custom tints before another model/preset click can arrive.
-            TintMapService.QueueItemCustomColorCarry(
+            TintMapCarry.QueueItemCustomColorCarry(
                 _target, item, item, Player, slot, armorPart, tintCarry, applyImmediately: true);
             EquippedItemAppearance.Refresh(_target, item);
         }
@@ -2449,7 +2450,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            TintMapService.RefreshAfterColorChange(_target);
+            TintMapApply.RefreshAfterColorChange(_target);
             if (reloadEditor)
                 LoadTintMapEditor();
             return true;
@@ -2467,7 +2468,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // being replaced, even though there is no current material to reset.
                 if (IsAppearanceSelected && TintMapVariable.IsCreatureColorLayer(selectedLayerType))
                 {
-                    TintMapService.ResetCreatureCustomColor(_target, selectedLayerType);
+                    TintMapCreatureColor.ResetCreatureCustomColor(_target, selectedLayerType);
                     LoadTintMapEditor();
                 }
                 else if (IsEquipmentSelected && SelectedItemTypeIndex is >= 0 and <= 2)
@@ -2475,7 +2476,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var item = GetItem();
                     if (GetIsObjectValid(item))
                     {
-                        TintMapService.ResetInactiveItemCustomColor(
+                        TintMapItemColor.ResetInactiveItemCustomColor(
                             _target,
                             item,
                             selectedLayerType,
@@ -2493,9 +2494,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 (SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global))
             {
                 if (selections.Count == 0)
-                    TintMapService.ResetInactiveItemCustomColor(_target, GetItem(), layerType, AppearanceArmor.Invalid);
+                    TintMapItemColor.ResetInactiveItemCustomColor(_target, GetItem(), layerType, AppearanceArmor.Invalid);
                 else
-                    TintMapService.ResetGlobalItemCustomColor(_target, selections, layerType);
+                    TintMapItemColor.ResetGlobalItemCustomColor(_target, selections, layerType);
                 LoadTintMapEditor();
             }
             else
@@ -2512,13 +2513,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (TintMapVariable.IsCreatureColorLayer(layerType))
             {
-                TintMapService.ResetCreatureCustomColor(_target, layerType);
+                TintMapCreatureColor.ResetCreatureCustomColor(_target, layerType);
             }
             else
             {
                 foreach (var selection in selections)
                 {
-                    TintMapService.ResetColor(_target, selection, layerType, paletteColor);
+                    TintMapItemColor.ResetColor(_target, selection, layerType, paletteColor);
                 }
             }
 
@@ -2610,7 +2611,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
 
-            TintMapService.CarryStoredCreatureCustomColors(_target);
+            TintMapCreatureColor.CarryStoredCreatureCustomColors(_target);
             ExecuteScript(ScriptName.OnAppearanceEdit, _target);
             LoadTintMapEditor();
         }
@@ -2848,7 +2849,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .ToList();
             if (selections.Count == 0)
             {
-                TintMapService.ResetInactiveItemCustomColor(
+                TintMapItemColor.ResetInactiveItemCustomColor(
                     _target,
                     item,
                     layerType,
@@ -2858,7 +2859,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var selection in selections)
             {
-                TintMapService.ResetColorToInheritance(_target, selection, layerType);
+                TintMapItemColor.ResetColorToInheritance(_target, selection, layerType);
             }
         }
 

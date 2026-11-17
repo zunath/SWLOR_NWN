@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using ItemPlugin = SWLOR.NWN.API.NWNX.ItemPlugin;
@@ -220,7 +221,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         var selection = TintMapModelResolver.GetCurrentSelections(creature).Single(selection =>
                             selection.ArmorPart == part && selection.Material.Layers.Contains(TintMapLayerType.Leather2));
-                        ctx.AssertEqual(expected, TintMapService.GetEffectiveDisplayColor(creature, selection, TintMapLayerType.Leather2),
+                        ctx.AssertEqual(expected, TintMapColorResolver.GetEffectiveDisplayColor(creature, selection, TintMapLayerType.Leather2),
                             $"{part}: {stage}");
                         TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Leather2, expected);
                     }
@@ -254,7 +255,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
                     // Exercise the exact queued path used by ordinary equip events,
                     // without opening the editor or directly refreshing the item.
-                    TintMapService.QueueRefresh(creature);
+                    TintMap.QueueRefresh(creature);
                 });
                 await ctx.DelaySecondsAsync(0.5f);
                 ctx.AssertEqual(0, GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
@@ -265,7 +266,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await AssignedAsync(ctx, female, () =>
                 {
                     EquippedItemAppearance.Set(femaleItem, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, missing);
-                    TintMapService.QueueRefresh(female);
+                    TintMap.QueueRefresh(female);
                 });
                 await ctx.DelaySecondsAsync(0.5f);
                 ctx.AssertEqual(missing, GetItemAppearance(femaleItem, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe),
@@ -339,7 +340,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     selection.ArmorPart == AppearanceArmor.Robe);
                 ctx.Assert(RobeModelRenderer.SupportsRgb(initialRobe), $"Catalog must support {initialRobe.ModelResref}; table has {Get2DARowCount("roberender")} rows.");
                 foreach (var layer in layers)
-                    TintMapService.SetGlobalItemCustomColor(creature,
+                    TintMapItemColor.SetGlobalItemCustomColor(creature,
                         TintMapModelResolver.GetCurrentSelections(creature), layer, requested, item);
                 generatedPhenotype = (int)GetPhenoType(creature);
                 ctx.Assert(generatedPhenotype >= 34 && generatedPhenotype <= 255, $"Generated phenotype fits the native byte; actual {generatedPhenotype}.");
@@ -357,9 +358,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 foreach (var layer in layers)
                     TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, layer, requested);
                 var partColor = new TintMapColor(1, 17, 91);
-                TintMapService.SetColor(creature, robe, TintMapLayerType.Cloth1, partColor);
+                TintMapItemColor.SetColor(creature, robe, TintMapLayerType.Cloth1, partColor);
                 TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, partColor);
-                TintMapService.ResetColorToInheritance(creature, robe, TintMapLayerType.Cloth1);
+                TintMapItemColor.ResetColorToInheritance(creature, robe, TintMapLayerType.Cloth1);
                 TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, requested);
             });
             await AssertSettledAsync(ctx, before, observation, "all robe layers and per-part RGB inheritance");
@@ -375,13 +376,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await AssignedAsync(ctx, creature, () =>
                 {
                     EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, robeId);
-                    TintMapService.ApplyCurrentColors(creature);
+                    TintMapApply.ApplyCurrentColors(creature);
                     if (robeId > 1)
                     {
                         var robeSelection = TintMapModelResolver.GetCurrentSelections(creature)
                             .FirstOrDefault(selection => selection.ArmorPart == AppearanceArmor.Robe);
                         ctx.Assert(robeSelection != null, $"Robe {robeId} must resolve a tint material for this body.");
-                        TintMapService.SetGlobalItemCustomColor(creature,
+                        TintMapItemColor.SetGlobalItemCustomColor(creature,
                             TintMapModelResolver.GetCurrentSelections(creature),
                             robeSelection.Material.Layers.First(), requested, item);
                     }
@@ -397,14 +398,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     {
                         var selections = TintMapModelResolver.GetCurrentSelections(creature);
                         var custom = new TintMapColor(100, 7, 180);
-                        TintMapService.SetGlobalItemCustomColor(creature, selections, TintMapLayerType.Cloth1, custom, item);
+                        TintMapItemColor.SetGlobalItemCustomColor(creature, selections, TintMapLayerType.Cloth1, custom, item);
                         foreach (var selection in selections.Where(part => part.ArmorPart == AppearanceArmor.Robe &&
                                      part.Material.Layers.Contains(TintMapLayerType.Cloth1)))
                         {
                             TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, custom);
-                            TintMapService.SetColor(creature, selection, TintMapLayerType.Cloth1, requested);
+                            TintMapItemColor.SetColor(creature, selection, TintMapLayerType.Cloth1, requested);
                             TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, requested);
-                            TintMapService.ResetColorToInheritance(creature, selection, TintMapLayerType.Cloth1);
+                            TintMapItemColor.ResetColorToInheritance(creature, selection, TintMapLayerType.Cloth1);
                             TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, custom);
                         }
                     }
@@ -705,13 +706,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await AssignedAsync(ctx, creature, () =>
             {
                 var armor = GetItemInSlot(InventorySlot.Chest, creature);
-                var standardColor = typeof(TintMapService).GetMethod("GetStandardColor",
-                    BindingFlags.NonPublic | BindingFlags.Static);
+                var standardColor = typeof(TintMapColorResolver).GetMethod("GetStandardColor",
+                    BindingFlags.Public | BindingFlags.Static);
                 foreach (var dye in new[] { 37, 82 })
                 {
                     // Switching away and back must retain head 139 and reread the current outfit.
                     SetCreatureBodyPart(SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.Head, 79, creature);
-                    TintMapService.ApplyCurrentColors(creature);
+                    TintMapApply.ApplyCurrentColors(creature);
                     SetCreatureBodyPart(SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart.Head, 139, creature);
                     for (var channel = 0; channel < 6; channel++)
                         EquippedItemAppearance.Set(armor, ItemAppearanceType.ArmorColor, channel, dye + channel);

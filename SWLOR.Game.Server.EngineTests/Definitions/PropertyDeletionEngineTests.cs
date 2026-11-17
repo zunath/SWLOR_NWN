@@ -25,7 +25,7 @@ public static class PropertyDeletionEngineTests
 
         try
         {
-            await RunInScriptContextAsync(ctx, () => Property.DeleteProperty(city));
+            await RunInScriptContextAsync(ctx, () => PropertyMaintenance.DeleteProperty(city));
 
             foreach (var property in created)
             {
@@ -126,7 +126,7 @@ public static class PropertyDeletionEngineTests
 
         try
         {
-            await RunInScriptContextAsync(ctx, () => Property.DeleteProperty(ship));
+            await RunInScriptContextAsync(ctx, () => PropertyMaintenance.DeleteProperty(ship));
 
             ctx.Assert(DB.Get<WorldProperty>(ship.Id) == null, "starship is deleted");
             var dockedShips = DB.Get<WorldProperty>(interior.Id).ChildPropertyIds[PropertyChildType.Starship];

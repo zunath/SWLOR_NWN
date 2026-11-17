@@ -76,7 +76,7 @@ public sealed class PassengerShuttleInteriorTests
     [Test]
     public void FlightTemplateHasABoardingPointAndUsablePilotChair()
     {
-        var resref = typeof(ShuttleService).GetField("ShuttleInteriorResref",
+        var resref = typeof(ShuttleFlightService).GetField("ShuttleInteriorResref",
             BindingFlags.NonPublic | BindingFlags.Static)!.GetRawConstantValue()!.ToString();
         var area = ReadResource("are", resref!);
         var contents = ReadResource("git", resref!);
@@ -97,7 +97,7 @@ public sealed class PassengerShuttleInteriorTests
     [Test]
     public void StatusConsoleStandsInTheSeatingCabinInsteadOfOnTheBoardingDivider()
     {
-        var tag = typeof(ShuttleService).GetField("ConsoleWaypointTag",
+        var tag = typeof(ShuttleFlightService).GetField("ConsoleWaypointTag",
             BindingFlags.NonPublic | BindingFlags.Static)!.GetRawConstantValue()!.ToString();
         var waypoints = Objects(ReadResource("git", "shuttle"), "WaypointList").ToList();
         var console = waypoints.Single(point => Value<string>(point, "Tag") == tag);

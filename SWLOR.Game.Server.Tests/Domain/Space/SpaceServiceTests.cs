@@ -54,7 +54,7 @@ public class SpaceServiceTests
         return new SpaceService(
             abilityAura: null!, abilityCooldownVisual: null!, ai: null!, area: null!, db: null!, enmity: null!, gui: null!,
             messaging: null!, perk: null!, planet: planet, playerName: null!, property: null!, race: null!, recast: null!,
-            stat: null!, statusEffect: null!);
+            stat: null!, statusEffect: null!, tintMap: null!);
     }
 
     // ---- slot and feat conversions
@@ -352,7 +352,7 @@ public class SpaceServiceTests
         public LaunchRecordingSpace()
             : base(abilityAura: null!, abilityCooldownVisual: null!, ai: null!, area: null!, db: null!, enmity: null!, gui: null!,
                 messaging: null!, perk: null!, planet: null!, playerName: null!, property: null!, race: null!, recast: null!,
-                stat: null!, statusEffect: null!)
+                stat: null!, statusEffect: null!, tintMap: null!)
         {
         }
 

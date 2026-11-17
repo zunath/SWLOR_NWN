@@ -14,14 +14,10 @@ SWLOR.Game.Server.Domain.Character.StatService.ApplyDeflectionEffectsNative | 16
 SWLOR.Game.Server.Domain.Character.StatusEffectService.ApplyStatusEffectInternal | 234
 SWLOR.Game.Server.Domain.Combat.CombatRecordSerializer.Write | 198
 SWLOR.Game.Server.Domain.Companions.DroidService.SpawnDroid | 272
-SWLOR.Game.Server.Domain.Crafting.CraftService.BuildItemPropertyForEnhancement | 248
 SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen.KitchenComponentTable.BuildFlavors | 182
 SWLOR.Game.Server.Domain.Items.ItemService.UseItem | 189
 SWLOR.Game.Server.Domain.Space.SpaceService.ActivateShipModule | 155
-SWLOR.Game.Server.Domain.UI.GuiWindowBuilder<T>.Build | 192
-SWLOR.Game.Server.Domain.World.PropertyCityGovernanceService.ProcessCityElections | 215
 SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase.ConfigureWeaponAbility | 291
-SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.QueueItemCustomColorCarry | 183
 SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.SetLocalVariable | 163
 SWLOR.Game.Server.Feature.DialogDefinition.StarportDockDialog.MainPageInit | 186
 SWLOR.Game.Server.Feature.GuiDefinition.ShipManagementDefinition.BuildWindow | 414

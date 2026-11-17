@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Capture(player.Creature, GuiWindowType.DMAdminTools, "admin-tools");
 
                 // /resetwindows closes other windows but keeps the toolbar, which stands in for the hidden native taskbar.
-                var resetWindows = new CharacterChatCommand().BuildChatCommands()["resetwindows"];
+                var resetWindows = new CharacterInfoChatCommand().BuildChatCommands()["resetwindows"];
                 await InContext(ctx, player.Creature, () =>
                     resetWindows.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));
                 ctx.Assert(Gui.IsWindowOpen(player.Creature, GuiWindowType.DMToolbar), "/resetwindows keeps the DM toolbar open");
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await InContext(ctx, player.Creature, () => BattleGrid.Remove(area));
                 await InContext(ctx, player.Creature, () => BattleGrid.SetSettings(area, BattleGrid.DefaultSettings));
 
-                var command = new DMChatCommand().BuildChatCommands()["battlegrid"];
+                var command = new DMToolsChatCommand().BuildChatCommands()["battlegrid"];
                 ctx.Assert(command.ValidateArguments == null, "/battlegrid adds no check beyond the DM and Admin permission");
                 await InContext(ctx, player.Creature, () =>
                     command.DoAction(player.Creature, OBJECT_INVALID, GetLocation(player.Creature)));

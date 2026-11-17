@@ -170,7 +170,7 @@ public class PerformanceAudienceStateTests
 
         Section(source, "public void PlayForPlayer(").Should().Contain("ForgetBandSong(player);");
         Section(source, "public void StopForPlayer(").Should().Contain("ForgetBandSong(player);");
-        source.Should().Contain("protected virtual void ForgetBandSong(uint player) => _performanceWatching.Value.ForgetBandSong(player);");
+        source.Should().Contain("listener.OnPlayerMusicReplaced(player);");
     }
 
     [Test]

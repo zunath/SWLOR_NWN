@@ -181,6 +181,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatSuppressionService, CombatSuppressionService>();
             services.AddSingleton<IDeathService, DeathService>();
             services.AddSingleton<IEnmityService, EnmityService>();
+            // The same instance, seen through the enmity reads Espionage owns (P5-15b).
+            services.AddSingleton<IEspionageEnmityQuery>(provider => provider.GetRequiredService<IEnmityService>());
             services.AddSingleton<IMeleeTechniqueService, MeleeTechniqueService>();
             services.AddSingleton<IOrdinaryAttackTraitsService, OrdinaryAttackTraitsService>();
             services.AddSingleton<IPairedRangedTraitsService, PairedRangedTraitsService>();
@@ -189,11 +191,15 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IPvpCombatService, PvpCombatService>();
             services.AddSingleton<IQueuedAttackAnimationService, QueuedAttackAnimationService>();
             services.AddSingleton<IRecastService, RecastService>();
+            // The same instance, seen through the recast delays the player introduction owns (P5-15b).
+            services.AddSingleton<IRecastDelays>(provider => provider.GetRequiredService<IRecastService>());
             services.AddSingleton<IResistanceService, ResistanceService>();
             services.AddSingleton<IResourceRestoredEffectsService, ResourceRestoredEffectsService>();
             // The same instance, seen through the listener the pools in Character own (P5-4d).
             services.AddSingleton<IResourceRestoredListener>(provider => provider.GetRequiredService<IResourceRestoredEffectsService>());
             services.AddSingleton<IStealthService, StealthService>();
+            // The same instance, seen through the stealth reads Espionage owns (P5-15b).
+            services.AddSingleton<IEspionageStealthQuery>(provider => provider.GetRequiredService<IStealthService>());
             // The same instance, seen through the concealment read the messaging owns (P5-15a).
             services.AddSingleton<IConcealmentQuery>(provider => provider.GetRequiredService<IStealthService>());
             services.AddSingleton<ITargetingService, TargetingService>();
@@ -210,6 +216,8 @@ namespace SWLOR.Game.Server.Composition
             // The companion questions Character, Items, Creatures and Combat ask; the lookup takes no service (P5-1g).
             services.AddSingleton<ICompanionLookup, CompanionLookup>();
             services.AddSingleton<IBeastMasteryService, BeastMasteryService>();
+            // The same instance, seen through the corpse reads the loot owns (P5-15b).
+            services.AddSingleton<IBeastCorpseInfo>(provider => provider.GetRequiredService<IBeastMasteryService>());
             services.AddSingleton<IDroidService, DroidService>();
             services.AddSingleton<IDroidEquipmentDiagnosticsService, DroidEquipmentDiagnosticsService>();
             services.AddSingleton<IIncubationFieldNoteService, IncubationFieldNoteService>();
@@ -325,6 +333,7 @@ namespace SWLOR.Game.Server.Composition
 
             // UI
             services.AddSingleton<IGuiService, GuiService>();
+            services.AddSingleton<IAchievementNotification, AchievementNotificationWindow>();
             // The same instance, seen through the interface Foundation owns for the domains below the UI (P5-1g).
             services.AddSingleton<IGuiRefreshPublisher>(provider => provider.GetRequiredService<IGuiService>());
 

@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Domain.Companions
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Domain.Companions
     public sealed class CompanionLookup : ICompanionLookup
     {
         public const string BeastIdVariable = "BEAST_ID";
-        public const string BeastTypeVariable = "BEAST_TYPE";
+        public const string BeastTypeVariable = IBeastCorpseInfo.BeastTypeVariable;
 
         private readonly DroidControllerReader _reader = new();
 

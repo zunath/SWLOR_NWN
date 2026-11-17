@@ -151,6 +151,8 @@ public class ConvertedServiceContainerTests
             // The inversions of P5-15a: the lower-domain interfaces a higher service implements, and the two adapters Creatures answers.
             .Concat(new[] { "IAreaLookup", "ICityUpgradeLookup", "IQuestAdvancer", "IConcealmentQuery", "ICurrencyBalance",
                 "IPlayerListRefresh", "IItemCacheInfo", "IPropertyIdLookup", "IDMActorResolver", "IDMWindowPresence", "IAIProfileDescription", "IDMSpawnPreparation" })
+            // The inversions of P5-15b: the Espionage, recast, beast corpse reads a higher service implements, and the achievement window UI draws.
+            .Concat(new[] { "IEspionageEnmityQuery", "IEspionageStealthQuery", "IRecastDelays", "IBeastCorpseInfo", "IAchievementNotification" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

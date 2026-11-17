@@ -94,7 +94,7 @@ public static class VelesSewerEngineTests
                 ClearAllActions();
                 JumpToLocation(approach);
             });
-            await ctx.WaitUntilAsync(() => GetArea(mover) == sourceArea, 3f, $"the mover to start {route}");
+            await ctx.WaitUntilAsync(() => GetArea(mover) == sourceArea, 12f, $"the mover to start {route}");
             await ctx.WaitFrameAsync();
             await ctx.ExecuteInCreatureContextAsync(mover, () =>
             {

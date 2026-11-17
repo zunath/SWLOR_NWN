@@ -145,11 +145,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var native = NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(npc);
             var originalHead = native.m_pStats.m_nHeadVariation;
 
-            // Helmet 64 has no tint material, so it is the native attachment between two
+            // Helmet 281 has no render head (helm_064 gained one), so it is the native attachment between two
             // render heads. Repeat the cycle, as the appearance editor does while scrolling.
             for (var pass = 0; pass < 2; pass++)
             {
-                foreach (var model in new[] { 114, 64, 65 })
+                foreach (var model in new[] { 114, 281, 65 })
                 {
                     await RunAssignedAsync(ctx, npc, () =>
                     {
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     });
                     await ctx.WaitFrameAsync();
 
-                    var projected = model != 64;
+                    var projected = model != 281;
                     ctx.AssertEqual(projected,
                         HelmetModelRenderer.RendersThroughHead(npc, TintMapModelResolver.GetCurrentSelections(npc)),
                         $"Pass {pass}: helm_{model:000} render path");
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(originalHead, native.m_pStats.m_nHeadVariation, "The canonical head never changes.");
                 }
             }
-            ctx.SetResultDetail("Two helmet model cycles 114 -> 64 -> 65 moved between render heads and the native helm_064 attachment, kept the native hidden flag and replicated head item consistent with each render path, and left the canonical head and owner visibility unchanged.");
+            ctx.SetResultDetail("Two helmet model cycles 114 -> 281 -> 65 moved between render heads and the native helm_281 attachment, kept the native hidden flag and replicated head item consistent with each render path, and left the canonical head and owner visibility unchanged.");
         }
 
         [EngineTest("Tint module declares the client material and mask packs", Category = "Tint")]

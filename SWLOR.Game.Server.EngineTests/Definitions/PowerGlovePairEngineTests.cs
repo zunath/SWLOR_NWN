@@ -40,9 +40,14 @@ public static class PowerGlovePairEngineTests
         foreach (var feat in new[] { FeatType.Jab1, FeatType.PerfectForm1, FeatType.Haymaker1 })
         {
             var ability = GameServices.AbilityCatalog.GetAbilityDetail(feat);
-            var clip = AbilityAnimationBinding.ImpactClip(ability, actor);
-            ctx.Assert(clip != null && ReferenceEquals(ability.AuthoredImpactAnimation, clip),
-                $"The actual equipped pair retains {feat}'s authored impact clip");
+            // Each ability binds its authored clip to one stage: the impact (Jab, Haymaker) or, for a queued weapon
+            // ability such as Perfect Form, the queued swing.
+            var clip = AbilityAnimationBinding.ImpactClip(ability, actor)
+                ?? AbilityAnimationBinding.QueuedClip(ability, actor)
+                ?? AbilityAnimationBinding.ActivationClip(ability, actor);
+            var authored = ability.AuthoredImpactAnimation ?? ability.QueuedAttackAnimation ?? ability.AuthoredAnimation;
+            ctx.Assert(clip != null && ReferenceEquals(authored, clip),
+                $"The actual equipped pair retains {feat}'s authored clip (clip {(clip == null ? "null" : clip.Name)}, authored {(authored == null ? "null" : authored.Name)}, requirement {ability.AnimationEquipmentRequirement})");
             string token = null;
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
                 token = NamedAnimation.Play(actor, clip, equipmentRequirement: ability.AnimationEquipmentRequirement));

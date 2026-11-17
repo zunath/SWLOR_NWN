@@ -44,8 +44,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < before, 5f, "attributed periodic damage");
                 var observed = before - GetCurrentHitPoints(target);
                 var factor = (100 - Math.Min(85, reduction)) / 100f;
-                var minimum = (int)((effect is ToxinStatusEffect ? 60 : 17) * factor);
-                var maximum = (int)((effect is ToxinStatusEffect ? 60 : 20) * factor);
+                // Toxin ticks for 6% of 1000 HP, capped at 30 + 3 per Agility modifier of its source (33bf375c8e).
+                var toxinTick = ToxinStatusEffect.CalculateTickDamage(1000, GetAbilityModifier(AbilityType.Agility, source));
+                var minimum = (int)((effect is ToxinStatusEffect ? toxinTick : 17) * factor);
+                // A fractional reduced tick rounds up (54 at 15% is 8.1 and lands as 9), so the bound is the rounded-up value.
+                var maximum = (int)Math.Ceiling(Math.Round((effect is ToxinStatusEffect ? toxinTick : 20) * factor, 3));
                 ctx.Assert(observed >= minimum && observed <= maximum,
                     $"{effect.Name} with {reduction}% reduction: expected {minimum}-{maximum}, observed {observed}");
                 ctx.Log($"{effect.Name}: reduction={reduction}%, native damage={observed}");

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Administration
 {
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Administration
             if (favorites.Count >= MaxFavorites)
                 return DMFavoriteChange.Full;
 
-            favorites.Add(new DMFavoriteBlueprint(blueprint));
+            favorites.Add(blueprint.ToFavorite());
             return DMFavoriteChange.Added;
         }
 

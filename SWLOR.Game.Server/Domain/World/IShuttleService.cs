@@ -1,12 +1,11 @@
-using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// Scheduled passenger shuttle flights between planets: tickets, boarding, the shuttle interior instance and
-    /// arrival. Static callers reach the container's instance through <c>GameServices.Shuttle</c>; the event handlers
+    /// Scheduled passenger shuttle flights between planets: the module load, login, logout and area exit handlers and the
+    /// login redirect. Tickets, boarding, the flight instances, passenger delivery and arrival are in the narrow shuttle
+    /// services (P5-9c). Static callers reach the container's instance through <c>GameServices.Shuttle</c>; the event handlers
     /// are on <see cref="ShuttleService"/>.
     /// </summary>
     public interface IShuttleService
@@ -22,33 +21,6 @@ namespace SWLOR.Game.Server.Domain.World
         /// server was down to their destination on their offline record.
         /// </summary>
         void DeliverOfflinePassengers();
-
-        /// <summary>
-        /// Retrieves a player's active shuttle ride, or null if they have none.
-        /// </summary>
-        /// <param name="playerId">The player Id to look up.</param>
-        /// <returns>The player's shuttle ride, or null.</returns>
-        ShuttleRide GetRide(string playerId);
-
-        /// <summary>
-        /// Attempts to purchase a shuttle ticket for the given route.
-        /// Charges the fare plus city transportation tax and deposits the tax into the city treasury.
-        /// </summary>
-        /// <param name="player">The player purchasing the ticket.</param>
-        /// <param name="origin">The origin planet.</param>
-        /// <param name="destination">The destination planet.</param>
-        /// <param name="cityPropertyId">The city property Id receiving the transportation tax, if any.</param>
-        /// <param name="taxRate">The transportation tax rate (0.0 - 0.25).</param>
-        /// <returns>true if the ticket was purchased, false otherwise.</returns>
-        bool TryPurchaseTicket(uint player, PlanetType origin, PlanetType destination, string cityPropertyId, float taxRate);
-
-        /// <summary>
-        /// Refunds a player's unboarded shuttle ticket. Only the fare is returned;
-        /// taxes stay with the city treasury.
-        /// </summary>
-        /// <param name="player">The player refunding their ticket.</param>
-        /// <returns>true if the ticket was refunded, false otherwise.</returns>
-        bool RefundTicket(uint player);
 
         /// <summary>
         /// Determines where a logging-in player with an in-transit shuttle ride should be placed.
@@ -80,23 +52,5 @@ namespace SWLOR.Game.Server.Domain.World
         /// stay aboard and disconnect still resume or arrive as intended.
         /// </summary>
         void HandleShuttleAreaExit();
-
-        /// <summary>
-        /// Retrieves the next scheduled departure for a route.
-        /// </summary>
-        /// <param name="origin">The origin planet.</param>
-        /// <param name="destination">The destination planet.</param>
-        /// <param name="playerId">Optional passenger whose login boarding grace period applies.</param>
-        /// <returns>The UTC time of the next departure.</returns>
-        DateTime GetNextDepartureUtc(PlanetType origin, PlanetType destination, string playerId = null);
-
-        /// <summary>
-        /// Retrieves the flight registered to a shuttle status console or shuttle area, if any.
-        /// </summary>
-        /// <param name="obj">The console placeable or area to check.</param>
-        /// <param name="destination">The flight's destination planet.</param>
-        /// <param name="arrivalUtc">The flight's UTC arrival time.</param>
-        /// <returns>true if a flight was found, false otherwise.</returns>
-        bool TryGetFlightInfo(uint obj, out PlanetType destination, out DateTime arrivalUtc);
     }
 }

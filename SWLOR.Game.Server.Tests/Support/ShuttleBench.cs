@@ -301,14 +301,13 @@ public sealed class ShuttleBench : IDisposable
 }
 
 /// <summary>
-/// The shuttle instance with its clock and scheduler under the test's control: <see cref="Now"/> is the time the
-/// instance sees, the repeating flight tick is kept in <see cref="Tick"/>, and delayed tasks wait in
-/// <see cref="Scheduled"/> until the test runs them.
+/// The shuttle clock with its time and scheduler under the test's control: <see cref="Now"/> is the time the services see,
+/// the repeating flight tick is kept in <see cref="Tick"/>, and delayed tasks wait in <see cref="Scheduled"/> until the test
+/// runs them.
 /// </summary>
-public sealed class ClockedShuttleService : ShuttleService
+public sealed class ClockedShuttleClockService : ShuttleClockService
 {
-    public ClockedShuttleService(IDBService db, IPlanetService planet, IAreaService area, DateTime now)
-        : base(db, planet, area)
+    public ClockedShuttleClockService(DateTime now)
     {
         Now = now;
     }
@@ -322,16 +321,16 @@ public sealed class ClockedShuttleService : ShuttleService
 
     public List<(Action Task, TimeSpan Delay)> Scheduled { get; } = new();
 
-    protected override DateTime UtcNow() => Now;
+    public override DateTime UtcNow() => Now;
 
-    protected override IDisposable ScheduleRepeating(Action task, TimeSpan interval)
+    public override IDisposable ScheduleRepeating(Action task, TimeSpan interval)
     {
         Tick = task;
         TickInterval = interval;
         return new NoopDisposable();
     }
 
-    protected override IDisposable Schedule(Action task, TimeSpan delay)
+    public override IDisposable Schedule(Action task, TimeSpan delay)
     {
         Scheduled.Add((task, delay));
         return new NoopDisposable();
@@ -343,6 +342,77 @@ public sealed class ClockedShuttleService : ShuttleService
         {
         }
     }
+}
+
+/// <summary>
+/// The shuttle services as the container builds them (<see cref="ShuttleService"/> and the narrow services it takes), with
+/// the clock and the scheduler under the test's control. A test drives the whole shuttle through this one object, as it
+/// did when the shuttle was a single service (P5-9c).
+/// </summary>
+public sealed class ClockedShuttleService
+{
+    private readonly ClockedShuttleClockService _clock;
+
+    public ClockedShuttleService(IDBService db, IPlanetService planet, IAreaService area, DateTime now)
+    {
+        _clock = new ClockedShuttleClockService(now);
+        State = new ShuttleStateService();
+        Tickets = new ShuttleTicketService(db, State, _clock);
+        Passengers = new ShuttlePassengerService(db, planet);
+        Flights = new ShuttleFlightService(planet, area, State, _clock, Passengers);
+        var boarding = new ShuttleBoardingService(db, planet, State, _clock, Tickets, Flights, Passengers);
+        var arrival = new ShuttleArrivalService(db, planet, State, _clock, Tickets, Flights, Passengers);
+        Shuttle = new ShuttleService(db, planet, State, _clock, Tickets, Flights, Passengers, boarding, arrival);
+    }
+
+    public ShuttleService Shuttle { get; }
+
+    public ShuttleStateService State { get; }
+
+    public ShuttleTicketService Tickets { get; }
+
+    public ShuttleFlightService Flights { get; }
+
+    public ShuttlePassengerService Passengers { get; }
+
+    public DateTime Now
+    {
+        get => _clock.Now;
+        set => _clock.Now = value;
+    }
+
+    public Action? Tick => _clock.Tick;
+
+    public TimeSpan? TickInterval => _clock.TickInterval;
+
+    public List<(Action Task, TimeSpan Delay)> Scheduled => _clock.Scheduled;
+
+    public void LoadShuttleFlights() => Shuttle.LoadShuttleFlights();
+
+    public void DeliverOfflinePassengers() => Shuttle.DeliverOfflinePassengers();
+
+    public void AdoptFlights() => Shuttle.AdoptFlights();
+
+    public void EnterServer() => Shuttle.EnterServer();
+
+    public void ExitServer() => Shuttle.ExitServer();
+
+    public void HandleShuttleAreaExit() => Shuttle.HandleShuttleAreaExit();
+
+    public bool TryGetLoginRedirect(uint player, out Location location) => Shuttle.TryGetLoginRedirect(player, out location);
+
+    public ShuttleRide GetRide(string playerId) => Tickets.GetRide(playerId);
+
+    public bool TryPurchaseTicket(uint player, PlanetType origin, PlanetType destination, string cityPropertyId, float taxRate) =>
+        Tickets.TryPurchaseTicket(player, origin, destination, cityPropertyId, taxRate);
+
+    public bool RefundTicket(uint player) => Tickets.RefundTicket(player);
+
+    public DateTime GetNextDepartureUtc(PlanetType origin, PlanetType destination, string? playerId = null) =>
+        Tickets.GetNextDepartureUtc(origin, destination, playerId!);
+
+    public bool TryGetFlightInfo(uint obj, out PlanetType destination, out DateTime arrivalUtc) =>
+        Flights.TryGetFlightInfo(obj, out destination, out arrivalUtc);
 }
 
 /// <summary>

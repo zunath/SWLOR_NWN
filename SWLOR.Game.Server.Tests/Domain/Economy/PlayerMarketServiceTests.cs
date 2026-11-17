@@ -45,7 +45,7 @@ public class PlayerMarketServiceTests
         _facadeScope = _facades.Install();
         _engine = new PlayerEngine();
         _db = new InMemoryDBService();
-        _service = new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<ISpaceService>());
+        _service = new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyStructurePlacementService>(), FacadeForwarder.For<ISpaceService>());
     }
 
     [TearDown]
@@ -82,7 +82,7 @@ public class PlayerMarketServiceTests
 
         _service.CacheData();
 
-        new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyService>(), FacadeForwarder.For<ISpaceService>()).GetActiveCategories().Should().BeEmpty("state lives on the instance, not in static fields");
+        new PlayerMarketService(_db, FacadeForwarder.For<IBeastMasteryService>(), FacadeForwarder.For<ICraftService>(), FacadeForwarder.For<IFishingService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.For<IMusicService>(), FacadeForwarder.For<IPropertyStructurePlacementService>(), FacadeForwarder.For<ISpaceService>()).GetActiveCategories().Should().BeEmpty("state lives on the instance, not in static fields");
     }
 
     [Test]

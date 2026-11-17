@@ -1715,12 +1715,9 @@ public class CombatDamageTests
     public void BlueprintResistanceBonuses_UseRebalancedRanges()
     {
         var root = FindRepositoryRoot();
-        var blueprintBonusesSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Crafting",
-            "BlueprintBonuses.cs"));
+        var blueprintBonusesSource = string.Concat(
+            new[] { "BlueprintBonuses.cs", "BlueprintWeaponBonusTables.cs", "BlueprintArmorBonusTables.cs", "BlueprintFoodBonusTables.cs" }
+                .Select(file => File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Crafting", file))));
 
         blueprintBonusesSource.Should().Contain("new(14, EnhancementSubType.ResistanceElectrical, 3)");
         blueprintBonusesSource.Should().Contain("new(4, EnhancementSubType.ResistancePoison, 7)");
@@ -1891,12 +1888,9 @@ public class CombatDamageTests
     public void BlueprintDamageBonuses_UseDmgAndSeparateDamageTypeProperty()
     {
         var root = FindRepositoryRoot();
-        var blueprintBonusesSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Crafting",
-            "BlueprintBonuses.cs"));
+        var blueprintBonusesSource = string.Concat(
+            new[] { "BlueprintBonuses.cs", "BlueprintWeaponBonusTables.cs", "BlueprintArmorBonusTables.cs", "BlueprintFoodBonusTables.cs" }
+                .Select(file => File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Crafting", file))));
 
         blueprintBonusesSource.Should().Contain("CombatDamageType.Fire");
         blueprintBonusesSource.Should().Contain("new(3, EnhancementSubType.DMG, 2)");

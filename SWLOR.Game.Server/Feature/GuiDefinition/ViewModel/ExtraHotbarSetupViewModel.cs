@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using static SWLOR.Game.Server.Composition.GameServices;
@@ -45,17 +46,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var windowToken = WindowToken;
             DelayCommand(0f, () => Listen(windowToken));
 
-            ExtraHotbars.SetUnlocked(Player, true);
+            ExtraHotbarsWindow.SetUnlocked(Player, true);
         }
 
         private void LoadValues()
         {
-            for (var index = 0; index < ExtraHotbarsService.BarCount; index++)
+            for (var index = 0; index < ExtraHotbarsWindowService.BarCount; index++)
             {
-                var bar = ExtraHotbars.GetBar(Player, index);
+                var bar = ExtraHotbarsWindow.GetBar(Player, index);
                 Set(bar?.IsVisible ?? false, VisibleProperty(index));
-                Set(bar?.SlotCount ?? ExtraHotbarsService.MaxSlots, SlotCountProperty(index));
-                Set(FormatSlotCount(bar?.SlotCount ?? ExtraHotbarsService.MaxSlots), SlotCountTextProperty(index));
+                Set(bar?.SlotCount ?? ExtraHotbarsWindowService.MaxSlots, SlotCountProperty(index));
+                Set(FormatSlotCount(bar?.SlotCount ?? ExtraHotbarsWindowService.MaxSlots), SlotCountTextProperty(index));
                 Set((int)(bar?.Layout ?? ExtraHotbarLayout.Horizontal), LayoutProperty(index));
             }
         }
@@ -84,30 +85,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!_isListening)
                 return;
 
-            for (var index = 0; index < ExtraHotbarsService.BarCount; index++)
+            for (var index = 0; index < ExtraHotbarsWindowService.BarCount; index++)
             {
                 if (propertyName == VisibleProperty(index))
                 {
                     var isVisible = Get<bool>(propertyName);
-                    ExtraHotbars.UpdateBar(Player, index, bar => bar.IsVisible = isVisible);
+                    ExtraHotbarsEdit.UpdateBar(Player, index, bar => bar.IsVisible = isVisible);
                 }
                 else if (propertyName == SlotCountProperty(index))
                 {
                     var slotCount = Get<int>(propertyName);
                     Set(FormatSlotCount(slotCount), SlotCountTextProperty(index));
-                    ExtraHotbars.UpdateBar(Player, index, bar => bar.SlotCount = slotCount);
+                    ExtraHotbarsEdit.UpdateBar(Player, index, bar => bar.SlotCount = slotCount);
                 }
                 else if (propertyName == LayoutProperty(index))
                 {
                     var layout = (ExtraHotbarLayout)Get<int>(propertyName);
-                    ExtraHotbars.UpdateBar(Player, index, bar => bar.Layout = layout);
+                    ExtraHotbarsEdit.UpdateBar(Player, index, bar => bar.Layout = layout);
                 }
             }
         }
 
         public override Action OnWindowClosed() => () =>
         {
-            ExtraHotbars.SetUnlocked(Player, false);
+            ExtraHotbarsWindow.SetUnlocked(Player, false);
         };
 
         private static string FormatSlotCount(int slotCount) => slotCount == 1 ? "1 slot" : $"{slotCount} slots";

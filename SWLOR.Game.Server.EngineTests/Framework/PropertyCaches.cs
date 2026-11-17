@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.EngineTests.Framework
     /// <summary>
     /// Reaches the private state and the private cleanup of the server's property classes, which the engine tests used to
     /// read from the static <c>Property</c> class by reflection before the property system was converted. The layout
-    /// entrances belong to the definitions catalog, the instance registry to the loader and the boot cleanup to the
-    /// property service.
+    /// entrances belong to the definitions catalog, the instance registry to the load registry and the boot cleanup to the
+    /// property maintenance service.
     /// </summary>
     public static class PropertyCaches
     {
@@ -21,14 +21,12 @@ namespace SWLOR.Game.Server.EngineTests.Framework
 
         /// <summary>The property instances the loader has registered, by property Id.</summary>
         public static Dictionary<string, PropertyInstance> Instances =>
-            Field<Dictionary<string, PropertyInstance>>(typeof(IPropertyLoaderService), "_propertyInstances");
+            Field<Dictionary<string, PropertyInstance>>(typeof(IPropertyLoadRegistryService), "_propertyInstances");
 
         /// <summary>Runs the clean-up the property service does at boot (expired leases, deletions, starship docks).</summary>
         public static void CleanUpData()
         {
-            var service = CompositionRoot.ServerHost.Provider.GetService(typeof(IPropertyService));
-            service.GetType().GetMethod("CleanUpData", BindingFlags.NonPublic | BindingFlags.Instance)
-                .Invoke(service, null);
+            ((IPropertyMaintenanceService)CompositionRoot.ServerHost.Provider.GetService(typeof(IPropertyMaintenanceService))).CleanUpData();
         }
 
         private static T Field<T>(Type contract, string name)

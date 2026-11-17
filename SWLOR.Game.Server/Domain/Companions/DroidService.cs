@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Creatures;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.UI;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Domain.Gameplay;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Companions;
@@ -734,7 +733,7 @@ namespace SWLOR.Game.Server.Domain.Companions
                     : defaultDroid.LeftFootId,
                 droid);
 
-            TintMapService.RestoreDroidOverrides(droid, constructedDroid.TintOverrides);
+            TintMapOverrideLocals.RestoreDroidOverrides(droid, constructedDroid.TintOverrides);
 
             if (constructedDroid.PortraitId == -1)
             {

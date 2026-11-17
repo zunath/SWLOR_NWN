@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     AssignCommand(Player, () => TakeGoldFromCreature(layout.InitialPrice, Player, true));
 
                     var property = Property.CreateApartment(Player, layoutType);
-                    Property.EnterProperty(Player, property.Id);
+                    PropertyAccess.EnterProperty(Player, property.Id);
 
                     Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
 
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var layoutType = _layoutTypes[SelectedLayout];
 
-            Property.PreviewProperty(Player, layoutType);
+            PropertyAccess.PreviewProperty(Player, layoutType);
             Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
         };
     }

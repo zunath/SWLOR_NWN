@@ -82,7 +82,7 @@ public class PropertyLoaderServiceTests
         _world.ClearCalls();
         var db = new InMemoryDBService();
 
-        _ = new PropertyLoaderService(db, _world.Areas, _world.Recorded);
+        _ = new PropertyWorld.LoaderUnderTest(db, _world.Areas, _world.Recorded);
 
         _world.Engine.Calls.Should().BeEmpty();
         db.Reads.Should().BeEmpty();
@@ -108,7 +108,12 @@ public class PropertyLoaderServiceTests
     private sealed class RealSchedulerLoader : PropertyLoaderService
     {
         public RealSchedulerLoader(IDBService db, IAreaService areas, IPropertyCatalogService catalog)
-            : base(db, areas, catalog)
+            : this(db, areas, catalog, new PropertyLoadRegistryService(db, catalog))
+        {
+        }
+
+        private RealSchedulerLoader(IDBService db, IAreaService areas, IPropertyCatalogService catalog, PropertyLoadRegistryService registry)
+            : base(db, areas, catalog, registry, new PropertySpawnService(areas, catalog, registry))
         {
         }
 
@@ -1355,9 +1360,14 @@ public class PropertyLoaderServiceTests
         _world.Engine.SetReturnHandler("GetObjectType", _ => ObjectType.Placeable);
     }
 
-    private static ReloadDigestLine AdoptedDigest(PropertyLoaderService loader)
+    /// <summary>The adopted state of the queue (the loader) and of the instances and load states (the registry).</summary>
+    private static (ReloadDigestLine Queue, ReloadDigestLine Registry) AdoptedDigest(PropertyWorld.LoaderUnderTest loader)
     {
-        return new ReloadDigestHasher(typeof(PropertyLoaderService).Assembly).Describe(ReloadDigests.AdoptedKind, "properties",
-            typeof(PropertyLoaderService), loader, field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted);
+        var hasher = new ReloadDigestHasher(typeof(PropertyLoaderService).Assembly);
+        return (
+            hasher.Describe(ReloadDigests.AdoptedKind, "properties", typeof(PropertyLoaderService), loader,
+                field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted),
+            hasher.Describe(ReloadDigests.AdoptedKind, "properties", typeof(PropertyLoadRegistryService), loader.Registry,
+                field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted));
     }
 }

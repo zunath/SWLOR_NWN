@@ -249,7 +249,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
         var properties = CraftedProperties(item);
         foreach (var property in reading.Properties)
-            Craft.MergeCraftedItemProperty(properties, property);
+            CraftEnhancementProperty.MergeCraftedItemProperty(properties, property);
     }
 
     /// <summary>The properties the finished item will carry, starting from the ones its template gave it.</summary>
@@ -321,8 +321,8 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
             if (bonus == null)
                 continue;
 
-            foreach (var ip in Craft.BuildItemPropertiesForEnhancement(bonus.Type, bonus.Amount, bonus.DamageType))
-                Craft.MergeCraftedItemProperty(CraftedProperties(item), ip);
+            foreach (var ip in CraftEnhancementProperty.BuildItemPropertiesForEnhancement(bonus.Type, bonus.Amount, bonus.DamageType))
+                CraftEnhancementProperty.MergeCraftedItemProperty(CraftedProperties(item), ip);
 
             var subTypeDetail = Craft.GetEnhancementSubType(bonus.Type);
             var bonusName = bonus.DamageType != CombatDamageType.Invalid &&
@@ -334,7 +334,7 @@ public sealed class NwnCraftSessionWorld : ICraftSessionWorld
 
         var properties = CraftedProperties(item);
         foreach (var ip in blueprint.GuaranteedBonuses)
-            Craft.MergeCraftedItemProperty(properties, ip);
+            CraftEnhancementProperty.MergeCraftedItemProperty(properties, ip);
 
         // Identify the blueprint level on the finished item, replacing any it already names.
         properties.RemoveAll(property => GetItemPropertyType(property) == ItemPropertyType.Blueprint &&

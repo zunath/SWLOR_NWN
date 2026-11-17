@@ -10,6 +10,21 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Chat handling and emote styles (the static facade <c>Communication</c> until P2-ZI).</summary>
         public static ICommunicationService Communication => FacadeAccessor.Resolve<ICommunicationService>();
 
+        /// <summary>The extra hotbars: running a slot, and the abilities, combat modes and items a slot can hold.</summary>
+        public static IExtraHotbarsService ExtraHotbars => FacadeAccessor.Resolve<IExtraHotbarsService>();
+
+        /// <summary>What a player puts on an extra hotbar (P5-11c).</summary>
+        public static IExtraHotbarsEditService ExtraHotbarsEdit => FacadeAccessor.Resolve<IExtraHotbarsEditService>();
+
+        /// <summary>The hand rules of the extra hotbar equipment slots, and equipping a slot (P5-11c).</summary>
+        public static IExtraHotbarsEquipService ExtraHotbarsEquip => FacadeAccessor.Resolve<IExtraHotbarsEquipService>();
+
+        /// <summary>Redraws what the extra hotbar slots show (P5-11c).</summary>
+        public static IExtraHotbarsStatusService ExtraHotbarsStatus => FacadeAccessor.Resolve<IExtraHotbarsStatusService>();
+
+        /// <summary>The saved extra hotbars and their windows (P5-11c).</summary>
+        public static IExtraHotbarsWindowService ExtraHotbarsWindow => FacadeAccessor.Resolve<IExtraHotbarsWindowService>();
+
         /// <summary>The guard for tells started from a chat-log portrait (the facade <c>Service.ChatPortraitTells</c> until P2-ZM).</summary>
         public static IChatPortraitTellsService ChatPortraitTells => FacadeAccessor.Resolve<IChatPortraitTellsService>();
 

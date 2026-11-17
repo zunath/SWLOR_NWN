@@ -19,7 +19,8 @@ namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
 /// Each one-line call into unconverted code still reaches the code it wraps: the stat service's and, since P5-4c, those of part 5
-/// of the stat split, <c>CombatRatingService</c>.
+/// of the stat split, <c>CombatRatingService</c>; since P5-4d, part 6's (<c>CombatDeflectionReactionService</c>) and part 7's
+/// (the healing adjustments' temporary modifier in <c>CombatResourcesService</c>).
 /// </summary>
 [NonParallelizable]
 public class StatServiceDefaultSeamsTests
@@ -32,6 +33,8 @@ public class StatServiceDefaultSeamsTests
     private FakeNWScript _engine = null!;
     private DefaultSeams _seams = null!;
     private DefaultRatingSeams _ratingSeams = null!;
+    private DefaultDeflectionSeams _deflectionSeams = null!;
+    private DefaultResourcesSeams _resourcesSeams = null!;
 
     [OneTimeSetUp]
     public void BuildFacades() => _facades = new FacadeContainer();
@@ -47,10 +50,15 @@ public class StatServiceDefaultSeamsTests
         _engineScope = NWScriptRuntime.Override(_engine);
         _seams = new DefaultSeams(
             _facades.Get<IDBService>(), _facades.Get<ICombatRecorderService>(), _facades.Get<IPlayerFeedbackService>(),
-            _facades.Get<IStatusEffectService>(), _facades.Get<IMimicryTraitStatsService>(), _facades.Get<IRecastService>(),
-            _facades.Get<ICompanionLookup>(), _facades.Get<IPvpCombatService>());
+            _facades.Get<IStatusEffectService>(), _facades.Get<IMimicryTraitStatsService>(), _facades.Get<ICompanionLookup>(),
+            _facades.Get<IResourceRestoredListener>());
         _ratingSeams = new DefaultRatingSeams(
             _facades.Get<IDBService>(), _facades.Get<IItemService>(), _facades.Get<ITwinPistolEquipmentService>(), _facades.Get<IStatService>());
+        _deflectionSeams = new DefaultDeflectionSeams(
+            _facades.Get<ICombatRecorderService>(), _facades.Get<IRecastService>(), _facades.Get<IStatService>());
+        _resourcesSeams = new DefaultResourcesSeams(
+            _facades.Get<IStatService>(), _facades.Get<IStatusEffectService>(), _facades.Get<ICombatRecorderService>(),
+            _facades.Get<IPvpCombatService>(), _facades.Get<ICompanionLookup>());
     }
 
     [TearDown]
@@ -72,9 +80,14 @@ public class StatServiceDefaultSeamsTests
     {
         try
         {
-            _seams.ReplaceTemporary(Creature, StatType.Attack, 5, 30f, StatType.Accuracy);
+            _deflectionSeams.ReplaceTemporary(Creature, StatType.Attack, 5, 30f, StatType.Accuracy);
 
             _seams.TemporaryAdjustment(Creature, StatType.Attack).Should().Be(5);
+            _seams.TemporarySources(Creature, StatType.Attack).Should().ContainSingle();
+
+            _resourcesSeams.ReplaceTemporary(Creature, StatType.Attack, 7, 30f, StatType.Accuracy);
+
+            _seams.TemporaryAdjustment(Creature, StatType.Attack).Should().Be(7, "the healing seam replaces the same group");
             _seams.TemporarySources(Creature, StatType.Attack).Should().ContainSingle();
         }
         finally
@@ -139,12 +152,12 @@ public class StatServiceDefaultSeamsTests
     {
         _seams.FPRestored(Creature);
         _seams.StaminaRestored(Creature);
-        _seams.Track(Creature, DeflectionSource.Melee);
-        _seams.NextSkillBonuses(Creature, SkillType.Invalid, 0, 0, 0);
-        _seams.NextAutoAttack(Creature, SkillType.Invalid, 0, 0);
-        _seams.NextNoDelay(Creature, SkillType.Invalid, 0);
+        _deflectionSeams.Track(Creature, DeflectionSource.Melee);
+        _deflectionSeams.NextSkillBonuses(Creature, SkillType.Invalid, 0, 0, 0);
+        _deflectionSeams.NextAutoAttack(Creature, SkillType.Invalid, 0, 0);
+        _deflectionSeams.NextNoDelay(Creature, SkillType.Invalid, 0);
 
-        _seams.Trigger(Creature, StatType.Attack, 0).Should().BeTrue("a stat trigger with no cooldown is always open");
+        _deflectionSeams.Trigger(Creature, StatType.Attack, 0).Should().BeTrue("a stat trigger with no cooldown is always open");
     }
 
     private sealed class DefaultSeams : StatService
@@ -155,11 +168,11 @@ public class StatServiceDefaultSeamsTests
             IPlayerFeedbackService playerFeedback,
             IStatusEffectService statusEffect,
             IMimicryTraitStatsService mimicryTraitStats,
-            IRecastService recast,
             ICompanionLookup beastMastery,
-            IPvpCombatService pvpCombat)
-            : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, recast, beastMastery, pvpCombat,
-                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
+            IResourceRestoredListener resourceRestored)
+            : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, beastMastery,
+                FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ISkillService>(), FacadeForwarder.For<ITemporaryStatModifierService>(),
+                resourceRestored)
         {
         }
 
@@ -170,9 +183,6 @@ public class StatServiceDefaultSeamsTests
         public int TemporaryAdjustment(uint creature, StatType stat) => GetTemporaryStatAdjustment(creature, stat);
 
         public IReadOnlyList<StatAdjustmentSource> TemporarySources(uint creature, StatType stat) => GetTemporaryStatSources(creature, stat);
-
-        public void ReplaceTemporary(uint creature, StatType stat, int amount, float seconds, StatType group) =>
-            ReplaceTemporaryStatModifier(creature, stat, amount, seconds, group);
 
         public SkillAttribute SkillDetails(SkillType skill) => GetSkillDetails(skill);
 
@@ -185,6 +195,19 @@ public class StatServiceDefaultSeamsTests
         public void FPRestored(uint creature) => ApplyFPRestoredEffects(creature);
 
         public void StaminaRestored(uint creature) => ApplyStaminaRestoredEffects(creature);
+    }
+
+    // Part 6 of the stat split (P5-4d): the deflection reaction seams with their default bodies.
+    private sealed class DefaultDeflectionSeams : CombatDeflectionReactionService
+    {
+        public DefaultDeflectionSeams(ICombatRecorderService combatRecorder, IRecastService recast, IStatService stat)
+            : base(combatRecorder, recast, FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatAttackTimingService>(),
+                FacadeForwarder.For<ICombatResourcesService>(), FacadeForwarder.For<ITemporaryStatModifierService>(), stat)
+        {
+        }
+
+        public void ReplaceTemporary(uint creature, StatType stat, int amount, float seconds, StatType group) =>
+            ReplaceTemporaryStatModifier(creature, stat, amount, seconds, group);
 
         public void Track(uint creature, DeflectionSource source) => TrackDeflection(creature, source);
 
@@ -197,6 +220,20 @@ public class StatServiceDefaultSeamsTests
             GrantNextAutoAttackCriticalRateBonus(creature, skill, critical, seconds);
 
         public void NextNoDelay(uint creature, SkillType skill, int seconds) => GrantNextAbilityNoDelay(creature, skill, seconds);
+    }
+
+    // Part 7 of the stat split (P5-4d): the healing adjustments' temporary modifier seam with its default body.
+    private sealed class DefaultResourcesSeams : CombatResourcesService
+    {
+        public DefaultResourcesSeams(IStatService stat, IStatusEffectService statusEffect, ICombatRecorderService combatRecorder,
+            IPvpCombatService pvpCombat, ICompanionLookup companions)
+            : base(FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<IAbilityImpactState>(), stat, statusEffect, combatRecorder,
+                FacadeForwarder.For<ITemporaryStatModifierService>(), pvpCombat, companions)
+        {
+        }
+
+        public void ReplaceTemporary(uint creature, StatType stat, int amount, float seconds, StatType group) =>
+            ReplaceTemporaryStatModifier(creature, stat, amount, seconds, group);
     }
 
     // Part 5 of the stat split (P5-4c): the rating seams with their default bodies.

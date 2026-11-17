@@ -344,7 +344,7 @@ public class PerkCombinationBehaviorTests
     [TestCase(20, 0, 100, 0)]
     [TestCase(20, 80, 100, 20)]
     public void HealingRiders_RequireAnActualPositiveHeal(int amount, int currentHP, int maxHP, int expected) =>
-        Stat.CalculateEffectiveHealingAmount(amount, currentHP, maxHP).Should().Be(expected);
+        CombatResources.CalculateEffectiveHealingAmount(amount, currentHP, maxHP).Should().Be(expected);
 
     [TestCase(44, 1f, 30)]
     [TestCase(90, 1f, 30)]

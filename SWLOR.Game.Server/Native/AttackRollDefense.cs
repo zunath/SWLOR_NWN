@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Native
             var deflected = deflectRoll <= deflectChance;
             if (deflected)
             {
-                Stat.ApplyDeflectionEffectsNative(defender, source);
+                CombatDeflectionReaction.ApplyDeflectionEffectsNative(defender, source);
 
                 var deflectionName = CombatRules.GetDeflectionResultName(source);
                 attacker.SendFeedbackString(new CExoString(AttackRollFeedback.BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName)));

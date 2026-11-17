@@ -282,9 +282,9 @@ public class FirstAidCombatUpgradeTests
         perkSource.Should().Contain(
             ".IncreasesStat(StatType.OutgoingAbilityHealingPercentAdjustment, 10)");
 
-        Stat.CalculateOutgoingAbilityHealingAmount(100, 5).Should().Be(105);
-        Stat.CalculateOutgoingAbilityHealingAmount(101, 10).Should().Be(112);
-        Stat.CalculateOutgoingAbilityHealingAmount(100, 0).Should().Be(100);
+        CombatResources.CalculateOutgoingAbilityHealingAmount(100, 5).Should().Be(105);
+        CombatResources.CalculateOutgoingAbilityHealingAmount(101, 10).Should().Be(112);
+        CombatResources.CalculateOutgoingAbilityHealingAmount(100, 0).Should().Be(100);
 
         var includedSources = new[]
         {
@@ -301,7 +301,7 @@ public class FirstAidCombatUpgradeTests
             File.ReadAllText(sourcePath.FullName)
                 .Should()
                 .Contain(
-                    "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                    "CombatResources.ApplyOutgoingAbilityHealingAdjustment",
                     $"{Path.GetFileName(sourcePath.FullName)} should apply Medical Injector Rig to eligible ability healing");
         }
 
@@ -322,14 +322,17 @@ public class FirstAidCombatUpgradeTests
             File.ReadAllText(sourcePath.FullName)
                 .Should()
                 .NotContain(
-                    "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                    "CombatResources.ApplyOutgoingAbilityHealingAdjustment",
                     $"{Path.GetFileName(sourcePath.FullName)} should not apply Medical Injector Rig to damage-derived or system healing");
         }
 
+        // The adjustment lives in CombatResourcesService since P5-4d, so its declaration is the only mention Combat may have.
+        // CombatSource puts static back on member declarations, as they read in the static class.
         CombatSource.Read()
+            .Replace("public static int ApplyOutgoingAbilityHealingAdjustment(", string.Empty)
             .Should()
             .NotContain(
-                "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                "ApplyOutgoingAbilityHealingAdjustment(",
                 "Combat should not apply Medical Injector Rig to damage-derived or system healing");
     }
 

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(recipient, StatType.HealingReceivedStaminaRestore, RestoredStamina, 60f);
             TemporaryStatModifier.Add(recipient, StatType.HealingReceivedStaminaRestoreCooldownSeconds, CooldownSeconds, 60f);
 
-            Stat.ApplyHealingReceivedAdjustment(recipient, 50);
+            CombatResources.ApplyHealingReceivedAdjustment(recipient, 50);
             ctx.AssertEqual(0, Stat.GetCurrentStamina(recipient), "regeneration, lifesteal and other non-instant heals never restore STM");
 
             AbilityEffectScaling.ApplyActivatedScaledHeal(healer, recipient, HealAmount.Percent(5));

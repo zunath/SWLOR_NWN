@@ -156,6 +156,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICombatAttackTimingService, CombatAttackTimingService>();
             services.AddSingleton<ICombatDamageCatalogService, CombatDamageCatalogService>();
             services.AddSingleton<ICombatDamageModifiersService, CombatDamageModifiersService>();
+            services.AddSingleton<ICombatDeflectionReactionService, CombatDeflectionReactionService>();
             services.AddSingleton<ICombatDamageTakenService, CombatDamageTakenService>();
             services.AddSingleton<ICombatFeedbackService, CombatFeedbackService>();
             services.AddSingleton<ICombatHitEffectsService, CombatHitEffectsService>();
@@ -183,6 +184,9 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IQueuedAttackAnimationService, QueuedAttackAnimationService>();
             services.AddSingleton<IRecastService, RecastService>();
             services.AddSingleton<IResistanceService, ResistanceService>();
+            services.AddSingleton<IResourceRestoredEffectsService, ResourceRestoredEffectsService>();
+            // The same instance, seen through the listener the pools in Character own (P5-4d).
+            services.AddSingleton<IResourceRestoredListener>(provider => provider.GetRequiredService<IResourceRestoredEffectsService>());
             services.AddSingleton<IStealthService, StealthService>();
             services.AddSingleton<ITargetingService, TargetingService>();
             services.AddSingleton<ITelegraphService, TelegraphService>();

@@ -30,6 +30,9 @@ public static class StatSource
     {
         "SWLOR.Game.Server/Domain/Character/StatService.cs",
         "SWLOR.Game.Server/Domain/Combat/CombatRatingService.cs",
+        "SWLOR.Game.Server/Domain/Combat/CombatDeflectionReactionService.cs",
+        // Part 7, the healing adjustments, joined the rest of the resources service (P5-4d).
+        "SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs",
     };
 
     /// <summary>
@@ -40,6 +43,8 @@ public static class StatSource
     {
         "SWLOR.Game.Server/Domain/Character/IStatService.cs",
         "SWLOR.Game.Server/Domain/Combat/ICombatRatingService.cs",
+        "SWLOR.Game.Server/Domain/Combat/ICombatDeflectionReactionService.cs",
+        "SWLOR.Game.Server/Domain/Combat/ICombatResourcesService.cs",
     };
 
     /// <summary>
@@ -49,7 +54,9 @@ public static class StatSource
     public static readonly IReadOnlySet<string> PartInterfaces = new HashSet<string>(StringComparer.Ordinal)
     {
         "IStatService",
-        "ICombatRatingService"
+        "ICombatRatingService",
+        "ICombatDeflectionReactionService",
+        "ICombatResourcesService"
     };
 
     private static readonly Lazy<IReadOnlyList<SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));

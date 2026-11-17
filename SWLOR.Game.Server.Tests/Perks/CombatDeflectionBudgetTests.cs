@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Tests.Support;
 
@@ -103,7 +104,7 @@ public class CombatDeflectionBudgetTests : SkillFacadeFixture
 
         foreach (var fieldName in fieldNames)
         {
-            var duration = (float)typeof(StatService)
+            var duration = (float)typeof(CombatDeflectionReactionService)
                 .GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static)!
                 .GetRawConstantValue()!;
 

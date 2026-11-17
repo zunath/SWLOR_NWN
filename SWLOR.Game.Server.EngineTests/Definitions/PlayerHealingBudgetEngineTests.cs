@@ -51,8 +51,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) > before, 5f, "the player's direct heal");
             // Med Kit IV on the 1,000 HP target: 108 HP plus 6% = 168, then x1.25 at 26 Willpower.
             var expected = AbilityEffectScaling.ScaleRestorativeEffect(168, 26);
-            expected = Stat.ApplyOutgoingAbilityHealingAdjustment(player, expected);
-            expected = Stat.ApplyHealingReceivedAdjustment(target, expected, false);
+            expected = CombatResources.ApplyOutgoingAbilityHealingAdjustment(player, expected);
+            expected = CombatResources.ApplyHealingReceivedAdjustment(target, expected, false);
             var observed = GetCurrentHitPoints(target) - before;
             ctx.AssertEqual(expected, observed, "healing includes ordinary WIL, Injector Rig and received-healing bonuses");
             ctx.Assert(observed < 500, "this legal combination restores less than half a health bar per cast");

@@ -94,7 +94,7 @@ lines: `ApplyDeflectionEffectsNative` (2251-2417, 167).
 ## Parts
 
 Services are `<Domain>/<Name>` behind `I<Name>` and a `GameServices` property (`CreatureStat`, `StatRecord`,
-`MimicryTraitStats`, `CombatRating`, `CombatDeflectionReaction`). "Deps" counts constructor parameters at the end. Lines are the
+`MimicryTraitStats`, `CombatRating`, `CombatDeflectionReaction`, and `ResourceRestoredEffects` for part 8, P5-4d below). "Deps" counts constructor parameters at the end. Lines are the
 moved members plus seams, constants, constructor and fields, to about 10%.
 
 | # | Part | Domain | Lines | Deps | Runs / state |
@@ -431,6 +431,72 @@ no `[ReloadCarriedFrom]` moved: part 5 holds no state. Where the pull request di
   Averaged, the sides are within 1% (players 859 against 863, NPCs 735 against 740), less than one side moved between rounds, and
   the stat read's own time stayed at 86 to 89 ms/s in the player fight on both sides.
 
+### P5-4d (the deflection reactions, the healing and the restore riders move up to Combat)
+
+Parts 6, 7 and 8 moved verbatim, and `StatService` went 14 -> 10 services (`IRecastService`, `IPvpCombatService`,
+`Lazy<ICombatAttackTimingService>`, `Lazy<ICombatDamageTakenService>` and `Lazy<ICombatResourcesService>` gone,
+`IResourceRestoredListener` added), 2,430 -> 2,088 lines, up `Lazy<>` 3 -> 0; it names no Combat member any more, so its
+`using SWLOR.Game.Server.Domain.Combat` went too. No handler, no `[ReloadState]` field and no `[ReloadCarriedFrom]` moved: the three
+parts hold no state, and no attribution scope changed (the stat trigger attributions and the healing reaction scope moved with their
+code, on the same recorder instance). Where the pull request differs from the map or adds to it:
+
+- **Part 6, `CombatDeflectionReactionService` behind `ICombatDeflectionReactionService`** (Combat, `GameServices.CombatDeflectionReaction`,
+  listed on its own in `ConvertedServices.json` and `DomainMap.json` as part 5 was; 337 lines, the 7 services of the map). Its 17 calls
+  into part 1 (`GetStatAdjustment`, `GetStatTypeDeflectionSource`, `RestoreStamina`, `RestoreFP`, `GetMaxStamina`) go through
+  `IStatService`, and its five Combat seams lost their `Lazy<>.Value`. The split is the map's: `ApplyDeflectionEffectsNative` (167 ->
+  134 lines) tracks the deflection, calls `ReadDeflectionReaction` (93 lines), which reads every payload verbatim and in order into the
+  readonly struct `DeflectionReaction` (`Domain/Combat`, 27 init-only values, the locals' names in Pascal case), then copies into locals
+  of the original names the 25 values the applies use (the two cooldown stat types are read only by the reads) and applies them
+  unchanged. `CombatParts.OtherServices` names the service, so the Combat source helpers leave it out.
+- **Part 7 joined `CombatResourcesService`** (660 -> 749 lines, 6 -> 8 services: `IPvpCombatService` and `ICompanionLookup`, as the holder
+  table says). The six calls it made to the healing members through `IStatService` are self calls now; production always ran those
+  members, so nothing changes, but `CombatResourcesServiceTests` lost the stand-ins it had for them: the real members run, the recorder
+  answers `BeginHealingReaction` and the PvP service its healing cut, and the one case that healed a creature at 0 HP (which the real
+  `CalculateEffectiveHealingAmount` never heals) starts at 1 HP. The healing code's `ReplaceTemporaryStatModifier` seam moved with it,
+  and `TryUseStatTrigger(uint, StatType, int)` is `virtual`, so the healing double (`TestCombatResourcesService`) answers the gate as the
+  stat double's seam did.
+- **Part 8 is a converted service, `ResourceRestoredEffects`** (Combat, `GameServices.ResourceRestoredEffects`), not a bare listener
+  class: a class named `<Name>Service` in a domain must be a listed piece with `I<Name>Service`
+  (`Service_classes_in_a_domain_namespace_are_pieces_of_converted_services`). `IResourceRestoredEffectsService` extends Character's
+  `IResourceRestoredListener`, which the container gives as the same instance (as `ICharacterRecording` is the recorder);
+  `ConvertedServiceContainerTests` lists the listener beside the other lower-domain interfaces. Its two methods take the stat reader as
+  their last argument (`statReader`), and the pools' seams pass `this`, so the riders read the same instance as before and the service
+  takes only `IStatusEffectService`.
+- **The facades.** `RemovedFacades.json` moves `ApplyDeflectionEffectsNative` to a `CombatDeflectionReaction` list and the five healing
+  names to a `CombatResources` list of the `Stat` entry; `ApplyFPRestoredEffects` and `ApplyStaminaRestoredEffects` left the `Combat`
+  entry's `CombatResources` list (their signature changed; Master porting, under Risks). `Apply-FacadeRemoval.ps1` rewrote 38 call sites
+  in 19 files: content (`InspiredStatusEffect` 3, `FirstAidTreatmentAdjustments` 4, `InnervateAbilityDefinition`, `MedKitAbilityDefinition`
+  and `WardenOrderTechniqueAbilityDefinition` 2 each, `RewardAbilityDefinition`, `BloodWeaponStatusEffect` and
+  `GuardiansResolveStatusEffect` 1 each), `Native/AttackRollDefense` (1), the static `AbilityEffectScaling` (4), 5 engine test files (8),
+  3 unit test files (7) and the characterization test (2, its `nameof` and snapshot names kept); a second run changes nothing.
+- **Tests:** `TestStatService.DeflectionReaction.cs` became `TestCombatDeflectionReactionService` and `TestStatService.Shared.cs` went: the
+  stat trigger and temporary modifier seams are copied into the part 6 and part 7 doubles, which read through the stat double, so the
+  deflection and healing tests are unchanged. `ResourceRestoredEffectsServiceTests` covers part 8; `StatServiceDefaultSeamsTests` runs
+  part 6's seams and part 7's temporary modifier seam on subclasses. The text tests that read the reactions read
+  `ApplyDeflectionEffectsNative` and `ReadDeflectionReaction` together, the Medical Injector Rig needles follow the
+  `CombatResources` receiver, and `StatSource` adds the part 6 file, `CombatResourcesService.cs` and their interfaces.
+- **Coverage** (the full `SWLOR.Game.Server.Tests` run alone): `CombatDeflectionReactionService` 224 of 225 lines (the native creature id
+  seam runs only in the engine, as it did in `StatService`), `ResourceRestoredEffectsService` and `DeflectionReaction` every line,
+  `CombatResourcesService` 405 of 406. `Domain/Combat` 96.8% (floor 95), `Domain/Character` 84.8% (floor 83).
+- **Accepted growth:** none. No `ServicesPerType.txt` line is added (`CombatResourcesService` 8, `CombatDeflectionReactionService` 7,
+  `ResourceRestoredEffectsService` 1), no holder gained a `Lazy<>`, and `LazyDependencyCycleTests` found no `Lazy<>` that the moves made
+  needless.
+- **Baselines:** `ServicesPerType.txt` 20 -> 19 lines (312 -> 298 services: the `StatService` line went), `LargeTypes.txt` (`StatService`
+  2,088; 65,016 -> 64,674 lines), `LongMethods.txt` (`ApplyDeflectionEffectsNative` 167 gone; 26 -> 25), `DeferredResolution.txt`
+  (`StatService.cs -> Combat (up)` gone; 47 -> 46 lines, 67 -> 64 parameters), `UpwardEdges.txt` 164 -> 163 lines and 456 -> 441 members
+  (`StatService.cs` Character -> Combat 15 gone), `LogicToContent.txt` (`CombatResourcesService.cs -> Feature/StatusEffectDefinition`
+  3 -> 1, `ResourceRestoredEffectsService.cs` 2, moved). `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` changed in counts
+  only and were kept.
+- **Readings:** CombatSim's team-fight, solo-boss, twin-pistol-barrage and twin-pistol-crossfire reports (seed 1, 50 runs) and its
+  ability table are byte-identical to the base's (`bfea48451`). The filtered engine run (`Deflect|Heal|Regen|Walk|Rating|Restor|Guard|
+  PvpCombat|StaminaRecovery`: 106 tests, among them combat and player healing, PvP healing, Stamina recovery, hit point limits, walk
+  mode and the deflection checks; the same module and haks on both sides, run side by side) passed 103 on the branch and 102 on the
+  base, with the opt-in `CombatLoad` test skipped on both. Two fail on both (the companion natural regeneration stamina delay, 32
+  against 31, which failed on the bases of P5-4b and P5-4c, and the Single Weapon rating capture's null reference, which failed on
+  both sides of P5-4c); the base also failed Blade Vortex's three-target stamina refund, which passed on the branch. No engine test
+  sets the deflection reactions' payload stats (the engine's deflection tests check the rolls and the ability-granted deflections);
+  `StatServiceDeflectionTests` covers the reactions through the part's double.
+
 ## Test plan
 
 Each pull request builds the solution; runs `SWLOR.Architecture.Tests` and regenerates the Phase 5 baselines with
@@ -463,3 +529,7 @@ ratings, deflection, healing, regeneration and walk mode. P5-4e runs the reload 
 - **Master porting.** Master changed `Service/Stat.cs` and `StatService.cs` 46 times since 2026-10-10; from P5-4b each sync ports
   master's edits by the range table. Part 1 has about 50 lines of headroom under 1,000. `feature/space-revamp`'s `SpaceService`
   calls change property name only. Master's `Mimicry.GetStatBonus(creature, stat)` and `Mimicry.GetStatSources(creature, stat)` calls (its engine tests have several) are ported by hand to `GameServices.MimicryTraitStats.GetStatBonus(creature, stat, GameServices.Stat)` and `GetStatSources(...)` with the same added argument, because the stat reader is now an argument; `GetSetBonusPotency` kept its signature and is listed in `RemovedFacades.json`.
+  The same holds for part 8 (P5-4d): master's only calls of `Combat.ApplyFPRestoredEffects(creature)` and
+  `Combat.ApplyStaminaRestoredEffects(creature)` are the pools' in `Service/Stat.cs` (398, 507), which a sync ports by hand by the
+  range table; they are the seams `ApplyFPRestoredEffects` and `ApplyStaminaRestoredEffects`, which pass the pools themselves to
+  `IResourceRestoredListener`. The two names left the `Combat` entry's `CombatResources` list, so the tool rewrites no call of them.

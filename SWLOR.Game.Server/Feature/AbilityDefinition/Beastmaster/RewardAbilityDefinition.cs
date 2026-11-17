@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
             var maxHP = GetMaxHitPoints(beast);
             var baseAmount = baseHealingAmount + (maxHP / 5);
             var amount = Stat.ScaleEffect(baseAmount, GetAbilityScore(activator, AbilityType.Social));
-            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
+            amount = CombatResources.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = CombatAbilityMagnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
 
             var hitPointsBeforeHealing = GetCurrentHitPoints(beast);

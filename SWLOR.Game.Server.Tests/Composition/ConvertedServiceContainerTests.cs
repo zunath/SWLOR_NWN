@@ -146,6 +146,8 @@ public class ConvertedServiceContainerTests
             .Concat(new[] { "ISpaceModeQuery" })
             // The ability split (P5-3f): the music and capstone proof services as the hostile impact's observers.
             .Concat(new[] { "IAbilityImpactObserver" })
+            // The stat split (P5-4d): the restore riders as the pools' listener, which Combat answers.
+            .Concat(new[] { "IResourceRestoredListener" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

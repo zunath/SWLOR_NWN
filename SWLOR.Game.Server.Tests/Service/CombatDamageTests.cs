@@ -455,7 +455,9 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var combatSource = CombatSource.Read();
         var statSource = StatSource.Read();
-        var applyDeflectionEffects = ExtractMethod(statSource, "public void ApplyDeflectionEffectsNative");
+        // The reactions read their payloads before they apply them (P5-4d split the two), so the needles span both methods.
+        var applyDeflectionEffects = ExtractMethod(statSource, "public void ApplyDeflectionEffectsNative") +
+            ExtractMethod(statSource, "private void ReadDeflectionReaction(");
         var grantNextSkillBonuses = ExtractMethod(
             combatSource.Replace("\r\n", "\n"),
             "public static void GrantNextSkillAbilityBonuses(\n            uint creature,\n            SkillType skillType");

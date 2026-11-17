@@ -59,7 +59,7 @@ public class AchievementServiceTests
         _engine.SetReturn("GetObjectUUID", PlayerId);
         _plugin = new FakePlayerPlugin();
         _db = new InMemoryDBService();
-        _service = new AchievementService(_db, FacadeForwarder.For<IGuiService>());
+        _service = new AchievementService(_db, new AchievementNotificationWindow(FacadeForwarder.For<IGuiService>()));
         _engineScope = NWScriptRuntime.Override(_engine);
         _pluginScope = PlayerPluginRuntime.Override(_plugin);
     }
@@ -135,7 +135,7 @@ public class AchievementServiceTests
     [Test]
     public void Each_instance_keeps_its_own_cache()
     {
-        var other = new AchievementService(new InMemoryDBService(), FacadeForwarder.For<IGuiService>());
+        var other = new AchievementService(new InMemoryDBService(), new AchievementNotificationWindow(FacadeForwarder.For<IGuiService>()));
 
         _service.LoadAchievements();
 
@@ -161,7 +161,7 @@ public class AchievementServiceTests
         var first = Gui.GetSystemReservation("Achievement").StartId;
 
         _service.ReserveGuiIds();
-        new AchievementService(_db, FacadeForwarder.For<IGuiService>()).ReserveGuiIds();
+        new AchievementService(_db, new AchievementNotificationWindow(FacadeForwarder.For<IGuiService>())).ReserveGuiIds();
 
         Gui.GetSystemReservation("Achievement").StartId.Should().Be(first);
     }
@@ -261,13 +261,15 @@ public class AchievementServiceTests
     // ---- the window
 
     [Test]
-    public void DisplayAchievementNotificationWindow_centres_the_name_and_draws_the_frame()
+    public void The_notification_window_centres_the_name_and_draws_the_frame()
     {
         PrepareGui();
         var start = Gui.GetSystemReservation("Achievement").StartId;
         var centre = Gui.CenterStringInWindow("Kill Enemies I", 4, 26);
+        var window = new AchievementNotificationWindow(FacadeForwarder.For<IGuiService>());
+        window.ReserveIds();
 
-        _service.DisplayAchievementNotificationWindow(PlayerObject, "Kill Enemies I");
+        window.Display(PlayerObject, "Kill Enemies I");
 
         var posts = _engine.CallsTo("PostString");
         posts[0].Arguments.Should().Equal(PlayerObject, "Achievement Unlocked", centre + 2, 5, ScreenAnchor.TopRight, 10.0f,

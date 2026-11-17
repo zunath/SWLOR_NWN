@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var observer = await PlayerAbilityFixture.CreateAsync(ctx);
             using var target = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
             using var bystander = await PlayerAbilityFixture.CreateAsync(ctx, -3f);
-            var command = new CharacterChatCommand().BuildChatCommands()["afk"];
+            var command = new CharacterSocialChatCommand().BuildChatCommands()["afk"];
             var snapshots = new List<object>();
             var suffix = " " + ColorToken.Purple("[AFK]");
             PlayerDisguise disguise = null;
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             using var observer = await PlayerAbilityFixture.CreateAsync(ctx);
             using var target = await PlayerAbilityFixture.CreateAsync(ctx, 3f);
             using var stationary = await PlayerAbilityFixture.CreateAsync(ctx, -3f);
-            var command = new CharacterChatCommand().BuildChatCommands()["afk"];
+            var command = new CharacterSocialChatCommand().BuildChatCommands()["afk"];
             PlayerDisguise disguise = null;
             try
             {

@@ -81,7 +81,7 @@ mod_cache_aft (16)
   Rerun       SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterAttackRules
   Rerun       SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.RegisterUnequipGuard
   Rerun       SWLOR.Game.Server.Feature.UnarmedTechniqueProfile.Register
-  Rerun       SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.CacheSpawnBeastEggHelp
+  Rerun       SWLOR.Game.Server.Feature.ChatCommandDefinition.DMSpawnChatCommand.CacheSpawnBeastEggHelp
 
 mod_load (46)
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds

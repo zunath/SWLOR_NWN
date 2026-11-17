@@ -746,7 +746,7 @@ public class PlayerNameRecognitionTests
             "SWLOR.Game.Server",
             "Feature",
             "ChatCommandDefinition",
-            "DMChatCommand.cs"));
+            "DMPlayerChatCommand.cs"));
 
         disguiseSource.Should().Contain("public const string IdentityKeyPrefix = \"disguise:\";");
         disguiseSource.Should().Contain("BuildIdentityKey(activeDisguise.Id)");
@@ -769,7 +769,7 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("dbPlayer.UnallocatedXP -= amount");
         disguiseSource.Should().Contain("new RPXPRefreshEvent()");
         disguiseSource.Should().Contain("new DisguiseChangedRefreshEvent()");
-        new DMChatCommand().BuildChatCommands()["resetcooldowns"].Description.Should().Contain("disguise");
+        new DMPlayerChatCommand().BuildChatCommands()["resetcooldowns"].Description.Should().Contain("disguise");
         dmChatCommandSource.Should().Contain("AbilityCooldownVisual.ClearAllRecastDelays(target);");
         dmChatCommandSource.Should().Contain("Disguise.ResetActivationCooldowns(target, user);");
 

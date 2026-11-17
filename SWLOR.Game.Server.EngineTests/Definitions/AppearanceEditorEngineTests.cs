@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 0.92f);
                     SetObjectVisualTransform(civilian, ObjectVisualTransform.Scale, 1.08f,
                         nScope: ObjectVisualTransformDataScopeType.CreatureHead);
-                    var command = new CharacterChatCommand().BuildChatCommands()["headscale"];
+                    var command = new CharacterAppearanceChatCommand().BuildChatCommands()["headscale"];
                     foreach (var invalid in new[] { "NaN", "Infinity", "-Infinity", "0.5", "2", "invalid" })
                         ctx.Assert(!string.IsNullOrEmpty(command.ValidateArguments(civilian, invalid)),
                             "Reject head scale: " + invalid);

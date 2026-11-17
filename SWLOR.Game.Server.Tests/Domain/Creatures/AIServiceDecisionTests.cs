@@ -58,7 +58,7 @@ public class AIServiceDecisionTests : AIServiceTestBase
         builder.Create(AIProfileType.Generic).DecisionThrottle(throttle);
 
     private bool Trigger(AITriggerType trigger = AITriggerType.CombatRound, uint target = Invalid, bool bypass = false) =>
-        Service.ProcessTrigger(Npc.Id, trigger, target, bypass);
+        Decision.ProcessTrigger(Npc.Id, trigger, target, bypass);
 
     private int Executed(string script) =>
         Bench.Engine.CallsTo("ExecuteScript").Count(call => (string)call.Arguments[0]! == script);
@@ -78,10 +78,10 @@ public class AIServiceDecisionTests : AIServiceTestBase
         var possessed = Bench.AddCreature("possessed", Area);
         possessed.IsDMPossessed = true;
 
-        Service.ProcessTrigger(player.Id, AITriggerType.CombatRound).Should().BeFalse();
-        Service.ProcessTrigger(dm.Id, AITriggerType.CombatRound).Should().BeFalse();
-        Service.ProcessTrigger(possessed.Id, AITriggerType.CombatRound).Should().BeFalse();
-        Service.ProcessTrigger(Invalid, AITriggerType.CombatRound).Should().BeFalse();
+        Decision.ProcessTrigger(player.Id, AITriggerType.CombatRound).Should().BeFalse();
+        Decision.ProcessTrigger(dm.Id, AITriggerType.CombatRound).Should().BeFalse();
+        Decision.ProcessTrigger(possessed.Id, AITriggerType.CombatRound).Should().BeFalse();
+        Decision.ProcessTrigger(Invalid, AITriggerType.CombatRound).Should().BeFalse();
         Executed(ScriptedProfiles.DefaultScript).Should().Be(0);
     }
 
@@ -148,11 +148,11 @@ public class AIServiceDecisionTests : AIServiceTestBase
         Trigger().Should().BeTrue();
         Bench.EventObject = Npc.Id;
 
-        Service.DMToggleAIAfter();
+        Events.DMToggleAIAfter();
         Trigger().Should().BeFalse("the AI is still on, so the cooldown stays");
 
         Npc.AILevel = AILevel.VeryLow;
-        Service.DMToggleAIAfter();
+        Events.DMToggleAIAfter();
         Npc.AILevel = AILevel.Medium;
         Trigger().Should().BeTrue("the AI was switched off and its state cleared");
     }
@@ -161,9 +161,9 @@ public class AIServiceDecisionTests : AIServiceTestBase
     public void A_dm_toggle_on_something_that_is_not_a_creature_does_nothing()
     {
         Bench.EventObject = Area;
-        Service.DMToggleAIAfter();
+        Events.DMToggleAIAfter();
         Bench.EventObject = Invalid;
-        Service.DMToggleAIAfter();
+        Events.DMToggleAIAfter();
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -989,10 +989,10 @@ public class AIServiceDecisionTests : AIServiceTestBase
     {
         var ally = Bench.AddCreature("ally", Area, 1f);
 
-        Service.TryUseBestTargetedSupportAbility(Npc.Id, ally.Id, out var name).Should().BeFalse("the ally is at full health");
+        Action.TryUseBestTargetedSupportAbility(Npc.Id, ally.Id, out var name).Should().BeFalse("the ally is at full health");
         name.Should().BeEmpty();
-        Service.TryUseBestTargetedSupportAbility(Invalid, ally.Id, out _).Should().BeFalse();
-        Service.TryUseBestTargetedSupportAbility(Npc.Id, Invalid, out _).Should().BeFalse();
+        Action.TryUseBestTargetedSupportAbility(Invalid, ally.Id, out _).Should().BeFalse();
+        Action.TryUseBestTargetedSupportAbility(Npc.Id, Invalid, out _).Should().BeFalse();
     }
 
     [Test]
@@ -1011,7 +1011,7 @@ public class AIServiceDecisionTests : AIServiceTestBase
             KnowFeat(feat);
         Service.AbilityUsed = (_, _, feat) => feat == healing[1].Key;
 
-        Service.TryUseBestTargetedSupportAbility(Npc.Id, ally.Id, out var name).Should().BeTrue();
+        Action.TryUseBestTargetedSupportAbility(Npc.Id, ally.Id, out var name).Should().BeTrue();
 
         name.Should().Be(healing[1].Value.Name);
         Bench.Trace().Should().Equal(
@@ -1025,7 +1025,7 @@ public class AIServiceDecisionTests : AIServiceTestBase
         var ally = Bench.AddCreature("ally", Area, 1f);
         ally.HitPoints = 10;
 
-        Service.TryUseBestTargetedSupportAbility(Npc.Id, ally.Id, out _).Should().BeFalse();
+        Action.TryUseBestTargetedSupportAbility(Npc.Id, ally.Id, out _).Should().BeFalse();
     }
 
     // ---- profile loading ---------------------------------------------------------------------------------------------

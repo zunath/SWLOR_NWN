@@ -45,7 +45,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     [Test]
     public void A_hostile_creature_with_AI_in_range_acquires_the_target_and_runs_its_aggro_profile()
     {
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().Equal(Proximity(Npc));
         Service.Proximity[Npc.Id].Should().Contain(_player.Id);
@@ -55,7 +55,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     [Test]
     public void The_search_is_a_creature_sphere_of_eight_and_a_half_meters_around_the_target()
     {
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         var search = Bench.Engine.CallsTo("GetFirstObjectInShape").Should().ContainSingle().Subject;
         search.Arguments[0].Should().Be(Shape.Sphere);
@@ -70,7 +70,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
         var second = HostileCreature("second", 4f);
         var third = HostileCreature("third", -2f);
 
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().Equal(Proximity(Npc), Proximity(second), Proximity(third));
         Bench.Engine.CallsTo("ExecuteScript").Should().HaveCount(3);
@@ -84,7 +84,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
         var next = HostileCreature("next", 5f);
         Bench.ClearCalls();
 
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         var lines = Bench.Trace("ExecuteScript");
         var scripts = lines.Select((line, index) => (line, index))
@@ -107,7 +107,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     {
         Npc.IsPC = true;
 
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -117,7 +117,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     {
         Npc.AILevel = AILevel.VeryLow;
 
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().BeEmpty();
         Bench.Engine.CallsTo("ExecuteScript").Should().BeEmpty();
@@ -128,7 +128,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     {
         var neutral = Bench.AddPlayer("neutral", Area, 1f);
 
-        Service.AcquireAggroFromNearbyEnemies(neutral.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(neutral.Id);
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -138,7 +138,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     {
         Npc.Position = new Vector3(20f, 0f, 0f);
 
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -148,7 +148,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     {
         Bench.BlockSight(_player.Id, Npc.Id);
 
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -157,13 +157,13 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     public void Nobody_acquires_a_dead_or_invisible_target()
     {
         _player.Dead = true;
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
         _player.Dead = false;
         _player.Effects.Add(EffectTypeScript.Invisibility);
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
         _player.Effects.Clear();
         _player.Effects.Add(EffectTypeScript.ImprovedInvisibility);
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().BeEmpty();
     }
@@ -173,7 +173,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     {
         Service.SetProximityEnmity(Npc.Id, _player.Id, 1);
 
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().BeEmpty();
         Bench.Engine.CallsTo("ExecuteScript").Should().BeEmpty();
@@ -186,7 +186,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
         Npc.Position = new Vector3(60f, 0f, 0f);
         _player.Position = new Vector3(63f, 0f, 0f);
 
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().NotContain(note => note.StartsWith("ModifyProximityEnmity", StringComparison.Ordinal));
         Bench.Locals.Int(Npc.Id, "AI_LEASH_EVADE_ACTIVE").Should().Be(1);
@@ -197,7 +197,7 @@ public class AIServiceAcquireAggroTests : AIServiceTestBase
     {
         Npc.Destroyed = true;
 
-        Service.AcquireAggroFromNearbyEnemies(_player.Id);
+        Aggro.AcquireAggroFromNearbyEnemies(_player.Id);
 
         Bench.Trace().Should().BeEmpty();
         Bench.Engine.CallsTo("ExecuteScript").Should().BeEmpty();

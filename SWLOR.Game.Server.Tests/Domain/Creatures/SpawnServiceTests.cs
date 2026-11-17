@@ -85,13 +85,13 @@ public class SpawnServiceTests
         var guard = _bench.AddCreature("guard", _area, new Vector3(1f, 2f, 3f), 90f);
         _service.Definitions.Add(typeof(ISpawnListDefinition)); // cannot be created, so the table load throws
 
-        var load = () => _service.LoadSpawnTables();
-        var store = () => _service.StoreSpawns();
+        var load = () => _service.Registry.LoadSpawnTables();
+        var store = () => _service.Registry.StoreSpawns();
 
         load.Should().Throw<Exception>();
         store.Should().Throw<InvalidOperationException>().WithMessage("*LoadSpawnTables did not finish*");
         _bench.DestroyCount(guard.Id).Should().Be(0, "the placed creature stays as it was");
-        _bench.Objects.CountOf("Serialize").Should().Be(0);
+        _bench.ObjectPlugin.CountOf("Serialize").Should().Be(0);
     }
 
     [Test]
@@ -100,14 +100,14 @@ public class SpawnServiceTests
         var guard = _bench.AddCreature("guard", _area, new Vector3(1f, 2f, 3f), 90f);
         _bench.AddWaypoint(RatTable, _area, new Vector3(5f, 6f, 7f));
 
-        _service.LoadSpawnTables();
+        _service.Registry.LoadSpawnTables();
 
         _bench.DestroyCount(guard.Id).Should().Be(0, "a hot reload reruns this part, so it must not capture or destroy creatures");
-        _bench.Objects.CountOf("Serialize").Should().Be(0);
+        _bench.ObjectPlugin.CountOf("Serialize").Should().Be(0);
         _bench.Engine.CountOf("GetFirstArea").Should().Be(0, "the areas are read by the boot-only part");
         _service.Errors.Should().BeEmpty();
 
-        _service.StoreSpawns();
+        _service.Registry.StoreSpawns();
 
         _bench.DestroyCount(guard.Id).Should().Be(1, "the boot-only part replaces the placed creature with a spawn");
         EnterAndSpawn();
@@ -140,12 +140,12 @@ public class SpawnServiceTests
 
         _bench.DestroyCount(guard.Id).Should().Be(1, "the placed creature is replaced by a spawn the system controls");
         _bench.DestroyCount(plotNpc.Id).Should().Be(0, "creatures of the object visibility service are left as they are");
-        _bench.Objects.CountOf("Serialize").Should().Be(1);
+        _bench.ObjectPlugin.CountOf("Serialize").Should().Be(1);
 
         EnterAndSpawn();
 
-        _bench.Objects.CountOf("Deserialize").Should().Be(1);
-        var add = _bench.Objects.CallsTo("AddToArea").Should().ContainSingle().Subject;
+        _bench.ObjectPlugin.CountOf("Deserialize").Should().Be(1);
+        var add = _bench.ObjectPlugin.CallsTo("AddToArea").Should().ContainSingle().Subject;
         var spawned = (uint)add.Arguments[0]!;
         add.Arguments[1].Should().Be(_area);
         add.Arguments[2].Should().Be(new Vector3(1f, 2f, 3f));
@@ -155,7 +155,7 @@ public class SpawnServiceTests
         _bench.Locals.Int(spawned, "AI_FLAGS").Should().Be((int)AIFlag.ReturnHome);
         _bench.Locals.Has(spawned, "FP").Should().BeTrue("the NPC stats are loaded onto hand-placed creatures");
         _bench.Locals.Has(spawned, "STAMINA").Should().BeTrue();
-        _bench.Objects.CallsTo("SetConversationPrivate").Should().ContainSingle().Which.Arguments
+        _bench.ObjectPlugin.CallsTo("SetConversationPrivate").Should().ContainSingle().Which.Arguments
             .Should().Equal(spawned, true);
     }
 
@@ -256,7 +256,7 @@ public class SpawnServiceTests
             .Where(t => typeof(ISpawnListDefinition).IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract)
             .ToList();
 
-        var found = _service.FindDefinitionsWithTheOriginalSearch().ToList();
+        var found = _service.Registry.FindDefinitionsWithTheOriginalSearch().ToList();
 
         expected.Should().NotBeEmpty();
         found.Should().Contain(expected);
@@ -293,7 +293,7 @@ public class SpawnServiceTests
     public void A_hand_placed_creature_the_engine_cannot_serialize_never_spawns_and_is_dropped()
     {
         _bench.AddCreature("guard", _area, new Vector3(1f, 2f, 3f));
-        _bench.Objects.SetReturnHandler("Serialize", _ => string.Empty);
+        _bench.ObjectPlugin.SetReturnHandler("Serialize", _ => string.Empty);
         CacheData();
         EnterAndSpawn();
 
@@ -303,7 +303,7 @@ public class SpawnServiceTests
             Pass(TimeSpan.FromMinutes(5 * 16) + TimeSpan.FromSeconds(1));
         }
 
-        _bench.Objects.CountOf("Deserialize").Should().Be(0);
+        _bench.ObjectPlugin.CountOf("Deserialize").Should().Be(0);
         _bench.Engine.CountOf("CreateObject").Should().Be(0);
         _service.Errors.Should().ContainSingle().Which.Should().Contain("failed 10 times consecutively");
     }
@@ -321,14 +321,14 @@ public class SpawnServiceTests
         spawnedAtBoot.Should().Be(3, "two rats and the hand-placed guard");
         var before = AdoptedDigest(_service);
 
-        _service.CarrySpawns();
+        _service.Registry.CarrySpawns();
         var calls = _bench.Engine.Calls.Count;
         var reloaded = Reload();
 
         AdoptedDigest(reloaded).Should().Be(before, "the new build holds the registry the old one had");
         _bench.Engine.Calls.Skip(calls).Select(call => call.Member)
             .Should().NotContain(new[] { "CreateObject", "DestroyObject", "SetLocalString" }, "adopting creates, destroys and marks nothing");
-        _bench.Objects.CountOf("Serialize").Should().Be(1, "only the boot captured the guard");
+        _bench.ObjectPlugin.CountOf("Serialize").Should().Be(1, "only the boot captured the guard");
         reloaded.Errors.Should().BeEmpty();
 
         EnterAndSpawn();
@@ -346,10 +346,10 @@ public class SpawnServiceTests
         EnterAndSpawn();
         var rat = CreatedObjects().Single(o => o.ResRef == "woods_rat");
 
-        _service.CarrySpawns();
+        _service.Registry.CarrySpawns();
         Reload();
         _bench.Self = rat.Id;
-        _service.QueueRespawn();
+        _service.Runtime.QueueRespawn();
         Pass(TimeSpan.FromMinutes(6));
         Enter(empty);
         Pass(TimeSpan.FromSeconds(1));
@@ -376,8 +376,8 @@ public class SpawnServiceTests
     {
         var reloaded = new TestSpawnService(_service.Now);
         reloaded.Definitions.AddRange(_service.Definitions);
-        reloaded.LoadSpawnTables();
-        reloaded.AdoptSpawns();
+        reloaded.Registry.LoadSpawnTables();
+        reloaded.Registry.AdoptSpawns();
         _service = reloaded;
         return reloaded;
     }
@@ -400,10 +400,10 @@ public class SpawnServiceTests
 
         _bench.Self = _area;
         _bench.Entering = npc.Id;
-        _service.SpawnArea();
+        _service.Runtime.SpawnArea();
         _bench.Self = other;
         _bench.Entering = _player.Id;
-        _service.SpawnArea();
+        _service.Runtime.SpawnArea();
         Pass(TimeSpan.FromSeconds(1));
 
         _bench.Engine.CountOf("CreateObject").Should().Be(0);
@@ -420,11 +420,11 @@ public class SpawnServiceTests
 
         _bench.Self = _area;
         _bench.Entering = dm.Id;
-        _service.SpawnArea();
-        _service.SpawnArea();
+        _service.Runtime.SpawnArea();
+        _service.Runtime.SpawnArea();
         Pass(TimeSpan.FromSeconds(1));
         _bench.Entering = _player.Id;
-        _service.SpawnArea();
+        _service.Runtime.SpawnArea();
         Pass(TimeSpan.FromSeconds(1));
 
         CreatedObjects().Count(o => o.ResRef == "woods_rat").Should().Be(2, "an area with spawns active is not spawned again");
@@ -437,7 +437,7 @@ public class SpawnServiceTests
         CacheData();
         Enter(_area);
 
-        _service.ProcessQueuedSpawns();
+        _service.Runtime.ProcessQueuedSpawns();
 
         _bench.Engine.CountOf("CreateObject").Should().Be(0, "the spawn is due when the time is past its respawn time, not at it");
         Pass(TimeSpan.FromSeconds(1));
@@ -454,22 +454,22 @@ public class SpawnServiceTests
 
         _bench.Self = _area;
         _bench.Exiting = _bench.AddCreature("npc", _area).Id;
-        _service.QueueDespawnArea();
+        _service.Runtime.QueueDespawnArea();
         _bench.Exiting = _player.Id;
         _bench.PlayersInArea[_area] = 1;
-        _service.QueueDespawnArea();
+        _service.Runtime.QueueDespawnArea();
         _service.Now += TimeSpan.FromMinutes(DespawnMinutes + 1);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
         rats.Should().OnlyContain(r => _bench.DestroyCount(r.Id) == 0, "somebody is still in the area");
 
         _bench.PlayersInArea[_area] = 0;
-        _service.QueueDespawnArea();
+        _service.Runtime.QueueDespawnArea();
         _service.Now += TimeSpan.FromMinutes(DespawnMinutes - 1);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
         rats.Should().OnlyContain(r => _bench.DestroyCount(r.Id) == 0, "the despawn time has not come");
 
         _service.Now += TimeSpan.FromMinutes(2);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
 
         rats.Should().OnlyContain(r => _bench.DestroyCount(r.Id) == 1);
         _bench.ExecutedScripts().Where(s => s.Script == "spawn_despawn").Select(s => s.Target)
@@ -484,11 +484,11 @@ public class SpawnServiceTests
         _bench.Self = bare;
         _bench.Exiting = _player.Id;
 
-        _service.QueueDespawnArea();
+        _service.Runtime.QueueDespawnArea();
         _service.Now += TimeSpan.FromMinutes(DespawnMinutes + 1);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
         _service.Now += TimeSpan.FromMinutes(DespawnMinutes + 1);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
 
         _bench.Engine.CountOf("DestroyObject").Should().Be(0);
         _bench.ExecutedScripts().Should().BeEmpty();
@@ -517,14 +517,14 @@ public class SpawnServiceTests
         var rat = CreatedObjects().Single();
         _bench.Self = _area;
         _bench.Exiting = _player.Id;
-        _service.QueueDespawnArea();
+        _service.Runtime.QueueDespawnArea();
 
         _service.Now += TimeSpan.FromMinutes(1);
         _bench.PlayersInArea[_area] = 1;
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
         _bench.PlayersInArea[_area] = 0;
         _service.Now += TimeSpan.FromMinutes(DespawnMinutes + 1);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
 
         _bench.DestroyCount(rat.Id).Should().Be(0);
     }
@@ -540,16 +540,16 @@ public class SpawnServiceTests
         var rat = CreatedObjects().Single();
         _bench.Self = _area;
         _bench.Exiting = _player.Id;
-        _service.QueueDespawnArea();
+        _service.Runtime.QueueDespawnArea();
 
         // The night creature cannot spawn at noon and stays queued: the area keeps its spawns past the despawn time.
         _service.Now += TimeSpan.FromMinutes(DespawnMinutes + 1);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
         _bench.DestroyCount(rat.Id).Should().Be(0);
 
         _bench.GameHour = 21;
         _service.Now += TimeSpan.FromMinutes(5);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
 
         var owl = CreatedObjects().Single(o => o.ResRef == "night_owl");
         _bench.DestroyCount(rat.Id).Should().Be(1, "once nothing is queued the despawn goes ahead");
@@ -566,21 +566,21 @@ public class SpawnServiceTests
         EnterAndSpawn();
         var rat = CreatedObjects().Single();
         var spawnId = Guid.Parse(_bench.Locals.String(rat.Id, "SPAWN_ID"));
-        _service.IsSpawnActiveForTesting(spawnId).Should().BeTrue();
+        _service.Runtime.IsSpawnActiveForTesting(spawnId).Should().BeTrue();
 
         _bench.Self = rat.Id;
-        _service.QueueRespawn();
-        _service.QueueRespawn();
+        _service.Runtime.QueueRespawn();
+        _service.Runtime.QueueRespawn();
 
         _bench.Locals.Int(rat.Id, "RESPAWN_QUEUED").Should().Be(1);
-        _service.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
-        _service.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1, "a creature queues its replacement once");
+        _service.Runtime.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
+        _service.Runtime.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1, "a creature queues its replacement once");
         Pass(TimeSpan.FromMinutes(5));
         _bench.Engine.CountOf("CreateObject").Should().Be(1, "the replacement is due after the delay, not at it");
         Pass(TimeSpan.FromSeconds(1));
         CreatedObjects().Should().HaveCount(2);
-        _service.IsSpawnActiveForTesting(spawnId).Should().BeTrue();
-        _service.GetQueuedSpawnCountForTesting(spawnId).Should().Be(0);
+        _service.Runtime.IsSpawnActiveForTesting(spawnId).Should().BeTrue();
+        _service.Runtime.GetQueuedSpawnCountForTesting(spawnId).Should().Be(0);
     }
 
     [Test]
@@ -589,10 +589,10 @@ public class SpawnServiceTests
         var wild = _bench.AddCreature("wild", _area);
         _bench.Self = wild.Id;
 
-        _service.QueueRespawn();
+        _service.Runtime.QueueRespawn();
 
         _bench.Locals.Has(wild.Id, "RESPAWN_QUEUED").Should().BeFalse();
-        _service.GetQueuedSpawnCountForTesting(Guid.Empty).Should().Be(0);
+        _service.Runtime.GetQueuedSpawnCountForTesting(Guid.Empty).Should().Be(0);
     }
 
     [Test]
@@ -609,14 +609,14 @@ public class SpawnServiceTests
         var spawnId = Guid.Parse(_bench.Locals.String(ore.Id, "SPAWN_ID"));
 
         _bench.Self = ore.Id;
-        _service.QueueRespawn();
+        _service.Runtime.QueueRespawn();
 
         _service.Now += TimeSpan.FromMinutes(delay);
-        _service.ProcessQueuedSpawns();
-        _service.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
+        _service.Runtime.ProcessQueuedSpawns();
+        _service.Runtime.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
         _service.Now += TimeSpan.FromSeconds(1);
-        _service.ProcessQueuedSpawns();
-        _service.GetQueuedSpawnCountForTesting(spawnId).Should().Be(0);
+        _service.Runtime.ProcessQueuedSpawns();
+        _service.Runtime.GetQueuedSpawnCountForTesting(spawnId).Should().Be(0);
     }
 
     [Test]
@@ -630,14 +630,14 @@ public class SpawnServiceTests
         ore.HasInventory = true;
         var contents = _bench.AddItem("ore_chunk", ore.Id);
 
-        _service.DespawnAndQueueRespawn(ore.Id).Should().BeTrue();
+        _service.Runtime.DespawnAndQueueRespawn(ore.Id).Should().BeTrue();
 
         _bench.DestroyCount(contents.Id).Should().Be(1, "a placeable's items are destroyed first, so the engine leaves no remains bag");
         _bench.DestroyCount(ore.Id).Should().Be(1);
         _bench.Locals.Int(ore.Id, "RESPAWN_QUEUED").Should().Be(1);
-        _service.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
-        _service.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
-        _service.DespawnAndQueueRespawn(ore.Id).Should().BeFalse("the replacement is queued once");
+        _service.Runtime.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
+        _service.Runtime.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
+        _service.Runtime.DespawnAndQueueRespawn(ore.Id).Should().BeFalse("the replacement is queued once");
     }
 
     [Test]
@@ -649,12 +649,12 @@ public class SpawnServiceTests
         var rat = CreatedObjects().Single();
         var spawnId = Guid.Parse(_bench.Locals.String(rat.Id, "SPAWN_ID"));
         _bench.Self = rat.Id;
-        _service.QueueRespawn();
+        _service.Runtime.QueueRespawn();
 
-        _service.DespawnAndQueueRespawn(rat.Id).Should().BeFalse();
+        _service.Runtime.DespawnAndQueueRespawn(rat.Id).Should().BeFalse();
 
         _bench.DestroyCount(rat.Id).Should().Be(0, "the corpse is left for the engine");
-        _service.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
+        _service.Runtime.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
     }
 
     [Test]
@@ -664,9 +664,9 @@ public class SpawnServiceTests
         _bench.Engine.SetLocalString(stranger.Id, "SPAWN_ID", Guid.NewGuid().ToString());
         var plain = _bench.AddCreature("plain", _area);
 
-        _service.DespawnAndQueueRespawn(stranger.Id).Should().BeFalse();
-        _service.DespawnAndQueueRespawn(plain.Id).Should().BeFalse();
-        _service.DespawnAndQueueRespawn(SpawnBench.Invalid).Should().BeFalse();
+        _service.Runtime.DespawnAndQueueRespawn(stranger.Id).Should().BeFalse();
+        _service.Runtime.DespawnAndQueueRespawn(plain.Id).Should().BeFalse();
+        _service.Runtime.DespawnAndQueueRespawn(SpawnBench.Invalid).Should().BeFalse();
 
         _bench.DestroyCount(stranger.Id).Should().Be(1);
         _bench.DestroyCount(plain.Id).Should().Be(1);
@@ -691,17 +691,17 @@ public class SpawnServiceTests
         {
             var before = attempts();
             _service.Now += TimeSpan.FromMinutes(minutes);
-            _service.ProcessQueuedSpawns();
+            _service.Runtime.ProcessQueuedSpawns();
             attempts().Should().Be(before, $"the spawn waits {minutes} minutes: the time is not past it yet");
             _service.Now += TimeSpan.FromSeconds(1);
-            _service.ProcessQueuedSpawns();
+            _service.Runtime.ProcessQueuedSpawns();
             attempts().Should().Be(before + 1);
         }
 
         _service.Errors.Should().ContainSingle().Which.Should().Contain("failed 10 times consecutively");
         _service.Now += TimeSpan.FromHours(1);
         _bench.GameHour = 21;
-        _service.ProcessQueuedSpawns();
+        _service.Runtime.ProcessQueuedSpawns();
         _bench.Engine.CountOf("CreateObject").Should().Be(0, "a dropped spawn is gone for good");
     }
 
@@ -751,7 +751,7 @@ public class SpawnServiceTests
         EnterAndSpawn();
         var rare = CreatedObjects().Single();
         _bench.Self = rare.Id;
-        _service.QueueRespawn();
+        _service.Runtime.QueueRespawn();
 
         Pass(TimeSpan.FromMinutes(1) + TimeSpan.FromSeconds(1));
 
@@ -780,7 +780,7 @@ public class SpawnServiceTests
         replay.NextDouble();
         replay.Next(360);
         var variance = (int)(60 * (replay.Next(-25, 26) / 100.0f));
-        _service.GetResourceDespawnTimeForTesting(nodes[0].Id).Should().Be(Start.AddSeconds(1).AddMinutes(60 + variance));
+        _service.Runtime.GetResourceDespawnTimeForTesting(nodes[0].Id).Should().Be(Start.AddSeconds(1).AddMinutes(60 + variance));
     }
 
     [Test]
@@ -791,21 +791,21 @@ public class SpawnServiceTests
         EnterAndSpawn();
         var ore = CreatedObjects().Single();
         var spawnId = Guid.Parse(_bench.Locals.String(ore.Id, "SPAWN_ID"));
-        var despawnAt = _service.GetResourceDespawnTimeForTesting(ore.Id)!.Value;
+        var despawnAt = _service.Runtime.GetResourceDespawnTimeForTesting(ore.Id)!.Value;
 
         _service.Now = despawnAt;
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
         _bench.DestroyCount(ore.Id).Should().Be(0, "the despawn time has not passed");
 
         _service.Now = despawnAt.AddSeconds(1);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
 
         _bench.ExecutedScripts().Should().Contain(("spawn_despawn", ore.Id));
         _bench.Locals.Int(ore.Id, "RESPAWN_QUEUED").Should().Be(1);
         _bench.DestroyCount(ore.Id).Should().Be(1);
-        _service.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
-        _service.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
-        _service.GetResourceDespawnTimeForTesting(ore.Id).Should().BeNull();
+        _service.Runtime.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
+        _service.Runtime.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
+        _service.Runtime.GetResourceDespawnTimeForTesting(ore.Id).Should().BeNull();
         _bench.Locals.Has(ore.Id, "FP").Should().BeFalse("only creatures get NPC stats");
     }
 
@@ -821,10 +821,10 @@ public class SpawnServiceTests
         _bench.Engine.DestroyObject(nodes[0].Id, 0f);
         _bench.Engine.SetLocalInt(nodes[1].Id, "RESPAWN_QUEUED", 1);
 
-        _service.ProcessResourceDespawnsForTesting(Start.AddDays(2));
+        _service.Runtime.ProcessResourceDespawnsForTesting(Start.AddDays(2));
 
-        _service.GetResourceDespawnTimeForTesting(nodes[0].Id).Should().BeNull();
-        _service.GetResourceDespawnTimeForTesting(nodes[1].Id).Should().BeNull();
+        _service.Runtime.GetResourceDespawnTimeForTesting(nodes[0].Id).Should().BeNull();
+        _service.Runtime.GetResourceDespawnTimeForTesting(nodes[1].Id).Should().BeNull();
         _bench.ExecutedScripts().Should().BeEmpty();
     }
 
@@ -835,13 +835,13 @@ public class SpawnServiceTests
         CacheData();
         EnterAndSpawn();
         var ore = CreatedObjects().Single();
-        var natural = _service.GetResourceDespawnTimeForTesting(ore.Id)!.Value;
+        var natural = _service.Runtime.GetResourceDespawnTimeForTesting(ore.Id)!.Value;
 
-        _service.ScheduleResourceDespawn(ore.Id, TimeSpan.FromDays(1)).Should().BeTrue();
-        _service.GetResourceDespawnTimeForTesting(ore.Id).Should().Be(natural, "an earlier despawn is kept");
-        _service.ScheduleResourceDespawn(ore.Id, TimeSpan.FromMinutes(5)).Should().BeTrue();
+        _service.Runtime.ScheduleResourceDespawn(ore.Id, TimeSpan.FromDays(1)).Should().BeTrue();
+        _service.Runtime.GetResourceDespawnTimeForTesting(ore.Id).Should().Be(natural, "an earlier despawn is kept");
+        _service.Runtime.ScheduleResourceDespawn(ore.Id, TimeSpan.FromMinutes(5)).Should().BeTrue();
 
-        _service.GetResourceDespawnTimeForTesting(ore.Id).Should().Be(_service.Now.AddMinutes(5));
+        _service.Runtime.GetResourceDespawnTimeForTesting(ore.Id).Should().Be(_service.Now.AddMinutes(5));
     }
 
     [Test]
@@ -851,20 +851,20 @@ public class SpawnServiceTests
         CacheData();
         EnterAndSpawn();
         var stump = CreatedObjects().Single();
-        _service.GetResourceDespawnTimeForTesting(stump.Id).Should().BeNull("this table's nodes do not despawn naturally");
+        _service.Runtime.GetResourceDespawnTimeForTesting(stump.Id).Should().BeNull("this table's nodes do not despawn naturally");
 
-        _service.ScheduleResourceDespawn(stump.Id, TimeSpan.FromMinutes(5)).Should().BeTrue();
+        _service.Runtime.ScheduleResourceDespawn(stump.Id, TimeSpan.FromMinutes(5)).Should().BeTrue();
 
-        _service.GetResourceDespawnTimeForTesting(stump.Id).Should().Be(_service.Now.AddMinutes(5));
+        _service.Runtime.GetResourceDespawnTimeForTesting(stump.Id).Should().Be(_service.Now.AddMinutes(5));
         var wild = _bench.AddPlaceable("wild", _area);
         var strayed = _bench.AddPlaceable("strayed", _area);
         _bench.Engine.SetLocalString(strayed.Id, "SPAWN_ID", Guid.NewGuid().ToString());
         var replaced = _bench.AddPlaceable("replaced", _area);
         _bench.Engine.SetLocalInt(replaced.Id, "RESPAWN_QUEUED", 1);
-        _service.ScheduleResourceDespawn(wild.Id, TimeSpan.FromMinutes(1)).Should().BeFalse();
-        _service.ScheduleResourceDespawn(strayed.Id, TimeSpan.FromMinutes(1)).Should().BeFalse();
-        _service.ScheduleResourceDespawn(replaced.Id, TimeSpan.FromMinutes(1)).Should().BeFalse();
-        _service.ScheduleResourceDespawn(SpawnBench.Invalid, TimeSpan.FromMinutes(1)).Should().BeFalse();
+        _service.Runtime.ScheduleResourceDespawn(wild.Id, TimeSpan.FromMinutes(1)).Should().BeFalse();
+        _service.Runtime.ScheduleResourceDespawn(strayed.Id, TimeSpan.FromMinutes(1)).Should().BeFalse();
+        _service.Runtime.ScheduleResourceDespawn(replaced.Id, TimeSpan.FromMinutes(1)).Should().BeFalse();
+        _service.Runtime.ScheduleResourceDespawn(SpawnBench.Invalid, TimeSpan.FromMinutes(1)).Should().BeFalse();
     }
 
     [Test]
@@ -873,22 +873,22 @@ public class SpawnServiceTests
         CacheData();
         var node = _bench.AddPlaceable("node", _area, new Vector3(2f, 3f, 4f));
 
-        var spawnId = _service.RegisterResourceSpawnForTesting(node.Id, OreTable);
+        var spawnId = _service.Runtime.RegisterResourceSpawnForTesting(node.Id, OreTable);
 
-        _service.IsSpawnActiveForTesting(spawnId).Should().BeTrue();
+        _service.Runtime.IsSpawnActiveForTesting(spawnId).Should().BeTrue();
         _bench.Locals.String(node.Id, "SPAWN_ID").Should().Be(spawnId.ToString());
-        _service.GetResourceDespawnTimeForTesting(node.Id).Should().NotBeNull();
+        _service.Runtime.GetResourceDespawnTimeForTesting(node.Id).Should().NotBeNull();
 
-        _service.ProcessResourceDespawnsForTesting(Start.AddDays(2));
+        _service.Runtime.ProcessResourceDespawnsForTesting(Start.AddDays(2));
 
-        _service.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
-        _service.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
+        _service.Runtime.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
+        _service.Runtime.GetQueuedSpawnCountForTesting(spawnId).Should().Be(1);
 
-        _service.RemoveSpawnForTesting(spawnId);
+        _service.Runtime.RemoveSpawnForTesting(spawnId);
 
-        _service.GetQueuedSpawnCountForTesting(spawnId).Should().Be(0);
-        _service.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
-        _service.RemoveSpawnForTesting(spawnId);
+        _service.Runtime.GetQueuedSpawnCountForTesting(spawnId).Should().Be(0);
+        _service.Runtime.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
+        _service.Runtime.RemoveSpawnForTesting(spawnId);
     }
 
     [Test]
@@ -897,9 +897,9 @@ public class SpawnServiceTests
         CacheData();
         var node = _bench.AddPlaceable("node", _area);
 
-        _service.RegisterResourceSpawnForTesting(node.Id, StumpTable);
+        _service.Runtime.RegisterResourceSpawnForTesting(node.Id, StumpTable);
 
-        _service.GetResourceDespawnTimeForTesting(node.Id).Should().Be(Start.AddMinutes(1));
+        _service.Runtime.GetResourceDespawnTimeForTesting(node.Id).Should().Be(Start.AddMinutes(1));
     }
 
     [Test]
@@ -907,12 +907,12 @@ public class SpawnServiceTests
     {
         CacheData();
         var node = _bench.AddPlaceable("node", _area);
-        var spawnId = _service.RegisterResourceSpawnForTesting(node.Id, OreTable);
+        var spawnId = _service.Runtime.RegisterResourceSpawnForTesting(node.Id, OreTable);
 
-        _service.RemoveSpawnForTesting(spawnId);
+        _service.Runtime.RemoveSpawnForTesting(spawnId);
 
-        _service.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
-        _service.GetResourceDespawnTimeForTesting(node.Id).Should().BeNull();
+        _service.Runtime.IsSpawnActiveForTesting(spawnId).Should().BeFalse();
+        _service.Runtime.GetResourceDespawnTimeForTesting(node.Id).Should().BeNull();
     }
 
     // ---------------------------------------------------------------- DM spawns and the scripts every spawn gets
@@ -928,7 +928,7 @@ public class SpawnServiceTests
             "OBJECT_TYPE" => ((int)InternalObjectType.Placeable).ToString(),
             _ => chest.Id.ToString("X")
         });
-        _service.DMSpawnCreature();
+        _service.Objects.DMSpawnCreature();
         _bench.Engine.CountOf("SetEventScript").Should().Be(0);
 
         _bench.Events.SetReturnHandler("GetEventData", arguments => (string)arguments[0]! switch
@@ -936,7 +936,7 @@ public class SpawnServiceTests
             "OBJECT_TYPE" => ((int)InternalObjectType.Creature).ToString(),
             _ => creature.Id.ToString("X")
         });
-        _service.DMSpawnCreature();
+        _service.Objects.DMSpawnCreature();
 
         creature.EventScripts[EventScript.Creature_OnDeath].Should().Be("x2_def_ondeath");
     }
@@ -947,7 +947,7 @@ public class SpawnServiceTests
         var creature = _bench.AddCreature("rat", _area);
         creature.EventScripts[EventScript.Creature_OnHeartbeat] = "nw_c2_default1";
 
-        _service.PrepareDMSpawnedCreature(creature.Id);
+        _service.Objects.PrepareDMSpawnedCreature(creature.Id);
 
         creature.EventScripts.Should().Contain(new Dictionary<EventScript, string>
         {
@@ -965,7 +965,7 @@ public class SpawnServiceTests
             [EventScript.Creature_OnUserDefined] = "x2_def_userdef"
         });
         _bench.ExecutedScripts().Should().Equal(("x2_def_spawn", creature.Id));
-        _bench.Objects.CallsTo("SetConversationPrivate").Should().ContainSingle().Which.Arguments.Should().Equal(creature.Id, true);
+        _bench.ObjectPlugin.CallsTo("SetConversationPrivate").Should().ContainSingle().Which.Arguments.Should().Equal(creature.Id, true);
         _bench.ConversationWasPrivateWhenTheSpawnScriptWasSet.Should().BeTrue();
     }
 
@@ -976,7 +976,7 @@ public class SpawnServiceTests
         guildmaster.EventScripts[EventScript.Creature_OnSpawnIn] = "crea_spawn_aft";
         guildmaster.EventScripts[EventScript.Creature_OnHeartbeat] = ScriptName.OnCreatureHeartbeatAfter;
 
-        _service.PrepareDMSpawnedCreature(guildmaster.Id);
+        _service.Objects.PrepareDMSpawnedCreature(guildmaster.Id);
 
         guildmaster.EventScripts[EventScript.Creature_OnHeartbeat].Should().Be(ScriptName.OnCreatureHeartbeatAfter);
         guildmaster.EventScripts[EventScript.Creature_OnSpawnIn].Should().Be("x2_def_spawn");
@@ -990,8 +990,8 @@ public class SpawnServiceTests
         var scripted = _bench.AddPlaceable("scripted", _area);
         scripted.EventScripts[EventScript.Placeable_OnDeath] = "my_death";
 
-        _service.PrepareDMSpawnedCreature(bare.Id);
-        _service.PrepareDMSpawnedCreature(scripted.Id);
+        _service.Objects.PrepareDMSpawnedCreature(bare.Id);
+        _service.Objects.PrepareDMSpawnedCreature(scripted.Id);
 
         bare.EventScripts[EventScript.Placeable_OnDeath].Should().Be("plc_death");
         scripted.EventScripts[EventScript.Placeable_OnDeath].Should().Be("my_death");
@@ -1007,9 +1007,9 @@ public class SpawnServiceTests
         possessed.IsDMPossessed = true;
         possessed.Immortal = true;
 
-        _service.PrepareDMSpawnedCreature(_player.Id);
-        _service.PrepareDMSpawnedCreature(dm.Id);
-        _service.PrepareDMSpawnedCreature(possessed.Id);
+        _service.Objects.PrepareDMSpawnedCreature(_player.Id);
+        _service.Objects.PrepareDMSpawnedCreature(dm.Id);
+        _service.Objects.PrepareDMSpawnedCreature(possessed.Id);
 
         _bench.Engine.CountOf("SetEventScript").Should().Be(0);
         _bench.Creatures.Calls.Should().BeEmpty();
@@ -1024,10 +1024,10 @@ public class SpawnServiceTests
         immortal.Immortal = true;
         var ordinary = _bench.AddCreature("ordinary", _area);
 
-        _service.PrepareDMSpawnedCreature(ordinary.Id);
+        _service.Objects.PrepareDMSpawnedCreature(ordinary.Id);
         _bench.Creatures.Calls.Should().BeEmpty();
-        _service.PrepareDMSpawnedCreature(plot.Id);
-        _service.PrepareDMSpawnedCreature(immortal.Id);
+        _service.Objects.PrepareDMSpawnedCreature(plot.Id);
+        _service.Objects.PrepareDMSpawnedCreature(immortal.Id);
 
         _bench.Creatures.CallsTo("SetBaseAC").Select(c => c.Arguments[0]).Should().Equal(plot.Id, immortal.Id);
         _bench.Creatures.CallsTo("SetRawAbilityScore").Where(c => (uint)c.Arguments[0]! == plot.Id).Select(c => c.Arguments[1])
@@ -1052,7 +1052,7 @@ public class SpawnServiceTests
         boss.Slots[InventorySlot.CreatureRight] = _bench.AddItem("my_claw", boss.Id).Id;
         boss.Slots[InventorySlot.CreatureLeft] = _bench.AddItem("my_claw", boss.Id).Id;
 
-        _service.PrepareDMSpawnedCreature(boss.Id);
+        _service.Objects.PrepareDMSpawnedCreature(boss.Id);
 
         _bench.Engine.CountOf("CreateItemOnObject").Should().Be(0);
     }
@@ -1072,21 +1072,21 @@ public class SpawnServiceTests
     {
         _bench.Self = area;
         _bench.Entering = _player.Id;
-        _service.SpawnArea();
+        _service.Runtime.SpawnArea();
     }
 
     /// <summary>Moves the clock and runs the queued spawns that have come due.</summary>
     private void Pass(TimeSpan time)
     {
         _service.Now += time;
-        _service.ProcessQueuedSpawns();
+        _service.Runtime.ProcessQueuedSpawns();
     }
 
     /// <summary>The two <c>mod_cache_bef</c> handlers in manifest order, which is what the single <c>CacheData</c> did.</summary>
     private void CacheData()
     {
-        _service.LoadSpawnTables();
-        _service.StoreSpawns();
+        _service.Registry.LoadSpawnTables();
+        _service.Registry.StoreSpawns();
     }
 
     private void EnterAndSpawn()
@@ -1099,9 +1099,9 @@ public class SpawnServiceTests
     {
         _bench.Self = _area;
         _bench.Exiting = _player.Id;
-        _service.QueueDespawnArea();
+        _service.Runtime.QueueDespawnArea();
         _service.Now += TimeSpan.FromMinutes(DespawnMinutes + 1);
-        _service.ProcessSpawnSystem();
+        _service.Runtime.ProcessSpawnSystem();
     }
 
     /// <summary>The objects the code under test created with <c>CreateObject</c>, in order.</summary>

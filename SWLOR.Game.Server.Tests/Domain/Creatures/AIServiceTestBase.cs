@@ -19,7 +19,13 @@ public abstract class AIServiceTestBase
     protected uint Area;
     protected AISim Npc = null!;
 
+    // One accessor per part of the AI split; each is the one instance until its part moves, and a test calls the accessor of
+    // the part that owns the member (Readmes/MaintainabilityRefactorCreaturesSplit.md).
     protected TestAIService Service => Bench.Service;
+    protected TestAIService Events => Bench.Events;
+    protected TestAIService Aggro => Bench.Aggro;
+    protected TestAIService Decision => Bench.Decision;
+    protected TestAIService Action => Bench.Action;
 
     // The AI asks the busy status of a creature (Activity facade), which resolves from a container.
     private FacadeContainer _baseFacades = null!;

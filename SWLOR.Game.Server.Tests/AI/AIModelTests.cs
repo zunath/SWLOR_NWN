@@ -590,7 +590,7 @@ public class AIModelTests
     [Test]
     public void CreatureSpawn_UsesExistingCreatureEventScriptsWithoutBaseNwnCombatScripts()
     {
-        var aiSource = ReadSource("SWLOR.Game.Server", "Domain", "Creatures", "AIService.cs").Replace("\r\n", "\n");
+        var aiSource = CreaturesSource.Members("CreaturePhysicalAttacked", "CreatureSpawn").Replace("\r\n", "\n");
         var enmitySource = ReadSource("SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs").Replace("\r\n", "\n");
         var attackedScript = ReadSource("Module", "nss", "nw_c2_default5.nss").Replace("\r\n", "\n");
         var damagedScript = ReadSource("Module", "nss", "nw_c2_default6.nss").Replace("\r\n", "\n");
@@ -1107,14 +1107,9 @@ public class AIModelTests
     [Test]
     public void CompanionDefensiveEventsResumeAfterBusyAbilityActivations()
     {
-        var companionControl = ReadSource(
-            "SWLOR.Game.Server",
-            "Domain",
-            "Creatures",
-            "CompanionControlService.cs");
         var usePerkFeat = ReadSource("SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
-        var registerThreat = ExtractMethodBody(companionControl, "public void RegisterDefensiveThreat");
-        var processCombatRound = ExtractMethodBody(companionControl, "public void ProcessCombatRound");
+        var registerThreat = ExtractMethodBody(CreaturesSource.Member("RegisterDefensiveThreat"), "public void RegisterDefensiveThreat");
+        var processCombatRound = ExtractMethodBody(CreaturesSource.Member("ProcessCombatRound"), "public void ProcessCombatRound");
         var resumeAttack = ExtractMethodBody(usePerkFeat, "private static void ResumeAttack");
         var pendingReaction = registerThreat.IndexOf("state.DefensiveReactionPending = true;", StringComparison.Ordinal);
         var processRound = registerThreat.IndexOf("ProcessCombatRound(companion, true);", StringComparison.Ordinal);
@@ -1131,14 +1126,9 @@ public class AIModelTests
     [Test]
     public void DefensiveTargetQueriesShareAuthorizationAndOrdering()
     {
-        var companionControl = ReadSource(
-            "SWLOR.Game.Server",
-            "Domain",
-            "Creatures",
-            "CompanionControlService.cs");
-        var peekTarget = ExtractMethodBody(companionControl, "public uint PeekAuthorizedTarget");
-        var getTarget = ExtractMethodBody(companionControl, "private uint GetDefensiveTarget");
-        var selectTarget = ExtractMethodBody(companionControl, "private uint SelectDefensiveTarget");
+        var peekTarget = ExtractMethodBody(CreaturesSource.Member("PeekAuthorizedTarget"), "public uint PeekAuthorizedTarget");
+        var getTarget = ExtractMethodBody(CreaturesSource.Member("GetDefensiveTarget"), "private uint GetDefensiveTarget");
+        var selectTarget = ExtractMethodBody(CreaturesSource.Member("SelectDefensiveTarget"), "private uint SelectDefensiveTarget");
 
         peekTarget.Should().Contain("SelectDefensiveTarget(companion, state, false)");
         getTarget.Should().Contain("SelectDefensiveTarget(companion, state, true)");
@@ -1151,12 +1141,7 @@ public class AIModelTests
     [Test]
     public void DiscardingADefensiveThreatClearsItsPathingProgress()
     {
-        var companionControl = ReadSource(
-            "SWLOR.Game.Server",
-            "Domain",
-            "Creatures",
-            "CompanionControlService.cs");
-        var removeThreat = ExtractMethodBody(companionControl, "private void RemoveDefensiveThreat");
+        var removeThreat = ExtractMethodBody(CreaturesSource.Member("RemoveDefensiveThreat"), "private void RemoveDefensiveThreat");
 
         removeThreat.Should().Contain("state.DefensiveThreats.Remove(threat);");
         removeThreat.Should().Contain("if (state.TrackedTarget == threat)");
@@ -1198,13 +1183,8 @@ public class AIModelTests
     [Test]
     public void CompanionCombatProcessingResumesRestBeforeTheBusyGuard()
     {
-        var source = ReadSource(
-            "SWLOR.Game.Server",
-            "Domain",
-            "Creatures",
-            "CompanionControlService.cs");
-        var processCombatRound = ExtractMethodBody(source, "public void ProcessCombatRound");
-        var releaseRest = ExtractMethodBody(source, "private void ResumeFromRestIfMasterIsActive");
+        var processCombatRound = ExtractMethodBody(CreaturesSource.Member("ProcessCombatRound"), "public void ProcessCombatRound");
+        var releaseRest = ExtractMethodBody(CreaturesSource.Member("ResumeFromRestIfMasterIsActive"), "private void ResumeFromRestIfMasterIsActive");
         var resumeRest = processCombatRound.IndexOf(
             "ResumeFromRestIfMasterIsActive(companion, GetMaster(companion));",
             StringComparison.Ordinal);
@@ -1221,12 +1201,7 @@ public class AIModelTests
     [Test]
     public void StandGroundPlacedAreasRequireAnExplicitPlacementRange()
     {
-        var source = ReadSource(
-            "SWLOR.Game.Server",
-            "Domain",
-            "Creatures",
-            "CompanionControlService.cs");
-        var checkAbilities = ExtractMethodBody(source, "private bool CanUseHostileAbilityWithoutMoving");
+        var checkAbilities = ExtractMethodBody(CreaturesSource.Member("CanUseHostileAbilityWithoutMoving"), "private bool CanUseHostileAbilityWithoutMoving");
 
         checkAbilities.Should().Contain("!isSelfOriginArea");
         checkAbilities.Should().Contain("CompanionControlPolicy.IsWithinDeclaredPlacementRange(");
@@ -1237,12 +1212,7 @@ public class AIModelTests
     [Test]
     public void SelfOriginAreaAuthorizationChecksShapeReachInEveryMode()
     {
-        var source = ReadSource(
-            "SWLOR.Game.Server",
-            "Domain",
-            "Creatures",
-            "CompanionControlService.cs");
-        var resolveTarget = ExtractMethodBody(source, "public uint ResolveHostileAbilityTarget");
+        var resolveTarget = ExtractMethodBody(CreaturesSource.Member("ResolveHostileAbilityTarget"), "public uint ResolveHostileAbilityTarget");
         var shapeReach = resolveTarget.IndexOf(
             "CompanionControlPolicy.IsWithinSelfOriginAreaReach(",
             StringComparison.Ordinal);

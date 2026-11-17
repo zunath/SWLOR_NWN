@@ -36,7 +36,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         Npc.AILevel = AILevel.VeryLow;
 
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
 
         Bench.Engine.Calls.Where(call => call.Member != "OBJECT_SELF" && call.Member != "GetIsObjectValid" && call.Member != "GetAILevel")
             .Should().BeEmpty();
@@ -45,7 +45,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     [Test]
     public void The_heartbeat_restores_stats_checks_the_idle_flags_and_then_attacks_the_highest_enmity_target()
     {
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
 
         Notes().Should().Equal("RestoreNPCStats(true)", Attack);
     }
@@ -53,7 +53,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     [Test]
     public void The_heartbeat_does_not_scan_for_aggro_targets()
     {
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
 
         Bench.Engine.CountOf("GetFirstObjectInShape").Should().Be(0);
     }
@@ -63,12 +63,12 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         Threat(10);
 
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
         Notes().Should().Equal("RestoreNPCStats(true)", Attack, Attack);
 
         Bench.ClearCalls();
         Npc.InConversation = true;
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
         Notes().Should().Equal("RestoreNPCStats(true)", Attack);
     }
 
@@ -78,7 +78,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
         Flags(AIFlag.RandomWalk);
         Npc.Effects.Add(EffectTypeScript.Petrify);
 
-        Service.CreatureHeartbeat();
+        Events.CreatureHeartbeat();
         Bench.RunAssigned(Npc.Id);
 
         Bench.Engine.CountOf("ActionRandomWalk").Should().Be(0);
@@ -102,7 +102,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         Npc.AILevel = AILevel.VeryLow;
 
-        Service.CreatureCombatRoundEnd();
+        Events.CreatureCombatRoundEnd();
 
         Notes().Should().BeEmpty();
     }
@@ -110,7 +110,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     [Test]
     public void The_combat_round_end_runs_the_profile_and_stops_when_it_handled_the_round()
     {
-        Service.CreatureCombatRoundEnd();
+        Events.CreatureCombatRoundEnd();
 
         Scripts(ScriptedProfiles.DefaultScript).Should().Be(1);
         Notes().Should().NotContain(Attack);
@@ -121,7 +121,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         UseProfiles(builder => builder.Create(AIProfileType.Generic).DecisionThrottle(0f).Script("never").Score(0));
 
-        Service.CreatureCombatRoundEnd();
+        Events.CreatureCombatRoundEnd();
 
         Notes().Should().Contain(Attack);
     }
@@ -131,7 +131,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         Bench.Engine.SetLocalBool(Npc.Id, "IS_BUSY", true);
 
-        Service.CreatureCombatRoundEnd();
+        Events.CreatureCombatRoundEnd();
 
         Scripts(ScriptedProfiles.DefaultScript).Should().Be(0);
         Notes().Should().Equal(Attack);
@@ -144,7 +144,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
         _enemy.Position = new System.Numerics.Vector3(80f, 0f, 0f);
         Threat(10);
 
-        Service.CreatureCombatRoundEnd();
+        Events.CreatureCombatRoundEnd();
 
         Bench.Locals.Int(Npc.Id, "AI_LEASH_EVADE_ACTIVE").Should().Be(1);
         Scripts(ScriptedProfiles.DefaultScript).Should().Be(0);
@@ -155,7 +155,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         Bench.LastSpeaker = _enemy.Id;
 
-        Service.CreatureConversation();
+        Events.CreatureConversation();
 
         Bench.AssignedTo(_enemy.Id).Should().BeEmpty();
     }
@@ -166,7 +166,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
         Bench.Engine.SetLocalString(Npc.Id, "CONVERSATION", "old_man");
         Bench.LastSpeaker = _enemy.Id;
 
-        Service.CreatureConversation();
+        Events.CreatureConversation();
 
         // The player runs the queued command, where OBJECT_SELF is the player: the owner must have been captured.
         Bench.RunAssigned(_enemy.Id);
@@ -182,12 +182,12 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         Bench.LastAttacker = _enemy.Id;
         Npc.AILevel = AILevel.VeryLow;
-        Service.CreaturePhysicalAttacked();
+        Events.CreaturePhysicalAttacked();
         Notes().Should().BeEmpty();
 
         Npc.AILevel = AILevel.Medium;
         Bench.Engine.SetLocalBool(Npc.Id, "AI_LEASH_EVADE_ACTIVE", true);
-        Service.CreaturePhysicalAttacked();
+        Events.CreaturePhysicalAttacked();
         Notes().Should().BeEmpty();
     }
 
@@ -198,7 +198,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
             .When(context => context.Trigger == AITriggerType.Attacked && context.EventTarget == _enemy.Id));
         Bench.LastAttacker = _enemy.Id;
 
-        Service.CreaturePhysicalAttacked();
+        Events.CreaturePhysicalAttacked();
 
         Scripts("on_attacked").Should().Be(1);
         Notes().Should().NotContain(Attack);
@@ -210,7 +210,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
         UseProfiles(builder => builder.Create(AIProfileType.Generic).DecisionThrottle(0f).Script("never").Score(0));
         Bench.LastAttacker = _enemy.Id;
 
-        Service.CreaturePhysicalAttacked();
+        Events.CreaturePhysicalAttacked();
 
         Notes().Should().Contain(Attack);
     }
@@ -222,7 +222,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
         _enemy.Position = new System.Numerics.Vector3(80f, 0f, 0f);
         Bench.LastAttacker = _enemy.Id;
 
-        Service.CreaturePhysicalAttacked();
+        Events.CreaturePhysicalAttacked();
 
         Bench.Locals.Int(Npc.Id, "AI_LEASH_EVADE_ACTIVE").Should().Be(1);
         Scripts(ScriptedProfiles.DefaultScript).Should().Be(0);
@@ -233,12 +233,12 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         Bench.LastDamager = _enemy.Id;
         Npc.AILevel = AILevel.VeryLow;
-        Service.CreatureDamaged();
+        Events.CreatureDamaged();
         Notes().Should().BeEmpty();
 
         Npc.AILevel = AILevel.Medium;
         Bench.Engine.SetLocalBool(Npc.Id, "AI_LEASH_EVADE_ACTIVE", true);
-        Service.CreatureDamaged();
+        Events.CreatureDamaged();
         Notes().Should().BeEmpty();
     }
 
@@ -249,12 +249,12 @@ public class AIServiceHandlerTests : AIServiceTestBase
             .When(context => context.Trigger == AITriggerType.Damaged && context.EventTarget == _enemy.Id));
         Bench.LastDamager = _enemy.Id;
 
-        Service.CreatureDamaged();
+        Events.CreatureDamaged();
         Scripts("on_damaged").Should().Be(1);
         Notes().Should().NotContain(Attack);
 
         UseProfiles(builder => builder.Create(AIProfileType.Generic).DecisionThrottle(0f).Script("never").Score(0));
-        Service.CreatureDamaged();
+        Events.CreatureDamaged();
         Notes().Should().Contain(Attack);
     }
 
@@ -265,7 +265,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
         _enemy.Position = new System.Numerics.Vector3(80f, 0f, 0f);
         Bench.LastDamager = _enemy.Id;
 
-        Service.CreatureDamaged();
+        Events.CreatureDamaged();
 
         Bench.Locals.Int(Npc.Id, "AI_LEASH_EVADE_ACTIVE").Should().Be(1);
     }
@@ -279,7 +279,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
         _enemy.Position = new System.Numerics.Vector3(80f, 0f, 0f);
         Bench.LastAttacker = _enemy.Id;
 
-        Service.CreaturePhysicalAttacked();
+        Events.CreaturePhysicalAttacked();
 
         Bench.Locals.Int(Npc.Id, "AI_LEASH_EVADE_ACTIVE").Should().Be(0, "the target the creature is fighting is inside the leash");
     }
@@ -289,7 +289,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         Npc.AILevel = AILevel.VeryLow;
 
-        Service.CreatureDeath();
+        Events.CreatureDeath();
 
         Scripts(ScriptedProfiles.DefaultScript).Should().Be(0, "the death trigger clears the state and runs no action");
     }
@@ -299,12 +299,12 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         UseProfiles(builder => builder.Create(AIProfileType.Generic).DecisionThrottle(0f).Script("on_disturbed").Score(10)
             .When(context => context.Trigger == AITriggerType.Disturbed));
-        Service.CreatureDisturbed();
+        Events.CreatureDisturbed();
         Scripts("on_disturbed").Should().Be(1);
         Notes().Should().NotContain(Attack);
 
         UseProfiles(builder => builder.Create(AIProfileType.Generic).DecisionThrottle(0f).Script("never").Score(0));
-        Service.CreatureDisturbed();
+        Events.CreatureDisturbed();
         Notes().Should().Contain(Attack);
     }
 
@@ -313,7 +313,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         Npc.AILevel = AILevel.VeryLow;
 
-        Service.CreatureDisturbed();
+        Events.CreatureDisturbed();
 
         Notes().Should().BeEmpty();
     }
@@ -327,7 +327,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
         Bench.Engine.SetLocalInt(Npc.Id, "PARALYZE", 1);
         Bench.Engine.SetLocalInt(Npc.Id, "DAZE", 1);
 
-        Service.CreatureSpawn();
+        Events.CreatureSpawn();
 
         Bench.Locals.String(Npc.Id, "X2_SPECIAL_COMBAT_AI_SCRIPT").Should().Be("xxx");
         Notes().Should().Equal("LoadNPCStats()", $"ApplyCreatureMovementRate({Npc.Id})");
@@ -343,7 +343,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
     [Test]
     public void Spawning_a_plain_creature_applies_only_the_aggro_aura()
     {
-        Service.CreatureSpawn();
+        Events.CreatureSpawn();
 
         Bench.Engine.CallsTo("ApplyEffectToObject").Should().HaveCount(1);
     }
@@ -351,9 +351,9 @@ public class AIServiceHandlerTests : AIServiceTestBase
     [Test]
     public void The_rested_spell_cast_and_user_defined_events_do_nothing()
     {
-        Service.CreatureRested();
-        Service.CreatureSpellCastAt();
-        Service.CreatureUserDefined();
+        Events.CreatureRested();
+        Events.CreatureSpellCastAt();
+        Events.CreatureUserDefined();
 
         Bench.Engine.Calls.Should().BeEmpty();
     }
@@ -364,7 +364,7 @@ public class AIServiceHandlerTests : AIServiceTestBase
         var blocker = Bench.AddCreature("blocker", Area, 1f);
         Bench.BlockingDoor = blocker.Id;
 
-        Service.CreatureBlocked();
+        Events.CreatureBlocked();
 
         Notes().Should().Equal($"ResumeAttackAfterActionsCleared({Npc.Id})");
     }
@@ -374,15 +374,15 @@ public class AIServiceHandlerTests : AIServiceTestBase
     {
         var blocker = Bench.AddCreature("blocker", Area, 1f);
         Bench.BlockingDoor = Invalid;
-        Service.CreatureBlocked();
+        Events.CreatureBlocked();
 
         Bench.BlockingDoor = blocker.Id;
         Npc.AILevel = AILevel.VeryLow;
-        Service.CreatureBlocked();
+        Events.CreatureBlocked();
 
         Npc.AILevel = AILevel.Medium;
         Bench.Engine.SetLocalBool(Npc.Id, "AI_LEASH_EVADE_ACTIVE", true);
-        Service.CreatureBlocked();
+        Events.CreatureBlocked();
 
         Notes().Should().BeEmpty();
     }

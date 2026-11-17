@@ -41,7 +41,7 @@ public sealed class AIBench : IDisposable
         Engine = new TimelineNWScript();
         Locals = new LocalVariables(Engine);
         Creatures = new FakeCreaturePlugin();
-        Events = new FakeEventsPlugin();
+        EventsPlugin = new FakeEventsPlugin();
         Profiler = new FakeProfilerPlugin();
         Party = ScriptedProxy.Create<IPartyService>(out var party);
         PartyScript = party.On("GetAllPartyMembers", arguments => PartyMembers(Convert.ToUInt32(arguments[0])));
@@ -55,16 +55,23 @@ public sealed class AIBench : IDisposable
         InstallEngine();
         _scopes.Add(NWScriptRuntime.Override(Engine));
         _scopes.Add(CreaturePluginRuntime.Override(Creatures));
-        _scopes.Add(EventsPluginRuntime.Override(Events));
+        _scopes.Add(EventsPluginRuntime.Override(EventsPlugin));
         _scopes.Add(ProfilerPluginRuntime.Override(Profiler));
     }
 
     public TimelineNWScript Engine { get; }
     public LocalVariables Locals { get; }
     public FakeCreaturePlugin Creatures { get; }
-    public FakeEventsPlugin Events { get; }
+    public FakeEventsPlugin EventsPlugin { get; }
     public FakeProfilerPlugin Profiler { get; }
     public TestAIService Service { get; }
+
+    // One accessor per part of the AI split (Readmes/MaintainabilityRefactorCreaturesSplit.md). Each is the one instance until
+    // its part moves; the tests call the accessor of the part that owns the member.
+    public TestAIService Events => Service.Events;
+    public TestAIService Aggro => Service.Aggro;
+    public TestAIService Decision => Service.Decision;
+    public TestAIService Action => Service.Action;
 
     public IPartyService Party { get; }
     public ScriptedProxy PartyScript { get; }
@@ -221,7 +228,7 @@ public sealed class AIBench : IDisposable
     private static string Format(object? argument) => argument switch
     {
         null => "null",
-        Action => "action",
+        System.Action => "action",
         Location location => "location" + location.Handle,
         Enum value => value.ToString(),
         bool flag => flag ? "true" : "false",
@@ -367,7 +374,7 @@ public sealed class AIBench : IDisposable
                 : EffectTypeScript.Invalideffect;
         });
 
-        Events.SetReturnHandler("GetEventData", _ => EventObject.ToString());
+        EventsPlugin.SetReturnHandler("GetEventData", _ => EventObject.ToString());
         Creatures.SetReturnHandler("GetHitDistance", arguments => Sim(arguments[0])?.HitDistance ?? 0f);
     }
 

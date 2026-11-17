@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 windowTarget = npc;
                 ctx.Assert(GetIsDMPossessed(npc), "native GetIsDMPossessed recognizes the NPC");
                 await ctx.ExecuteInCreatureContextAsync(npc, () =>
-                    new CharacterChatCommand().BuildChatCommands()["customize"].DoAction(npc, OBJECT_INVALID, null));
+                    new CharacterAppearanceChatCommand().BuildChatCommands()["customize"].DoAction(npc, OBJECT_INVALID, null));
                 await ctx.WaitFrameAsync();
                 ctx.Assert(window.WindowToken > 0, "possessed NPC opens the real editor through /customize");
                 ctx.Assert(editor.IsSettingsVisible, "possessed NPC has the Settings tab");

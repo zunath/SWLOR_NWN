@@ -14,7 +14,7 @@ public class PlayerAppearanceTests
     [Test]
     public void AppearanceCommands_CoexistAndAllowStaffAuthorizedPlayers()
     {
-        var commands = new CharacterChatCommand().BuildChatCommands();
+        var commands = new CharacterAppearanceChatCommand().BuildChatCommands();
         foreach (var name in new[] { "disguise", "disguises", "headscale" })
             commands[name].Authorization.Should().Be(AuthorizationLevel.All, name);
     }

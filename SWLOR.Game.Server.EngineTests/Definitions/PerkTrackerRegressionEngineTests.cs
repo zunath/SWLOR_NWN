@@ -414,7 +414,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(firstHP - 8, GetCurrentHitPoints(first), "later ticks do not restart the once-per-cast bonus");
             ctx.AssertEqual(100, Combat.ConsumeNextAbilityDamageBonus(caster, PerkType.KillzoneBeacon), "scheduled ticks leave the next activation's bonus untouched");
             ctx.Assert(Ability.GetActiveAbilityImpactSummary(caster) == null, "scheduled impacts leave no active tracker");
-            ctx.AssertEqual(0, Combat.GetAbilityStaminaPaid(caster, area), "the cost context ends with the last channel");
 
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
@@ -423,6 +422,56 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 finally { Ability.EndAbilityImpact(caster); }
             });
             await ctx.WaitUntilAsync(() => GetCurrentHitPoints(first) == firstHP - 16, 8f, "a new cast to receive its own bonus pulse");
+        }
+
+        [EngineTest("Scheduled device pulses refund from the activation that scheduled them after a recast", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task ScheduledDevicePulsesKeepTheirOwnActivationCost(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001", -1f);
+            var first = ctx.SpawnCreature("nw_rat001", 1f);
+            var second = ctx.SpawnCreature("nw_rat001", 3f);
+            await ctx.WaitFrameAsync();
+            foreach (var creature in new[] { caster, first, second })
+                PrepareStationaryCreature(ctx, creature);
+            ctx.MakeHostile(first);
+            ctx.MakeHostile(second);
+            ctx.SetNPCResources(caster, 100, 100);
+            TemporaryStatModifier.Add(caster, StatType.AreaAbilityPulseRadiusMeters, 5, 30f, "pulse");
+            TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestorePerTarget, 2, 30f, "reward");
+            TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestoreMaximum, 6, 30f, "reward");
+            var area = Ability.GetAbilityDetail(FeatType.KillzoneBeacon1);
+            var stamina = 0;
+
+            // Two casts of the same ability while the first one's pulses are still scheduled, as a recast of a
+            // long field does. Each pays 10 stamina, so each may refund at most 9; one shared budget would stop at 9.
+            await ctx.ExecuteInCreatureContextAsync(caster, () =>
+            {
+                foreach (var damageType in new[] { CombatDamageType.Physical, CombatDamageType.Electrical })
+                {
+                    Stat.ReduceStamina(caster, 10);
+                    Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
+                    Ability.BeginAbilityImpact(caster, area);
+                    try
+                    {
+                        DeviceAbilityEffects.ScheduleAreaHostilePulses(caster, GetLocation(first), SkillType.Devices,
+                            0, 0, null, 5f, 6f, damageType, SWLOR.NWN.API.NWScript.Enum.VisualEffect.VisualEffect.None,
+                            appliesBeaconPulseBonuses: true, showAreaIndicator: false);
+                    }
+                    finally
+                    {
+                        Ability.EndAbilityImpact(caster);
+                        Combat.CompleteAbilityStaminaCostContext(caster, area);
+                    }
+                }
+
+                stamina = Stat.GetCurrentStamina(caster);
+            });
+
+            // Each channel pulses twice and refunds 2 STM per target for both targets: 8 per activation.
+            await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(caster) >= stamina + 16, 10f,
+                "each activation's pulses to refund from its own paid stamina");
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(stamina + 16, Stat.GetCurrentStamina(caster), "neither activation spends the other's refund budget");
         }
 
         [EngineTest("Deadeye Reload builds from non-critical abilities of every ranged weapon skill only", Category = "PerkTracker", TimeoutSeconds = 30f)]

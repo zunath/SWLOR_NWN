@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return count;
         }
 
-        [EngineTest("Outdoor weather stays consistent across Viscara maps and a new instance", Category = "Weather")]
+        [EngineTest("Outdoor weather stays consistent across Viscara maps", Category = "Weather")]
         public static async Task SharedOutdoorWeather(EngineTestContext ctx)
         {
             // Use a warm, wet, windy front so independently rolled storms would
@@ -97,9 +97,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         GetLocalInt(area, "VAR_WEATHER_WIND") != 0) continue;
                     areas.Add(area);
                 }
+                // Production copies areas only for interiors (property layouts and the shuttle), which never get
+                // weather, so an outdoor copy is not part of this check.
                 ctx.Assert(areas.Count >= 10, "Need several comparable outdoor maps to exercise shared storm selection.");
-                var instance = ctx.CreateInstancedArea(GetResRef(areas[0]));
-                areas.Add(instance);
 
                 int? storm = null;
                 foreach (var area in areas)
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     WeatherRuntime.SetWeather(area);
                     ctx.AssertEqual(storm.Value, GetLocalInt(area, "GS_AM_SKY_OVERRIDE"), "Repeated entry retains the shared storm");
                 }
-                ctx.SetResultDetail($"Verified equal heat, humidity, wind, native rain and storm sky flags across {areas.Count - 1} outdoor maps plus a fresh instance. Repeated requests retained the same storm.");
+                ctx.SetResultDetail($"Verified equal heat, humidity, wind, native rain and storm sky flags across {areas.Count} outdoor maps. Repeated requests retained the same storm.");
                 await ctx.WaitFrameAsync();
             }
             finally

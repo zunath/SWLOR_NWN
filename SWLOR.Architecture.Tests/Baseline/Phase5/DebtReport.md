@@ -8,7 +8,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,081 | 13,442 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 31 | 51,770 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 31 | 51,769 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 21 | 5,428 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 19 | 302 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 39 | 55 parameters | none |
@@ -58,7 +58,7 @@ Largest 15 of 1,081 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 31 types over 1,000 lines, 51,770 lines in all.
+- 31 types over 1,000 lines, 51,769 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
@@ -71,7 +71,7 @@ Largest 15 of 31 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 2,768 | SpaceService.cs |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase` | 2,332 | WeaponActiveAbilityDefinitionBase.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel` | 2,081 | ShipManagementViewModel.cs |
-| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,879 | AIService.cs |
+| `SWLOR.Game.Server.Domain.Creatures.AIService` | 1,878 | AIService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 1,707 | CombatHitEffectsService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatRecorderService` | 1,691 | CombatRecorderService.cs |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 1,689 | CombatAbilityImpactService.cs |

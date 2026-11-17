@@ -91,20 +91,6 @@
     "Call": "SendMessageToPC(GetControlledCreature(actor), message)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/AchievementService.cs",
-    "Line": 86,
-    "Member": "DisplayAchievementNotificationWindow",
-    "Delivery": "Retained",
-    "Call": "PostString(player, \"Achievement Unlocked\", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, GuiService.ColorWhite, GuiService.ColorYellow, _idReservation.StartId,GuiService.TextName)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/AchievementService.cs",
-    "Line": 87,
-    "Member": "DisplayAchievementNotificationWindow",
-    "Delivery": "Retained",
-    "Call": "PostString(player, \" \" + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, GuiService.ColorWhite, GuiService.ColorYellow, _idReservation.StartId + 1, GuiService.TextName)"
-  },
-  {
     "File": "SWLOR.Game.Server/Domain/Character/PerkService.cs",
     "Line": 1436,
     "Member": "RemovePerkLevelOnSkillDecay",
@@ -2028,6 +2014,20 @@
     "Member": "PutAwayHandItem",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Red($\"Free inventory space or make room in a carried bag before putting away {GetName(item)}.\"))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/UI/AchievementNotificationWindow.cs",
+    "Line": 35,
+    "Member": "Display",
+    "Delivery": "Retained",
+    "Call": "PostString(player, \"Achievement Unlocked\", centerWindowX + 2, WindowY+1, ScreenAnchor.TopRight, 10.0f, GuiService.ColorWhite, GuiService.ColorYellow, _idReservation.StartId,GuiService.TextName)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/UI/AchievementNotificationWindow.cs",
+    "Line": 36,
+    "Member": "Display",
+    "Delivery": "Retained",
+    "Call": "PostString(player, \" \" + name, centerWindowX + 4, WindowY+3, ScreenAnchor.TopRight, 10.0f, GuiService.ColorWhite, GuiService.ColorYellow, _idReservation.StartId + 1, GuiService.TextName)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/UI/GuiService.cs",

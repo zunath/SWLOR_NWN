@@ -64,6 +64,9 @@ namespace SWLOR.Game.Server.Domain.Social
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public void StartAudienceTick()
         {
+            // The watching is the music's listener for a replaced track. A reload rebuilds the music's list, so the boot
+            // handler that starts the tick (rerun on a reload) registers it again.
+            _music.RegisterMusicReplacedListener(_watching);
             _tickSchedule?.Dispose();
             _tickSchedule = ScheduleRepeating(
                 OnAudienceTick, TimeSpan.FromSeconds(PerformanceAudienceRules.TickSeconds));

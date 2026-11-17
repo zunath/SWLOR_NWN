@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// <see cref="PerformanceAudienceService"/>'s own, moved here unchanged. The watcher and performer states and the tick
     /// number are this instance's own, and so are the handlers that interrupt watching.
     /// </summary>
-    public class PerformanceWatchingService : IPerformanceWatchingService, IMusicReplacedListener
+    public class PerformanceWatchingService : IPerformanceWatchingService
     {
         private readonly IPerformanceWindowsService _windows;
         private readonly IMusicService _music;
@@ -210,17 +210,6 @@ namespace SWLOR.Game.Server.Domain.Social
             // After StopWatching, so the window closing is not taken for the watcher choosing to hide it.
             if (GetIsObjectValid(state.Creature))
                 _windows.CloseWatching(state.Creature);
-        }
-
-        /// <summary>
-        /// Gives the music this service as the listener of its replaced-music notice. A reload rebuilds the list through this
-        /// boot handler, which reruns with the other module load handlers.
-        /// </summary>
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleLoad)]
-        public void RegisterMusicReplacedListener()
-        {
-            _music.RegisterMusicReplacedListener(this);
         }
 
         /// <summary>

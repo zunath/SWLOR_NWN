@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.World;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Domain.Social;
 using SWLOR.Game.Server.Domain.Character;
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Domain.Social
     /// interrupts watching (a new area, leaving range, combat, death, a performance starting, a band losing a member). A
     /// part of the Performance audience; its handlers are on <see cref="PerformanceWatchingService"/>.
     /// </summary>
-    public interface IPerformanceWatchingService
+    public interface IPerformanceWatchingService : IMusicReplacedListener
     {
         /// <summary>
         /// Gives a leaving watcher back the Inspired time frozen while they watched. Disconnect-before runs ahead of

@@ -14,7 +14,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | 5. Deferred resolution | `DeferredResolution.txt` | 39 | 55 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 103 | 224 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 32 | 108 edges | none |
-| 8. Static entry points and static state | `StaticState.txt` | 137 | 259 members | each kept with an approved reason, or removed |
+| 8. Static entry points and static state | `StaticState.txt` | 135 | 254 members | each kept with an approved reason, or removed |
 | 9. References up the domain order | `UpwardEdges.txt` | 135 | 328 members | none: every reference follows the domain order |
 | 10. Sink work | `SinkWork.txt` | 15 | 2,096 lines | none: a sink only forwards |
 
@@ -213,12 +213,12 @@ Largest 15 of 32 (all in `DomainCycles.txt`):
 
 ## 8. Static entry points and static state
 
-- To classify: 137 types, 258 static fields, 1 static members that resolve from the container.
+- To classify: 135 types, 253 static fields, 1 static members that resolve from the container.
 - Logic (outside Feature/): 34 types, 65 fields; written after initialization (runtime state): 30 fields in 16 types.
-- Content (Feature/): 103 types, 193 fields; written after initialization (runtime state): 16 fields in 11 types. The other fields are tables built once but held in a mutable type (an array, List, Dictionary).
+- Content (Feature/): 101 types, 188 fields; written after initialization (runtime state): 16 fields in 11 types. The other fields are tables built once but held in a mutable type (an array, List, Dictionary).
 - Approved (owner decision 3, not listed): Log (2 fields), Clock (1 fields), Random (1 fields), FrameProfiler (20 fields).
 
-Largest 15 of 137 (all in `StaticState.txt`):
+Largest 15 of 135 (all in `StaticState.txt`):
 
 | Entry | Members | Detail |
 |---|---:|---|
@@ -235,8 +235,8 @@ Largest 15 of 137 (all in `StaticState.txt`):
 | `SWLOR.Game.Server.Core.ServerManager` | 5 | fields: Bootstrapper*, Executor*, MainLoop*, NativeInterop*, Scripts* |
 | `SWLOR.Game.Server.Feature.MigrationDefinition.DoubleWeaponRecalibration` | 5 | fields: CurrentTierDamage, DamageByResref, PreviousTierDamage, PreviousUpgradeDamage, UpgradableSaberstaffBaseTiers |
 | `SWLOR.Game.Server.Native.PairedRangedPresentation` | 5 | fields: Anchors*, CompanionMuzzleOffset, LastPoses*, LaunchCounts*, MainMuzzleOffset |
-| `SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.ArmorColorRegionCatalog` | 4 | fields: Channels, Entries, Targets, _byKey |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerformanceOptionsViewModel` | 4 | fields: AllRoutines, AllSets, TabToggles, Tabs |
+| `SWLOR.Game.Server.Native.SavedPlayerClassLayout` | 4 | fields: ClassLabel, ClassListLabel, IsPCLabel, LevelLabel |
 
 ## 9. References up the domain order
 

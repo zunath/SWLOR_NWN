@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
@@ -21,11 +22,61 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     /// </summary>
     public static class AppearanceEditorBindingIdentityEngineTests
     {
-        private const string Resource = "AppearanceEditor/BindingIdentity.txt";
-        private const string CapturePath = "/nwn/home/appearance-binding-identity.txt";
-
         [EngineTest("Appearance editor publishes the same bindings and values as before the split", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
-        public static async Task BindingTranscriptMatchesFixture(EngineTestContext ctx)
+        public static Task BindingTranscriptMatchesFixture(EngineTestContext ctx) =>
+            RunAsync(ctx, "AppearanceEditor/BindingIdentity.txt", "/nwn/home/appearance-binding-identity.txt", ColorSteps);
+
+        [EngineTest("Appearance editor publishes the same bindings across tab switches as before the split", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static Task TabSwitchTranscriptMatchesFixture(EngineTestContext ctx) =>
+            RunAsync(ctx, "AppearanceEditor/BindingIdentityTabs.txt", "/nwn/home/appearance-binding-identity-tabs.txt", TabSteps);
+
+        private static void TabSteps(AppearanceEditorViewModel editor, Action<string, Action> step)
+        {
+            step("select-slot", () => editor.OnClickMapSlot(AppearanceEditorSlot.Chest)());
+            step("select-equipment", () => editor.OnSelectEquipment()());
+            step("select-part", () => editor.OnClickMapSlot(AppearanceEditorSlot.Chest)());
+            step("main-hand", () => editor.SelectedItemTypeIndex = 3);
+            step("armor", () => editor.SelectedItemTypeIndex = 0);
+            step("select-settings", () => editor.OnSelectSettings()());
+            step("select-appearance", () => editor.OnSelectAppearance()());
+            step("select-equipment-again", () => editor.OnSelectEquipment()());
+        }
+
+        private static void ColorSteps(AppearanceEditorViewModel editor, Action<string, Action> Step)
+        {
+            Step("select-equipment", () => editor.OnSelectEquipment()());
+            Step("global-cloth1", () => editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Cloth1)());
+            Step("palette-35", () => editor.OnClickColorPalette(35)());
+            Step("chest-leather2", () => editor.OnClickColorTarget(AppearanceColorTarget.Chest, AppearanceArmorColor.Leather2)());
+            Step("palette-77", () => editor.OnClickColorPalette(77)());
+            Step("global-leather2", () => editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)());
+            Step("custom-rgb", () => AppearanceEditorEngineTests.ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(17, 83, 209)));
+            Step("custom-red-text", () =>
+            {
+                AppearanceEditorEngineTests.ApplyWatchedValue(editor, nameof(editor.CustomTintRed), "40");
+                AppearanceEditorEngineTests.InvokePrivate(editor, "CommitCustomTintComponents");
+            });
+            Step("part-custom-rgb", () =>
+            {
+                editor.OnClickColorTarget(AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                AppearanceEditorEngineTests.ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(200, 17, 91));
+            });
+            Step("global-preset-clears-custom", () =>
+            {
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorPalette(66)();
+            });
+            Step("robe-metal2", () => editor.OnClickColorTarget(AppearanceColorTarget.Robe, AppearanceArmorColor.Metal2)());
+            Step("palette-12", () => editor.OnClickColorPalette(12)());
+            Step("clear-color", () => editor.OnClickClearColor(AppearanceColorTarget.Robe, AppearanceArmorColor.Metal2)());
+            Step("revert-chest", () => AppearanceEditorEngineTests.InvokePrivate(editor, "ResetArmorColorToInheritance",
+                AppearanceColorTarget.Chest, AppearanceArmorColor.Leather2));
+            Step("copy-right", () => editor.OnClickCopyToRight()());
+            Step("select-appearance", () => editor.OnSelectAppearance()());
+        }
+
+        private static async Task RunAsync(EngineTestContext ctx, string Resource, string CapturePath,
+            Action<AppearanceEditorViewModel, Action<string, Action>> script)
         {
             var civilian = await AppearanceEditorEngineTests.SpawnCivilianAsync(ctx);
             var transcript = new StringBuilder();
@@ -67,35 +118,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     action();
                 }
 
-                Step("select-equipment", () => editor.OnSelectEquipment()());
-                Step("global-cloth1", () => editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Cloth1)());
-                Step("palette-35", () => editor.OnClickColorPalette(35)());
-                Step("chest-leather2", () => editor.OnClickColorTarget(AppearanceColorTarget.Chest, AppearanceArmorColor.Leather2)());
-                Step("palette-77", () => editor.OnClickColorPalette(77)());
-                Step("global-leather2", () => editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)());
-                Step("custom-rgb", () => AppearanceEditorEngineTests.ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(17, 83, 209)));
-                Step("custom-red-text", () =>
-                {
-                    AppearanceEditorEngineTests.ApplyWatchedValue(editor, nameof(editor.CustomTintRed), "40");
-                    AppearanceEditorEngineTests.InvokePrivate(editor, "CommitCustomTintComponents");
-                });
-                Step("part-custom-rgb", () =>
-                {
-                    editor.OnClickColorTarget(AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
-                    AppearanceEditorEngineTests.ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(200, 17, 91));
-                });
-                Step("global-preset-clears-custom", () =>
-                {
-                    editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)();
-                    editor.OnClickColorPalette(66)();
-                });
-                Step("robe-metal2", () => editor.OnClickColorTarget(AppearanceColorTarget.Robe, AppearanceArmorColor.Metal2)());
-                Step("palette-12", () => editor.OnClickColorPalette(12)());
-                Step("clear-color", () => editor.OnClickClearColor(AppearanceColorTarget.Robe, AppearanceArmorColor.Metal2)());
-                Step("revert-chest", () => AppearanceEditorEngineTests.InvokePrivate(editor, "ResetArmorColorToInheritance",
-                    AppearanceColorTarget.Chest, AppearanceArmorColor.Leather2));
-                Step("copy-right", () => editor.OnClickCopyToRight()());
-                Step("select-appearance", () => editor.OnSelectAppearance()());
+                script(editor, Step);
                 editor.PropertyChanged -= Record;
             });
 

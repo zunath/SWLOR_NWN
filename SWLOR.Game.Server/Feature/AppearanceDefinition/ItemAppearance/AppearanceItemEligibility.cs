@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -12,14 +13,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
     /// </summary>
     public static class AppearanceItemEligibility
     {
-        private static readonly AppearanceArmor[] EditedArmorParts =
-        {
+        private static readonly ImmutableArray<AppearanceArmor> EditedArmorParts = ImmutableArray.Create(
             AppearanceArmor.Neck, AppearanceArmor.Torso, AppearanceArmor.Belt, AppearanceArmor.Pelvis,
             AppearanceArmor.LeftShoulder, AppearanceArmor.LeftBicep, AppearanceArmor.LeftForearm, AppearanceArmor.LeftHand,
             AppearanceArmor.LeftThigh, AppearanceArmor.LeftShin, AppearanceArmor.LeftFoot,
             AppearanceArmor.RightShoulder, AppearanceArmor.RightBicep, AppearanceArmor.RightForearm, AppearanceArmor.RightHand,
-            AppearanceArmor.RightThigh, AppearanceArmor.RightShin, AppearanceArmor.RightFoot, AppearanceArmor.Robe,
-        };
+            AppearanceArmor.RightThigh, AppearanceArmor.RightShin, AppearanceArmor.RightFoot, AppearanceArmor.Robe
+        );
 
         private static bool AllowsArmorParts(uint target, uint item)
         {

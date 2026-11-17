@@ -1425,7 +1425,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             var regions = ArmorColorRegionCatalog.Entries;
-            ctx.AssertEqual(120, regions.Count, "All six dyes for Global and nineteen armor parts");
+            ctx.AssertEqual(120, regions.Length, "All six dyes for Global and nineteen armor parts");
             foreach (var swatch in regions)
             {
                 var rectangle = values.AfterLayout(ctx, swatch.RegionName, stage);

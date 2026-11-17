@@ -1,4 +1,6 @@
-using System.Collections.Generic;
+using System.Collections.Frozen;
+using System.Collections.Immutable;
+using System.Linq;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.UI.Component;
@@ -22,8 +24,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         private const int NeutralX = 247;
         private const int NeutralY = 55;
 
-        public static readonly IReadOnlyList<AppearanceColorTarget> Targets = new[]
-        {
+        public static readonly ImmutableArray<AppearanceColorTarget> Targets = ImmutableArray.Create(
             AppearanceColorTarget.Global,
             AppearanceColorTarget.LeftShoulder, AppearanceColorTarget.LeftBicep, AppearanceColorTarget.LeftForearm,
             AppearanceColorTarget.LeftHand, AppearanceColorTarget.LeftThigh, AppearanceColorTarget.LeftShin,
@@ -33,18 +34,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             AppearanceColorTarget.RightFoot,
             AppearanceColorTarget.Neck, AppearanceColorTarget.Chest, AppearanceColorTarget.Belt,
             AppearanceColorTarget.Pelvis, AppearanceColorTarget.Robe
-        };
+        );
 
-        public static readonly IReadOnlyList<AppearanceArmorColor> Channels = new[]
-        {
+        public static readonly ImmutableArray<AppearanceArmorColor> Channels = ImmutableArray.Create(
             AppearanceArmorColor.Leather1, AppearanceArmorColor.Leather2,
             AppearanceArmorColor.Cloth1, AppearanceArmorColor.Cloth2,
             AppearanceArmorColor.Metal1, AppearanceArmorColor.Metal2
-        };
+        );
 
-        public static readonly IReadOnlyList<ArmorColorRegion> Entries = Build();
+        public static readonly ImmutableArray<ArmorColorRegion> Entries = Build();
 
-        private static readonly Dictionary<(AppearanceColorTarget, AppearanceArmorColor), ArmorColorRegion> _byKey = Index();
+        private static readonly FrozenDictionary<(AppearanceColorTarget, AppearanceArmorColor), ArmorColorRegion> _byKey =
+            Entries.ToFrozenDictionary(entry => (entry.Target, entry.Channel));
 
         public static bool TryGet(AppearanceColorTarget target, AppearanceArmorColor channel, out ArmorColorRegion region) =>
             _byKey.TryGetValue((target, channel), out region);
@@ -76,21 +77,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         public static string GetSelectionName(string regionName) =>
             regionName[..^"Region".Length] + "Selected";
 
-        private static List<ArmorColorRegion> Build()
-        {
-            var entries = new List<ArmorColorRegion>(Targets.Count * Channels.Count);
-            foreach (var target in Targets)
-                foreach (var channel in Channels)
-                    entries.Add(new ArmorColorRegion(target, channel));
-            return entries;
-        }
-
-        private static Dictionary<(AppearanceColorTarget, AppearanceArmorColor), ArmorColorRegion> Index()
-        {
-            var index = new Dictionary<(AppearanceColorTarget, AppearanceArmorColor), ArmorColorRegion>();
-            foreach (var entry in Entries)
-                index[(entry.Target, entry.Channel)] = entry;
-            return index;
-        }
+        private static ImmutableArray<ArmorColorRegion> Build() =>
+            Targets.SelectMany(target => Channels.Select(channel => new ArmorColorRegion(target, channel))).ToImmutableArray();
     }
 }

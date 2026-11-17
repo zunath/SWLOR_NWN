@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.Preview
         /// <summary>Palette position shown to players: column letter A-P, row number 1-11 (e.g. H1).</summary>
         public static string PaletteCode(int colorId)
         {
-            if (colorId < 0 || colorId >= TintMap.TintMapMaterialRegistry.PaletteColorCount)
+            if (colorId < 0 || colorId >= Domain.Companions.TintMapMaterialRegistry.PaletteColorCount)
                 return string.Empty;
             return $"{(char)('A' + colorId % 16)}{colorId / 16 + 1}";
         }

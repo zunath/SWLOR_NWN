@@ -26,12 +26,10 @@ Domain/Administration -> Platform/Entity | 21
 # Administration -> Platform (1 edge)
 Domain/Administration -> Platform/Core | 10
 
-# Character -> Foundation (9 edges)
+# Character -> Foundation (7 edges)
 Domain/Character -> Domain/Foundation | 535
 Domain/Character -> Platform/Entity | 183
 Domain/Character -> Platform/Enumeration | 13
-Feature/AppearanceDefinition -> Domain/Foundation | 2
-Feature/AppearanceDefinition -> Platform/Entity | 4
 Feature/PerkDefinition -> Domain/Foundation | 49
 Feature/PerkDefinition -> Platform/Entity | 1
 Feature/StatusEffectDefinition -> Domain/Foundation | 125
@@ -332,8 +330,9 @@ Domain/Quests -> Platform/Core | 32
 Domain/Quests -> Platform/Extension | 1
 Feature/QuestDefinition -> Platform/Composition | 145
 
-# Social -> Foundation (6 edges)
+# Social -> Foundation (7 edges)
 Domain/Social -> Domain/Foundation | 69
+Domain/Social -> Feature/MigrationDefinition | 1
 Domain/Social -> Platform/Entity | 13
 Domain/Social -> Platform/Enumeration | 9
 Feature/ChatCommandDefinition -> Domain/Foundation | 41
@@ -361,9 +360,8 @@ Domain/Space -> Platform/Core | 39
 Feature/ShipModuleDefinition -> Platform/Composition | 21
 Feature/ShipModuleDefinition -> Platform/Core | 4
 
-# UI -> Foundation (7 edges)
+# UI -> Foundation (6 edges)
 Domain/UI -> Domain/Foundation | 25
-Domain/UI -> Feature/MigrationDefinition | 1
 Domain/UI -> Platform/Entity | 29
 Domain/UI -> Platform/Enumeration | 7
 Feature/GuiDefinition -> Domain/Foundation | 559

@@ -305,8 +305,7 @@ public class FirstAidCombatUpgradeTests
                     $"{Path.GetFileName(sourcePath.FullName)} should apply Medical Injector Rig to eligible ability healing");
         }
 
-        var statSource = File.ReadAllText(
-            (root / "SWLOR.Game.Server" / "Domain" / "Character" / "StatService.cs").FullName);
+        var statSource = StatSource.Read();
         statSource.Should().Contain("_companions.IsPlayerBeast(source)");
         statSource.Should().Contain("GetMaster(source)");
 

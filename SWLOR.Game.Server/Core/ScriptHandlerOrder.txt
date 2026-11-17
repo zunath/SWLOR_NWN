@@ -57,11 +57,11 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.World.WeatherService.LoadData
   action      SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration
   action      SWLOR.Game.Server.Feature.UnarmedMastery.Register
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.NeckModelRenderer.Load
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.PartSkinModelRenderer.Load
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.RobeModelRenderer.Load
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.ShoulderModelRenderer.Load
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapMaterialRegistry.Load
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadNeckCatalog
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadPartSkinCatalog
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadRobeCatalog
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadShoulderCatalog
+  action      SWLOR.Game.Server.Domain.Companions.TintMapCatalogService.LoadMaterials
 
 mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript, after every mod_cache_bef handler
   action      SWLOR.Game.Server.Domain.Abilities.AbilityCooldownVisualService.CacheData
@@ -137,7 +137,7 @@ actions
   action      SWLOR.Game.Server.Domain.Foundation.SnippetService.ConversationAction
 
 apartment_term
-  action      SWLOR.Game.Server.Domain.World.PropertyService.StartApartmentConversation
+  action      SWLOR.Game.Server.Domain.World.PropertyTerminalService.StartApartmentConversation
 
 app_shutdown
   action      SWLOR.Game.Server.Domain.Combat.CombatRecorderService.StopOnShutdown
@@ -148,7 +148,7 @@ appear
 
 appearance_edit
   action      SWLOR.Game.Server.Domain.Companions.DroidService.EditDroidAppearance
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEdit
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAppearanceEdit
 
 appears
   conditional SWLOR.Game.Server.Domain.Foundation.SnippetService.ConversationAppearsWhen
@@ -156,7 +156,7 @@ appears
 area_enter
   action      SWLOR.Game.Server.Domain.World.AreaService.EnterArea
   action      SWLOR.Game.Server.Domain.Foundation.ConversationService.EndOnAreaEnter
-  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.OpenBarsOnEnter
+  action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.OpenBarsOnEnter
   action      SWLOR.Game.Server.Domain.UI.GuiService.CloseAllWindows
   action      SWLOR.Game.Server.Domain.World.MusicService.ApplyPlayerMusic
   action      SWLOR.Game.Server.Domain.World.PropertyService.EnterPropertyInstance
@@ -176,7 +176,7 @@ area_enter
   action      SWLOR.Game.Server.Feature.PersistentLocation.LoadLocationOnEnter
   action      SWLOR.Game.Server.Feature.PersistentMapProgression.LoadMapProgression
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.LoadPlayerStatusWindow
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAreaEnter
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAreaEnter
 
 area_exit
   action      SWLOR.Game.Server.Domain.World.AreaService.ExitArea
@@ -304,7 +304,7 @@ cp_xp_distribute
   action      SWLOR.Game.Server.Domain.Abilities.MimicryService.CombatPointXPDistributed
 
 craft_on_used
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.UseCraftingDevice
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.UseCraftingDevice
 
 craft_success
   action      SWLOR.Game.Server.Feature.AchievementProgression.CompleteCraftSuccessfully
@@ -394,7 +394,7 @@ crea_spawn_aft
   action      SWLOR.Game.Server.Domain.Creatures.AIService.CreatureSpawn
   action      SWLOR.Game.Server.Feature.PistolAnimationRemap.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.TrapDefinition.SpawnLarvaeOnSlugDeath.MessageOnDeath
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnCreatureSpawn
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
 
@@ -510,7 +510,7 @@ droid_roundend
 
 droid_spawn
   action      SWLOR.Game.Server.Domain.Companions.DroidService.DroidOnSpawn
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnCreatureSpawn
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnCreatureSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
 
@@ -530,7 +530,7 @@ enmity_changed
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DebugEnmityViewModel.OnEnmityChanged
 
 enter_property
-  action      SWLOR.Game.Server.Domain.World.PropertyService.EnterBuilding
+  action      SWLOR.Game.Server.Domain.World.PropertyAccessService.EnterBuilding
 
 enter_world
   action      SWLOR.Game.Server.Feature.GameWorldEntry.EnterGameWorld
@@ -561,7 +561,7 @@ explore_trigger
   action      SWLOR.Game.Server.Feature.ExplorationTrigger.EnterExplorationTrigger
 
 feat_use_bef
-  action      SWLOR.Game.Server.Domain.World.PropertyService.PropertyMenu
+  action      SWLOR.Game.Server.Domain.World.PropertyTerminalService.PropertyMenu
   action      SWLOR.Game.Server.Domain.Space.SpaceService.HandleShipModuleFeats
   action      SWLOR.Game.Server.Feature.UsePerkFeat.UseFeat
 
@@ -626,7 +626,7 @@ item_eqpval_aft
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.AfterEquip
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.AfterEquip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEquipmentChanged
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAppearanceEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
 
@@ -650,8 +650,8 @@ item_uneqp_aft
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.AfterUnequip
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.AfterUnequip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceItemUnequipped
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnAppearanceEquipmentChanged
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAppearanceItemUnequipped
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnAppearanceEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnEquipmentChanged
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnEquipmentChanged
 
@@ -667,7 +667,7 @@ item_uneqp_bef
 
 item_use_bef
   action      SWLOR.Game.Server.Domain.Items.ItemService.UseItem
-  action      SWLOR.Game.Server.Domain.World.PropertyService.PlaceStructure
+  action      SWLOR.Game.Server.Domain.World.PropertyStructurePlacementService.PlaceStructure
   action      SWLOR.Game.Server.Feature.InstantItemUse.OnUseItem
 
 jukebox_used
@@ -688,7 +688,7 @@ mappin_rem_bef
 mod_acquire
   action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OnAcquireItem
   action      SWLOR.Game.Server.Domain.Companions.DroidService.OnAcquireItem
-  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnAcquire
+  action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnAcquire
   action      SWLOR.Game.Server.Domain.Items.ItemService.EnsureAcquiredItemActivation
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnAcquire
   action      SWLOR.Game.Server.Feature.StoreManagement.AcquireItem
@@ -741,7 +741,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Social.CommunicationService.ApplyShoutChannelName
   action      SWLOR.Game.Server.Domain.Combat.DeathService.InitializeRespawnPoint
   action      SWLOR.Game.Server.Domain.Character.DisguiseService.ApplyActiveDisguiseOnEnter
-  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnEnter
+  action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.LockBarsOnEnter
   action      SWLOR.Game.Server.Domain.UI.GuiService.CreatePlayerWindows
   action      SWLOR.Game.Server.Domain.World.HoloComService.OnModuleEnter
   action      SWLOR.Game.Server.Domain.Items.ItemService.EnsureInventoryItemActivations
@@ -762,7 +762,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter
   action      SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnEnter
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.RestoreCraftingStylesOnEnter
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.RestoreCraftingStylesOnEnter
   action      SWLOR.Game.Server.Domain.Creatures.CompanionControlService.RenameToggleAbilitiesCommand
   action      SWLOR.Game.Server.Feature.AchievementProgression.LogIn
   action      SWLOR.Game.Server.Feature.Auditing.AuditClientConnection
@@ -784,13 +784,13 @@ mod_enter
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnEnter
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariables
   action      SWLOR.Game.Server.Feature.StatusEffectDefinition.RestStatusEffect.RemoveRestOnLogin
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEnter
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEnter
   action      SWLOR.Game.Server.Feature.AbilityDefinition.AbilityClientTargeting.RefreshClientTargetingOnEnter
 
 mod_equip
-  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnEquip
+  action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnEquip
   action      SWLOR.Game.Server.Domain.UI.GuiService.RefreshOnEquip
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnEquip
   action      SWLOR.Game.Server.Domain.Combat.WeaponDelayService.ApplyWeaponDelayFallback
@@ -799,7 +799,7 @@ mod_equip
   action      SWLOR.Game.Server.Feature.LightsaberAudio.EquipLightsaber
   action      SWLOR.Game.Server.Feature.StandardItemConfigurations.AddOnHitProperty
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnEquip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEquip
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleEquip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleEquip
 
@@ -813,7 +813,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Companions.DroidService.OnPlayerExit
   action      SWLOR.Game.Server.Domain.Combat.EnmityService.PlayerExit
   action      SWLOR.Game.Server.Domain.Character.EspionageInfiltrationService.OnPlayerExit
-  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.LockBarsOnExit
+  action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsWindowService.LockBarsOnExit
   action      SWLOR.Game.Server.Domain.UI.GuiService.SavePlayerWindowGeometry
   action      SWLOR.Game.Server.Domain.World.HoloComService.OnModuleLeave
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnExit
@@ -887,23 +887,23 @@ mod_rest
 
 mod_unacquire
   action      SWLOR.Game.Server.Domain.Companions.DroidService.OnLostItem
-  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnacquire
+  action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnUnacquire
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnLostItem
   action      SWLOR.Game.Server.Feature.TwinPistolEquipmentValidation.OnUnacquire
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.OnLostItem
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnacquire
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleUnacquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnUnacquire
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnUnacquire
 
 mod_unequip
-  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnUnequip
+  action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnUnequip
   action      SWLOR.Game.Server.Domain.UI.GuiService.RefreshOnUnequip
   action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.OnUnequip
   action      SWLOR.Game.Server.Domain.Social.PerformanceService.EndOnInstrumentUnequipped
   action      SWLOR.Game.Server.Feature.KatarAnimationRemap.OnUnequip
   action      SWLOR.Game.Server.Feature.LightsaberAudio.UnequipLightsaber
   action      SWLOR.Game.Server.Feature.TwinPistolCombatLifecycle.OnUnequip
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnequip
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleUnequip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnModuleUnequip
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnModuleUnequip
 
@@ -932,10 +932,10 @@ open_bank
   action      SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.BankViewModel.ShowBank
 
 open_citizenship
-  action      SWLOR.Game.Server.Domain.World.PropertyService.OpenCitizenshipMenu
+  action      SWLOR.Game.Server.Domain.World.PropertyTerminalService.OpenCitizenshipMenu
 
 open_city_manage
-  action      SWLOR.Game.Server.Domain.World.PropertyService.OpenCityManagementMenu
+  action      SWLOR.Game.Server.Domain.World.PropertyTerminalService.OpenCityManagementMenu
 
 open_holonet
   action      SWLOR.Game.Server.Feature.HolonetTerminal.OpenHolonetUI
@@ -966,7 +966,7 @@ pc_fp_adjusted
   action      SWLOR.Game.Server.Feature.PlayerStatusWindow.PlayerFPAdjusted
 
 pc_heartbeat
-  action      SWLOR.Game.Server.Domain.UI.ExtraHotbarsService.RefreshOnHeartbeat
+  action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnHeartbeat
   action      SWLOR.Game.Server.Domain.Character.StatService.RefreshOutOfCombatMovementRate
   action      SWLOR.Game.Server.Domain.Combat.StealthService.EnsureStealthStatusWhileHidden
   action      SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.StopWatchingWhenOutOfRange
@@ -985,7 +985,7 @@ pc_shld_adjusted
 
 pc_spawn
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.OnSpawn
-  action      SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnPlayerSpawn
+  action      SWLOR.Game.Server.Domain.Companions.TintMapService.OnPlayerSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.HornFit.OnSpawn
   action      SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveFit.OnSpawn
 
@@ -1062,7 +1062,7 @@ quest_trigger
   action      SWLOR.Game.Server.Domain.Quests.QuestService.EnterQuestTrigger
 
 refinery_used
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.UseRefinery
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.UseRefinery
 
 res_heartbeat
   action      SWLOR.Game.Server.Feature.Resource.OnHeartbeat
@@ -1071,7 +1071,7 @@ res_used
   action      SWLOR.Game.Server.Feature.Resource.OnUsed
 
 research_term
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.UseResearchTerminal
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.UseResearchTerminal
 
 rest_started
   action      SWLOR.Game.Server.Feature.UsePerkFeat.ClearTemporaryQueuedVariablesOnRest
@@ -1160,7 +1160,7 @@ swlor_damage
 
 swlor_del_prop
   action      SWLOR.Game.Server.Domain.Companions.BeastMasteryService.OnRemoveProperty
-  action      SWLOR.Game.Server.Domain.Crafting.CraftService.OnRemoveProperty
+  action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.OnRemoveProperty
 
 swlor_gain_skill
   action      SWLOR.Game.Server.Feature.AchievementProgression.GainSkillPoint

@@ -332,10 +332,9 @@ Feature.Jukebox -> Domain/Administration | 1
 Feature.RoleplayXP -> Domain/Administration | 1
 Feature.ServerTasks -> Domain/Administration | 1
 
-# Gameplay -> Character (24 edges)
+# Gameplay -> Character (22 edges)
 Domain/Gameplay -> Domain/Character | 1
 Feature.AchievementProgression -> Domain/Character | 6
-Feature.ArmorDisplay -> Feature/AppearanceDefinition | 3
 Feature.Auditing -> Domain/Character | 3
 Feature.BuffTimer -> Domain/Character | 3
 Feature.CivilianPatrol -> Domain/Character | 1
@@ -349,7 +348,6 @@ Feature.PlayerInitialization -> Domain/Character | 5
 Feature.PlayerRest -> Domain/Character | 1
 Feature.PlayerRest -> Feature/StatusEffectDefinition | 1
 Feature.PlayerTemporaryEffects -> Domain/Character | 1
-Feature.PlayerTemporaryEffects -> Feature/AppearanceDefinition | 1
 Feature.RoleplayXP -> Domain/Character | 6
 Feature.ScavengePoint -> Domain/Character | 1
 Feature.TlkOverrides -> Domain/Character | 2
@@ -378,8 +376,10 @@ Feature.UnarmedMastery -> Domain/Combat | 1
 Feature.UnarmedTechniqueProfile -> Domain/Combat | 1
 Feature.UsePerkFeat -> Domain/Combat | 20
 
-# Gameplay -> Companions (2 edges)
+# Gameplay -> Companions (4 edges)
+Feature.ArmorDisplay -> Domain/Companions | 3
 Feature.EquipmentRestrictions -> Domain/Companions | 1
+Feature.PlayerTemporaryEffects -> Domain/Companions | 1
 Feature.TwinPistolEquipmentValidation -> Domain/Companions | 2
 
 # Gameplay -> Crafting (5 edges)
@@ -580,13 +580,15 @@ Feature/ChatCommandDefinition -> Domain/Crafting | 4
 # Social -> Creatures (1 edge)
 Feature/ChatCommandDefinition -> Domain/Creatures | 1
 
-# Social -> Gameplay (4 edges)
+# Social -> Gameplay (5 edges)
+Domain/Social -> Feature.UsePerkFeat | 1
 Feature/ChatCommandDefinition -> Domain/Gameplay | 1
 Feature/ChatCommandDefinition -> Feature.ArmorDisplay | 1
 Feature/ChatCommandDefinition -> Feature.PlayerTemporaryEffects | 1
 Feature/ChatCommandDefinition -> Feature.ServerTasks | 1
 
-# Social -> Items (1 edge)
+# Social -> Items (2 edges)
+Domain/Social -> Domain/Items | 4
 Feature/ChatCommandDefinition -> Domain/Items | 1
 
 # Social -> Quests (1 edge)
@@ -609,14 +611,16 @@ Feature/ChatCommandDefinition -> Domain/World | 3
 # Space -> Abilities (1 edge)
 Domain/Space -> Domain/Abilities | 5
 
-# Space -> Character (3 edges)
+# Space -> Character (2 edges)
 Domain/Space -> Domain/Character | 18
-Domain/Space -> Feature/AppearanceDefinition | 1
 Feature/ShipModuleDefinition -> Domain/Character | 8
 
 # Space -> Combat (2 edges)
 Domain/Space -> Domain/Combat | 8
 Feature/ShipModuleDefinition -> Domain/Combat | 16
+
+# Space -> Companions (1 edge)
+Domain/Space -> Domain/Companions | 3
 
 # Space -> Creatures (1 edge)
 Domain/Space -> Domain/Creatures | 6
@@ -630,8 +634,7 @@ Domain/Space -> Domain/UI | 4
 # Space -> World (1 edge)
 Domain/Space -> Domain/World | 14
 
-# UI -> Abilities (3 edges)
-Domain/UI -> Domain/Abilities | 11
+# UI -> Abilities (2 edges)
 Feature/GuiDefinition -> Domain/Abilities | 28
 Feature/GuiDefinition -> Feature/AbilityDefinition | 4
 
@@ -639,20 +642,17 @@ Feature/GuiDefinition -> Feature/AbilityDefinition | 4
 Domain/UI -> Domain/Administration | 5
 Feature/GuiDefinition -> Domain/Administration | 113
 
-# UI -> Character (3 edges)
-Domain/UI -> Domain/Character | 8
+# UI -> Character (2 edges)
 Feature/GuiDefinition -> Domain/Character | 162
 Feature/GuiDefinition -> Feature/AppearanceDefinition | 89
 
-# UI -> Combat (2 edges)
-Domain/UI -> Domain/Combat | 6
+# UI -> Combat (1 edge)
 Feature/GuiDefinition -> Domain/Combat | 58
 
 # UI -> Companions (1 edge)
 Feature/GuiDefinition -> Domain/Companions | 57
 
-# UI -> Crafting (2 edges)
-Domain/UI -> Domain/Crafting | 3
+# UI -> Crafting (1 edge)
 Feature/GuiDefinition -> Domain/Crafting | 210
 
 # UI -> Creatures (1 edge)
@@ -661,23 +661,20 @@ Feature/GuiDefinition -> Domain/Creatures | 1
 # UI -> Economy (1 edge)
 Feature/GuiDefinition -> Domain/Economy | 35
 
-# UI -> Gameplay (6 edges)
-Domain/UI -> Feature.UsePerkFeat | 1
+# UI -> Gameplay (5 edges)
 Feature/GuiDefinition -> Feature.ArmorDisplay | 5
 Feature/GuiDefinition -> Feature.EquipmentRestrictions | 1
 Feature/GuiDefinition -> Feature.PlayerInitialization | 1
 Feature/GuiDefinition -> Feature.PlayerStatusWindow | 1
 Feature/GuiDefinition -> Feature.PowerGlovePairLifecycle | 1
 
-# UI -> Items (2 edges)
-Domain/UI -> Domain/Items | 4
+# UI -> Items (1 edge)
 Feature/GuiDefinition -> Domain/Items | 67
 
 # UI -> Quests (1 edge)
 Feature/GuiDefinition -> Domain/Quests | 33
 
-# UI -> Social (2 edges)
-Domain/UI -> Domain/Social | 3
+# UI -> Social (1 edge)
 Feature/GuiDefinition -> Domain/Social | 111
 
 # UI -> Space (1 edge)

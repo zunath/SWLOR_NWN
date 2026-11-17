@@ -57,7 +57,7 @@ SWLOR.Game.Server/Domain/Combat/ResistanceService.cs: Combat -> Abilities | 3
 SWLOR.Game.Server/Domain/Combat/StealthService.cs: Combat -> Creatures | 4
 SWLOR.Game.Server/Domain/Combat/TelegraphService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/TwinPistolMasteryService.cs: Combat -> Quests | 3
-SWLOR.Game.Server/Domain/Crafting/CraftService.cs: Crafting -> World | 3
+SWLOR.Game.Server/Domain/Crafting/CraftDeviceService.cs: Crafting -> World | 3
 SWLOR.Game.Server/Domain/Creatures/AIService.cs: Creatures -> Social | 3
 SWLOR.Game.Server/Domain/Foundation/CacheService.cs: Foundation -> Items | 3
 SWLOR.Game.Server/Domain/Foundation/ConversationService.cs: Foundation -> Character | 3
@@ -75,11 +75,6 @@ SWLOR.Game.Server/Domain/Items/LightsaberWorkbenchService.cs: Items -> Economy |
 SWLOR.Game.Server/Domain/Items/LootService.cs: Items -> Companions | 5
 SWLOR.Game.Server/Domain/Quests/GuildTaskXpReward.cs: Quests -> Economy | 2
 SWLOR.Game.Server/Domain/Quests/QuestRewards.cs: Quests -> Economy | 2
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Abilities | 7
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Combat | 6
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Crafting | 3
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Items | 4
-SWLOR.Game.Server/Domain/UI/ExtraHotbarsService.cs: UI -> Social | 3
 SWLOR.Game.Server/Domain/UI/GuiService.cs: UI -> Administration | 5
 SWLOR.Game.Server/Domain/World/HoloComService.cs: World -> Social | 6
 SWLOR.Game.Server/Domain/World/HoloComService.cs: World -> Space | 5
@@ -109,11 +104,10 @@ SWLOR.Game.Server/Feature/MigrationDefinition/CharacterMigration/_1_LegacyPlayer
 SWLOR.Game.Server/Feature/MigrationDefinition/FurnitureRenameMigration.cs: Foundation content -> UI content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/ItemAppearanceCatalogMigration.cs: Foundation content -> Character content | 2
 SWLOR.Game.Server/Feature/MigrationDefinition/LootStatRevisionMigration.cs: Foundation content -> Gameplay content | 1
-SWLOR.Game.Server/Feature/MigrationDefinition/PelvisAppearanceMigration.cs: Foundation content -> Character content | 10
+SWLOR.Game.Server/Feature/MigrationDefinition/PelvisAppearanceMigration.cs: Foundation content -> Character content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/PistolBaseItemMigration.cs: Foundation content -> Gameplay content | 3
 SWLOR.Game.Server/Feature/MigrationDefinition/SerializedItemWeaponDamageTypeMigration.cs: Foundation content -> Gameplay content | 1
 SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.FurnitureRenames.cs: Foundation content -> UI content | 1
-SWLOR.Game.Server/Feature/MigrationDefinition/StoredObjectData.Pelvis.cs: Foundation content -> Character content | 1
 SWLOR.Game.Server/Feature/NaturalRegeneration.cs: Gameplay content -> Abilities content | 1
 SWLOR.Game.Server/Feature/PerkDefinition/DevicesGrenadierPerkDefinition.cs: Character content -> Abilities content | 1
 SWLOR.Game.Server/Feature/PerkDefinition/LeadershipVanguardCommandPerkDefinition.cs: Character content -> Abilities content | 1

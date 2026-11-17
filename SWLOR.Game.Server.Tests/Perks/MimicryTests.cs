@@ -620,7 +620,7 @@ public class MimicryTests
     public void MimicryTraitBonuses_AreWiredIntoTheStatAndResistancePipelines()
     {
         var root = FindRepositoryRoot();
-        var statSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatService.cs"));
+        var statSource = StatSource.Read();
         var resistanceSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResistanceService.cs"));
         var mimicrySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Abilities", "MimicryService.cs"));
 

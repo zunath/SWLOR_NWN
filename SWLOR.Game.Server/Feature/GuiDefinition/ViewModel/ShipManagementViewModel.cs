@@ -672,7 +672,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// Duplicate records resolve like Property.HasPropertyPermission. A missing record grants no access.
+        /// Duplicate records resolve like PropertyAccess.HasPropertyPermission. A missing record grants no access.
         /// </summary>
         private WorldPropertyPermission GetShipPermission(string propertyId)
         {
@@ -684,7 +684,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private bool CanBoardShip(string propertyId)
         {
-            return Property.HasPropertyPermission(Player, propertyId, PropertyPermissionType.EnterProperty);
+            return PropertyAccess.HasPropertyPermission(Player, propertyId, PropertyPermissionType.EnterProperty);
         }
 
         private int CalculateRepairBill(PlayerShip ship)

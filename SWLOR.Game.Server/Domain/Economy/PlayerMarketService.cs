@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Domain.Economy
         private readonly IFishingService _fishing;
         private readonly IItemService _item;
         private readonly IMusicService _music;
-        private readonly IPropertyService _property;
+        private readonly IPropertyStructurePlacementService _property;
         private Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new Dictionary<MarketCategoryType, MarketCategoryAttribute>();
         private readonly Dictionary<MarketRegionType, MarketRegionAttribute> _activeMarketRegions = new Dictionary<MarketRegionType, MarketRegionAttribute>();
 
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Domain.Economy
             IFishingService fishing,
             IItemService item,
             IMusicService music,
-            IPropertyService property,
+            IPropertyStructurePlacementService property,
             ISpaceService space)
         {
             _db = db;

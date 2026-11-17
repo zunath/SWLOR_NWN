@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private string DescribeZone()
         {
             return _zone.Id == PlayerTimeZones.UtcId
-                ? "Times are UTC; set your time zone in Settings."
+                ? "Times in UTC; change in Settings."
                 : $"Times are {PlayerTimeZones.GetAbbreviation(DateTime.UtcNow, _zone)}.";
         }
 

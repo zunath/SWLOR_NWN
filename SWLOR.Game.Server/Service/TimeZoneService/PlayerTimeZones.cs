@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Service.TimeZoneService
         /// </summary>
         public static PlayerTimeZone ForPlayer(uint player)
         {
-            // DM avatars have no Player record; their choice follows their CD key in DM Settings.
-            if (GetIsDM(DMPresence.GetDM(player)))
+            // DM avatars and possessed creatures have no Player record; a DM's choice follows their CD key.
+            if (DMPresence.IsControlledByDM(player))
                 return Get(DMPreference.Get(player).TimeZoneId);
 
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));

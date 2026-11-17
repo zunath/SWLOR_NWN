@@ -57,14 +57,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Settings apply to whatever the DM controls, so resolve it from the avatar on every change.
             _dm = DMPresence.GetDM(Player);
             Geometry = DMToolbarViewModel.PlaceBelowToolbar(Player, Geometry);
+            ChangePartialView(MainContentElement, MainContentPartial);
             LoadSettings();
 
+            // Every change saves at once, and a control that missed its value reports its default (layout rule R7),
+            // which would overwrite the saved choice. Send the values again and watch from the next tick.
+            var windowToken = WindowToken;
+            DelayCommand(0f, () => Listen(windowToken));
+        }
+
+        private void Listen(int windowToken)
+        {
+            if (WindowToken != windowToken || !Gui.IsWindowOpen(Player, WindowType))
+                return;
+
+            // Watching sends each value again, now that its control exists.
+            LoadSettings();
             WatchOnClient(model => model.EmoteStyleIndex);
             WatchOnClient(model => model.CommsFilterIndex);
             WatchOnClient(model => model.ShowHelmet);
             WatchOnClient(model => model.ShowCloak);
             WatchOnClient(model => model.TimeZoneIndex);
-            ChangePartialView(MainContentElement, MainContentPartial);
         }
 
         private void LoadSettings()

@@ -74,7 +74,8 @@ public class StatFacadeAllocationTests
 
     // The pins are grouped by the part of the stat split that each member goes to (Readmes/MaintainabilityRefactorStatSplit.md)
     // and still read through Stat: the pull request that moves a part points its group at the part's GameServices property and
-    // registers the part's allocation double (part 5, CombatRating, since P5-4c).
+    // registers the part's allocation double (part 5, CombatRating, since P5-4c). Part 7's healing reads go through
+    // CombatResources since P5-4d; the real resources service reads the stat through the allocation double, so it needs none.
 
     /// <summary>
     /// Part 1, <c>StatService</c> (stays): the stat adjustment read, the metadata, the equipment action read, the pools, the NPC
@@ -161,15 +162,15 @@ public class StatFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
-    /// <summary>Part 7, the healing adjustments that join <c>CombatResourcesService</c> (Combat).</summary>
+    /// <summary>Part 7, the healing adjustments that joined <c>CombatResourcesService</c> (Combat, P5-4d).</summary>
     [Test]
     public void TheHealingAdjustmentsAllocateNothing()
     {
         var sink = 0;
 
-        Allocated(() => sink += Stat.CalculateOutgoingAbilityHealingAmount(10, 20)).Should().Be(0);
-        Allocated(() => sink += Stat.CalculateEffectiveHealingAmount(10, 20, 30)).Should().Be(0);
-        Allocated(() => sink += Stat.ApplyOutgoingAbilityHealingAdjustment(Creature, 10)).Should().Be(0);
+        Allocated(() => sink += CombatResources.CalculateOutgoingAbilityHealingAmount(10, 20)).Should().Be(0);
+        Allocated(() => sink += CombatResources.CalculateEffectiveHealingAmount(10, 20, 30)).Should().Be(0);
+        Allocated(() => sink += CombatResources.ApplyOutgoingAbilityHealingAdjustment(Creature, 10)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
@@ -257,14 +258,13 @@ public class StatFacadeAllocationTests
             IPlayerFeedbackService playerFeedback,
             IStatusEffectService statusEffect,
             IMimicryTraitStatsService mimicryTraitStats,
-            IRecastService recast,
             ICompanionLookup beastMastery,
-            IPvpCombatService pvpCombat,
             IPerkService perk,
             ISkillService skill,
-            ITemporaryStatModifierService temporaryStatModifier)
-            : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, recast, beastMastery, pvpCombat,
-                perk, skill, temporaryStatModifier, FacadeForwarder.LazyFor<ICombatAttackTimingService>(), FacadeForwarder.LazyFor<ICombatDamageTakenService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
+            ITemporaryStatModifierService temporaryStatModifier,
+            IResourceRestoredListener resourceRestored)
+            : base(db, combatRecorder, playerFeedback, statusEffect, mimicryTraitStats, beastMastery, perk, skill, temporaryStatModifier,
+                resourceRestored)
         {
         }
 

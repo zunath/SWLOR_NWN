@@ -6,7 +6,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// FP, stamina and healing bookkeeping for combat: stat trigger cooldowns, damage-derived healing and its budgets, the
-    /// stamina a hostile ability paid and what its hits may refund, and the riders that restored FP or stamina grant.
+    /// stamina a hostile ability paid and what its hits may refund, and the healing adjustments and what a received heal
+    /// sets off (part 7 of the stat split, P5-4d; until then members of <c>IStatService</c>). The riders that restored FP or
+    /// stamina grant are <c>IResourceRestoredEffectsService</c>'s (part 8).
     /// </summary>
     public interface ICombatResourcesService
     {
@@ -28,6 +30,18 @@ namespace SWLOR.Game.Server.Domain.Combat
         bool DidCrossHPThreshold(uint creature, int damage, int thresholdPercent);
 
         void HealFromMaxHP(uint creature, int percent);
+
+        int ApplyOutgoingAbilityHealingAdjustment(uint source, int amount);
+
+        int CalculateOutgoingAbilityHealingAmount(int amount, int adjustment);
+
+        /// <param name="isInstantAbilityHeal">True for a heal an ability lands when it resolves. Only these can restore Stamina through the healing-received trigger.</param>
+        int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true, bool isInstantAbilityHeal = false);
+
+        int CalculateEffectiveHealingAmount(int amount, int currentHP, int maxHP);
+
+        /// <param name="isInstantAbilityHeal">Heals over time, lifesteal, drains and regeneration pass false and never restore Stamina.</param>
+        void ApplyHealingReceivedEffects(uint creature, int amount, bool isInstantAbilityHeal = false);
 
         bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds);
 
@@ -83,10 +97,6 @@ namespace SWLOR.Game.Server.Domain.Combat
         int ConsumeNextAbilityFPCostAdjustment(uint creature, SkillType skillType);
 
         void ApplyAbilityRestoredFPEffects(uint activator);
-
-        void ApplyFPRestoredEffects(uint creature);
-
-        void ApplyStaminaRestoredEffects(uint creature);
 
         void ApplyAbilityRestoredBothResourcesEffects(uint activator);
 

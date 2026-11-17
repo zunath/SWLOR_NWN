@@ -13,8 +13,10 @@ namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>
     /// The FP, stamina and healing bookkeeping of <c>Combat</c>: stat trigger cooldowns, damage-derived healing and its
-    /// budgets, the stamina each hostile ability paid and what its hits may refund, and the riders that restored FP or
-    /// stamina grant. The five tables are this instance's own fields.
+    /// budgets, the stamina each hostile ability paid and what its hits may refund, and the healing adjustments and what a
+    /// received heal sets off (part 7 of the stat split, P5-4d: moved from <c>StatService</c> unchanged except that the stat
+    /// read and the pools are <see cref="IStatService"/> calls). The five tables are this instance's own fields. The riders
+    /// that restored FP or stamina grant are <c>ResourceRestoredEffectsService</c>'s (part 8).
     /// </summary>
     public class CombatResourcesService : ICombatResourcesService
     {
@@ -37,6 +39,8 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatusEffectService _statusEffect;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
+        private readonly IPvpCombatService _pvpCombat;
+        private readonly ICompanionLookup _companions;
 
         public CombatResourcesService(
             ICombatQueriesService queries,
@@ -44,7 +48,9 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             IStatusEffectService statusEffect,
             ICombatRecorderService combatRecorder,
-            ITemporaryStatModifierService temporaryStatModifier)
+            ITemporaryStatModifierService temporaryStatModifier,
+            IPvpCombatService pvpCombat,
+            ICompanionLookup companions)
         {
             _queries = queries;
             _impactState = impactState;
@@ -52,6 +58,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect = statusEffect;
             _combatRecorder = combatRecorder;
             _temporaryStatModifier = temporaryStatModifier;
+            _pvpCombat = pvpCombat;
+            _companions = companions;
         }
 
         public IDisposable BeginDamageDerivedHealing(uint creature, uint target)
@@ -103,9 +111,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             var maximumHP = GetMaxHitPoints(creature);
             var amount = GameMath.PercentOf(damage, percent);
-            amount = _stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
+            amount = ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
             amount = CalculateCappedDamageDerivedHealingAmount(damage, state.HealingApplied, amount);
-            amount = _stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
+            amount = CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
 
             if (isActivatedHealing)
             {
@@ -137,7 +145,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return 0;
 
             state.HealingApplied += amount;
-            _stat.ApplyHealingReceivedEffects(creature, amount);
+            ApplyHealingReceivedEffects(creature, amount);
             using var recorderAttribution = _combatRecorder.BeginRiderAttribution(creature, CombatRecordSourceKind.Lifesteal);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
             return amount;
@@ -212,14 +220,14 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             var maximumHP = GetMaxHitPoints(creature);
             var amount = GameMath.PercentOf(maximumHP, percent);
-            amount = _stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
-            amount = _stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
+            amount = ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
+            amount = CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maximumHP);
             amount = TakeCombatHealingBudget(_defeatedEnemyHealingBudgets, creature, maximumHP,
                 MaximumDefeatedEnemyHealingMaxHPPercentPerWindow, amount);
             if (amount <= 0)
                 return;
 
-            _stat.ApplyHealingReceivedEffects(creature, amount);
+            ApplyHealingReceivedEffects(creature, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
         }
 
@@ -238,7 +246,113 @@ namespace SWLOR.Game.Server.Domain.Combat
             return budget.Take(CalculateMaxHPHealingBudget(maximumHP, percent), requested, Clock.UtcNow);
         }
 
-        public bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds)
+        public int ApplyOutgoingAbilityHealingAdjustment(uint source, int amount)
+        {
+            if (amount <= 0 || !GetIsObjectValid(source))
+                return amount;
+
+            var statSource = _companions.IsPlayerBeast(source)
+                ? GetMaster(source)
+                : source;
+            var adjustment = _stat.GetStatAdjustment(
+                statSource,
+                StatType.OutgoingAbilityHealingPercentAdjustment);
+
+            return CalculateOutgoingAbilityHealingAmount(amount, adjustment);
+        }
+
+        public int CalculateOutgoingAbilityHealingAmount(int amount, int adjustment)
+        {
+            if (amount <= 0 || adjustment <= 0)
+                return amount;
+
+            return amount + (int)Math.Ceiling(amount * (adjustment / 100f));
+        }
+
+        /// <param name="isInstantAbilityHeal">True for a heal an ability lands when it resolves. Only these can restore Stamina through the healing-received trigger.</param>
+        public int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true, bool isInstantAbilityHeal = false)
+        {
+            if (amount <= 0)
+                return amount;
+
+            var adjustment = _stat.GetStatAdjustment(creature, StatType.HealingReceivedPercentAdjustment);
+            var adjustedAmount = Math.Max(1, StatRules.ApplyPercentAdjustment(amount, adjustment));
+
+            if (applyReceivedEffects)
+                ApplyHealingReceivedEffects(creature, adjustedAmount, isInstantAbilityHeal);
+
+            return adjustedAmount;
+        }
+
+        public int CalculateEffectiveHealingAmount(int amount, int currentHP, int maxHP)
+        {
+            return currentHP <= 0 ? 0 : Math.Clamp(amount, 0, Math.Max(0, maxHP - currentHP));
+        }
+
+        /// <param name="isInstantAbilityHeal">Heals over time, lifesteal, drains and regeneration pass false and never restore Stamina.</param>
+        public void ApplyHealingReceivedEffects(uint creature, int amount, bool isInstantAbilityHeal = false)
+        {
+            // The PvP healing ramp cuts the heal when it lands, so these react to what is left of it.
+            amount = PvpCombatRules.ReduceHealing(amount, _pvpCombat.GetHealingReductionPercent(creature));
+            if (CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
+                return;
+            // The heal these react to is applied right after them.
+            using var recorderReaction = _combatRecorder.BeginHealingReaction(creature);
+            if (isInstantAbilityHeal)
+                ApplyHealingReceivedStaminaRestore(creature);
+            ApplyHealingReceivedAttackBoost(creature);
+        }
+
+        private void ApplyHealingReceivedStaminaRestore(uint creature)
+        {
+            var chance = _stat.GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChance);
+            var stamina = _stat.GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestore);
+            if (chance <= 0 || stamina <= 0)
+                return;
+
+            var maximumChance = _stat.GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChanceMaximum);
+            var scalingAbility = GetAbilityTypeFromStatValue(_stat.GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChanceScalingAbility));
+            if (maximumChance > chance && scalingAbility != AbilityType.Invalid)
+            {
+                chance = Math.Min(maximumChance, chance + Math.Max(0, GetAbilityScore(creature, scalingAbility)));
+            }
+
+            if (Domain.Foundation.Random.D100(1) > chance)
+                return;
+
+            var cooldownSeconds = _stat.GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreCooldownSeconds);
+            if (!TryUseStatTrigger(creature, StatType.HealingReceivedStaminaRestore, cooldownSeconds))
+                return;
+
+            using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(creature, StatType.HealingReceivedStaminaRestore);
+            _stat.RestoreStamina(creature, stamina);
+        }
+
+        private void ApplyHealingReceivedAttackBoost(uint creature)
+        {
+            var attackPercent = _stat.GetStatAdjustment(creature, StatType.HealingReceivedAttackPercentAdjustment);
+            var duration = _stat.GetStatAdjustment(creature, StatType.HealingReceivedAttackDurationSeconds);
+            if (attackPercent == 0 || duration <= 0)
+                return;
+
+            ReplaceTemporaryStatModifier(
+                creature,
+                StatType.AttackPercentAdjustment,
+                attackPercent,
+                duration,
+                StatType.HealingReceivedAttackPercentAdjustment);
+        }
+
+        private AbilityType GetAbilityTypeFromStatValue(int value)
+        {
+            var abilityValue = value - 1;
+            return Enum.IsDefined(typeof(AbilityType), abilityValue)
+                ? (AbilityType)abilityValue
+                : AbilityType.Invalid;
+        }
+
+        // Virtual so the healing tests' double answers the gate, as the stat service's seam did before the healing moved here.
+        public virtual bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds)
         {
             return TryUseStatTrigger(creature, statType, TimeSpan.FromSeconds(cooldownSeconds));
         }
@@ -550,34 +664,6 @@ namespace SWLOR.Game.Server.Domain.Combat
                 duration);
         }
 
-        public void ApplyFPRestoredEffects(uint creature)
-        {
-            var forceAttack = _stat.GetStatAdjustment(creature, StatType.RestoredFPForceAttackPercentAdjustment);
-            var duration = _stat.GetStatAdjustment(creature, StatType.RestoredFPForceAttackDurationSeconds);
-            if (forceAttack == 0 || duration <= 0)
-                return;
-
-            _statusEffect.ApplyStatusEffect(
-                creature,
-                creature,
-                new ForceLensForceAttackStatusEffect(forceAttack),
-                duration);
-        }
-
-        public void ApplyStaminaRestoredEffects(uint creature)
-        {
-            var attack = _stat.GetStatAdjustment(creature, StatType.RestoredStaminaAttackPercentAdjustment);
-            var duration = _stat.GetStatAdjustment(creature, StatType.RestoredStaminaAttackDurationSeconds);
-            if (attack == 0 || duration <= 0)
-                return;
-
-            _statusEffect.ApplyStatusEffect(
-                creature,
-                creature,
-                new ForceLensAttackStatusEffect(attack),
-                duration);
-        }
-
         public void ApplyAbilityRestoredBothResourcesEffects(uint activator)
         {
             var haste = _stat.GetStatAdjustment(activator, StatType.AbilityRestoredBothResourcesHastePercentAdjustment);
@@ -656,5 +742,8 @@ namespace SWLOR.Game.Server.Domain.Combat
                 _abilityStaminaCosts.Remove(key);
             }
         }
+
+        protected virtual void ReplaceTemporaryStatModifier(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType) =>
+            _temporaryStatModifier.Replace(creature, statType, amount, durationSeconds, groupStatType);
     }
 }

@@ -267,11 +267,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var attackBefore = Stat.GetStatAdjustment(player.Creature, StatType.AttackPercentAdjustment);
                 PvpCombat.SetCombatSecondsForTesting(player.Creature, 240);
 
-                Stat.ApplyHealingReceivedEffects(player.Creature, 2);
+                CombatResources.ApplyHealingReceivedEffects(player.Creature, 2);
                 ctx.AssertEqual(attackBefore, Stat.GetStatAdjustment(player.Creature, StatType.AttackPercentAdjustment),
                     "the 60% cut leaves nothing of a 2-HP heal, so there is no Attack boost");
 
-                Stat.ApplyHealingReceivedEffects(player.Creature, 3);
+                CombatResources.ApplyHealingReceivedEffects(player.Creature, 3);
                 ctx.AssertEqual(attackBefore + 10, Stat.GetStatAdjustment(player.Creature, StatType.AttackPercentAdjustment),
                     "a 3-HP heal still restores 1 HP after the cut");
             }

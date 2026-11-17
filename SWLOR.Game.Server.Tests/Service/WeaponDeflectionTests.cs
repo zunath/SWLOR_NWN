@@ -81,7 +81,7 @@ public class WeaponDeflectionTests
         source.Should().Contain("var shieldDeflection = CombatRating.GetShieldDeflectionChanceNative(defender);");
         source.Should().Contain("CombatRating.GetRangedDeflectionChanceNative(defender)");
         source.Should().Contain("CombatRating.GetMeleeDeflectionChanceNative(defender)");
-        source.Should().Contain("Stat.ApplyDeflectionEffectsNative(defender, source)");
+        source.Should().Contain("CombatDeflectionReaction.ApplyDeflectionEffectsNative(defender, source)");
         source.Should().Contain("deflectionSource == DeflectionSource.Ranged");
         source.Should().Contain("CombatRules.GetDeflectionResultName(source)");
         source.Should().NotContain("private static string GetDeflectionName");

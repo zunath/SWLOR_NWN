@@ -292,7 +292,7 @@ public class StatFormulaCharacterizationTests
                      new[] { -5, 0, 1, 7, 33, 100, 1000 },
                      new[] { -20, 0, 1, 10, 33, 50, 100, 250 }))
         {
-            table.Add(row[0], row[1], Stat.CalculateOutgoingAbilityHealingAmount(row[0], row[1]));
+            table.Add(row[0], row[1], CombatResources.CalculateOutgoingAbilityHealingAmount(row[0], row[1]));
         }
 
         Snapshot.Verify("Stat", "CalculateOutgoingAbilityHealingAmount", table);
@@ -313,7 +313,7 @@ public class StatFormulaCharacterizationTests
                      new[] { -5, 0, 1, 50, 99, 100, 150 },
                      new[] { -5, 0, 100, 200 }))
         {
-            table.Add(row[0], row[1], row[2], Stat.CalculateEffectiveHealingAmount(row[0], row[1], row[2]));
+            table.Add(row[0], row[1], row[2], CombatResources.CalculateEffectiveHealingAmount(row[0], row[1], row[2]));
         }
 
         Snapshot.Verify("Stat", "CalculateEffectiveHealingAmount", table);

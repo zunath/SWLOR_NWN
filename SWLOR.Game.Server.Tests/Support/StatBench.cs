@@ -152,8 +152,10 @@ public sealed partial class StatBench : IDisposable
         var pvp = ScriptedProxy.Create<IPvpCombatService>(out var pvpProxy);
         pvpProxy.On("GetHealingReductionPercent", _ => PvpHealingReduction);
 
-        Service = new TestStatService(this, db, recorder, feedback, statusEffect, mimicryTraitStats, recast, beastMastery, pvp);
+        Service = new TestStatService(this, db, recorder, feedback, statusEffect, mimicryTraitStats, beastMastery);
         CombatRating = new TestCombatRatingService(this, db, item, twinPistol, Service);
+        DeflectionReaction = new TestCombatDeflectionReactionService(this, recorder, recast, Service);
+        Healing = new TestCombatResourcesService(this, Service, statusEffect, recorder, pvp, beastMastery);
     }
 
     public StatEngine Engine { get; }
@@ -195,11 +197,17 @@ public sealed partial class StatBench : IDisposable
     /// </summary>
     public TestCombatRatingService CombatRating { get; }
 
-    /// <summary>Part 6, <c>CombatDeflectionReactionService</c> (Combat): what a deflection triggers.</summary>
-    public TestStatService DeflectionReaction => Service;
+    /// <summary>
+    /// Part 6, <c>CombatDeflectionReactionService</c> (Combat, P5-4d): what a deflection triggers. It reads the stat adjustment
+    /// and the pools through <see cref="Service"/>.
+    /// </summary>
+    public TestCombatDeflectionReactionService DeflectionReaction { get; }
 
-    /// <summary>Part 7, the healing adjustments that join <c>CombatResourcesService</c> (Combat).</summary>
-    public TestStatService Healing => Service;
+    /// <summary>
+    /// Part 7, the healing adjustments that joined <c>CombatResourcesService</c> (Combat, P5-4d). It reads the stat adjustment and
+    /// the pools through <see cref="Service"/>.
+    /// </summary>
+    public TestCombatResourcesService Healing { get; }
 
     /// <summary>Everything the service did outside itself, in order.</summary>
     public List<string> Log { get; } = new();

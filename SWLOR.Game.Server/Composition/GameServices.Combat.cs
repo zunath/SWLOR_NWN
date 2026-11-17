@@ -43,6 +43,11 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The damage roll modifiers, a part of combat.</summary>
         public static ICombatDamageModifiersService CombatDamageModifiers => FacadeAccessor.Resolve<ICombatDamageModifiersService>();
 
+        /// <summary>
+        /// What a deflection sets off (part 6 of the stat split, P5-4d; until then <c>Stat.ApplyDeflectionEffectsNative</c>).
+        /// </summary>
+        public static ICombatDeflectionReactionService CombatDeflectionReaction => FacadeAccessor.Resolve<ICombatDeflectionReactionService>();
+
         /// <summary>The damage taken part of combat, a part of combat.</summary>
         public static ICombatDamageTakenService CombatDamageTaken => FacadeAccessor.Resolve<ICombatDamageTakenService>();
 
@@ -111,6 +116,12 @@ namespace SWLOR.Game.Server.Composition
 
         /// <summary>Resistances and vulnerabilities (the facade <c>Service.Resistance</c> until P2-ZG).</summary>
         public static IResistanceService Resistance => FacadeAccessor.Resolve<IResistanceService>();
+
+        /// <summary>
+        /// The riders restoring FP or Stamina grants (part 8 of the stat split, P5-4d; until then
+        /// <c>CombatResources.ApplyFPRestoredEffects</c> and <c>ApplyStaminaRestoredEffects</c>, which took no stat reader).
+        /// </summary>
+        public static IResourceRestoredEffectsService ResourceRestoredEffects => FacadeAccessor.Resolve<IResourceRestoredEffectsService>();
 
         /// <summary>Stealth entry, detection and granted stealth (the facade <c>Service.Stealth</c> until P2-ZH).</summary>
         public static IStealthService Stealth => FacadeAccessor.Resolve<IStealthService>();

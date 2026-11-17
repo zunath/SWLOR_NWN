@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             float multiplier = 1f)
         {
             var amount = CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
-            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = CombatResources.ApplyOutgoingAbilityHealingAdjustment(source, amount);
+            amount = CombatResources.ApplyHealingReceivedAdjustment(target, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
         }
@@ -127,9 +127,9 @@ namespace SWLOR.Game.Server.Domain.Combat
             float multiplier = 1f)
         {
             var amount = CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
-            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
+            amount = CombatResources.ApplyOutgoingAbilityHealingAdjustment(source, amount);
             amount = CombatAbilityMagnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
+            amount = CombatResources.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), target);
         }

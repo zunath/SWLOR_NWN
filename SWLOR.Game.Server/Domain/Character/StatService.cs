@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Globalization;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -21,14 +20,15 @@ using ObjectType = SWLOR.NWN.API.NWScript.Enum.ObjectType;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Stats: the FP and Stamina pools, the player records fed by worn gear, walk mode and movement rate, deflection and
-    /// healing reactions, and NPC stat skins. The Attack, Accuracy, Defense and Evasion ratings and the deflection and Guard
-    /// chances are <c>CombatRatingService</c>'s (Combat, P5-4c). The logic that used to
-    /// be static in the facade <c>Stat</c> is moved here unchanged; the event handlers run on the container's instance,
-    /// and static callers reach it through <c>GameServices.Stat</c>. Calls into <c>Combat</c>, <c>Skill</c>, <c>Perk</c>,
-    /// <c>TemporaryStatModifier</c>, <c>TemporaryHitPointEffects</c> and <c>Droid</c> sit behind one-line
-    /// <c>protected virtual</c> methods whose bodies are the original calls. The stat type metadata and the formulas the
-    /// offline tools read live in <see cref="StatRules"/>, for code that has no container.
+    /// Stats: the FP and Stamina pools, the player records fed by worn gear, walk mode and movement rate, and NPC stat skins.
+    /// The Attack, Accuracy, Defense and Evasion ratings and the deflection and Guard chances are <c>CombatRatingService</c>'s
+    /// (Combat, P5-4c); what a deflection sets off is <c>CombatDeflectionReactionService</c>'s, the healing adjustments are
+    /// <c>CombatResourcesService</c>'s, and what a restore grants is the <see cref="IResourceRestoredListener"/>'s (Combat,
+    /// P5-4d). The logic that used to be static in the facade <c>Stat</c> is moved here unchanged; the event handlers run on
+    /// the container's instance, and static callers reach it through <c>GameServices.Stat</c>. Calls into <c>Skill</c>,
+    /// <c>Perk</c>, <c>TemporaryStatModifier</c>, <c>TemporaryHitPointEffects</c>, <c>Droid</c> and the restore listener sit
+    /// behind one-line <c>protected virtual</c> methods whose bodies are the original calls. The stat type metadata and the
+    /// formulas the offline tools read live in <see cref="StatRules"/>, for code that has no container.
     /// </summary>
     public class StatService : IStatService
     {
@@ -55,9 +55,6 @@ namespace SWLOR.Game.Server.Domain.Character
         private const string WalkRestoreMaximumMovementRateVariable = "WALK_RESTORE_MAX_MOVEMENT_RATE";
         private const float PendingWalkMovementRestore = -1.0f;
         private const float MinimumNativeMovementSpeedMultiplier = 0.125f;
-        private const float DeflectionEvasionBoostDurationSeconds = 30f;
-        private const float DeflectionEnmityBoostDurationSeconds = 30f;
-        private const float DeflectionDefenseBoostDurationSeconds = 30f;
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, bool> _outOfCombatMovementCombatState = new();
         private readonly Dictionary<ItemPropertyType, StatEquipmentAction> _equipmentStatActions = new();
@@ -67,15 +64,11 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly IStatusEffectService _statusEffect;
         private readonly IMimicryTraitStatsService _mimicryTraitStats;
-        private readonly IRecastService _recast;
         private readonly ICompanionLookup _companions;
-        private readonly IPvpCombatService _pvpCombat;
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
-        private readonly Lazy<ICombatAttackTimingService> _attackTiming;
-        private readonly Lazy<ICombatDamageTakenService> _damageTaken;
-        private readonly Lazy<ICombatResourcesService> _resources;
+        private readonly IResourceRestoredListener _resourceRestored;
 
         public StatService(
             IDBService db,
@@ -83,30 +76,22 @@ namespace SWLOR.Game.Server.Domain.Character
             IPlayerFeedbackService playerFeedback,
             IStatusEffectService statusEffect,
             IMimicryTraitStatsService mimicryTraitStats,
-            IRecastService recast,
             ICompanionLookup companions,
-            IPvpCombatService pvpCombat,
             IPerkService perk,
             ISkillService skill,
             ITemporaryStatModifierService temporaryStatModifier,
-            Lazy<ICombatAttackTimingService> attackTiming,
-            Lazy<ICombatDamageTakenService> damageTaken,
-            Lazy<ICombatResourcesService> resources)
+            IResourceRestoredListener resourceRestored)
         {
             _db = db;
             _combatRecorder = combatRecorder;
             _playerFeedback = playerFeedback;
             _statusEffect = statusEffect;
             _mimicryTraitStats = mimicryTraitStats;
-            _recast = recast;
             _companions = companions;
-            _pvpCombat = pvpCombat;
             _perk = perk;
             _skill = skill;
             _temporaryStatModifier = temporaryStatModifier;
-            _attackTiming = attackTiming;
-            _damageTaken = damageTaken;
-            _resources = resources;
+            _resourceRestored = resourceRestored;
         }
 
         /// <summary>
@@ -1548,208 +1533,6 @@ namespace SWLOR.Game.Server.Domain.Character
             return Math.Max(0, agility * 2 + equipmentBonus + adjustment);
         }
 
-        public void ApplyDeflectionEffectsNative(CNWSCreature creature, DeflectionSource source)
-        {
-            var creatureId = GetNativeCreatureId(creature);
-            TrackDeflection(creatureId, source);
-
-            var staminaRestoreStat = GetDeflectionStatTypeForSource(
-                source,
-                StatType.MeleeDeflectionStaminaRestore,
-                StatType.ShieldDeflectionStaminaRestore);
-            var staminaRestoreCooldownStat = GetDeflectionStatTypeForSource(
-                source,
-                StatType.MeleeDeflectionStaminaRestoreCooldownSeconds,
-                StatType.ShieldDeflectionStaminaRestoreCooldownSeconds);
-            var staminaRestore = staminaRestoreStat != StatType.Invalid
-                ? GetStatAdjustment(creatureId, staminaRestoreStat)
-                : 0;
-            var fpRestoreStat = GetDeflectionStatTypeForSource(
-                source,
-                StatType.MeleeDeflectionFPRestore,
-                StatType.DeflectionFPRestore);
-            var fpRestore = fpRestoreStat != StatType.Invalid
-                ? GetStatAdjustment(creatureId, fpRestoreStat)
-                : 0;
-            var fpRestoreCooldownStat = GetDeflectionStatTypeForSource(
-                source,
-                StatType.MeleeDeflectionFPRestoreCooldownSeconds,
-                StatType.DeflectionFPRestoreCooldownSeconds);
-            var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
-            var staminaRestoreCooldown = staminaRestoreCooldownStat != StatType.Invalid
-                ? GetStatAdjustment(creatureId, staminaRestoreCooldownStat)
-                : 0;
-            var fpRestoreCooldown = fpRestoreCooldownStat != StatType.Invalid
-                ? GetStatAdjustment(creatureId, fpRestoreCooldownStat)
-                : 0;
-            var evasionBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEvasionPercentAdjustment, source);
-            var evasionEnmityBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEvasionEnmityPercentAdjustment, source);
-            var enmityBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEnmityPercentAdjustment, source);
-            var defenseBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionDefensePercentAdjustment, source);
-            var forceDefenseBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionForceDefensePercentAdjustment, source);
-            var recastReductionGroup = GetRecastGroupFromStat(GetDeflectionStatAdjustment(
-                creatureId,
-                StatType.DeflectionRecastReductionGroupId,
-                source));
-            var recastReductionSeconds = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionRecastReductionSeconds, source);
-            var recastReductionCooldown = GetDeflectionStatAdjustment(
-                creatureId,
-                StatType.DeflectionRecastReductionCooldownSeconds,
-                source);
-            var nextSkillAbilitySkillType = GetSkillTypeFromStat(GetDeflectionStatAdjustment(
-                creatureId,
-                StatType.DeflectionNextSkillAbilitySkillType,
-                source));
-            var nextSkillAbilityDamageBonus = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityDamageBonus, source);
-            var nextSkillAbilityCriticalRate = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment, source);
-            var nextSkillAbilityNoDelay = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelay, source);
-            var nextSkillAbilityDamageWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds);
-            var nextSkillAbilityCriticalWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRateWindowSeconds);
-            var nextSkillAbilityNoDelayWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelayWindowSeconds);
-            var nextAutoAttackCriticalRateSkillType = GetSkillTypeFromStat(GetDeflectionStatAdjustment(
-                creatureId,
-                StatType.DeflectionNextAutoAttackCriticalRateSkillType,
-                source));
-            var nextAutoAttackCriticalRate = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment, source);
-            var nextAutoAttackCriticalRateWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds);
-
-            if (staminaRestore > 0 &&
-                TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown))
-            {
-                using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(creatureId, staminaRestoreStat);
-                RestoreStamina(creatureId, staminaRestore);
-            }
-
-            if (fpRestore > 0 &&
-                TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown))
-            {
-                using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(creatureId, fpRestoreStat);
-                RestoreFP(creatureId, fpRestore);
-            }
-
-            if (staminaRestorePercent > 0)
-            {
-                var amount = GameMath.PercentOf(GetMaxStamina(creatureId), staminaRestorePercent);
-                using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(creatureId, StatType.DeflectionStaminaRestorePercent);
-                RestoreStamina(creatureId, amount);
-            }
-
-            if (evasionBoost != 0 || evasionEnmityBoost != 0)
-            {
-                ReplaceTemporaryStatModifier(
-                    creatureId,
-                    StatType.EvasionPercentAdjustment,
-                    evasionBoost,
-                    DeflectionEvasionBoostDurationSeconds,
-                    StatType.DeflectionEvasionPercentAdjustment);
-                ReplaceTemporaryStatModifier(
-                    creatureId,
-                    StatType.EnmityPercentAdjustment,
-                    evasionEnmityBoost,
-                    DeflectionEvasionBoostDurationSeconds,
-                    StatType.DeflectionEvasionPercentAdjustment);
-            }
-
-            if (enmityBoost != 0)
-            {
-                ReplaceTemporaryStatModifier(
-                    creatureId,
-                    StatType.EnmityPercentAdjustment,
-                    enmityBoost,
-                    DeflectionEnmityBoostDurationSeconds,
-                    StatType.DeflectionEnmityPercentAdjustment);
-            }
-
-            if (defenseBoost != 0 || forceDefenseBoost != 0)
-            {
-                ReplaceTemporaryStatModifier(
-                    creatureId,
-                    StatType.PhysicalDefensePercentAdjustment,
-                    defenseBoost,
-                    DeflectionDefenseBoostDurationSeconds,
-                    StatType.DeflectionDefensePercentAdjustment);
-                ReplaceTemporaryStatModifier(
-                    creatureId,
-                    StatType.ForceDefensePercentAdjustment,
-                    forceDefenseBoost,
-                    DeflectionDefenseBoostDurationSeconds,
-                    StatType.DeflectionDefensePercentAdjustment);
-            }
-
-            // Rate limited like every other deflection payload: the trigger fires once per
-            // incoming attack, so without a gate the reduction outpaces the cooldown it shortens
-            // as soon as a second attacker joins. The gate is only spent when there is actually a
-            // cooldown to shorten, so deflecting while the ability is ready does not burn the
-            // window that the next real cooldown needs.
-            if (recastReductionGroup != RecastGroup.Invalid && recastReductionSeconds > 0)
-            {
-                var (isOnRecastDelay, _) = _recast.IsOnRecastDelay(creatureId, recastReductionGroup);
-                if (isOnRecastDelay &&
-                    TryUseStatTrigger(
-                        creatureId,
-                        StatType.DeflectionRecastReductionSeconds,
-                        recastReductionCooldown))
-                {
-                    _recast.ReduceRecastDelay(creatureId, recastReductionGroup, recastReductionSeconds);
-                }
-            }
-
-            GrantNextSkillAbilityBonuses(
-                creatureId,
-                nextSkillAbilitySkillType,
-                nextSkillAbilityDamageBonus,
-                nextSkillAbilityCriticalRate,
-                Math.Max(nextSkillAbilityDamageWindow, nextSkillAbilityCriticalWindow));
-
-            GrantNextAutoAttackCriticalRateBonus(
-                creatureId,
-                nextAutoAttackCriticalRateSkillType,
-                nextAutoAttackCriticalRate,
-                nextAutoAttackCriticalRateWindow);
-
-            if (nextSkillAbilityNoDelay > 0)
-            {
-                GrantNextAbilityNoDelay(
-                    creatureId,
-                    nextSkillAbilitySkillType,
-                    nextSkillAbilityNoDelayWindow);
-            }
-        }
-
-        private RecastGroup GetRecastGroupFromStat(int value)
-        {
-            return value > 0 && Enum.IsDefined(typeof(RecastGroup), value)
-                ? (RecastGroup)value
-                : RecastGroup.Invalid;
-        }
-
-        private int GetDeflectionStatAdjustment(uint creature, StatType statType, DeflectionSource source)
-        {
-            return GetStatTypeDeflectionSource(statType) == source
-                ? GetStatAdjustment(creature, statType)
-                : 0;
-        }
-
-        private StatType GetDeflectionStatTypeForSource(
-            DeflectionSource source,
-            StatType first,
-            StatType second)
-        {
-            if (GetStatTypeDeflectionSource(first) == source)
-                return first;
-
-            return GetStatTypeDeflectionSource(second) == source
-                ? second
-                : StatType.Invalid;
-        }
-
-        private SkillType GetSkillTypeFromStat(int value)
-        {
-            return value > 0 && Enum.IsDefined(typeof(SkillType), value)
-                ? (SkillType)value
-                : SkillType.Invalid;
-        }
-
         private int GetNPCSkinStat(uint creature, ItemPropertyType type)
         {
             var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
@@ -1811,111 +1594,6 @@ namespace SWLOR.Game.Server.Domain.Character
                 stat,
                 AggregateStatAdjustment(stat, statusAdjustment, perkAdjustment),
                 mimicryTraitAdjustment);
-        }
-
-        public int ApplyOutgoingAbilityHealingAdjustment(uint source, int amount)
-        {
-            if (amount <= 0 || !GetIsObjectValid(source))
-                return amount;
-
-            var statSource = _companions.IsPlayerBeast(source)
-                ? GetMaster(source)
-                : source;
-            var adjustment = GetStatAdjustment(
-                statSource,
-                StatType.OutgoingAbilityHealingPercentAdjustment);
-
-            return CalculateOutgoingAbilityHealingAmount(amount, adjustment);
-        }
-
-        public int CalculateOutgoingAbilityHealingAmount(int amount, int adjustment)
-        {
-            if (amount <= 0 || adjustment <= 0)
-                return amount;
-
-            return amount + (int)Math.Ceiling(amount * (adjustment / 100f));
-        }
-
-        /// <param name="isInstantAbilityHeal">True for a heal an ability lands when it resolves. Only these can restore Stamina through the healing-received trigger.</param>
-        public int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true, bool isInstantAbilityHeal = false)
-        {
-            if (amount <= 0)
-                return amount;
-
-            var adjustment = GetStatAdjustment(creature, StatType.HealingReceivedPercentAdjustment);
-            var adjustedAmount = Math.Max(1, StatRules.ApplyPercentAdjustment(amount, adjustment));
-
-            if (applyReceivedEffects)
-                ApplyHealingReceivedEffects(creature, adjustedAmount, isInstantAbilityHeal);
-
-            return adjustedAmount;
-        }
-
-        public int CalculateEffectiveHealingAmount(int amount, int currentHP, int maxHP)
-        {
-            return currentHP <= 0 ? 0 : Math.Clamp(amount, 0, Math.Max(0, maxHP - currentHP));
-        }
-
-        /// <param name="isInstantAbilityHeal">Heals over time, lifesteal, drains and regeneration pass false and never restore Stamina.</param>
-        public void ApplyHealingReceivedEffects(uint creature, int amount, bool isInstantAbilityHeal = false)
-        {
-            // The PvP healing ramp cuts the heal when it lands, so these react to what is left of it.
-            amount = PvpCombatRules.ReduceHealing(amount, _pvpCombat.GetHealingReductionPercent(creature));
-            if (CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), GetMaxHitPoints(creature)) <= 0)
-                return;
-            // The heal these react to is applied right after them.
-            using var recorderReaction = _combatRecorder.BeginHealingReaction(creature);
-            if (isInstantAbilityHeal)
-                ApplyHealingReceivedStaminaRestore(creature);
-            ApplyHealingReceivedAttackBoost(creature);
-        }
-
-        private void ApplyHealingReceivedStaminaRestore(uint creature)
-        {
-            var chance = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChance);
-            var stamina = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestore);
-            if (chance <= 0 || stamina <= 0)
-                return;
-
-            var maximumChance = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChanceMaximum);
-            var scalingAbility = GetAbilityTypeFromStatValue(GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreChanceScalingAbility));
-            if (maximumChance > chance && scalingAbility != AbilityType.Invalid)
-            {
-                chance = Math.Min(maximumChance, chance + Math.Max(0, GetAbilityScore(creature, scalingAbility)));
-            }
-
-            if (Domain.Foundation.Random.D100(1) > chance)
-                return;
-
-            var cooldownSeconds = GetStatAdjustment(creature, StatType.HealingReceivedStaminaRestoreCooldownSeconds);
-            if (!TryUseStatTrigger(creature, StatType.HealingReceivedStaminaRestore, cooldownSeconds))
-                return;
-
-            using var recorderAttribution = _combatRecorder.BeginStatTriggerAttribution(creature, StatType.HealingReceivedStaminaRestore);
-            RestoreStamina(creature, stamina);
-        }
-
-        private void ApplyHealingReceivedAttackBoost(uint creature)
-        {
-            var attackPercent = GetStatAdjustment(creature, StatType.HealingReceivedAttackPercentAdjustment);
-            var duration = GetStatAdjustment(creature, StatType.HealingReceivedAttackDurationSeconds);
-            if (attackPercent == 0 || duration <= 0)
-                return;
-
-            ReplaceTemporaryStatModifier(
-                creature,
-                StatType.AttackPercentAdjustment,
-                attackPercent,
-                duration,
-                StatType.HealingReceivedAttackPercentAdjustment);
-        }
-
-        private AbilityType GetAbilityTypeFromStatValue(int value)
-        {
-            var abilityValue = value - 1;
-            return Enum.IsDefined(typeof(AbilityType), abilityValue)
-                ? (AbilityType)abilityValue
-                : AbilityType.Invalid;
         }
 
         private int ApplyFPRestoreAdjustment(uint creature, int amount)
@@ -2380,9 +2058,6 @@ namespace SWLOR.Game.Server.Domain.Character
             return true;
         }
 
-        // The native read of the deflection reactions: they need only the creature's id, so a test can run them.
-        protected virtual uint GetNativeCreatureId(CNWSCreature creature) => creature.m_idSelf;
-
         // The calls that are not injected, one line each, so a test can answer them. The bodies are the original calls. The
         // hot reads among them (the perk and temporary stat reads) add one virtual dispatch and no allocation.
 
@@ -2397,9 +2072,6 @@ namespace SWLOR.Game.Server.Domain.Character
         protected virtual int GetTemporaryStatAdjustment(uint creature, StatType stat) =>
             _temporaryStatModifier.GetStatAdjustment(creature, stat);
 
-        protected virtual void ReplaceTemporaryStatModifier(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType) =>
-            _temporaryStatModifier.Replace(creature, statType, amount, durationSeconds, groupStatType);
-
         protected virtual void ScheduleTemporaryHitPointLimitCheck(uint creature) =>
             TemporaryHitPointEffects.ScheduleLimitCheck(creature);
 
@@ -2409,22 +2081,8 @@ namespace SWLOR.Game.Server.Domain.Character
 
         protected virtual ImmutableArray<CombatDamageType> GetDefenseDamageTypes() => DamageTableDefaults.GetDefenseDamageTypes();
 
-        protected virtual void ApplyFPRestoredEffects(uint creature) => _resources.Value.ApplyFPRestoredEffects(creature);
+        protected virtual void ApplyFPRestoredEffects(uint creature) => _resourceRestored.ApplyFPRestoredEffects(creature, this);
 
-        protected virtual void ApplyStaminaRestoredEffects(uint creature) => _resources.Value.ApplyStaminaRestoredEffects(creature);
-
-        protected virtual void TrackDeflection(uint creature, DeflectionSource source) => _damageTaken.Value.TrackDeflection(creature, source);
-
-        protected virtual bool TryUseStatTrigger(uint creature, StatType statType, int cooldownSeconds) =>
-            _resources.Value.TryUseStatTrigger(creature, statType, cooldownSeconds);
-
-        protected virtual void GrantNextSkillAbilityBonuses(uint creature, SkillType skillType, int damageBonus, int criticalRate, int durationSeconds) =>
-            _attackTiming.Value.GrantNextSkillAbilityBonuses(creature, skillType, damageBonus, criticalRate, durationSeconds);
-
-        protected virtual void GrantNextAutoAttackCriticalRateBonus(uint creature, SkillType skillType, int criticalRate, int durationSeconds) =>
-            _attackTiming.Value.GrantNextAutoAttackCriticalRateBonus(creature, skillType, criticalRate, durationSeconds);
-
-        protected virtual void GrantNextAbilityNoDelay(uint creature, SkillType skillType, int durationSeconds) =>
-            _attackTiming.Value.GrantNextAbilityNoDelay(creature, skillType, durationSeconds);
+        protected virtual void ApplyStaminaRestoredEffects(uint creature) => _resourceRestored.ApplyStaminaRestoredEffects(creature, this);
     }
 }

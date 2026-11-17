@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             VisualEffect visualEffect = VisualEffect.Vfx_Imp_Healing_M_Silent)
         {
             var amount = AbilityEffectScaling.CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
-            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
+            amount = CombatResources.ApplyOutgoingAbilityHealingAdjustment(source, amount);
+            amount = CombatResources.ApplyHealingReceivedAdjustment(target, amount);
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyMedicalVisualEffect(target, visualEffect);
@@ -35,9 +35,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             float multiplier = 1f)
         {
             var amount = AbilityEffectScaling.CalculateScaledHeal(source, target, heal, scalingAbility, multiplier);
-            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(source, amount);
+            amount = CombatResources.ApplyOutgoingAbilityHealingAdjustment(source, amount);
             amount = CombatAbilityMagnitude.ApplyCombatReadinessToActivatedAbilityMagnitude(source, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
+            amount = CombatResources.ApplyHealingReceivedAdjustment(target, amount, isInstantAbilityHeal: true);
 
             var hitPointsBeforeHealing = GetCurrentHitPoints(target);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using NWN.Native.API;
-using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -11,9 +10,10 @@ using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Stats: the FP and Stamina pools, the player records fed by worn gear, walk mode and movement rate, deflection and
-    /// healing reactions, and NPC stat skins. The ratings and the deflection and Guard chances are
-    /// <c>ICombatRatingService</c>'s (Combat, P5-4c).
+    /// Stats: the FP and Stamina pools, the player records fed by worn gear, walk mode and movement rate, and NPC stat skins.
+    /// The ratings and the deflection and Guard chances are <c>ICombatRatingService</c>'s (Combat, P5-4c); what a deflection
+    /// sets off is <c>ICombatDeflectionReactionService</c>'s and the healing adjustments are <c>ICombatResourcesService</c>'s
+    /// (Combat, P5-4d).
     /// </summary>
     public interface IStatService
     {
@@ -443,25 +443,11 @@ namespace SWLOR.Game.Server.Domain.Character
 
         int CalculateStealthRating(int agility, int equipmentBonus, int adjustment);
 
-        void ApplyDeflectionEffectsNative(CNWSCreature creature, DeflectionSource source);
-
         IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat);
 
         int GetStatAdjustment(uint creature, StatType stat);
 
         int GetStatAdjustmentExcludingTemporaryModifiers(uint creature, StatType stat);
-
-        int ApplyOutgoingAbilityHealingAdjustment(uint source, int amount);
-
-        int CalculateOutgoingAbilityHealingAmount(int amount, int adjustment);
-
-        /// <param name="isInstantAbilityHeal">True for a heal an ability lands when it resolves. Only these can restore Stamina through the healing-received trigger.</param>
-        int ApplyHealingReceivedAdjustment(uint creature, int amount, bool applyReceivedEffects = true, bool isInstantAbilityHeal = false);
-
-        int CalculateEffectiveHealingAmount(int amount, int currentHP, int maxHP);
-
-        /// <param name="isInstantAbilityHeal">Heals over time, lifesteal, drains and regeneration pass false and never restore Stamina.</param>
-        void ApplyHealingReceivedEffects(uint creature, int amount, bool isInstantAbilityHeal = false);
 
         /// <summary>
         /// Retrieves the stats of an NPC. This is determined by several item properties located on the NPC's skin.

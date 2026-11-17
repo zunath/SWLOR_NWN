@@ -164,12 +164,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             var maxHP = GetMaxHitPoints(creature);
             var amount = PerformanceAudienceRules.StandingOvationHeal(maxHP);
-            amount = Stat.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
-            amount = Stat.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maxHP);
+            amount = CombatResources.ApplyHealingReceivedAdjustment(creature, amount, applyReceivedEffects: false);
+            amount = CombatResources.CalculateEffectiveHealingAmount(amount, ObjectPlugin.GetCurrentHitPoints(creature), maxHP);
             if (amount <= 0)
                 return;
 
-            Stat.ApplyHealingReceivedEffects(creature, amount);
+            CombatResources.ApplyHealingReceivedEffects(creature, amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
             SendMessageToPC(creature, "A standing ovation lifts you, restoring your health.");
         }

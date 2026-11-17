@@ -31,9 +31,9 @@ public abstract class StatServiceTestBase
 
     protected TestCombatRatingService CombatRating => Bench.CombatRating;
 
-    protected TestStatService DeflectionReaction => Bench.DeflectionReaction;
+    protected TestCombatDeflectionReactionService DeflectionReaction => Bench.DeflectionReaction;
 
-    protected TestStatService Healing => Bench.Healing;
+    protected TestCombatResourcesService Healing => Bench.Healing;
 
     [OneTimeSetUp]
     public void BuildFacades() => _facades = new FacadeContainer();

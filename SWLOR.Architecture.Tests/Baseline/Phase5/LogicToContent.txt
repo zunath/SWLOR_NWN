@@ -40,7 +40,7 @@ SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/AbilityDe
 SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Feature/StatusEffectDefinition | 5
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Feature/StatusEffectDefinition | 17
 SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Feature/AbilityDefinition | 1
-SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs -> Feature/StatusEffectDefinition | 3
+SWLOR.Game.Server/Domain/Combat/CombatResourcesService.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatRules.cs -> Feature/StatusEffectDefinition | 1
 SWLOR.Game.Server/Domain/Combat/CombatService.cs -> Feature/StatusEffectDefinition | 3
 SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs -> Feature/StatusEffectDefinition | 3
@@ -56,6 +56,7 @@ SWLOR.Game.Server/Domain/Combat/PoisonsService.cs -> Feature/StatusEffectDefinit
 SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs -> Feature/AppearanceDefinition | 2
 SWLOR.Game.Server/Domain/Combat/PowerGloveEquipmentService.cs -> Feature/MigrationDefinition | 1
 SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs -> Feature/StatusEffectDefinition | 6
+SWLOR.Game.Server/Domain/Combat/ResourceRestoredEffectsService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Feature.LightsaberAudio | 1
 SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Feature/StatusEffectDefinition | 2
 SWLOR.Game.Server/Domain/Combat/TwinPistolEquipmentService.cs -> Feature/AppearanceDefinition | 1

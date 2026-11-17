@@ -13,7 +13,7 @@ public sealed class AbilityBenchStat : StatService, IStatService
     private readonly AbilityBench _bench;
 
     public AbilityBenchStat(AbilityBench bench)
-        : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!)
+        : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!)
     {
         _bench = bench;
     }

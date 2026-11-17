@@ -1552,9 +1552,13 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
         combatSource.Should().Contain("new HostileAbilityForceAttackStatusEffect(total)");
         combatSource.Should().Contain("new EnergizedFormsHasteStatusEffect(haste)");
-        combatSource.Should().Contain("new ForceLensForceAttackStatusEffect(forceAttack)");
-        combatSource.Should().Contain("new ForceLensAttackStatusEffect(attack)");
+        // The riders of any FP or Stamina restore left the resources part for their own service in P5-4d.
+        var restoredEffectsSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "ResourceRestoredEffectsService.cs"));
+        restoredEffectsSource.Should().Contain("new ForceLensForceAttackStatusEffect(forceAttack)");
+        restoredEffectsSource.Should().Contain("new ForceLensAttackStatusEffect(attack)");
         combatSource.Should().NotContain("SaberstaffConduitForceLens",
+            "shared resource restoration must remain stat-driven rather than checking a specific perk identity");
+        restoredEffectsSource.Should().NotContain("SaberstaffConduitForceLens",
             "shared resource restoration must remain stat-driven rather than checking a specific perk identity");
         generatorSource.Should().Contain(
             "add_stat(stats, \"HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent\"");

@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var damage = 1000 - GetCurrentHitPoints(target);
                 ctx.Assert(damage > 0, "Force Drain lands against the target");
                 ctx.Assert(GetCurrentHitPoints(target) > 500, "target remains above the enhanced-drain threshold");
-                var requested = Stat.ApplyHealingReceivedAdjustment(source, GameMath.PercentOf(damage, 40), false);
+                var requested = CombatResources.ApplyHealingReceivedAdjustment(source, GameMath.PercentOf(damage, 40), false);
                 var expected = Math.Min(GameMath.PercentOf(damage, 50), Math.Min(requested,
                     CombatRules.CalculateMaxHPHealingBudget(GetMaxHitPoints(source), CombatResourcesService.MaximumActivatedDamageHealingMaxHPPercent)));
                 ctx.AssertEqual(expected, GetCurrentHitPoints(source) - 1, "healing applies the damage and maximum-HP caps without another Readiness multiplier");

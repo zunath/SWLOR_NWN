@@ -88,9 +88,6 @@ public class CombatResourcesServiceTests
         var stat = ScriptedProxy.Create<IStatService>(out _statCalls);
         _statCalls
             .On(nameof(IStatService.GetStatAdjustment), args => _stats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)))
-            .On(nameof(IStatService.ApplyHealingReceivedAdjustment), args => (int)args[1]!)
-            .On(nameof(IStatService.CalculateEffectiveHealingAmount), args => Math.Min((int)args[0]!, (int)args[2]! - (int)args[1]!))
-            .On(nameof(IStatService.ApplyHealingReceivedEffects), _ => null)
             .On(nameof(IStatService.RestoreFP), args => (int)args[1]!)
             .On(nameof(IStatService.RestoreStamina), args => (int)args[1]!)
             .On(nameof(IStatService.ReduceFP), _ => null)
@@ -104,7 +101,13 @@ public class CombatResourcesServiceTests
         var recorder = ScriptedProxy.Create<ICombatRecorderService>(out _recorderCalls);
         _recorderCalls
             .On(nameof(ICombatRecorderService.BeginRiderAttribution), _ => default(CombatRecordAttributionScope))
-            .On(nameof(ICombatRecorderService.BeginStatTriggerAttribution), _ => default(CombatRecordAttributionScope));
+            .On(nameof(ICombatRecorderService.BeginStatTriggerAttribution), _ => default(CombatRecordAttributionScope))
+            .On(nameof(ICombatRecorderService.BeginHealingReaction), _ => default(CombatRecordHealingReactionScope));
+        // The healing adjustments joined this service in P5-4d; they read the PvP healing cut and whether a source is a beast.
+        var pvp = ScriptedProxy.Create<IPvpCombatService>(out var pvpCalls);
+        pvpCalls.On(nameof(IPvpCombatService.GetHealingReductionPercent), _ => 0);
+        var companions = ScriptedProxy.Create<ICompanionLookup>(out var companionCalls);
+        companionCalls.On(nameof(ICompanionLookup.IsPlayerBeast), _ => false);
 
         _temporary = new();
         _temporaryCalls = new();
@@ -124,7 +127,7 @@ public class CombatResourcesServiceTests
                 return null;
             });
 
-        _service = new CombatResourcesService(queries, ability, stat, statusEffect, recorder, temporary);
+        _service = new CombatResourcesService(queries, ability, stat, statusEffect, recorder, temporary, pvp, companions);
     }
 
     [TearDown]
@@ -190,7 +193,8 @@ public class CombatResourcesServiceTests
         _service.HealFromMaxHP(Creature, 10);
 
         Heals().Should().Equal(new[] { 20, 4 }, "the window allows 12% of 200 HP");
-        StatCalls(nameof(IStatService.ApplyHealingReceivedEffects)).Select(call => call.Arguments[1]).Should().Equal(20, 4);
+        _recorderCalls.Calls.Where(call => call.Member == nameof(ICombatRecorderService.BeginHealingReaction))
+            .Should().HaveCount(2, "each heal that lands sets off the received-healing reactions first");
         _engine.CallsTo("ApplyEffectToObject").Should().HaveCount(2);
 
         _service.HealFromMaxHP(Creature, 10);
@@ -242,7 +246,8 @@ public class CombatResourcesServiceTests
         }
 
         first.Should().Be(12, "half of the 30 HP the target had is 15, and a passive hit heals at most 6% of 200");
-        _recorderCalls.Calls.Should().ContainSingle().Which.Arguments.Should().Equal(Creature, CombatRecordSourceKind.Lifesteal);
+        _recorderCalls.Calls.Where(call => call.Member == nameof(ICombatRecorderService.BeginRiderAttribution))
+            .Should().ContainSingle().Which.Arguments.Should().Equal(Creature, CombatRecordSourceKind.Lifesteal);
         Heals().Should().Equal(12);
 
         _remainingTargetHP[Target] = 1000;
@@ -290,7 +295,8 @@ public class CombatResourcesServiceTests
         using (_service.BeginDamageDerivedHealing(Creature, Target))
             _service.ApplyDamageDerivedHealing(Creature, 100, 100).Should().Be(5);
 
-        _currentHP = 0;
+        // Nearly dead, so the room under the maximum is not what limits the heal (a creature at 0 HP is healed nothing).
+        _currentHP = 1;
         using (_service.BeginDamageDerivedHealing(Creature, Target))
             _service.ApplyDamageDerivedHealing(Creature, 10, 100).Should().Be(5, "at most half the damage dealt heals");
     }
@@ -531,26 +537,21 @@ public class CombatResourcesServiceTests
     [Test]
     public void RestoredResourceRidersNeedAValueAndADuration()
     {
-        _service.ApplyFPRestoredEffects(Creature);
-        _service.ApplyStaminaRestoredEffects(Creature);
+        // The riders of any FP or Stamina restore left for ResourceRestoredEffectsService in P5-4d (its own tests).
         _service.ApplyAbilityRestoredFPEffects(Creature);
         _service.ApplyAbilityRestoredBothResourcesEffects(Creature);
         _statusCalls.Calls.Should().BeEmpty();
         _temporaryCalls.Should().BeEmpty();
 
-        Stat(StatType.RestoredFPForceAttackPercentAdjustment, 5);
-        Stat(StatType.RestoredFPForceAttackDurationSeconds, 4);
-        Stat(StatType.RestoredStaminaAttackPercentAdjustment, 6);
-        Stat(StatType.RestoredStaminaAttackDurationSeconds, 3);
+        Stat(StatType.AbilityRestoredFPHastePercentAdjustment, 5);
+        Stat(StatType.AbilityRestoredFPHasteDurationSeconds, 4);
         Stat(StatType.AbilityRestoredBothResourcesHastePercentAdjustment, 10);
         Stat(StatType.AbilityRestoredBothResourcesHasteDurationSeconds, 8);
-        _service.ApplyFPRestoredEffects(Creature);
-        _service.ApplyStaminaRestoredEffects(Creature);
+        _service.ApplyAbilityRestoredFPEffects(Creature);
         _service.ApplyAbilityRestoredBothResourcesEffects(Creature);
 
-        _statusCalls.Calls.Select(call => call.Arguments[2]!.GetType()).Should().Equal(
-            typeof(ForceLensForceAttackStatusEffect), typeof(ForceLensAttackStatusEffect));
-        _statusCalls.Calls.Select(call => call.Arguments[3]).Should().Equal(4f, 3f);
+        _statusCalls.Calls.Select(call => call.Arguments[2]!.GetType()).Should().Equal(typeof(EnergizedFormsHasteStatusEffect));
+        _statusCalls.Calls.Select(call => call.Arguments[3]).Should().Equal(4f);
         _temporaryCalls.Should().Equal(
             $"Replace {Creature} {StatType.AttackDelayReductionPercent} 10 8 {StatType.AbilityRestoredBothResourcesHastePercentAdjustment}");
     }

@@ -12,7 +12,6 @@
 
 SWLOR.Game.Server.Domain.Abilities.AbilityDamageInputService | 11
 SWLOR.Game.Server.Domain.Abilities.MimicryService | 11
-SWLOR.Game.Server.Domain.Character.StatService | 14
 SWLOR.Game.Server.Domain.Character.StatusEffectService | 16
 SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 13
 SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService | 12

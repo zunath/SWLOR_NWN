@@ -91,7 +91,16 @@ namespace SWLOR.Game.Server.Service.TimeZoneService
             {
                 if (!Resolved.TryGetValue(zone.Id, out var info))
                 {
-                    info = TimeZoneInfo.FindSystemTimeZoneById(zone.Id);
+                    // A host without the zone in its time zone database shows UTC rather than failing the window.
+                    try
+                    {
+                        info = TimeZoneInfo.FindSystemTimeZoneById(zone.Id);
+                    }
+                    catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException)
+                    {
+                        info = TimeZoneInfo.Utc;
+                    }
+
                     Resolved[zone.Id] = info;
                 }
 

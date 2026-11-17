@@ -11,9 +11,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// </summary>
     public class DMSettingsDefinition : IGuiWindowDefinition
     {
-        // The window cannot shrink below the size that shows every setting.
-        public const float MinimumWindowWidth = 360f;
-        public const float MinimumWindowHeight = 470f;
         private readonly GuiWindowBuilder<DMSettingsViewModel> _builder = new();
 
         private const float ContentPanelWidth = 320f;
@@ -22,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.DMSettings)
-                .SetInitialGeometry(DMToolbarViewModel.ToolbarX, DMToolbarViewModel.ToolbarY, MinimumWindowWidth, MinimumWindowHeight)
+                .SetInitialGeometry(DMToolbarViewModel.ToolbarX, DMToolbarViewModel.ToolbarY, 360f, 470f)
                 .SetTitle("DM Settings")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

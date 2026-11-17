@@ -337,8 +337,8 @@ Administration -> Creatures (3 each), `AIService.cs` Creatures -> Social (3) and
 | Combat -> Creatures: Enmity `IsRegisteredCompanion`, `PeekAuthorizedTarget`, `CanIssueAttackCommand` | 3 (5 counted) | port `ICompanionTargetQuery`; `ICompanionControlService : ICompanionTargetQuery` in e, implemented by the authority from f (rule 2: the authority has no path back to Enmity) | Combat | e, then f moves the implementation |
 | Combat -> Creatures: Stealth `AcquireAggroFromNearbyEnemies`, `TryAcquireAggroAfterDetection` | 4 | notice `IStealthAggroListener`, registered at boot (rule 3) | Combat | e, then g moves the implementation |
 | Character -> Creatures: Espionage `IsInAggroRange` x2, `IsCreatureAIEnabled` | 4 | static `CreatureAIRules` | Foundation | e |
-| Administration -> Creatures: `DMBlueprintCatalogService` `PrepareDMSpawnedCreature` | 3 | port `ISpawnedCreaturePreparer`, implemented by `SpawnObjectService` | Administration | d |
-| Administration -> Creatures: `DMObjectDetailsService` `GetAIProfile` | 3 | port `ICreatureAIProfileReader`, implemented by `AIService` | Administration | d |
+| Administration -> Creatures: `DMBlueprintCatalogService` `PrepareDMSpawnedCreature` | 3 | Administration-owned `IDMSpawnPreparation` (P5-15a), implemented directly by `SpawnObjectService`; the forwarding adapter `DMSpawnPreparation` is deleted | Administration | d |
+| Administration -> Creatures: `DMObjectDetailsService` `GetAIProfile` | 3 | Administration-owned `IAIProfileDescription` (P5-15a), implemented directly by `AIService` (`IAIService : IAIProfileDescription`); the forwarding adapter `AIProfileDescription` is deleted | Administration | d |
 | Creatures -> Social: `AIService` `GetAllPartyMembers` | 3 | port `IAIPartyQuery`, implemented by `PartyService` | Creatures | d |
 | Foundation -> Creatures: `WalkmeshService` -> `SpawnClearanceGrid` | 2 | the type moves to `Domain/Foundation` (`DomainOrderTypeMoves.json`; `SWLOR.TypeMoves` fixes the usings) | Foundation | c |
 | Creatures -> Companions (3 + 3 + 3) | 9 | done in P5-1g (`ICompanionLookup`); P5-8 edits neither `BeastMasteryService` nor `DroidService` | Character | none |
@@ -367,7 +367,7 @@ Services counted as the guard counts them. No holder gains a `Lazy<>`.
 | `StealthService` | e: `IAIService` leaves (a listener list is state, not a service) | -1 |
 | `EspionageInfiltrationService` | e: `IAIService` leaves | -1 |
 | `SpaceService` (18) | e: `IAIService` -> `ICombatLeash`; four `IsLeashEvading` calls -> `CreatureAIRules` | 18 |
-| `DMObjectDetailsService`, `DMBlueprintCatalogService` | d: `IAIService` -> `ICreatureAIProfileReader`; `ISpawnService` -> `ISpawnedCreaturePreparer` | same |
+| `DMObjectDetailsService`, `DMBlueprintCatalogService` | d: `IAIService` -> `IAIProfileDescription`; `ISpawnService` -> `IDMSpawnPreparation` (both from P5-15a) | same |
 | `BeastMasteryService` (14), `DroidService` (14), `SlicingSessionService` | unchanged (`IAIService`, `ICompanionControlService`, `ISpawnService` keep their members) | same |
 | `CharacterChatCommand`, `StablesViewModel`, `ScavengePoint` | unchanged | same |
 
@@ -458,7 +458,7 @@ P5-7 the Combat services named in the Phase 5 guide (here `EnmityService.cs`); P
 | P5-8a | This guide; the Phase 5 table links it | `Readmes` | 1,874 / 15 / 8 |
 | P5-8b | Test groundwork: `CreaturesSource`, bench accessors, split doubles, part-aware `AIInternals` and `SpawnInternals`, the nine readers repointed. No production code | tests only | same |
 | P5-8c | `SpawnClearanceGrid` to Foundation; `SpawnRegistryService` leaves `SpawnService` (1,208 -> about 830, `LargeTypes.txt` line gone); handler renames, reload snapshots and digests re-keyed | `WalkmeshService.cs` (usings), reload tests | same |
-| P5-8d | `SpawnObjectService` leaves (`SpawnService` about 515); the Administration and Social ports: `ISpawnedCreaturePreparer`, `ICreatureAIProfileReader`, `IAIPartyQuery` | `DMBlueprintCatalogService.cs`, `DMObjectDetailsService.cs`, `PartyService.cs` | 1,874 / 15 / 8 |
+| P5-8d | `SpawnObjectService` leaves (`SpawnService` about 515); `AIService` implements `IAIProfileDescription` and `SpawnObjectService` implements `IDMSpawnPreparation` directly (the two P5-15a adapters are deleted); the Social port `IAIPartyQuery` | `DMBlueprintCatalogService.cs`, `DMObjectDetailsService.cs`, `PartyService.cs` | 1,874 / 15 / 8 |
 | P5-8e | **Gated (D3).** `CreatureAIRules`; ports `ICombatLeash`, `ICompanionTargetQuery`, `IStealthAggroListener` and their registrations; Enmity, Stealth, Espionage, Space and the two Feature call sites; five `Lazy<>` plain | `EnmityService.cs`, `StealthService.cs`, `EspionageInfiltrationService.cs`, `SpaceService.cs`, `CivilianPatrol.cs`, `EchaniTempleMonks.cs` | about 1,850 / 15 / 3 |
 | P5-8f | `CompanionControlStoreService`, `CompanionPositioningService`, `CompanionTargetAuthorityService` leave `CompanionControlService` (1,090 -> about 470); `AIContext` and `UsePerkFeat` call text (D2); `AIService` takes store and authority plain | `UsePerkFeat.cs` (9 sites, scripted) | about 1,850 / 16 / 2 |
 | P5-8g | `AICreatureEventService` and `AIAggroService` leave (15 handler lines re-pointed; the Stealth registration handler moves); `Lazy<IEspionageInfiltrationService>` leaves with the aggro code | none | about 1,330 / 12 / 1 |

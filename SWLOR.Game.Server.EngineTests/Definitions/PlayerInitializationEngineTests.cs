@@ -135,9 +135,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     catch (TargetInvocationException exception) when (exception.InnerException is InvalidOperationException)
                     { failed = true; }
                     ctx.AssertEqual(failExport, failed, "Only the injected export failure is expected");
-                    ctx.AssertEqual(StatService.BaseHP, saved.MaxHP, "HP budget is initialized once across retries");
-                    ctx.AssertEqual(StatService.BaseFP, saved.MaxFP, "FP budget is initialized once across retries");
-                    ctx.AssertEqual(StatService.BaseSTM, saved.MaxStamina, "Stamina budget is initialized once across retries");
+                    ctx.AssertEqual(CreatureStatService.BaseHP, saved.MaxHP, "HP budget is initialized once across retries");
+                    ctx.AssertEqual(StatRecordService.BaseFP, saved.MaxFP, "FP budget is initialized once across retries");
+                    ctx.AssertEqual(StatRecordService.BaseSTM, saved.MaxStamina, "Stamina budget is initialized once across retries");
                     ctx.AssertEqual(1, saved.Currencies[CurrencyType.RebuildToken], "Retries retain exactly one starting rebuild token");
                     ctx.AssertEqual(1, saved.Currencies[CurrencyType.LanguageToken], "Retries retain exactly one starting language token");
                     ctx.AssertEqual(failExport, saved.CharacterInitializationPending, "Completion follows a successful export");

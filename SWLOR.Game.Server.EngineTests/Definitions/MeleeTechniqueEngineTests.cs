@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var target = ctx.SpawnCreature("nw_rat001", x, y);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             SetAILevel(target, AILevel.VeryLow);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
             TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
@@ -363,7 +363,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature("nw_rat001", 1f);
             await ctx.DelaySecondsAsync(1f);
             ctx.MakeHostile(target);
-            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             SetAILevel(target, AILevel.VeryLow);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
             TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature("nw_rat001", 1f);
             await ctx.DelaySecondsAsync(1f);
             ctx.MakeHostile(target);
-            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             SetAILevel(target, AILevel.VeryLow);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
             TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
@@ -505,7 +505,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var target = ctx.SpawnCreature("nw_rat001", 1f);
                     await ctx.DelaySecondsAsync(1f);
                     ctx.SuppressNPCNaturalRegen(target);
-                    Stat.SetNPCMaxHitPoints(target, 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                     SetAILevel(target, AILevel.VeryLow);
                     ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
                     TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
@@ -1056,7 +1056,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var creature in new[] { caster, target })
             {
                 ctx.SuppressNPCNaturalRegen(creature);
-                Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
                 SetAILevel(creature, AILevel.VeryLow);
             }
             ctx.SetNPCResources(caster, 100, 100);

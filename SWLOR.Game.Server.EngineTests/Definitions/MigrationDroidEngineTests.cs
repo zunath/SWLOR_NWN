@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(expectedHP, GetMaxHitPoints(droid), "Unequipping removes only the equipment HP bonus");
                 ctx.AssertEqual(300, GetCurrentHitPoints(droid), "Unequipping preserves wounds below the new maximum");
             }
-            await ctx.ExecuteInCreatureContextAsync(droid, () => Stat.LoadNPCStats(droid));
+            await ctx.ExecuteInCreatureContextAsync(droid, () => CreatureStat.LoadNPCStats(droid));
             ctx.AssertEqual(350, GetMaxHitPoints(droid), "Reloading the skin preserves Vitality HP without doubling it");
             ctx.AssertEqual(350, GetCurrentHitPoints(droid), "Reload restores the full final HP budget");
         }

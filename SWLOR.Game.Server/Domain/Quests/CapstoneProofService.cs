@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Domain.Quests
         private const string SupportProofPrefix = "CAPSTONE_SUPPORT_";
         private const string OwnedBeastHitPrefix = "OWNED_BEAST_HIT_";
 
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly ICompanionLookup _companions;
         private readonly IAbilityCatalog _catalog;
         private readonly Dictionary<string, CapstoneProofDefinition> _proofs = new();
         private readonly Dictionary<Type, List<CapstoneProofDefinition>> _byEnemyStatus = new();
@@ -38,9 +38,9 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// Registers the capstone proofs the quest definitions name. That only fills dictionaries from static data (no
         /// engine, database or service call), as the static constructor of the old class did on first use.
         /// </summary>
-        public CapstoneProofService(IBeastMasteryService beastMastery, IAbilityCatalog catalog)
+        public CapstoneProofService(ICompanionLookup companions, IAbilityCatalog catalog)
         {
-            _beastMastery = beastMastery;
+            _companions = companions;
             _catalog = catalog;
 
             foreach (var proof in CapstoneProofDefinitions.All)
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Domain.Quests
 
         public void RecordBeastDamage(uint beast, uint target)
         {
-            if (!GetIsObjectValid(beast) || !_beastMastery.IsPlayerBeast(beast))
+            if (!GetIsObjectValid(beast) || !_companions.IsPlayerBeast(beast))
                 return;
 
             var player = ResolvePlayer(beast);

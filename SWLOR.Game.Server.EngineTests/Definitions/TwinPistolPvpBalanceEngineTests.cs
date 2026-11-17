@@ -268,7 +268,7 @@ public static class TwinPistolPvpBalanceEngineTests
             {
                 SuppressAi(target);
                 ctx.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 30000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 30000, true);
                 TemporaryStatModifier.Add(target, StatType.PhysicalDefense,
                     94 - CombatRating.GetDefense(target, CombatDamageType.Physical, AbilityType.Vitality), 30f);
                 TemporaryStatModifier.Add(target, StatType.Evasion, 134 - CombatRating.GetEvasion(target, SkillType.Invalid), 30f);
@@ -343,7 +343,7 @@ public static class TwinPistolPvpBalanceEngineTests
                 {
                     // Calibrated actual damage makes this hit fatal precisely at the configured
                     // threshold, with enough real shield capacity to survive the arriving hit.
-                    Stat.SetNPCMaxHitPoints(target, baseline * 5, true);
+                    CreatureStat.SetNPCMaxHitPoints(target, baseline * 5, true);
                     ObjectPlugin.SetCurrentHitPoints(target, baseline);
                     TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPThresholdPercent, 20, 30f);
                     TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPPercent, 50, 30f);
@@ -526,7 +526,7 @@ public static class TwinPistolPvpBalanceEngineTests
         SuppressAi(npc);
         SetPlotFlag(npc, false);
         ctx.SuppressNPCNaturalRegen(npc);
-        Stat.SetNPCMaxHitPoints(npc, 20000, true);
+        CreatureStat.SetNPCMaxHitPoints(npc, 20000, true);
         PrepareTarget(ctx, npc);
     }
 

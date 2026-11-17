@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ObjectPlugin.SetPosition(targets[i], GetPositionFromLocation(ctx.GetArenaLocation(-2f + 2f * i)));
                 ctx.MakeHostile(targets[i]);
                 ctx.SuppressNPCNaturalRegen(targets[i]);
-                Stat.SetNPCMaxHitPoints(targets[i], 30000);
+                CreatureStat.SetNPCMaxHitPoints(targets[i], 30000);
                 ctx.AssertEqual(30000, GetMaxHitPoints(targets[i]), "target HP budget");
             }
             foreach (var creature in targets.Append(caster))

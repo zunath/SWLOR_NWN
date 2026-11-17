@@ -59,13 +59,14 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly IPropertyService _property;
         private readonly IAIService _ai;
         private readonly ICombatRecorderService _combatRecorder;
-        private readonly Lazy<ICompanionControlService> _companionControl;
+        private readonly ICompanionControlService _companionControl;
         private readonly IGuiService _gui;
         private readonly IItemService _item;
-        private readonly Lazy<IPerkService> _perk;
+        private readonly IPerkService _perk;
         private readonly IResistanceService _resistance;
-        private readonly Lazy<IStatService> _stat;
-        private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly IStatService _stat;
+        private readonly ICreatureStatService _creatureStat;
+        private readonly IStatusEffectService _statusEffect;
         private readonly ICombatDamageCatalogService _damageCatalog;
 
         public BeastMasteryService(
@@ -74,13 +75,14 @@ namespace SWLOR.Game.Server.Domain.Companions
             IPropertyService property,
             IAIService ai,
             ICombatRecorderService combatRecorder,
-            Lazy<ICompanionControlService> companionControl,
+            ICompanionControlService companionControl,
             IGuiService gui,
             IItemService item,
-            Lazy<IPerkService> perk,
+            IPerkService perk,
             IResistanceService resistance,
-            Lazy<IStatService> stat,
-            Lazy<IStatusEffectService> statusEffect,
+            IStatService stat,
+            ICreatureStatService creatureStat,
+            IStatusEffectService statusEffect,
             ICombatDamageCatalogService damageCatalog)
         {
             _db = db;
@@ -94,6 +96,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             _perk = perk;
             _resistance = resistance;
             _stat = stat;
+            _creatureStat = creatureStat;
             _statusEffect = statusEffect;
             _damageCatalog = damageCatalog;
         }
@@ -260,7 +263,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual int GetPerkLevel(uint creature, PerkType perkType)
         {
-            return _perk.Value.GetPerkLevel(creature, perkType);
+            return _perk.GetPerkLevel(creature, perkType);
         }
 
         /// <summary>
@@ -269,7 +272,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual int GetStatAdjustment(uint creature, StatType stat)
         {
-            return _stat.Value.GetStatAdjustment(creature, stat);
+            return _stat.GetStatAdjustment(creature, stat);
         }
 
         /// <summary>
@@ -551,7 +554,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual void SyncGrantedFeats(uint creature, PerkType perkType, int perkLevel, bool addByLevel)
         {
-            _perk.Value.SyncGrantedFeats(creature, perkType, perkLevel, addByLevel);
+            _perk.SyncGrantedFeats(creature, perkType, perkLevel, addByLevel);
         }
 
         /// <summary>
@@ -560,7 +563,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints)
         {
-            _stat.Value.SetNPCMaxHitPoints(creature, desiredMaxHitPoints);
+            _creatureStat.SetNPCMaxHitPoints(creature, desiredMaxHitPoints);
         }
 
         public (BeastFoodType, BeastFoodType) GetLikedAndHatedFood()
@@ -607,7 +610,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// </summary>
         protected virtual NPCStats GetNPCStats(uint npc)
         {
-            return _stat.Value.GetNPCStats(npc);
+            return _stat.GetNPCStats(npc);
         }
 
         /// <summary>
@@ -782,37 +785,37 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>Clears the companion control state of a companion. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void ClearCompanionControl(uint companion)
         {
-            _companionControl.Value.Clear(companion);
+            _companionControl.Clear(companion);
         }
 
         /// <summary>Sets up the companion control state of a companion. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void InitializeCompanionControl(uint companion)
         {
-            _companionControl.Value.Initialize(companion);
+            _companionControl.Initialize(companion);
         }
 
         /// <summary>Runs a companion's combat round. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void ProcessCompanionCombatRound(uint companion)
         {
-            _companionControl.Value.ProcessCombatRound(companion);
+            _companionControl.ProcessCombatRound(companion);
         }
 
         /// <summary>Runs a companion's heartbeat. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void ProcessCompanionHeartbeat(uint companion)
         {
-            _companionControl.Value.ProcessHeartbeat(companion);
+            _companionControl.ProcessHeartbeat(companion);
         }
 
         /// <summary>Lets the companion control answer a conversation. The original call into <c>CompanionControl</c>.</summary>
         protected virtual bool HandleCompanionConversation(uint companion)
         {
-            return _companionControl.Value.HandleConversation(companion);
+            return _companionControl.HandleConversation(companion);
         }
 
         /// <summary>Registers a threat a companion defends against. The original call into <c>CompanionControl</c>.</summary>
         protected virtual void RegisterDefensiveThreat(uint companion, uint threat)
         {
-            _companionControl.Value.RegisterDefensiveThreat(companion, threat);
+            _companionControl.RegisterDefensiveThreat(companion, threat);
         }
 
         /// <summary>
@@ -827,25 +830,25 @@ namespace SWLOR.Game.Server.Domain.Companions
         /// <summary>Restores the stamina and focus of the beasts. The original call into <c>Stat</c>.</summary>
         protected virtual void RestoreBeastStats()
         {
-            _stat.Value.RestoreBeastStats();
+            _creatureStat.RestoreBeastStats();
         }
 
         /// <summary>Loads the stats of the NPC that runs the current script. The original call into <c>Stat</c>.</summary>
         protected virtual void LoadNPCStats()
         {
-            _stat.Value.LoadNPCStats();
+            _creatureStat.LoadNPCStats();
         }
 
         /// <summary>Applies the movement rate of a creature. The original call into <c>Stat</c>.</summary>
         protected virtual void ApplyCreatureMovementRate(uint creature)
         {
-            _stat.Value.ApplyCreatureMovementRate(creature);
+            _creatureStat.ApplyCreatureMovementRate(creature);
         }
 
         /// <summary>Puts the rest status effect on a beast. The original call into <c>StatusEffect</c>.</summary>
         protected virtual void ApplyRestStatusEffect(uint beast)
         {
-            _statusEffect.Value.ApplyStatusEffect(beast, beast, typeof(RestStatusEffect), 0f);
+            _statusEffect.ApplyStatusEffect(beast, beast, typeof(RestStatusEffect), 0f);
         }
 
         /// <summary>

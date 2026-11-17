@@ -52,6 +52,7 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Creatures.SpawnService.LoadSpawnTables
   action      SWLOR.Game.Server.Domain.Creatures.SpawnService.StoreSpawns
   action      SWLOR.Game.Server.Domain.Character.StatService.CacheData
+  action      SWLOR.Game.Server.Domain.Character.CreatureStatService.RegisterStatEffectListener
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData
   action      SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
   action      SWLOR.Game.Server.Domain.World.WeatherService.LoadData
@@ -209,7 +210,7 @@ asso_rem_bef
   action      SWLOR.Game.Server.Domain.Social.PartyService.AssociateLeaveParty
 
 assoc_stateffect
-  action      SWLOR.Game.Server.Domain.Character.StatService.ReapplyFoodHP
+  action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ReapplyFoodHP
 
 aura_enter
   action      SWLOR.Game.Server.Domain.Abilities.AbilityAuraService.AuraEnter
@@ -446,7 +447,7 @@ dm_limbo_bef
 dm_poss_bef
   action      SWLOR.Game.Server.Domain.Social.CommunicationService.OnDMPossess
   action      SWLOR.Game.Server.Domain.Social.PlayerListService.MoveWindowOnPossession
-  action      SWLOR.Game.Server.Domain.Character.StatService.ClearWalkModeBeforeDMPossessionChange
+  action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ClearWalkModeBeforeDMPossessionChange
   action      SWLOR.Game.Server.Domain.Combat.TelegraphService.ResendShaderStateOnDMPossess
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveToolbarOnPossession
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAvatarFadeOnRelease
@@ -457,7 +458,7 @@ dm_poss_bef
 dm_possfull_bef
   action      SWLOR.Game.Server.Domain.Social.CommunicationService.OnDMPossess
   action      SWLOR.Game.Server.Domain.Social.PlayerListService.MoveWindowOnPossession
-  action      SWLOR.Game.Server.Domain.Character.StatService.ClearWalkModeBeforeDMPossessionChange
+  action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ClearWalkModeBeforeDMPossessionChange
   action      SWLOR.Game.Server.Domain.Combat.TelegraphService.ResendShaderStateOnDMPossess
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.MoveToolbarOnPossession
   action      SWLOR.Game.Server.Feature.DMToolbarWindow.RefreshAvatarFadeOnRelease
@@ -759,7 +760,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.World.ShuttleService.EnterServer
   action      SWLOR.Game.Server.Domain.Character.SkillService.AddMissingSkills
   action      SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
-  action      SWLOR.Game.Server.Domain.Character.StatService.ApplyPlayerStats
+  action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ApplyPlayerStats
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter
   action      SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnEnter
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
@@ -829,7 +830,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.Combat.PvpCombatService.ForgetExitingPlayer
   action      SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
   action      SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer
-  action      SWLOR.Game.Server.Domain.Character.StatService.ForgetOutOfCombatMovementState
+  action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ForgetOutOfCombatMovementState
   action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerExit
   action      SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnExit
   action      SWLOR.Game.Server.Domain.Combat.TelegraphService.ForgetShaderStateOnExit
@@ -968,7 +969,7 @@ pc_fp_adjusted
 
 pc_heartbeat
   action      SWLOR.Game.Server.Domain.Social.ExtraHotbarsStatusService.RefreshOnHeartbeat
-  action      SWLOR.Game.Server.Domain.Character.StatService.RefreshOutOfCombatMovementRate
+  action      SWLOR.Game.Server.Domain.Character.CreatureStatService.RefreshOutOfCombatMovementRate
   action      SWLOR.Game.Server.Domain.Combat.StealthService.EnsureStealthStatusWhileHidden
   action      SWLOR.Game.Server.Domain.Social.PerformanceWatchingService.StopWatchingWhenOutOfRange
   action      SWLOR.Game.Server.Feature.NaturalRegeneration.ProcessRegeneration

@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void Prepare(EngineTestContext ctx, uint creature)
         {
             ctx.SuppressNPCNaturalRegen(creature);
-            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             SetAILevel(creature, AILevel.VeryLow);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 120f);
         }

@@ -83,8 +83,8 @@ public static partial class MigrationEngineTests
         {
             // Keep the complete HP budget below the one-level fixture's native cap.
             var record = DB.Get<Player>(GetObjectUUID(player));
-            record.TemporaryFoodHP = 100 - StatService.BaseHP;
-            Stat.AdjustPlayerMaxHP(record, player, 100 - record.MaxHP);
+            record.TemporaryFoodHP = 100 - CreatureStatService.BaseHP;
+            CreatureStat.AdjustPlayerMaxHP(record, player, 100 - record.MaxHP);
             DB.Set(record);
             SetCurrentHitPoints(player, 100);
         });

@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetPlotFlag(doomed, false);
             ctx.SetNPCResources(doomed, ResourcePool, ResourcePool);
             CreaturePlugin.AddFeat(doomed, FeatType.Benevolence1);
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(target, 500);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
             ctx.MakeHostile(attacker);
@@ -718,7 +718,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SuppressNPCNaturalRegen(medic);
             SetPlotFlag(medic, false);
             ctx.SetNPCResources(medic, 9999, 9999);
-            Stat.SetNPCMaxHitPoints(medic, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(medic, 1000, true);
             ctx.SetNPCPerkLevel(medic, PerkType.Resuscitation, 1);
             CreaturePlugin.AddFeat(medic, FeatType.Resuscitation1);
             SetName(body, "Recorder Body");
@@ -741,7 +741,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, TemporaryHitPointEffects.ApplyFlatFromSource(granter, shielded, "RECORDER_CAP_REFUSED", 50, 60f),
                     "a full cap grants nothing");
                 // The cap drops to 300, so the pool ending soonest loses 200.
-                Stat.SetNPCMaxHitPoints(shielded, 600);
+                CreatureStat.SetNPCMaxHitPoints(shielded, 600);
                 await ctx.WaitUntilAsync(() => TemporaryHitPointEffects.GetRemaining(shielded) == 300, 2f, "pools to shrink to the new cap");
 
                 var started = false;
@@ -840,7 +840,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SuppressNPCNaturalRegen(creature);
             SetPlotFlag(creature, false);
             ctx.SetNPCResources(creature, ResourcePool, ResourcePool);
-            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(creature, hitPoints);
         }
 

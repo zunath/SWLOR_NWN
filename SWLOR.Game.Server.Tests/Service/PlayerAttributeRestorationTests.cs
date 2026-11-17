@@ -89,12 +89,12 @@ public class PlayerAttributeRestorationTests
     {
         var source = ReadSource("Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs");
         source.Should().NotContain("ModifyRawAbilityScore");
-        source.Should().Contain("DB.Set(dbPlayer);\n                Stat.ApplyPlayerStat(dbPlayer, _target, ability);");
+        source.Should().Contain("DB.Set(dbPlayer);\n                CreatureStat.ApplyPlayerStat(dbPlayer, _target, ability);");
     }
 
     private static void Restore(Player player, Action<AbilityType, int> setScore)
     {
-        Stat.RestorePlayerAttributes(player, setScore);
+        CreatureStat.RestorePlayerAttributes(player, setScore);
     }
 
     private static string ReadSource(params string[] path)

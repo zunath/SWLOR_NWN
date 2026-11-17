@@ -10,7 +10,10 @@ using BaseItem = SWLOR.NWN.API.NWScript.Enum.Item.BaseItem;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Stats: the FP and Stamina pools, the player records fed by worn gear, walk mode and movement rate, and NPC stat skins.
+    /// Stats: the stat adjustment read and its sources, the FP and Stamina pools, the NPC stat skin reads, and the Detection,
+    /// Stealth, Lockpicking, Combat Readiness, Control and Craftsmanship reads. Walk mode, the movement rate, maximum HP,
+    /// attributes, NPC loading and regeneration are <c>ICreatureStatService</c>'s and the player records fed by worn gear are
+    /// <c>IStatRecordService</c>'s (P5-4e).
     /// The ratings and the deflection and Guard chances are <c>ICombatRatingService</c>'s (Combat, P5-4c); what a deflection
     /// sets off is <c>ICombatDeflectionReactionService</c>'s and the healing adjustments are <c>ICombatResourcesService</c>'s
     /// (Combat, P5-4d).
@@ -53,18 +56,6 @@ namespace SWLOR.Game.Server.Domain.Character
             float primaryRate = 0.01f,
             int secondaryStat = 0,
             float secondaryRate = 0.005f);
-
-        /// <summary>
-        /// When a player enters the server, reapply HP and temporary stats.
-        /// </summary>
-        void ApplyPlayerStats();
-
-        /// <summary>
-        /// The engine keeps a player's local variables across a relog until the server resets,
-        /// but the forced walk set through NWNX belongs to the old creature object.
-        /// Reapply it so a player who logged out walking still walks.
-        /// </summary>
-        void RestoreWalkMode(uint player);
 
         /// <summary>
         /// Retrieves the maximum FP on a creature.
@@ -153,263 +144,7 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <param name="dbPlayer">The entity to modify</param>
         void ReduceStamina(uint creature, int reduceBy, Player dbPlayer = null);
 
-        /// <summary>
-        /// After a player's status effects are reassociated,
-        /// adjust any food HP if necessary.
-        /// </summary>
-        void ReapplyFoodHP();
-
-        void ReapplyFoodHP(uint player);
-
-        /// <summary>
-        /// Increases or decreases a player's HP by a specified amount.
-        /// There is a cap of 255 HP per NWN level. Players are auto-leveled to 40 by default, so this
-        /// gives 255 * 40 = 10,200 HP maximum. If the player's HP would go over this amount, it will be set to 10,200.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="player">The player to adjust</param>
-        /// <param name="adjustBy">The amount to adjust by.</param>
-        void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy);
-
-        /// <summary>
-        /// Sets a player's stored maximum HP to the sum of its sources: the base, the HP bonuses on equipped items,
-        /// and active food. Equipment and food add and remove their HP as changes, so one missed, failed or repeated
-        /// change leaves the record off for good. A record below the native floor of one HP per level then hides
-        /// gear HP until enough is worn to climb past that floor.
-        /// </summary>
-        /// <param name="player">The player to reconcile</param>
-        /// <returns>True if the record was corrected</returns>
-        bool RefreshPlayerMaxHP(uint player);
-
-        int GetEquippedHPBonus(uint creature);
-
-        /// <summary>
-        /// Sets every player record summed from worn gear (see <see cref="EquipmentRecordStats"/>) to what the worn gear
-        /// grants. Like max HP, these records are kept by adding and removing each equipment change, so one missed,
-        /// failed or repeated change leaves them off for good.
-        /// </summary>
-        /// <param name="player">The player to reconcile</param>
-        /// <param name="stats">The records to rebuild</param>
-        /// <returns>The records that were corrected</returns>
-        EquipmentRecordStats RefreshPlayerEquipmentStats(uint player, EquipmentRecordStats stats = EquipmentRecordStats.All);
-
-        /// <summary>
-        /// Sums the record stats the worn gear grants, counting the same properties equipping does.
-        /// </summary>
-        EquipmentStatTotals GetEquippedStatTotals(uint creature);
-
-        /// <summary>
-        /// Writes the gear totals into the selected records: Defense and Resistance for every type, maximum FP and STM
-        /// above their bases, Control, Craftsmanship and CP Bonus for every crafting skill, and each summed number
-        /// such as Evasion, Attack or Stealth. Pools are left alone.
-        /// </summary>
-        /// <returns>The records that changed</returns>
-        EquipmentRecordStats ApplyEquipmentStatTotals(Player entity, EquipmentStatTotals totals, EquipmentRecordStats stats);
-
-        /// <summary>
-        /// Modifies a player's maximum FP by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustPlayerMaxFP(Player entity, int adjustBy, uint player);
-
-        /// <summary>
-        /// Modifies a player's maximum STM by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustPlayerMaxSTM(Player entity, int adjustBy, uint player);
-
-        bool IsWalkModeEnabled(uint creature);
-
-        void ClearWalkModeBeforeDMPossessionChange();
-
-        bool ToggleWalkMode(uint player);
-
-        void ApplyCreatureMovementRate(uint creature);
-
-        /// <summary>
-        /// Out-of-combat movement speed depends on the combat state, which has no event of its own, so a player
-        /// holding that stat has their movement rate re-applied on the heartbeat that sees the state change.
-        /// </summary>
-        void RefreshOutOfCombatMovementRate();
-
-        void ForgetOutOfCombatMovementState();
-
-        float GetMovementSpeedMultiplier(uint creature);
-
-        /// <summary>
-        /// Calculates a player's stat based on their skill bonuses, upgrades, etc. and applies the changes to one ability score.
-        /// </summary>
-        /// <param name="entity">The player entity</param>
-        /// <param name="player">The player object</param>
-        /// <param name="ability">The ability score to apply to.</param>
-        void ApplyPlayerStat(Player entity, uint player, AbilityType ability);
-
-        void RestorePlayerAttributes(uint player);
-
-        void RestorePlayerAttributes(Player entity, Action<AbilityType, int> setAbilityScore);
-
-        /// <summary>
-        /// Modifies the combat readiness of a player by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The player entity</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustCombatReadiness(Player entity, int adjustBy);
-
         int GetCombatReadinessPercent(uint creature);
-
-        /// <summary>
-        /// Reconciles the equipment cache after login or a completed equipment change.
-        /// Keep this outside ability calculations: one scan can serve every target.
-        /// </summary>
-        void RefreshCombatReadinessEquipment(uint creature);
-
-        int GetEquippedCombatReadiness(uint creature);
-
-        /// <summary>
-        /// Modifies a player's HP Regen by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustHPRegen(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's FP Regen by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustFPRegen(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's STM Regen by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustSTMRegen(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's defense toward a particular damage type by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="type">The type of damage</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustDefense(Player entity, CombatDamageType type, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's evasion by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustEvasion(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's stealth by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustStealth(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's detection by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustDetection(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's trap bonus by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustTrapBonus(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's trap disarm by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustTrapDisarm(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's poison bonus by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustPoisonBonus(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's lockpicking by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustLockpicking(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's attack by a certain amount. Attack affects damage output.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustAttack(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's accuracy granted by non-weapon equipment.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustAccuracy(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's force attack by a certain amount. Force Attack affects damage output.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustForceAttack(Player entity, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's control by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="skillType">The skill type to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustControl(Player entity, SkillType skillType, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's craftsmanship by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="skillType">The skill type to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustCraftsmanship(Player entity, SkillType skillType, int adjustBy);
-
-        /// <summary>
-        /// Modifies a player's CP bonus by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify</param>
-        /// <param name="skillType">The skill type to modify</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        void AdjustCPBonus(Player entity, SkillType skillType, int adjustBy);
 
         /// <summary>
         /// Retrieves a creature's detection rating, used against Stealth in the opposed stealth detection check.
@@ -491,49 +226,9 @@ namespace SWLOR.Game.Server.Domain.Character
         int CalculateCraftsmanship(uint player, SkillType craftingSkillType);
 
         /// <summary>
-        /// Stores an NPC's STM and FP as local variables.
-        /// Also load their HP per their skin, if specified.
-        /// </summary>
-        void LoadNPCStats();
-
-        void LoadNPCStats(uint self);
-
-        /// <summary>
         /// Returns the maximum HP a stat skin grants, or 0 when it grants none.
         /// </summary>
         /// <param name="skin">The stat skin item.</param>
         int GetNPCSkinMaxHP(uint skin);
-
-        /// <summary>
-        /// Sets an NPC's final maximum HP after accounting for the native NWN bonuses
-        /// derived from Constitution (SWLOR Vitality), Toughness, and similar rules.
-        /// ObjectPlugin.SetMaxHitPoints writes the engine's base HP, not its final maximum.
-        /// </summary>
-        /// <param name="creature">The NPC whose HP budget is being applied.</param>
-        /// <param name="desiredMaxHitPoints">The final maximum HP the NPC should have.</param>
-        /// <param name="restoreToFull">If true, restore current HP to the final maximum.</param>
-        void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints, bool restoreToFull = false);
-
-        /// <summary>
-        /// Restores an NPC's STM and FP.
-        /// </summary>
-        /// <param name="outOfCombatRegen">Also heals a tenth of maximum HP while the NPC is out of combat with nobody on its enmity table.</param>
-        /// <param name="enmity">Who the NPC hates most; read only when <paramref name="outOfCombatRegen"/> is true, so other callers pass null.</param>
-        void RestoreNPCStats(bool outOfCombatRegen, IEnmityTargetQuery enmity);
-
-        /// <summary>
-        /// Restores a beast's FP and STM. Each heartbeat restores 1 + WIL/10 FP and 1 + MGT/10 STM.
-        /// STM regeneration remains active in and out of combat, but cannot begin until six seconds
-        /// after the beast last spent STM.
-        /// </summary>
-        void RestoreBeastStats();
-
-        bool IsNaturalStaminaRegenerationAvailable(long availableAtTicks, long currentTicks);
-
-        /// <summary>
-        /// Amount of FP or STM a beast restores per heartbeat, scaled by the governing attribute
-        /// (WIL for FP, MGT for STM).
-        /// </summary>
-        int GetBeastNaturalRegenAmount(int attribute);
     }
 }

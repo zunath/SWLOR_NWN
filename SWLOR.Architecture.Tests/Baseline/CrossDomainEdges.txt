@@ -526,9 +526,6 @@ Feature/QuestDefinition -> Feature/StatusEffectDefinition | 1
 Domain/Quests -> Domain/Combat | 7
 Feature/QuestDefinition -> Domain/Combat | 2
 
-# Quests -> Companions (1 edge)
-Domain/Quests -> Domain/Companions | 3
-
 # Quests -> Crafting (1 edge)
 Domain/Quests -> Domain/Crafting | 1
 

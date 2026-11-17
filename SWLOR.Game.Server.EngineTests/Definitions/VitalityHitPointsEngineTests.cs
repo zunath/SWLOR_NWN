@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var npc = ctx.SpawnCreature("civilian", 3f);
             await ctx.DelaySecondsAsync(1f);
             CreaturePlugin.SetRawAbilityScore(npc, AbilityType.Vitality, 26);
-            Stat.SetNPCMaxHitPoints(npc, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(npc, 1000, true);
             CreaturePlugin.SetRawAbilityScore(npc, AbilityType.Vitality, 27);
             ctx.AssertEqual(1000, GetMaxHitPoints(npc), "odd Vitality does not change NPC budgets");
             CreaturePlugin.SetRawAbilityScore(npc, AbilityType.Vitality, 28);

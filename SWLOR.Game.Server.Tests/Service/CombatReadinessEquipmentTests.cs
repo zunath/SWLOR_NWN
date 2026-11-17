@@ -62,6 +62,7 @@ public class CombatReadinessEquipmentTests
             using SWLOR.NWN.API.NWScript.Enum.Item;
             using static SWLOR.Game.Server.Composition.GameServices;
             using Stat = ReadinessHarness;
+            using StatRecord = ReadinessHarness;
 
             public static class ReadinessHarness
             {

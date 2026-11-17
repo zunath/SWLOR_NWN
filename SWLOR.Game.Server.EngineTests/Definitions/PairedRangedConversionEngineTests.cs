@@ -82,7 +82,7 @@ public static class PairedRangedConversionEngineTests
                     SetEventScript(creature, EventScript.Creature_OnNotice, "");
                     SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "");
                     ctx.SuppressNPCNaturalRegen(creature);
-                    Stat.SetNPCMaxHitPoints(creature, 20000, true);
+                    CreatureStat.SetNPCMaxHitPoints(creature, 20000, true);
                 }
                 ReplaceProperty(companion, ItemPropertyType.DMG, ItemPropertyCustom(ItemPropertyType.DMG, -1, 200));
                 ReplaceProperty(companion, ItemPropertyType.WeaponDamageType,

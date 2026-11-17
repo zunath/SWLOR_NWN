@@ -160,7 +160,7 @@ public static class TwinPistolEquipmentEngineTests
         {
             record.Skills[SkillType.TwinPistol].Rank = 25;
             // STM gear rebuilds max STM from worn gear, so the fixture's seeded STM, which has no source, would vanish.
-            record.MaxStamina = record.Stamina = StatService.BaseSTM;
+            record.MaxStamina = record.Stamina = StatRecordService.BaseSTM;
         });
         var actor = player.Creature;
         var main = await CreateCarriedItem(ctx, actor, "b_twinpistol");
@@ -304,7 +304,7 @@ public static class TwinPistolEquipmentEngineTests
                             CreaturePlugin.SetRawAbilityScore(target, AbilityType.Vitality, defenseStat);
                             SetPlotFlag(target, false);
                             ctx.SuppressNPCNaturalRegen(target);
-                            Stat.SetNPCMaxHitPoints(target, 20000, true);
+                            CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
 
                             mainDamage = SampleOrdinaryDamage(ctx, actor, target, main, false);
                             spareDamage = SampleOrdinaryDamage(ctx, actor, target, spare, true);

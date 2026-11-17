@@ -84,8 +84,8 @@ namespace SWLOR.CraftSim.Legacy
 
         public static readonly SourceReference GearStats = new(
             "Crafting gear stats", EquipmentStats, 930, 1126,
-            "Stat.AdjustControl(dbPlayer, skillType, amount);", "Stat.AdjustCraftsmanship(dbPlayer, skillType, amount);",
-            "Stat.AdjustCPBonus(dbPlayer, skillType, amount);", "GetItemPropertyCostTableValue(ip)");
+            "StatRecord.AdjustControl(dbPlayer, skillType, amount);", "StatRecord.AdjustCraftsmanship(dbPlayer, skillType, amount);",
+            "StatRecord.AdjustCPBonus(dbPlayer, skillType, amount);", "GetItemPropertyCostTableValue(ip)");
 
         // The harvest rules live in Prospecting now. A node still holds a d4 pool of units, set when it is first worked, and Quick Harvest
         // takes all of it, a charge and a harvest delay for each; a unit still pays GetDeltaXP(10 x (tier - 1) + 5 - rank). The bonus item

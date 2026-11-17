@@ -240,7 +240,7 @@ public static class LootStatRevisionMigration
         SetLocalInt(item, revisionVariable, revision);
 
         if (GetIsObjectValid(wearer))
-            Stat.RefreshCombatReadinessEquipment(wearer);
+            StatRecord.RefreshCombatReadinessEquipment(wearer);
         return true;
     }
 

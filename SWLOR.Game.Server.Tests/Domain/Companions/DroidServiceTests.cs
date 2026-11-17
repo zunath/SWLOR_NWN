@@ -77,7 +77,7 @@ public class DroidServiceTests
             FacadeForwarder.For<IRaceService>(),
             FacadeForwarder.For<IRecastService>(),
             FacadeForwarder.For<IResistanceService>(),
-            FacadeForwarder.For<IStatService>(),
+            FacadeForwarder.For<ICreatureStatService>(),
             FacadeForwarder.For<IStatusEffectService>(),
             FacadeForwarder.For<ITwinPistolEquipmentService>());
     }

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.DelaySecondsAsync(1f);
                 ctx.SuppressNPCNaturalRegen(target);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 120f);
-                Stat.SetNPCMaxHitPoints(target, 1000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
                 if (reduction == 50)
                 {
                     ctx.Assert(StatusEffect.ApplyStatusEffect(source, target, new PainSuppressant2StatusEffect(), 60f), "Pain Suppressant applies");

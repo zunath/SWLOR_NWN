@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature("civilian", 1f);
             await ctx.DelaySecondsAsync(1f);
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             ObjectPlugin.SetCurrentHitPoints(target, 1);
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, 26);
             fixture.Update(record =>

@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.TemporaryFoodHP = Food.HP;
-            Stat.AdjustPlayerMaxHP(dbPlayer, creature, Food.HP);
+            CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, Food.HP);
             DB.Set(dbPlayer);
         }
 
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var playerId = GetObjectUUID(creature);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            Stat.AdjustPlayerMaxHP(dbPlayer, creature, 0);
+            CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, 0);
         }
 
         protected override void Remove(uint creature)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var dbPlayer = DB.Get<Player>(playerId);
 
             dbPlayer.TemporaryFoodHP = 0;
-            Stat.AdjustPlayerMaxHP(dbPlayer, creature, -Food.HP);
+            CreatureStat.AdjustPlayerMaxHP(dbPlayer, creature, -Food.HP);
             DB.Set(dbPlayer);
         }
 

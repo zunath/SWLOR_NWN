@@ -66,7 +66,7 @@ public class CapstoneProofServiceTests
     }
 
     private static TestCapstoneProofService NewService() =>
-        new(new BeastMasteryService(new InMemoryDBService(), null!, null!, FacadeForwarder.For<IAIService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<ICompanionControlService>(), FacadeForwarder.For<IGuiService>(), FacadeForwarder.For<IItemService>(), FacadeForwarder.LazyFor<IPerkService>(), FacadeForwarder.For<IResistanceService>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.For<ICombatDamageCatalogService>()));
+        new(new CompanionLookup());
 
     private static string EnemyKey(string proof) => "CAPSTONE_PROOF_" + proof + "_" + PlayerId;
 
@@ -586,8 +586,8 @@ public class CapstoneProofServiceTests
     /// <summary>Answers the ability table from a dictionary the test fills, and counts the questions.</summary>
     private sealed class TestCapstoneProofService : CapstoneProofService
     {
-        public TestCapstoneProofService(IBeastMasteryService beastMastery)
-            : base(beastMastery, FacadeForwarder.For<IAbilityCatalog>())
+        public TestCapstoneProofService(ICompanionLookup companions)
+            : base(companions, FacadeForwarder.For<IAbilityCatalog>())
         {
         }
 

@@ -46,21 +46,21 @@ public class StatFormulaCharacterizationTests
         // constants move to their owners and the facade removal tool respells each read, both ways (the parity copy).
         var constants = new (string Name, Type Type, object Value)[]
         {
-            (nameof(StatService.BaseFP), typeof(int), StatService.BaseFP),
-            (nameof(StatService.BaseHP), typeof(int), StatService.BaseHP),
-            (nameof(StatService.BaseSTM), typeof(int), StatService.BaseSTM),
-            (nameof(StatService.BeastNaturalRegenStatDivisor), typeof(int), StatService.BeastNaturalRegenStatDivisor),
+            (nameof(StatRecordService.BaseFP), typeof(int), StatRecordService.BaseFP),
+            (nameof(CreatureStatService.BaseHP), typeof(int), CreatureStatService.BaseHP),
+            (nameof(StatRecordService.BaseSTM), typeof(int), StatRecordService.BaseSTM),
+            (nameof(CreatureStatService.BeastNaturalRegenStatDivisor), typeof(int), CreatureStatService.BeastNaturalRegenStatDivisor),
             (nameof(StatService.BeastNaturalStaminaRegenDelaySeconds), typeof(float), StatService.BeastNaturalStaminaRegenDelaySeconds),
             (nameof(CombatRatingService.DefaultMeleeDeflectionChanceCap), typeof(int), CombatRatingService.DefaultMeleeDeflectionChanceCap),
             (nameof(CombatRatingService.DefaultRangedDeflectionChanceCap), typeof(int), CombatRatingService.DefaultRangedDeflectionChanceCap),
             (nameof(StatService.MaximumCombatReadinessPercent), typeof(int), StatService.MaximumCombatReadinessPercent),
             (nameof(CombatRatingService.MaximumDeflectionChanceCap), typeof(int), CombatRatingService.MaximumDeflectionChanceCap),
             (nameof(CombatRatingService.MaximumGuardChance), typeof(int), CombatRatingService.MaximumGuardChance),
-            (nameof(StatService.MaximumMovementSpeedMultiplier), typeof(float), StatService.MaximumMovementSpeedMultiplier),
+            (nameof(CreatureStatService.MaximumMovementSpeedMultiplier), typeof(float), CreatureStatService.MaximumMovementSpeedMultiplier),
             (nameof(StatService.MaximumNPCDetection), typeof(int), StatService.MaximumNPCDetection),
             (nameof(CombatRatingService.MaximumShieldDeflectionChance), typeof(int), CombatRatingService.MaximumShieldDeflectionChance),
-            (nameof(StatService.MinimumMovementSpeedMultiplier), typeof(float), StatService.MinimumMovementSpeedMultiplier),
-            (nameof(StatService.SuppressNaturalRegenVariable), typeof(string), StatService.SuppressNaturalRegenVariable),
+            (nameof(CreatureStatService.MinimumMovementSpeedMultiplier), typeof(float), CreatureStatService.MinimumMovementSpeedMultiplier),
+            (nameof(CreatureStatService.SuppressNaturalRegenVariable), typeof(string), CreatureStatService.SuppressNaturalRegenVariable),
         };
         FacadeConstants.AssertListsEveryConstant("SWLOR.Game.Server.Service.Stat", constants.Select(constant => constant.Name));
         foreach (var (constantName, type, value) in constants)
@@ -376,7 +376,7 @@ public class StatFormulaCharacterizationTests
         foreach (var availableAt in new[] { -1L, 0L, 1L, 100L, 1000L })
         {
             foreach (var current in new[] { -1L, 0L, 1L, 99L, 100L, 101L, 1000L, 2000L })
-                table.Add(availableAt, current, Stat.IsNaturalStaminaRegenerationAvailable(availableAt, current));
+                table.Add(availableAt, current, CreatureStat.IsNaturalStaminaRegenerationAvailable(availableAt, current));
         }
 
         Snapshot.Verify("Stat", "IsNaturalStaminaRegenerationAvailable", table);
@@ -393,7 +393,7 @@ public class StatFormulaCharacterizationTests
             new[] { "amount" });
 
         foreach (var attribute in new[] { -10, -1, 0, 1, 9, 10, 11, 19, 20, 55, 100, 999 })
-            table.Add(attribute, Stat.GetBeastNaturalRegenAmount(attribute));
+            table.Add(attribute, CreatureStat.GetBeastNaturalRegenAmount(attribute));
 
         Snapshot.Verify("Stat", "GetBeastNaturalRegenAmount", table);
     }

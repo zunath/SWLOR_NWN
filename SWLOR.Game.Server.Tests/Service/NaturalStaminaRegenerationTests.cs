@@ -84,11 +84,11 @@ public class NaturalStaminaRegenerationTests
         var spentAt = new DateTime(2026, 8, 25, 12, 0, 0, DateTimeKind.Utc);
         var availableAt = spentAt.AddSeconds(StatService.BeastNaturalStaminaRegenDelaySeconds);
 
-        Stat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, spentAt.Ticks)
+        CreatureStat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, spentAt.Ticks)
             .Should().BeFalse();
-        Stat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, availableAt.AddTicks(-1).Ticks)
+        CreatureStat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, availableAt.AddTicks(-1).Ticks)
             .Should().BeFalse();
-        Stat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, availableAt.Ticks)
+        CreatureStat.IsNaturalStaminaRegenerationAvailable(availableAt.Ticks, availableAt.Ticks)
             .Should().BeTrue();
     }
 
@@ -100,7 +100,7 @@ public class NaturalStaminaRegenerationTests
     [TestCase(-5, 1)]
     public void BeastNaturalRegeneration_ScalesWithGoverningAttribute(int attribute, int expected)
     {
-        Stat.GetBeastNaturalRegenAmount(attribute).Should().Be(expected);
+        CreatureStat.GetBeastNaturalRegenAmount(attribute).Should().Be(expected);
     }
 
     [Test]

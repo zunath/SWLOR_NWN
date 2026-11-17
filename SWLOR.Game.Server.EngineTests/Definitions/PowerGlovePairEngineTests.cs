@@ -71,7 +71,7 @@ public static class PowerGlovePairEngineTests
             standardOnHitProperty = PropertySignature(ItemPropertyOnHitCastSpell(OnHitCastSpellType.ONHIT_UNIQUEPOWER, 40));
         });
         // The fixture's oversized STM pool is rebuilt from worn gear on the first equip; start from the rebuilt record.
-        await ctx.ExecuteInCreatureContextAsync(actor, () => Stat.RefreshPlayerEquipmentStats(actor));
+        await ctx.ExecuteInCreatureContextAsync(actor, () => StatRecord.RefreshPlayerEquipmentStats(actor));
         var baseline = DB.Get<Player>(player.Id);
         var hp = baseline.MaxHP;
         var stamina = baseline.MaxStamina;
@@ -241,7 +241,7 @@ public static class PowerGlovePairEngineTests
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 ctx.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
                 TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
                 ctx.MakeHostile(target);
@@ -360,7 +360,7 @@ public static class PowerGlovePairEngineTests
             AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Stamina, -1, 9), main);
         });
         // The fixture's oversized STM pool is rebuilt from worn gear on the first equip; start from the rebuilt record.
-        await ctx.ExecuteInCreatureContextAsync(actor, () => Stat.RefreshPlayerEquipmentStats(actor));
+        await ctx.ExecuteInCreatureContextAsync(actor, () => StatRecord.RefreshPlayerEquipmentStats(actor));
         var baseline = DB.Get<Player>(player.Id);
         var baselineHP = baseline.MaxHP;
         var baselineStamina = baseline.MaxStamina;
@@ -382,7 +382,7 @@ public static class PowerGlovePairEngineTests
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 ctx.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
                 TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
                 ctx.MakeHostile(target);

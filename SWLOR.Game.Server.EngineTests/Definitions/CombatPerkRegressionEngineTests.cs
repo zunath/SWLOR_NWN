@@ -494,15 +494,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var maxSTM = Stat.GetMaxStamina(beast);
             SetLocalInt(beast, "FP", maxFP - 1);
             SetLocalInt(beast, "STAMINA", maxSTM - 1);
-            DeleteLocalInt(beast, StatService.SuppressNaturalRegenVariable);
+            DeleteLocalInt(beast, CreatureStatService.SuppressNaturalRegenVariable);
             SetLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT", DateTime.UtcNow.AddMinutes(1).Ticks.ToString());
-            await ctx.ExecuteInCreatureContextAsync(beast, () => Stat.RestoreBeastStats());
+            await ctx.ExecuteInCreatureContextAsync(beast, () => CreatureStat.RestoreBeastStats());
             ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP regenerates while stamina is delayed");
             ctx.AssertEqual(maxSTM - 1, Stat.GetCurrentStamina(beast), "Spending stamina delays its regeneration");
             DeleteLocalString(beast, "BEAST_STAMINA_REGEN_AVAILABLE_AT");
-            await ctx.ExecuteInCreatureContextAsync(beast, () => Stat.RestoreBeastStats());
+            await ctx.ExecuteInCreatureContextAsync(beast, () => CreatureStat.RestoreBeastStats());
             ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina regenerates when its delay expires");
-            await ctx.ExecuteInCreatureContextAsync(beast, () => Stat.RestoreBeastStats());
+            await ctx.ExecuteInCreatureContextAsync(beast, () => CreatureStat.RestoreBeastStats());
             ctx.AssertEqual(maxFP, Stat.GetCurrentFP(beast), "FP stays capped");
             ctx.AssertEqual(maxSTM, Stat.GetCurrentStamina(beast), "Stamina stays capped");
         }
@@ -567,7 +567,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     ctx.AssertEqual(75, GameServices.CombatAbilityImpact.GetAbilityImpactBaseDamageBonus(caster, target, attack, SkillType.BeastMastery),
                         "Control-only casts preserve every First Strike stack without starting recharge");
-                    Stat.SetNPCMaxHitPoints(target, 1000, true);
+                    CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
                     AbilityImpactLifecycle.BeginAbilityImpact(caster, attack);
                     try
                     {
@@ -636,7 +636,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, caster);
             Prepare(ctx, target);
             ctx.MakeHostile(target);
-            Stat.SetNPCMaxHitPoints(target, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             var ability = new AbilityDetail { SkillType = SkillType.Force, IsHostileAbility = true,
                 ActivationType = AbilityActivationType.Casted };
             GameServices.CombatAbilityBonus.GrantNextSkillAbilityBonuses(caster, (int)SkillType.Force, 75, 0, 120);
@@ -737,7 +737,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SeedRandom(54321);
             for (var i = 0; i < 40; i++)
             {
-                Stat.SetNPCMaxHitPoints(target, 1000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
                 AbilityImpactLifecycle.BeginAbilityImpact(caster, apex);
                 try
                 {
@@ -761,7 +761,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void Prepare(EngineTestContext ctx, uint creature)
         {
             ctx.SuppressNPCNaturalRegen(creature);
-            Stat.SetNPCMaxHitPoints(creature, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(creature, 1000, true);
             SetAILevel(creature, AILevel.VeryLow);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 120f);
         }

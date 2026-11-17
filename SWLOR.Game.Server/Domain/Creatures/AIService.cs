@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
         private readonly Lazy<IEnmityService> _enmity;
         private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
         private readonly Lazy<IPerkService> _perk;
-        private readonly Lazy<IStatService> _stat;
+        private readonly Lazy<ICreatureStatService> _stat;
         private readonly Lazy<IStatusEffectService> _statusEffect;
         private readonly Lazy<IStealthService> _stealth;
 
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             Lazy<IEnmityService> enmity,
             Lazy<IEspionageInfiltrationService> espionageInfiltration,
             Lazy<IPerkService> perk,
-            Lazy<IStatService> stat,
+            Lazy<ICreatureStatService> stat,
             Lazy<IStatusEffectService> statusEffect,
             Lazy<IStealthService> stealth)
         {

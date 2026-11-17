@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetAILevel(body, AILevel.VeryLow);
             await ctx.WaitFrameAsync();
 
-            Stat.SetNPCMaxHitPoints(caster, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(caster, 1000, true);
             ctx.SetResources(caster, 9999, 9999);
             ctx.SuppressNPCNaturalRegen(caster);
             ctx.SetNPCPerkLevel(caster, PerkType.Resuscitation, 1);

@@ -28,7 +28,7 @@ public static class QuickCastEngineTests
         CreaturePlugin.AddFeat(player, FeatType.PowerCell3);
         ctx.SetResources(player, 100, 100);
         fixture.Update(record => record.Stamina = 50);
-        SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 1);
+        SetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable, 1);
         var expectedStamina = 50 - 7 + GameMath.PercentOf(Stat.GetMaxStamina(player), 18);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
             ctx.Assert(!QuickCast.TryCast(player, FeatType.AutoCastPowerCell3, out _), "default-off setting rejects alias"));

@@ -46,7 +46,7 @@ public static class PowerGloveKatarParityEngineTests
                 Upgrade(item);
         });
         // The fixture's oversized STM pool is rebuilt from worn gear on the first equip; start from the rebuilt record.
-        await ctx.ExecuteInCreatureContextAsync(actor, () => Stat.RefreshPlayerEquipmentStats(actor));
+        await ctx.ExecuteInCreatureContextAsync(actor, () => StatRecord.RefreshPlayerEquipmentStats(actor));
         var baseline = Totals(player);
 
         await EquipExisting(ctx, actor, katars[0], InventorySlot.RightHand);

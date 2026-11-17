@@ -41,6 +41,7 @@ public class CombatFacadeAllocationTests
     public void BuildContainer() => _container = new FacadeContainer(services =>
     {
         services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>());
+        services.Replace(ServiceDescriptor.Singleton<ICreatureStatService, AllocationCreatureStatService>());
         services.Replace(ServiceDescriptor.Singleton<ICombatRatingService, AllocationCombatRatingService>());
     });
 
@@ -315,6 +316,8 @@ public class CombatFacadeAllocationTests
         var container = new FacadeContainer(services =>
         {
             services.Replace(ServiceDescriptor.Singleton<IStatService, AllocationStatService>());
+            services.Replace(ServiceDescriptor.Singleton<ICreatureStatService, AllocationCreatureStatService>());
+        services.Replace(ServiceDescriptor.Singleton<ICreatureStatService, AllocationCreatureStatService>());
             services.Replace(ServiceDescriptor.Singleton<ICombatRatingService, AllocationCombatRatingService>());
         });
         scopes.Add(container);

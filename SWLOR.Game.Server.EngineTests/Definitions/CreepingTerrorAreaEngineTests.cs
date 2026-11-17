@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ctx.MakeHostile(hostile);
                 // A 12 HP bandit dies to the first pulse, which clears its statuses.
-                Stat.SetNPCMaxHitPoints(hostile, 1000, true);
+                CreatureStat.SetNPCMaxHitPoints(hostile, 1000, true);
                 SetImmortal(hostile, true);
                 ctx.SuppressNPCNaturalRegen(hostile);
             }

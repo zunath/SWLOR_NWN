@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
                 }
                 ctx.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 90f);
                 TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 90f);
                 ctx.MakeHostile(target);

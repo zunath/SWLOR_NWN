@@ -69,7 +69,7 @@ public static class BareHandedAttackSkillEngineTests
             var enemy = ctx.SpawnCreature("nw_bandit001", 2f);
             await ctx.WaitFrameAsync();
             ctx.SuppressNPCNaturalRegen(enemy);
-            Stat.SetNPCMaxHitPoints(enemy, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(enemy, 1000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), enemy, 60f);
 
             CombatPoint.RecordItemHitPoint(actor, enemy, armsItem);

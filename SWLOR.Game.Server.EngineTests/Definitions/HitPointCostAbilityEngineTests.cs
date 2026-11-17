@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(10000), target, 60f);
             await ctx.DelaySecondsAsync(1f);
 
-            Stat.SetNPCMaxHitPoints(caster, 1000, true);
+            CreatureStat.SetNPCMaxHitPoints(caster, 1000, true);
             ctx.SetResources(caster, 1000, 1000);
             ctx.SuppressNPCNaturalRegen(caster);
             ctx.SetNPCPerkLevel(caster, PerkType.SoulBurst, 1);

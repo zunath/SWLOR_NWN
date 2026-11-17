@@ -107,7 +107,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         {
             SetLocalInt(player, "NATURAL_REGENERATION_TICK", 0);
             SetLocalInt(player, "NATURAL_STAMINA_REGEN_REMAINDER", 0);
-            SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 0);
+            SetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable, 0);
             try
             {
                 for (var heartbeat = 1; heartbeat <= 5; heartbeat++)
@@ -117,7 +117,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
                     ctx.AssertEqual(heartbeat == 5 ? fpBudget : 0, Stat.GetCurrentFP(player), "FP retains its thirty-second cadence");
                 }
             }
-            finally { SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 1); }
+            finally { SetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable, 1); }
             NaturalRegeneration.ProcessRegeneration();
             ctx.AssertEqual(20, Stat.GetCurrentStamina(player), "suppressed heartbeats cannot leak recovery into other engine tests");
         });
@@ -132,7 +132,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         fixture.Update(record => { record.Stamina = 0; record.STMRegen = 0; });
         SetLocalInt(player, "NATURAL_STAMINA_REGEN_REMAINDER", 0);
         SetEventScript(player, EventScript.Creature_OnHeartbeat, ScriptName.OnPlayerHeartbeat);
-        SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 0);
+        SetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable, 0);
         try
         {
             await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(player) > 0, 7f, "a real native six-second heartbeat");
@@ -140,7 +140,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         }
         finally
         {
-            SetLocalInt(player, StatService.SuppressNaturalRegenVariable, 1);
+            SetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable, 1);
             SetEventScript(player, EventScript.Creature_OnHeartbeat, "");
         }
     }
@@ -185,7 +185,7 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         {
             ctx.SuppressNPCNaturalRegen(target);
             ctx.MakeHostile(target);
-            Stat.SetNPCMaxHitPoints(target, 10000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 10000, true);
             AssignCommand(target, () => ClearAllActions());
             SetCommandable(false, target);
         }

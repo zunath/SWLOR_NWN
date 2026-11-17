@@ -218,7 +218,7 @@ public static class WeaponRotationBalanceEngineTests
                 CreaturePlugin.SetRawAbilityScore(target, ability, 26);
             ctx.SuppressNPCNaturalRegen(target);
             // Apply the final NPC HP budget only after its spawn initialization and Vitality settle.
-            Stat.SetNPCMaxHitPoints(target, TargetMaximumHP, true);
+            CreatureStat.SetNPCMaxHitPoints(target, TargetMaximumHP, true);
             ctx.AssertEqual(TargetMaximumHP, GetMaxHitPoints(target), "The NPC has its actual native maximum HP budget");
             ctx.AssertEqual(TargetMaximumHP, GetCurrentHitPoints(target), "The NPC begins at its actual native maximum HP");
             // Preserve the former player defender's measured defense and evasion budgets.
@@ -312,7 +312,7 @@ public static class WeaponRotationBalanceEngineTests
             await ctx.ExecuteInCreatureContextAsync(actor, () =>
             {
                 SetEventScript(actor, EventScript.Creature_OnHeartbeat, "");
-                SetLocalInt(actor, StatService.SuppressNaturalRegenVariable, 1);
+                SetLocalInt(actor, CreatureStatService.SuppressNaturalRegenVariable, 1);
                 SetLocalInt(actor, "NATURAL_REGENERATION_TICK", 0);
                 SetLocalInt(actor, "NATURAL_STAMINA_REGEN_REMAINDER", 0);
                 player.Update(record => record.Stamina = Stat.GetMaxStamina(actor));
@@ -330,9 +330,9 @@ public static class WeaponRotationBalanceEngineTests
                     await ctx.ExecuteInCreatureContextAsync(actor, () =>
                     {
                         var before = Stat.GetCurrentStamina(actor);
-                        SetLocalInt(actor, StatService.SuppressNaturalRegenVariable, 0);
+                        SetLocalInt(actor, CreatureStatService.SuppressNaturalRegenVariable, 0);
                         try { NaturalRegeneration.ProcessRegeneration(); }
-                        finally { SetLocalInt(actor, StatService.SuppressNaturalRegenVariable, 1); }
+                        finally { SetLocalInt(actor, CreatureStatService.SuppressNaturalRegenVariable, 1); }
                         naturalRestored += Math.Max(0, Stat.GetCurrentStamina(actor) - before);
                         naturalTicks++;
                     });
@@ -463,7 +463,7 @@ public static class WeaponRotationBalanceEngineTests
             PairedRangedAttackCycle.Cancel(actor);
             TwinPistolAbility.Cancel(actor);
             UsePerkFeat.ClearQueuedAbility(actor);
-            SetLocalInt(actor, StatService.SuppressNaturalRegenVariable, 1);
+            SetLocalInt(actor, CreatureStatService.SuppressNaturalRegenVariable, 1);
             if (GetIsObjectValid(target))
             {
                 TemporaryStatModifier.Clear(target);

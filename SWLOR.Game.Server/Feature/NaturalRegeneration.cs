@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature
 
             // Max HP can also drop natively (a Vitality penalty), leaving shields above the cap.
             AbilityDefinition.TemporaryHitPointEffects.EnforceMaximumTotal(player);
-            if (GetLocalInt(player, StatService.SuppressNaturalRegenVariable) != 0) return;
+            if (GetLocalInt(player, CreatureStatService.SuppressNaturalRegenVariable) != 0) return;
 
             using var recorderAttribution = CombatRecorder.BeginAttribution(player, CombatRecordSourceKind.Regeneration);
             var tick = GetLocalInt(player, "NATURAL_REGENERATION_TICK") + 1;

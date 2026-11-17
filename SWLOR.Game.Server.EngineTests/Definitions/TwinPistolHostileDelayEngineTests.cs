@@ -305,7 +305,7 @@ public static class TwinPistolHostileDelayEngineTests
                 SetEventScript(creature, EventScript.Creature_OnMeleeAttacked, "");
             }
             ctx.SuppressNPCNaturalRegen(target);
-            Stat.SetNPCMaxHitPoints(target, 20000, true);
+            CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
             ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 45f);
             SetCommandable(false, target);
             TemporaryStatModifier.Add(target, StatType.RangedDeflection, -100, 45f);

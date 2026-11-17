@@ -298,7 +298,7 @@ public class ForceLightConsularTests
         var readyAt = new double[rotation.Length];
         var seconds = 0d;
         var damage = 0d;
-        var fp = Stat.GetMaxFP(StatService.BaseFP, attackerWillpower, 0);
+        var fp = Stat.GetMaxFP(StatRecordService.BaseFP, attackerWillpower, 0);
         var casts = 0;
         while (damage < squellbugHP && seconds < 60d)
         {

@@ -31,7 +31,7 @@ public static class ScenarioActors
             ClearAllActions();
         });
         ctx.SuppressNPCNaturalRegen(creature);
-        Stat.SetNPCMaxHitPoints(creature, maximumHitPoints, true);
+        CreatureStat.SetNPCMaxHitPoints(creature, maximumHitPoints, true);
         return creature;
     }
 

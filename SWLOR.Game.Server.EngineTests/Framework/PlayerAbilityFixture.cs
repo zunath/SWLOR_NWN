@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                     CharacterType = Enumeration.CharacterType.ForceSensitive,
                     MaxHP = 1000, HP = 1000, MaxFP = 10000, FP = 9999,
                     // HP gear rebuilds the record from its sources, so the HP above the base comes from one.
-                    TemporaryFoodHP = 1000 - StatService.BaseHP,
+                    TemporaryFoodHP = 1000 - CreatureStatService.BaseHP,
                     MaxStamina = 10000, Stamina = 9999,
                     Attack = 150, Accuracy = 150, ForceAttack = 150, Evasion = 100,
                     TotalSPAcquired = SkillService.TotalSkillPointCap - SkillService.StartingSkillPoints,
@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// as a login does. The new record's combat values come from no gear, so any equip change or login rebuilds them;
         /// tests that count equipment totals call this first so their baseline is the gear.
         /// </summary>
-        public void MatchEquipmentRecordsToGear() => Stat.RefreshPlayerEquipmentStats(Creature);
+        public void MatchEquipmentRecordsToGear() => StatRecord.RefreshPlayerEquipmentStats(Creature);
 
         /// <summary>
         /// Saves current carried/equipped items with native server character save flags and reloads

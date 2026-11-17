@@ -76,7 +76,7 @@ public static class TwinPistolMasteryEngineTests
             await trial.ExecuteInCreatureContextAsync(actor, () =>
             {
                 trial.SuppressNPCNaturalRegen(target);
-                Stat.SetNPCMaxHitPoints(target, 20000, true);
+                CreatureStat.SetNPCMaxHitPoints(target, 20000, true);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 150f);
                 trial.MakeHostile(target);
                 ctx.Assert(GetIsEnemy(target, actor) && LineOfSightObject(actor, target) &&

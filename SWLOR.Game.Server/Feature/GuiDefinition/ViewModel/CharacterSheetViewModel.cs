@@ -668,7 +668,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 DB.Set(dbPlayer);
-                Stat.ApplyPlayerStat(dbPlayer, _target, ability);
+                CreatureStat.ApplyPlayerStat(dbPlayer, _target, ability);
 
                 FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
                 LoadData();
@@ -1057,7 +1057,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
             AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
             AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");
-            AddStat("Movement Speed", FormatMultiplier(Stat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed.");
+            AddStat("Movement Speed", FormatMultiplier(CreatureStat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed.");
             AddStat("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability.");
             AddStat("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "-10 Dark to +10 Light. Strengthens matching powers; weakens opposing powers.");
             AddStat("Detection", Stat.GetDetection(_target).ToString(), "PER + WIL plus equipment, perk, and status-effect bonuses; Detect mode adds +5.");

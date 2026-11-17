@@ -14,7 +14,8 @@ picked up by rerunning, and caught by AstromechModuleContentTests):
   - SWLOR.Game.Server/Feature/RecipeDefinition/EngineeringRecipeDefinition/AstromechModuleRecipes.cs
     (the .CircuitParameters(...) values are written by tools/SWLOR.RecipeParameters and kept across reruns)
   - the generated RecipeType block (5071-5230) in SWLOR.Game.Server/Service/CraftService/RecipeType.cs
-  - the sixteen Mk I modules in Module/utm/cz220_merchant.utm.json, next to the humanoid Mk I pieces they copy
+  - the sixteen Mk I modules in Module/utm/cz220_merchant.utm.json, next to the humanoid Mk I pieces they copy,
+    and in every copy of that store placed in an area (Module/git), which is what the game opens
 """
 from __future__ import annotations
 
@@ -23,6 +24,9 @@ import json
 import re
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import AstromechPlacedStores as placed  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 UTI = ROOT / "Module" / "uti"
@@ -340,6 +344,9 @@ def expected_outputs() -> dict:
     outputs[RECIPES_CS] = recipes_source(smithery).encode("utf-8")
     outputs[RECIPE_TYPE_CS] = recipe_type_text(read(RECIPE_TYPE_CS, "utf-8")).encode("utf-8")
     outputs[STORE] = store_text(read(STORE)).encode("latin-1")
+    # The game opens the copies of the store placed in areas, which hold their own item lists.
+    outputs.update(placed.stock({STORE.name.split(".")[0]: [(m.source, m.resref) for m in MODULES if m.tier == 0]},
+                                lambda resref: outputs[UTI / f"{resref}.uti.json"]))
     return localize(outputs)
 
 

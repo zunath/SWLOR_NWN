@@ -26,43 +26,51 @@
      "perks": {
       "MedKit": {
        "id": "FieldRepair",
+       "icon": "fldrep",
        "source_name": "Med Kit",
        "name": "Field Repair"
       },
       "TreatmentKit": {
        "id": "SystemPurge",
+       "icon": "syspurge",
        "source_name": "Treatment Kit",
        "name": "System Purge"
       },
       "MedicalInjectorRig": {
        "id": "PrecisionTooling",
+       "icon": "prectool",
        "source_name": "Medical Injector Rig",
        "name": "Precision Tooling",
        "short": "Prec. Tooling"
       },
       "EmergencySealant": {
        "id": "SealantFoam",
+       "icon": "sealfoam",
        "source_name": "Emergency Sealant",
        "name": "Sealant Foam"
       },
       "KoltoMist": {
        "id": "NaniteCloud",
+       "icon": "nanite",
        "source_name": "Kolto Mist",
        "name": "Nanite Cloud"
       },
       "Resuscitation": {
        "id": "JumpStart",
+       "icon": "jumpstrt",
        "source_name": "Resuscitation",
        "name": "Jump Start"
       },
       "Infusion": {
        "id": "MaintenanceRoutine",
+       "icon": "maint",
        "source_name": "Infusion",
        "name": "Maintenance Routine",
        "short": "Maintenance"
       },
       "EmergencyTriage": {
        "id": "EmergencyOverride",
+       "icon": "emrgovr",
        "source_name": "Emergency Triage",
        "name": "Emergency Override",
        "short": "Emerg Override"
@@ -78,45 +86,53 @@
      "perks": {
       "AdrenalStim": {
        "id": "PowerTransfer",
+       "icon": "pwrxfer",
        "source_name": "Adrenal Stim",
        "name": "Power Transfer"
       },
       "Shielding": {
        "id": "DeflectorField",
+       "icon": "deflfld",
        "source_name": "Shielding",
        "name": "Deflector Field",
        "short": "Deflector Fld"
       },
       "Coagulant": {
        "id": "HardenedBuffers",
+       "icon": "hardbuf",
        "source_name": "Coagulant",
        "name": "Hardened Buffers",
        "short": "Hard. Buffers"
       },
       "PainSuppressant": {
        "id": "DamperField",
+       "icon": "damper",
        "source_name": "Pain Suppressant",
        "name": "Damper Field"
       },
       "Antitoxin": {
        "id": "FilterFlush",
+       "icon": "fltflush",
        "source_name": "Antitoxin",
        "name": "Filter Flush"
       },
       "FieldPharmacist": {
        "id": "EfficientDispenser",
+       "icon": "effdisp",
        "source_name": "Field Pharmacist",
        "name": "Efficient Dispenser",
        "short": "Eff. Dispenser"
       },
       "FocusStim": {
        "id": "TargetingUplink",
+       "icon": "tgtuplnk",
        "source_name": "Focus Stim",
        "name": "Targeting Uplink",
        "short": "Target Uplink"
       },
       "EmergencyCocktail": {
        "id": "FullOverride",
+       "icon": "fullovr",
        "source_name": "Emergency Cocktail",
        "name": "Full Override"
       }
@@ -155,55 +171,65 @@
      "perks": {
       "Slam": {
        "id": "ShockJab",
+       "icon": "shkjab",
        "source_name": "Slam",
        "name": "Shock Jab"
       },
       "CrushingMastery": {
        "id": "OverchargedCapacitors",
+       "icon": "ovrcap",
        "source_name": "Crushing Mastery",
        "name": "Overcharged Capacitors",
        "short": "Overcharged"
       },
       "ChargedBlows": {
        "id": "ResidualCharge",
+       "icon": "reschrg",
        "source_name": "Charged Blows",
        "name": "Residual Charge",
        "short": "Residual Chrg"
       },
       "RibBreaker": {
        "id": "StunProd",
+       "icon": "stunprod",
        "source_name": "Rib Breaker",
        "name": "Stun Prod"
       },
       "HeavyHands": {
        "id": "ArcConductors",
+       "icon": "arccond",
        "source_name": "Heavy Hands",
        "name": "Arc Conductors"
       },
       "GroundQuake": {
        "id": "DischargeRing",
+       "icon": "dischrng",
        "source_name": "Ground Quake",
        "name": "Discharge Ring"
       },
       "CrusherStance": {
        "id": "AggressionRoutine",
+       "icon": "aggro",
        "source_name": "Crusher Stance",
        "name": "Aggression Routine",
        "short": "Aggression"
       },
       "BreakPosture": {
        "id": "CircuitBreaker",
+       "icon": "circbrk",
        "source_name": "Break Posture",
        "name": "Circuit Breaker",
        "short": "Circuit Break"
       },
       "SkullRattle": {
        "id": "SensorScramble",
+       "icon": "sensscr",
        "source_name": "Skull Rattle",
        "name": "Sensor Scramble"
       },
       "Worldbreaker": {
        "id": "OverloadBurst",
+       "icon": "ovrburst",
        "source_name": "Worldbreaker",
        "name": "Overload Burst"
       }
@@ -224,55 +250,65 @@
      "perks": {
       "SuppressingShot": {
        "id": "SuppressiveBurst",
+       "icon": "supburst",
        "source_name": "Suppressing Shot",
        "name": "Suppressive Burst",
        "short": "Suppr. Burst"
       },
       "PinningFire": {
        "id": "TrackingServos",
+       "icon": "trkservo",
        "source_name": "Pinning Fire",
        "name": "Tracking Servos"
       },
       "SustainedFire": {
        "id": "LockedBarrage",
+       "icon": "lockbarr",
        "source_name": "Sustained Fire",
        "name": "Locked Barrage"
       },
       "CripplingShot": {
        "id": "HobblingBolt",
+       "icon": "hobbolt",
        "source_name": "Crippling Shot",
        "name": "Hobbling Bolt"
       },
       "SpottersRhythm": {
        "id": "TargetAnalysis",
+       "icon": "tgtanal",
        "source_name": "Spotter's Rhythm",
        "name": "Target Analysis"
       },
       "SuppressiveLine": {
        "id": "SweepingFire",
+       "icon": "swpfire",
        "source_name": "Suppressive Line",
        "name": "Sweeping Fire"
       },
       "SuppressionStance": {
        "id": "SuppressionProtocol",
+       "icon": "supproto",
        "source_name": "Suppression Stance",
        "name": "Suppression Protocol",
        "short": "Suppr Protocol"
       },
       "Overwatch": {
        "id": "OverwatchSubroutine",
+       "icon": "ovwsub",
        "source_name": "Overwatch",
        "name": "Overwatch Subroutine",
        "short": "Overwatch Sub"
       },
       "ContainmentNet": {
        "id": "ContainmentPattern",
+       "icon": "contpat",
        "source_name": "Containment Net",
        "name": "Containment Pattern",
        "short": "Containment"
       },
       "KillBox": {
        "id": "DesignateTarget",
+       "icon": "desigtgt",
        "source_name": "Kill Box",
        "name": "Designate Target",
        "short": "Designate Tgt"
@@ -308,6 +344,134 @@
      "PerceptiveStance1"
     ]
    }
+  }
+ ],
+ "statuses": [
+  {
+   "class": "AdrenalStimStatusEffect",
+   "name": "Power Transfer",
+   "label": "AstromechPowerTransfer",
+   "icon": "ief_am_pwrxfer",
+   "category": "Beneficial",
+   "rank": "",
+   "row": 526
+  },
+  {
+   "class": "Shielding1StatusEffect",
+   "name": "Deflector Field I",
+   "label": "AstromechDeflectorField1",
+   "icon": "ief_am_deflfld1",
+   "category": "Beneficial",
+   "rank": "1",
+   "row": 527
+  },
+  {
+   "class": "Shielding2StatusEffect",
+   "name": "Deflector Field II",
+   "label": "AstromechDeflectorField2",
+   "icon": "ief_am_deflfld2",
+   "category": "Beneficial",
+   "rank": "2",
+   "row": 528
+  },
+  {
+   "class": "Shielding3StatusEffect",
+   "name": "Deflector Field III",
+   "label": "AstromechDeflectorField3",
+   "icon": "ief_am_deflfld3",
+   "category": "Beneficial",
+   "rank": "3",
+   "row": 529
+  },
+  {
+   "class": "PainSuppressant1StatusEffect",
+   "name": "Damper Field I",
+   "label": "AstromechDamperField1",
+   "icon": "ief_am_damper1",
+   "category": "Beneficial",
+   "rank": "1",
+   "row": 530
+  },
+  {
+   "class": "PainSuppressant2StatusEffect",
+   "name": "Damper Field II",
+   "label": "AstromechDamperField2",
+   "icon": "ief_am_damper2",
+   "category": "Beneficial",
+   "rank": "2",
+   "row": 531
+  },
+  {
+   "class": "Antitoxin1StatusEffect",
+   "name": "Filter Flush",
+   "label": "AstromechFilterFlush",
+   "icon": "ief_am_fltflush",
+   "category": "Beneficial",
+   "rank": "",
+   "row": 532
+  },
+  {
+   "class": "FocusStim1StatusEffect",
+   "name": "Targeting Uplink I",
+   "label": "AstromechTargetingUplink1",
+   "icon": "ief_am_tgtuplnk1",
+   "category": "Beneficial",
+   "rank": "1",
+   "row": 533
+  },
+  {
+   "class": "FocusStim2StatusEffect",
+   "name": "Targeting Uplink II",
+   "label": "AstromechTargetingUplink2",
+   "icon": "ief_am_tgtuplnk2",
+   "category": "Beneficial",
+   "rank": "2",
+   "row": 534
+  },
+  {
+   "class": "EmergencyCocktailStatusEffect",
+   "name": "Full Override",
+   "label": "AstromechFullOverride",
+   "icon": "ief_am_fullovr",
+   "category": "Beneficial",
+   "rank": "",
+   "row": 535
+  },
+  {
+   "class": "KoltoMistHealingStatusEffect",
+   "name": "Nanite Cloud",
+   "label": "AstromechNaniteCloud",
+   "icon": "ief_am_nanite",
+   "category": "Beneficial",
+   "rank": "",
+   "row": 536
+  },
+  {
+   "class": "CrusherStanceStatusEffect",
+   "name": "Aggression Routine",
+   "label": "AstromechAggressionRoutine",
+   "icon": "ief_am_aggro",
+   "category": "Self",
+   "rank": "",
+   "row": 537
+  },
+  {
+   "class": "SuppressionStanceStatusEffect",
+   "name": "Suppression Protocol",
+   "label": "AstromechSuppressionProtocol",
+   "icon": "ief_am_supproto",
+   "category": "Self",
+   "rank": "",
+   "row": 538
+  },
+  {
+   "class": "KillBoxStatusEffect",
+   "name": "Designate Target",
+   "label": "AstromechDesignateTarget",
+   "icon": "ief_am_desigtgt",
+   "category": "Harmful",
+   "rank": "",
+   "row": 539
   }
  ],
  "ledger": {
@@ -677,6 +841,50 @@
    },
    "#skill": {
     "name": 193286
+   }
+  },
+  "#statuses": {
+   "AstromechPowerTransfer": {
+    "name": 193287
+   },
+   "AstromechDeflectorField1": {
+    "name": 193288
+   },
+   "AstromechDeflectorField2": {
+    "name": 193289
+   },
+   "AstromechDeflectorField3": {
+    "name": 193290
+   },
+   "AstromechDamperField1": {
+    "name": 193291
+   },
+   "AstromechDamperField2": {
+    "name": 193292
+   },
+   "AstromechFilterFlush": {
+    "name": 193293
+   },
+   "AstromechTargetingUplink1": {
+    "name": 193294
+   },
+   "AstromechTargetingUplink2": {
+    "name": 193295
+   },
+   "AstromechFullOverride": {
+    "name": 193296
+   },
+   "AstromechNaniteCloud": {
+    "name": 193297
+   },
+   "AstromechAggressionRoutine": {
+    "name": 193298
+   },
+   "AstromechSuppressionProtocol": {
+    "name": 193299
+   },
+   "AstromechDesignateTarget": {
+    "name": 193300
    }
   }
  }

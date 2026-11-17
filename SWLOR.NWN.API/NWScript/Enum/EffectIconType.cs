@@ -523,5 +523,21 @@ namespace SWLOR.NWN.API.NWScript.Enum
 
         // Retain the legacy name for the same icon row.
         ShadowflowStanceStatusEffect = 386,
+
+        // Astromech names of shared status effects (tools/GenerateAstromechSkillMirrors.py).
+        AstromechPowerTransfer = 526,
+        AstromechDeflectorField1 = 527,
+        AstromechDeflectorField2 = 528,
+        AstromechDeflectorField3 = 529,
+        AstromechDamperField1 = 530,
+        AstromechDamperField2 = 531,
+        AstromechFilterFlush = 532,
+        AstromechTargetingUplink1 = 533,
+        AstromechTargetingUplink2 = 534,
+        AstromechFullOverride = 535,
+        AstromechNaniteCloud = 536,
+        AstromechAggressionRoutine = 537,
+        AstromechSuppressionProtocol = 538,
+        AstromechDesignateTarget = 539,
     }
 }

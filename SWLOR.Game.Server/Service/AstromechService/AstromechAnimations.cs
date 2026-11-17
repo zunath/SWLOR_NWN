@@ -21,6 +21,12 @@ namespace SWLOR.Game.Server.Service.AstromechService
         /// </summary>
         public const Animation Station = Animation.LoopingConjure1;
 
+        /// <summary>
+        /// The motion an astromech makes while it works at something (crafting, gathering, fishing, using an item):
+        /// its tool arm out, probing. It stands in for the authored humanoid working animations.
+        /// </summary>
+        public const Animation Work = Animation.LoopingGetMid;
+
         private static readonly HashSet<Animation> Supported = new()
         {
             Animation.LoopingPause,
@@ -29,6 +35,8 @@ namespace SWLOR.Game.Server.Service.AstromechService
             Animation.LoopingDeadBack,
             Animation.LoopingConjure1,
             Animation.LoopingConjure2,
+            Animation.LoopingGetLow,
+            Animation.LoopingGetMid,
             Animation.LoopingSpasm,
             Animation.FireForgetHeadTurnLeft,
             Animation.FireForgetHeadTurnRight,

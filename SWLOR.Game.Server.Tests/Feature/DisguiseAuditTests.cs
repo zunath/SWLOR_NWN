@@ -60,7 +60,7 @@ public class DisguiseAuditTests
                 public string ActiveDisguiseId = "", UnknownDisplayName = "Base descriptor";
                 public int UndisguisedPortraitId = -1, UndisguisedSoundSetId = -1, UnallocatedXP = 100000;
                 public string UndisguisedPortraitResref = "", UndisguisedDescription = "";
-                public bool HasUndisguisedDescriptionSnapshot;
+                public bool HasUndisguisedDescriptionSnapshot, CharacterInitializationPending;
             }
             public static class World
             {
@@ -154,7 +154,7 @@ public class DisguiseAuditTests
                 private static int GetDisguiseSlotLimit(uint player, Player dbPlayer) => 3;
                 private static int ResolvePortraitInternalId(uint player) => 10;
                 private static int GetMaxPortraitCount() => 100;
-                private static int ResolveSoundSetId(int id) => id;
+                private static int ResolveSoundSetId(uint player, int id) => id;
                 private static string ValidateActivationDelay(uint player, string playerId) => "";
                 private static void ApplyAppearance(uint player, PlayerDisguise disguise) { }
                 private static void RefreshDisguiseDisplay(uint player) { }

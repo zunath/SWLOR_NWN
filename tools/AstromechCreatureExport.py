@@ -812,7 +812,7 @@ ANIM_NODES = [('rootdummy', None), ('torso', 'rootdummy'), ('head', 'torso'), ('
               ('toolr', 'toolr_socket'), ('tooll', 'tooll_socket')]
 POSITION_NODES = ('rootdummy', 'toolr', 'tooll')
 SOCKET_PARENTS = {'toolr_socket': 'torso', 'tooll_socket': 'torso'}
-LOOPING_CLIPS = ('cpause1', 'cpause2', 'cwalk', 'cwalkinj', 'crun', 'creadyr', 'creadyl', 'ccastoutlp')
+LOOPING_CLIPS = ('cpause1', 'cpause2', 'cwalk', 'cwalkinj', 'crun', 'creadyr', 'creadyl', 'ccastoutlp', 'cgetmidlp', 'cgetlowlp')
 MELEE_CLIPS = ('ca1slashl', 'ca1slashr', 'ca1stab', 'cclosel', 'ccloseh', 'creach')
 
 
@@ -904,6 +904,20 @@ def clip_specs(tool_lengths):
         clip('ccastoutlp', 1.0, {
             'torso': {'rot': [(0, X, 4), (0.5, X, 6), (1.0, X, 4)]},
             'tooll': {'pos': [(0, slide(0)), (1.0, slide(0))]}}),
+    ]
+    # Working at something in front of it (crafting, gathering, using an item): the tool arm comes out and probes,
+    # leaning forward a little for something at bench height and further for something on the ground.
+    for name, lean in (('cgetmid', -5), ('cgetlow', -16)):
+        clips += [
+            clip(name, 0.6, {
+                'torso': {'rot': [(0, X, 0), (0.6, X, lean)]},
+                'toolr': {'pos': [(0, slide(prod)), (0.6, slide(0))]}}),
+            clip(name + 'lp', 1.2, {
+                'torso': {'rot': [(0, X, lean), (0.6, X, lean - 2), (1.2, X, lean)]},
+                'head': {'rot': [(0, Z, 0), (0.3, Z, 14), (0.9, Z, -14), (1.2, Z, 0)]},
+                'toolr': {'pos': [(0, slide(0)), (0.3, slide(-0.05)), (0.6, slide(0)), (0.9, slide(-0.05)), (1.2, slide(0))]}}),
+        ]
+    clips += [
         clip('cspasm', 1.0, {
             'rootdummy': {'rot': [(0, Y, 0), (0.1, Y, 6), (0.2, Y, -6), (0.3, Y, 6), (0.4, Y, -6), (1.0, Y, 0)]},
             'head': {'rot': [(0, Z, 0), (0.2, Z, 70), (0.4, Z, -70), (0.6, Z, 70), (1.0, Z, 0)]}}),

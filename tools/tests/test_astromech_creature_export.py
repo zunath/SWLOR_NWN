@@ -21,7 +21,8 @@ EXPECTED_CLIPS = [
     'cpause1', 'cpause2', 'cwalk', 'crun', 'creadyr', 'creadyl', 'ca1slashl', 'ca1slashr', 'ca1stab', 'cclosel', 'ccloseh',
     'creach', 'cdodges', 'cdodgelr', 'cparryl', 'cparryr', 'cdamages', 'cdamagel', 'cdamager', 'ckdbck', 'ckdbckps',
     'ckdbckdie', 'cdead', 'cgustandb', 'cguptokdb', 'ctaunt', 'cconjure1', 'ccastout', 'ccastoutlp', 'cspasm', 'chturnl',
-    'chturnr', 'cvictory', 'cwalkinj']
+    'chturnr', 'cvictory', 'cwalkinj', 'cgetmid', 'cgetmidlp', 'cgetlow', 'cgetlowlp']
+WORK_CLIPS = {'cgetmid', 'cgetmidlp', 'cgetlow', 'cgetlowlp'}
 
 
 def parse_clips(text):
@@ -223,8 +224,20 @@ class ClipTests(unittest.TestCase):
         self.assertLess(recoil[0.32], 0)
         self.assertEqual({k[2] for k in self.clips['ccastoutlp']['nodes']['tooll']['position']}, {0})
 
+    def test_work_clips_bring_the_tool_arm_out(self):
+        # Crafting, gathering and item use play the get-mid and get-low loops: the arm comes out and stays out.
+        for name in ('cgetmid', 'cgetlow'):
+            keys = {k[0]: k[2] for k in self.clips[name]['nodes']['toolr']['position']}
+            self.assertAlmostEqual(keys[0.0], astro.retract_offset(TOOL_LENGTHS['prod']))
+            self.assertEqual(keys[max(keys)], 0)
+            loop = self.clips[name + 'lp']
+            ys = [k[2] for k in loop['nodes']['toolr']['position']]
+            self.assertEqual(ys[0], ys[-1])
+            self.assertGreater(min(ys), astro.retract_offset(TOOL_LENGTHS['prod']) / 2)
+            self.assertIn(name + 'lp', astro.LOOPING_CLIPS)
+
     def test_tools_are_retracted_in_every_other_clip(self):
-        keyed = {'toolr': set(astro.MELEE_CLIPS) | {'creadyr', 'creadyl'}, 'tooll': {'cconjure1', 'ccastout', 'ccastoutlp'}}
+        keyed = {'toolr': set(astro.MELEE_CLIPS) | {'creadyr', 'creadyl'} | WORK_CLIPS, 'tooll': {'cconjure1', 'ccastout', 'ccastoutlp'}}
         for name, clip in self.clips.items():
             for node, key in (('toolr', 'prod'), ('tooll', 'blaster')):
                 if name in keyed[node]:

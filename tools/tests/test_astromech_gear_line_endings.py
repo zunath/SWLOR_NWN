@@ -18,6 +18,7 @@ tools = importlib.import_module("GenerateAstromechTools")
 PATH_NAMES = {
     modules: ("UTI", "SMITHERY", "RECIPES_CS", "RECIPE_TYPE_CS", "STORE"),
     tools: ("UTI", "RECIPES_CS", "RECIPE_TYPE_CS", "STORE"),
+    modules.placed: ("GIT",),
 }
 
 
@@ -40,6 +41,9 @@ class GearGeneratorLineEndingTests(unittest.TestCase):
         needed |= {modules.UTI / f"{m.source}.uti.json" for m in modules.MODULES}
         needed |= {tools.UTI / f"{t.source}.uti.json" for t in tools.TOOLS}
         needed |= set(modules.SMITHERY.glob("*.cs"))
+        # The placed copy of the store, which both generators stock.
+        needed |= {path for path in modules.placed.GIT.glob("*.git.json")
+                   if b'"' + modules.STORE.name.split(".")[0].encode() + b'"' in path.read_bytes()}
         for path in needed:
             copy = target / path.relative_to(self.root)
             copy.parent.mkdir(parents=True, exist_ok=True)

@@ -15,7 +15,8 @@ up by rerunning, and caught by AstromechToolContentTests):
   - SWLOR.Game.Server/Feature/RecipeDefinition/EngineeringRecipeDefinition/AstromechToolRecipes.cs
     (the .CircuitParameters(...) values are written by tools/SWLOR.RecipeParameters and kept across reruns)
   - the generated RecipeType block (5231-5250) in SWLOR.Game.Server/Service/CraftService/RecipeType.cs
-  - the two Mk I tools in Module/utm/cz220_merchant.utm.json, next to the humanoid Basic Staff and Basic Rifle they copy
+  - the two Mk I tools in Module/utm/cz220_merchant.utm.json, next to the humanoid Basic Staff and Basic Rifle they copy,
+    and in every copy of that store placed in an area (Module/git), which is what the game opens
 """
 from __future__ import annotations
 
@@ -255,6 +256,9 @@ def expected_outputs() -> dict:
     outputs[RECIPES_CS] = recipes_source(smithery).encode("utf-8")
     outputs[RECIPE_TYPE_CS] = recipe_type_text(mod.read(RECIPE_TYPE_CS, "utf-8")).encode("utf-8")
     outputs[STORE] = store_text(mod.read(STORE)).encode("latin-1")
+    # The game opens the copies of the store placed in areas, which hold their own item lists.
+    outputs.update(mod.placed.stock({STORE.name.split(".")[0]: [(t.source, t.resref) for t in TOOLS if t.tier == 0]},
+                                    lambda resref: outputs[UTI / f"{resref}.uti.json"]))
     return mod.localize(outputs)
 
 

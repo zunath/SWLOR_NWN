@@ -2,6 +2,7 @@ using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service;
@@ -22,6 +23,12 @@ public static class NamedAnimation
         var duration = Validate(clip, durationSeconds);
         if (!GetIsObjectValid(creature) || GetObjectType(creature) != ObjectType.Creature)
             throw new ArgumentException("Animation target must be a valid creature.", nameof(creature));
+        if (Astromech.IsAstromech(creature))
+        {
+            // The authored clips are humanoid motions. An astromech works with its tool arm out for the same time.
+            AssignCommand(creature, () => ActionPlayAnimation(AstromechAnimations.Work, 1f, duration));
+            return;
+        }
         var request = equipmentRequirement == AnimationEquipmentRequirement.Unrestricted ? null : Playback.ReserveEquipmentPlayback(creature);
         string token = null;
         AssignCommand(creature, () =>
@@ -54,6 +61,13 @@ public static class NamedAnimation
         bool fitToDuration = false, NamedAnimationHold holdMode = NamedAnimationHold.Auto)
     {
         var duration = Validate(clip, durationSeconds);
+        if (Astromech.IsAstromech(creature))
+        {
+            // The authored clips are humanoid motions. An astromech works with its tool arm out for the same time;
+            // no mapping is reserved, so there is no token to stop.
+            AssignCommand(creature, () => PlayAnimation(AstromechAnimations.Work, 1f, duration));
+            return null;
+        }
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
         var nativeHold = holdMode is NamedAnimationHold.Auto or NamedAnimationHold.LiftInPlace
             ? AbilityAnimationEquipment.ReadHold(creature) : AnimationWeaponHold.None;

@@ -290,7 +290,7 @@ public class StatusEffectServiceRemovalTests : StatusEffectServiceTestBase
         var ownedHeld = Applied<ProbeEffect>(Player, Caster, probe => probe.OriginatingAbility = ability);
         var otherAbilityHeld = Applied<OtherProbeEffect>(Player, Caster, probe => probe.OriginatingAbility = new AbilityDetail());
         Bench.Engine.SetReturn("GetExitingObject", Player);
-        Service.OnPlayerExit();
+        Session.OnPlayerExit();
 
         var ownedActive = Applied<ProbeEffect>(Target, Caster, probe => probe.OriginatingAbility = ability);
         var unknownOrigin = Applied<OtherProbeEffect>(Target, Caster);
@@ -303,7 +303,7 @@ public class StatusEffectServiceRemovalTests : StatusEffectServiceTestBase
         Log.Should().NotContain(line => line.Contains("worn off"));
 
         Bench.Engine.SetReturn("GetEnteringObject", Returned);
-        Service.OnPlayerEnter();
+        Session.OnPlayerEnter();
         var restored = Service.GetCreatureStatusEffects(Returned).GetAllEffects();
         restored.Should().Equal(otherAbilityHeld);
         restored.Should().NotContain(ownedHeld);
@@ -341,8 +341,8 @@ public class StatusEffectServiceRemovalTests : StatusEffectServiceTestBase
     [Test]
     public void ANewStance_RemovesOtherStancesAndTellsTheMeleeTechnique()
     {
-        Service.DefinitionTypes = new[] { typeof(StanceProbeEffect), typeof(ProbeEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(StanceProbeEffect), typeof(ProbeEffect) };
+        Catalog.CacheData();
         var old = Applied<ProbeEffect>(Target, Caster, probe => probe.SourceValue = StatusEffectSourceType.Stance);
 
         Service.RemoveOtherStanceStatuses(Target, typeof(StanceProbeEffect));
@@ -354,8 +354,8 @@ public class StatusEffectServiceRemovalTests : StatusEffectServiceTestBase
     [Test]
     public void TheStanceRuleKeepsTheNewTypeAndIgnoresOtherEffects()
     {
-        Service.DefinitionTypes = new[] { typeof(StanceProbeEffect), typeof(ProbeEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(StanceProbeEffect), typeof(ProbeEffect) };
+        Catalog.CacheData();
         var same = Applied<StanceProbeEffect>(Target, Caster);
 
         Service.RemoveOtherStanceStatuses(Target, typeof(ProbeEffect));
@@ -382,8 +382,8 @@ public class StatusEffectServiceRemovalTests : StatusEffectServiceTestBase
     [Test]
     public void ANewCommand_RemovesOnlyTheSameLeadersOtherCommandsAsAReplacement()
     {
-        Service.DefinitionTypes = new[] { typeof(CommandProbeEffect), typeof(OtherCommandProbeEffect), typeof(ProbeEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(CommandProbeEffect), typeof(OtherCommandProbeEffect), typeof(ProbeEffect) };
+        Catalog.CacheData();
         var mine = Applied<OtherCommandProbeEffect>(Target, Caster);
         var theirs = Applied<ThirdProbeEffect>(Target, Bystander, probe => probe.SourceValue = StatusEffectSourceType.Command);
 
@@ -400,11 +400,11 @@ public class StatusEffectServiceRemovalTests : StatusEffectServiceTestBase
     [Test]
     public void ApplyingACommand_RemovesTheLeadersOtherCommandFirst()
     {
-        Service.DefinitionTypes = new[] { typeof(CommandProbeEffect), typeof(OtherCommandProbeEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(CommandProbeEffect), typeof(OtherCommandProbeEffect) };
+        Catalog.CacheData();
         var old = Applied<OtherCommandProbeEffect>(Target, Caster);
 
-        Service.ApplyStatusEffect(Caster, Target, typeof(CommandProbeEffect), 5f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, typeof(CommandProbeEffect), 5f).Should().BeTrue();
 
         Service.GetStatusEffect(Target, typeof(OtherCommandProbeEffect)).Should().BeNull();
         Log.Should().Contain($"Remove:{old.Name}:{Target}:True");

@@ -7,21 +7,21 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,081 | 13,440 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 31 | 50,182 lines | none over 1,000 lines |
-| 3. Long methods | `LongMethods.txt` | 19 | 5,073 lines | none over 150 lines (400 for layout) |
-| 4. Services per type | `ServicesPerType.txt` | 19 | 302 services | none over 10 services |
+| 1. Static service lookup | `StaticLookups.txt` | 1,090 | 13,449 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 30 | 48,741 lines | none over 1,000 lines |
+| 3. Long methods | `LongMethods.txt` | 18 | 4,910 lines | none over 150 lines (400 for layout) |
+| 4. Services per type | `ServicesPerType.txt` | 17 | 270 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 38 | 54 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 103 | 224 types | none |
 | 7. Domain cycles | `DomainCycles.txt` | 30 | 102 edges | none |
-| 8. Static entry points and static state | `StaticState.txt` | 135 | 254 members | each kept with an approved reason, or removed |
+| 8. Static entry points and static state | `StaticState.txt` | 136 | 254 members | each kept with an approved reason, or removed |
 | 9. References up the domain order | `UpwardEdges.txt` | 128 | 297 members | none: every reference follows the domain order |
 | 10. Sink work | `SinkWork.txt` | 15 | 2,096 lines | none: a sink only forwards |
 
 ## 1. Static service lookup
 
-- 1,081 files, 13,440 uses: 820 using directives and 12,620 uses in code (7,486 in a static context).
-- SWLOR.Game.Server: 636 file(s), 5,917 use(s) (Feature/ 526, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- 1,090 files, 13,449 uses: 829 using directives and 12,620 uses in code (7,486 in a static context).
+- SWLOR.Game.Server: 645 file(s), 5,926 use(s) (Feature/ 535, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 238 file(s), 5,303 use(s).
 - SWLOR.Game.Server.Tests: 178 file(s), 2,062 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
@@ -34,9 +34,9 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
 - Content (Feature/) uses in code: 4,640 (1,692 in a static context).
-- Content (Feature/) types that use it: 523. Static classes: 71. Instance classes that use it from a static member: 202 (156 only from static members).
+- Content (Feature/) types that use it: 531. Static classes: 71. Instance classes that use it from a static member: 204 (156 only from static members).
 
-Largest 15 of 1,081 (all in `StaticLookups.txt`):
+Largest 15 of 1,090 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -58,11 +58,11 @@ Largest 15 of 1,081 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 31 types over 1,000 lines, 50,182 lines in all.
+- 30 types over 1,000 lines, 48,741 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 31 (all in `LargeTypes.txt`):
+Largest 15 of 30 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -84,10 +84,10 @@ Largest 15 of 31 (all in `LargeTypes.txt`):
 
 ## 3. Long methods
 
-- 17 methods over 150 lines and 2 GUI layout methods over 400.
+- 16 methods over 150 lines and 2 GUI layout methods over 400.
 - Exempt and over the limit: 80 (content data 76, data catalog member 4).
 
-Largest 15 of 19 (all in `LongMethods.txt`):
+Largest 15 of 18 (all in `LongMethods.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -104,15 +104,15 @@ Largest 15 of 19 (all in `LongMethods.txt`):
 | `SWLOR.Game.Server.Domain.Items.ItemService.UseItem` | 189 | ItemService.cs |
 | `SWLOR.Game.Server.Feature.DialogDefinition.StarportDockDialog.MainPageInit` | 186 | StarportDockDialog.cs |
 | `SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen.KitchenComponentTable.BuildFlavors` | 182 | KitchenComponentTable.cs |
-| `SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.SetLocalVariable` | 163 | DMChatCommand.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerksViewModel.OnClickBuyUpgrade` | 162 | PerksViewModel.cs |
+| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterFullRebuildViewModel.OnClickResetEverything` | 158 | CharacterFullRebuildViewModel.cs |
 
 ## 4. Services per type
 
-- 19 types use more than 10 services: 14 through the constructor only, 5 through the lookup only, 0 through both.
+- 17 types use more than 10 services: 14 through the constructor only, 3 through the lookup only, 0 through both.
 - Exempt and over the limit: 0 (none).
 
-Largest 15 of 19 (all in `ServicesPerType.txt`):
+Largest 15 of 17 (all in `ServicesPerType.txt`):
 
 | Entry | Services | Detail |
 |---|---:|---|
@@ -123,14 +123,14 @@ Largest 15 of 19 (all in `ServicesPerType.txt`):
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 18 | constructor 18, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService` | 17 | constructor 17, lookup 0 |
 | `SWLOR.Game.Server.Domain.Character.StatusEffectService` | 16 | constructor 16, lookup 0 |
-| `SWLOR.Game.Server.Feature.ChatCommandDefinition.CharacterChatCommand` | 16 | constructor 0, lookup 16 |
-| `SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand` | 16 | constructor 0, lookup 16 |
 | `SWLOR.Game.Server.Domain.Creatures.AIService` | 15 | constructor 15, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.BeastMasteryService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Companions.DroidService` | 14 | constructor 14, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService` | 13 | constructor 13, lookup 0 |
 | `SWLOR.Game.Server.Domain.Combat.CombatAbilityHitService` | 12 | constructor 12, lookup 0 |
+| `SWLOR.Game.Server.Domain.Combat.CombatService` | 12 | constructor 12, lookup 0 |
+| `SWLOR.Game.Server.Domain.Combat.EnmityService` | 12 | constructor 12, lookup 0 |
 
 ## 5. Deferred resolution
 
@@ -213,12 +213,12 @@ Largest 15 of 30 (all in `DomainCycles.txt`):
 
 ## 8. Static entry points and static state
 
-- To classify: 135 types, 253 static fields, 1 static members that resolve from the container.
+- To classify: 136 types, 253 static fields, 1 static members that resolve from the container.
 - Logic (outside Feature/): 34 types, 65 fields; written after initialization (runtime state): 30 fields in 16 types.
-- Content (Feature/): 101 types, 188 fields; written after initialization (runtime state): 16 fields in 11 types. The other fields are tables built once but held in a mutable type (an array, List, Dictionary).
+- Content (Feature/): 102 types, 188 fields; written after initialization (runtime state): 16 fields in 11 types. The other fields are tables built once but held in a mutable type (an array, List, Dictionary).
 - Approved (owner decision 3, not listed): Log (2 fields), Clock (1 fields), Random (1 fields), FrameProfiler (20 fields).
 
-Largest 15 of 135 (all in `StaticState.txt`):
+Largest 15 of 136 (all in `StaticState.txt`):
 
 | Entry | Members | Detail |
 |---|---:|---|

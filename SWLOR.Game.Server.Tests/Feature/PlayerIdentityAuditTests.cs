@@ -644,7 +644,7 @@ public class PlayerIdentityAuditTests
     {
         var root = FindRoot();
         var source = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature",
-            "ChatCommandDefinition", "CharacterChatCommand.cs"));
+            "ChatCommandDefinition", "CharacterSocialChatCommand.cs"));
         var method = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>().Single(node => node.Identifier.ValueText == methodName);
         var action = method.DescendantNodes().OfType<InvocationExpressionSyntax>()

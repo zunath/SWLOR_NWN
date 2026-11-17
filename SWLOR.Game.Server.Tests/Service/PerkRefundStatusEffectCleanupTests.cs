@@ -215,12 +215,7 @@ public class PerkRefundStatusEffectCleanupTests
     public void SourceOwnedPerkRefundCleanup_RemovesEffectsFromLoggedOutTargets()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "StatusEffectService.cs")).Replace("\r\n", "\n");
+        var source = StatusEffectSource.Read().Replace("\r\n", "\n");
         var cleanupBody = source.Substring(
             source.IndexOf("public void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal),
             source.IndexOf("private void RemoveStatusEffectsFromAllTargetsWhenSourceExits", StringComparison.Ordinal) -

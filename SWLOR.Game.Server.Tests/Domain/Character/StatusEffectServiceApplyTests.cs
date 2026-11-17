@@ -25,7 +25,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void AHostileDebuff_RunsEveryStepInTheOriginalOrder()
     {
         Bench.Hostile.Add((Target, Caster));
-        Service.ActiveImpact = new AbilityImpactSummary { Ability = ActiveAbility };
+        Bench.ActiveImpact = new AbilityImpactSummary { Ability = ActiveAbility };
         Bench.ResistedTicks = ticks => ticks - 2;
         var effect = Probe<ProbeEffect>(probe =>
         {
@@ -34,7 +34,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
             probe.StatGroup.Stats[StatType.Attack] = -3;
         });
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 10f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, effect, 10f).Should().BeTrue();
 
         Log.Should().Equal(
             $"HasImmunity:{Target}:{ResistanceType.Mind}",
@@ -57,7 +57,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     {
         var effect = Probe<ProbeEffect>(probe => probe.IconValue = EffectIconType.Stunned);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f);
 
         var apply = Bench.Engine.CallsTo("ApplyEffectToObject").Single();
         apply.Arguments[0].Should().Be(DurationType.Temporary);
@@ -74,7 +74,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     {
         var effect = Probe<ProbeEffect>(probe => probe.ActivationValue = StatusEffectActivationType.Passive);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f);
 
         Bench.Engine.CallsTo("EffectRunScript").Single().Arguments[2].Should().Be(string.Empty);
         Bench.Engine.CallsTo("ApplyEffectToObject").Single().Arguments[3].Should().Be(5f);
@@ -86,7 +86,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         var effect = Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind);
         Bench.Hostile.Add((Target, Caster));
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 0f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, effect, 0f).Should().BeTrue();
 
         Bench.Engine.CallsTo("ApplyEffectToObject").Single().Arguments[0].Should().Be(DurationType.Permanent);
         Log.Should().NotContain(line => line.StartsWith("HasImmunity"));
@@ -96,10 +96,10 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void TheGenericAndPermanentOverloadsMakeANewEffect()
     {
-        Service.ApplyPermanentStatusEffect<ProbeEffect>(Caster, Target);
-        Service.ApplyPermanentStatusEffect(typeof(OtherProbeEffect), Caster, Target);
-        Service.ApplyStatusEffect<ThirdProbeEffect>(Caster, Target, 5f).Should().BeTrue();
-        Service.ApplyStatusEffect<LimitedDelayProbeEffect>(Caster, Target, 5f, CombatDamageType.Physical).Should().BeTrue();
+        Application.ApplyPermanentStatusEffect<ProbeEffect>(Caster, Target);
+        Application.ApplyPermanentStatusEffect(typeof(OtherProbeEffect), Caster, Target);
+        Application.ApplyStatusEffect<ThirdProbeEffect>(Caster, Target, 5f).Should().BeTrue();
+        Application.ApplyStatusEffect<LimitedDelayProbeEffect>(Caster, Target, 5f, CombatDamageType.Physical).Should().BeTrue();
 
         Service.GetStatusEffect(Target, typeof(ProbeEffect))!.DurationTicks.Should().Be(-1);
         Service.GetStatusEffect(Target, typeof(OtherProbeEffect))!.DurationTicks.Should().Be(-1);
@@ -110,22 +110,22 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void APermanentApplicationOfNoType_Throws()
     {
-        Service.Invoking(service => service.ApplyPermanentStatusEffect((Type)null!, Caster, Target))
+        Application.Invoking(service => service.ApplyPermanentStatusEffect((Type)null!, Caster, Target))
             .Should().Throw<ArgumentNullException>();
     }
 
     [Test]
     public void TheTypeOverloadsReadTheCatalog()
     {
-        Service.DefinitionTypes = new[] { typeof(ProbeEffect), typeof(OtherProbeEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(ProbeEffect), typeof(OtherProbeEffect) };
+        Catalog.CacheData();
 
-        Service.ApplyStatusEffect(Caster, Target, typeof(ProbeEffect), 5f).Should().BeTrue();
-        Service.ApplyStatusEffect(Caster, Target, typeof(OtherProbeEffect), 5f, CombatDamageType.Physical).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, typeof(ProbeEffect), 5f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, typeof(OtherProbeEffect), 5f, CombatDamageType.Physical).Should().BeTrue();
 
-        Service.Invoking(service => service.ApplyStatusEffect(Caster, Target, typeof(ThirdProbeEffect), 5f))
+        Application.Invoking(service => service.ApplyStatusEffect(Caster, Target, typeof(ThirdProbeEffect), 5f))
             .Should().Throw<KeyNotFoundException>();
-        Service.Invoking(service => service.ApplyStatusEffect(Caster, Target, (Type)null!, 5f, CombatDamageType.Physical))
+        Application.Invoking(service => service.ApplyStatusEffect(Caster, Target, (Type)null!, 5f, CombatDamageType.Physical))
             .Should().Throw<KeyNotFoundException>().WithMessage("*null*");
     }
 
@@ -135,7 +135,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Bench.Hostile.Add((Target, Caster));
         var effect = Probe<ProbeEffect>();
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f, CombatDamageType.Fire);
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f, CombatDamageType.Fire);
 
         effect.AppliedResistanceType.Should().Be(ResistanceType.Fire);
         Log.Should().Contain($"HasImmunity:{Target}:{ResistanceType.Fire}");
@@ -147,7 +147,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Bench.Hostile.Add((Target, Caster));
         var effect = Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f, ResistanceType.Poison);
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f, ResistanceType.Poison);
 
         effect.AppliedResistanceType.Should().Be(ResistanceType.Poison);
     }
@@ -158,7 +158,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Bench.Hostile.Add((Target, Caster));
         var effect = Probe<ProbeEffect>();
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f, CombatDamageType.Invalid);
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f, CombatDamageType.Invalid);
 
         effect.AppliedResistanceType.Should().Be(ResistanceType.Invalid);
         Log.Should().NotContain(line => line.StartsWith("HasImmunity"));
@@ -171,7 +171,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Bench.Immune.Add((Target, ResistanceType.Mind));
         var effect = Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
 
         Bench.Messages.Should().Equal((Caster, "Your ability was resisted."));
         Log.Should().NotContain(line => line.StartsWith("Apply:"));
@@ -185,7 +185,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Bench.ResistedTicks = _ => 0;
         var effect = Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
 
         Bench.Messages.Should().Equal((Caster, "Your ability was resisted."));
     }
@@ -197,7 +197,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Bench.Hostile.Add((creature, source));
         var effect = Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind);
 
-        Service.ApplyStatusEffect(source, creature, effect, 5f);
+        Application.ApplyStatusEffect(source, creature, effect, 5f);
 
         Log.Should().NotContain(line => line.StartsWith("HasImmunity"));
     }
@@ -207,7 +207,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     {
         var effect = Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f);
 
         Log.Should().NotContain(line => line.StartsWith("HasImmunity"));
     }
@@ -215,12 +215,12 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void OutgoingDurationBonusesAreReadFromTheSourceBeforeResistance()
     {
-        Service.Stats[(Caster, StatType.OutgoingDebuffDurationPercentAdjustment)] = 100;
-        Service.Stats[(Caster, StatType.OutgoingBleedingDurationBonusSeconds)] = 4;
+        Bench.Stats[(Caster, StatType.OutgoingDebuffDurationPercentAdjustment)] = 100;
+        Bench.Stats[(Caster, StatType.OutgoingBleedingDurationBonusSeconds)] = 4;
         var effect = Probe<ProbeEffect>(probe =>
             probe.CategoriesValue = StatusEffectCategory.Debuff | StatusEffectCategory.Bleeding);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 10f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 10f);
 
         effect.DurationTicks.Should().Be(24);
     }
@@ -229,27 +229,27 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void ABleedWithoutABonusAndASourceThatIsGoneKeepTheirDuration()
     {
         var bleed = Probe<ProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.Bleeding);
-        Service.ApplyStatusEffect(Caster, Target, bleed, 10f);
+        Application.ApplyStatusEffect(Caster, Target, bleed, 10f);
         bleed.DurationTicks.Should().Be(10);
 
-        Service.Stats[(Bystander, StatType.OutgoingDebuffDurationPercentAdjustment)] = 100;
+        Bench.Stats[(Bystander, StatType.OutgoingDebuffDurationPercentAdjustment)] = 100;
         Bench.Invalid.Add(Bystander);
         var debuff = Probe<OtherProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.Debuff);
-        Service.ApplyStatusEffect(Bystander, Target, debuff, 10f);
+        Application.ApplyStatusEffect(Bystander, Target, debuff, 10f);
         debuff.DurationTicks.Should().Be(10);
     }
 
     [Test]
     public void AForceDisruptionTakesTheSourcesForceDefenseAdjustment()
     {
-        Service.Stats[(Caster, StatType.OutgoingForceDisruptionForceDefensePercentAdjustment)] = 7;
+        Bench.Stats[(Caster, StatType.OutgoingForceDisruptionForceDefensePercentAdjustment)] = 7;
         var effect = Probe<ProbeEffect>(probe =>
         {
             probe.CategoriesValue = StatusEffectCategory.ForceDisruption;
             probe.StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = 3;
         });
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 10f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 10f);
 
         effect.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(10);
     }
@@ -258,13 +258,13 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void AForceDisruptionWithNoAdjustmentOrAnInvalidSourceIsUnchanged()
     {
         var effect = Probe<ProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.ForceDisruption);
-        Service.ApplyStatusEffect(Caster, Target, effect, 10f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 10f);
         effect.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(0);
 
-        Service.Stats[(Bystander, StatType.OutgoingForceDisruptionForceDefensePercentAdjustment)] = 7;
+        Bench.Stats[(Bystander, StatType.OutgoingForceDisruptionForceDefensePercentAdjustment)] = 7;
         Bench.Invalid.Add(Bystander);
         var other = Probe<OtherProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.ForceDisruption);
-        Service.ApplyStatusEffect(Bystander, Target, other, 10f);
+        Application.ApplyStatusEffect(Bystander, Target, other, 10f);
         other.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(0);
     }
 
@@ -272,12 +272,12 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void HardControlIsCappedAndCutFurtherBetweenPlayers()
     {
         var cc = HardControl();
-        Service.ApplyStatusEffect(Caster, Target, cc, 100f);
+        Application.ApplyStatusEffect(Caster, Target, cc, 100f);
         cc.DurationTicks.Should().Be(StatusEffectRules.MaximumHardCrowdControlDurationSeconds);
 
         Bench.PlayerAgainstPlayer = true;
         var pvp = Probe<OtherProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.HardCrowdControl);
-        Service.ApplyStatusEffect(Caster, Bystander, pvp, 100f);
+        Application.ApplyStatusEffect(Caster, Bystander, pvp, 100f);
         pvp.DurationTicks.Should().Be(15);
     }
 
@@ -286,7 +286,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     {
         var cc = HardControl();
 
-        Service.ApplyStatusEffect(Target, Target, cc, 100f);
+        Application.ApplyStatusEffect(Target, Target, cc, 100f);
 
         cc.DurationTicks.Should().Be(100);
     }
@@ -295,14 +295,14 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void AConversion_NeedsTheReplacedTypeToBeActiveAndReplacesItAsAReplacement()
     {
         var old = Applied<ProbeEffect>(Target, Caster, seconds: 6f);
-        Service.DefinitionTypes = new[] { typeof(OtherProbeEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(OtherProbeEffect) };
+        Catalog.CacheData();
 
-        Service.ApplyStatusEffect(Caster, Target, typeof(OtherProbeEffect), 30f, CombatDamageType.Invalid, typeof(ThirdProbeEffect))
+        Application.ApplyStatusEffect(Caster, Target, typeof(OtherProbeEffect), 30f, CombatDamageType.Invalid, typeof(ThirdProbeEffect))
             .Should().BeFalse("there is nothing of the replaced type to convert");
         Service.GetStatusEffect(Target, typeof(ProbeEffect)).Should().BeSameAs(old);
 
-        Service.ApplyStatusEffect(Caster, Target, typeof(OtherProbeEffect), 30f, CombatDamageType.Invalid, typeof(ProbeEffect))
+        Application.ApplyStatusEffect(Caster, Target, typeof(OtherProbeEffect), 30f, CombatDamageType.Invalid, typeof(ProbeEffect))
             .Should().BeTrue();
 
         Service.GetStatusEffect(Target, typeof(ProbeEffect)).Should().BeNull();
@@ -319,11 +319,11 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void AConversionIsClampedToWhatRemainsOfTheOriginalControl()
     {
         var old = Applied<ProbeEffect>(Target, Caster, probe => probe.CategoriesValue = StatusEffectCategory.HardCrowdControl, 6f);
-        Service.DefinitionTypes = new[] { typeof(HardConvertedEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(HardConvertedEffect) };
+        Catalog.CacheData();
         Now = Start.AddSeconds(2);
 
-        Service.ApplyStatusEffect(Caster, Target, typeof(HardConvertedEffect), 30f, CombatDamageType.Invalid, typeof(ProbeEffect))
+        Application.ApplyStatusEffect(Caster, Target, typeof(HardConvertedEffect), 30f, CombatDamageType.Invalid, typeof(ProbeEffect))
             .Should().BeTrue();
 
         Service.GetStatusEffect(Target, typeof(HardConvertedEffect))!.DurationTicks.Should().Be(4);
@@ -334,11 +334,11 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void AConversionWithNoTimeLeftIsRefusedAndKeepsTheOriginal()
     {
         var old = Applied<ProbeEffect>(Target, Caster, probe => probe.CategoriesValue = StatusEffectCategory.HardCrowdControl, 6f);
-        Service.DefinitionTypes = new[] { typeof(HardConvertedEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(HardConvertedEffect) };
+        Catalog.CacheData();
         Now = Start.AddSeconds(6);
 
-        Service.ApplyStatusEffect(Caster, Target, typeof(HardConvertedEffect), 30f, CombatDamageType.Invalid, typeof(ProbeEffect))
+        Application.ApplyStatusEffect(Caster, Target, typeof(HardConvertedEffect), 30f, CombatDamageType.Invalid, typeof(ProbeEffect))
             .Should().BeFalse();
 
         Service.GetStatusEffect(Target, typeof(ProbeEffect)).Should().BeSameAs(old);
@@ -349,11 +349,11 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     {
         var old = Applied<ProbeEffect>(Target, Caster, seconds: 6f);
         var seen = new List<int>();
-        Service.DefinitionTypes = new[] { typeof(RefusingEffect) };
-        Service.CacheData();
+        Bench.DefinitionTypes = new[] { typeof(RefusingEffect) };
+        Catalog.CacheData();
         RefusingEffect.OnCanApply = () => seen.Add(Service.GetCreatureStatusEffects(Target).GetAllEffects().Count);
 
-        Service.ApplyStatusEffect(Caster, Target, typeof(RefusingEffect), 6f, CombatDamageType.Invalid, typeof(ProbeEffect))
+        Application.ApplyStatusEffect(Caster, Target, typeof(RefusingEffect), 6f, CombatDamageType.Invalid, typeof(ProbeEffect))
             .Should().BeFalse();
 
         seen.Should().Equal(0);
@@ -376,22 +376,22 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void ARefusalGoesToASourcePlayerOrElseToTheCreature()
     {
         Bench.Players.Add(Caster);
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CanApplyAnswer = "Nope"), 5f)
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CanApplyAnswer = "Nope"), 5f)
             .Should().BeFalse();
         Bench.Messages.Last().Should().Be((Caster, "Effect failed to apply: Nope"));
 
         Bench.Players.Clear();
         Bench.Dms.Add(Caster);
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CanApplyAnswer = "Nope"), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CanApplyAnswer = "Nope"), 5f);
         Bench.Messages.Last().Receiver.Should().Be(Caster);
 
         Bench.Dms.Clear();
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CanApplyAnswer = "Nope"), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CanApplyAnswer = "Nope"), 5f);
         Bench.Messages.Last().Receiver.Should().Be(Target);
 
         Bench.Invalid.Add(Caster);
         Bench.Players.Add(Caster);
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CanApplyAnswer = "Nope"), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CanApplyAnswer = "Nope"), 5f);
         Bench.Messages.Last().Receiver.Should().Be(Target);
     }
 
@@ -403,7 +403,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         effect.MorePowerfulEffectTypes.Add(typeof(ThirdProbeEffect));
         effect.MorePowerfulEffectTypes.Add(typeof(OtherProbeEffect));
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
 
         Bench.Messages.Single().Message.Should().Be("A more powerful effect is active.");
     }
@@ -415,7 +415,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         var effect = Probe<ProbeEffect>();
         effect.LessPowerfulEffectTypes.Add(typeof(OtherProbeEffect));
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeTrue();
 
         Log.Should().ContainInOrder($"Remove:{weak.Name}:{Target}:True", $"Apply:{effect.Name}:{Target}:5");
         Log.Should().NotContain(line => line.Contains("worn off"));
@@ -431,7 +431,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Applied<ProbeEffect>(Target, Caster, probe => probe.StackValue = stacking);
         Applied<ProbeEffect>(Target, Bystander, probe => probe.StackValue = stacking);
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.StackValue = stacking), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.StackValue = stacking), 5f);
 
         if (stacking == StatusEffectStackType.Disabled || stacking == StatusEffectStackType.Invalid)
             Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().ContainSingle();
@@ -446,7 +446,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Now = Start.AddSeconds(3);
         var fresh = Probe<ProbeEffect>(probe => probe.PreservesTicks = true);
 
-        Service.ApplyStatusEffect(Caster, Target, fresh, 6f);
+        Application.ApplyStatusEffect(Caster, Target, fresh, 6f);
 
         fresh.LastTickTime.Should().Be(old.LastTickTime);
     }
@@ -482,7 +482,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     {
         var effect = Probe<ProbeEffect>(probe => probe.FlagOnApply = true);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
 
         Log.Should().ContainInOrder($"Apply:{effect.Name}:{Target}:5", $"Remove:{effect.Name}:{Target}:False");
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().BeEmpty();
@@ -498,7 +498,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
             probe.FlagOnApply = true;
         });
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f).Should().BeFalse();
 
         Log.Should().ContainInOrder($"Apply:{effect.Name}:{Target}:5", $"Remove:{effect.Name}:{Target}:False");
         Bench.Engine.CallsTo("RemoveEffectByTag")
@@ -510,7 +510,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     {
         var other = Applied<OtherProbeEffect>(Target, Caster);
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.FlagOnApply = true), 5f).Should().BeFalse();
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.FlagOnApply = true), 5f).Should().BeFalse();
 
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().Equal(other);
     }
@@ -518,11 +518,11 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void AFriendlyOrSelfAppliedDebuff_GrantsNoHostilePartyBuff()
     {
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.Debuff), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.Debuff), 5f);
         Log.Should().NotContain(line => line.StartsWith("HostileBuff"));
 
         Bench.Hostile.Add((Caster, Caster));
-        Service.ApplyStatusEffect(Caster, Caster, Probe<ProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.Debuff), 5f);
+        Application.ApplyStatusEffect(Caster, Caster, Probe<ProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.Debuff), 5f);
         Log.Should().NotContain(line => line.StartsWith("HostileBuff"));
     }
 
@@ -532,16 +532,16 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Bench.Hostile.Add((Target, Caster));
         Bench.ResistedTicks = ticks => ticks / 2;
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind), 10f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind), 10f);
         Bench.Messages.Should().BeEmpty();
 
         Bench.Players.Add(Caster);
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind), 10f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind), 10f);
         Bench.Messages.Single().Should().Be((Caster, "Mind Resistance reduced Probe duration from 10s to 5s."));
 
         Bench.Players.Clear();
         Bench.Dms.Add(Caster);
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind), 10f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind), 10f);
         Bench.Messages.Should().HaveCount(2);
     }
 
@@ -552,7 +552,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Bench.ResistedTicks = ticks => ticks + 5;
 
         var effect = Probe<ProbeEffect>(probe => probe.ResistanceValue = ResistanceType.Mind);
-        Service.ApplyStatusEffect(Caster, Target, effect, 10f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 10f);
 
         effect.DurationTicks.Should().Be(15);
     }
@@ -560,7 +560,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void ASilentEffectSendsNoApplicationMessage()
     {
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.SendsApplication = false), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.SendsApplication = false), 5f);
 
         Log.Should().NotContain(line => line.StartsWith("Nearby"));
         Bench.Messages.Should().BeEmpty();
@@ -569,7 +569,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void AnApplicationWithNoOtherSource_NamesOnlyTheBearer()
     {
-        Service.ApplyStatusEffect(Target, Target, Probe<ProbeEffect>(), 5f);
+        Application.ApplyStatusEffect(Target, Target, Probe<ProbeEffect>(), 5f);
 
         Log.Should().Contain($"Nearby:{Target}:name-{Target} receives the effect of Probe");
     }
@@ -580,7 +580,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         var names = new Dictionary<uint, string> { { Caster, " " } };
         Bench.DisplayNames = names;
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(), 5f);
 
         Log.Should().Contain($"Nearby:{Target}:name-{Target} receives the effect of Probe");
     }
@@ -591,7 +591,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Bench.Concealed.Add(Target);
         Bench.Players.Add(Caster);
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(), 5f);
 
         Log.Should().NotContain(line => line.StartsWith("Nearby"));
         Bench.Messages.Should().Equal(
@@ -604,7 +604,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     {
         Bench.Concealed.Add(Caster);
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(), 5f);
 
         Log.Should().NotContain(line => line.StartsWith("Nearby"));
         Bench.Messages.Should().ContainSingle(message => message.Receiver == Target);
@@ -635,8 +635,8 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
             probe.StatGroup.Stats[StatType.PhysicalDefense] = -25;
         });
 
-        Service.ApplyStatusEffect(Caster, Target, weak, 0f);
-        Service.ApplyStatusEffect(Caster, Target, strong, 0f);
+        Application.ApplyStatusEffect(Caster, Target, weak, 0f);
+        Application.ApplyStatusEffect(Caster, Target, strong, 0f);
 
         weak.StatGroup.Stats[StatType.PhysicalDefense].Should().Be(0, "the stronger effect wins this channel");
         weak.StatGroup.Stats[StatType.ForceDefense].Should().Be(-40, "nothing competes for this one");
@@ -653,7 +653,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void TheLastLeadershipEffectRemoved_LeavesNothingToReconcile()
     {
-        Service.ApplyStatusEffect(Caster, Target, Probe<LeadershipProbeEffect>(probe =>
+        Application.ApplyStatusEffect(Caster, Target, Probe<LeadershipProbeEffect>(probe =>
         {
             probe.Nominal[StatType.PhysicalDefense] = -10;
             probe.StatGroup.Stats[StatType.PhysicalDefense] = -10;
@@ -668,7 +668,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void AVitalityEffect_SchedulesTheTemporaryHitPointCheckOnApplyAndRemove()
     {
         var effect = Probe<ProbeEffect>(probe => probe.StatGroup.Abilities[AbilityType.Vitality] = 2);
-        Service.ApplyStatusEffect(Caster, Target, effect, 0f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 0f);
         Log.Should().Contain($"LimitCheck:{Target}");
 
         Log.Clear();
@@ -676,7 +676,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Log.Should().Contain($"LimitCheck:{Target}");
 
         Log.Clear();
-        Service.ApplyStatusEffect(Caster, Target, Probe<OtherProbeEffect>(), 0f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<OtherProbeEffect>(), 0f);
         Log.Should().NotContain($"LimitCheck:{Target}");
     }
 
@@ -690,7 +690,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
             probe.StatGroup.Abilities[AbilityType.Invalid] = 9;
         });
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 0f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 0f);
 
         Bench.Engine.CallsTo("EffectAbilityIncrease").Should().ContainSingle(call => (AbilityType)call.Arguments[0]! == AbilityType.Might && (int)call.Arguments[1]! == 3);
         Bench.Engine.CallsTo("EffectAbilityDecrease").Should().ContainSingle(call => (AbilityType)call.Arguments[0]! == AbilityType.Social && (int)call.Arguments[1]! == 2);
@@ -703,7 +703,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         var effect = Probe<ProbeEffect>();
         Bench.NativeTags.Add(effect.Id);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f);
 
         Bench.Engine.CallsTo("ApplyEffectToObject").Should().BeEmpty();
     }
@@ -712,10 +712,10 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void AnEffectApplied_ItsOwnOriginIsKeptOverTheActiveAbility()
     {
         var parent = new AbilityDetail { Name = "Parent" };
-        Service.ActiveImpact = new AbilityImpactSummary { Ability = ActiveAbility };
+        Bench.ActiveImpact = new AbilityImpactSummary { Ability = ActiveAbility };
         var effect = Probe<ProbeEffect>(probe => probe.OriginatingAbility = parent);
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 5f);
+        Application.ApplyStatusEffect(Caster, Target, effect, 5f);
 
         effect.OriginatingAbility.Should().BeSameAs(parent);
         Log.Should().Contain($"CapstoneProof:{Caster}:{Target}:ProbeEffect:Parent");
@@ -730,7 +730,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Now = Start.AddSeconds(2);
         Bench.Engine.ClearCalls();
 
-        Service.ApplyStatusEffect(Bystander, Target, incoming, 8f).Should().BeTrue();
+        Application.ApplyStatusEffect(Bystander, Target, incoming, 8f).Should().BeTrue();
 
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().Equal(active);
         active.Source.Should().Be(Bystander, "a non-stacking effect moves to the new source");
@@ -751,7 +751,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         var incoming = Probe<ProbeEffect>(probe => probe.RefreshAnswer = _ => true);
         incoming.LessPowerfulEffectTypes.Add(typeof(OtherProbeEffect));
 
-        Service.ApplyStatusEffect(Caster, Target, incoming, 8f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, incoming, 8f).Should().BeTrue();
 
         active.Source.Should().Be(Caster);
         Log.Should().Contain($"Remove:{weak.Name}:{Target}:True");
@@ -778,7 +778,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         });
 
         Bench.Recording = true;
-        Service.ApplyStatusEffect(Caster, Target, incoming, 8f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, incoming, 8f).Should().BeTrue();
 
         Log.Should().ContainInOrder(
             $"RecordStatusApplied:{Caster}:{Target}:Probe:False:True",
@@ -797,7 +797,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
             probe.StackValue = stacking;
         }, 5f);
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe =>
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe =>
         {
             probe.RefreshAnswer = _ => true;
             probe.StackValue = stacking;
@@ -810,11 +810,11 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void ARefreshInPlace_NeedsTheCreatureToBeTrackedAndTheEffectToOptIn()
     {
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.RefreshAnswer = _ => true), 5f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.RefreshAnswer = _ => true), 5f).Should().BeTrue();
         Log.Should().Contain(line => line.StartsWith("Apply:"), "nothing was active to refresh");
 
         Log.Clear();
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.RefreshAnswer = _ => false), 5f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.RefreshAnswer = _ => false), 5f).Should().BeTrue();
         Log.Should().Contain(line => line.StartsWith("Apply:"), "the incoming effect did not opt in");
     }
 
@@ -824,7 +824,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Applied<ProbeEffect>(Target, Caster, probe => probe.RefreshAnswer = _ => true, 5f);
         Applied<ProbeEffect>(Target, Bystander, probe => probe.RefreshAnswer = _ => true, 5f);
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.RefreshAnswer = _ => true), 5f);
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe => probe.RefreshAnswer = _ => true), 5f);
 
         Log.Should().Contain(line => line.StartsWith("Apply:"));
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().ContainSingle();
@@ -839,7 +839,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
             probe.StackValue = StatusEffectStackType.StackFromMultipleSources;
         }, 5f);
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe =>
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(probe =>
         {
             probe.RefreshAnswer = _ => true;
             probe.StackValue = StatusEffectStackType.StackFromMultipleSources;
@@ -882,7 +882,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
                 break;
         }
 
-        Service.ApplyStatusEffect(Caster, Target, incoming, 8f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, incoming, 8f).Should().BeTrue();
 
         Log.Should().Contain(line => line.StartsWith("Apply:"));
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().Equal(incoming);
@@ -893,21 +893,21 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void ALimitedAttackEffect_WaitsForTheNativeCycleToEndAndIsNotProfiledTwice()
     {
-        Service.BeginNativeAttackSwing(Target);
-        Service.BeginNativeAttackSwing(Target);
+        CombatEvents.BeginNativeAttackSwing(Target);
+        CombatEvents.BeginNativeAttackSwing(Target);
         var effect = Probe<LimitedDelayProbeEffect>();
         var noDelay = Probe<LimitedNoDelayProbeEffect>();
 
-        Service.ApplyStatusEffect(Caster, Target, effect, 10f).Should().BeTrue();
-        Service.ApplyStatusEffect(Caster, Target, noDelay, 10f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, effect, 10f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, noDelay, 10f).Should().BeTrue();
 
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().BeEmpty();
         Log.Should().Equal($"CapstoneProof:{Caster}:{Target}:LimitedDelayProbeEffect:", $"CapstoneProof:{Caster}:{Target}:LimitedNoDelayProbeEffect:");
 
-        Service.EndNativeAttackSwing(Target);
+        CombatEvents.EndNativeAttackSwing(Target);
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().BeEmpty("the outer cycle is still open");
 
-        Service.EndNativeAttackSwing(Target);
+        CombatEvents.EndNativeAttackSwing(Target);
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().BeEquivalentTo(new IStatusEffect[] { effect, noDelay });
         Log.Should().Contain($"Apply:Probe:{Target}:10");
     }
@@ -915,18 +915,18 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void AnOrdinaryEffectDuringANativeCycleAppliesAtOnce()
     {
-        Service.BeginNativeAttackSwing(Target);
+        CombatEvents.BeginNativeAttackSwing(Target);
 
-        Service.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(), 10f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, Probe<ProbeEffect>(), 10f).Should().BeTrue();
 
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().ContainSingle();
-        Service.EndNativeAttackSwing(Target);
+        CombatEvents.EndNativeAttackSwing(Target);
     }
 
     [Test]
     public void ALimitedAttackEffectOutsideANativeCycleAppliesAtOnce()
     {
-        Service.ApplyStatusEffect(Caster, Target, Probe<LimitedNoDelayProbeEffect>(), 10f).Should().BeTrue();
+        Application.ApplyStatusEffect(Caster, Target, Probe<LimitedNoDelayProbeEffect>(), 10f).Should().BeTrue();
 
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().ContainSingle();
     }
@@ -934,7 +934,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void EndingACycleThatWasNeverStartedDoesNothing()
     {
-        Service.EndNativeAttackSwing(Target);
+        CombatEvents.EndNativeAttackSwing(Target);
 
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().BeEmpty();
     }
@@ -942,12 +942,12 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [Test]
     public void ADestroyedAttacker_LosesItsOpenCycleAndDeferredEffects()
     {
-        Service.BeginNativeAttackSwing(Target);
-        Service.ApplyStatusEffect(Caster, Target, Probe<LimitedNoDelayProbeEffect>(), 10f);
+        CombatEvents.BeginNativeAttackSwing(Target);
+        Application.ApplyStatusEffect(Caster, Target, Probe<LimitedNoDelayProbeEffect>(), 10f);
         Log.Clear();
 
-        Service.ForgetDestroyedNativeAttackSwing(Target);
-        Service.EndNativeAttackSwing(Target);
+        CombatEvents.ForgetDestroyedNativeAttackSwing(Target);
+        CombatEvents.EndNativeAttackSwing(Target);
 
         Log.Should().BeEmpty();
         Service.GetCreatureStatusEffects(Target).GetAllEffects().Should().BeEmpty();

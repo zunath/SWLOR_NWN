@@ -32,8 +32,8 @@ public class DamageOverTimeStatusEffectTests
     [Test]
     public void TickingStatusEffects_KeepNativeLifetimeLongEnoughForTheirFinalTick()
     {
-        var burnDuration = StatusEffectInternals.Invoke<float>("GetStatusEffectDurationSeconds", new BurnStatusEffect(), 2);
-        var passiveDuration = StatusEffectInternals.Invoke<float>("GetStatusEffectDurationSeconds", new KoltoMistHealingStatusEffect(), 2);
+        var burnDuration = StatusEffectInternals.InvokeNative<float>("GetStatusEffectDurationSeconds", new BurnStatusEffect(), 2);
+        var passiveDuration = StatusEffectInternals.InvokeNative<float>("GetStatusEffectDurationSeconds", new KoltoMistHealingStatusEffect(), 2);
 
         burnDuration.Should().Be(18f,
             "two 6-second ticks need one logical tick of NWN scheduler grace at the 12-second boundary");

@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Economy;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -22,12 +23,7 @@ public class CombatUpgradeMigrationCoverageTests
     public void LoggedOutStatusEffects_RemainProcessLocalRuntimeState()
     {
         var root = FindRepositoryRoot();
-        var statusEffectService = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "StatusEffectService.cs"));
+        var statusEffectService = StatusEffectSource.Read();
 
         statusEffectService.Should().Contain("private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();");
         statusEffectService.Should().Contain("_loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, Clock.UtcNow);");

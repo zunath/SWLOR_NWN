@@ -20,7 +20,7 @@ may have moved). If master or the branch changes the file first, map the ranges 
 ## Decisions
 
 Settled by the coordinator (2026-11-17) after the review of the first draft; change only on a finding in review. The nine decisions the draft asked
-for are recorded under Settled decisions (end of this guide). Only the freeze start is open.
+for are recorded under Settled decisions (end of this guide). The owner confirmed the master freeze on 2026-11-17.
 
 - **The split is layered by who calls what, with the stay-part at the bottom.** `StatusEffectService` stays as the trackers, the
   reads and the removal (about 800 lines, 4 services). Everything that applies, refreshes, announces, reapplies or reacts to
@@ -511,8 +511,7 @@ tool's. P5-5c is the one that edits other items' files (Stealth, Pvp, QuickCast,
 
 ## Master freeze
 
-P5-5c to P5-5h run under a master freeze that starts when the owner confirms it (the owner has not answered whether the P5-4 freeze carries over;
-this guide does not state that a freeze is in force). P5-5b is tests only and needs no freeze. The freeze, once confirmed, covers the work from P5-5c,
+P5-5c to P5-5h run under a master freeze that the owner confirmed on 2026-11-17. P5-5b is tests only and needed no freeze. The freeze covers the work from P5-5c,
 the first PR that moves code out of the service file, to the merge of P5-5h. The master files whose edits would need hand porting
 (master `88f02ed6a`, local ref):
 
@@ -534,6 +533,10 @@ That is 19 files (1 + 17 + 1). Content edits that only call the service merge wi
 (`Service/StatusEffectService/*`, `Feature/StatusEffectDefinition/*`), which this split does not move. Master's later syncs run the mechanical
 scripts first and port the service range by hand with a Port log row.
 
+Open master PR at the freeze start: #3448 (status extension adds exactly the requested time) changes one line of
+`ExtendStatusEffectDuration` in `Service/StatusEffect.cs` (part 4, duration) plus the status effect types. If it merges during the freeze,
+the sync ports that line by hand to whichever file holds `ExtendStatusEffectDuration` at the time.
+
 ## Settled decisions (coordinator, 2026-11-17)
 
 The coordinator reviewed the first draft and settled its nine decisions; the guide above is written to them.
@@ -549,7 +552,7 @@ The coordinator reviewed the first draft and settled its nine decisions; the gui
 5. **Resistance is the port `IStatusResistance`,** not a push.
 6. **Statics:** `PvpCombatRules`, `PlayerControlRules` and `ConcealmentRules` in Character beside `StatusEffectRules`; `QuickCastFeatMap` in Foundation.
 7. **P5-8e's D3:** no Stealth subscription is needed; D3 in the Creatures split drops that clause (done in this commit).
-8. **The freeze** is below under Open decisions (not yet confirmed).
+8. **The freeze** was confirmed by the owner on 2026-11-17 (Master freeze above).
 9. **P5-8:** P5-8d merged (`737210cdd`, #3446); the `AIService` and `CompanionControlService` rows are rechecked against the feature tip (Combat ports
    section); P5-8e runs after P5-5.
 
@@ -559,5 +562,4 @@ The coordinator reviewed the first draft and settled its nine decisions; the gui
 
 ## Open decisions
 
-1. **Freeze start.** P5-5c to P5-5h run under a master freeze that starts when the owner confirms it; P5-5b (tests only) needs none.
-   Recommended: confirm before P5-5c starts, so that master's edits to `Service/StatusEffect.cs` stop for the six moving PRs.
+None. The freeze start was confirmed by the owner on 2026-11-17 (Master freeze above).

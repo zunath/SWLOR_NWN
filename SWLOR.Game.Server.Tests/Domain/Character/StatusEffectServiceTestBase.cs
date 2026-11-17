@@ -25,7 +25,20 @@ public abstract class StatusEffectServiceTestBase
 
     protected StatusEffectBench Bench { get; private set; } = null!;
 
+    // One accessor per part of the status effect split; each is the part's double (StatusEffectBench).
     protected TestStatusEffectService Service => Bench.Service;
+
+    protected TestStatusEffectService Catalog => Bench.Catalog;
+
+    protected TestStatusEffectService Application => Bench.Application;
+
+    protected TestStatusEffectService Duration => Bench.Duration;
+
+    protected TestStatusEffectService Native => Bench.Native;
+
+    protected TestStatusEffectService CombatEvents => Bench.CombatEvents;
+
+    protected TestStatusEffectService Session => Bench.Session;
 
     protected List<string> Log => Bench.Log;
 
@@ -80,7 +93,7 @@ public abstract class StatusEffectServiceTestBase
     /// <summary>The tracker the service holds for <paramref name="creature"/>, created when it has none.</summary>
     protected CreatureStatusEffect Tracked(uint creature)
     {
-        Service.OnApplyNWNStatusEffect(creature);
+        Native.OnApplyNWNStatusEffect(creature);
         return Service.GetCreatureStatusEffects(creature);
     }
 }

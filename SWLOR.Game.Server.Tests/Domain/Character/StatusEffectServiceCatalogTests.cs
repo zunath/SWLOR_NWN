@@ -13,14 +13,14 @@ public class StatusEffectServiceCatalogTests : StatusEffectServiceTestBase
 {
     private void Cache(params Type[] types)
     {
-        Service.DefinitionTypes = types;
-        Service.CacheData();
+        Bench.DefinitionTypes = types;
+        Catalog.CacheData();
     }
 
     [Test]
     public void DefaultSearch_FindsTheServerDefinitionsAndSkipsAbstractTypes()
     {
-        var found = Service.DefaultDefinitionTypes().ToList();
+        var found = Catalog.DefaultDefinitionTypes().ToList();
 
         found.Should().Contain(typeof(BleedStatusEffect));
         found.Should().NotContain(typeof(StatusEffectBase));
@@ -31,13 +31,13 @@ public class StatusEffectServiceCatalogTests : StatusEffectServiceTestBase
     public void CacheData_ReplacesTheCatalogOnEachRun()
     {
         Cache(typeof(ProbeEffect));
-        Service.HasStatusEffectDefinition(typeof(ProbeEffect)).Should().BeTrue();
+        Catalog.HasStatusEffectDefinition(typeof(ProbeEffect)).Should().BeTrue();
 
         Cache(typeof(OtherProbeEffect));
 
-        Service.HasStatusEffectDefinition(typeof(ProbeEffect)).Should().BeFalse();
-        Service.HasStatusEffectDefinition(typeof(OtherProbeEffect)).Should().BeTrue();
-        Service.HasStatusEffectDefinition(null!).Should().BeFalse();
+        Catalog.HasStatusEffectDefinition(typeof(ProbeEffect)).Should().BeFalse();
+        Catalog.HasStatusEffectDefinition(typeof(OtherProbeEffect)).Should().BeTrue();
+        Catalog.HasStatusEffectDefinition(null!).Should().BeFalse();
     }
 
     [Test]
@@ -45,8 +45,8 @@ public class StatusEffectServiceCatalogTests : StatusEffectServiceTestBase
     {
         Cache(typeof(ProbeEffect));
 
-        var first = Service.CreateStatusEffect(typeof(ProbeEffect));
-        var second = Service.CreateStatusEffect(typeof(ProbeEffect));
+        var first = Catalog.CreateStatusEffect(typeof(ProbeEffect));
+        var second = Catalog.CreateStatusEffect(typeof(ProbeEffect));
 
         first.Should().BeOfType<ProbeEffect>();
         first.Should().NotBeSameAs(second);
@@ -57,9 +57,9 @@ public class StatusEffectServiceCatalogTests : StatusEffectServiceTestBase
     {
         Cache(typeof(ProbeEffect));
 
-        Service.Invoking(service => service.CreateStatusEffect(typeof(OtherProbeEffect)))
+        Catalog.Invoking(service => service.CreateStatusEffect(typeof(OtherProbeEffect)))
             .Should().Throw<KeyNotFoundException>().WithMessage("*OtherProbeEffect*");
-        Service.Invoking(service => service.CreateStatusEffect(null!))
+        Catalog.Invoking(service => service.CreateStatusEffect(null!))
             .Should().Throw<KeyNotFoundException>().WithMessage("*null*");
     }
 
@@ -68,9 +68,9 @@ public class StatusEffectServiceCatalogTests : StatusEffectServiceTestBase
     {
         Cache(typeof(ProbeEffect));
 
-        Service.GetStatusEffectName(typeof(ProbeEffect)).Should().Be("Probe");
-        Service.GetStatusEffectName(typeof(OtherProbeEffect)).Should().Be(nameof(OtherProbeEffect));
-        Service.GetStatusEffectName(null!).Should().Be("Unknown");
+        Catalog.GetStatusEffectName(typeof(ProbeEffect)).Should().Be("Probe");
+        Catalog.GetStatusEffectName(typeof(OtherProbeEffect)).Should().Be(nameof(OtherProbeEffect));
+        Catalog.GetStatusEffectName(null!).Should().Be("Unknown");
     }
 
     [Test]
@@ -78,9 +78,9 @@ public class StatusEffectServiceCatalogTests : StatusEffectServiceTestBase
     {
         Cache(typeof(ProbeEffect));
 
-        Service.GetStatusEffectSourceType(typeof(ProbeEffect)).Should().Be(StatusEffectSourceType.Normal);
-        Service.GetStatusEffectSourceType(typeof(OtherProbeEffect)).Should().Be(StatusEffectSourceType.Invalid);
-        Service.GetStatusEffectSourceType(null!).Should().Be(StatusEffectSourceType.Invalid);
+        Catalog.GetStatusEffectSourceType(typeof(ProbeEffect)).Should().Be(StatusEffectSourceType.Normal);
+        Catalog.GetStatusEffectSourceType(typeof(OtherProbeEffect)).Should().Be(StatusEffectSourceType.Invalid);
+        Catalog.GetStatusEffectSourceType(null!).Should().Be(StatusEffectSourceType.Invalid);
     }
 
     public class DebuffProbeEffect : ProbeEffect
@@ -111,7 +111,7 @@ public class StatusEffectServiceCatalogTests : StatusEffectServiceTestBase
         Cache(typeof(IconProbeEffect), typeof(ProbeEffect));
         Applied<OtherProbeEffect>(Target, Caster, effect => effect.IconValue = EffectIconType.Stunned);
 
-        Service.GetStatusEffectsFromIcon(EffectIconType.Stunned).Should().Equal(typeof(IconProbeEffect));
+        Catalog.GetStatusEffectsFromIcon(EffectIconType.Stunned).Should().Equal(typeof(IconProbeEffect));
         Service.GetStatusEffectsFromIcon(Target, EffectIconType.Stunned).Should().Equal(typeof(OtherProbeEffect));
         Service.GetStatusEffectsFromIcon(Bystander, EffectIconType.Stunned).Should().Equal(typeof(IconProbeEffect));
     }

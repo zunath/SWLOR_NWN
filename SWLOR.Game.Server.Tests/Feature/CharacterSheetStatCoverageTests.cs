@@ -102,8 +102,7 @@ public class CharacterSheetStatCoverageTests
     public void CharacterSheet_RefreshesWhenStatusEffectStatsChange()
     {
         var viewModel = ReadViewModel();
-        var statusEffects = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"));
+        var statusEffects = StatusEffectSource.Read();
 
         viewModel.Should().Contain("IGuiRefreshable<StatusEffectReceivedRefreshEvent>");
         viewModel.Should().Contain("IGuiRefreshable<StatusEffectRemovedRefreshEvent>");

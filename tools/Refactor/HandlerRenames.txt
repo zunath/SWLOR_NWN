@@ -412,3 +412,4 @@ SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleEq
 SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnacquire SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleUnacquire
 SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnequip SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleUnequip
 SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnPlayerSpawn SWLOR.Game.Server.Domain.Companions.TintMapService.OnPlayerSpawn
+SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.CacheSpawnBeastEggHelp SWLOR.Game.Server.Feature.ChatCommandDefinition.DMSpawnChatCommand.CacheSpawnBeastEggHelp

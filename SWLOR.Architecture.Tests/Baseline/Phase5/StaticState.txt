@@ -47,7 +47,8 @@ SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponAppearanceCa
 SWLOR.Game.Server.Feature.AppearanceDefinition.Preview.AppearancePartNames | 2
 SWLOR.Game.Server.Feature.AppearanceDefinition.Species.RacialAppearanceRegistry | 2
 SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility | 1
-SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand | 2
+SWLOR.Game.Server.Feature.ChatCommandDefinition.DMCommunicationChatCommand | 1
+SWLOR.Game.Server.Feature.ChatCommandDefinition.DMSpawnChatCommand | 1
 SWLOR.Game.Server.Feature.EchaniTempleMonks | 1
 SWLOR.Game.Server.Feature.EventRegistration | 1
 SWLOR.Game.Server.Feature.GuiDefinition.AppearanceEditorDefinition | 1

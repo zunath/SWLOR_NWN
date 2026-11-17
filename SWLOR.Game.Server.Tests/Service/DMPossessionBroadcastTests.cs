@@ -79,7 +79,7 @@ public class DMPossessionBroadcastTests
             {
                 public static void Send(uint user, string message)
                 {
-                    {{PlayerLoop("Feature/ChatCommandDefinition/DMChatCommand.cs", "ChatChannel.DMShout")}}
+                    {{PlayerLoop("Feature/ChatCommandDefinition/DMCommunicationChatCommand.cs", "ChatChannel.DMShout")}}
                 }
             }
 

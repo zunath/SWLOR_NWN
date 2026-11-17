@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Social;
 using System;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Core.Beamdog;
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         panel.SetScrollbars(NuiScrollbars.None);
                         panel.AddColumn(content =>
                         {
-                            for (var bar = 0; bar < ExtraHotbarsService.BarCount; bar++)
+                            for (var bar = 0; bar < ExtraHotbarsWindowService.BarCount; bar++)
                                 AddBarRow(content, bar);
 
                             content.AddRow(r => r.AddText()
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetId($"ehb_setup_slots_{bar}")
                     .BindValue(Bind<int>(ExtraHotbarSetupViewModel.SlotCountProperty(bar)))
                     .SetMinimum(1)
-                    .SetMaximum(ExtraHotbarsService.MaxSlots)
+                    .SetMaximum(ExtraHotbarsWindowService.MaxSlots)
                     .SetStepSize(1)
                     .SetWidth(150f)
                     .SetHeight(RowHeight);

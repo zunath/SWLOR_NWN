@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -11,31 +10,23 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.World
 {
     /// <summary>
-    /// Instance loading: the registry of property area instances, their load states, failures and waiting players, the
-    /// queue that loads them a few at a time, the startup load of the world properties, and spawning a property into
-    /// the game world. The logic and state that used to be part of the static property class, moved here unchanged.
+    /// Instance loading: the queue that loads property area instances a few at a time, the startup load of the world
+    /// properties and the load diagnostics. The logic and state that used to be part of the static property class, moved
+    /// here unchanged. The registry of the instances, load states, failures and waiting players is
+    /// <see cref="IPropertyLoadRegistryService"/>, spawning a property into the world is <see cref="IPropertySpawnService"/> and the
+    /// hot reload of the loader is <see cref="IPropertyLoadReloadService"/> (split out in P5-9b).
     /// </summary>
     public class PropertyLoaderService : IPropertyLoaderService
     {
         private readonly IDBService _db;
         private readonly IAreaService _area;
         private readonly IPropertyCatalogService _catalog;
+        private readonly IPropertyLoadRegistryService _registry;
+        private readonly IPropertySpawnService _spawn;
 
         // A hot reload rebuilds the instances, placeables and spawn actions from the live world and takes the rest of the
         // bookkeeping from the old build (CarryLoadState, AdoptLiveProperties). The queued jobs are carried by property id and
         // read their property again, and the progress figures only shorten the log, so their digests are not compared.
-        [ReloadState(ReloadStateKind.Adopted)]
-        private readonly Dictionary<string, PropertyInstance> _propertyInstances = new();
-        [ReloadState(ReloadStateKind.Adopted)]
-        private readonly Dictionary<string, PropertyLoadState> _propertyLoadStates = new();
-        [ReloadState(ReloadStateKind.Adopted)]
-        private readonly Dictionary<string, string> _propertyLoadFailures = new();
-        [ReloadState(ReloadStateKind.Adopted)]
-        private readonly Dictionary<string, HashSet<string>> _propertyLoadWaiters = new();
-        [ReloadState(ReloadStateKind.Adopted)]
-        private readonly HashSet<string> _completedInstanceSpawnActions = new();
-        [ReloadState(ReloadStateKind.Adopted)]
-        private readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly List<PropertyLoadJob> _propertyLoadJobs = new();
         [ReloadState(ReloadStateKind.Adopted)]
@@ -55,19 +46,22 @@ namespace SWLOR.Game.Server.Domain.World
         [ReloadState(ReloadStateKind.Runtime)]
         private int _lastStartupPropertyLoadProgressFailed = -1;
 
-        /// <summary>The key the loader's bookkeeping is carried under across a hot reload (<see cref="ReloadCarry"/>).</summary>
-        private const string PropertyCarryKey = "properties";
-
-        private const string LastDescribedPropertyVariable = "PROPERTY_LAST_DESCRIBED";
         private const int PropertyLoadBatchSize = 5;
         private const int PropertyLoadProgressReportInterval = 25;
         private TimeSpan PropertyLoadBatchDelay => TimeSpan.FromSeconds(0.2d);
 
-        public PropertyLoaderService(IDBService db, IAreaService area, IPropertyCatalogService catalog)
+        public PropertyLoaderService(
+            IDBService db,
+            IAreaService area,
+            IPropertyCatalogService catalog,
+            IPropertyLoadRegistryService registry,
+            IPropertySpawnService spawn)
         {
             _db = db;
             _area = area;
             _catalog = catalog;
+            _registry = registry;
+            _spawn = spawn;
         }
 
         private enum PropertyLoadPriority
@@ -95,111 +89,6 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <summary>
-        /// Assigns a property Id as a local variable to a specific object.
-        /// </summary>
-        /// <param name="obj">The object to assign</param>
-        /// <param name="propertyId">The property Id to assign.</param>
-        public void AssignPropertyId(uint obj, string propertyId)
-        {
-            SetLocalString(obj, "PROPERTY_ID", propertyId);
-        }
-
-        /// <summary>
-        /// Retrieves the assigned property Id assigned to a specific object.
-        /// Returns an empty string if not found.
-        /// </summary>
-        /// <param name="obj">The object to check.</param>
-        /// <returns>The property Id or an empty string if not found.</returns>
-        public string GetPropertyId(uint obj)
-        {
-            return GetLocalString(obj, "PROPERTY_ID");
-        }
-
-        /// <summary>
-        /// Registers an area instance to a given property Id.
-        /// </summary>
-        /// <param name="propertyId">The property Id</param>
-        /// <param name="instance">The area instance to register</param>
-        /// <param name="layoutType">The layout of the property.</param>
-        public void RegisterInstance(string propertyId, uint instance, PropertyLayoutType layoutType)
-        {
-            AssignPropertyId(instance, propertyId);
-            _propertyInstances[propertyId] = new PropertyInstance(instance, layoutType);
-        }
-
-        /// <summary>
-        /// Retrieves the current load state for an instanced property.
-        /// </summary>
-        /// <param name="propertyId">The property Id to check.</param>
-        /// <returns>The current property load state.</returns>
-        public PropertyLoadState GetPropertyLoadState(string propertyId)
-        {
-            if (string.IsNullOrWhiteSpace(propertyId))
-                return PropertyLoadState.Failed;
-
-            if (_propertyLoadStates.TryGetValue(propertyId, out var state))
-            {
-                if (state != PropertyLoadState.Loaded)
-                    return state;
-
-                if (_propertyInstances.TryGetValue(propertyId, out var registeredInstance) &&
-                    GetIsObjectValid(registeredInstance.Area))
-                    return state;
-
-                var dbProperty = _db.Get<WorldProperty>(propertyId);
-                if (dbProperty == null)
-                {
-                    _propertyInstances.Remove(propertyId);
-                    _completedInstanceSpawnActions.Remove(propertyId);
-                    SetPropertyLoadState(propertyId, PropertyLoadState.Failed);
-                    _propertyLoadFailures[propertyId] = "Property does not exist in the database.";
-                    return PropertyLoadState.Failed;
-                }
-
-                if (_catalog.GetPropertyDetail(dbProperty.PropertyType).SpawnType == PropertySpawnType.Instance)
-                {
-                    _propertyInstances.Remove(propertyId);
-                    _completedInstanceSpawnActions.Remove(propertyId);
-                    SetPropertyLoadState(propertyId, PropertyLoadState.Unloaded);
-                    return PropertyLoadState.Unloaded;
-                }
-
-                return state;
-            }
-
-            if (_propertyInstances.TryGetValue(propertyId, out var existingInstance))
-            {
-                if (GetIsObjectValid(existingInstance.Area))
-                    return PropertyLoadState.Loaded;
-
-                _propertyInstances.Remove(propertyId);
-                _completedInstanceSpawnActions.Remove(propertyId);
-                return PropertyLoadState.Unloaded;
-            }
-
-            var property = _db.Get<WorldProperty>(propertyId);
-            if (property == null)
-                return PropertyLoadState.Failed;
-
-            var detail = _catalog.GetPropertyDetail(property.PropertyType);
-            return detail.SpawnType == PropertySpawnType.Instance
-                ? PropertyLoadState.Unloaded
-                : PropertyLoadState.Loaded;
-        }
-
-        /// <summary>
-        /// Retrieves the last failure associated with a property load.
-        /// </summary>
-        /// <param name="propertyId">The property Id to check.</param>
-        /// <returns>The failure message or an empty string.</returns>
-        public string GetPropertyLoadFailure(string propertyId)
-        {
-            return _propertyLoadFailures.TryGetValue(propertyId, out var failure)
-                ? failure
-                : string.Empty;
-        }
-
-        /// <summary>
         /// Retrieves runtime load diagnostics for all instanced properties.
         /// </summary>
         /// <returns>A list of property load diagnostics.</returns>
@@ -219,7 +108,7 @@ namespace SWLOR.Game.Server.Domain.World
             {
                 var detail = _catalog.GetPropertyDetail(property.PropertyType);
                 var job = _propertyLoadJobs.FirstOrDefault(x => x.PropertyId == property.Id);
-                var state = GetPropertyLoadState(property.Id);
+                var state = _registry.GetPropertyLoadState(property.Id);
                 var expectedChildCount = job?.Structures.Count > 0
                     ? job.Structures.Count
                     : GetPropertyStructures(property.Id).Count;
@@ -228,7 +117,7 @@ namespace SWLOR.Game.Server.Domain.World
                     : state == PropertyLoadState.Loaded
                         ? expectedChildCount
                         : 0;
-                var isLoadedAreaValid = _propertyInstances.TryGetValue(property.Id, out var instance) &&
+                var isLoadedAreaValid = _registry.TryGetRegisteredInstance(property.Id, out var instance) &&
                                         GetIsObjectValid(instance.Area);
                 diagnostics.Add(new PropertyLoadDiagnostic
                 {
@@ -243,8 +132,8 @@ namespace SWLOR.Game.Server.Domain.World
                     ExpectedChildCount = expectedChildCount,
                     IsLoadedAreaValid = isLoadedAreaValid,
                     LastPhase = job?.Phase.ToString() ?? state.ToString(),
-                    Failure = GetPropertyLoadFailure(property.Id),
-                    WaiterCount = _propertyLoadWaiters.TryGetValue(property.Id, out var waiters) ? waiters.Count : 0,
+                    Failure = _registry.GetPropertyLoadFailure(property.Id),
+                    WaiterCount = _registry.GetWaiterCount(property.Id),
                     IsQueued = job != null
                 });
             }
@@ -267,37 +156,6 @@ namespace SWLOR.Game.Server.Domain.World
                 PropertyLoadState.Loaded => 4,
                 _ => 5
             };
-        }
-
-        /// <summary>
-        /// Retrieves a loaded property instance without throwing if it is not ready.
-        /// </summary>
-        /// <param name="propertyId">The property Id to retrieve.</param>
-        /// <param name="instance">The loaded property instance.</param>
-        /// <returns>true if the instance is fully loaded; otherwise false.</returns>
-        public bool TryGetLoadedInstance(string propertyId, out PropertyInstance instance)
-        {
-            instance = null;
-
-            if (GetPropertyLoadState(propertyId) != PropertyLoadState.Loaded)
-                return false;
-
-            if (!_propertyInstances.TryGetValue(propertyId, out var registeredInstance))
-                return false;
-
-            if (!GetIsObjectValid(registeredInstance.Area))
-                return false;
-
-            instance = registeredInstance;
-            return true;
-        }
-
-        public void SetPropertyLoadState(string propertyId, PropertyLoadState state)
-        {
-            if (string.IsNullOrWhiteSpace(propertyId))
-                return;
-
-            _propertyLoadStates[propertyId] = state;
         }
 
         public bool IsPropertyOnDemand(WorldProperty property)
@@ -323,84 +181,6 @@ namespace SWLOR.Game.Server.Domain.World
                    !IsPropertyOnDemand(property);
         }
 
-        private void AddPropertyLoadWaiter(uint player, string propertyId)
-        {
-            if (!GetIsPC(player) || string.IsNullOrWhiteSpace(propertyId))
-                return;
-
-            if (!_propertyLoadWaiters.ContainsKey(propertyId))
-                _propertyLoadWaiters[propertyId] = new HashSet<string>();
-
-            _propertyLoadWaiters[propertyId].Add(GetObjectUUID(player));
-        }
-
-        private void NotifyPropertyLoadWaiters(string propertyId, bool loaded)
-        {
-            if (!_propertyLoadWaiters.TryGetValue(propertyId, out var waiterIds) ||
-                waiterIds.Count <= 0)
-            {
-                return;
-            }
-
-            var property = _db.Get<WorldProperty>(propertyId);
-            var propertyName = property?.CustomName ?? "The property";
-            var message = loaded
-                ? $"{propertyName} is ready. Please try entering again."
-                : $"{propertyName} could not be loaded. Please notify staff.";
-
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (!waiterIds.Contains(GetObjectUUID(player)))
-                    continue;
-
-                SendMessageToPC(player, message);
-            }
-
-            _propertyLoadWaiters.Remove(propertyId);
-        }
-
-        public void NotifyPropertyLoadWaitersForStaff(string propertyId)
-        {
-            var state = GetPropertyLoadState(propertyId);
-            if (state == PropertyLoadState.Loaded ||
-                state == PropertyLoadState.Failed)
-            {
-                NotifyPropertyLoadWaiters(propertyId, state == PropertyLoadState.Loaded);
-                return;
-            }
-
-            NotifyPropertyLoadWaitersWithoutClearing(
-                propertyId,
-                "This property is still loading. Please try again shortly.");
-        }
-
-        private void NotifyPropertyLoadWaitersWithoutClearing(string propertyId, string message)
-        {
-            if (!_propertyLoadWaiters.TryGetValue(propertyId, out var waiterIds) ||
-                waiterIds.Count <= 0)
-            {
-                return;
-            }
-
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (!waiterIds.Contains(GetObjectUUID(player)))
-                    continue;
-
-                SendMessageToPC(player, message);
-            }
-        }
-
-        private void SendPropertyLoadingMessage(uint player)
-        {
-            SendMessageToPC(player, "This property is still loading. Please try again shortly.");
-        }
-
-        public void SendPropertyLoadFailedMessage(uint player)
-        {
-            SendMessageToPC(player, "This property could not be loaded. Please notify staff.");
-        }
-
         /// <summary>
         /// Retrieves a usable property instance or starts loading it if it is not ready.
         /// </summary>
@@ -412,31 +192,31 @@ namespace SWLOR.Game.Server.Domain.World
         {
             instance = null;
 
-            if (TryGetLoadedInstance(propertyId, out instance))
+            if (_registry.TryGetLoadedInstance(propertyId, out instance))
                 return true;
 
-            var state = GetPropertyLoadState(propertyId);
+            var state = _registry.GetPropertyLoadState(propertyId);
             if (state == PropertyLoadState.Failed)
             {
-                SendPropertyLoadFailedMessage(player);
+                _registry.SendPropertyLoadFailedMessage(player);
                 return false;
             }
 
             var property = _db.Get<WorldProperty>(propertyId);
             if (property == null)
             {
-                SendPropertyLoadFailedMessage(player);
+                _registry.SendPropertyLoadFailedMessage(player);
                 return false;
             }
 
             var detail = _catalog.GetPropertyDetail(property.PropertyType);
             if (detail.SpawnType != PropertySpawnType.Instance)
             {
-                SendPropertyLoadFailedMessage(player);
+                _registry.SendPropertyLoadFailedMessage(player);
                 return false;
             }
 
-            AddPropertyLoadWaiter(player, propertyId);
+            _registry.AddPropertyLoadWaiter(player, propertyId);
 
             if (state == PropertyLoadState.Unloaded)
             {
@@ -447,7 +227,7 @@ namespace SWLOR.Game.Server.Domain.World
                 PromotePropertyLoad(propertyId, PropertyLoadPriority.PlayerRequest);
             }
 
-            SendPropertyLoadingMessage(player);
+            _registry.SendPropertyLoadingMessage(player);
             return false;
         }
 
@@ -459,8 +239,8 @@ namespace SWLOR.Game.Server.Domain.World
             var property = _db.Get<WorldProperty>(propertyId);
             if (property == null)
             {
-                SetPropertyLoadState(propertyId, PropertyLoadState.Failed);
-                _propertyLoadFailures[propertyId] = "Property does not exist in the database.";
+                _registry.SetPropertyLoadState(propertyId, PropertyLoadState.Failed);
+                _registry.SetPropertyLoadFailure(propertyId, "Property does not exist in the database.");
                 return false;
             }
 
@@ -468,7 +248,7 @@ namespace SWLOR.Game.Server.Domain.World
             if (detail.SpawnType != PropertySpawnType.Instance)
                 return false;
 
-            var state = GetPropertyLoadState(propertyId);
+            var state = _registry.GetPropertyLoadState(propertyId);
             if (state == PropertyLoadState.Loaded)
                 return true;
 
@@ -487,9 +267,9 @@ namespace SWLOR.Game.Server.Domain.World
                 return true;
             }
 
-            _propertyLoadFailures.Remove(propertyId);
+            _registry.ClearPropertyLoadFailure(propertyId);
             _failedStartupPropertyLoadIds.Remove(propertyId);
-            SetPropertyLoadState(propertyId, PropertyLoadState.Queued);
+            _registry.SetPropertyLoadState(propertyId, PropertyLoadState.Queued);
             _propertyLoadJobs.Add(new PropertyLoadJob
             {
                 PropertyId = propertyId,
@@ -517,7 +297,7 @@ namespace SWLOR.Game.Server.Domain.World
             if (detail.SpawnType != PropertySpawnType.Instance)
                 return false;
 
-            var state = GetPropertyLoadState(propertyId);
+            var state = _registry.GetPropertyLoadState(propertyId);
             if (state == PropertyLoadState.Loaded)
                 return QueueExteriorStructuresForInterior(propertyId);
 
@@ -533,22 +313,22 @@ namespace SWLOR.Game.Server.Domain.World
                 return true;
             }
 
-            _propertyLoadFailures.Remove(propertyId);
-            SetPropertyLoadState(propertyId, PropertyLoadState.Unloaded);
+            _registry.ClearPropertyLoadFailure(propertyId);
+            _registry.SetPropertyLoadState(propertyId, PropertyLoadState.Unloaded);
             return QueuePropertyLoad(propertyId, PropertyLoadPriority.StaffRequest);
         }
 
         public bool AbortQueuedPropertyLoad(string propertyId)
         {
             var job = _propertyLoadJobs.FirstOrDefault(x => x.PropertyId == propertyId);
-            if (job == null || GetPropertyLoadState(propertyId) == PropertyLoadState.Loading)
+            if (job == null || _registry.GetPropertyLoadState(propertyId) == PropertyLoadState.Loading)
                 return false;
 
             _propertyLoadJobs.Remove(job);
-            SetPropertyLoadState(propertyId, PropertyLoadState.Failed);
-            _propertyLoadFailures[propertyId] = "Load aborted by staff before it started.";
+            _registry.SetPropertyLoadState(propertyId, PropertyLoadState.Failed);
+            _registry.SetPropertyLoadFailure(propertyId, "Load aborted by staff before it started.");
             TrackStartupPropertyLoadFailed(propertyId);
-            NotifyPropertyLoadWaiters(propertyId, false);
+            _registry.NotifyPropertyLoadWaiters(propertyId, false);
             LogStartupPropertyLoadProgress();
             return true;
         }
@@ -676,20 +456,20 @@ namespace SWLOR.Game.Server.Domain.World
                     return 1;
                 }
 
-                SetPropertyLoadState(job.PropertyId, PropertyLoadState.Loading);
+                _registry.SetPropertyLoadState(job.PropertyId, PropertyLoadState.Loading);
 
                 if (job.Phase == PropertyLoadJobPhase.CreateArea)
                 {
                     var layout = _catalog.GetLayoutByType(job.Property.Layout);
                     uint targetArea;
-                    if (!_propertyInstances.TryGetValue(job.PropertyId, out var instance) ||
+                    if (!_registry.TryGetRegisteredInstance(job.PropertyId, out var instance) ||
                         !GetIsObjectValid(instance.Area))
                     {
                         targetArea = _area.CreateInstance(layout.AreaInstanceResref);
                         if (!GetIsObjectValid(targetArea))
                             throw new InvalidOperationException($"Unable to create property area from resref '{layout.AreaInstanceResref}'.");
 
-                        RegisterInstance(job.Property.Id, targetArea, job.Property.Layout);
+                        _registry.RegisterInstance(job.Property.Id, targetArea, job.Property.Layout);
 
                         SetName(targetArea, "{PC} " + job.Property.CustomName);
                     }
@@ -698,13 +478,14 @@ namespace SWLOR.Game.Server.Domain.World
                         targetArea = instance.Area;
                     }
 
-                    if (!_completedInstanceSpawnActions.Contains(job.PropertyId))
+                    if (!_registry.IsSpawnActionCompleted(job.PropertyId))
                     {
                         layout.OnSpawnAction?.Invoke(targetArea);
-                        _completedInstanceSpawnActions.Add(job.PropertyId);
+                        _registry.MarkSpawnActionCompleted(job.PropertyId);
                     }
 
-                    job.Area = _propertyInstances[job.PropertyId].Area;
+                    _registry.TryGetRegisteredInstance(job.PropertyId, out var registeredInstance);
+                    job.Area = registeredInstance.Area;
                     job.Structures = GetPropertyStructures(job.PropertyId);
                     job.Phase = PropertyLoadJobPhase.SpawnStructures;
                     return Math.Max(budget, 1);
@@ -739,7 +520,7 @@ namespace SWLOR.Game.Server.Domain.World
             var consumed = 0;
             while (job.StructureIndex < job.Structures.Count && consumed < budget)
             {
-                SpawnIntoWorld(job.Structures[job.StructureIndex], job.Area);
+                _spawn.SpawnIntoWorld(job.Structures[job.StructureIndex], job.Area);
                 job.StructureIndex++;
                 consumed++;
             }
@@ -750,11 +531,11 @@ namespace SWLOR.Game.Server.Domain.World
         private void CompletePropertyLoad(PropertyLoadJob job)
         {
             _propertyLoadJobs.Remove(job);
-            _propertyLoadFailures.Remove(job.PropertyId);
-            SetPropertyLoadState(job.PropertyId, PropertyLoadState.Loaded);
+            _registry.ClearPropertyLoadFailure(job.PropertyId);
+            _registry.SetPropertyLoadState(job.PropertyId, PropertyLoadState.Loaded);
             TrackStartupPropertyLoadCompleted(job.PropertyId);
             QueueExteriorStructuresForInterior(job.PropertyId);
-            NotifyPropertyLoadWaiters(job.PropertyId, true);
+            _registry.NotifyPropertyLoadWaiters(job.PropertyId, true);
             LogStartupPropertyLoadProgress();
 
             Log.Write(LogGroup.Property, $"Property '{job.Property.CustomName}' ({job.PropertyId}) loaded on {job.Priority} queue.");
@@ -793,7 +574,7 @@ namespace SWLOR.Game.Server.Domain.World
         private void FailPropertyLoad(PropertyLoadJob job, string failure)
         {
             _propertyLoadJobs.Remove(job);
-            SetPropertyLoadState(job.PropertyId, PropertyLoadState.Failed);
+            _registry.SetPropertyLoadState(job.PropertyId, PropertyLoadState.Failed);
             var property = job.Property ?? _db.Get<WorldProperty>(job.PropertyId);
             var structureId = job.Phase == PropertyLoadJobPhase.SpawnStructures &&
                               job.Structures != null &&
@@ -808,9 +589,9 @@ namespace SWLOR.Game.Server.Domain.World
                 $"Phase: {job.Phase}; " +
                 $"StructureId: {structureId}; " +
                 $"Error: {failure}";
-            _propertyLoadFailures[job.PropertyId] = failureDetail;
+            _registry.SetPropertyLoadFailure(job.PropertyId, failureDetail);
             TrackStartupPropertyLoadFailed(job.PropertyId);
-            NotifyPropertyLoadWaiters(job.PropertyId, false);
+            _registry.NotifyPropertyLoadWaiters(job.PropertyId, false);
             LogStartupPropertyLoadProgress();
 
             Log.Write(LogGroup.Error, $"Property failed to load. {failureDetail}");
@@ -878,7 +659,7 @@ namespace SWLOR.Game.Server.Domain.World
 
                 try
                 {
-                    SpawnIntoWorld(property, area);
+                    _spawn.SpawnIntoWorld(property, area);
                 }
                 catch (Exception ex)
                 {
@@ -907,7 +688,7 @@ namespace SWLOR.Game.Server.Domain.World
             var parentDetail = _catalog.GetPropertyDetail(parent.PropertyType);
             if (parentDetail.SpawnType == PropertySpawnType.Instance)
             {
-                var state = GetPropertyLoadState(parent.Id);
+                var state = _registry.GetPropertyLoadState(parent.Id);
                 if (state == PropertyLoadState.Failed)
                 {
                     dependencyFailed = true;
@@ -917,7 +698,7 @@ namespace SWLOR.Game.Server.Domain.World
                 if (state == PropertyLoadState.Unloaded)
                     QueuePropertyLoad(parent.Id, PropertyLoadPriority.Startup);
 
-                if (!TryGetLoadedInstance(parent.Id, out var instance))
+                if (!_registry.TryGetLoadedInstance(parent.Id, out var instance))
                     return false;
 
                 area = instance.Area;
@@ -950,7 +731,7 @@ namespace SWLOR.Game.Server.Domain.World
             if (interiorDetail.SpawnType != PropertySpawnType.Instance)
                 return true;
 
-            var interiorState = GetPropertyLoadState(interiorId);
+            var interiorState = _registry.GetPropertyLoadState(interiorId);
             if (interiorState == PropertyLoadState.Failed)
             {
                 dependencyFailed = true;
@@ -961,7 +742,7 @@ namespace SWLOR.Game.Server.Domain.World
                 QueuePropertyLoad(interiorId, PropertyLoadPriority.Startup);
 
             return IsPropertyOnDemand(interior) ||
-                   TryGetLoadedInstance(interiorId, out _);
+                   _registry.TryGetLoadedInstance(interiorId, out _);
         }
 
         /// <summary>
@@ -971,10 +752,7 @@ namespace SWLOR.Game.Server.Domain.World
         {
             _propertyLoadJobs.Clear();
             _pendingStartupWorldPropertyIds.Clear();
-            _propertyLoadStates.Clear();
-            _propertyLoadFailures.Clear();
-            _propertyLoadWaiters.Clear();
-            _completedInstanceSpawnActions.Clear();
+            _registry.ResetLoadBookkeeping();
             ResetStartupPropertyLoadProgress();
             _propertyLoadProcessorScheduled = false;
 
@@ -1016,7 +794,7 @@ namespace SWLOR.Game.Server.Domain.World
             {
                 if (IsPropertyOnDemand(property))
                 {
-                    SetPropertyLoadState(property.Id, PropertyLoadState.Unloaded);
+                    _registry.SetPropertyLoadState(property.Id, PropertyLoadState.Unloaded);
                     continue;
                 }
 
@@ -1043,7 +821,7 @@ namespace SWLOR.Game.Server.Domain.World
             foreach (var property in areaProperties)
             {
                 var area = _area.GetAreaByResref(property.ParentPropertyId);
-                SpawnIntoWorld(property, area);
+                _spawn.SpawnIntoWorld(property, area);
             }
 
 
@@ -1054,14 +832,15 @@ namespace SWLOR.Game.Server.Domain.World
             LogStartupPropertyLoadProgress(true);
         }
 
-        /// <inheritdoc />
-        public void CarryLoadState()
+        /// <summary>
+        /// When a hot reload quiesces this build: the queued loads and world structures and the startup progress, which the world
+        /// cannot tell, for <see cref="RestoreQueueState"/> in the next build.
+        /// </summary>
+        /// <returns>The carried bookkeeping of the queue.</returns>
+        public JObject CarryQueueState()
         {
-            var carry = new JObject
+            return new JObject
             {
-                ["states"] = new JObject(_propertyLoadStates.Select(pair => new JProperty(pair.Key, (int)pair.Value))),
-                ["failures"] = new JObject(_propertyLoadFailures.Select(pair => new JProperty(pair.Key, pair.Value))),
-                ["waiters"] = new JObject(_propertyLoadWaiters.Select(pair => new JProperty(pair.Key, JArray.FromObject(pair.Value)))),
                 ["jobs"] = new JArray(_propertyLoadJobs.Select(job => new JObject
                 {
                     ["id"] = job.PropertyId,
@@ -1073,133 +852,14 @@ namespace SWLOR.Game.Server.Domain.World
                 ["startupLoaded"] = JArray.FromObject(_completedStartupPropertyLoadIds),
                 ["startupFailed"] = JArray.FromObject(_failedStartupPropertyLoadIds),
             };
-
-            ReloadCarry.Put(PropertyCarryKey, carry.ToString(Formatting.None));
-        }
-
-        /// <inheritdoc />
-        public void AdoptLiveProperties()
-        {
-            var carried = ReloadCarry.Take(PropertyCarryKey);
-            var properties = LoadSpawnedTypeProperties();
-            var instances = 0;
-            var structures = 0;
-
-            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
-            {
-                var areaPropertyId = GetPropertyId(area);
-                if (!string.IsNullOrEmpty(areaPropertyId) &&
-                    properties.TryGetValue(areaPropertyId, out var areaProperty) &&
-                    _catalog.GetPropertyDetail(areaProperty.PropertyType).SpawnType == PropertySpawnType.Instance)
-                {
-                    AdoptInstance(areaProperty, area);
-                    instances++;
-                }
-
-                for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
-                {
-                    if (GetObjectType(obj) != ObjectType.Placeable)
-                        continue;
-
-                    // A building's door carries the building's id too; only the placeable of the structure's own resref is it.
-                    var propertyId = GetPropertyId(obj);
-                    if (string.IsNullOrEmpty(propertyId) ||
-                        !properties.TryGetValue(propertyId, out var structure) ||
-                        structure.PropertyType != PropertyType.Structure ||
-                        GetResRef(obj) != _catalog.GetStructureByType(structure.StructureType).Resref)
-                    {
-                        continue;
-                    }
-
-                    _structurePropertyIdToPlaceable[propertyId] = obj;
-                    structures++;
-                }
-            }
-
-            if (carried != null)
-            {
-                RestoreLoadState(JObject.Parse(carried));
-            }
-            else
-            {
-                Log.Write(LogGroup.Error, "Hot reload: the build this one replaced carried no property load state; the properties in the " +
-                                          "world are loaded, the other instanced properties load when they are entered.", true);
-                foreach (var property in properties.Values)
-                {
-                    var spawnType = _catalog.GetPropertyDetail(property.PropertyType).SpawnType;
-                    if (spawnType == PropertySpawnType.Instance)
-                        SetPropertyLoadState(property.Id, _propertyInstances.ContainsKey(property.Id) ? PropertyLoadState.Loaded : PropertyLoadState.Unloaded);
-                    else if (spawnType == PropertySpawnType.Area)
-                        SetPropertyLoadState(property.Id, PropertyLoadState.Loaded);
-                }
-            }
-
-            if (_propertyLoadJobs.Count > 0 || _pendingStartupWorldPropertyIds.Count > 0)
-                EnsurePropertyLoadProcessor();
-
-            Log.Write(LogGroup.Property, $"Hot reload: adopted {instances} property instances and {structures} structures from the world; " +
-                                         $"{_propertyLoadJobs.Count} instance loads and {_pendingStartupWorldPropertyIds.Count} world structures are still queued.", true);
-        }
-
-        /// <summary>Every property of the instance, world and area spawn types, by id: what the boot's load reads.</summary>
-        private Dictionary<string, WorldProperty> LoadSpawnedTypeProperties()
-        {
-            var types = _catalog.PropertyTypes
-                .Where(x => x.Value.SpawnType is PropertySpawnType.Instance or PropertySpawnType.World or PropertySpawnType.Area)
-                .Select(s => (int)s.Key)
-                .ToList();
-            var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), types);
-            var count = _db.SearchCount(query);
-            var properties = new Dictionary<string, WorldProperty>();
-            foreach (var property in _db.Search(query.AddPaging((int)count, 0)))
-                properties[property.Id] = property;
-            return properties;
-        }
-
-        /// <summary>
-        /// Registers a live property instance as the boot's load left it: its area, the players in it, its spawn action done, and
-        /// whatever its layout keeps outside the world (<see cref="PropertyLayout.OnReloadAdoptAction"/>, a starport's dock).
-        /// </summary>
-        private void AdoptInstance(WorldProperty property, uint area)
-        {
-            var instance = new PropertyInstance(area, property.Layout);
-            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
-            {
-                if (GetIsPC(obj) && !GetIsDM(obj))
-                    instance.Players.Add(obj);
-            }
-
-            _propertyInstances[property.Id] = instance;
-            _completedInstanceSpawnActions.Add(property.Id);
-
-            var adopt = _catalog.GetLayoutByType(property.Layout).OnReloadAdoptAction;
-            if (adopt == null)
-                return;
-
-            try
-            {
-                adopt(area);
-            }
-            catch (Exception ex)
-            {
-                Log.Write(LogGroup.Error, $"Hot reload: adopting property '{property.CustomName}' ({property.Id}) failed: {ex}", true);
-            }
         }
 
         /// <summary>
         /// Takes the bookkeeping the old build carried and resumes its queued loads: a load that had created its area spawns only
         /// the structures that are not in the world yet, so nothing is spawned twice.
         /// </summary>
-        private void RestoreLoadState(JObject carry)
+        public void RestoreQueueState(JObject carry)
         {
-            foreach (var (propertyId, state) in (JObject)carry["states"])
-                _propertyLoadStates[propertyId] = (PropertyLoadState)state.Value<int>();
-            foreach (var (propertyId, failure) in (JObject)carry["failures"])
-                _propertyLoadFailures[propertyId] = failure.Value<string>();
-            foreach (var (propertyId, waiters) in (JObject)carry["waiters"])
-                _propertyLoadWaiters[propertyId] = new HashSet<string>(waiters.ToObject<List<string>>());
-
             _pendingStartupWorldPropertyIds.AddRange(carry["pendingWorld"].ToObject<List<string>>());
             _startupPropertyLoadIds.UnionWith(carry["startup"].ToObject<List<string>>());
             _completedStartupPropertyLoadIds.UnionWith(carry["startupLoaded"].ToObject<List<string>>());
@@ -1216,11 +876,11 @@ namespace SWLOR.Game.Server.Domain.World
 
                 if (job.Phase == PropertyLoadJobPhase.SpawnStructures)
                 {
-                    if (_propertyInstances.TryGetValue(job.PropertyId, out var instance))
+                    if (_registry.TryGetRegisteredInstance(job.PropertyId, out var instance))
                     {
                         job.Area = instance.Area;
                         job.Structures = GetPropertyStructures(job.PropertyId)
-                            .Where(structure => !(_structurePropertyIdToPlaceable.TryGetValue(structure.Id, out var placeable) && GetIsObjectValid(placeable)))
+                            .Where(structure => !(_registry.TryGetStructurePlaceable(structure.Id, out var placeable) && GetIsObjectValid(placeable)))
                             .ToList();
                     }
                     else
@@ -1234,192 +894,27 @@ namespace SWLOR.Game.Server.Domain.World
         }
 
         /// <summary>
-        /// Retrieves a placeable associated with a property Id.
+        /// Starts the load processor when queued loads or world structures remain after an adoption.
         /// </summary>
-        /// <param name="propertyId">The property Id to search for</param>
-        /// <returns>A placeable or OBJECT_INVALID if not found.</returns>
-        public uint GetPlaceableByPropertyId(string propertyId)
+        /// <returns>The number of queued instance loads and of queued world structures.</returns>
+        public (int Jobs, int WorldStructures) ResumeQueuedLoads()
         {
-            return !_structurePropertyIdToPlaceable.ContainsKey(propertyId)
-                ? OBJECT_INVALID
-                : _structurePropertyIdToPlaceable[propertyId];
+            if (_propertyLoadJobs.Count > 0 || _pendingStartupWorldPropertyIds.Count > 0)
+                EnsurePropertyLoadProcessor();
+
+            return (_propertyLoadJobs.Count, _pendingStartupWorldPropertyIds.Count);
         }
 
         /// <summary>
-        /// When a player enters a property instance, add them to the list of players.
+        /// Forgets everything the loader knows about a property that is being deleted: its instance, load state,
+        /// failure, waiting players, queued load and placeable.
         /// </summary>
-        public void EnterPropertyInstance()
-        {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            var propertyId = GetPropertyId(OBJECT_SELF);
-
-            if (!_propertyInstances.ContainsKey(propertyId))
-                return;
-
-            if (GetPropertyLoadState(propertyId) != PropertyLoadState.Loaded)
-                return;
-
-            if (!_propertyInstances[propertyId].Players.Contains(player))
-                _propertyInstances[propertyId].Players.Add(player);
-        }
-
-        /// <summary>
-        /// Shows a property's description to a player arriving from outside it. Coming back to the property's area, such as after a
-        /// reload, does not repeat it.
-        /// </summary>
-        public void ShowPropertyDescription()
-        {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            var propertyId = GetPropertyId(OBJECT_SELF);
-            if (!_propertyInstances.ContainsKey(propertyId))
-            {
-                DeleteLocalString(player, LastDescribedPropertyVariable);
-                return;
-            }
-
-            if (GetLocalString(player, LastDescribedPropertyVariable) == propertyId)
-                return;
-
-            SetLocalString(player, LastDescribedPropertyVariable, propertyId);
-
-            var property = _db.Get<WorldProperty>(propertyId);
-            var message = PropertyDescriptionText.Format(property?.CustomName, property?.CustomDescription);
-            if (!string.IsNullOrEmpty(message))
-                SendMessageToPC(player, ColorToken.Cyan(message));
-        }
-
-        /// <summary>
-        /// Shows a structure's player-given name on its placeable. A structure that still has its catalog name keeps its template's.
-        /// </summary>
-        public void ApplyStructureWorldName(uint placeable, WorldProperty structure)
-        {
-            var catalogName = _catalog.GetStructureByType(structure.StructureType).Name;
-            SetName(placeable, StructureWorldName.Resolve(structure.CustomName, catalogName));
-        }
-
-        /// <summary>
-        /// When a player exits a property instance, remove them from the list of players.
-        /// </summary>
-        public void ExitPropertyInstance()
-        {
-            // No GetIsPC check: it is false here for a player logging out, and the entry must still go, because
-            // the player keeps the same object ID when they log back in.
-            var player = GetExitingObject();
-
-            var propertyId = GetPropertyId(OBJECT_SELF);
-
-            if (!_propertyInstances.ContainsKey(propertyId))
-                return;
-
-            if (GetPropertyLoadState(propertyId) != PropertyLoadState.Loaded)
-                return;
-
-            _propertyInstances[propertyId].Players.Remove(player);
-        }
-
-        /// <summary>
-        /// Spawns the property into the game world.
-        /// For structures, this means spawning a placeable at the location.
-        /// For cities, starships, apartments, and buildings this means spawning area instances.
-        /// </summary>
-        /// <param name="property">The property to spawn into the world.</param>
-        /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
-        public void SpawnIntoWorld(WorldProperty property, uint area)
-        {
-            var propertyDetail = _catalog.GetPropertyDetail(property.PropertyType);
-
-            // World spawns represent placeables within the game world such as furniture and buildings
-            if (propertyDetail.SpawnType == PropertySpawnType.World)
-            {
-                if (_structurePropertyIdToPlaceable.TryGetValue(property.Id, out var existingPlaceable) &&
-                    GetIsObjectValid(existingPlaceable))
-                {
-                    _catalog.RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, existingPlaceable);
-                    return;
-                }
-
-                var furniture = _catalog.GetStructureByType(property.StructureType);
-
-                var staticPosition = property.Positions[PropertyLocationType.StaticPosition];
-                var position = Vector3(staticPosition.X, staticPosition.Y, staticPosition.Z);
-                var location = Location(area, position, staticPosition.Orientation);
-
-                var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
-                SetPlotFlag(placeable, true);
-                AssignPropertyId(placeable, property.Id);
-                ApplyStructureWorldName(placeable, property);
-
-                _structurePropertyIdToPlaceable[property.Id] = placeable;
-
-                // Some structures have custom spawn-in actions which also need to be run
-                // when brought into the world.
-                _catalog.RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
-            }
-            // Instance spawns are instanced areas that are spawned dynamically into the game world.
-            else if(propertyDetail.SpawnType == PropertySpawnType.Instance)
-            {
-                var layout = _catalog.GetLayoutByType(property.Layout);
-                if (_propertyInstances.TryGetValue(property.Id, out var existingInstance) &&
-                    GetIsObjectValid(existingInstance.Area))
-                {
-                    if (!_completedInstanceSpawnActions.Contains(property.Id))
-                    {
-                        layout.OnSpawnAction?.Invoke(existingInstance.Area);
-                        _completedInstanceSpawnActions.Add(property.Id);
-                    }
-
-                    SetPropertyLoadState(property.Id, PropertyLoadState.Loaded);
-                    return;
-                }
-
-                // If no interior layout is defined, the provided area will be used.
-                var targetArea = _area.CreateInstance(layout.AreaInstanceResref);
-                if (!GetIsObjectValid(targetArea))
-                    throw new InvalidOperationException($"Unable to create property area from resref '{layout.AreaInstanceResref}'.");
-
-                RegisterInstance(property.Id, targetArea, property.Layout);
-
-                SetName(targetArea, "{PC} " + property.CustomName);
-
-                if (layout.OnSpawnAction != null)
-                {
-                    layout.OnSpawnAction(targetArea);
-                }
-
-                _completedInstanceSpawnActions.Add(property.Id);
-                SetPropertyLoadState(property.Id, PropertyLoadState.Loaded);
-            }
-            // Area spawns exist in a pre-built area.
-            else if(propertyDetail.SpawnType == PropertySpawnType.Area)
-            {
-                AssignPropertyId(area, property.Id);
-                SetPropertyLoadState(property.Id, PropertyLoadState.Loaded);
-            }
-        }
-
-        /// <inheritdoc />
-        public void RegisterStructurePlaceable(string propertyId, uint placeable)
-        {
-            _structurePropertyIdToPlaceable[propertyId] = placeable;
-        }
-
-        /// <inheritdoc />
+        /// <param name="propertyId">The property Id.</param>
         public void ForgetProperty(string propertyId)
         {
-            _propertyInstances.Remove(propertyId);
-            _propertyLoadStates.Remove(propertyId);
-            _propertyLoadFailures.Remove(propertyId);
-            _propertyLoadWaiters.Remove(propertyId);
-            _completedInstanceSpawnActions.Remove(propertyId);
+            _registry.ForgetProperty(propertyId);
             _propertyLoadJobs.RemoveAll(x => x.PropertyId == propertyId);
             _pendingStartupWorldPropertyIds.Remove(propertyId);
-            _structurePropertyIdToPlaceable.Remove(propertyId);
         }
 
         /// <summary>

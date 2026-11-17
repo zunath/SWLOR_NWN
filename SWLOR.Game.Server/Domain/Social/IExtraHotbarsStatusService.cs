@@ -1,0 +1,40 @@
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Crafting;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Feature.MigrationDefinition;
+using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+
+namespace SWLOR.Game.Server.Domain.Social
+{
+    /// <summary>
+    /// Redraws what the bar slots show. A part of the ExtraHotbars service.
+    /// </summary>
+    public interface IExtraHotbarsStatusService
+    {
+        void RefreshOnAcquire();
+
+        void RefreshOnUnacquire();
+
+        void RefreshOnEquip();
+
+        void RefreshOnUnequip();
+
+        void RefreshOnHeartbeat();
+
+        /// <summary>Redraws the player's bars a second from now, after the action that changed them has run.</summary>
+        void RefreshStatusSoon(uint player);
+    }
+}

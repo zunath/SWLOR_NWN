@@ -22,6 +22,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Recipes, blueprints, enhancements and the crafting devices (the facade <c>Service.Craft</c> until P2-ZK).</summary>
         public static ICraftService Craft => FacadeAccessor.Resolve<ICraftService>();
 
+        /// <summary>The item properties an enhancement builds and how a crafted property merges (P5-9a).</summary>
+        public static ICraftEnhancementPropertyService CraftEnhancementProperty => FacadeAccessor.Resolve<ICraftEnhancementPropertyService>();
+
+        /// <summary>The crafting devices and the crafting handlers of the property and login scripts (P5-9a).</summary>
+        public static ICraftDeviceService CraftDevice => FacadeAccessor.Resolve<ICraftDeviceService>();
+
         /// <summary>The harvest nodes engine world (the facade <c>Service.Prospecting</c> until P2-ZK).</summary>
         public static IProspectingService Prospecting => FacadeAccessor.Resolve<IProspectingService>();
 

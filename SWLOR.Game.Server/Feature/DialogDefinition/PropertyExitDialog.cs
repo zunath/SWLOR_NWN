@@ -10,13 +10,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private IAreaService Area { get; }
         private IDBService DB { get; }
         private IPropertyService Property { get; }
+        private IPropertyAccessService PropertyAccess { get; }
         private ISpaceService Space { get; }
 
-        public PropertyExitDialog(IAreaService area, IDBService db, IPropertyService property, ISpaceService space)
+        public PropertyExitDialog(IAreaService area, IDBService db, IPropertyService property, IPropertyAccessService propertyAccess, ISpaceService space)
         {
             Area = area;
             DB = db;
             Property = property;
+            PropertyAccess = propertyAccess;
             Space = space;
         }
 
@@ -111,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     // Otherwise jump the player to their original location.
                     else
                     {
-                        Property.JumpToOriginalLocation(player);
+                        PropertyAccess.JumpToOriginalLocation(player);
                     }
                 });
             }

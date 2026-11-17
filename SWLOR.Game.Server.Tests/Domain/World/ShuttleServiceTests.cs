@@ -271,16 +271,16 @@ public class ShuttleServiceTests
     private ClockedShuttleService ReloadCarryingState()
     {
         var carrier = new ReloadStateCarrier(typeof(ShuttleService).Assembly);
-        var fields = ReloadStateCarrier.CarriedClasses(typeof(ShuttleService).Assembly).Single(entry => entry.Type == typeof(ShuttleService)).Fields;
-        var carried = carrier.Write(fields, Service);
+        var fields = ReloadStateCarrier.CarriedClasses(typeof(ShuttleService).Assembly).Single(entry => entry.Type == typeof(ShuttleStateService)).Fields;
+        var carried = carrier.Write(fields, Service.State);
         var reloaded = Reload();
-        carrier.Read(fields, reloaded, carried);
+        carrier.Read(fields, reloaded.State, carried);
         return reloaded;
     }
 
-    private static ReloadDigestLine AdoptedDigest(ShuttleService service)
+    private static ReloadDigestLine AdoptedDigest(ClockedShuttleService service)
     {
-        return new ReloadDigestHasher(typeof(ShuttleService).Assembly).Describe(ReloadDigests.AdoptedKind, "flights", typeof(ShuttleService), service,
+        return new ReloadDigestHasher(typeof(ShuttleService).Assembly).Describe(ReloadDigests.AdoptedKind, "flights", typeof(ShuttleStateService), service.State,
             field => ReloadDigestHasher.StateOf(field) == ReloadStateKind.Adopted);
     }
 

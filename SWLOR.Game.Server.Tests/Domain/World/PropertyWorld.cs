@@ -359,13 +359,72 @@ public sealed class PropertyWorld : IDisposable
         }
     }
 
-    /// <summary>The loader with the clock-driven batch scheduler replaced by a list the test runs by hand.</summary>
+    /// <summary>
+    /// The loader with the clock-driven batch scheduler replaced by a list the test runs by hand, built with the registry, spawn
+    /// and reload services it works with. The members of those parts are reachable from here, as they were when the loader was one
+    /// class, so a test reads like the scenario it checks.
+    /// </summary>
     public sealed class LoaderUnderTest : PropertyLoaderService
     {
         public LoaderUnderTest(IDBService db, StubAreas areas, IPropertyCatalogService catalog)
-            : base(db, areas, catalog)
+            : this(db, areas, catalog, new PropertyLoadRegistryService(db, catalog))
         {
         }
+
+        private LoaderUnderTest(IDBService db, StubAreas areas, IPropertyCatalogService catalog, PropertyLoadRegistryService registry)
+            : this(db, areas, catalog, registry, new PropertySpawnService(areas, catalog, registry))
+        {
+        }
+
+        private LoaderUnderTest(IDBService db, StubAreas areas, IPropertyCatalogService catalog, PropertyLoadRegistryService registry, PropertySpawnService spawn)
+            : base(db, areas, catalog, registry, spawn)
+        {
+            Registry = registry;
+            Spawner = spawn;
+            Reload = new PropertyLoadReloadService(db, catalog, registry, this);
+        }
+
+        public PropertyLoadRegistryService Registry { get; }
+
+        public PropertySpawnService Spawner { get; }
+
+        public PropertyLoadReloadService Reload { get; }
+
+        public void AssignPropertyId(uint obj, string propertyId) => Registry.AssignPropertyId(obj, propertyId);
+
+        public string GetPropertyId(uint obj) => Registry.GetPropertyId(obj);
+
+        public void RegisterInstance(string propertyId, uint instance, PropertyLayoutType layoutType) => Registry.RegisterInstance(propertyId, instance, layoutType);
+
+        public PropertyLoadState GetPropertyLoadState(string propertyId) => Registry.GetPropertyLoadState(propertyId);
+
+        public string GetPropertyLoadFailure(string propertyId) => Registry.GetPropertyLoadFailure(propertyId);
+
+        public bool TryGetLoadedInstance(string propertyId, out PropertyInstance instance) => Registry.TryGetLoadedInstance(propertyId, out instance);
+
+        public void SetPropertyLoadState(string propertyId, PropertyLoadState state) => Registry.SetPropertyLoadState(propertyId, state);
+
+        public void NotifyPropertyLoadWaitersForStaff(string propertyId) => Registry.NotifyPropertyLoadWaitersForStaff(propertyId);
+
+        public void SendPropertyLoadFailedMessage(uint player) => Registry.SendPropertyLoadFailedMessage(player);
+
+        public uint GetPlaceableByPropertyId(string propertyId) => Registry.GetPlaceableByPropertyId(propertyId);
+
+        public void EnterPropertyInstance() => Registry.EnterPropertyInstance();
+
+        public void ShowPropertyDescription() => Registry.ShowPropertyDescription();
+
+        public void ExitPropertyInstance() => Registry.ExitPropertyInstance();
+
+        public void RegisterStructurePlaceable(string propertyId, uint placeable) => Registry.RegisterStructurePlaceable(propertyId, placeable);
+
+        public void ApplyStructureWorldName(uint placeable, WorldProperty structure) => Spawner.ApplyStructureWorldName(placeable, structure);
+
+        public void SpawnIntoWorld(WorldProperty property, uint area) => Spawner.SpawnIntoWorld(property, area);
+
+        public void CarryLoadState() => Reload.CarryLoadState();
+
+        public void AdoptLiveProperties() => Reload.AdoptLiveProperties();
 
         /// <summary>The batches scheduled and not run yet, with the delay they asked for.</summary>
         public List<(Action Task, TimeSpan Delay)> Scheduled { get; } = new();
@@ -394,17 +453,11 @@ public sealed class PropertyWorld : IDisposable
         protected override void ScheduleLoadBatch(Action task, TimeSpan delay) => Scheduled.Add((task, delay));
     }
 
-    /// <summary>The service with the window table of <c>Gui</c> replaced by a list of the windows asked for.</summary>
-    public sealed class ServiceUnderTest : PropertyService
+    /// <summary>The terminals with the window table of <c>Gui</c> replaced by a list of the windows asked for.</summary>
+    public sealed class TerminalUnderTest : PropertyTerminalService
     {
-        public ServiceUnderTest(
-            IDBService db,
-            IAreaService area,
-            IPlanetService planet,
-            IPropertyCatalogService catalog,
-            IPropertyLoaderService loader,
-            IPropertyCityGovernanceService city)
-            : base(db, area, planet, catalog, loader, city, FacadeForwarder.For<IConversationMenuService>(), FacadeForwarder.For<IGuiService>())
+        public TerminalUnderTest(IDBService db, IPropertyLoadRegistryService registry)
+            : base(db, FacadeForwarder.For<IGuiService>(), registry)
         {
         }
 
@@ -415,6 +468,84 @@ public sealed class PropertyWorld : IDisposable
         {
             Windows.Add((player, type, tetherObject));
         }
+    }
+
+    /// <summary>
+    /// The service with the parts split from it (maintenance, access, placement and the terminals) built on the same world. Their
+    /// members are reachable from here, as they were when the service was one class.
+    /// </summary>
+    public sealed class ServiceUnderTest : PropertyService
+    {
+        public ServiceUnderTest(
+            IDBService db,
+            IAreaService area,
+            IPlanetService planet,
+            IPropertyCatalogService catalog,
+            LoaderUnderTest loader,
+            IPropertyCityGovernanceService city)
+            : this(db, area, planet, catalog, loader, city, new PropertyMaintenanceService(db, area, planet, catalog, loader))
+        {
+        }
+
+        private ServiceUnderTest(
+            IDBService db,
+            IAreaService area,
+            IPlanetService planet,
+            IPropertyCatalogService catalog,
+            LoaderUnderTest loader,
+            IPropertyCityGovernanceService city,
+            PropertyMaintenanceService maintenance)
+            : base(db, planet, catalog, loader, loader.Registry, loader.Spawner, loader.Reload, city, maintenance)
+        {
+            Maintenance = maintenance;
+            Access = new PropertyAccessService(db, catalog, loader.Registry, loader);
+            Placement = new PropertyStructurePlacementService(db, catalog, loader.Registry, this, FacadeForwarder.For<IConversationMenuService>());
+            Terminals = new TerminalUnderTest(db, loader.Registry);
+        }
+
+        public PropertyMaintenanceService Maintenance { get; }
+
+        public PropertyAccessService Access { get; }
+
+        public PropertyStructurePlacementService Placement { get; }
+
+        public TerminalUnderTest Terminals { get; }
+
+        /// <summary>The windows the terminals asked to show, in order: the player, the type and the object it is tethered to.</summary>
+        public List<(uint Player, GuiWindowType Type, uint Tether)> Windows => Terminals.Windows;
+
+        public void DeleteProperty(WorldProperty property) => Maintenance.DeleteProperty(property);
+
+        public StarshipDockReturnResult ReturnStarshipToSafeDock(WorldProperty property, string retrievedStarportId = "", string fallbackAreaResref = "") =>
+            Maintenance.ReturnStarshipToSafeDock(property, retrievedStarportId, fallbackAreaResref);
+
+        public bool HasPropertyPermission(uint player, string propertyId, PropertyPermissionType permission) => Access.HasPropertyPermission(player, propertyId, permission);
+
+        public bool CanGrantPermission(uint player, string propertyId, PropertyPermissionType permission) => Access.CanGrantPermission(player, propertyId, permission);
+
+        public List<WorldPropertyPermission> GetCategoryPermissions(string playerId, string propertyId) => Access.GetCategoryPermissions(playerId, propertyId);
+
+        public void EnterProperty(uint player, string propertyId) => Access.EnterProperty(player, propertyId);
+
+        public void StoreOriginalLocation(uint player) => Access.StoreOriginalLocation(player);
+
+        public void JumpToOriginalLocation(uint player) => Access.JumpToOriginalLocation(player);
+
+        public void PreviewProperty(uint player, PropertyLayoutType layout) => Access.PreviewProperty(player, layout);
+
+        public void EnterBuilding() => Access.EnterBuilding();
+
+        public void PlaceStructure() => Placement.PlaceStructure();
+
+        public StructureType GetStructureTypeFromItem(uint item) => Placement.GetStructureTypeFromItem(item);
+
+        public void PropertyMenu() => Terminals.PropertyMenu();
+
+        public void StartApartmentConversation() => Terminals.StartApartmentConversation();
+
+        public void OpenCitizenshipMenu() => Terminals.OpenCitizenshipMenu();
+
+        public void OpenCityManagementMenu() => Terminals.OpenCityManagementMenu();
     }
 
     /// <summary>The city governance with the broadcast webhook a test names, not the environment's.</summary>

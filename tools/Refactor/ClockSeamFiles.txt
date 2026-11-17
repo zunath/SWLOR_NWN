@@ -116,6 +116,7 @@ Domain/Abilities/QuickCastTargetType.cs
 Domain/Foundation/RecastGroup.cs
 Service/Craft.cs  # master-only (P2-ZK)
 Domain/Crafting/CraftService.cs
+Domain/Crafting/CraftDeviceService.cs
 Native/PairedRangedPresentation.cs
 Native/OnAIActionAttackObject.cs
 NativeSinks/OnAIActionAttackObjectSink.cs

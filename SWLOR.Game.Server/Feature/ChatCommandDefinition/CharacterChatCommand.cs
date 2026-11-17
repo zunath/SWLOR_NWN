@@ -14,8 +14,8 @@ using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Associate;
 using Player = SWLOR.Game.Server.Entity.Player;
-using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Companions;
 using static SWLOR.Game.Server.Composition.GameServices;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
@@ -863,7 +863,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     // Extra hotbars are part of the HUD, so the ones the player turned on come back at their default spots.
-                    ExtraHotbars.ApplyVisibility(owner);
+                    ExtraHotbarsWindow.ApplyVisibility(owner);
 
                     SendMessageToPC(user, ColorToken.Green("All window positions and sizes have been reset to their default values."));
                 });

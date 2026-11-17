@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Social;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Entity;
@@ -324,7 +325,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool Slot10PairOffIconHasLayers { get => Get<bool>(); set => Set(value); }
         public bool Slot11PairOffIconHasLayers { get => Get<bool>(); set => Set(value); }
 
-        private int BarIndex => ExtraHotbars.GetBarIndex(WindowType);
+        private int BarIndex => ExtraHotbarsWindow.GetBarIndex(WindowType);
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
@@ -337,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _placedScreen = default;
             TitleBar = false;
             IsTransparent = true;
-            for (var slot = 0; slot < ExtraHotbarsService.MaxSlots; slot++)
+            for (var slot = 0; slot < ExtraHotbarsWindowService.MaxSlots; slot++)
             {
                 Set(string.Empty, IconProperty(slot));
                 Set(false, HasIconProperty(slot));
@@ -383,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         void IGuiRefreshable<PlayerStatusRefreshEvent>.Refresh(PlayerStatusRefreshEvent payload)
         {
             if (HasScreenChanged())
-                ExtraHotbars.FollowScreen(Player);
+                ExtraHotbarsWindow.FollowScreen(Player);
         }
 
         public void Refresh(ExtraHotbarCooldownRefreshEvent payload)
@@ -400,11 +401,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadBar()
         {
-            _bar = ExtraHotbars.GetBar(Player, BarIndex);
+            _bar = ExtraHotbarsWindow.GetBar(Player, BarIndex);
             if (_bar == null)
                 return;
 
-            var isUnlocked = ExtraHotbars.IsUnlocked(Player);
+            var isUnlocked = ExtraHotbarsWindow.IsUnlocked(Player);
             TitleBar = isUnlocked ? $"Hotbar {BarIndex + 1}" : false;
             IsTransparent = !isUnlocked;
 
@@ -417,12 +418,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             _handItems = null;
-            for (var slot = 0; slot < ExtraHotbarsService.MaxSlots; slot++)
+            for (var slot = 0; slot < ExtraHotbarsWindowService.MaxSlots; slot++)
                 RefreshSlot(slot, _bar.Slots[slot]);
 
             // A bar is fitted from where it sits, so it first catches up with a screen change it has not seen yet.
             if (HasScreenChanged())
-                ExtraHotbars.FollowScreen(Player);
+                ExtraHotbarsWindow.FollowScreen(Player);
 
             // A bar turned on or resized in setup must not land on another bar. Title bars that appear when setup
             // opens are cleared by ExtraHotbars once every bar has one.
@@ -461,7 +462,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var lowerBarsHeight = 0f;
                     for (var index = 0; index < BarIndex; index++)
                     {
-                        var lowerBar = ExtraHotbars.GetBar(Player, index);
+                        var lowerBar = ExtraHotbarsWindow.GetBar(Player, index);
                         lowerBarsHeight += GetHeight(lowerBar.SlotCount, lowerBar.Layout, false) * scale;
                     }
 
@@ -547,12 +548,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         // Open bars numbered below barLimit, other than this one.
-        private List<GuiRectangle> GetOtherBarBounds(float scale, int barLimit = ExtraHotbarsService.BarCount)
+        private List<GuiRectangle> GetOtherBarBounds(float scale, int barLimit = ExtraHotbarsWindowService.BarCount)
         {
             var bounds = new List<GuiRectangle>();
             for (var index = 0; index < barLimit; index++)
             {
-                var windowType = ExtraHotbars.GetWindowType(index);
+                var windowType = ExtraHotbarsWindow.GetWindowType(index);
                 if (index == BarIndex || !Gui.IsWindowOpen(Player, windowType))
                     continue;
 
@@ -703,12 +704,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // The client moved the bar because the game window shrank, not because the player dragged it.
             if (HasScreenChanged())
             {
-                ExtraHotbars.FollowScreen(Player);
+                ExtraHotbarsWindow.FollowScreen(Player);
                 return;
             }
 
             // A locked bar has no title bar to drag, so the player did not move it.
-            if (!ExtraHotbars.IsUnlocked(Player))
+            if (!ExtraHotbarsWindow.IsUnlocked(Player))
                 return;
 
             _shownX = Geometry.X;
@@ -716,7 +717,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (System.Math.Abs(Geometry.X - _placedX) < 0.5f && System.Math.Abs(Geometry.Y - _placedY) < 0.5f)
                 return;
 
-            KeepClear(ExtraHotbarsService.BarCount);
+            KeepClear(ExtraHotbarsWindowService.BarCount);
         }
 
         /// <summary>
@@ -790,14 +791,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     tooltip = $"{ExtraHotbars.GetActionModeName(slot.ActionMode)} ({(isActive ? "on" : "off")})";
                     break;
                 case ExtraHotbarSlotType.Equipment:
-                    _handItems ??= ExtraHotbars.GetHandItems(Player);
-                    var (mainHand, offHand) = ExtraHotbars.FindEquipItems(slot, _handItems);
+                    _handItems ??= ExtraHotbarsEquip.GetHandItems(Player);
+                    var (mainHand, offHand) = ExtraHotbarsEquip.FindEquipItems(slot, _handItems);
                     var mainLayers = GetEquipIconLayers(slot.MainHand, mainHand);
                     var offLayers = GetEquipIconLayers(slot.OffHand, offHand);
                     // A set with a missing item cannot be put away by a click, so it never reads as worn.
                     var isComplete = (slot.MainHand == null || GetIsObjectValid(mainHand)) &&
                                      (slot.OffHand == null || GetIsObjectValid(offHand));
-                    isActive = isComplete && ExtraHotbars.IsEquipped(Player, mainHand, offHand);
+                    isActive = isComplete && ExtraHotbarsEquip.IsEquipped(Player, mainHand, offHand);
                     tooltip = $"{(isActive ? "Unequip" : "Equip")} {GetEquipNames(slot)}";
 
                     // Two items sit side by side; weapon icons are tall, so each half still reads clearly.

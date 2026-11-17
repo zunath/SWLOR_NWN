@@ -162,7 +162,7 @@ public static class AbandonedStationDockMasterEngineTests
             if (ownsStationSpawns)
                 ctx.Assert(!GetIsObjectValid(GetObjectByTag("aban_dockmaster")), "station cleanup destroys the previous dock master before another visit");
             if (ship != null) DB.Delete<PlayerShip>(ship.Id);
-            if (property != null) Property.DeleteProperty(property);
+            if (property != null) PropertyMaintenance.DeleteProperty(property);
             if (GetIsObjectValid(interior)) DestroyArea(interior);
         }
     }

@@ -50,9 +50,9 @@ SWLOR.Game.Server/Domain/Items/KeyItemIcon.cs: Items -> World | 1
 SWLOR.Game.Server/Domain/Quests/GuildTaskXpReward.cs: Quests -> Economy | 2
 SWLOR.Game.Server/Domain/Quests/QuestRewards.cs: Quests -> Economy | 2
 SWLOR.Game.Server/Domain/World/StructureChangedAction.cs: World -> Space | 1
+SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceSettingsService.cs: UI content -> Gameplay content | 3
 SWLOR.Game.Server/Feature/BeastStableTrials.cs: Gameplay content -> Quests content | 1
 SWLOR.Game.Server/Feature/DialogDefinition/MarketDialog.cs: Foundation content -> UI content | 1
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs: UI content -> Gameplay content | 3
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs: UI content -> Gameplay content | 1
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs: UI content -> Abilities content | 2
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs: UI content -> Gameplay content | 1

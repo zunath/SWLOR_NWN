@@ -765,8 +765,6 @@ SWLOR.Game.Server/Feature/GuiDefinition/KeyItemsDefinition.cs | 2
 SWLOR.Game.Server/Feature/GuiDefinition/SkillsDefinition.cs | 2
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AchievementsViewModel.cs | 6
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AnimationDebugViewModel.cs | 4
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.Outfits.cs | 15
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.PartBrowser.cs | 1
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AreaNotesViewModel.cs | 9
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/BankViewModel.cs | 12
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/BugReportViewModel.cs | 4

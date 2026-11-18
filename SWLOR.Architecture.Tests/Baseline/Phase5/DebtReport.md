@@ -7,21 +7,21 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,089 | 13,410 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 30 | 47,619 lines | none over 1,000 lines |
+| 1. Static service lookup | `StaticLookups.txt` | 1,087 | 13,394 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 29 | 44,150 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 18 | 4,910 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 17 | 270 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 38 | 54 parameters | none |
 | 6. Logic referencing content | `LogicToContent.txt` | 103 | 224 types | none |
-| 7. Domain cycles | `DomainCycles.txt` | 30 | 102 edges | none |
-| 8. Static entry points and static state | `StaticState.txt` | 136 | 254 members | each kept with an approved reason, or removed |
+| 7. Domain cycles | `DomainCycles.txt` | 30 | 103 edges | none |
+| 8. Static entry points and static state | `StaticState.txt` | 135 | 250 members | each kept with an approved reason, or removed |
 | 9. References up the domain order | `UpwardEdges.txt` | 128 | 297 members | none: every reference follows the domain order |
 | 10. Sink work | `SinkWork.txt` | 15 | 2,096 lines | none: a sink only forwards |
 
 ## 1. Static service lookup
 
-- 1,089 files, 13,410 uses: 828 using directives and 12,582 uses in code (7,487 in a static context).
-- SWLOR.Game.Server: 644 file(s), 5,881 use(s) (Feature/ 534, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- 1,087 files, 13,394 uses: 826 using directives and 12,568 uses in code (7,485 in a static context).
+- SWLOR.Game.Server: 642 file(s), 5,865 use(s) (Feature/ 532, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 238 file(s), 5,309 use(s).
 - SWLOR.Game.Server.Tests: 178 file(s), 2,062 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
@@ -33,10 +33,10 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CLI: 1 file(s), 5 use(s).
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
-- Content (Feature/) uses in code: 4,596 (1,687 in a static context).
-- Content (Feature/) types that use it: 531. Static classes: 71. Instance classes that use it from a static member: 204 (156 only from static members).
+- Content (Feature/) uses in code: 4,582 (1,685 in a static context).
+- Content (Feature/) types that use it: 530. Static classes: 71. Instance classes that use it from a static member: 203 (156 only from static members).
 
-Largest 15 of 1,089 (all in `StaticLookups.txt`):
+Largest 15 of 1,087 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -58,15 +58,14 @@ Largest 15 of 1,089 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 30 types over 1,000 lines, 47,619 lines in all.
+- 29 types over 1,000 lines, 44,150 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 30 (all in `LargeTypes.txt`):
+Largest 15 of 29 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
-| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel` | 3,469 | AppearanceEditorViewModel.ColorBindings.cs, AppearanceEditorViewModel.ColorSelection.cs, AppearanceEditorViewModel.ColorSwatches.cs, AppearanceEditorViewModel.Outfits.cs, AppearanceEditorViewModel.PartBrowser.cs, AppearanceEditorViewModel.cs |
 | `SWLOR.Game.Server.Domain.Character.StatusEffectService` | 2,833 | StatusEffectService.cs |
 | `SWLOR.Game.Server.Domain.Space.SpaceService` | 2,768 | SpaceService.cs |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase` | 2,332 | WeaponActiveAbilityDefinitionBase.cs |
@@ -81,6 +80,7 @@ Largest 15 of 30 (all in `LargeTypes.txt`):
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerksViewModel` | 1,544 | PerksViewModel.cs |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel` | 1,516 | CharacterSheetViewModel.cs |
 | `SWLOR.Game.Server.Domain.Character.PerkService` | 1,486 | PerkService.cs |
+| `SWLOR.Game.Server.Domain.Combat.CombatDamageModifiersService` | 1,433 | CombatDamageModifiersService.cs |
 
 ## 3. Long methods
 
@@ -196,7 +196,7 @@ Largest 15 of 30 (all in `DomainCycles.txt`):
 | Entry | Edges | Detail |
 |---|---:|---|
 | `Foundation <-> Platform` | 9 | Foundation -> Platform: 6 edge(s), 97 member(s); Platform -> Foundation: 3 edge(s), 36 member(s) |
-| `Gameplay content <-> UI content` | 8 | Gameplay content -> UI content: 2 edge(s), 2 member(s); UI content -> Gameplay content: 6 edge(s), 9 member(s) |
+| `Gameplay content <-> UI content` | 9 | Gameplay content -> UI content: 2 edge(s), 2 member(s); UI content -> Gameplay content: 7 edge(s), 9 member(s) |
 | `Foundation content <-> Gameplay content` | 7 | Foundation content -> Gameplay content: 4 edge(s), 12 member(s); Gameplay content -> Foundation content: 3 edge(s), 3 member(s) |
 | `Abilities <-> Platform` | 6 | Abilities -> Platform: 5 edge(s), 75 member(s); Platform -> Abilities: 1 edge(s), 2 member(s) |
 | `Character <-> Platform` | 6 | Character -> Platform: 4 edge(s), 128 member(s); Platform -> Character: 2 edge(s), 27 member(s) |
@@ -213,18 +213,17 @@ Largest 15 of 30 (all in `DomainCycles.txt`):
 
 ## 8. Static entry points and static state
 
-- To classify: 136 types, 253 static fields, 1 static members that resolve from the container.
+- To classify: 135 types, 249 static fields, 1 static members that resolve from the container.
 - Logic (outside Feature/): 34 types, 65 fields; written after initialization (runtime state): 30 fields in 16 types.
-- Content (Feature/): 102 types, 188 fields; written after initialization (runtime state): 16 fields in 11 types. The other fields are tables built once but held in a mutable type (an array, List, Dictionary).
+- Content (Feature/): 101 types, 184 fields; written after initialization (runtime state): 16 fields in 11 types. The other fields are tables built once but held in a mutable type (an array, List, Dictionary).
 - Approved (owner decision 3, not listed): Log (2 fields), Clock (1 fields), Random (1 fields), FrameProfiler (20 fields).
 
-Largest 15 of 136 (all in `StaticState.txt`):
+Largest 15 of 135 (all in `StaticState.txt`):
 
 | Entry | Members | Detail |
 |---|---:|---|
 | `SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemResistanceMigration` | 9 | fields: ArmorAndFoodResistanceAmountByRank, DroidResistanceAmountByRank, DroidResistanceSubTypes, LegacyElementalDefenseToResistance, LegacyIncubationPurityToResistancePurity, LegacySavingThrowToResistance, LegacySpecificSavingThrowToResistance, LegacyStatusResistanceToResistance, ResistanceEnhancementByResrefPrefix |
 | `SWLOR.Game.Server.Feature.AbilityDefinition.NPC.InnateAbilityProfile` | 8 | fields: CreaturePhysical, Devices, Force, Mimicry, Rifle, Staff, Throwing, Vibroblade |
-| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel` | 7 | fields: BodyColorSwatches, EditorTabs, EditorToggles, OutfitsToggles, SettingsToggles, SwatchChannels, _armorAppearances |
 | `SWLOR.Game.Server.Feature.MigrationDefinition.SerializedItemWeaponDamageTypeMigration` | 7 | fields: DelayByResref, LegacyEnhancementDamageTypesBySubType, RawDamageEnhancementAmountsByResref, TrainingSaberDamageResrefs, TrainingSaberDamageScale, WeaponBaseItemTypes, WeaponDamageScales |
 | `SWLOR.Game.Server.Feature.MigrationDefinition.StoredObjectData` | 7 | fields: ArmorPaletteLabels, ArmorPartLabels, ItemHeader, RenamedTextFields, RevisedPropertyCostTables, RootIcons, SimpleModelRootIcons |
 | `SWLOR.Game.Server.Core.Scheduler` | 6 | fields: DeltaTime*, Time*, _clearCount*, _comparer, _scheduledItems*, _stopwatch* |
@@ -235,12 +234,13 @@ Largest 15 of 136 (all in `StaticState.txt`):
 | `SWLOR.Game.Server.Core.ServerManager` | 5 | fields: Bootstrapper*, Executor*, MainLoop*, NativeInterop*, Scripts* |
 | `SWLOR.Game.Server.Feature.MigrationDefinition.DoubleWeaponRecalibration` | 5 | fields: CurrentTierDamage, DamageByResref, PreviousTierDamage, PreviousUpgradeDamage, UpgradableSaberstaffBaseTiers |
 | `SWLOR.Game.Server.Native.PairedRangedPresentation` | 5 | fields: Anchors*, CompanionMuzzleOffset, LastPoses*, LaunchCounts*, MainMuzzleOffset |
+| `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel` | 4 | fields: EditorTabs, EditorToggles, OutfitsToggles, SettingsToggles |
 | `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerformanceOptionsViewModel` | 4 | fields: AllRoutines, AllSets, TabToggles, Tabs |
 | `SWLOR.Game.Server.Native.SavedPlayerClassLayout` | 4 | fields: ClassLabel, ClassListLabel, IsPCLabel, LevelLabel |
 
 ## 9. References up the domain order
 
-- 297 members in 85 files reference a domain above their own: 35 directions, 51 unit edges.
+- 297 members in 85 files reference a domain above their own: 35 directions, 52 unit edges.
 - Logic: 245 members in 26 directions; content: 52 members in 9 directions.
 - From the hook logic in Platform/Native (P5-16b): 123 members in 52 lines.
 - By direction: Platform -> Combat 52, Platform -> Foundation 36, Platform -> Character 27, Character -> Combat 25, Combat -> Creatures 17, Foundation content -> Gameplay content 12, Character content -> Abilities content 10, Combat -> Abilities 10, Combat -> Social 9, Items -> Combat 9, UI content -> Gameplay content 9, Character -> Abilities 7, Foundation -> Character 6, Foundation -> UI 6, Platform -> Items 6, Character -> Quests 5, Foundation content -> Character content 5, Foundation content -> UI content 5, Character -> Creatures 4, Character -> Social 4, Quests -> Economy 4, UI content -> Abilities content 4, Combat -> Quests 3, Combat -> World 3, Items -> Crafting 3, Items content -> Abilities content 3, Character -> Companions 2, Gameplay content -> Abilities content 2, Gameplay content -> Quests content 2, Platform -> Abilities 2, Character -> Items 1, Items -> Companions 1, Items -> World 1, Platform -> Creatures 1, World -> Space 1.

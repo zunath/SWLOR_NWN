@@ -31,6 +31,9 @@
                       LogicalName="AppearanceEditor/BindingIdentity.txt" />
     <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentityTabs.txt"
                       LogicalName="AppearanceEditor/BindingIdentityTabs.txt" />
+    <!-- The binding transcripts of the six windows of the view model split, captured before any view model code moved (P5-16h). -->
+    <EmbeddedResource Include="Definitions\Fixtures\ViewModelTranscript\*.txt"
+                      LogicalName="ViewModelTranscript/%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>

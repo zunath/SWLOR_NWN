@@ -594,7 +594,7 @@ def perk_lines_entry(src: dict[str, Source], manifest: list[dict[str, str]]) -> 
     toggled = [skill for skill, mode in modes.items() if mode == "toggled"]
     exclusive = [skill for skill, mode in modes.items() if mode == "exclusive"]
     windows = [STYLE_WINDOWS[skill][0] for skill in toggled]
-    hours = src["perks_view"].find_int(r"DatePerkRefundAvailable\s*=\s*DateTime\.UtcNow\.AddHours\((\d+)\)", "the refund delay")
+    hours = src["perks_view"].find_int(r"DatePerkRefundAvailable\s*=\s*Clock\.UtcNow\.AddHours\((\d+)\)", "the refund delay")
     src["perks_view"].find(rf"You may only refund one perk per {hours} hour", "the refund text")
     return (
         f"{PERK_LINES_OPENING} {lines_text}. Each line has {len(schedule)} purchases at skill ranks"

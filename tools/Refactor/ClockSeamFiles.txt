@@ -160,3 +160,5 @@ NativeSinks/WeaponAttackAnimationSink.cs
 Domain/Crafting/Minigame/CraftSessionLifecycle.cs
 Domain/Crafting/Minigame/NwnCraftSessionWorld.cs
 Entity/EntityBase.cs
+Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs
+Feature/GuiDefinition/ViewModel/PerksViewModel.cs

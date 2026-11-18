@@ -693,33 +693,36 @@ path on master: 27 for `Combat.cs`, 5 for `Enmity.cs`, 5 for `Death.cs`, 1 for `
 be read from the diffs (master's hunks name call sites in other files), so only the totals are given. For comparison the StatusEffect freeze
 covered one file with 27 commits since 2026-10-10.
 
-**Freeze windows, per file** (recommendation; open question 1). A master edit to a moved range must be ported by hand to whichever part owns it
+**Freeze windows, per file** (owner decision, 2026-11-18: "Yes, per-file windows"; open question 1). A master edit to a moved range must be ported by hand to whichever part owns it
 and the ranges change with each PR, so each file is frozen only while its code moves:
 - `Service/Combat.cs`: P5-7c to P5-7i2 (the Combat parts d to i; P5-7l's `CombatService` edit is small and ported by hand if master touched
   the handler or cleanup ranges). 9 November commits and 66 in October make this the file that matters.
 - `Service/CombatRecorder.cs`: P5-7j1 to P5-7j3 (no November commits).
 - `Service/Enmity.cs`: P5-7k only (one PR).
 - `Service/Death.cs`: P5-7l only (one PR; `cb465ec15` must be on the branch first).
-The 38 tests that read these files by path are in the same windows. If the owner declines, each sync ports by hand with a Port log row: about
-4 commits a week at the November rate, and many more if October's tuning pass repeats.
+The 38 tests that read these files by path are in the same windows. A master edit inside a window waits for the window to close, or is
+ported by hand with a Port log row.
 
 ## Open questions
 
-1. **Master freeze, per file?** Recommend the windows above (Combat.cs c to i2; the recorder j1 to j3; Enmity.cs k; Death.cs l). It is the
-   owner's call because it holds combat balance edits on master.
-2. **Enmity part names and which part keeps `IEnmityService`.** Recommend `EnmityService` stays the table part (carried keys unchanged, no
-   `[ReloadCarriedFrom]`, the AI core's reads stay), and the writes (`ModifyEnmity`, 138 sites) move to `EnmityChangeService`, which changes about 260
-   mostly test call sites. The alternative (writes stay, tables move) costs about the same but moves the carried keys.
-3. **The Stealth notice.** Recommend a separate `IStealthRetargetListener` in P5-7k rather than widening P5-8e's `IStealthAggroListener`, so P5-8e
-   is not reopened. If P5-8e has not landed when P5-7k starts, P5-7k waits (it depends on P5-8h anyway).
-4. **Holder growth that regrouping cannot remove.** `AbilityDamageStageService` 10 -> 11 and `AbilityDamageInputService` 11 -> 13 (two damage taken
-   parts because the force conversion calls triggered damage, which calls the modifiers), and `SpaceService` 18 -> 19. Recommend accepting them
-   with removers named: P5-16 for the two Abilities parts (the Stat split recorded the same entry for `AbilityDamageInputService`), P5-6 for
-   `SpaceService`. Stage is a new `ServicesPerType.txt` line until then.
-5. **The recorder's two `Lazy<>`.** Recommend leaving them to P5-15 (they need a Foundation-owned reader for FP, stamina and the weapon skill, which
-   is a design decision of its own).
-6. **Cleanup by owner list with phases.** Recommend the phase-numbered owner list for `CombatService` over a larger direct list, as above;
-   it keeps today's order exactly, including the second `CombatActivity` and `CombatResources` calls, and the direct last call to
+All six are closed. Question 1 is the owner's decision; question 4 is the coordinator's decision (2026-11-18); the other four are
+coordinator decisions that take this guide's recommendation.
+
+1. **Master freeze, per file?** Closed, owner decision (2026-11-18): "Yes, per-file windows". `Service/Combat.cs` is frozen from P5-7c to
+   P5-7i2, `Service/CombatRecorder.cs` from P5-7j1 to P5-7j3, `Service/Enmity.cs` for P5-7k, and `Service/Death.cs` for P5-7l (`cb465ec15`
+   synced first). The 38 tests that read these files by path follow the same windows.
+2. **Enmity part names and which part keeps `IEnmityService`.** Closed, coordinator decision: `EnmityService` stays the table part (carried
+   keys unchanged, no `[ReloadCarriedFrom]`, the AI core's reads stay), and the writes (`ModifyEnmity`, 138 sites) move to
+   `EnmityChangeService`.
+3. **The Stealth notice.** Closed, coordinator decision: a separate `IStealthRetargetListener` in P5-7k, not a widening of P5-8e's
+   `IStealthAggroListener`. If P5-8e has not landed when P5-7k starts, P5-7k waits (it depends on P5-8h anyway).
+4. **Holder growth that regrouping cannot remove.** Closed, coordinator decision (2026-11-18): accepted with the named removers.
+   `AbilityDamageInputService` goes to 13 and `AbilityDamageStageService` to 11, both removed by P5-16; `SpaceService` goes to 19, removed by
+   P5-6. Stage is a new `ServicesPerType.txt` line until then.
+5. **The recorder's two `Lazy<>`.** Closed, coordinator decision: left to P5-15 (they need a Foundation-owned reader for FP, stamina and the
+   weapon skill, which is a design decision of its own).
+6. **Cleanup by owner list with phases.** Closed, coordinator decision: the phase-numbered owner list for `CombatService`, as above; it keeps
+   today's order exactly, including the second `CombatActivity` and `CombatResources` calls, and the direct last call to
    `TemporaryStatModifierService`.
 
 ## Progress

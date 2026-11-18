@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Kitchen window: every Agriculture recipe is cooked here.</summary>
     public class KitchenDefinition : IGuiWindowDefinition
     {
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 700f;
+
         public const string HelpText =
             "GOAL\n" +
             "Steer the dish's flavor into the recipe's target zone while it cooks, then finish cooking it. " +
@@ -41,11 +44,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             "ruined dish costs. Closing the window ruins the dish too. Craftsmanship makes cooking faster, and Control narrows " +
             "your pushes.";
 
-        private const float ContentPanelWidth = 620f;
         private const float LabelHeight = 20f;
         private const float BarHeight = 20f;
-        private const float RowHeight = 34f;
+        /// <summary>Two wrapped lines: an enhancement's slot, threshold and item name beside its button.</summary>
+        private const float EnhancementRowHeight = 44f;
+        /// <summary>Two wrapped lines: an action's summary, which can list several effects, their ranges and a warning.</summary>
+        private const float ActionRowHeight = 44f;
+        /// <summary>Every action without scrolling the list: the Kitchen has fourteen.</summary>
+        private const float ActionListHeight = 14 * ActionRowHeight + 8f;
         private const float NoteHeight = 44f;
+        /// <summary>Three lines: the failure rule runs to three lines in the default window.</summary>
+        private const float RuleNoteHeight = 66f;
+        /// <summary>The three flavor rows of 28 with the list's padding, so the last one is not cut off.</summary>
+        private const float AxisListHeight = 3 * 28f + 16f;
         private const float ButtonWidth = 190f;
         private const float EnhancementButtonWidth = 90f;
         private const float PalateRowHeight = 40f;
@@ -60,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Kitchen)
-                .SetInitialGeometry(0f, 0f, 700f, 680f)
+                .SetInitialGeometry(0f, 0f, WindowWidth, 680f)
                 .SetTitle("Kitchen")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -85,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
@@ -164,18 +176,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     });
                                     template.AddCell(cell =>
                                     {
-                                        cell.AddLabel()
+                                        cell.AddText()
                                             .BindText(model => model.EnhancementTexts)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                            .SetShowBorder(false)
+                                            .SetScrollbars(NuiScrollbars.None);
                                     });
                                 })
                                     .BindRowCount(model => model.EnhancementTexts)
-                                    .SetRowHeight(RowHeight)
-                                    .SetHeight(106f);
+                                    .SetRowHeight(EnhancementRowHeight)
+                                    .SetHeight(3 * EnhancementRowHeight + 8f);
                             });
 
-                            AddNote(content, model => model.FailureRuleText);
+                            AddNote(content, model => model.FailureRuleText, RuleNoteHeight);
 
                             content.AddRow(r =>
                             {
@@ -198,8 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 r.AddSpacer();
                             });
                         });
-                    })
-                        .SetWidth(ContentPanelWidth);
+                    });
                 });
             });
         }
@@ -210,6 +221,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
@@ -266,17 +278,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 })
                                     .BindRowCount(model => model.AxisNames)
                                     .SetRowHeight(28f)
-                                    .SetHeight(90f);
+                                    .SetHeight(AxisListHeight);
                             });
 
-                            content.AddRow(r =>
-                            {
-                                r.AddLabel()
-                                    .BindText(model => model.DistanceText)
-                                    .BindColor(model => model.DistanceColor)
-                                    .SetHeight(LabelHeight)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                            });
+                            content.AddRow(r => r.AddText()
+                                .BindText(model => model.DistanceText)
+                                .BindColor(model => model.DistanceColor)
+                                .SetHeight(NoteHeight)
+                                .SetShowBorder(false)
+                                .SetScrollbars(NuiScrollbars.None));
                             AddNote(content, model => model.HeatText);
                             AddNote(content, model => model.DriftText);
                             content.AddRow(r =>
@@ -287,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHeight(LabelHeight)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
                             });
-                            AddLabel(content, model => model.ThresholdText);
+                            AddNote(content, model => model.ThresholdText);
 
                             AddLabel(content, null, "Actions (hover for every result)");
                             content.AddRow(r =>
@@ -307,20 +317,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     });
                                     template.AddCell(cell =>
                                     {
-                                        cell.AddLabel()
+                                        cell.AddText()
                                             .BindText(model => model.ActionSummaries)
                                             .BindColor(model => model.ActionColors)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                                            .SetShowBorder(false)
+                                            .SetScrollbars(NuiScrollbars.None);
                                     });
                                 })
                                     .BindRowCount(model => model.ActionNames)
-                                    .SetRowHeight(RowHeight)
-                                    .SetHeight(440f);
+                                    .SetRowHeight(ActionRowHeight)
+                                    .SetHeight(ActionListHeight);
                             });
                         });
-                    })
-                        .SetWidth(ContentPanelWidth);
+                    });
                 });
             });
         }
@@ -344,12 +353,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         }
 
         /// <summary>Text that may wrap to a few lines.</summary>
-        private static void AddNote(GuiColumn<KitchenViewModel> content, Expression<Func<KitchenViewModel, string>> text)
+        private static void AddNote(GuiColumn<KitchenViewModel> content, Expression<Func<KitchenViewModel, string>> text, float height = NoteHeight)
         {
             content.AddRow(r => r.AddText()
                 .BindText(text)
                 .SetShowBorder(false)
-                .SetHeight(NoteHeight));
+                .SetHeight(height));
         }
 
         private static void AddMeter(

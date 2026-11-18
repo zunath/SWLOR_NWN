@@ -8,7 +8,7 @@ using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The ordered call-and-draw transcript of the damage taken orchestrators (P5-7b), taken before <c>CombatDamageTakenService</c>
+/// The ordered call-and-draw transcript of the damage taken orchestrators, taken before <c>CombatDamageTakenService</c>
 /// is split: <c>ApplyDamageTakenModifiers</c>, the after-damage handler <c>ApplyDamageTakenEffects</c>, <c>ApplyGuardedHitModifiers</c>
 /// and the reflection and deflection members that run from them. Every stat is zero in one pass and raised in the other.
 /// Regenerate with <c>SWLOR_UPDATE_SNAPSHOTS=1</c> only for a deliberate change.

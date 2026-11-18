@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// A decorator for a real service of the container (P5-7b): the calls whose member names match a filter are written to the
+/// A decorator for a real service of the container: the calls whose member names match a filter are written to the
 /// transcript, then forwarded to the real instance, which keeps its real behaviour and state.
 /// </summary>
 public class ForwardingRecorder : DispatchProxy

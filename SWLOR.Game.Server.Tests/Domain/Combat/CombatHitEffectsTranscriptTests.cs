@@ -8,7 +8,7 @@ using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The ordered call-and-draw transcript of the hit effects orchestrators (P5-7b), taken before <c>CombatHitEffectsService</c>
+/// The ordered call-and-draw transcript of the hit effects orchestrators, taken before <c>CombatHitEffectsService</c>
 /// is split: <c>ApplyDamageDealtEffects</c>, <c>ApplyTriggeredDamage</c>, <c>ApplyCriticalHitEffects</c>,
 /// <c>ApplyAutoAttackDamageModifiers</c> and <c>ApplyDefeatedEnemyEffects</c>. The real container runs with recording stand-ins at
 /// its leaves; each scenario runs twice, once with every stat at zero (the gates and their order) and once with every stat raised

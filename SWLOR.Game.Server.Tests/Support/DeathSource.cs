@@ -3,7 +3,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// <summary>
 /// The source of <c>DeathService</c> wherever it lives, for the tests that guard a rule by reading the code. The combat services split
 /// (<c>Readmes/MaintainabilityRefactorCombatServicesSplit.md</c>) moves the respawn code of <c>Domain/Combat/DeathService.cs</c> into
-/// <c>DeathRespawnService</c> (P5-7l); that PR adds its file to <see cref="PartFiles"/>.
+/// <c>DeathRespawnService</c>; that PR adds its file to <see cref="PartFiles"/>.
 /// </summary>
 public static class DeathSource
 {

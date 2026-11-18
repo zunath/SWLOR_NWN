@@ -6,7 +6,7 @@ using System.Runtime.ExceptionServices;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// A recording stand-in for a leaf service of a combat transcript (P5-7b): every member writes "Label.Member(arguments)"
+/// A recording stand-in for a leaf service of a combat transcript: every member writes "Label.Member(arguments)"
 /// to the one transcript in call order, then answers with a scripted value or, when none is scripted, with the empty
 /// value of its return type (zero, false, an empty string, an empty collection, null). It forwards to nothing, so what
 /// a transcript shows is the call a service made, not what a real leaf did with it.

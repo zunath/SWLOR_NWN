@@ -10,7 +10,7 @@ using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The ordered call-and-draw transcripts of the ability orchestrators (P5-7b), taken before the services are split:
+/// The ordered call-and-draw transcripts of the ability orchestrators, taken before the services are split:
 /// <c>ApplyAbilityActivatedEffects</c> (24 steps), <c>ApplySuccessfulAbilityImpactRiders</c>, <c>ApplyAbilityImpactEffects</c>, the
 /// status-applied listener notices, <c>ApplyDamageDealtModifiers</c>, <c>TryResolveAbilityHit</c> and the ability bonus reads. Each
 /// scenario runs with every stat at zero and again with every stat raised; the weapon-family riders run once per weapon skill.

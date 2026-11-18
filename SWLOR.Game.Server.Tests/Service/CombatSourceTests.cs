@@ -263,7 +263,7 @@ public class CombatSourceTests
 
         foreach (var name in CombatParts.OtherServices)
         {
-            // A recorder layer the combat services split has not created yet (P5-7j2, P5-7j3) is named already, so its PR changes no list here.
+            // A recorder layer the combat services split has not created yet is named already, so its PR changes no list here.
             if (!File.Exists(Path.Combine(domain, name + ".cs")))
             {
                 name.Should().StartWith("CombatRecord", "only the recorder layers are named before they exist");

@@ -20,7 +20,7 @@ using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The recorder transcript of a scripted fight (P5-7b), taken before <c>CombatRecorderService</c> is split into layers: a
+/// The recorder transcript of a scripted fight, taken before <c>CombatRecorderService</c> is split into layers: a
 /// <c>Start</c>, an ability cast with its cost, attack, damage with temporary hit points and impact, a denied, a queued and an
 /// interrupted ability, a heal with a nested heal and a reduced heal, temporary hit point grants and trims, resources and items, a
 /// status applied, refreshed and removed, a creature death, a player death, a respawn, a resurrection, a subdual, and a <c>Stop</c>.

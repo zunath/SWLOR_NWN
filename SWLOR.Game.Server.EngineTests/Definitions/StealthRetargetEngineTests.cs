@@ -10,10 +10,10 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     /// <summary>
-    /// The enemy retarget the stealth service asks of the enmity service (P5-7b). When a player enters stealth the enemies that
+    /// The enemy retarget the stealth service asks of the enmity service. When a player enters stealth the enemies that
     /// were fighting the player choose their attack target again, drop the player they can no longer see, and keep the player on
     /// their enmity table; when the player is revealed they choose again and attack the player. The notice is deferred to the
-    /// next frame, so the checks wait for the target to change. This is the proof for the P5-7k notice that replaces the
+    /// next frame, so the checks wait for the target to change. This is the proof for the deferred notice that replaces the
     /// stealth service's two calls into the enmity service.
     /// </summary>
     public static class StealthRetargetEngineTests

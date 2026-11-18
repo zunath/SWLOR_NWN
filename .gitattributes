@@ -76,5 +76,5 @@ SWLOR.Game.Server/Docker/*.patch text eol=lf
 /SWLOR.Game.Server.Tests/Fixtures/ViewModelSplit/*.txt -text
 /SWLOR.Game.Server.EngineTests/Definitions/Fixtures/ViewModelTranscript/*.txt -text
 
-# The combat transcripts (P5-7b) and the serializer goldens are compared byte for byte and are written with LF.
+# The combat transcripts and the serializer goldens are compared byte for byte and are written with LF.
 /SWLOR.Game.Server.Tests/Fixtures/CombatTranscripts/*.txt -text

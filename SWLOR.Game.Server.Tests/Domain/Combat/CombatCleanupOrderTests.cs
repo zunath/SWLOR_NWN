@@ -9,12 +9,12 @@ using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The forget order of <c>CombatService</c> (P5-7b): a bench with every table the cleanup clears populated for the leaving creature
+/// The forget order of <c>CombatService</c>: a bench with every table the cleanup clears populated for the leaving creature
 /// and for others, run through the real parts and the real temporary stat modifier service, with the status effect service, the
 /// recorder and the refresh publisher recording. The transcript lists the tables before and after, and in order every call the
 /// forgets cause: the overwatch status removal of the suppression forget (it runs once per source that held a pending use),
 /// the refresh notice of the temporary stat modifier clear, the second activity and resources forgets, and the final
-/// <c>TemporaryStatModifier.Clear</c>. P5-7l's phase list must produce the same transcript. Regenerate with
+/// <c>TemporaryStatModifier.Clear</c>. The planned cleanup phase list must produce the same transcript. Regenerate with
 /// <c>SWLOR_UPDATE_SNAPSHOTS=1</c> only for a deliberate change.
 /// </summary>
 [TestFixture]

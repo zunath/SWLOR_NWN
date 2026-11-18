@@ -10,7 +10,7 @@ using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The ordered call-and-draw transcripts of <c>DeathService</c>'s handlers and of <c>CombatService</c>'s handlers (P5-7b), taken
+/// The ordered call-and-draw transcripts of <c>DeathService</c>'s handlers and of <c>CombatService</c>'s handlers, taken
 /// before either is split. The death handlers run for a player killed by a creature, by a player, and by a player in subdual mode,
 /// with and without a recording; the combat handlers run the defeated-enemy effects, the exit cleanup, the tracker refresh with
 /// every tracker configured and with none, and the six-second facing cleanup. Regenerate with <c>SWLOR_UPDATE_SNAPSHOTS=1</c>

@@ -17,7 +17,7 @@ using static SWLOR.Game.Server.Tests.Support.CombatTranscriptBench;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// The enmity transcript (P5-7b), taken before <c>EnmityService</c> is split into the table, change and attack parts: a scripted
+/// The enmity transcript, taken before <c>EnmityService</c> is split into the table, change and attack parts: a scripted
 /// sequence of damage, attack, healing (with a nested heal), taunt, reduce, proximity, removal, limbo, death, destroy, player death
 /// and exit events, then the attack paths (the highest target, the attack command, the leash retarget). After every step the
 /// transcript lists the three carried tables, the creature-to-enemies list, the attack commands and the healing observations, and

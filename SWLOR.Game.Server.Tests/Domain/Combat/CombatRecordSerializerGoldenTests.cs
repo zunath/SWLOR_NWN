@@ -10,11 +10,11 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Tests.Domain.Combat;
 
 /// <summary>
-/// One golden JSON line per event type of <c>CombatRecordSerializer.Write</c> (P5-7b): all 23 types, each built with every
+/// One golden JSON line per event type of <c>CombatRecordSerializer.Write</c>: all 23 types, each built with every
 /// field the type writes set to a distinct value, compared whole against the committed text, plus the variants that take a
 /// different branch (no location, a null ability, a permanent duration, an interrupter, a missing item). The existing
 /// serializer tests build 19 types and assert parsed fields; this pins the bytes, so the cut of <c>Write</c> into four
-/// methods (P5-7c) cannot change a field name, an order or a number format. Regenerate with <c>SWLOR_UPDATE_SNAPSHOTS=1</c>
+/// methods cannot change a field name, an order or a number format. Regenerate with <c>SWLOR_UPDATE_SNAPSHOTS=1</c>
 /// only for a deliberate change.
 /// </summary>
 [TestFixture]

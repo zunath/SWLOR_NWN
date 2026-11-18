@@ -6,8 +6,8 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// <summary>
 /// The reading half of a source reader like <see cref="StatusEffectSource"/>: the files a service lives in (its own file first,
 /// then each part the split moves out), read as they are apart from the receiver of a call through a field of a part interface,
-/// which the code called on its own instance before the move. <see cref="EnmitySource"/> and <see cref="DeathSource"/> hold one each
-/// (P5-7b), so a PR that moves a part adds its file to one list and no test names a path.
+/// which the code called on its own instance before the move. <see cref="EnmitySource"/> and <see cref="DeathSource"/> hold one each,
+/// so a PR that moves a part adds its file to one list and no test names a path.
 /// </summary>
 public sealed class PartSourceFiles
 {

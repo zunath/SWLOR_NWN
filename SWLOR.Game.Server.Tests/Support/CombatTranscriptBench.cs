@@ -22,7 +22,7 @@ using SWLOR.NWN.API.Testing;
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
-/// The bench of the P5-7b transcripts: the server's real container with recording stand-ins at its leaves, one engine
+/// The bench of the combat transcripts: the server's real container with recording stand-ins at its leaves, one engine
 /// fake whose writes are recorded in order, a clock held still and the shared <c>Random</c> replaced by a seeded generator
 /// that records every draw. A transcript is the one ordered list of what the code under test did: each call into a leaf
 /// service with its arguments, each engine write, each random draw, and what it returned. The tests call the services

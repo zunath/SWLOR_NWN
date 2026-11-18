@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Line window: the fight a fishing bite starts.</summary>
     public class LineDefinition : IGuiWindowDefinition
     {
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 620f;
+
         private const float StatusTextHeight = 66f;
         private const float ActionButtonWidth = 130f;
         private const float ActionButtonHeight = 32f;
@@ -75,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Line)
-                .SetInitialGeometry(0, 0, 620f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("On the Line")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Kitchen window: every Agriculture recipe is cooked here.</summary>
     public class KitchenDefinition : IGuiWindowDefinition
     {
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 700f;
+
         public const string HelpText =
             "GOAL\n" +
             "Steer the dish's flavor into the recipe's target zone while it cooks, then finish cooking it. " +
@@ -68,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Kitchen)
-                .SetInitialGeometry(0f, 0f, 700f, 680f)
+                .SetInitialGeometry(0f, 0f, WindowWidth, 680f)
                 .SetTitle("Kitchen")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

@@ -12,6 +12,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Search window: the board a scavenge site opens.</summary>
     public class SearchDefinition : IGuiWindowDefinition
     {
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 620f;
+
         private const float StatusTextHeight = 66f;
         private const float SpotWidth = 170f;
         private const float SpotHeight = 56f;
@@ -66,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Search)
-                .SetInitialGeometry(0, 0, 620f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("Search the Site")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

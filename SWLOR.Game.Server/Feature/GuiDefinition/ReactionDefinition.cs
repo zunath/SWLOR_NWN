@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Reaction window: Espionage's poison and trap crafting.</summary>
     public class ReactionDefinition : IGuiWindowDefinition
     {
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 640f;
+
         private const float StatusTextHeight = 66f;
         private const float ActionButtonWidth = 130f;
         private const float ActionButtonHeight = 32f;
@@ -64,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Reaction)
-                .SetInitialGeometry(0, 0, 640f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("Reaction Bench")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

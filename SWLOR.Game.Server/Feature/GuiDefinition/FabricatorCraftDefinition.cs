@@ -11,6 +11,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Fabrication crafting window: the Fabricator minigame.</summary>
     public class FabricatorCraftDefinition : IGuiWindowDefinition
     {
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 740f;
+
         /// <summary>Two wrapped lines: a summary or threshold line that runs past one line in the default window.</summary>
         private const float TwoLineTextHeight = 44f;
         private const float SlotRowHeight = 30f;
@@ -68,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.CraftFabricator)
-                .SetInitialGeometry(0, 0, 740f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("Fabricator")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

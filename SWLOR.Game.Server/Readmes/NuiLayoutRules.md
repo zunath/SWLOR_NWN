@@ -157,7 +157,10 @@ borderless `AddText` tall enough for its lines at the default window width (a te
 cell takes the list's row height); a label clips at the panel edge however wide the window
 is. In such a panel, verified in the client 2026-11: when several labels share a row, give
 each one a width (otherwise the first takes the whole row and the rest are cut to nothing),
-and give every list a height (otherwise it collapses to a sliver).
+and give every list a height (otherwise it collapses to a sliver). The text boxes are sized for the
+default width, so a narrower window cuts text off: these windows keep their default width
+as a minimum (`CraftMinigameViewModel.MinimumWindowWidth`, the way Settings keeps its
+minimum size).
 
 ### R6 — Re-select the current tab after any modal closes (framework hook)
 Closing `ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back into the root with

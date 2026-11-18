@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Plasma Forge: the window every Smithery recipe is crafted in.</summary>
     public class ForgeDefinition : IGuiWindowDefinition
     {
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 680f;
+
         /// <summary>Two wrapped lines: a status line such as the Thermal zone, a perk summary or the enhancement thresholds.</summary>
         private const float TwoLineTextHeight = 44f;
         private const float ButtonWidth = 190f;
@@ -61,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Forge)
-                .SetInitialGeometry(0, 0, 680f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("Plasma Forge")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

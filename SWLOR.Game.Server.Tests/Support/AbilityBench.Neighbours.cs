@@ -45,6 +45,19 @@ public sealed partial class AbilityBench
             .On("GetStatusEffect", args => ActiveEffects.GetValueOrDefault(((uint)args[0]!, (Type)args[1]!)))
             .On("HasStatusEffect", args => ActiveEffects.ContainsKey(((uint)args[0]!, (Type)args[1]!)))
             .On("HasStatusEffectCategory", args => (TypeCategories & (StatusEffectCategory)args[1]!) == (StatusEffectCategory)args[1]! && TypeCategories != StatusEffectCategory.None)
+            .On("RemoveStatusEffect", args =>
+            {
+                Log.Add($"RemoveStatus:{args[0]}:{((Type)args[1]!).Name}:{args[2]}:{args[3]}");
+                ActiveEffects.Remove(((uint)args[0]!, (Type)args[1]!));
+                return null;
+            });
+        return service;
+    }
+
+    private IStatusEffectCombatEventService StatusCombatEvents()
+    {
+        var service = ScriptedProxy.Create<IStatusEffectCombatEventService>(out var proxy);
+        proxy
             .On("NotifyAttackAttemptStatusEffects", args =>
             {
                 Log.Add($"NotifyAttackAttempt:{args[0]}:{args[1]}");
@@ -58,12 +71,6 @@ public sealed partial class AbilityBench
             .On("NotifyPreDamageStatusEffects", args =>
             {
                 Log.Add($"NotifyPreDamage:{args[0]}:{args[1]}:{args[2]}:{args[3]}");
-                return null;
-            })
-            .On("RemoveStatusEffect", args =>
-            {
-                Log.Add($"RemoveStatus:{args[0]}:{((Type)args[1]!).Name}:{args[2]}:{args[3]}");
-                ActiveEffects.Remove(((uint)args[0]!, (Type)args[1]!));
                 return null;
             });
         return service;

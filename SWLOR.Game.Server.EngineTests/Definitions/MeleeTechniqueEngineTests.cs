@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var cost = ability.Requirements.OfType<AbilityRequirementStamina>().Single().RequiredSTM;
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical, CombatDamageDeliveryType.DamageOverTime);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical, CombatDamageDeliveryType.DamageOverTime);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
             });
             ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "periodic damage cannot charge Payback");
@@ -304,7 +304,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "triggered and reflected damage cannot charge Payback");
             await ctx.ExecuteInCreatureContextAsync(caster, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(caster, caster, 5, CombatDamageType.Physical);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(caster, caster, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
             });
             ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "self damage cannot charge Payback");
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(20, TemporaryHitPointEffects.GetRemaining(caster), "native temporary pool starts at twenty");
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
             });
             ctx.Log($"NATIVE_TEMP_HP Payback after absorbed5 HP={GetCurrentHitPoints(caster)}, temporary={TemporaryHitPointEffects.GetRemaining(caster)}");
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "temporary HP absorption is not HP damage");
             await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(attacker, caster, 25, CombatDamageType.Physical);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(attacker, caster, 25, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(25), caster);
             });
             ctx.Log($"NATIVE_TEMP_HP Payback after spillover25 HP={GetCurrentHitPoints(caster)}, temporary={TemporaryHitPointEffects.GetRemaining(caster)}");
@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, 3, false), "paid activation consumes charge");
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
-                    StatusEffect.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical);
+                    StatusEffectCombatEvent.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical);
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
                 });
                 ctx.AssertEqual(0, MeleeTechnique.GetStaminaDiscount(caster, ability, cost, false), "another hit cannot bypass the preserved eighteen-second trigger gate");
@@ -659,7 +659,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, caster), "self damage cannot grant a counter");
                 await ctx.ExecuteInCreatureContextAsync(target, () =>
                 {
-                    StatusEffect.NotifyPreDamageStatusEffects(target, caster, 5, CombatDamageType.Physical, CombatDamageDeliveryType.DamageOverTime);
+                    StatusEffectCombatEvent.NotifyPreDamageStatusEffects(target, caster, 5, CombatDamageType.Physical, CombatDamageDeliveryType.DamageOverTime);
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
                 });
                 ctx.AssertEqual(0, MeleeTechnique.GetPendingRetaliationPower(caster, target), "periodic damage cannot grant a counter");
@@ -692,7 +692,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             async Task DirectHit(uint attacker, int damage) => await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(attacker, caster, damage, CombatDamageType.Physical);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(attacker, caster, damage, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), caster);
             });
         }
@@ -865,7 +865,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             async Task DirectHit() => await ctx.ExecuteInCreatureContextAsync(attacker, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(attacker, caster, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
             });
         }
@@ -932,7 +932,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             async Task DirectHit() => await ctx.ExecuteInCreatureContextAsync(target, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(target, caster, 5, CombatDamageType.Physical);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(target, caster, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), caster);
             });
         }

@@ -108,6 +108,7 @@ public class CombatDamageTakenServiceTests
             ICombatRatingService combatRating,
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusApplication,
+            IStatusEffectCombatEventService statusCombat,
             ITemporaryStatModifierService temporaryStatModifier,
             ICombatRecorderService combatRecorder,
             IPvpCombatService pvpCombat,
@@ -115,7 +116,7 @@ public class CombatDamageTakenServiceTests
             IMessagingService messaging,
             IPlayerNameService playerName)
             : base(feedback, queries, resources, attackTiming, combatActivity, damageModifiers, abilityHit, hitEffects, stat, combatRating,
-                statusEffect, statusApplication, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName, FacadeForwarder.LazyFor<ICombatService>())
+                statusEffect, statusApplication, statusCombat, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName, FacadeForwarder.LazyFor<ICombatService>())
         {
             _log = log;
             _calculated = calculated;
@@ -339,8 +340,9 @@ public class CombatDamageTakenServiceTests
         statusCalls
             .On(nameof(IStatusEffectService.GetStatusEffectSourceWithStat), args => _statusSources.GetValueOrDefault((StatType)args[1]!, NWScript.OBJECT_INVALID))
             .On(nameof(IStatusEffectService.RemoveStatusEffectsWithStat), args => Log($"RemoveWithStat {args[0]} {args[1]} {args[2]}"))
-            .On(nameof(IStatusEffectService.ConsumeStatusEffectStat), args => Log($"ConsumeStat {args[0]} {args[1]}"))
-            .On(nameof(IStatusEffectService.OnGuardedHit), args => Log($"OnGuarded {args[0]} {args[1]} {args[2]}"));
+            .On(nameof(IStatusEffectService.ConsumeStatusEffectStat), args => Log($"ConsumeStat {args[0]} {args[1]}"));
+        var statusCombat = ScriptedProxy.Create<IStatusEffectCombatEventService>(out var statusCombatCalls);
+        statusCombatCalls.On(nameof(IStatusEffectCombatEventService.OnGuardedHit), args => Log($"OnGuarded {args[0]} {args[1]} {args[2]}"));
         var statusApplication = ScriptedProxy.Create<IStatusEffectApplicationService>(out var statusApplicationCalls);
         statusApplicationCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), args =>
             {
@@ -408,7 +410,7 @@ public class CombatDamageTakenServiceTests
         playerNameCalls.On(nameof(IPlayerNameService.GetColoredDisplayName), args => $"<{args[0]}:{args[1]}>");
 
         return new TestDamageTaken(_log, () => _calculated, feedback, queries, resources, timing, activity, modifiers, abilityHit, hitEffects,
-            stat, rating, statusEffect, statusApplication, temporary, recorder, pvp, enmity, messaging, playerName);
+            stat, rating, statusEffect, statusApplication, statusCombat, temporary, recorder, pvp, enmity, messaging, playerName);
     }
 
     [TearDown]

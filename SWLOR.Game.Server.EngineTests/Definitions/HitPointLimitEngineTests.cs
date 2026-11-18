@@ -320,12 +320,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Status hooks see each hit before the pool absorbs it; these notifications drive
             // only the status, so its healing shows how much shield it still tracks.
             var baseHitPoints = ObjectPlugin.GetCurrentHitPoints(npc);
-            StatusEffect.NotifyDamageStatusEffects(attacker, npc, 2000, CombatDamageType.Physical);
+            StatusEffectCombatEvent.NotifyDamageStatusEffects(attacker, npc, 2000, CombatDamageType.Physical);
             await ctx.WaitFrameAsync();
             var firstHeal = CombatResources.ApplyHealingReceivedAdjustment(npc, GameMath.PercentOf(2000, 15));
             ctx.AssertEqual(baseHitPoints + firstHeal, ObjectPlugin.GetCurrentHitPoints(npc), "healing from a hit inside the trimmed shield");
 
-            StatusEffect.NotifyDamageStatusEffects(attacker, npc, 1000, CombatDamageType.Physical);
+            StatusEffectCombatEvent.NotifyDamageStatusEffects(attacker, npc, 1000, CombatDamageType.Physical);
             await ctx.WaitFrameAsync();
             var secondHeal = CombatResources.ApplyHealingReceivedAdjustment(npc, GameMath.PercentOf(Headroom - 2000, 15));
             ctx.AssertEqual(baseHitPoints + firstHeal + secondHeal, ObjectPlugin.GetCurrentHitPoints(npc),

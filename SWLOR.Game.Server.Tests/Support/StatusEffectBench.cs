@@ -26,7 +26,8 @@ public sealed partial class StatusEffectBench : IDisposable
     private readonly IDisposable _creaturePluginScope;
     private readonly HashSet<object> _ranClosures = new(ReferenceEqualityComparer.Instance);
     private readonly Func<TestStatusEffectService> _createService;
-    private readonly Func<TestStatusEffectService, TestStatusEffectApplicationService> _createApplication;
+    private readonly Func<TestStatusEffectService, TestStatusEffectDurationService, TestStatusEffectCombatEventService, TestStatusEffectApplicationService> _createApplication;
+    private readonly Func<TestStatusEffectService, TestStatusEffectDurationService> _createDuration;
 
     public StatusEffectBench()
     {
@@ -92,10 +93,14 @@ public sealed partial class StatusEffectBench : IDisposable
         });
 
         Catalog = new TestStatusEffectCatalogService(this);
-        _createService = () => new TestStatusEffectService(this, resistance, Catalog, recorder, messaging, playerName, gui);
-        _createApplication = service => new TestStatusEffectApplicationService(this, service, Catalog, messaging, playerName);
+        _createService = () => new TestStatusEffectService(this, Catalog, messaging, playerName, gui);
+        _createDuration = service => new TestStatusEffectDurationService(this, service, resistance, recorder);
+        _createApplication = (service, duration, combatEvents) =>
+            new TestStatusEffectApplicationService(this, service, Catalog, messaging, playerName, duration, combatEvents);
         Service = _createService();
-        Application = _createApplication(Service);
+        Duration = _createDuration(Service);
+        CombatEvents = new TestStatusEffectCombatEventService(this, Service);
+        Application = _createApplication(Service, Duration, CombatEvents);
         Session = new TestStatusEffectSessionService(this, Service, Application, Catalog, Db);
         Service.RegisterLoggedOutSource(Session);
         Service.RegisterMeleeListener(new StatusEffectListenerStandIns.Melee(Log));
@@ -122,7 +127,8 @@ public sealed partial class StatusEffectBench : IDisposable
     public TestStatusEffectService CreateServiceWithoutListeners() => _createService();
 
     /// <summary>The application part over another tracker part, such as the one with no listener registered.</summary>
-    public TestStatusEffectApplicationService CreateApplicationOver(TestStatusEffectService service) => _createApplication(service);
+    public TestStatusEffectApplicationService CreateApplicationOver(TestStatusEffectService service) =>
+        _createApplication(service, _createDuration(service), new TestStatusEffectCombatEventService(this, service));
 
     // One accessor per part of the status effect split (Readmes/MaintainabilityRefactorStatusEffectSplit.md). A test calls each
     // member through its part's accessor. Until a part moves, its accessor is the one TestStatusEffectService; the pull request
@@ -134,14 +140,14 @@ public sealed partial class StatusEffectBench : IDisposable
     /// <summary>Part 3, <c>StatusEffectApplicationService</c> (P5-5f): applying an effect.</summary>
     public TestStatusEffectApplicationService Application { get; }
 
-    /// <summary>Part 4, <c>StatusEffectDurationService</c>: timing, refresh, restart and extension.</summary>
-    public TestStatusEffectService Duration => Service;
+    /// <summary>Part 4, <c>StatusEffectDurationService</c> (P5-5g): timing, refresh, restart and extension.</summary>
+    public TestStatusEffectDurationService Duration { get; }
 
     /// <summary>Part 5, <c>StatusEffectNativeService</c>: the native effects, the three effect scripts and the ticks.</summary>
     public TestStatusEffectService Native => Service;
 
-    /// <summary>Part 6, <c>StatusEffectCombatEventService</c>: damage and attack notices and the native attack swing.</summary>
-    public TestStatusEffectService CombatEvents => Service;
+    /// <summary>Part 6, <c>StatusEffectCombatEventService</c> (P5-5g): damage and attack notices and the native attack swing.</summary>
+    public TestStatusEffectCombatEventService CombatEvents { get; }
 
     /// <summary>Part 7, <c>StatusEffectSessionService</c>: login, logout, restart and reload.</summary>
     public TestStatusEffectSessionService Session { get; }

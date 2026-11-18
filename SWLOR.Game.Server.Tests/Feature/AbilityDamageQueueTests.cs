@@ -189,7 +189,7 @@ public class AbilityDamageQueueTests
         flushBody.Should().Contain("EffectDamage(effect.Damage, effect.DamageType)");
 
         var preDamageValidation = flushBody.IndexOf(
-            "_statusEffect.NotifyPreDamageStatusEffects(",
+            "_statusEffectCombatEvents.NotifyPreDamageStatusEffects(",
             StringComparison.Ordinal);
         var damageApplication = flushBody.IndexOf(
             "EffectDamage(effect.Damage, effect.DamageType)",

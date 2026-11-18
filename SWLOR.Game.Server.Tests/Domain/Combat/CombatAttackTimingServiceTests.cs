@@ -75,14 +75,14 @@ public class CombatAttackTimingServiceTests
         var stat = ScriptedProxy.Create<IStatService>(out var statCalls);
         statCalls.On(nameof(IStatService.GetStatAdjustment), args => _stats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)));
         var statusEffect = ScriptedProxy.Create<IStatusEffectService>(out var statusCalls);
-        statusCalls
-            .On(nameof(IStatusEffectService.TryGetLimitedAttackDelayReduction), args =>
-            {
-                args[2] = _limited.Percent;
-                args[3] = 3;
-                return _limited.Has;
-            })
-            .On(nameof(IStatusEffectService.HasStatusEffectCategory), _ => _bleeding);
+        statusCalls.On(nameof(IStatusEffectService.HasStatusEffectCategory), _ => _bleeding);
+        var statusCombat = ScriptedProxy.Create<IStatusEffectCombatEventService>(out var statusCombatCalls);
+        statusCombatCalls.On(nameof(IStatusEffectCombatEventService.TryGetLimitedAttackDelayReduction), args =>
+        {
+            args[2] = _limited.Percent;
+            args[3] = 3;
+            return _limited.Has;
+        });
         var temporary = ScriptedProxy.Create<ITemporaryStatModifierService>(out var temporaryCalls);
         temporaryCalls
             .On(nameof(ITemporaryStatModifierService.GetStatAdjustment), args =>
@@ -108,7 +108,7 @@ public class CombatAttackTimingServiceTests
         var playerName = ScriptedProxy.Create<IPlayerNameService>(out var nameCalls);
         nameCalls.On(nameof(IPlayerNameService.GetDisplayName), args => $"name of {args[1]} for {args[0]}");
 
-        _service = new CombatAttackTimingService(queries, stat, statusEffect, temporary, twinPistols, feedback, playerName);
+        _service = new CombatAttackTimingService(queries, stat, statusEffect, statusCombat, temporary, twinPistols, feedback, playerName);
     }
 
     [TearDown]

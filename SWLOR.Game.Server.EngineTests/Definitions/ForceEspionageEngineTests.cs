@@ -73,7 +73,7 @@ public static class ForceEspionageEngineTests
         ctx.Assert(GetActionMode(player.Creature, ActionMode.Stealth), "the player stays in stealth");
 
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            StatusEffect.NotifyDamageStatusEffects(player.Creature, observer, 1, CombatDamageType.Physical));
+            StatusEffectCombatEvent.NotifyDamageStatusEffects(player.Creature, observer, 1, CombatDamageType.Physical));
         ctx.Assert(!StatusEffect.HasStatusEffect<CloudedMindStatusEffect>(observer),
             "taking damage clears the observer's mind");
         ctx.Assert(CountDetections(observer, player.Creature, 20) > 0,

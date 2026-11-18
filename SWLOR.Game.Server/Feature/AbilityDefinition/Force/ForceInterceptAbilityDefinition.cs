@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_1), activator);
             AssignCommand(activator, () => ActionJumpToObject(friendly));
-            if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(ForceIntercept1StatusEffect), 30f))
+            if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(ForceIntercept1StatusEffect), 30f))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             LightGuardianPowerSupport.ApplyCourageousResolve(activator);

@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Domain.World
         private readonly IPvpCombatService _pvpCombat;
         private readonly ISkillService _skill;
         private readonly IStatService _stat;
-        private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffect;
 
         public TrapsService(
             IDBService db,
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Domain.World
             IPvpCombatService pvpCombat,
             ISkillService skill,
             IStatService stat,
-            IStatusEffectService statusEffect)
+            IStatusEffectApplicationService statusEffect)
         {
             _db = db;
             _ability = ability;

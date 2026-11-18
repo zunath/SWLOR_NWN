@@ -172,7 +172,7 @@ public class LeadershipCombatUpgradeTests
         var helperStart = cleanseOrder.IndexOf("private static void ApplyCommandAndTemporaryHP", StringComparison.Ordinal);
         helperStart.Should().BeGreaterThanOrEqualTo(0);
         var helperBody = cleanseOrder[helperStart..];
-        helperBody.IndexOf("StatusEffect.ApplyStatusEffect", StringComparison.Ordinal)
+        helperBody.IndexOf("StatusEffectApplication.ApplyStatusEffect", StringComparison.Ordinal)
             .Should().BeLessThan(helperBody.IndexOf("TemporaryHitPointEffects.ApplyFlatOwned", StringComparison.Ordinal),
                 "the marker must be accepted before its ID claims ownership of the temporary-HP pool");
         helperBody.Should().Contain("commandMarker.Id");

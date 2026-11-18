@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly IResistanceService _resistance;
         private readonly IStatService _stat;
         private readonly ICreatureStatService _creatureStat;
-        private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffect;
         private readonly ICombatDamageCatalogService _damageCatalog;
 
         public BeastMasteryService(
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             IResistanceService resistance,
             IStatService stat,
             ICreatureStatService creatureStat,
-            IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffect,
             ICombatDamageCatalogService damageCatalog)
         {
             _db = db;

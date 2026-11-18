@@ -91,6 +91,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>The status effect definitions the module cache finds and the creation of an effect by type (part 2 of the status effect split, P5-5c).</summary>
         public static IStatusEffectCatalogService StatusEffectCatalog => FacadeAccessor.Resolve<IStatusEffectCatalogService>();
 
+        /// <summary>What survives logout, a planned restart and a hot reload: the logged-out effects and the saved toggles (part 7 of the status effect split, P5-5e).</summary>
+        public static IStatusEffectSessionService StatusEffectSession => FacadeAccessor.Resolve<IStatusEffectSessionService>();
+
+        /// <summary>Applying a status effect: the apply family, its checks, conflicts and messages (part 3 of the status effect split, P5-5f).</summary>
+        public static IStatusEffectApplicationService StatusEffectApplication => FacadeAccessor.Resolve<IStatusEffectApplicationService>();
+
         /// <summary>
         /// Timed stat modifiers a creature carries (the facade <c>Service.TemporaryStatModifier</c> until P2-ZG). Combat and content
         /// write them and the stat read reads them, so they are Character's (P5-4b).

@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IAbilityImpactState _impactState;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ICombatQueriesService _queries;
         private readonly ICombatResourcesService _resources;
 
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IAbilityImpactState impactState,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             ICombatQueriesService queries,
             ICombatResourcesService resources)
         {
@@ -40,6 +42,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _impactState = impactState;
             _stat = stat;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _queries = queries;
             _resources = resources;
         }
@@ -468,6 +471,6 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual void ApplyStatusEffect(uint actor, IStatusEffect effect, float seconds) =>
-            _statusEffect.ApplyStatusEffect(actor, actor, effect, seconds);
+            _statusEffectApplication.ApplyStatusEffect(actor, actor, effect, seconds);
     }
 }

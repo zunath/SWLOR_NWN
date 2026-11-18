@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatResourcesService _resources;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IAbilityImpactState _impactState;
         private readonly IPlayerFeedbackService _playerFeedback;
@@ -39,6 +40,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatResourcesService resources,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState impactState,
             IPlayerFeedbackService playerFeedback,
@@ -48,6 +50,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _resources = resources;
             _stat = stat;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _temporaryStatModifier = temporaryStatModifier;
             _impactState = impactState;
             _playerFeedback = playerFeedback;
@@ -492,7 +495,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             // guarded above as positive), but ExposedStatusEffect writes its argument straight into
             // DefensePercentAdjustment. Passing the magnitude unchanged granted the target +20%
             // Defense instead of taking it away, so it must be negated here.
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 defender,
                 new ExposedStatusEffect(-exposedPercent),
@@ -557,7 +560,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect.RemoveStatusEffect(attacker, typeof(AttackCycleTrackerStatusEffect), false);
             if (trackerIcon != EffectIconType.Invalid)
             {
-                _statusEffect.ApplyStatusEffect(
+                _statusEffectApplication.ApplyStatusEffect(
                     attacker,
                     attacker,
                     new AttackCycleTrackerStatusEffect(
@@ -1178,7 +1181,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             // so it always reports the actual bonus that the next hit receives.
             var stackBonus = Math.Min(maxBonus, state.Stacks * bonusPerHit);
             _statusEffect.RemoveStatusEffect(attacker, typeof(SustainedFireStatusEffect), false);
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 attacker,
                 new SustainedFireStatusEffect(state.Stacks, maxStacks, stackBonus),
@@ -1317,7 +1320,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             state.ReadyUntil = now.AddSeconds(readyDurationSeconds);
             _sameTargetPressureStates[attacker] = state;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 attacker,
                 typeof(SpottersRhythmStatusEffect),

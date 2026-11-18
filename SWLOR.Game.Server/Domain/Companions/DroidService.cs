@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Domain.Companions
         private readonly IRecastService _recast;
         private readonly IResistanceService _resistance;
         private readonly ICreatureStatService _stat;
-        private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffect;
         private readonly ITwinPistolEquipmentService _twinPistolEquipment;
 
         public DroidService(
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Domain.Companions
             IRecastService recast,
             IResistanceService resistance,
             ICreatureStatService stat,
-            IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffect,
             ITwinPistolEquipmentService twinPistolEquipment)
         {
             _ai = ai;

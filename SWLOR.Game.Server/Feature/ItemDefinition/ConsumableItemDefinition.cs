@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     var maxHP = GetMaxHitPoints(user);
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(maxHP), user);
-                    StatusEffect.ApplyStatusEffect(user, user, new SlugShakePenaltyStatusEffect(ability), 120f);
+                    StatusEffectApplication.ApplyStatusEffect(user, user, new SlugShakePenaltyStatusEffect(ability), 120f);
                 });
         }
 
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             // Crafted food keeps the extra duration its quality earned in seconds, finer than the 5-minute steps of a property.
             duration += GetLocalInt(item, CraftOutcomeRules.FoodDurationBonusSecondsVariable);
 
-            StatusEffect.ApplyStatusEffect(user, user, new FoodStatusEffect(foodEffect), duration);
+            StatusEffectApplication.ApplyStatusEffect(user, user, new FoodStatusEffect(foodEffect), duration);
         }
 
         private static void AddFoodBonus(FoodEffectData foodEffect, FoodItemPropertySubType bonusType, int amount, ref float duration)
@@ -276,7 +276,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SendMessageToPC(user, "Your beast doesn't like this food very much...");
                     }
 
-                    StatusEffect.ApplyStatusEffect(user, beast, new PetFoodStatusEffect(xpBonus), 1800f);
+                    StatusEffectApplication.ApplyStatusEffect(user, beast, new PetFoodStatusEffect(xpBonus), 1800f);
 
                     Item.ReduceItemStack(item, 1);
                 });

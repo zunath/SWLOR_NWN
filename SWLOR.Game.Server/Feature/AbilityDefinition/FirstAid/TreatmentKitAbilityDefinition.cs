@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 StatusEffect.RemoveCleanseableStatusEffects(friendly, StatusEffectCleanseType.TreatmentKit2, false);
                 if (StatusEffect.GetCreatureStatusEffects(friendly).GetAllEffects().Count < statusCountBeforeCleanse)
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(AilmentResistance3StatusEffect), 30f))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(AilmentResistance3StatusEffect), 30f))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);

@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void LastStandOfTheLight1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
-            if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(LastStandOfTheLight1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
+            if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(LastStandOfTheLight1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
         }

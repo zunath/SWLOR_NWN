@@ -26,6 +26,7 @@ public sealed partial class StatusEffectBench : IDisposable
     private readonly IDisposable _creaturePluginScope;
     private readonly HashSet<object> _ranClosures = new(ReferenceEqualityComparer.Instance);
     private readonly Func<TestStatusEffectService> _createService;
+    private readonly Func<TestStatusEffectService, TestStatusEffectApplicationService> _createApplication;
 
     public StatusEffectBench()
     {
@@ -91,8 +92,12 @@ public sealed partial class StatusEffectBench : IDisposable
         });
 
         Catalog = new TestStatusEffectCatalogService(this);
-        _createService = () => new TestStatusEffectService(this, resistance, Catalog, recorder, messaging, playerName, gui, Db);
+        _createService = () => new TestStatusEffectService(this, resistance, Catalog, recorder, messaging, playerName, gui);
+        _createApplication = service => new TestStatusEffectApplicationService(this, service, Catalog, messaging, playerName);
         Service = _createService();
+        Application = _createApplication(Service);
+        Session = new TestStatusEffectSessionService(this, Service, Application, Catalog, Db);
+        Service.RegisterLoggedOutSource(Session);
         Service.RegisterMeleeListener(new StatusEffectListenerStandIns.Melee(Log));
         Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Impact(Log));
         Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Capstone(Log));
@@ -116,6 +121,9 @@ public sealed partial class StatusEffectBench : IDisposable
     /// <summary>A second instance with the same neighbours and no listener registered, as the container builds it before the boot handlers run.</summary>
     public TestStatusEffectService CreateServiceWithoutListeners() => _createService();
 
+    /// <summary>The application part over another tracker part, such as the one with no listener registered.</summary>
+    public TestStatusEffectApplicationService CreateApplicationOver(TestStatusEffectService service) => _createApplication(service);
+
     // One accessor per part of the status effect split (Readmes/MaintainabilityRefactorStatusEffectSplit.md). A test calls each
     // member through its part's accessor. Until a part moves, its accessor is the one TestStatusEffectService; the pull request
     // that moves it gives the accessor its own double, and the tests change nowhere.
@@ -123,8 +131,8 @@ public sealed partial class StatusEffectBench : IDisposable
     /// <summary>Part 2, <c>StatusEffectCatalogService</c>: the definition cache and the creation of effects by type.</summary>
     public TestStatusEffectCatalogService Catalog { get; }
 
-    /// <summary>Part 3, <c>StatusEffectApplicationService</c>: applying an effect.</summary>
-    public TestStatusEffectService Application => Service;
+    /// <summary>Part 3, <c>StatusEffectApplicationService</c> (P5-5f): applying an effect.</summary>
+    public TestStatusEffectApplicationService Application { get; }
 
     /// <summary>Part 4, <c>StatusEffectDurationService</c>: timing, refresh, restart and extension.</summary>
     public TestStatusEffectService Duration => Service;
@@ -136,7 +144,7 @@ public sealed partial class StatusEffectBench : IDisposable
     public TestStatusEffectService CombatEvents => Service;
 
     /// <summary>Part 7, <c>StatusEffectSessionService</c>: login, logout, restart and reload.</summary>
-    public TestStatusEffectService Session => Service;
+    public TestStatusEffectSessionService Session { get; }
 
     /// <summary>Everything the service did outside itself, in order.</summary>
     public List<string> Log { get; } = new();

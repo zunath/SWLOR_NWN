@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void RampartHide1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            StatusEffect.ApplyStatusEffect(activator, activator, typeof(RampartHide1StatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(activator, activator, typeof(RampartHide1StatusEffect), 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), activator);
         }
 

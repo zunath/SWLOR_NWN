@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyForceDamageOverTime(uint activator, uint target, int immobilizeSeconds, int totalDamage)
         {
-            if (StatusEffect.ApplyStatusEffect(
+            if (StatusEffectApplication.ApplyStatusEffect(
                 activator,
                 target,
                 new ForceChokeDamageStatusEffect(totalDamage),

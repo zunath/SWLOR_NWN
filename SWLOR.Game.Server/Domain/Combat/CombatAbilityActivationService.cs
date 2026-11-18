@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatDamageTakenService _damageTaken;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IAbilityImpactState _impactState;
         private readonly IPerkService _perk;
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatDamageTakenService damageTaken,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState impactState,
             IPerkService perk,
@@ -63,6 +65,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _damageTaken = damageTaken;
             _stat = stat;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _temporaryStatModifier = temporaryStatModifier;
             _impactState = impactState;
             _perk = perk;
@@ -285,7 +288,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 typeof(HostileAbilityForceAttackStatusEffect)) as HostileAbilityForceAttackStatusEffect;
             var total = Math.Min(maximum, (current?.ForceAttack ?? 0) + forceAttack);
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 activator,
                 activator,
                 new HostileAbilityForceAttackStatusEffect(total),
@@ -356,7 +359,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 StatType.HostileAbilityUsedAttackPercentAdjustment);
             if (currentTotal > 0)
             {
-                _statusEffect.ApplyStatusEffect(
+                _statusEffectApplication.ApplyStatusEffect(
                     activator,
                     activator,
                     new ButchersTempoStatusEffect(currentTotal),
@@ -447,7 +450,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
 
             var poolGeneration = TemporaryHitPointEffects.GetGrantGeneration(activator, TemporaryHitPointEffectKey.GuardiansResolve);
-            _statusEffect.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount, poolGeneration), duration);
+            _statusEffectApplication.ApplyStatusEffect(activator, activator, new GuardiansResolveStatusEffect(shieldAmount, poolGeneration), duration);
         }
 
         private void ApplyHeavyVibrobladeActivatedEffects(
@@ -518,7 +521,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             var evasion = rank >= 2 ? 20 : 10;
             var enmity = rank >= 2 ? -25 : -15;
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 activator,
                 activator,
                 new EvasiveCombatStatusEffect(-15, evasion, enmity),
@@ -576,7 +579,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
             }
 
-            _statusEffect.ApplyStatusEffect(activator, activator, new CenteringStatusEffect(accuracy), duration);
+            _statusEffectApplication.ApplyStatusEffect(activator, activator, new CenteringStatusEffect(accuracy), duration);
 
             var enmityReduction = _stat.GetStatAdjustment(activator, StatType.LightsaberOffenseCenteringEnmityReductionPercent);
             if (enmityReduction > 0 && GetIsObjectValid(target))
@@ -730,7 +733,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
             }
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 activator,
                 activator,
                 new GuardingStepStatusEffect(evasion, defense, forceDefense),
@@ -765,7 +768,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f))
             {
-                _statusEffect.ApplyStatusEffect(
+                _statusEffectApplication.ApplyStatusEffect(
                     activator,
                     friendly,
                     new SentinelGuardStatusEffect(attackDeflection, selfEnmity, deflectionStatType),
@@ -786,7 +789,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             if (_stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseHitPointSpendSoulSacrifice) > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, activator, typeof(SoulSacrificeStatusEffect), 30f);
+                _statusEffectApplication.ApplyStatusEffect(activator, activator, typeof(SoulSacrificeStatusEffect), 30f);
             }
 
             if (_stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeOffenseSoulAscension) > 0)
@@ -860,13 +863,13 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (_stat.GetStatAdjustment(activator, StatType.ForcePrecognition) > 0 &&
                 _resources.TryUseStatTrigger(activator, StatType.ForcePrecognition, 12))
             {
-                _statusEffect.ApplyStatusEffect(activator, activator, typeof(DangerSenseStatusEffect), 30f);
+                _statusEffectApplication.ApplyStatusEffect(activator, activator, typeof(DangerSenseStatusEffect), 30f);
             }
 
             if (_stat.GetStatAdjustment(activator, StatType.ForceConvergence) > 0 &&
                 _resources.TryUseStatTrigger(activator, StatType.ForceConvergence, 45))
             {
-                _statusEffect.ApplyStatusEffect(activator, activator, typeof(ForceConvergenceStatusEffect), 30f);
+                _statusEffectApplication.ApplyStatusEffect(activator, activator, typeof(ForceConvergenceStatusEffect), 30f);
             }
         }
 
@@ -989,7 +992,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (evasionPercent == 0 || duration <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 activator,
                 activator,
                 new EvasiveFootworkStatusEffect(evasionPercent),
@@ -1023,7 +1026,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (deflection <= 0 || duration <= 0 || statusEffectIcon == EffectIconType.Invalid)
                 return;
 
-            if (_statusEffect.ApplyStatusEffect(
+            if (_statusEffectApplication.ApplyStatusEffect(
                     activator,
                     activator,
                     new RangedDeflectionStatusEffect(deflection, statusEffectIcon),

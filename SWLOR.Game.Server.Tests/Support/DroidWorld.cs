@@ -77,7 +77,7 @@ public sealed class DroidWorld : IDisposable
         ResistanceCalls = resistance;
         Stat = Proxy<ICreatureStatService>(out var stat);
         StatCalls = stat;
-        StatusEffect = Proxy<IStatusEffectService>(out var statusEffect);
+        StatusEffect = Proxy<IStatusEffectApplicationService>(out var statusEffect);
         StatusEffectCalls = statusEffect;
         Twin = Proxy<ITwinPistolEquipmentService>(out var twin);
         TwinCalls = twin;
@@ -148,7 +148,7 @@ public sealed class DroidWorld : IDisposable
     public IRecastService Recast { get; }
     public IResistanceService Resistance { get; }
     public ICreatureStatService Stat { get; }
-    public IStatusEffectService StatusEffect { get; }
+    public IStatusEffectApplicationService StatusEffect { get; }
     public ITwinPistolEquipmentService Twin { get; }
 
     public ScriptedProxy AiCalls { get; }

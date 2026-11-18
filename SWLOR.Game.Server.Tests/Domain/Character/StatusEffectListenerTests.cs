@@ -78,7 +78,7 @@ public class StatusEffectListenerTests : StatusEffectServiceTestBase
         var bare = Bench.CreateServiceWithoutListeners();
         var effect = Probe<ProbeEffect>();
 
-        var apply = () => bare.ApplyStatusEffect(Caster, Target, effect, 10f);
+        var apply = () => Bench.CreateApplicationOver(bare).ApplyStatusEffect(Caster, Target, effect, 10f);
 
         apply.Should().Throw<InvalidOperationException>().WithMessage("*applied listener*");
     }
@@ -91,5 +91,17 @@ public class StatusEffectListenerTests : StatusEffectServiceTestBase
         var notify = () => bare.NotifyPreDamageStatusEffects(Caster, Target, 7, CombatDamageType.Fire, CombatDamageDeliveryType.Direct);
 
         notify.Should().Throw<InvalidOperationException>().WithMessage("*melee listener*");
+    }
+
+    [Test]
+    public void ARemovalBySourceWithNoLoggedOutHolderRegisteredThrows()
+    {
+        var bare = Bench.CreateServiceWithoutListeners();
+
+        var bySource = () => bare.RemoveStatusEffectsFromAllTargetsBySource(Caster, typeof(ProbeEffect), false);
+        var whenExits = () => bare.RemoveStatusEffectsFromAllTargetsWhenSourceExits(Caster);
+
+        bySource.Should().Throw<InvalidOperationException>().WithMessage("*logged-out holder*");
+        whenExits.Should().Throw<InvalidOperationException>().WithMessage("*logged-out holder*");
     }
 }

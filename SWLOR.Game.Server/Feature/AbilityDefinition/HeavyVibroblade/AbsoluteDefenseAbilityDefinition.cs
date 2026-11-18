@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                         if (!GetIsObjectValid(partyMember))
                             continue;
 
-                        if (StatusEffect.ApplyStatusEffect(activator, partyMember, typeof(AbsoluteDefenseStatusEffect), CapstoneAbility.ActiveDurationSeconds))
+                        if (StatusEffectApplication.ApplyStatusEffect(activator, partyMember, typeof(AbsoluteDefenseStatusEffect), CapstoneAbility.ActiveDurationSeconds))
                             Ability.PlaySuccessfulImpactVisualEffect(activator, partyMember);
                         AbilityImmunity.ApplyTemporaryImmunity(partyMember, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Knockdown);
                         AbilityImmunity.ApplyTemporaryImmunity(partyMember, CapstoneAbility.ActiveDurationSeconds, ImmunityType.Dazed);

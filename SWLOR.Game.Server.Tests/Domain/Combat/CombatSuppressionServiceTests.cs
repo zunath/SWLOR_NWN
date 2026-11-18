@@ -74,19 +74,6 @@ public class CombatSuppressionServiceTests
         var statusEffect = ScriptedProxy.Create<IStatusEffectService>(out var statusCalls);
         statusCalls
             .On(nameof(IStatusEffectService.GetCreatureStatusEffects), args => Effects((uint)args[0]!))
-            .On(nameof(IStatusEffectService.ApplyStatusEffect), args =>
-            {
-                var effect = (StatusEffectBase)args[2]!;
-                _statusCalls.Add($"Apply {args[0]} {args[1]} {effect.GetType().Name} {args[3]}" +
-                                 (args.Length > 4 && args[4] is CombatDamageType damageType ? $" {damageType}" : string.Empty));
-                if (!_applySucceeds)
-                    return false;
-                effect.ReassignSource((uint)args[0]!);
-                effect.RestartDuration((int)(float)args[3]!);
-                Effects((uint)args[1]!).Add(effect);
-                _onApply?.Invoke();
-                return true;
-            })
             .On(nameof(IStatusEffectService.RemoveStatusEffect), args =>
             {
                 var creature = (uint)args[0]!;
@@ -98,12 +85,26 @@ public class CombatSuppressionServiceTests
                     Effects(creature).Remove(effect);
                 return null;
             });
+        var statusApplication = ScriptedProxy.Create<IStatusEffectApplicationService>(out var statusApplicationCalls);
+        statusApplicationCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), args =>
+            {
+                var effect = (StatusEffectBase)args[2]!;
+                _statusCalls.Add($"Apply {args[0]} {args[1]} {effect.GetType().Name} {args[3]}" +
+                                 (args.Length > 4 && args[4] is CombatDamageType damageType ? $" {damageType}" : string.Empty));
+                if (!_applySucceeds)
+                    return false;
+                effect.ReassignSource((uint)args[0]!);
+                effect.RestartDuration((int)(float)args[3]!);
+                Effects((uint)args[1]!).Add(effect);
+                _onApply?.Invoke();
+                return true;
+            });
         var feedback = ScriptedProxy.Create<IPlayerFeedbackService>(out _feedbackCalls);
         _feedbackCalls
             .On(nameof(IPlayerFeedbackService.ShowDiagnosticFloatingText), _ => null)
             .On(nameof(IPlayerFeedbackService.SendDiagnosticToPlayer), _ => null);
 
-        _service = new CombatSuppressionService(queries, stat, statusEffect, feedback);
+        _service = new CombatSuppressionService(queries, stat, statusEffect, statusApplication, feedback);
     }
 
     [TearDown]

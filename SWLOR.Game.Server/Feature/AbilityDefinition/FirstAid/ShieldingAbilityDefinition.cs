@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding1StatusEffect), duration))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(Shielding1StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding2StatusEffect), duration))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(Shielding2StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var treated = new List<uint>();
             foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Shielding3StatusEffect), duration))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(Shielding3StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);

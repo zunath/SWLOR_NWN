@@ -441,7 +441,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
             combat,
             "private static void ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(");
 
-        refresh.Should().Contain("if (_statusEffect.ApplyStatusEffect(",
+        refresh.Should().Contain("if (_statusEffectApplication.ApplyStatusEffect(",
             "deflection riders must run only when the refreshed status was actually applied");
         refresh.Should().Contain(
             "_stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)",
@@ -654,7 +654,7 @@ public class CrossSkillPerkInteractionSafetyTests : SkillFacadeFixture
         var skillEvasionChannel = ExtractMethod(combat, "private static void ApplyAbilityUsedSkillEvasionChannel(");
         skillEvasionChannel.Should().Contain("new EvasiveFootworkStatusEffect(evasionPercent)",
             "Lateral and Mobile Footwork need a visible timed status while retaining their shared stat-driven trigger");
-        skillEvasionChannel.Should().Contain("_statusEffect.ApplyStatusEffect(");
+        skillEvasionChannel.Should().Contain("_statusEffectApplication.ApplyStatusEffect(");
 
         var damageModifiers = ExtractMethod(combat, "public static int ApplyDamageDealtModifiers(");
         var outgoingDamageIndex = damageModifiers.IndexOf("ApplyOutgoingDamageModifier", StringComparison.Ordinal);

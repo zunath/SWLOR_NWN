@@ -643,7 +643,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SetNPCPerkLevel(attacker, PerkType.PathogenStrike, 1);
                 CreaturePlugin.AddFeat(attacker, FeatType.PathogenStrike1);
                 ctx.Assert(UsePerkFeat.TryUseAbility(attacker, target, FeatType.PathogenStrike1, GetLocation(target)), "Placeable ability queues");
-                StatusEffect.ApplyStatusEffect(attacker, attacker,
+                StatusEffectApplication.ApplyStatusEffect(attacker, attacker,
                     new LimitedHasteStatusEffect(30, 10, SkillType.Vibroknife, EffectIconType.Haste, null), 60f);
                 var active = (LimitedHasteStatusEffect)StatusEffect.GetStatusEffect(attacker, typeof(LimitedHasteStatusEffect));
                 ResolveCycle(attacker, target, 6);
@@ -860,7 +860,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(attacker, () =>
                 {
                     var effect = new LimitedHasteStatusEffect(30, 4, SkillType.Vibroknife, EffectIconType.Haste, null);
-                    ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, effect, 60f), "Limited Haste applies");
+                    ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker, attacker, effect, 60f), "Limited Haste applies");
                     var active = (LimitedHasteStatusEffect)StatusEffect.GetStatusEffect(attacker, typeof(LimitedHasteStatusEffect));
                     ResolveCycle(attacker, target);
                     ctx.AssertEqual(2, active.RemainingAttacks, "Both missed weapon attempts consume a charge");
@@ -981,7 +981,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.Delay, -1, 30), main);
                     var unbuffedDelay = CombatRules.CalculateEffectiveAttackDelay(GameServices.CombatAttackTiming.CalculateAttackDelay(attacker));
                     var effect = new LimitedHasteStatusEffect(40, 4, SkillType.Vibroblade, EffectIconType.Haste, null);
-                    ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, effect, 60f), "Off-hand haste applies");
+                    ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker, attacker, effect, 60f), "Off-hand haste applies");
                     ctx.AssertEqual(SkillType.Vibroblade, WeaponAttackTiming.GetTimingSkill(attacker),
                         "The off-hand's haste participates in the shared timer");
                     var sheet = new CharacterSheetViewModel();

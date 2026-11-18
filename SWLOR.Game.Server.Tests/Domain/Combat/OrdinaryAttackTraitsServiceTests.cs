@@ -214,7 +214,7 @@ public class OrdinaryAttackTraitsServiceTests
     private sealed class TestTraits : OrdinaryAttackTraitsService
     {
         public TestTraits()
-            : base(FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>())
+            : base(FacadeForwarder.For<IStatService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>())
         {
         }
 

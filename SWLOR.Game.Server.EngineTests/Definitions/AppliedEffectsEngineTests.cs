@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             };
             for (var index = 0; index < effects.Length; index++)
                 ApplyEffectToObject(DurationType.Temporary, TagEffect(effects[index], TagPrefix + index), creature, 60f);
-            ctx.Assert(StatusEffect.ApplyStatusEffect(creature, creature, typeof(HobbleStatusEffect), 30f), "Hobble applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(creature, creature, typeof(HobbleStatusEffect), 30f), "Hobble applies");
 
             var scriptTypes = new HashSet<EffectTypeScript>();
             var scriptTags = new HashSet<string>();
@@ -113,15 +113,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var creature in new[] { caster, target, control })
                 SetAILevel(creature, AILevel.VeryLow);
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, control, typeof(HobbleStatusEffect), 6f), "Hobble applies to the control");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, control, typeof(HobbleStatusEffect), 6f), "Hobble applies to the control");
             var expected = CountTagged(control, StatusEffect.GetStatusEffect<HobbleStatusEffect>(control).Id);
             ctx.Assert(expected > 0, "a fresh Hobble has a native effect");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 6f), "Hobble applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 6f), "Hobble applies");
             var hobble = StatusEffect.GetStatusEffect<HobbleStatusEffect>(target);
             var steps = new (string Name, Func<bool> Run)[]
             {
-                ("an in-place refresh", () => StatusEffect.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 6f)),
+                ("an in-place refresh", () => StatusEffectApplication.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 6f)),
                 ("a restart", () => StatusEffect.RestartStatusEffectDuration(target, typeof(HobbleStatusEffect), caster, 6f)),
                 ("an extension", () => StatusEffect.ExtendStatusEffectDuration(target, typeof(HobbleStatusEffect), caster, 1f)),
                 ("a refresh", () => StatusEffect.RefreshStatusEffectDuration(target, typeof(HobbleStatusEffect), caster, 6f)),

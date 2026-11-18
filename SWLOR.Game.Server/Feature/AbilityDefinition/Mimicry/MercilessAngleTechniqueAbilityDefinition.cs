@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 return;
             }
 
-            StatusEffect.ApplyStatusEffect<HemorrhageStatusEffect>(activator, target, 30f, CombatDamageType.Physical);
+            StatusEffectApplication.ApplyStatusEffect<HemorrhageStatusEffect>(activator, target, 30f, CombatDamageType.Physical);
         }
     }
 }

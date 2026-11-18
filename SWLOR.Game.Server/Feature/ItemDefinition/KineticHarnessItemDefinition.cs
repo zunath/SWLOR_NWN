@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .HasRecastDelay(RecastGroup.FieldTool, FieldToolRecastSeconds)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    StatusEffect.ApplyStatusEffect(user, user, new KineticHarnessStatusEffect(), 60f);
+                    StatusEffectApplication.ApplyStatusEffect(user, user, new KineticHarnessStatusEffect(), 60f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), user);
                 });
 

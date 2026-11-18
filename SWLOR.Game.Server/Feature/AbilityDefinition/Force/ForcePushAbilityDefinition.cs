@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyHobble(uint activator, uint target, int durationSeconds)
         {
-            if (StatusEffect.ApplyStatusEffect(activator, target, typeof(HobbleStatusEffect), durationSeconds, CombatDamageType.Force))
+            if (StatusEffectApplication.ApplyStatusEffect(activator, target, typeof(HobbleStatusEffect), durationSeconds, CombatDamageType.Force))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, target);
         }
 

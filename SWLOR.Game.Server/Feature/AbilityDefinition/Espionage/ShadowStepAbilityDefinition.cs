@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
                         // A target fighting the activator turns toward the new position before the
                         // arrival runs. Turn it back so the stun holds it facing away.
                         SetFacing(targetFacing, target);
-                        StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
+                        StatusEffectApplication.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
                             StunDurationSeconds, CombatDamageType.Physical);
                     }
                 }

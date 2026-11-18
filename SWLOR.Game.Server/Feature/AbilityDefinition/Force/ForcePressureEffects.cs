@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             var lowHPForceDamageTaken = Stat.GetStatAdjustment(activator, StatType.SparkLightningPressureLowHPForceDamageTakenPercent);
             var lowHPThreshold = Stat.GetStatAdjustment(activator, StatType.SparkLightningPressureLowHPThresholdPercent);
-            StatusEffect.ApplyStatusEffect(
+            StatusEffectApplication.ApplyStatusEffect(
                 activator,
                 target,
                 new UnstablePressureStatusEffect(evasionPenalty, lowHPForceDamageTaken, lowHPThreshold),

@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (stacks <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(attacker, attacker, new RundownStatusEffect(stacks), VisualDurationSeconds);
+            StatusEffectApplication.ApplyStatusEffect(attacker, attacker, new RundownStatusEffect(stacks), VisualDurationSeconds);
         }
     }
 }

@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var credited = new HashSet<uint>();
-            if (StatusEffect.ApplyStatusEffect(
+            if (StatusEffectApplication.ApplyStatusEffect(
                 activator,
                 friendly,
                 new RegenerativeHealingStatusEffect(name, healPerTick, appliesMedicalHealingBonus: true, supportSkill: SkillType.FirstAid, supportCredited: credited),

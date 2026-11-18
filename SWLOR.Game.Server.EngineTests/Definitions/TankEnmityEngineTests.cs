@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var actor in new[] { tank, healer, enemy })
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), actor, 120f);
             await ctx.WaitFrameAsync();
-            ctx.Assert(StatusEffect.ApplyStatusEffect(tank, tank, new BastionStanceStatusEffect(), 120f), "Tank stance applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(tank, tank, new BastionStanceStatusEffect(), 120f), "Tank stance applies");
             Enmity.ClearEnmityTable(enemy);
             var before = GetCurrentHitPoints(enemy);
             await ctx.ExecuteInCreatureContextAsync(tank, () => AbilityHostileImpact.ApplyHostileCombatImpact(
@@ -216,12 +216,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var healThreat = Enmity.GetEnmityTable(enemy).GetValueOrDefault(healer);
             await ctx.ExecuteInCreatureContextAsync(healer, () => ApplyEffectToObject(DurationType.Instant, EffectHeal(10000), tank));
             ctx.AssertEqual(healThreat, Enmity.GetEnmityTable(enemy).GetValueOrDefault(healer), "Full-health healing cannot farm threat");
-            ctx.Assert(StatusEffect.ApplyStatusEffect(tank, tank, new PerfectAegisStatusEffect(), 120f), "Independent bonus applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(tank, tank, new PerfectAegisStatusEffect(), 120f), "Independent bonus applies");
             StatusEffect.RemoveOtherStanceStatuses(tank, typeof(DefensiveStanceStatusEffect));
-            ctx.Assert(StatusEffect.ApplyStatusEffect(tank, tank, new DefensiveStanceStatusEffect(), 120f), "Replacing tank stance applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(tank, tank, new DefensiveStanceStatusEffect(), 120f), "Replacing tank stance applies");
             ctx.AssertEqual(50, Enmity.ClampEnmityPercentAdjustment(Stat.GetStatAdjustment(tank, StatType.EnmityPercentAdjustment)), "Stance plus Aegis respects general cap");
             StatusEffect.RemoveOtherStanceStatuses(tank, typeof(BerserkerStanceStatusEffect));
-            ctx.Assert(StatusEffect.ApplyStatusEffect(tank, tank, new BerserkerStanceStatusEffect(), 120f), "Offensive stance replaces tank stance");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(tank, tank, new BerserkerStanceStatusEffect(), 120f), "Offensive stance replaces tank stance");
             ctx.AssertEqual(0, Stat.GetStatAdjustment(tank, StatType.DamageEnmityPercentAdjustment), "Stance replacement removes damage threat stat");
             ctx.AssertEqual(25, Stat.GetStatAdjustment(tank, StatType.EnmityPercentAdjustment), "Replacement preserves independent Aegis bonus");
             StatusEffect.RemoveAllStatusEffects(tank);
@@ -240,8 +240,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var actor in new[] { tank, rival, first, second })
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), actor, 120f);
             await ctx.WaitFrameAsync();
-            ctx.Assert(StatusEffect.ApplyStatusEffect(tank, first, new ChallengeEnmityStatusEffect(30), 120f), "First tank's source bonus applies");
-            ctx.Assert(StatusEffect.ApplyStatusEffect(rival, first, new ChallengeEnmityStatusEffect(20), 120f), "Other tank's source bonus applies independently");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(tank, first, new ChallengeEnmityStatusEffect(30), 120f), "First tank's source bonus applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(rival, first, new ChallengeEnmityStatusEffect(20), 120f), "Other tank's source bonus applies independently");
             Enmity.ModifyEnmity(tank, first, 100);
             Enmity.ModifyEnmity(tank, second, 100);
             Enmity.ModifyEnmity(rival, first, 100);
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var soothe = AbilityCatalog.GetAbilityDetail(FeatType.SoothePet);
                     soothe.ImpactAction(owner.Creature, owner.Creature, 1, GetLocation(owner.Creature));
                     ctx.AssertEqual(450, Enmity.GetEnmityTable(enemy)[owner.Creature], "Empty cleanse generates no support threat");
-                    ctx.Assert(StatusEffect.ApplyStatusEffect(owner.Creature, pet, new PoisonStatusEffect(), 30f), "Pet poison applies");
+                    ctx.Assert(StatusEffectApplication.ApplyStatusEffect(owner.Creature, pet, new PoisonStatusEffect(), 30f), "Pet poison applies");
                     soothe.ImpactAction(owner.Creature, owner.Creature, 1, GetLocation(owner.Creature));
                     ctx.AssertEqual(950, Enmity.GetEnmityTable(enemy)[owner.Creature], "Successful cleanse grants one support bonus");
                 });

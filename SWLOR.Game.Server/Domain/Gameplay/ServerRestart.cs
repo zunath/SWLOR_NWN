@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Domain.Gameplay
         public static void BootAllPlayers(string message)
         {
             IsRestarting = true;
-            StatusEffect.SaveTogglesForRestart();
+            StatusEffectSession.SaveTogglesForRestart();
 
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {

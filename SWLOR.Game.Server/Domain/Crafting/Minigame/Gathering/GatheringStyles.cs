@@ -122,7 +122,7 @@ public static class GatheringStyles
         Remove(player, All.Where(other => other != style));
 
         if (style != GatheringStyle.None && !StatusEffect.HasEffect(StatusEffectOf(style), player))
-            StatusEffect.ApplyPermanentStatusEffect(StatusEffectOf(style), player, player);
+            StatusEffectApplication.ApplyPermanentStatusEffect(StatusEffectOf(style), player, player);
 
         CraftStyleEffects.Record(player, Skill, PerkOf(style));
     }

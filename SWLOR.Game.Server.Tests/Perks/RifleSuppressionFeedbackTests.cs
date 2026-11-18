@@ -104,7 +104,7 @@ public sealed class RifleSuppressionFeedbackTests
         statusEffectService.Should().Contain("RemoveStatusEffectsFromAllTargetsBySource(");
         statusEffectService.Should().Contain("RemoveStatusEffectsFromAllTargetsWhenSourceExits(player);");
         statusEffectService.Should().Contain("effect is IRemoveWhenSourceExits");
-        statusEffectService.Should().Contain("foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)");
+        statusEffectService.Should().Contain("foreach (var loggedOutEffects in GetLoggedOutEffects())");
         statusEffectService.Should().NotContain("typeof(IRangedHitSuppressionSource)");
         statusEffectService.Should().NotContain("typeof(SuppressionStatusEffect)");
         combat.Should().Contain("var suppressionSourcesToRefresh = _pendingSuppressionAbilityUses.Keys");

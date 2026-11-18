@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatDamageTakenService _damageTaken;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IAbilityImpactState _impactState;
         private readonly IEnmityService _enmity;
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatDamageTakenService damageTaken,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState impactState,
             IEnmityService enmity,
@@ -73,6 +75,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _damageTaken = damageTaken;
             _stat = stat;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _temporaryStatModifier = temporaryStatModifier;
             _impactState = impactState;
             _enmity = enmity;
@@ -296,7 +299,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 costState.Cost >= statusMinimumCost &&
                 SkillTypeMatchesOrGlobal(skillType, statusSkillType))
             {
-                _statusEffect.ApplyStatusEffect(
+                _statusEffectApplication.ApplyStatusEffect(
                     activator,
                     target,
                     typeof(ExposedStatusEffect),
@@ -350,7 +353,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (GetDistanceBetween(activator, target) > range)
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 activator,
                 target,
                 new DamageDealtAdjustmentStatusEffect(
@@ -502,7 +505,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
                     if (_statusEffect.HasStatusEffect(target, typeof(PoisonStatusEffect)))
                     {
-                        _statusEffect.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), 30f, damageType);
+                        _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(BleedStatusEffect), 30f, damageType);
                     }
                     break;
                 case SkillType.Pistol when ability.IsSingleTargetAbility:
@@ -611,7 +614,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (damage <= 0 || duration <= 0 || pulse <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 activator,
                 target,
                 new FragmentationStatusEffect(damage, pulse),
@@ -719,7 +722,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (duration <= 0 || damage <= 0 || pulse <= 0)
                 return;
 
-            var applied = _statusEffect.ApplyStatusEffect(
+            var applied = _statusEffectApplication.ApplyStatusEffect(
                 activator,
                 target,
                 new SaturationTossStatusEffect(damage, pulse),
@@ -761,7 +764,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     StatType.HeavyVibrobladeDefenseAbilityCrushingBlowTriggerSenaryPerkType) &&
                 _stat.GetStatAdjustment(activator, StatType.HeavyVibrobladeDefenseAbilityCrushingBlow) > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(CrushingBlowStatusEffect), 30f, CombatDamageType.Physical);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(CrushingBlowStatusEffect), 30f, CombatDamageType.Physical);
             }
         }
 
@@ -781,8 +784,8 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
             }
 
-            _statusEffect.ApplyStatusEffect(activator, target, typeof(ExposedStatusEffect), 30f, CombatDamageType.Force);
-            _statusEffect.ApplyStatusEffect(activator, target, typeof(ForceErosionStatusEffect), 30f, CombatDamageType.Force);
+            _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(ExposedStatusEffect), 30f, CombatDamageType.Force);
+            _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(ForceErosionStatusEffect), 30f, CombatDamageType.Force);
         }
 
         private void ApplyLightsaberOffenseImpactRiders(
@@ -802,7 +805,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var disorientedDuration = _stat.GetStatAdjustment(activator, StatType.LightsaberOffenseDisorientedDurationSeconds);
             if (disorientedDuration > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(DisorientedStatusEffect), disorientedDuration, ResistanceType.Mind);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(DisorientedStatusEffect), disorientedDuration, ResistanceType.Mind);
             }
 
             if (ability.IsSingleTargetAbility)
@@ -810,7 +813,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 var disruptionDuration = _stat.GetStatAdjustment(activator, StatType.LightsaberOffenseSingleTargetForceDisruptionDurationSeconds);
                 if (disruptionDuration > 0)
                 {
-                    _statusEffect.ApplyStatusEffect(activator, target, typeof(ForceDisruptionStatusEffect), disruptionDuration, CombatDamageType.Force);
+                    _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(ForceDisruptionStatusEffect), disruptionDuration, CombatDamageType.Force);
                 }
             }
 
@@ -824,7 +827,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (HasSunderPenaltyAtLeast(target, DefensePenaltyPercent))
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 activator,
                 target,
                 new SunderStatusEffect(DefensePenaltyPercent),
@@ -879,7 +882,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                          maximumTargets,
                          defender))
             {
-                _statusEffect.ApplyStatusEffect(attacker, nearby, typeof(BleedStatusEffect), duration, damageType);
+                _statusEffectApplication.ApplyStatusEffect(attacker, nearby, typeof(BleedStatusEffect), duration, damageType);
             }
         }
 
@@ -910,7 +913,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             var transferred = effect.Clone();
             _statusEffect.RemoveStatusEffect(activator, effect.GetType(), effect.Source, false);
-            _statusEffect.ApplyStatusEffect(activator, target, transferred, 30f, CombatDamageType.Force);
+            _statusEffectApplication.ApplyStatusEffect(activator, target, transferred, 30f, CombatDamageType.Force);
         }
 
         private void ApplyAbilityUsedPerkCategoryTargetEnmityToSourceStatus(
@@ -935,7 +938,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (enmity <= 0 || duration <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 activator,
                 target,
                 new CoveringClawsStatusEffect(enmity),
@@ -981,7 +984,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius))
             {
-                _statusEffect.ApplyStatusEffect(activator, friendly,
+                _statusEffectApplication.ApplyStatusEffect(activator, friendly,
                     new HostileAbilityPartyBuffStatusEffect(damagePercent, accuracyPercent, nameStrRef, icon), duration);
             }
         }
@@ -997,7 +1000,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var disorientedDuration = _stat.GetStatAdjustment(activator, StatType.PistolSkirmisherDisorientedDurationSeconds);
             if (disorientedDuration > 0 && (ability.IsAreaAbility || ability.MaxRange <= 5f))
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(DisorientedStatusEffect), disorientedDuration, ResistanceType.Mind);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(DisorientedStatusEffect), disorientedDuration, ResistanceType.Mind);
             }
         }
 
@@ -1006,23 +1009,23 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (_stat.GetStatAdjustment(activator, StatType.RiflePacificationNeutralizingShot) > 0)
             {
                 _statusEffect.RemoveFirstBeneficialCombatStatusEffect(target, false);
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(DisorientedStatusEffect), 30f, ResistanceType.Mind);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(DisorientedStatusEffect), 30f, ResistanceType.Mind);
             }
 
             if (_stat.GetStatAdjustment(activator, StatType.RiflePacificationOverwatch) > 0)
             {
                 ActionInterruption.ClearActions(target);
-                _statusEffect.ApplyStatusEffect(activator, target, new FoggyMindStatusEffect(2), 30f, ResistanceType.Mind);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, new FoggyMindStatusEffect(2), 30f, ResistanceType.Mind);
             }
 
             var pinningRank = _stat.GetStatAdjustment(activator, StatType.RiflePacificationPinningFireRank);
             if (pinningRank >= 2)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), 6f, ResistanceType.Trauma);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(KnockdownStatusEffect), 6f, ResistanceType.Trauma);
             }
             else if (pinningRank == 1)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(DazedStatusEffect), 30f, ResistanceType.Mind);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(DazedStatusEffect), 30f, ResistanceType.Mind);
             }
         }
 
@@ -1040,7 +1043,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var duration = _stat.GetStatAdjustment(activator, StatType.SaberstaffConduitFlareForceDisruptionDurationSeconds);
             if (duration > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(ForceDisruptionStatusEffect), duration, CombatDamageType.Force);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(ForceDisruptionStatusEffect), duration, CombatDamageType.Force);
             }
         }
 
@@ -1058,7 +1061,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var duration = _stat.GetStatAdjustment(activator, StatType.SaberstaffTempestForceGyreDurationSeconds);
             if (duration > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(ForceErosionStatusEffect), duration, CombatDamageType.Force);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(ForceErosionStatusEffect), duration, CombatDamageType.Force);
             }
         }
 
@@ -1069,12 +1072,12 @@ namespace SWLOR.Game.Server.Domain.Combat
         {
             if (_stat.GetStatAdjustment(activator, StatType.SpearDamageBreachStrike) > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(BreachStatusEffect), 30f, CombatDamageType.Physical);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(BreachStatusEffect), 30f, CombatDamageType.Physical);
             }
 
             if (ability.IsAreaAbility && _stat.GetStatAdjustment(activator, StatType.SpearDamageCripplingDefense) > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(CrippledDefenseStatusEffect), 45f, CombatDamageType.Physical);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(CrippledDefenseStatusEffect), 45f, CombatDamageType.Physical);
             }
         }
 
@@ -1097,17 +1100,17 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             if (_stat.GetStatAdjustment(activator, StatType.SpearDisablerForceNullification) > 0 && appliesDisruption)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, new ForceDisruptionStatusEffect(), 30f, CombatDamageType.Force);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, new ForceDisruptionStatusEffect(), 30f, CombatDamageType.Force);
             }
 
             if (_stat.GetStatAdjustment(activator, StatType.SpearDisablerForcebane) > 0 && appliesSuppression)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(ForcebaneStatusEffect), 45f, CombatDamageType.Force);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(ForcebaneStatusEffect), 45f, CombatDamageType.Force);
             }
 
             if (_stat.GetStatAdjustment(activator, StatType.SpearDisablerFractureStrike) > 0 && appliesDisruption)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(FracturedFocusStatusEffect), 30f, CombatDamageType.Force);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(FracturedFocusStatusEffect), 30f, CombatDamageType.Force);
             }
         }
 
@@ -1118,12 +1121,12 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             if (_stat.GetStatAdjustment(activator, StatType.SpearDisablerFractureStrike) > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(FracturedFocusStatusEffect), 30f, CombatDamageType.Force);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(FracturedFocusStatusEffect), 30f, CombatDamageType.Force);
             }
 
             if (_stat.GetStatAdjustment(activator, StatType.SpearDisablerForcebane) > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(ForcebaneStatusEffect), 45f, CombatDamageType.Force);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(ForcebaneStatusEffect), 45f, CombatDamageType.Force);
             }
         }
 
@@ -1132,7 +1135,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var duration = _stat.GetStatAdjustment(activator, StatType.StaffCrusherFinisherDazedDurationSeconds);
             if (duration > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(DazedStatusEffect), duration, ResistanceType.Mind);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(DazedStatusEffect), duration, ResistanceType.Mind);
             }
         }
 
@@ -1147,7 +1150,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
             }
 
-            _statusEffect.ApplyStatusEffect(activator, target, typeof(MarkingTossStatusEffect), 30f, CombatDamageType.Physical);
+            _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(MarkingTossStatusEffect), 30f, CombatDamageType.Physical);
         }
 
         private void ApplyTwinBladeDuelistImpactRiders(uint activator, uint target, AbilityDetail ability)
@@ -1163,7 +1166,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 StatType.TwinBladeDuelistReversalCut);
             if (duration > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(DazedStatusEffect), duration, ResistanceType.Mind);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(DazedStatusEffect), duration, ResistanceType.Mind);
             }
         }
 
@@ -1178,7 +1181,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
             }
 
-            _statusEffect.ApplyStatusEffect(activator, target, typeof(MarkedForDeathStatusEffect), 30f, CombatDamageType.Physical);
+            _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(MarkedForDeathStatusEffect), 30f, CombatDamageType.Physical);
         }
 
         private void ApplyVibroknifeSaboteurImpactRiders(
@@ -1190,7 +1193,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var toxicCoatingRank = _stat.GetStatAdjustment(activator, StatType.VibroknifeSaboteurToxicCoatingRank);
             if (toxicCoatingRank > 0)
             {
-                _statusEffect.ApplyStatusEffect(activator, target, typeof(ToxinStatusEffect), 30f, CombatDamageType.Poison);
+                _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(ToxinStatusEffect), 30f, CombatDamageType.Poison);
             }
 
             var sapRank = _stat.GetStatAdjustment(activator, StatType.VibroknifeSaboteurSapVitalityRank);
@@ -1307,7 +1310,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (existing > enmity)
                 return;
 
-            _statusEffect.ApplyStatusEffect(activator, target, new ChallengeEnmityStatusEffect(enmity), duration);
+            _statusEffectApplication.ApplyStatusEffect(activator, target, new ChallengeEnmityStatusEffect(enmity), duration);
         }
 
         private void ApplyStatusAppliedSelfEffects(uint activator)
@@ -1491,7 +1494,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (count >= requiredCount)
             {
                 _areaAbilityTargetHitSequences.Remove(key);
-                _statusEffect.ApplyStatusEffect(
+                _statusEffectApplication.ApplyStatusEffect(
                     activator,
                     target,
                     typeof(ExposedStatusEffect),
@@ -1523,7 +1526,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (duration <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(activator, target, typeof(ExposedStatusEffect), duration, CombatDamageType.Physical);
+            _statusEffectApplication.ApplyStatusEffect(activator, target, typeof(ExposedStatusEffect), duration, CombatDamageType.Physical);
         }
 
         public void ApplyAbilityImpactEffects(uint activator, AbilityImpactSummary summary)

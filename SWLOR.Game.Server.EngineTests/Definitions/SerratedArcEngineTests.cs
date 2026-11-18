@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             StatusEffect.RemoveStatusEffect<BleedStatusEffect>(enemy);
 
                         if (startsBleeding)
-                            ctx.Assert(StatusEffect.ApplyStatusEffect<BleedStatusEffect>(caster, target, 60f), "setup Bleed must apply");
+                            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<BleedStatusEffect>(caster, target, 60f), "setup Bleed must apply");
                         var originalBleed = StatusEffect.GetStatusEffect(target, typeof(BleedStatusEffect));
 
                         ctx.Assert((GetDistanceBetween(caster, nearby) < 5f) == recipientInsideArea &&

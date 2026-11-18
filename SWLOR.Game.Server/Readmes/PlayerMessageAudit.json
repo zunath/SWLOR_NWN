@@ -8,14 +8,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/AbilityAuraService.cs",
-    "Line": 269,
+    "Line": 272,
     "Member": "ApplyAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Green($\"Aura '{effectName}' activated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/AbilityAuraService.cs",
-    "Line": 333,
+    "Line": 336,
     "Member": "ToggleAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Red($\"Aura '{effectName}' deactivated.\"))"
@@ -210,85 +210,85 @@
     "Call": "_playerFeedback.SendResourceRestored(creature, restored, \"STM\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 574,
-    "Member": "ApplyStatusEffectInternal",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 594,
-    "Member": "ApplyStatusEffectInternal",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 730,
-    "Member": "ApplyStatusEffectInternal",
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+    "Line": 436,
+    "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 755,
-    "Member": "ApplyStatusEffectInternal",
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+    "Line": 461,
+    "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 760,
-    "Member": "ApplyStatusEffectInternal",
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+    "Line": 466,
+    "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 762,
-    "Member": "ApplyStatusEffectInternal",
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+    "Line": 468,
+    "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, BuildApplicationMessage(source))"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 917,
-    "Member": "RestartInPlace",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(source, durationResistanceMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 987,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+    "Line": 479,
     "Member": "SendStatusEffectFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(recipient, message)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1359,
+    "Line": 378,
+    "Member": "ResolveApplicationTiming",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 398,
+    "Member": "ResolveApplicationTiming",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 560,
+    "Member": "RestartInPlace",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, durationResistanceMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+    "Line": 866,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1368,
+    "Line": 875,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1893,
+    "Line": 1405,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1895,
+    "Line": 1407,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
@@ -302,56 +302,56 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
-    "Line": 1426,
+    "Line": 1454,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
-    "Line": 404,
+    "Line": 407,
     "Member": "ApplyFirstHostileAbilityHitCount",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
-    "Line": 405,
+    "Line": 408,
     "Member": "ApplyFirstHostileAbilityHitCount",
     "Delivery": "Testing only",
     "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
-    "Line": 446,
+    "Line": 449,
     "Member": "EnsureFirstHostileAbilityHitState",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, feedback)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
-    "Line": 447,
+    "Line": 450,
     "Member": "EnsureFirstHostileAbilityHitState",
     "Delivery": "Testing only",
     "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"First Strike ready ({maximumCount} {stackLabel})\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
-    "Line": 473,
+    "Line": 476,
     "Member": "ReportFirstStrikeCombatEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(\n                attacker,\n                ColorToken.Combat($\"First Strike is recharging ({remainingSeconds} seconds remaining).\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
-    "Line": 677,
+    "Line": 680,
     "Member": "RefreshIdleReadiness",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Opening Attack Ready\"), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatActivityService.cs",
-    "Line": 691,
+    "Line": 694,
     "Member": "RefreshIdleReadiness",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Idle Skill Ability Ready\"), creature, false)"
@@ -372,70 +372,70 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 161,
+    "Line": 164,
     "Member": "GetHighHPTargetCriticalDamageAdjustment",
     "Delivery": "Testing only",
     "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                    ColorToken.Combat($\"High Noon +{adjustment}% critical damage\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 575,
+    "Line": 578,
     "Member": "PrepareAutoAttackCycleCriticalRate",
     "Delivery": "Testing only",
     "Call": "_playerFeedback.ShowDiagnosticFloatingText(\n                ColorToken.Combat($\"Attack +{criticalRate}% Critical Rate\"),\n                attacker,\n                false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 1125,
+    "Line": 1128,
     "Member": "ApplyMeleeRepeatedTargetDamageModifier",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat(MeleeRepeatedTargetStack.GetStackText(statusEffectIcon, state.Stacks, maxStacks, stackBonus)),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 1188,
+    "Line": 1191,
     "Member": "ApplyRangedRepeatedTargetDamageModifier",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)\"),\n                    attacker,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 1296,
+    "Line": 1299,
     "Member": "ConsumeSameTargetPressureWeaponAbilityDamageBonus",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat($\"Spotter's Rhythm (+{bonus} DMG)\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs",
-    "Line": 1328,
+    "Line": 1331,
     "Member": "ReadySameTargetPressure",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Spotter's Rhythm\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 797,
+    "Line": 800,
     "Member": "ApplyLowHPGuardEffect",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1134,
+    "Line": 1137,
     "Member": "ApplyGuardedHitRetaliationPulse",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1317,
+    "Line": 1320,
     "Member": "ApplyGuardedHitNextSkillAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1550,
+    "Line": 1553,
     "Member": "ApplyRangedDeflectionReflection",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
@@ -498,77 +498,77 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 887,
+    "Line": 890,
     "Member": "ApplyCriticalHitEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 1092,
+    "Line": 1095,
     "Member": "ApplyNonCriticalAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs",
-    "Line": 68,
+    "Line": 71,
     "Member": "ApplyAutoAttackSuppressionStack",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, ColorToken.Combat(\"Pinning Fire: Suppression applied.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs",
-    "Line": 69,
+    "Line": 72,
     "Member": "ApplyAutoAttackSuppressionStack",
     "Delivery": "Testing only",
     "Call": "_playerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat(\"Pinning Fire\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs",
-    "Line": 303,
+    "Line": 306,
     "Member": "ConsumeSuppressionRangedAttackAccuracyAdjustment",
     "Delivery": "Testing only",
     "Call": "_playerFeedback.SendDiagnosticToPlayer(attacker, ColorToken.Combat($\"Overwatch: +{adjustment}% Accuracy.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatSuppressionService.cs",
-    "Line": 304,
+    "Line": 307,
     "Member": "ConsumeSuppressionRangedAttackAccuracyAdjustment",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Overwatch\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 107,
+    "Line": 110,
     "Member": "OnPlayerDeath",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"You have been subdued.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 108,
+    "Line": 111,
     "Member": "OnPlayerDeath",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                        player,\n                        receiver => $\"{_playerName.GetDisplayName(receiver, player)} has been subdued by {_playerName.GetDisplayName(receiver, hostile)}.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 283,
+    "Line": 286,
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Requiem spares you any XP debt.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/DeathService.cs",
-    "Line": 325,
+    "Line": 328,
     "Member": "ApplyPenalties",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"{newDebt} XP added to your debt. (Total: {dbPlayer.XPDebt} XP)\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PoisonsService.cs",
-    "Line": 84,
+    "Line": 86,
     "Member": "ConsumePoisonCoating",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, $\"The venom coating on {GetName(weapon)} has worn off.\")"
@@ -596,49 +596,49 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs",
-    "Line": 256,
+    "Line": 258,
     "Member": "Update",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(healingStep < 0\n                        ? \"You are in PvP combat. Healing you receive starts dropping at 2:00 and damage players deal to you starts rising at 3:00. It ends after 30 seconds without PvP damage.\"\n                        : $\"PvP combat {FormatTime(PvpCombatRules.HealingReductionSteps[healingStep].AtSeconds)}: healing you receive is reduced by {PvpCombatRules.HealingReductionSteps[healingStep].Percent}%.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs",
-    "Line": 268,
+    "Line": 270,
     "Member": "Update",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\n                    $\"PvP combat {FormatTime(step.AtSeconds)}: damage players deal to you is increased by {step.Percent}%.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs",
-    "Line": 302,
+    "Line": 304,
     "Member": "End",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\"PvP combat has ended. Healing and damage are back to normal.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 86,
+    "Line": 89,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You have not learned to move unseen. The Stealth perk is required.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 93,
+    "Line": 96,
     "Member": "GateStealthEntry",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, ColorToken.Red(\"You cannot enter stealth while in combat.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 254,
+    "Line": 257,
     "Member": "BreakStealthOnDamageDealt",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, \"Your attack gives away your position.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 738,
+    "Line": 741,
     "Member": "ExitDetectedPlayerStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"
@@ -3914,28 +3914,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1678,
+    "Line": 1202,
     "Member": "CloseForUnsupportedAppearance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(owner, \"This creature's appearance cannot be customized.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 1811,
+    "Line": 1335,
     "Member": "ApplyDMArmorDisplay",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, ColorToken.Red(\"Your helmet and cloak setting could not be saved.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2081,
+    "Line": 1640,
     "Member": "SendScaleMessage",
     "Delivery": "Retained",
     "Call": "DMPresence.SendMessage(Player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs",
-    "Line": 2571,
+    "Line": 1872,
     "Member": "OnClickSaveSettings",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(_session.Target, ColorToken.Green(\"Appearance settings saved successfully.\"))"
@@ -3977,7 +3977,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.PartBrowser.cs",
-    "Line": 633,
+    "Line": 634,
     "Member": "OnClickMapSlot",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red($\"No {(itemType == 1 ? \"helmet\" : \"cloak\")} is equipped.\"))"

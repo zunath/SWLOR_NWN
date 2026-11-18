@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 if (GetCurrentHitPoints(friendly) > hitPointsBeforeHealing)
                     playPulseVisual(friendly);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
-                if (StatusEffect.ApplyStatusEffect(
+                if (StatusEffectApplication.ApplyStatusEffect(
                     activator,
                     friendly,
                     typeof(KoltoMistHealingStatusEffect),

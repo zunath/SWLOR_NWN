@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (!StatusEffect.HasStatusEffect(beast, BeastStatusEffectType, player))
             {
-                StatusEffect.ApplyStatusEffect(player, beast, BeastStatusEffectType, 0f);
+                StatusEffectApplication.ApplyStatusEffect(player, beast, BeastStatusEffectType, 0f);
             }
         }
 

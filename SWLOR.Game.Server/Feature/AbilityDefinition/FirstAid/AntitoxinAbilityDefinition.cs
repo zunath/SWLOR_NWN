@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 StatusEffect.RemoveFirstStatusEffect(friendly, new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }, false);
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(Antitoxin1StatusEffect), duration))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(Antitoxin1StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 FirstAidTreatmentAdjustments.ApplyCombatPharmacologyStimRiders(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);

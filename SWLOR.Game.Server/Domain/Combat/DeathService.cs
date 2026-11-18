@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICityUpgradeLookup _property;
         private readonly IAreaLookup _area;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly ICreatureRevivedListener[] _revivedListeners;
         private readonly ICombatDamageTakenService _damageTaken;
@@ -44,6 +45,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICityUpgradeLookup property,
             IAreaLookup area,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             ICombatRecorderService combatRecorder,
             IEnumerable<ICreatureRevivedListener> revivedListeners,
             ICombatDamageTakenService damageTaken)
@@ -55,6 +57,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _property = property;
             _area = area;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _combatRecorder = combatRecorder;
             _revivedListeners = revivedListeners.ToArray();
             _damageTaken = damageTaken;
@@ -375,7 +378,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         protected virtual void ApplyStatusEffect(uint source, uint creature, Type statusEffectClass, float durationSeconds) =>
-            _statusEffect.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
+            _statusEffectApplication.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
 
         protected virtual void WriteLog(LogGroup group, string details) => Log.Write(group, details);
     }

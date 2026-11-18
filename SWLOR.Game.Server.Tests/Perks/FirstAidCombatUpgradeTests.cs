@@ -210,7 +210,7 @@ public class FirstAidCombatUpgradeTests
         koltoMist.Should().Contain("var treated = ApplyKoltoMistPulse(activator, location, healPerTick, playPulseVisual);");
         koltoMist.Should().Contain("FirstAidTreatmentAdjustments.GrantCombatPoint(activator, treated, credited);");
         koltoMist.Should().Contain("visualEffect: VisualEffect.Vfx_Imp_Head_Heal");
-        koltoMist.Should().Contain("StatusEffect.ApplyStatusEffect(");
+        koltoMist.Should().Contain("StatusEffectApplication.ApplyStatusEffect(");
         koltoMist.Should().Contain("typeof(KoltoMistHealingStatusEffect)");
         koltoMist.Should().Contain("StatusRefreshDurationSeconds");
         koltoMist.Should().NotContain("new KoltoMistHealingStatusEffect(totalPercent, 4)");
@@ -226,10 +226,10 @@ public class FirstAidCombatUpgradeTests
         treatmentAdjustments.Should().Contain("CombatPoint.AddSupportCombatPoint(activator, treated, SkillType.FirstAid");
         treatmentAdjustments.Should().Contain("GrantCombatPoint(uint activator, IReadOnlyCollection<uint> treated");
         treatmentAdjustments.Should().Contain("if (!removedAilment)");
-        treatmentAdjustments.Should().Contain("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);");
+        treatmentAdjustments.Should().Contain("StatusEffectApplication.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);");
         treatmentAdjustments.IndexOf("if (!removedAilment)", StringComparison.Ordinal)
             .Should()
-            .BeLessThan(treatmentAdjustments.IndexOf("StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);", StringComparison.Ordinal));
+            .BeLessThan(treatmentAdjustments.IndexOf("StatusEffectApplication.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);", StringComparison.Ordinal));
 
         var firstAidSupportFiles = new[]
         {

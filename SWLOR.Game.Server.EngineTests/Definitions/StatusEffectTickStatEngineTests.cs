@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ApplyAnchorEffect(ctx, npc);
             var baseline = Stat.GetStatAdjustment(npc, stat);
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect<UnstablePressureStatusEffect>(npc, npc, 30f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<UnstablePressureStatusEffect>(npc, npc, 30f),
                 "Unstable Pressure must apply");
             var effect = StatusEffect.GetStatusEffect<UnstablePressureStatusEffect>(npc);
             var observations = new List<string>();
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ApplyAnchorEffect(ctx, npc);
             ctx.AssertEqual(0, Stat.GetStatAdjustment(npc, stat), "starting haste");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect<SignalJammerStatusEffect>(npc, npc, 30f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<SignalJammerStatusEffect>(npc, npc, 30f),
                 "Signal Jammer must apply");
             var effect = StatusEffect.GetStatusEffect<SignalJammerStatusEffect>(npc);
             var observations = new List<string>();
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var suppressedTotal = Stat.GetStatAdjustment(npc, stat);
             observations.Add($"20% haste added: effect={suppressedEffect} total={suppressedTotal}");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect<SpotterStanceStatusEffect>(npc, npc, 30f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<SpotterStanceStatusEffect>(npc, npc, 30f),
                 "Spotter Stance must apply");
             await ctx.DelaySecondsAsync(SettleSeconds);
             var slowedEffect = effect.StatGroup.Stats[stat];
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         /// </summary>
         private static void ApplyAnchorEffect(EngineTestContext ctx, uint npc)
         {
-            ctx.Assert(StatusEffect.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 60f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 60f),
                 "the anchor status effect must apply");
         }
     }

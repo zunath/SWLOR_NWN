@@ -218,13 +218,13 @@ public class PerkRefundStatusEffectCleanupTests
         var source = StatusEffectSource.Read().Replace("\r\n", "\n");
         var cleanupBody = source.Substring(
             source.IndexOf("public void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal),
-            source.IndexOf("private void RemoveStatusEffectsFromAllTargetsWhenSourceExits", StringComparison.Ordinal) -
+            source.IndexOf("public void RemoveStatusEffectsFromAllTargetsWhenSourceExits", StringComparison.Ordinal) -
             source.IndexOf("public void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal));
 
-        cleanupBody.Should().Contain("foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)");
+        cleanupBody.Should().Contain("foreach (var loggedOutEffects in GetLoggedOutEffects())");
         cleanupBody.Should().Contain("statusEffectType.IsAssignableFrom(effect.GetType())");
         cleanupBody.Should().Contain("effect.Source == source");
-        cleanupBody.Should().Contain("loggedOutEffects.Effects.Remove(effect);");
+        cleanupBody.Should().Contain("loggedOutEffects.Remove(effect);");
 
         var method = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<MethodDeclarationSyntax>()

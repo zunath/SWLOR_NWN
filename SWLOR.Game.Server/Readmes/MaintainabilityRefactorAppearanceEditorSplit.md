@@ -235,7 +235,7 @@ exception"); its services (10) and methods (150 lines) are still measured.
   `ToggleItemEquippedFlags` 10, `InitializeSettings` 10, `OnModalClosedRestore` 7. Moving every one of those that can move (about 250
   lines: `Initialize`, `SelectEditorTab`, the item type change, the picker setter and the refresh bodies; the tab groups and the
   `WatchOnClient` calls cannot leave) would leave about 1,090 lines, so no cohesive move reaches 1,000 without declaring fewer
-  bindings. The owner accepted this (decision 6): the type stays as is.
+  bindings. The owner decided (decision 6) to keep the view model at its measured size, 1,337 lines, with no further moves.
 - Guard: `AppearanceEditorSizeTests` fails when the view model is not a single file or grows past its measured 1,337 lines (the exemption
   above), any other editor type is over 1,000 lines, any method is over 150 lines, or any editor type takes more than 10 services.
 - Proof: `AppearanceEditorBindingIdentityEngineTests` has two more transcripts, one through the part lists, browser, helmet, cloak,

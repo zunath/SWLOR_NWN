@@ -183,7 +183,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.IsMutationAllowed);
         }
 
-
         private void LoadPlayerStats()
         {
             var mutationBonus = IncubatorJobCalculator.GetErraticGeniusBonus(this);

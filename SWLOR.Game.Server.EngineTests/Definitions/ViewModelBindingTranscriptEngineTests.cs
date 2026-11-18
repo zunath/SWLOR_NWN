@@ -388,11 +388,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
             // The sheet reads its HP maximum from the engine creature, so the large maximum is set on the creature and checked before the
             // sheet opens; the ordinary cases above keep the small one as the control.
-            const int LargeMaxHitPoints = 30000;
+            // A player's maximum is the sum of its per-level maximums, written the way the game writes them (255 is the most one level holds).
+            const int LargeMaxHitPoints = 255;
             await run.Context.ExecuteInCreatureContextAsync(run.Player, () =>
             {
-                ObjectPlugin.SetMaxHitPoints(run.Player, LargeMaxHitPoints);
-                SetCurrentHitPoints(run.Player, LargeMaxHitPoints);
+                var levels = GetLevelByPosition(1, run.Player) + GetLevelByPosition(2, run.Player) + GetLevelByPosition(3, run.Player);
+                for (var level = 1; level <= levels; level++)
+                    CreaturePlugin.SetMaxHitPointsByLevel(run.Player, level, LargeMaxHitPoints);
+                SetCurrentHitPoints(run.Player, GetMaxHitPoints(run.Player));
             });
             await run.Context.WaitFrameAsync();
             await run.Context.ExecuteInCreatureContextAsync(run.Player, () =>

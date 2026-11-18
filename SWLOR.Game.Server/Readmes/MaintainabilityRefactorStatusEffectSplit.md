@@ -747,3 +747,65 @@ resistance, recorder, stat and active-impact parameters and the `Lazy<IStatServi
   failing alike on their bases. The hot-reload check (`--engine-filter HotReloadPlayers --reloads 2`, run because `OnDealtDamage` moves) passes: 251 cache digests and 86 adopted
   digests match at both reloads. A plain cycle through a factory registration deadlocks the container build instead of throwing, so a hung `dotnet test` or CombatSim run after a
   constructor change means a new cycle: dump the process (`dotnet-dump collect`) and read `clrstack -all`.
+
+### P5-5h (native part, and the split is complete)
+
+`StatusEffectService` 1,281 -> 997 lines, 4 services (unchanged). Part 5 `StatusEffectNativeService` behind `IStatusEffectNativeService` (Character,
+`GameServices.StatusEffectNative`; 303 lines and a 43-line interface, 1 service: `IStatusEffectService`).
+
+- **Part 5** holds the three effect-script handlers (`OnApplyStatusEffect`, `OnRemoveStatusEffect`, `OnStatusEffectInterval`), `OnApplyNWNStatusEffect`,
+  `OnRemoveNWNStatusEffect`, `OnNWNStatusEffectInterval`, the three tick methods, `ReapplyNWNEffects`, `ApplyTrackedNWNEffect`, `ReplaceNativeStatusEffect`,
+  `ApplyNativeStatusEffect`, `BuildNativeStatusEffect`, `GetStatusEffectDurationSeconds`, `LinkEffect` and `BuildAbilityStatEffects`. `MayHaveEffectTag` is its one
+  `protected virtual` seam. It has no state, no carried field and no `[ReloadCarriedFrom]`, so `ReloadAdoption.txt` and `ReloadCarryHistory.txt` do not change.
+  It reads the clock (`ClockSeamFiles.txt`).
+- **Handlers:** the three keep their manifest lines and events; `ScriptHandlerOrder.txt` and `HandlerRenames.txt` (lines 321, 325, 326) are renamed in place to
+  `StatusEffectNativeService`. None has a boot or session classification line.
+- **Departure from the map: the hit point limit check stays in part 1.** `ScheduleTemporaryHitPointLimitCheckForVitality` and its `TemporaryHitPointEffects` seam
+  are called by part 1's `RemoveStatusEffectInstance`, and part 1 cannot call part 5 (part 5 depends on part 1). The method is public on `IStatusEffectService` and part 5
+  calls it, so the `LogicToContent.txt` line stays keyed to `StatusEffectService.cs` and nothing is copied. Part 5's bodies reach the trackers through part 1's members
+  instead of the fields: `EnsureCreatureStatusEffectTracker`, `RemoveCreature(creature, false)`, `TryGetCreatureStatusEffects` and the new `IsRemovalSuppressed(id)`;
+  `RemoveNativeStatusEffect` (with the suppression around the engine call) is public on part 1 for `ReplaceNativeStatusEffect`. Each is the same read or write the original did.
+  `StatusEffectTag` (a constant) is declared in both parts.
+- **Holders:** the application, duration and session parts take `IStatusEffectNativeService` (7 -> 8, 5 -> 6 and 5 -> 6 services). No Combat or other holder changes; the facade
+  tool rewrote one call site (`StatusEffectScenarios`, engine tests; `RemovedFacades.json` lists `OnApplyNWNStatusEffect`, `OnNWNStatusEffectInterval` and
+  `OnRemoveNWNStatusEffect` under `StatusEffectNative`), and its `-Check`, with that of the six other mechanical scripts, reports nothing to change. `WeaponActiveAbilityDefinitionBase` and
+  `HeavyVibrobladeActiveAbilityDefinitionBase` did not change.
+- **`Lazy<>`: none could be made plain.** `LazyDependencyCycleTests` still reports every remaining `Lazy<>` as breaking a real cycle (it would have named a needless one). The
+  cycles, from a scan of the constructor graph:
+  - `StealthService` `Lazy<IStatusEffectService>` and `AIService` `Lazy<IStatusEffectService>`: `StatusEffectService -> MessagingService -> StealthService`. Part 1 still takes
+    `IMessagingService` (the worn-off nearby message), and `MessagingService` takes `IStealthService`. The way out is to give the worn-off message to a listener or to cut Messaging's
+    Stealth dependency; neither is this item's.
+  - `StealthService` `Lazy<IStatusEffectApplicationService>`: `StatusEffectApplicationService -> StatusEffectService -> MessagingService -> StealthService` (the application part also takes
+    `IMessagingService` directly).
+  - `StatusEffectDurationService` and `StatusEffectCombatEventService` `Lazy<IStatService>`: `StatService -> ResourceRestoredEffectsService -> StatusEffectApplicationService -> the part`.
+    `StatService` takes the resource-restored listeners, `ResourceRestoredEffectsService` applies status effects, and the application part takes both parts.
+
+  A plain parameter in any of them is a constructor cycle, which deadlocks the container build; the scan says so without a trial, so no change was tried.
+- **Tests:** `TestStatusEffectNativeService` is the part 5 double (`Bench.Native`; the bench builds the application, duration and session doubles over it); the `MayHaveEffectTag` seam moved
+  into it and `ScheduleTemporaryHitPointLimitCheck` stays in `TestStatusEffectService.Core.cs` (`TestStatusEffectService.Native.cs` is gone). `StatusEffectSource.PartFiles`, `InterfaceFiles`
+  and `PartInterfaces` gain the part; `StatusEffectInternals.NativeType` is part 5; the allocation pins, `DefaultSeamsTests` and two reload carry fixtures follow the constructors.
+  `RemoveNativeStatusEffect` is added to `RemovalsThatNameTheirTarget`.
+- **Baselines:** `LargeTypes.txt` (`StatusEffectService` leaves the list: 1,281 -> 997 lines; 30 -> 29 types) and `DebtReport.md`. `ConvertedServices.json` and `DomainMap.json` list the part.
+  `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` changed only in member counts (no edge appeared or disappeared) and were reverted. `LogicToContent.txt`, `DeferredResolution.txt`,
+  `ServicesPerType.txt`, `LongMethods.txt` and `UpwardEdges.txt` do not change (no `Lazy<>`, service count or upward edge moved; the file has had no upward line since P5-5d). `PlayerMessageAudit.json`:
+  12 rows re-keyed to the lines the worn-off messages sit on after the move.
+- **Readings and runs:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs, Markdown and JSON) and its ability table are
+  byte-identical to the base's (`5ed7c7c10`). `SWLOR.Game.Server.Tests` (no exclusions) fails the same 121 tests with the same messages on the base and the branch (the ones that read `SWLOR_Haks` content the
+  sparse checkout lacks): 19,024 passed on the base, 19,027 on the branch (three more cases, from the new part file in the source reader's lists). `SWLOR.Architecture.Tests` (297),
+  `SWLOR.Game.Server.CharacterizationTests` (148), `SWLOR.CombatSim.Tests` (895) and `SWLOR.CraftSim.Tests` (1,097) pass on both. The hot-reload check
+  (`--engine-filter HotReloadPlayers --reloads 2`, run because three handlers move) passes on the base and the branch: 251 cache digests and 86 adopted digests match at both reloads.
+  With `StatusEffect|HotReloadPlayers` the base and the branch fail alike (28 tests, 27 pass: the Piercing Toss bleed test, 7 ticks where 6 are expected, in every generation, and the
+  `_creatureEffects` digest of 34 and 67 entries after each reload, left running by the status engine tests), as P5-5e recorded.
+
+#### The split is complete
+
+`StatusEffectService.cs` was 2,833 lines with 16 services, 7 script handlers, 2 carried fields and about 100 `IStatusEffectService` members; it is now the tracker, read and removal part
+plus catalog, application, duration, native, combat event and session parts (all Character) and three static types. Against the end-state targets:
+
+| Target | Result |
+|---|---|
+| Core about 800 lines | **Not met:** 997 lines (under the 1,000-line limit, so it left `LargeTypes.txt`). The map's estimate did not count the members promoted for the parts, the listener registrations and notices, or the documentation they carry; all of them sit in part 1. |
+| Core 4 services | Met: 4 (`IStatusEffectCatalogService`, `IMessagingService`, `IPlayerNameService`, `IGuiRefreshPublisher`). |
+| All three `Lazy<>` of the service gone | Met for the service: it takes no `Lazy<>`. **Not met overall:** two parts carry `Lazy<IStatService>` and the holders `StealthService` (3: stat, status effect, application) and `AIService` (1) still take one each, for the cycles above. |
+| No Character -> Combat, Abilities or Quests reference | Met: no `UpwardEdges.txt` line names a `StatusEffect` file, and `StatusEffectService.cs` no longer imports the Abilities or UI namespaces. Content: `StatusEffectService.cs -> Feature/AbilityDefinition | 1` (`TemporaryHitPointEffects`) stays in `LogicToContent.txt` (P5-12). |
+| No part over 10 services, no method over 150 lines | Met: the core and parts have 4, 0 (catalog), 8, 6, 1, 2 and 6 services (core, catalog, application, duration, native, combat events, session); the longest method in them is 61 lines (`TryRefreshInPlace`), and `LongMethods.txt` is unchanged. |

@@ -179,7 +179,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         // ------------------------------------------------------------------ perks
 
-        private static void SeedPerks(PlayerAbilityFixture fixture)
+        // A Force-role beast (Warding Howl, the first beast perk, needs level 12 and the Force role) so the beast purchase has a perk to buy.
+        private static void SeedPerks(PlayerAbilityFixture fixture) => SeedBeast(fixture, BeastType.DawnfangHound);
+
+        private static void SeedBeast(PlayerAbilityFixture fixture, BeastType type)
         {
             var beast = new Beast
             {
@@ -187,7 +190,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Name = "Transcript Beast",
                 Level = 20,
                 UnallocatedSP = 8,
-                Type = BeastType.Viper
+                Type = type
             };
             DB.Set(beast);
             fixture.Update(record => record.ActiveBeastId = beast.Id);
@@ -268,7 +271,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 t.Step("sort", () => perks.SelectedSortOrderId = 1);
                 t.Step("category-all", () => perks.SelectedPerkCategoryId = 0);
                 t.Step("beast-mode", () => perks.OnClickBeastPerks()());
-                // The first perk of the list can need a beast role the seeded Viper lacks; the step picks one it can buy.
+                // The first perk of the list can need more than the seeded beast has; the step picks one it can buy.
                 var beastId = DB.Get<Player>(run.Fixture.Id).ActiveBeastId;
                 var beastBefore = DB.Get<Beast>(beastId);
                 var beastSkillPoints = beastBefore.UnallocatedSP;
@@ -278,7 +281,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 t.Step("beast-buy", Buy);
                 var beastAfter = DB.Get<Beast>(beastId);
                 run.Check(beastAfter.UnallocatedSP < beastSkillPoints && beastAfter.Perks.Values.Sum() > beastPerkRanks,
-                    $"The beast bought a perk rank and spent skill points (picked {beastPick}, SP {beastSkillPoints} to {beastAfter.UnallocatedSP}, {Count()} perks; {string.Join(" | ", ((IList)Get(perks, "_filteredPerks")).Cast<PerkType>().Take(8).Select(perk => perk + ":" + string.Join(",", Perk.GetPerkDetails(perk).PerkLevels[1].Requirements.Select(requirement => requirement.CheckRequirements(run.Player)))))}).");
+                    $"The beast bought a perk rank and spent skill points (picked {beastPick}, SP {beastSkillPoints} to {beastAfter.UnallocatedSP}).");
                 t.Step("my-perks", () => perks.OnClickMyPerks()());
                 t.Step("refresh-skill-xp", () => perks.Refresh(new SkillXPRefreshEvent(new List<SkillType> { SkillType.Force })));
                 t.Step("refresh-reset", () => perks.Refresh(new PerkResetAcquiredRefreshEvent()));
@@ -300,7 +303,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         // ------------------------------------------------------------------ character sheet
 
-        private static void SeedSheet(PlayerAbilityFixture fixture) => SeedPerks(fixture);
+        private static void SeedSheet(PlayerAbilityFixture fixture) => SeedBeast(fixture, BeastType.Viper);
 
         private static async Task SheetScriptAsync(Run run)
         {
@@ -397,7 +400,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         // ------------------------------------------------------------------ incubator
 
-        private static void SeedIncubator(PlayerAbilityFixture fixture) => SeedPerks(fixture);
+        private static void SeedIncubator(PlayerAbilityFixture fixture) => SeedBeast(fixture, BeastType.Viper);
 
         private static uint MakeDna(uint player, int attackPurity)
         {

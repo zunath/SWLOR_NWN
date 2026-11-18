@@ -8,6 +8,13 @@ DEFINITIONS = REPO / "SWLOR.Game.Server/Feature/AppearanceDefinition"
 APPEARANCE_ENUM = REPO / "SWLOR.NWN.API/NWScript/Enum/AppearanceType.cs"
 BASE_ITEM_ENUM = REPO / "SWLOR.NWN.API/NWScript/Enum/Item/BaseItem.cs"
 EDITOR_VIEW_MODEL = REPO / "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/AppearanceEditorViewModel.cs"
+CHASSIS_CATALOG = REPO / "SWLOR.Game.Server/Service/AstromechService/AstromechChassisCatalog.cs"
+# Tint layers of the chassis paint zones (AstromechChassisCatalog.GetLayer): primary Cloth 2,
+# secondary Cloth 1, trim Metal 2.
+CHASSIS_PAINT_LAYERS = (5, 4, 3)
+# A chassis model holds its two tools extended and its fishing rod; standing in game they are drawn
+# in (tools/AstromechCreatureExport.py), so its picture leaves them out.
+CHASSIS_STOWED_NODES = ("toolr", "tooll", "rod", "rodline")
 
 # Armor catalog list name -> model stems (right side first).
 ARMOR_STEMS = {
@@ -35,6 +42,8 @@ class Job:
     model: str                     # model to render
     materials: dict = field(default_factory=dict)  # mesh material name -> replacement material (cloak textures)
     weapon: str = ""               # "weapon" or "shield": a lone part, framed to fill the picture
+    paints: dict = field(default_factory=dict)     # tint layer index -> (r, g, b) worn instead of a preview dye
+    hidden: tuple = ()             # mesh nodes left out of the picture
 
 
 def int_lists(path: Path) -> dict:
@@ -123,6 +132,22 @@ def weapon_models(haks_2da: Path) -> list:
     return [(base_item, model) for base_item, model in result if model]
 
 
+def chassis_paints(path: Path = CHASSIS_CATALOG) -> dict:
+    """Astromech chassis model -> {tint layer index: (r, g, b)}: the paint each chassis comes with.
+
+    The Chassis Workshop shows a chassis by its model's picture, in that paint."""
+    text = path.read_text(encoding="utf-8")
+    color = r"new TintMapColor\((\d+),\s*(\d+),\s*(\d+)\)"
+    entry = re.compile(r'new AstromechChassis\(\s*AppearanceType\.\w+,\s*"(\w+)",\s*"[^"]*",\s*'
+                       + r",\s*".join([color] * 3) + r"\)")
+    result = {}
+    for match in entry.finditer(text):
+        values = [int(v) for v in match.groups()[1:]]
+        result[match[1].lower()] = {layer: tuple(values[i * 3:i * 3 + 3])
+                                    for i, layer in enumerate(CHASSIS_PAINT_LAYERS)}
+    return result
+
+
 def appearance_ids() -> dict:
     text = APPEARANCE_ENUM.read_text(encoding="utf-8")
     return {m[1]: int(m[2]) for m in re.finditer(r"^\s*(\w+)\s*=\s*(\d+)", text, re.M)}
@@ -155,10 +180,10 @@ def build(haks_2da: Path, exists) -> list:
     """All jobs whose model exists (exists(resname) -> bool)."""
     jobs, seen = [], set()
 
-    def add(key, model, materials=None, weapon=""):
+    def add(key, model, materials=None, weapon="", paints=None, hidden=()):
         if key not in seen and exists(model + ".mdl"):
             seen.add(key)
-            jobs.append(Job(key, model, materials or {}, weapon))
+            jobs.append(Job(key, model, materials or {}, weapon, paints or {}, tuple(hidden)))
 
     general = int_lists(DEFINITIONS / "ItemAppearance/GeneralArmorAppearanceDefinition.cs")
     droid = int_lists(DEFINITIONS / "ItemAppearance/DroidArmorAppearanceDefinition.cs")
@@ -211,4 +236,8 @@ def build(haks_2da: Path, exists) -> list:
     # Weapon and shield parts: the picture key is the part's model resref.
     for _, model in weapon_models(haks_2da):
         add(model, model, weapon="shield" if model.startswith(SHIELD_CLASS_PREFIX) else "weapon")
+
+    # Astromech chassis: the whole model, in the paint it comes with.
+    for model, paints in chassis_paints().items():
+        add(model, model, paints=paints, hidden=CHASSIS_STOWED_NODES)
     return jobs

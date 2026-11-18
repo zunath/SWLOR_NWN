@@ -12,7 +12,8 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from appearance_previews import MAX_RESREF, VIEWS, preview_resref  # noqa: E402
 from appearance_previews import jobs  # noqa: E402
-from appearance_previews.tint import LAYER_BASE, PREVIEW_DYES, bake, cloak_tile  # noqa: E402
+from appearance_previews.tint import (  # noqa: E402
+    LAYER_BASE, PALETTE_COLORS, PREVIEW_DYES, bake, cloak_tile, exact_color_ramp)
 
 REPO = Path(__file__).resolve().parents[2]
 CSHARP = REPO / "SWLOR.Game.Server/Feature/AppearanceDefinition/AppearancePreview/AppearancePreview.cs"
@@ -267,12 +268,20 @@ class NamingParityTests(unittest.TestCase):
 
         self.assertIn("wswls_t_011", keys)
         self.assertIn("ashlw_011", keys)
+        # The Chassis Workshop asks for a chassis by its model, in the paint it comes with.
+        chassis = {job.key: job for job in built if job.key.startswith("c_astro_")}
+        self.assertEqual(sorted(chassis), sorted(jobs.chassis_paints()))
+        for key, job in chassis.items():
+            self.assertEqual(job.model, key)
+            self.assertEqual(job.paints, jobs.chassis_paints()[key])
+            self.assertEqual(job.hidden, jobs.CHASSIS_STOWED_NODES)
+            self.assertEqual(job.weapon, "", "a chassis is pictured from the front, back and angle")
         for gender in "fm":
             self.assertIn(f"p{gender}h0_chest350", keys, "Wookiee body choices are separate from armor")
             for side in "rl":
                 self.assertIn(f"p{gender}h0_hand{side}262", keys, "inherited bare hands are separate from armor")
         for key in keys:
-            self.assertRegex(key, r"^(p[fm]h0_[a-z]+\d{3}|helm_\d{3}|w[a-z]+_[tmb]_\d{3}|w[a-z]+_\d{3}|ashlw_\d{3})$")
+            self.assertRegex(key, r"^(p[fm]h0_[a-z]+\d{3}|helm_\d{3}|w[a-z]+_[tmb]_\d{3}|w[a-z]+_\d{3}|ashlw_\d{3}|c_astro_\d{2})$")
             for view in VIEWS:
                 preview_resref(key, view)  # raises when a key cannot fit a resref
 
@@ -666,6 +675,75 @@ class FailedPartTests(unittest.TestCase):
         problems = ["PREVIEW_FAILED pmh0_chest001 RuntimeError('x')", "PREVIEW_MISSING_RENDER helm_002",
                     "PREVIEW_NO_MODEL pfh0_head012", "PREVIEW_BATCH_FAILED exit 3: crash"]
         self.assertEqual(failed_keys(problems), {"pmh0_chest001", "helm_002", "pfh0_head012"})
+
+
+class ChassisPictureTests(unittest.TestCase):
+    """Astromech chassis pictures: the catalog the server reads, and the paint the shader would draw."""
+
+    CATALOG = REPO / "SWLOR.Game.Server/Service/AstromechService/AstromechChassisCatalog.cs"
+
+    def test_every_chassis_in_the_catalog_gets_a_picture_in_its_own_paint(self):
+        text = self.CATALOG.read_text(encoding="utf-8")
+        models = re.findall(r'new AstromechChassis\(\s*AppearanceType\.\w+,\s*"(\w+)"', text)
+        paints = jobs.chassis_paints()
+        self.assertEqual(len(models), 8)
+        self.assertEqual(sorted(paints), sorted(models))
+        # Dome Frame: off-white primary, blue secondary, grey trim.
+        self.assertEqual(paints["c_astro_01"], {5: (210, 210, 205), 4: (40, 90, 170), 3: (80, 82, 88)})
+        for model in models:
+            self.assertEqual(sorted(paints[model]), [3, 4, 5])
+            for view in VIEWS:
+                preview_resref(model, view)
+
+    def test_paint_layers_match_the_server(self):
+        text = self.CATALOG.read_text(encoding="utf-8")
+        layers = REPO / "SWLOR.Game.Server/Feature/AppearanceDefinition/TintMap/TintMapLayerType.cs"
+        ids = dict(re.findall(r"(\w+)\s*=\s*(\d+)", layers.read_text(encoding="utf-8")))
+        secondary = re.search(r"AstromechPaintZone\.Secondary => TintMapLayerType\.(\w+)", text)[1]
+        trim = re.search(r"AstromechPaintZone\.Trim => TintMapLayerType\.(\w+)", text)[1]
+        primary = re.search(r"_ => TintMapLayerType\.(\w+)", text)[1]
+        self.assertEqual(jobs.CHASSIS_PAINT_LAYERS, (int(ids[primary]), int(ids[secondary]), int(ids[trim])))
+
+    def palette(self, root: Path) -> Path:
+        """A palette whose rows differ: row r has midtone grey r (clamped), brighter with the shade."""
+        atlas = np.zeros((2048, 256, 4), np.uint8)
+        atlas[..., 3] = 255
+        shades = np.arange(256, dtype=np.float32) / 128.0
+        for row in range(1536):
+            value = np.clip((row % PALETTE_COLORS) * shades, 0, 255)
+            atlas[2047 - row, :, :3] = value[:, None]   # the TGA is stored bottom-up
+        path = root / "plt_palette.png"
+        Image.fromarray(atlas).save(path)
+        return path
+
+    def test_a_colour_equal_to_a_swatch_is_drawn_as_that_swatch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            atlas = np.asarray(Image.open(self.palette(Path(directory))).convert("RGBA")).astype(np.float32) / 255.0
+        ramp = exact_color_ramp(atlas, 5, (100, 100, 100))
+        swatch = atlas[2047 - (LAYER_BASE[5] + 100)]
+        np.testing.assert_allclose(ramp, swatch, atol=1e-6)
+
+    def test_another_colour_offsets_its_nearest_swatch_by_the_rows_shading(self):
+        with tempfile.TemporaryDirectory() as directory:
+            atlas = np.asarray(Image.open(self.palette(Path(directory))).convert("RGBA")).astype(np.float32) / 255.0
+        # Nearest swatch of (110, 100, 100) is grey 103 (midtone 103); red is 7 above it, green and blue 3 below.
+        ramp = exact_color_ramp(atlas, 5, (110, 100, 100))
+        swatch = atlas[2047 - (LAYER_BASE[5] + 103)]
+        np.testing.assert_allclose(ramp[128, :3], np.array([110, 100, 100]) / 255.0, atol=1e-6)
+        # Half as bright a shade carries half the offset.
+        np.testing.assert_allclose(ramp[64, :3] - swatch[64, :3], np.array([7, -3, -3]) / 255.0 * 0.5, atol=2e-3)
+        self.assertTrue((ramp[:, :3] >= 0).all() and (ramp[:, :3] <= 1).all())
+
+    def test_bake_uses_the_paint_only_on_its_layers(self):
+        shade = np.full((2, 2), 128, np.int32)
+        layer = np.array([[5, 4], [3, 6]], np.int32)
+        with tempfile.TemporaryDirectory() as directory:
+            palette = self.palette(Path(directory))
+            plain, _ = bake(shade, layer, palette)
+            painted, _ = bake(shade, layer, palette, paints={5: (200, 10, 10)})
+        np.testing.assert_allclose(painted[0, 0].astype(int), (200, 10, 10), atol=1)  # bytes are truncated
+        np.testing.assert_array_equal(painted[0, 1], plain[0, 1])
+        np.testing.assert_array_equal(painted[1], plain[1])
 
 
 if __name__ == "__main__":

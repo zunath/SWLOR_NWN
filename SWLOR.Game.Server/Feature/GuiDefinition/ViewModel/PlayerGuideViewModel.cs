@@ -1223,7 +1223,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("A Different Body",
                             "An astromech is a playable species with a droid chassis in place of a humanoid body. It has no hands, clothes, or head to customize, and it cannot be Force Sensitive. Pick it at character creation like any other species."),
                         new ArticleBlock("Chassis Workshop",
-                            "Use /customize or the Appearance action on the Character Sheet to open the Chassis Workshop. Choose a chassis, set its size, and paint its primary, secondary, and trim colors. Every change applies at once, and the portrait follows the chassis."),
+                            "Use /customize or the Appearance action on the Character Sheet to open the Chassis Workshop. It works like the Appearance Editor. Click a chassis picture to wear it. Click the Primary, Secondary, or Trim swatch, then pick a color from the palette or the RGB picker; right-click a swatch to return it to the chassis's own paint. The Settings tab changes the size. Every change applies at once, and the portrait follows the chassis."),
                         new ArticleBlock("Speech and Emotes",
                             "An astromech speaks only Droidspeak. Others understand it as far as their own Droidspeak allows, the same way Shyriiwook works for Wookiees. Emotes stay free, but the chassis can only play the emotes it has a motion for, and it cannot sit in chairs. Resting powers the chassis down on the floor."),
                         new ArticleBlock("Skills",
@@ -1235,7 +1235,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     },
                     new[]
                     {
-                        new QuestionAnswer("How do I change how my astromech looks?", "Use /customize to open the Chassis Workshop. Pick a chassis, a size, and three paint colors."),
+                        new QuestionAnswer("How do I change how my astromech looks?", "Use /customize to open the Chassis Workshop. Click a chassis picture, paint its three swatches from the palette or the RGB picker, and set the size on the Settings tab."),
                         new QuestionAnswer("Why can't I equip this item?", "Astromechs equip only astromech modules and tools, plus fishing rods, and each module or tool needs enough Chassis or Armaments rank."),
                         new QuestionAnswer("Why can't I train this skill?", "The Force, Armor, First Aid, humanoid weapon skills, Mimicry, Beast Mastery, and Performance are closed to astromechs. Chassis, Utility Systems, and Armaments take their place."),
                         new QuestionAnswer("Why does nobody understand me?", "Astromechs speak only Droidspeak. Listeners understand more as their own Droidspeak improves."),

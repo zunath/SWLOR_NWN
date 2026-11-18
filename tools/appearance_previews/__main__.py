@@ -3,7 +3,8 @@
 python tools/GenerateAppearancePreviews.py --hak-dir <packed haks> --output <hak source folder> --work <scratch>
 
 Reads the parts the editor offers (armor for every body type, every species' heads, helmets,
-cloaks, weapon and shield parts), extracts each model and its tint material from the packed HAKs
+cloaks, weapon and shield parts) and the astromech chassis the Chassis Workshop offers (each in
+the paint it comes with), extracts each model and its tint material from the packed HAKs
 (base game weapon models and textures from the NWN:EE install, --nwn-root), renders front, back
 and 3/4 views in Blender, and writes 96x96 DXT1 DDS files named a<key><f|b|a>. A weapon part's
 key is its model resref (wswls_t_011); it is laid out diagonally to fill the tile, and only its
@@ -29,7 +30,7 @@ import numpy as np
 from PIL import Image
 
 from . import VIEWS, preview_resref
-from .jobs import CLOAK_ATLAS_PREFIX, REPO, build
+from .jobs import CLOAK_ATLAS_PREFIX, REPO, build, chassis_paints
 from .resources import HakIndex
 from .tint import PREVIEW_DYES, bake, cloak_tile, plain_texture, read_tint_map, save_for_blender
 
@@ -158,8 +159,11 @@ def prepare_emitter_textures(index: HakIndex, names, work: Path) -> dict:
     return result
 
 
-def prepare_textures(index: HakIndex, materials, work: Path, palette: Path) -> dict:
-    """Material name -> baked texture paths."""
+def prepare_textures(index: HakIndex, materials, work: Path, palette: Path, paints=None) -> dict:
+    """Material name -> baked texture paths.
+
+    paints: {material: {tint layer index: (r, g, b)}} for materials baked in exact colours."""
+    paints = paints or {}
     raw, baked = work / "raw", work / "textures"
     baked.mkdir(parents=True, exist_ok=True)
     result = {}
@@ -207,7 +211,7 @@ def prepare_textures(index: HakIndex, materials, work: Path, palette: Path) -> d
             continue
         try:
             if tinted:
-                save_for_blender(*bake(*read_tint_map(source), palette), color, metal)
+                save_for_blender(*bake(*read_tint_map(source), palette, paints=paints.get(material)), color, metal)
             else:
                 plain_texture(source, color, keep_alpha=cutout)
             result[material] = entry
@@ -403,12 +407,20 @@ class RenderCache:
             state = {}
         self.dyes = list(PREVIEW_DYES)
         self.render_size = render_size
+        # JSON keeps neither integer keys nor tuples; compare the paints in the shape it stores.
+        self.paints = json.loads(json.dumps(chassis_paints()))
         self.previous = state.get("haks", {})
         same_look = state.get("dyes") == self.dyes and state.get("render_size") == render_size
         self.dependencies = state.get("renders", {}) if same_look else {}
         if self.previous != self.current or state.get("dyes") != self.dyes:
             for folder in ("models", "binary", "ascii", "raw", "textures"):
                 shutil.rmtree(work / folder, ignore_errors=True)
+        # A chassis whose paint changed is rendered again; every other picture keeps its render.
+        for model, paint in self.paints.items():
+            if state.get("paints", {}).get(model) != paint:
+                self.dependencies.pop(model, None)
+                for baked in (work / "textures").glob(f"{model}_[acm].png"):
+                    baked.unlink()
 
     def is_fresh(self, key: str, renders: Path) -> bool:
         haks = self.dependencies.get(key)
@@ -430,7 +442,7 @@ class RenderCache:
     def save(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.path.write_text(json.dumps({"haks": self.current, "dyes": self.dyes, "render_size": self.render_size,
-                                               "renders": self.dependencies}, indent=0))
+                                               "paints": self.paints, "renders": self.dependencies}, indent=0))
 
 
 def render(args, index, jobs, renders, cache):
@@ -441,7 +453,7 @@ def render(args, index, jobs, renders, cache):
     palette = args.work / "raw" / "plt_palette.tga"
     index.extract(["plt_palette.tga"], palette.parent)
 
-    batch_jobs, materials, problems = [], set(), []
+    batch_jobs, materials, problems, material_paints = [], set(), [], {}
     for job in jobs:
         cache.forget(job.key)
         # Only renders made by this run may be cached: a failed render must not leave old views.
@@ -463,10 +475,12 @@ def render(args, index, jobs, renders, cache):
             bitmaps = {}
         materials.update(nodes.values())
         materials.update(bitmaps.values())
+        if job.paints:
+            material_paints.update({material: job.paints for material in nodes.values()})
         batch_jobs.append({"key": job.key, "ascii": str(ascii_path), "nodes": nodes, "bitmaps": bitmaps,
-                           "model": f"{job.model}.mdl", "weapon": job.weapon,
+                           "model": f"{job.model}.mdl", "weapon": job.weapon, "hidden": list(job.hidden),
                            "emitters": mesh_emitters(ascii_path) if job.weapon else []})
-    textures = prepare_textures(index, materials, args.work, palette)
+    textures = prepare_textures(index, materials, args.work, palette, material_paints)
     glows = prepare_emitter_textures(index, sorted({e["texture"] for j in batch_jobs for e in j["emitters"]}), args.work)
     for job in batch_jobs:
         glow_sources = []

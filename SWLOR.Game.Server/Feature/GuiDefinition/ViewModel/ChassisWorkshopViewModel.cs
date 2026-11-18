@@ -1,6 +1,9 @@
 using System;
-using SWLOR.Game.Server.Core;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AstromechService;
@@ -9,58 +12,121 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
+    /// <summary>
+    /// The Chassis Workshop. It follows the Appearance Editor: pictures to choose from, a swatch for each
+    /// colour, the palette and the RGB picker for the swatch being painted, and the size on Settings.
+    /// </summary>
     public class ChassisWorkshopViewModel : GuiViewModelBase<ChassisWorkshopViewModel, GuiPayloadBase>
     {
         public const string ContentElement = "chassis_workshop_content";
-        public const string MainPartial = "CHASSIS_WORKSHOP_MAIN";
+        public const string ChassisPartial = "CHASSIS_WORKSHOP_CHASSIS";
+        public const string SettingsPartial = "CHASSIS_WORKSHOP_SETTINGS";
 
-        private const string PickText = "Pick";
-        private const string DoneText = "Done";
-        private const string WornText = "Worn";
-        private const string WearText = "Wear";
+        /// <summary>The window has a picture binding for this many chassis.</summary>
+        public const int TileCount = 8;
 
-        // A drag of the slider or the picker reports many values; the last one is applied after this pause.
-        private const float ApplyDelay = 0.25f;
+        private const int ChassisTabId = 0;
+        private const int SettingsTabId = 1;
 
-        // The client drops a value that reaches it before the control showing it, and a slider left without a
-        // value reports its minimum. So changes are only listened for from the tick after the values are sent
-        // again, the way the Hotbars window does it.
+        // A drag across the picker reports many colours; the last one is applied after this pause.
+        private const float ApplyDelay = 0.1f;
+
+        // Rule R4: tab registration and toggle sync are static and shared.
+        private static readonly GuiTabGroup<ChassisWorkshopViewModel, GuiPayloadBase> Tabs =
+            new GuiTabGroup<ChassisWorkshopViewModel, GuiPayloadBase>()
+                .AddTab(ChassisTabId, ChassisPartial)
+                .AddTab(SettingsTabId, SettingsPartial);
+
+        private static readonly GuiToggleGroupSync TabToggles = new(ChassisTabId, SettingsTabId);
+
+        private static readonly string[] ColorBindings =
+        {
+            nameof(SelectedColor), nameof(CustomRed), nameof(CustomGreen), nameof(CustomBlue)
+        };
+
+        private readonly HashSet<string> _assigned = new();
         private bool _isListening;
+        private bool _colorBindingsWatched;
+        private AstromechPaintZone _zone;
+        private AppearancePreviewView _view;
+        private float[] _paletteOutline = Array.Empty<float>();
+        // Two palette cells can hold one colour: the outline stays on the cell the player chose.
+        private readonly Dictionary<AstromechPaintZone, int> _paletteChoice = new();
 
-        private AstromechPaintZone? _activeZone;
+        // The picker reports a colour of its own when it is created, and a click's colour before its press.
+        // Only a colour reported during a press on the picker is a choice (as in the Appearance Editor).
+        private bool _pickerPressed;
+        private GuiColor _unclaimedColor;
+        private int _unclaimedGeneration;
+        private TintMapColor? _pendingColor;
         private AstromechPaintZone _pendingZone;
-        private GuiColor _pendingColor;
-        private bool _colorFlushScheduled;
-        private float _pendingScale;
-        private float _appliedScale;
-        private bool _hasPendingScale;
-        private bool _scaleFlushScheduled;
+        private bool _pendingFromPicker;
+        private bool _flushScheduled;
 
-        public GuiBindingList<string> ChassisNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
-        public GuiBindingList<string> ChassisButtonText { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        // Rule R4: this widget-bound property only forwards genuine clicks on a tab.
+        public int TabToggleValue
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                TabToggles.HandleClientChange(value, SelectTab);
+            }
+        }
+
+        public int SelectedTabId { get => Get<int>(); set => Set(value); }
+
+        public string Tile0Image { get => Get<string>(); set => Set(value); }
+        public string Tile1Image { get => Get<string>(); set => Set(value); }
+        public string Tile2Image { get => Get<string>(); set => Set(value); }
+        public string Tile3Image { get => Get<string>(); set => Set(value); }
+        public string Tile4Image { get => Get<string>(); set => Set(value); }
+        public string Tile5Image { get => Get<string>(); set => Set(value); }
+        public string Tile6Image { get => Get<string>(); set => Set(value); }
+        public string Tile7Image { get => Get<string>(); set => Set(value); }
+        public bool Tile0Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile1Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile2Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile3Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile4Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile5Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile6Selected { get => Get<bool>(); set => Set(value); }
+        public bool Tile7Selected { get => Get<bool>(); set => Set(value); }
+
+        public string PreviewImage { get => Get<string>(); set => Set(value); }
+        public string PreviewLabel { get => Get<string>(); set => Set(value); }
+        public string PreviewViewText { get => Get<string>(); set => Set(value); }
 
         public GuiColor PrimaryTint { get => Get<GuiColor>(); set => Set(value); }
         public GuiColor SecondaryTint { get => Get<GuiColor>(); set => Set(value); }
         public GuiColor TrimTint { get => Get<GuiColor>(); set => Set(value); }
-        public string PrimaryPickText { get => Get<string>(); set => Set(value); }
-        public string SecondaryPickText { get => Get<string>(); set => Set(value); }
-        public string TrimPickText { get => Get<string>(); set => Set(value); }
+        public bool PrimarySelected { get => Get<bool>(); set => Set(value); }
+        public bool SecondarySelected { get => Get<bool>(); set => Set(value); }
+        public bool TrimSelected { get => Get<bool>(); set => Set(value); }
 
-        public bool IsPickerVisible { get => Get<bool>(); set => Set(value); }
-        public string PickerLabel { get => Get<string>(); set => Set(value); }
+        public string ColorSheetResref { get => Get<string>(); set => Set(value); }
+        public GuiBindingList<float> PaletteSelectionPoints { get => Get<GuiBindingList<float>>(); set => Set(value); }
+        public bool IsPaletteSelectionVisible { get => Get<bool>(); set => Set(value); }
+
         public GuiColor SelectedColor { get => Get<GuiColor>(); set => Set(value); }
+        public string CustomRed { get => Get<string>(); set => Set(value); }
+        public string CustomGreen { get => Get<string>(); set => Set(value); }
+        public string CustomBlue { get => Get<string>(); set => Set(value); }
 
-        public float ScaleValue { get => Get<float>(); set => Set(value); }
         public string ScaleText { get => Get<string>(); set => Set(value); }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             _isListening = false;
-            _activeZone = null;
+            _assigned.Clear();
+            _colorBindingsWatched = false;
+            _zone = AstromechPaintZone.Primary;
+            _view = AppearancePreviewView.Front;
+            _paletteOutline = Array.Empty<float>();
+            _paletteChoice.Clear();
+            CancelPickerPress();
             _pendingColor = null;
-            _colorFlushScheduled = false;
-            _hasPendingScale = false;
-            _scaleFlushScheduled = false;
+            _flushScheduled = false;
 
             if (!Astromech.IsAstromech(Player))
             {
@@ -76,52 +142,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            // Rule R3: every bound property is assigned before any of them is watched.
+            PaletteSelectionPoints = new GuiBindingList<float>();
             LoadValues();
-            ChangePartialView(ContentElement, MainPartial);
+            TabToggles.SyncTo(ChassisTabId, value => TabToggleValue = value);
 
-            var windowToken = WindowToken;
-            DelayCommand(0f, () => Listen(windowToken));
+            WatchOnClient(model => model.TabToggleValue);
+            WatchOnClient(model => model.SelectedColor);
+            WatchOnClient(model => model.CustomRed);
+            WatchOnClient(model => model.CustomGreen);
+            WatchOnClient(model => model.CustomBlue);
+            _colorBindingsWatched = true;
+
+            SelectTab(ChassisTabId);
+            _isListening = true;
         }
 
         private void LoadValues()
         {
             var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
-
-            var names = new GuiBindingList<string>();
-            var buttons = new GuiBindingList<string>();
-            foreach (var chassis in AstromechChassisCatalog.All)
-            {
-                names.Add(chassis.Name);
-                buttons.Add(WearText);
-            }
-
-            ChassisNames = names;
-            ChassisButtonText = buttons;
-
             RefreshChassis(dbPlayer);
             RefreshPaint(dbPlayer);
-
-            IsPickerVisible = _activeZone != null;
-            PickerLabel = _activeZone == null ? string.Empty : $"Color: {GetZoneName(_activeZone.Value)}";
-            SelectedColor = _activeZone == null
-                ? GuiColor.Grey
-                : ToGuiColor(Astromech.GetPaint(dbPlayer, _activeZone.Value));
-
-            _appliedScale = AstromechWorkshop.RoundScale(dbPlayer?.AppearanceScale ?? 1.0f);
-            ScaleValue = _appliedScale;
-            ScaleText = AstromechWorkshop.FormatScale(_appliedScale);
+            RefreshScale(dbPlayer);
         }
 
-        private void Listen(int windowToken)
+        private void SelectTab(int tabId)
         {
-            if (WindowToken != windowToken || !Gui.IsWindowOpen(Player, WindowType))
+            if (tabId is not (ChassisTabId or SettingsTabId))
                 return;
 
-            // Watching sends each value again, now that its control exists.
-            LoadValues();
-            WatchOnClient(model => model.ScaleValue);
-            WatchOnClient(model => model.SelectedColor);
-            _isListening = true;
+            FlushColor();
+            CancelPickerPress();
+            SelectedTabId = tabId;
+            TabToggles.SyncTo(tabId, value => TabToggleValue = value);
+            // The tab's controls are new: send them their values, without taking the echo for a choice.
+            Tabs.Select(this, ContentElement, tabId, () => WithoutColorWatches(RepublishBindings));
         }
 
         protected override void OnClientPropertyUpdated(string propertyName)
@@ -129,15 +184,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!_isListening)
                 return;
 
-            if (propertyName == nameof(ScaleValue))
-            {
-                ScaleText = AstromechWorkshop.FormatScale(ScaleValue);
-                QueueScale(ScaleValue);
-            }
-            else if (propertyName == nameof(SelectedColor) && _activeZone != null)
-            {
-                QueueColor(_activeZone.Value, SelectedColor);
-            }
+            if (propertyName == nameof(SelectedColor))
+                OnPickerColor(SelectedColor);
+            else if (propertyName is nameof(CustomRed) or nameof(CustomGreen) or nameof(CustomBlue))
+                OnRgbTyped();
         }
 
         private bool CanChange()
@@ -157,11 +207,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return true;
         }
 
+        /// <summary>Sends a value the first time and whenever it changes, so nothing is redrawn for no reason.</summary>
+        private void SetIfChanged<TValue>(string propertyName, TValue value)
+        {
+            if (_assigned.Add(propertyName) || !EqualityComparer<TValue>.Default.Equals(Get<TValue>(propertyName), value))
+                Set(value, propertyName);
+        }
+
         // ------------------------------------------------------------------ chassis
 
-        public Action OnClickChassis() => () =>
+        public Action OnClickTile(int tile) => () => Wear(tile);
+
+        public Action OnClickPreviousChassis() => () => Wear(AstromechWorkshop.StepChassis(WornIndex(), -1));
+
+        public Action OnClickNextChassis() => () => Wear(AstromechWorkshop.StepChassis(WornIndex(), 1));
+
+        /// <summary>Turns every picture to the next view: front, back, angle.</summary>
+        public Action OnClickView() => () =>
         {
-            var chassis = AstromechWorkshop.GetChassisAt(NuiGetEventArrayIndex());
+            _view = AstromechWorkshop.NextView(_view);
+            RefreshChassis(DB.Get<Player>(GetObjectUUID(Player)));
+        };
+
+        private int WornIndex()
+        {
+            var worn = Astromech.GetChassis(DB.Get<Player>(GetObjectUUID(Player)));
+            for (var index = 0; index < AstromechChassisCatalog.All.Count; index++)
+            {
+                if (AstromechChassisCatalog.All[index].Appearance == worn.Appearance)
+                    return index;
+            }
+
+            return 0;
+        }
+
+        private void Wear(int tile)
+        {
+            var chassis = AstromechWorkshop.GetChassisAt(tile);
             if (chassis == null || !CanChange())
                 return;
 
@@ -171,135 +253,260 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
             RefreshChassis(dbPlayer);
             RefreshPaint(dbPlayer);
-            if (_activeZone != null)
-                SetPickerColor(ToGuiColor(Astromech.GetPaint(dbPlayer, _activeZone.Value)));
-        };
+        }
 
         private void RefreshChassis(Player dbPlayer)
         {
             var worn = Astromech.GetChassis(dbPlayer);
-            for (var index = 0; index < AstromechChassisCatalog.All.Count; index++)
+            for (var index = 0; index < Math.Min(TileCount, AstromechChassisCatalog.All.Count); index++)
             {
-                var text = AstromechChassisCatalog.All[index].Appearance == worn.Appearance ? WornText : WearText;
-                if (ChassisButtonText[index] != text)
-                    ChassisButtonText[index] = text;
+                var chassis = AstromechChassisCatalog.All[index];
+                SetIfChanged($"Tile{index}Image", AppearancePreview.Picture(AstromechWorkshop.GetPictureKey(chassis), _view));
+                SetIfChanged($"Tile{index}Selected", chassis.Appearance == worn.Appearance);
             }
+
+            SetIfChanged(nameof(PreviewImage), AppearancePreview.Picture(AstromechWorkshop.GetPictureKey(worn), _view));
+            SetIfChanged(nameof(PreviewLabel), worn.Name);
+            SetIfChanged(nameof(PreviewViewText), _view.ToString());
         }
 
         // ------------------------------------------------------------------ paint
 
-        public Action OnClickPick(AstromechPaintZone zone) => () =>
+        /// <summary>Chooses the zone the palette and picker paint.</summary>
+        public Action OnClickSwatch(AstromechPaintZone zone) => () =>
         {
-            if (!CanChange())
-                return;
-
             FlushColor();
-            if (_activeZone == zone)
-            {
-                _activeZone = null;
-                IsPickerVisible = false;
-                PickerLabel = string.Empty;
-            }
-            else
-            {
-                _activeZone = zone;
-                PickerLabel = $"Color: {GetZoneName(zone)}";
-                SetPickerColor(ToGuiColor(Astromech.GetPaint(DB.Get<Player>(GetObjectUUID(Player)), zone)));
-                IsPickerVisible = true;
-            }
-
-            RefreshPickText();
+            _zone = zone;
+            RefreshPaint(DB.Get<Player>(GetObjectUUID(Player)));
         };
 
-        public Action OnClickReset(AstromechPaintZone zone) => () =>
+        /// <summary>A right-click returns the zone to the paint its chassis comes with.</summary>
+        public Action OnMouseDownSwatch(AstromechPaintZone zone) => () =>
         {
-            if (!CanChange())
+            var button = (NuiMouseButton)JsonGetInt(JsonObjectGet(NuiGetEventPayload(), "mouse_btn"));
+            if (button != NuiMouseButton.Right || !CanChange())
                 return;
 
             if (_pendingColor != null && _pendingZone == zone)
                 _pendingColor = null;
             FlushColor();
             Astromech.ResetPaint(Player, zone);
-
-            var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
-            RefreshPaint(dbPlayer);
-            if (_activeZone == zone)
-                SetPickerColor(ToGuiColor(Astromech.GetPaint(dbPlayer, zone)));
+            RefreshPaint(DB.Get<Player>(GetObjectUUID(Player)));
         };
 
-        private void RefreshPaint(Player dbPlayer)
+        public Action OnClickPalette(int paletteIndex) => () =>
         {
-            PrimaryTint = ToGuiColor(Astromech.GetPaint(dbPlayer, AstromechPaintZone.Primary));
-            SecondaryTint = ToGuiColor(Astromech.GetPaint(dbPlayer, AstromechPaintZone.Secondary));
-            TrimTint = ToGuiColor(Astromech.GetPaint(dbPlayer, AstromechPaintZone.Trim));
-            RefreshPickText();
-        }
+            if (paletteIndex < 0 || paletteIndex >= TintMapMaterialRegistry.PaletteColorCount || !CanChange())
+                return;
 
-        private void RefreshPickText()
-        {
-            PrimaryPickText = _activeZone == AstromechPaintZone.Primary ? DoneText : PickText;
-            SecondaryPickText = _activeZone == AstromechPaintZone.Secondary ? DoneText : PickText;
-            TrimPickText = _activeZone == AstromechPaintZone.Trim ? DoneText : PickText;
-        }
-
-        private void SetPickerColor(GuiColor color)
-        {
-            // A color the player did not pick is never applied: a report equal to the stored paint is skipped.
             _pendingColor = null;
-            SelectedColor = color;
+            _paletteChoice[_zone] = paletteIndex;
+            Astromech.SetPaint(Player, _zone, AstromechWorkshop.GetPaletteColor(_zone, paletteIndex));
+            RefreshPaint(DB.Get<Player>(GetObjectUUID(Player)));
+        };
+
+        public Action OnMouseDownPicker() => () =>
+        {
+            var button = (NuiMouseButton)JsonGetInt(JsonObjectGet(NuiGetEventPayload(), "mouse_btn"));
+            var color = _unclaimedColor;
+            _unclaimedColor = null;
+            _unclaimedGeneration++;
+            if (button != NuiMouseButton.Left)
+                return;
+
+            _pickerPressed = true;
+            if (color != null)
+                QueueColor(new TintMapColor(color.R, color.G, color.B), fromPicker: true);
+        };
+
+        public Action OnMouseUpPicker() => () =>
+        {
+            var button = (NuiMouseButton)JsonGetInt(JsonObjectGet(NuiGetEventPayload(), "mouse_btn"));
+            if (button != NuiMouseButton.Left || !_pickerPressed)
+                return;
+
+            FlushColor();
+            CancelPickerPress();
+        };
+
+        private void OnPickerColor(GuiColor color)
+        {
+            if (color == null)
+                return;
+
+            if (_pickerPressed)
+            {
+                QueueColor(new TintMapColor(color.R, color.G, color.B), fromPicker: true);
+                return;
+            }
+
+            // A click's colour arrives before its press. Hold it briefly for that press and no longer.
+            _unclaimedColor = color;
+            var generation = ++_unclaimedGeneration;
+            var windowToken = WindowToken;
+            DelayCommand(ApplyDelay, () =>
+            {
+                if (generation == _unclaimedGeneration && windowToken == WindowToken)
+                    _unclaimedColor = null;
+            });
         }
 
-        private void QueueColor(AstromechPaintZone zone, GuiColor color)
+        private void OnRgbTyped()
         {
-            if (color == null || !CanChange())
+            // As in the Appearance Editor, a box keeps digits only and nothing above 255.
+            WithoutColorWatches(() =>
+            {
+                foreach (var name in new[] { nameof(CustomRed), nameof(CustomGreen), nameof(CustomBlue) })
+                {
+                    var typed = Get<string>(name);
+                    var kept = AstromechWorkshop.NormalizeChannel(typed);
+                    if (kept != typed)
+                        Set(kept, name);
+                }
+            });
+
+            if (AstromechWorkshop.TryParseRgb(CustomRed, CustomGreen, CustomBlue, out var color))
+                QueueColor(color, fromPicker: false);
+        }
+
+        private void CancelPickerPress()
+        {
+            _pickerPressed = false;
+            _unclaimedColor = null;
+            _unclaimedGeneration++;
+        }
+
+        private void QueueColor(TintMapColor color, bool fromPicker)
+        {
+            if (!CanChange())
                 return;
 
-            _pendingZone = zone;
+            _pendingZone = _zone;
             _pendingColor = color;
-            if (_colorFlushScheduled)
+            _pendingFromPicker = fromPicker;
+            if (_flushScheduled)
                 return;
 
-            _colorFlushScheduled = true;
+            _flushScheduled = true;
             var windowToken = WindowToken;
             DelayCommand(ApplyDelay, () =>
             {
                 if (windowToken == WindowToken && Gui.IsWindowOpen(Player, WindowType))
                     FlushColor();
                 else
-                    _colorFlushScheduled = false;
+                    _flushScheduled = false;
             });
         }
 
         private void FlushColor()
         {
-            _colorFlushScheduled = false;
-            var color = _pendingColor;
+            _flushScheduled = false;
+            var pending = _pendingColor;
             _pendingColor = null;
-            if (color == null || !Astromech.IsAstromech(Player))
+            if (pending == null || !Astromech.IsAstromech(Player))
                 return;
 
             var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
-            var picked = new TintMapColor(color.R, color.G, color.B);
-            if (picked == Astromech.GetPaint(dbPlayer, _pendingZone))
+            if (pending.Value == Astromech.GetPaint(dbPlayer, _pendingZone))
                 return;
 
-            Astromech.SetPaint(Player, _pendingZone, picked);
-            RefreshPaint(DB.Get<Player>(GetObjectUUID(Player)));
+            Astromech.SetPaint(Player, _pendingZone, pending.Value);
+            // The control the colour came from keeps what the player put in it.
+            RefreshPaint(DB.Get<Player>(GetObjectUUID(Player)),
+                keepPicker: _pendingFromPicker, keepFields: !_pendingFromPicker);
+        }
+
+        private void RefreshPaint(Player dbPlayer, bool keepPicker = false, bool keepFields = false)
+        {
+            SetIfChanged(nameof(PrimaryTint), ToGuiColor(Astromech.GetPaint(dbPlayer, AstromechPaintZone.Primary)));
+            SetIfChanged(nameof(SecondaryTint), ToGuiColor(Astromech.GetPaint(dbPlayer, AstromechPaintZone.Secondary)));
+            SetIfChanged(nameof(TrimTint), ToGuiColor(Astromech.GetPaint(dbPlayer, AstromechPaintZone.Trim)));
+            SetIfChanged(nameof(PrimarySelected), _zone == AstromechPaintZone.Primary);
+            SetIfChanged(nameof(SecondarySelected), _zone == AstromechPaintZone.Secondary);
+            SetIfChanged(nameof(TrimSelected), _zone == AstromechPaintZone.Trim);
+            SetIfChanged(nameof(ColorSheetResref), AstromechWorkshop.GetPaletteSheet(_zone));
+
+            var paint = Astromech.GetPaint(dbPlayer, _zone);
+            RefreshPaletteSelection(paint);
+            WithoutColorWatches(() =>
+            {
+                if (!keepPicker)
+                {
+                    CancelPickerPress();
+                    SetIfChanged(nameof(SelectedColor), ToGuiColor(paint));
+                }
+
+                if (!keepFields)
+                {
+                    SetIfChanged(nameof(CustomRed), paint.Red.ToString());
+                    SetIfChanged(nameof(CustomGreen), paint.Green.ToString());
+                    SetIfChanged(nameof(CustomBlue), paint.Blue.ToString());
+                }
+            });
+        }
+
+        /// <summary>Outlines the palette cell the paint is, as the Appearance Editor outlines its selection.</summary>
+        private void RefreshPaletteSelection(TintMapColor paint)
+        {
+            var index = _paletteChoice.TryGetValue(_zone, out var chosen) &&
+                        AstromechWorkshop.GetPaletteColor(_zone, chosen) == paint
+                ? chosen
+                : AstromechWorkshop.FindPaletteIndex(_zone, paint);
+            var points = Array.Empty<float>();
+            if (index >= 0)
+            {
+                var left = AppearanceEditorViewModel.PaletteHeaderWidth +
+                           index % AstromechWorkshop.PaletteColumns * AppearanceEditorViewModel.PaletteCellWidth + 1f;
+                var top = AppearanceEditorViewModel.PaletteHeaderHeight +
+                          index / AstromechWorkshop.PaletteColumns * AppearanceEditorViewModel.PaletteCellHeight + 1f;
+                var right = left + AppearanceEditorViewModel.PaletteCellWidth - 2f;
+                var bottom = top + AppearanceEditorViewModel.PaletteCellHeight - 2f;
+                points = new[] { left, top, right, top, right, bottom, left, bottom, left, top };
+            }
+
+            if (!points.SequenceEqual(_paletteOutline))
+            {
+                _paletteOutline = points;
+                var list = new GuiBindingList<float>();
+                foreach (var value in points)
+                    list.Add(value);
+                PaletteSelectionPoints = list;
+            }
+
+            SetIfChanged(nameof(IsPaletteSelectionVisible), points.Length > 0);
+        }
+
+        /// <summary>
+        /// Runs an update of the picker and RGB boxes with their watches off, so the client's echo of a
+        /// value the server set is not taken for the player's choice.
+        /// </summary>
+        private void WithoutColorWatches(Action update)
+        {
+            var restore = _colorBindingsWatched;
+            if (restore)
+                SetColorWatches(false);
+
+            try
+            {
+                update();
+            }
+            finally
+            {
+                if (restore)
+                    SetColorWatches(true);
+            }
+        }
+
+        private void SetColorWatches(bool watched)
+        {
+            foreach (var binding in ColorBindings)
+                NuiSetBindWatch(Player, WindowToken, binding, watched);
+            _colorBindingsWatched = watched;
         }
 
         private static GuiColor ToGuiColor(TintMapColor color)
         {
             return new GuiColor(color.Red, color.Green, color.Blue);
-        }
-
-        private static string GetZoneName(AstromechPaintZone zone)
-        {
-            return zone switch
-            {
-                AstromechPaintZone.Secondary => "Secondary",
-                AstromechPaintZone.Trim => "Trim",
-                _ => "Primary"
-            };
         }
 
         // ------------------------------------------------------------------ size
@@ -313,54 +520,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!CanChange())
                 return;
 
-            var scale = AstromechWorkshop.StepScale(ScaleValue, direction);
-            ScaleValue = scale;
-            ScaleText = AstromechWorkshop.FormatScale(scale);
-            QueueScale(scale);
-        }
-
-        private void QueueScale(float scale)
-        {
-            if (!CanChange())
-                return;
-
-            _pendingScale = AstromechWorkshop.RoundScale(scale);
-            _hasPendingScale = true;
-            if (_scaleFlushScheduled)
-                return;
-
-            _scaleFlushScheduled = true;
-            var windowToken = WindowToken;
-            DelayCommand(ApplyDelay, () =>
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(Player));
+            var current = AstromechWorkshop.RoundScale(dbPlayer?.AppearanceScale ?? 1.0f);
+            var next = AstromechWorkshop.StepScale(current, direction);
+            if (Math.Abs(next - current) < 0.0001f)
             {
-                if (windowToken == WindowToken && Gui.IsWindowOpen(Player, WindowType))
-                    FlushScale();
-                else
-                    _scaleFlushScheduled = false;
-            });
+                SendMessageToPC(Player, direction > 0 ? AstromechWorkshop.LargestMessage : AstromechWorkshop.SmallestMessage);
+                return;
+            }
+
+            Astromech.SetScale(Player, next);
+            RefreshScale(DB.Get<Player>(GetObjectUUID(Player)));
         }
 
-        private void FlushScale()
+        private void RefreshScale(Player dbPlayer)
         {
-            _scaleFlushScheduled = false;
-            if (!_hasPendingScale)
-                return;
-
-            _hasPendingScale = false;
-            if (!Astromech.IsAstromech(Player) || Math.Abs(_pendingScale - _appliedScale) < 0.0001f)
-                return;
-
-            _appliedScale = _pendingScale;
-            Astromech.SetScale(Player, _appliedScale);
+            SetIfChanged(nameof(ScaleText), $"Size: {AstromechWorkshop.FormatScale(dbPlayer?.AppearanceScale ?? 1.0f)}");
         }
 
         // ------------------------------------------------------------------ closing
 
         public override Action OnWindowClosed() => () =>
         {
-            // Whatever the last drag left is kept when the window closes before the pause ends.
+            // Whatever the last drag or typed colour left is kept when the window closes before the pause ends.
             FlushColor();
-            FlushScale();
         };
     }
 }

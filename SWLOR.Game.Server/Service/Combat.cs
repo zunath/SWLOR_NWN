@@ -162,6 +162,8 @@ namespace SWLOR.Game.Server.Service
             public bool StaminaRestoreApplied { get; set; }
             public int HitStaminaRefunded { get; set; }
             public int DeferredImpactCount { get; set; }
+            /// <summary>Scheduled impacts running under this captured activation; they outlive the 35 second window.</summary>
+            public int ScheduledImpactDepth { get; set; }
         }
 
         private sealed class SuppressionAbilityUseState
@@ -10619,7 +10621,7 @@ namespace SWLOR.Game.Server.Service
             if (!_abilityStaminaCosts.TryGetValue(key, out state))
                 return false;
 
-            if ((DateTime.UtcNow - state.SpentAt).TotalSeconds <= 35)
+            if (state.ScheduledImpactDepth > 0 || (DateTime.UtcNow - state.SpentAt).TotalSeconds <= 35)
                 return true;
 
             _abilityStaminaCosts.Remove(key);
@@ -10691,12 +10693,14 @@ namespace SWLOR.Game.Server.Service
             {
                 _abilityStaminaCosts.TryGetValue(key, out var current);
                 _abilityStaminaCosts[key] = state;
+                state.ScheduledImpactDepth++;
                 try
                 {
                     impact();
                 }
                 finally
                 {
+                    state.ScheduledImpactDepth--;
                     if (current == null)
                         _abilityStaminaCosts.Remove(key);
                     else

@@ -474,6 +474,46 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(stamina + 16, Stat.GetCurrentStamina(caster), "neither activation spends the other's refund budget");
         }
 
+        [EngineTest("Scheduled device pulses keep refunding after the cost context's ordinary lifetime", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task ScheduledDevicePulsesOutliveTheCostContextLifetime(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            await ctx.WaitFrameAsync();
+            PrepareStationaryCreature(ctx, caster);
+            ctx.SetNPCResources(caster, 100, 100);
+            var area = Ability.GetAbilityDetail(FeatType.KillzoneBeacon1);
+
+            // Ages the paid cost past the 35 second window, as a long field's late pulse sees it.
+            void AgeCostContext(int seconds)
+            {
+                var costs = (System.Collections.IDictionary)typeof(Combat)
+                    .GetField("_abilityStaminaCosts", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)!
+                    .GetValue(null);
+                var state = costs[(caster, area)]!;
+                state.GetType().GetProperty("SpentAt")!.SetValue(state, DateTime.UtcNow.AddSeconds(-seconds));
+            }
+
+            Stat.ReduceStamina(caster, 10);
+            var before = Stat.GetCurrentStamina(caster);
+            Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
+            var inCostContext = Combat.CaptureAbilityStaminaCostContext(caster, area);
+            AgeCostContext(40);
+            Combat.CompleteAbilityStaminaCostContext(caster, area);
+            ctx.Assert(inCostContext != null, "an activation that paid stamina can be captured");
+
+            var refunded = 0;
+            inCostContext(() => refunded = Combat.RestoreAbilityHitStamina(caster, area, 2));
+            ctx.AssertEqual(2, refunded, "a scheduled pulse 40 seconds after the cast still refunds from the paid cost");
+            ctx.AssertEqual(before + 2, Stat.GetCurrentStamina(caster), "the refund reaches the caster");
+            ctx.AssertEqual(0, Combat.RestoreAbilityHitStamina(caster, area, 2), "outside a captured pulse the context stays removed");
+
+            // An ordinary uncaptured cost still expires after 35 seconds.
+            Combat.ApplyAbilityStaminaCostFPRestore(caster, area, 10);
+            AgeCostContext(40);
+            ctx.AssertEqual(0, Combat.RestoreAbilityHitStamina(caster, area, 2), "an uncaptured paid cost expires after its ordinary lifetime");
+            Combat.CompleteAbilityStaminaCostContext(caster, area);
+        }
+
         [EngineTest("Deadeye Reload builds from non-critical abilities of every ranged weapon skill only", Category = "PerkTracker", TimeoutSeconds = 30f)]
         public static async Task DeadeyeReloadBuildsFromEveryRangedSkill(EngineTestContext ctx)
         {

@@ -208,11 +208,11 @@ public class ForceLightGuardianTests
             weaponAddDamageStart - weaponProcessDamageStart);
         var abilityDamage = AbilitySource.Read();
         var abilityPreDamageNotification = abilityDamage.IndexOf(
-            "_statusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
+            "_statusEffectCombatEvents.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);
         abilityPreDamageNotification.Should().BeGreaterThan(-1);
         var abilityPostDamageNotification = abilityDamage.IndexOf(
-            "_statusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);",
+            "_statusEffectCombatEvents.NotifyDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);
         var immediateDamageApplication = abilityDamage.IndexOf(
             "EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType())",
@@ -228,7 +228,7 @@ public class ForceLightGuardianTests
         var queuedDamageFlush = AbilitySource.Members("FlushDamageEffects");
         queuedDamageFlush.Should().NotBeEmpty();
         var queuedPreDamageNotification = queuedDamageFlush.IndexOf(
-            "_statusEffect.NotifyPreDamageStatusEffects(",
+            "_statusEffectCombatEvents.NotifyPreDamageStatusEffects(",
             StringComparison.Ordinal);
         var queuedDamageApplication = queuedDamageFlush.IndexOf(
             "EffectDamage(effect.Damage, effect.DamageType)",
@@ -245,7 +245,7 @@ public class ForceLightGuardianTests
             "the queued hit that consumes the final Guardian Ward pool must reflect before its damage is applied, then the next hit revalidates the consumed pool");
 
         var weaponPreDamageNotification = weaponProcessDamage.IndexOf(
-            "StatusEffect.NotifyPreDamageStatusEffects(",
+            "StatusEffectCombatEvent.NotifyPreDamageStatusEffects(",
             StringComparison.Ordinal);
         weaponPreDamageNotification.Should().BeGreaterThan(-1);
         weaponPreDamageNotification.Should().BeLessThan(

@@ -19,12 +19,14 @@ public class OrdinaryAttackTraitsService : IOrdinaryAttackTraitsService
     private readonly IStatService _stat;
     private readonly IStatusEffectService _statusEffect;
     private readonly IStatusEffectApplicationService _statusEffectApplication;
+    private readonly IStatusEffectDurationService _statusEffectDuration;
 
-    public OrdinaryAttackTraitsService(IStatService stat, IStatusEffectService statusEffect, IStatusEffectApplicationService statusEffectApplication)
+    public OrdinaryAttackTraitsService(IStatService stat, IStatusEffectService statusEffect, IStatusEffectApplicationService statusEffectApplication, IStatusEffectDurationService statusEffectDuration)
     {
         _stat = stat;
         _statusEffect = statusEffect;
         _statusEffectApplication = statusEffectApplication;
+        _statusEffectDuration = statusEffectDuration;
     }
 
     public void RecordTargetChange(uint actor, uint target)
@@ -117,7 +119,7 @@ public class OrdinaryAttackTraitsService : IOrdinaryAttackTraitsService
 
     /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
     protected virtual void RefreshHasteEffectDuration(uint actor, float remaining) =>
-        _statusEffect.RefreshStatusEffectDuration(actor, typeof(OrdinaryAttackHasteStatusEffect), actor, remaining);
+        _statusEffectDuration.RefreshStatusEffectDuration(actor, typeof(OrdinaryAttackHasteStatusEffect), actor, remaining);
 
     /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
     protected virtual void ApplyHasteEffect(uint actor, int stacks, int hastePerStack, float remaining) =>

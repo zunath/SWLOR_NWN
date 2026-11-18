@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             StatusEffectApplication.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 2f);
             var effect = StatusEffect.GetStatusEffect(npc, typeof(KoltoMistHealingStatusEffect));
 
-            ctx.Assert(StatusEffect.RefreshStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 5f),
+            ctx.Assert(StatusEffectDuration.RefreshStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 5f),
                 "the passive status must accept a duration refresh");
             await ctx.DelaySecondsAsync(3f);
             ctx.Assert(StatusEffect.GetStatusEffect(npc, typeof(KoltoMistHealingStatusEffect)) == effect,
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var npc = ctx.SpawnCreature("nw_rat001");
             await ctx.WaitFrameAsync();
             StatusEffectApplication.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 60f);
-            StatusEffect.ExtendStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 6f);
+            StatusEffectDuration.ExtendStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 6f);
             var effect = StatusEffect.GetStatusEffect(npc, typeof(KoltoMistHealingStatusEffect));
             ctx.Assert(effect != null, "the renewed status must be present before native removal");
             RemoveEffectByTag(npc, effect.Id);

@@ -33,7 +33,7 @@ public class DestroyedOwnerCleanupTests
         File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "OrdinaryAttackTraitsService.cs"))
             .Should().Contain("public void ForgetDestroyed(uint actor) => _states.Remove(actor);");
         File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "PairedRangedAttackCycle.cs"))
-            .Should().Contain("if (PendingHands.Remove(actor)) StatusEffect.ForgetDestroyedNativeAttackSwing(actor);");
+            .Should().Contain("if (PendingHands.Remove(actor)) StatusEffectCombatEvent.ForgetDestroyedNativeAttackSwing(actor);");
         var statusEffect = StatusEffectSource.Read()
             .Replace("\r\n", "\n");
         var start = statusEffect.IndexOf("public void ForgetDestroyedNativeAttackSwing(", StringComparison.Ordinal);

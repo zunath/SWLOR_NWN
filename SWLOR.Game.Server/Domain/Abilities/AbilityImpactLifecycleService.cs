@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IMeleeTechniqueService _meleeTechnique;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IAbilityDamageDeliveryService _damageDelivery;
-        private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectCombatEventService _statusEffectCombatEvents;
         private readonly ICombatQueriesService _queries;
         private readonly ICombatAbilityBonusService _abilityBonus;
         private readonly ICombatAbilityImpactService _abilityImpact;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IMeleeTechniqueService meleeTechnique,
             ICombatRecorderService combatRecorder,
             IAbilityDamageDeliveryService damageDelivery,
-            IStatusEffectService statusEffect,
+            IStatusEffectCombatEventService statusEffectCombatEvents,
             ICombatQueriesService queries,
             ICombatAbilityBonusService abilityBonus,
             ICombatAbilityImpactService abilityImpact,
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             _meleeTechnique = meleeTechnique;
             _combatRecorder = combatRecorder;
             _damageDelivery = damageDelivery;
-            _statusEffect = statusEffect;
+            _statusEffectCombatEvents = statusEffectCombatEvents;
             _queries = queries;
             _abilityBonus = abilityBonus;
             _abilityImpact = abilityImpact;
@@ -350,7 +350,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                         impact.Summary.SkillType);
                 }
 
-                _statusEffect.NotifyAttackAttemptStatusEffects(
+                _statusEffectCombatEvents.NotifyAttackAttemptStatusEffects(
                     activator,
                     impact.Summary.SkillType,
                     impact.Summary);

@@ -20,13 +20,11 @@ public sealed partial class TestStatusEffectService : StatusEffectService
 
     public TestStatusEffectService(
         StatusEffectBench bench,
-        IStatusResistance resistance,
         IStatusEffectCatalogService statusCatalog,
-        ICombatRecorderService combatRecorder,
         IMessagingService messaging,
         IPlayerNameService playerName,
         IGuiService gui)
-        : base(resistance, statusCatalog, combatRecorder, messaging, playerName, gui, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IActiveAbilityImpact>())
+        : base(statusCatalog, messaging, playerName, gui)
     {
         _bench = bench;
     }

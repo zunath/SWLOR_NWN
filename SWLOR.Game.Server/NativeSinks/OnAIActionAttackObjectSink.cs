@@ -553,12 +553,12 @@ public sealed unsafe class OnAIActionAttackObjectSink : IOnAIActionAttackObjectS
         SkillType attackSkillType, SkillType mainSkill, SkillType offSkill, bool isDualWieldCycle,
         bool isTwinPistolCycle)
     {
-        var hasLimitedAttackDelayReduction = StatusEffect.TryGetLimitedAttackDelayReduction(
+        var hasLimitedAttackDelayReduction = StatusEffectCombatEvent.TryGetLimitedAttackDelayReduction(
             pCreature.m_idSelf,
             attackSkillType,
             out var limitedAttackDelayReductionPercent,
             out var limitedAttackDelayReductionRemainingAttacks);
-        var hasLimitedAttackNoDelay = StatusEffect.TryGetLimitedAttackNoDelay(
+        var hasLimitedAttackNoDelay = StatusEffectCombatEvent.TryGetLimitedAttackNoDelay(
             pCreature.m_idSelf,
             attackSkillType,
             out var limitedAttackNoDelayRemainingAttacks);
@@ -899,7 +899,7 @@ public sealed unsafe class OnAIActionAttackObjectSink : IOnAIActionAttackObjectS
         }
         else
         {
-            StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);
+            StatusEffectCombatEvent.BeginNativeAttackSwing(pCreature.m_idSelf);
             try
             {
                 var firstAttack = pCreature.m_pcCombatRound.m_nCurrentAttack;
@@ -909,7 +909,7 @@ public sealed unsafe class OnAIActionAttackObjectSink : IOnAIActionAttackObjectS
             }
             finally
             {
-                StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);
+                StatusEffectCombatEvent.EndNativeAttackSwing(pCreature.m_idSelf);
             }
         }
     }

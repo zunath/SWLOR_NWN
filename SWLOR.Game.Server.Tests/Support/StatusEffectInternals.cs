@@ -26,7 +26,7 @@ public static class StatusEffectInternals
     public static readonly Type NativeType = typeof(StatusEffectService);
 
     /// <summary>Part 6, the combat events: the native attack swing depth and the deferred list.</summary>
-    public static readonly Type CombatEventsType = typeof(StatusEffectService);
+    public static readonly Type CombatEventsType = typeof(StatusEffectCombatEventService);
 
     /// <summary>Part 7, the session: <c>_loggedOutPlayerEffects</c> and its private nested <c>LoggedOutStatusEffects</c>.</summary>
     public static readonly Type SessionType = typeof(StatusEffectSessionService);
@@ -63,7 +63,7 @@ public static class StatusEffectInternals
 
     private static object Native => Resolve<IStatusEffectService>();
 
-    private static object CombatEvents => Resolve<IStatusEffectService>();
+    private static object CombatEvents => Resolve<IStatusEffectCombatEventService>();
 
     private static object Resolve<TInterface>()
     {

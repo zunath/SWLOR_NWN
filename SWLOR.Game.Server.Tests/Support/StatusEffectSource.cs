@@ -28,6 +28,8 @@ public static class StatusEffectSource
         "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
         "SWLOR.Game.Server/Domain/Character/StatusEffectCatalogService.cs",
         "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+        "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+        "SWLOR.Game.Server/Domain/Character/StatusEffectCombatEventService.cs",
         "SWLOR.Game.Server/Domain/Character/StatusEffectSessionService.cs",
         "SWLOR.Game.Server/Domain/Character/StatusEffectIconMap.cs",
         "SWLOR.Game.Server/Domain/Character/LeadershipDamageReductionRules.cs",
@@ -43,6 +45,8 @@ public static class StatusEffectSource
         "SWLOR.Game.Server/Domain/Character/IStatusEffectService.cs",
         "SWLOR.Game.Server/Domain/Character/IStatusEffectCatalogService.cs",
         "SWLOR.Game.Server/Domain/Character/IStatusEffectApplicationService.cs",
+        "SWLOR.Game.Server/Domain/Character/IStatusEffectDurationService.cs",
+        "SWLOR.Game.Server/Domain/Character/IStatusEffectCombatEventService.cs",
         "SWLOR.Game.Server/Domain/Character/IStatusEffectSessionService.cs",
     };
 
@@ -54,6 +58,8 @@ public static class StatusEffectSource
         "IStatusEffectService",
         "IStatusEffectCatalogService",
         "IStatusEffectApplicationService",
+        "IStatusEffectDurationService",
+        "IStatusEffectCombatEventService",
         "IStatusEffectSessionService",
     };
 

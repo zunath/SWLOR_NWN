@@ -602,7 +602,7 @@ public class GeneratedWeaponPerkBehaviorTests
     {
         var root = FindRepositoryRoot();
         var nativeSource = NativeCombatSource.AttackRoll();
-        nativeSource.Should().Contain("StatusEffect.NotifyAttackAttemptStatusEffects(");
+        nativeSource.Should().Contain("StatusEffectCombatEvent.NotifyAttackAttemptStatusEffects(");
         nativeSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, attacker.m_pcCombatRound.m_nCurrentAttack)");
         nativeSource.Should().Contain("WeaponAttackCycle.GetAttackWeapon(attacker, pCombatRound.GetWeaponAttackType())");
         var placeableBranchIndex = nativeSource.IndexOf(
@@ -613,7 +613,7 @@ public class GeneratedWeaponPerkBehaviorTests
             placeableBranchIndex,
             StringComparison.Ordinal);
         var placeableNotificationIndex = nativeSource.IndexOf(
-            "StatusEffect.NotifyAttackAttemptStatusEffects(",
+            "StatusEffectCombatEvent.NotifyAttackAttemptStatusEffects(",
             placeableBranchIndex,
             StringComparison.Ordinal);
         var placeableBranch = nativeSource[placeableBranchIndex..placeableReturnIndex];
@@ -695,13 +695,13 @@ public class GeneratedWeaponPerkBehaviorTests
         var statusEffectSource = StatusEffectSource.Read();
 
         var beginSwing = nativeAttackSource.IndexOf(
-            "StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);",
+            "StatusEffectCombatEvent.BeginNativeAttackSwing(pCreature.m_idSelf);",
             StringComparison.Ordinal);
         var resolveAttack = nativeAttackSource.IndexOf(
             "pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);",
             StringComparison.Ordinal);
         var endSwing = nativeAttackSource.IndexOf(
-            "StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);",
+            "StatusEffectCombatEvent.EndNativeAttackSwing(pCreature.m_idSelf);",
             StringComparison.Ordinal);
 
         beginSwing.Should().BeGreaterThanOrEqualTo(0);
@@ -748,7 +748,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         try
         {
-            StatusEffect.BeginNativeAttackSwing(creature);
+            StatusEffectCombatEvent.BeginNativeAttackSwing(creature);
             StatusEffectApplication.ApplyStatusEffect(creature, creature, statusEffect, 30f)
                 .Should()
                 .BeTrue();
@@ -1018,7 +1018,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         pathogenSource.Should().Contain("SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }");
         pathogenSource.Should().NotContain("ConsumeSourceStatusEffectsOnHit = true");
-        generatedAbilitySource.Should().Contain("StatusEffect.ExtendStatusEffectDuration(\n                        target,\n                        statusEffectType,\n                        activator,");
+        generatedAbilitySource.Should().Contain("StatusEffectDuration.ExtendStatusEffectDuration(\n                        target,\n                        statusEffectType,\n                        activator,");
     }
 
     [Test]
@@ -1917,7 +1917,7 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var combatSource = CombatSource.Read();
         var statusEffectSource = StatusEffectSource.Read();
-        combatSource.Should().Contain("_statusEffect.OnGuardedHit(defender, attacker, preventedDamage)");
+        combatSource.Should().Contain("_statusEffectCombatEvents.OnGuardedHit(defender, attacker, preventedDamage)");
         statusEffectSource.Should().Contain("OfType<IGuardedHitStatusEffect>()");
 
         var steelShoulder = new SteelShoulderAbilityDefinition().BuildAbilities()[FeatType.TwinGuardStance1];

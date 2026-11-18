@@ -41,7 +41,7 @@ public class StatusResistanceTests
     public void ThePortAnswersWhatTheServiceAnswers()
     {
         var service = new ResistanceService(new InMemoryDBService(), FacadeForwarder.For<IMimicryService>(),
-            FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>());
+            FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IStatusEffectService>());
         IStatusResistance port = service;
 
         port.IsValidResistanceType(ResistanceType.Fire).Should().Be(service.IsValidResistanceType(ResistanceType.Fire)).And.BeTrue();

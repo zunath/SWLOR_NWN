@@ -759,9 +759,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         var round = native.m_pcCombatRound;
                         round.StartCombatRound(target);
                         var count = WeaponAttackCycle.PrepareDualWieldAttacks(round, cycles * 2);
-                        StatusEffect.BeginNativeAttackSwing(attacker);
+                        StatusEffectCombatEvent.BeginNativeAttackSwing(attacker);
                         try { native.ResolveAttack(target, count, CombatRules.BaseAttackDelayMilliseconds); }
-                        finally { StatusEffect.EndNativeAttackSwing(attacker); }
+                        finally { StatusEffectCombatEvent.EndNativeAttackSwing(attacker); }
                     });
                     ctx.AssertEqual(cycles * 2, _hits.Count, "Every scheduled hand deals its own damage");
                     ctx.AssertEqual(cycles, _hits.Count(hit => hit.Weapon == main && hit.Type == CombatDamageType.Ice), "Cold main-hand rolls");
@@ -963,9 +963,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             round.StartCombatRound(target);
             var firstAttack = round.m_nCurrentAttack;
             var count = WeaponAttackCycle.PrepareDualWieldAttacks(round, attacks);
-            StatusEffect.BeginNativeAttackSwing(attacker);
+            StatusEffectCombatEvent.BeginNativeAttackSwing(attacker);
             try { native.ResolveAttack(target, count, CombatRules.BaseAttackDelayMilliseconds); }
-            finally { StatusEffect.EndNativeAttackSwing(attacker); }
+            finally { StatusEffectCombatEvent.EndNativeAttackSwing(attacker); }
             return firstAttack;
         }
 

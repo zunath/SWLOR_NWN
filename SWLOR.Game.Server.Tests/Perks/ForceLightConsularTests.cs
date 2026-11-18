@@ -672,7 +672,7 @@ public class ForceLightConsularTests
         var root = FindRepositoryRoot();
         var healing = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceControlHealingEffects.cs").FullName);
 
-        healing.Should().Contain("StatusEffect.RefreshStatusEffectDuration(",
+        healing.Should().Contain("StatusEffectDuration.RefreshStatusEffectDuration(",
             "a fresh application restarts the effect's cadence, so a running instance is refreshed instead");
 
         // Force Sanctuary heals faster than this effect ticks, so re-applying on each pulse would

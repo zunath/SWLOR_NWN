@@ -88,7 +88,7 @@ public class StatusEffectListenerTests : StatusEffectServiceTestBase
     {
         var bare = Bench.CreateServiceWithoutListeners();
 
-        var notify = () => bare.NotifyPreDamageStatusEffects(Caster, Target, 7, CombatDamageType.Fire, CombatDamageDeliveryType.Direct);
+        var notify = () => new TestStatusEffectCombatEventService(Bench, bare).NotifyPreDamageStatusEffects(Caster, Target, 7, CombatDamageType.Fire, CombatDamageDeliveryType.Direct);
 
         notify.Should().Throw<InvalidOperationException>().WithMessage("*melee listener*");
     }

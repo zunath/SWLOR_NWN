@@ -27,7 +27,7 @@
         "Gui"
       ],
       "featureFolders": [
-        "GuiDefinition"
+        "AppearanceEditing", "GuiDefinition"
       ]
     },
     "Combat": {

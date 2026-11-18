@@ -1,0 +1,76 @@
+== step 1 start recording in the cantina
+schedule every 1s after 1s
+log DM: Combat recording 'scripted fight' started in Cantina (res-Cantina): <recordings folder>/CombatRecordings/20261118T120000000Z-scripted-fight.jsonl
+Start returned True: Combat recording 'scripted fight' started in Cantina. File: <recordings folder>/CombatRecordings/20261118T120000000Z-scripted-fight.jsonl
+IsRecording True RecordedArea Cantina
+== step 2 a second start is refused
+Start returned False: A combat recording is already running in Cantina ('scripted fight'). Stop it first.
+== step 3 status of the recording
+GetStatus starts: Recording 'scripted fight' in Cantina for 0s
+== step 4 ability cast, cost, attack and expected damage
+HasPendingDamage True
+== step 5 temporary hit points granted, then damage that they absorb
+== step 6 temporary hit points trimmed
+== step 7 ability impact
+== step 8 denied, queued and interrupted abilities
+TakeToggleDeactivation True
+== step 9 a heal with a pvp reduction and a nested heal
+inner reduction 25, outer reduction 60
+== step 10 a healing reaction is written after the heal
+== step 11 resources and items
+== step 12 a status applied, refreshed and removed
+== step 13 something outside the recorded area is ignored
+== step 14 a snapshot tick
+== step 15 a creature dies
+== step 16 a player dies
+== step 17 the player respawns and the creature is resurrected
+== step 18 a subdual
+== step 19 stop recording
+schedule cancelled
+log DM: Combat recording 'scripted fight' stopped (scripted stop) after 0s, 42 events.
+Stop returned True: Combat recording 'scripted fight' stopped after 0s with 42 events and 3 participants. Files: <recordings folder>/CombatRecordings/20261118T120000000Z-scripted-fight.jsonl and <recordings folder>/CombatRecordings/20261118T120000000Z-scripted-fight.summary.json
+IsRecording False
+== step 20 the events file, line by line
+events file has 42 lines
+1: {"type":"recording_started","ts_ms":1700000000100,"frame":2,"label":"scripted fight","area_name":"Cantina","area_resref":"res-Cantina","started_utc":"2023-11-14T22:13:20.1000000Z"}
+2: {"type":"participant","ts_ms":1700000000100,"frame":2,"id":1,"name":"Attacker","player":true}
+3: {"type":"snapshot","ts_ms":1700000000100,"frame":2,"creature":1,"hp":93,"max_hp":200,"temp_hp":7,"fp":11,"max_fp":22,"stm":33,"max_stm":44,"in_combat":true,"dead":false}
+4: {"type":"participant","ts_ms":1700000000400,"frame":8,"id":2,"name":"Defender","player":false,"resref":"res-Defender"}
+5: {"type":"ability_cast","ts_ms":1700000000400,"frame":8,"caster":1,"target":2,"ability":"Strike","feat":null,"rank":3,"activation":"casted","delay_s":1.5,"toggled_off":false}
+6: {"type":"ability_cost","ts_ms":1700000000400,"frame":8,"caster":1,"ability":"Strike","feat":null,"rank":3,"fp":0,"stm":0}
+7: {"type":"attack","ts_ms":1700000000400,"frame":8,"attacker":1,"defender":2,"mode":"ability","ability":"Strike","result":"deflect","hit_chance":88}
+8: {"type":"temp_hp_grant","ts_ms":1700000000500,"frame":10,"source":2,"target":2,"source_kind":"ability","source_name":"Strike","effect_key":"shield","amount":30,"duration_s":12.5}
+9: {"type":"damage","ts_ms":1700000000500,"frame":10,"source":1,"target":2,"source_kind":"ability","source_name":"Strike","damage":{"physical":40},"total":40,"hp_lost":10,"overkill":0,"temp_hp_absorbed":20,"hp_before":100,"hp_after":90,"temp_hp_before":30,"temp_hp_after":10,"max_hp":200,"engine_applied":true}
+10: {"type":"temp_hp_absorb","ts_ms":1700000000500,"frame":10,"attacker":1,"target":2,"effect_key":"shield","amount":20,"granted_by":2,"granted_kind":"ability","granted_name":"Strike"}
+11: {"type":"temp_hp_trim","ts_ms":1700000000600,"frame":12,"target":2,"effect_key":"shield","trimmed":5,"remaining":5,"granted_by":2,"granted_kind":"ability","granted_name":"Strike"}
+12: {"type":"ability_impact","ts_ms":1700000000700,"frame":14,"caster":1,"target":2,"ability":"Strike","feat":null,"rank":3,"targets_hit":2,"critical_hits":1,"damage_queued":40,"recurring":false}
+13: {"type":"ability_impact","ts_ms":1700000000700,"frame":14,"caster":1,"target":null,"ability":"Strike","feat":null,"rank":3,"targets_hit":2,"critical_hits":1,"damage_queued":40,"recurring":true}
+14: {"type":"ability_denied","ts_ms":1700000000800,"frame":16,"caster":1,"target":2,"ability":"Strike","feat":null,"rank":3,"reason":"Not enough FP","stage":"completion"}
+15: {"type":"ability_queued","ts_ms":1700000000800,"frame":16,"caster":1,"target":2,"ability":"Strike","feat":null,"rank":3}
+16: {"type":"ability_interrupted","ts_ms":1700000000800,"frame":16,"caster":1,"ability":"Strike","feat":null,"rank":3,"cause":"moved","interrupted_by":null}
+17: {"type":"ability_interrupted","ts_ms":1700000000800,"frame":16,"caster":1,"ability":"Strike","feat":null,"rank":3,"cause":"damage","interrupted_by":2,"interrupted_by_kind":"unattributed","interrupted_by_name":null}
+18: {"type":"participant","ts_ms":1700000000900,"frame":18,"id":3,"name":"Other","player":false,"resref":"res-Other"}
+19: {"type":"heal","ts_ms":1700000000900,"frame":18,"source":3,"target":2,"source_kind":"ability","source_name":"Strike","requested":40,"effective":60,"overheal":0,"pvp_reduced":60,"hp_before":20,"hp_after":80,"max_hp":200}
+20: {"type":"heal","ts_ms":1700000001000,"frame":20,"source":1,"target":2,"source_kind":"unattributed","source_name":null,"requested":10,"effective":10,"overheal":0,"pvp_reduced":0,"hp_before":50,"hp_after":60,"max_hp":200}
+21: {"type":"resource","ts_ms":1700000001000,"frame":20,"creature":2,"resource":"stm","delta":4,"after":10,"reason":"unattributed","reason_name":null}
+22: {"type":"resource","ts_ms":1700000001100,"frame":22,"creature":1,"resource":"fp","delta":-5,"after":15,"reason":"unattributed","reason_name":null}
+23: {"type":"resource","ts_ms":1700000001100,"frame":22,"creature":1,"resource":"stm","delta":-8,"after":0,"reason":"unattributed","reason_name":null}
+24: {"type":"resource","ts_ms":1700000001100,"frame":22,"creature":1,"resource":"item","delta":-2,"item":"medpac","reason":"unattributed","reason_name":null}
+25: {"type":"resource","ts_ms":1700000001100,"frame":22,"creature":1,"resource":"item","delta":-1,"item":"res-Item","reason":"item","reason_name":"Item"}
+26: {"type":"resource","ts_ms":1700000001100,"frame":22,"creature":1,"resource":"fp","delta":3,"after":18,"reason":"setup","reason_name":null}
+27: {"type":"status_apply","ts_ms":1700000001200,"frame":24,"source":1,"target":2,"effect":"Exposed","effect_type":"ExposedStatusEffect","ability":null,"duration_s":6}
+28: {"type":"status_refresh","ts_ms":1700000001200,"frame":24,"source":1,"target":2,"effect":"Exposed","effect_type":"ExposedStatusEffect","ability":null,"duration_s":6}
+29: {"type":"status_apply","ts_ms":1700000001200,"frame":24,"source":2,"target":2,"effect":"Absolute Defense","effect_type":"AbsoluteDefenseStatusEffect","ability":null,"duration_s":null}
+30: {"type":"status_remove","ts_ms":1700000001200,"frame":24,"source":1,"target":2,"effect":"Exposed","effect_type":"ExposedStatusEffect","reason":"removed"}
+31: {"type":"status_remove","ts_ms":1700000001200,"frame":24,"source":2,"target":2,"effect":"Absolute Defense","effect_type":"AbsoluteDefenseStatusEffect","reason":"replaced"}
+32: {"type":"snapshot","ts_ms":1700000001400,"frame":28,"creature":1,"hp":93,"max_hp":200,"temp_hp":7,"fp":11,"max_fp":22,"stm":33,"max_stm":44,"in_combat":true,"dead":false}
+33: {"type":"snapshot","ts_ms":1700000001400,"frame":28,"creature":2,"hp":93,"max_hp":200,"temp_hp":7,"fp":11,"max_fp":22,"stm":33,"max_stm":44,"in_combat":true,"dead":false}
+34: {"type":"snapshot","ts_ms":1700000001400,"frame":28,"creature":3,"hp":93,"max_hp":200,"temp_hp":7,"fp":11,"max_fp":22,"stm":33,"max_stm":44,"in_combat":true,"dead":false}
+35: {"type":"death","ts_ms":1700000001500,"frame":30,"target":2,"killer":1,"last_damage_source":1}
+36: {"type":"death","ts_ms":1700000001600,"frame":32,"target":1,"killer":2,"last_damage_source":null}
+37: {"type":"resurrection","ts_ms":1700000001700,"frame":34,"target":1,"caster":null,"source_kind":"respawn","source_name":null}
+38: {"type":"resurrection","ts_ms":1700000001700,"frame":34,"target":2,"caster":null,"source_kind":"dm","source_name":null}
+39: {"type":"death","ts_ms":1700000001800,"frame":36,"target":1,"killer":2,"last_damage_source":null}
+40: {"type":"subdual","ts_ms":1700000001800,"frame":36,"target":1,"subdued_by":2}
+41: {"type":"resurrection","ts_ms":1700000001800,"frame":36,"target":1,"caster":null,"source_kind":"subdual","source_name":null}
+42: {"type":"recording_stopped","ts_ms":1700000001900,"frame":38,"reason":"scripted stop","events":42}

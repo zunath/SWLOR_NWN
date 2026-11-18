@@ -317,7 +317,7 @@ SWLOR.Game.Server.Service.Stat.ClearWalkModeBeforeDMPossessionChange SWLOR.Game.
 SWLOR.Game.Server.Service.Stat.ForgetOutOfCombatMovementState SWLOR.Game.Server.Domain.Character.CreatureStatService.ForgetOutOfCombatMovementState
 SWLOR.Game.Server.Service.Stat.ReapplyFoodHP SWLOR.Game.Server.Domain.Character.CreatureStatService.ReapplyFoodHP
 SWLOR.Game.Server.Service.Stat.RefreshOutOfCombatMovementRate SWLOR.Game.Server.Domain.Character.CreatureStatService.RefreshOutOfCombatMovementRate
-SWLOR.Game.Server.Service.StatusEffect.CacheData SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData
+SWLOR.Game.Server.Service.StatusEffect.CacheData SWLOR.Game.Server.Domain.Character.StatusEffectCatalogService.CacheData SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RegisterStatusEffectListener SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService.RegisterStatusEffectListener SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListener
 SWLOR.Game.Server.Service.StatusEffect.OnApplyStatusEffect SWLOR.Game.Server.Domain.Character.StatusEffectService.OnApplyStatusEffect
 SWLOR.Game.Server.Service.StatusEffect.OnDealtDamage SWLOR.Game.Server.Domain.Character.StatusEffectService.OnDealtDamage
 SWLOR.Game.Server.Service.StatusEffect.OnPlayerEnter SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter

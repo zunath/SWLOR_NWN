@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.UI;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;
@@ -22,7 +23,9 @@ public sealed partial class StatusEffectBench : IDisposable
     public const uint ObjectInvalid = 0x7F000000;
 
     private readonly IDisposable _engineScope;
+    private readonly IDisposable _creaturePluginScope;
     private readonly HashSet<object> _ranClosures = new(ReferenceEqualityComparer.Instance);
+    private readonly Func<TestStatusEffectService> _createService;
 
     public StatusEffectBench()
     {
@@ -36,9 +39,16 @@ public sealed partial class StatusEffectBench : IDisposable
         Engine.SetReturnHandler("GetObjectUUID", args => $"uuid-{(uint)args[0]!}");
         Engine.SetReturn("GetLastRunScriptEffect", EngineStructures.Create<SWLOR.NWN.API.Engine.Effect>(0x44));
         Engine.SetReturn("OBJECT_SELF", ObjectInvalid);
+        // The static rules read the engine: a concealed creature is in stealth mode, and the master of a pet is none.
+        Engine.SetReturnHandler("GetActionMode", args => (ActionMode)args[1]! == ActionMode.Stealth && Concealed.Contains((uint)args[0]!));
+        Engine.SetReturn("GetMaster", ObjectInvalid);
         _engineScope = NWScriptRuntime.Override(Engine);
 
-        var resistance = ScriptedProxy.Create<IResistanceService>(out var resistanceProxy);
+        var creaturePlugin = new FakeCreaturePlugin();
+        creaturePlugin.SetReturnHandler("GetKnowsFeat", args => KnownFeats.Contains(((uint)args[0]!, (FeatType)args[1]!)));
+        _creaturePluginScope = CreaturePluginRuntime.Override(creaturePlugin);
+
+        var resistance = ScriptedProxy.Create<IStatusResistance>(out var resistanceProxy);
         resistanceProxy
             .On("IsValidResistanceType", args => (ResistanceType)args[0]! != ResistanceType.Invalid)
             .On("HasImmunity", args =>
@@ -50,25 +60,6 @@ public sealed partial class StatusEffectBench : IDisposable
             {
                 Log.Add($"CalculateResistedTicks:{args[0]}:{args[1]}:{args[2]}");
                 return ResistedTicks?.Invoke((int)args[2]!) ?? (int)args[2]!;
-            });
-
-        var pvp = ScriptedProxy.Create<IPvpCombatService>(out var pvpProxy);
-        pvpProxy.On("IsPlayerAgainstPlayer", args => PlayerAgainstPlayer);
-
-        var stealth = ScriptedProxy.Create<IStealthService>(out var stealthProxy);
-        stealthProxy.On("IsConcealed", args => Concealed.Contains((uint)args[0]!));
-
-        var melee = ScriptedProxy.Create<IMeleeTechniqueService>(out var meleeProxy);
-        meleeProxy
-            .On("OnStanceChanged", args =>
-            {
-                Log.Add($"OnStanceChanged:{args[0]}");
-                return null;
-            })
-            .On("PrepareDirectDamage", args =>
-            {
-                Log.Add($"PrepareDirectDamage:{args[0]}:{args[1]}:{args[2]}");
-                return null;
             });
 
         var recorder = ScriptedProxy.Create<ICombatRecorderService>(out var recorderProxy);
@@ -99,17 +90,12 @@ public sealed partial class StatusEffectBench : IDisposable
             return null;
         });
 
-        var capstone = ScriptedProxy.Create<ICapstoneProofService>(out var capstoneProxy);
-        capstoneProxy.On("RecordStatusEffect", args =>
-        {
-            Log.Add($"CapstoneProof:{args[0]}:{args[1]}:{((Type)args[2]!).Name}:{(args[3] as AbilityDetail)?.Name}");
-            return null;
-        });
-
-        var quickCast = ScriptedProxy.Create<IQuickCastService>(out var quickCastProxy);
-        quickCastProxy.On("KnowsFeat", args => KnownFeats.Contains(((uint)args[0]!, (FeatType)args[1]!)));
-
-        Service = new TestStatusEffectService(this, resistance, pvp, stealth, melee, recorder, messaging, playerName, gui, capstone, Db, quickCast);
+        Catalog = new TestStatusEffectCatalogService(this);
+        _createService = () => new TestStatusEffectService(this, resistance, Catalog, recorder, messaging, playerName, gui, Db);
+        Service = _createService();
+        Service.RegisterMeleeListener(new StatusEffectListenerStandIns.Melee(Log));
+        Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Impact(Log));
+        Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Capstone(Log));
     }
 
     /// <summary>The creature <see cref="IMessagingService.SendMessageNearbyToPlayers(uint, BuildMessageDelegate, float)"/> builds its text for.</summary>
@@ -119,7 +105,7 @@ public sealed partial class StatusEffectBench : IDisposable
 
     public InMemoryDBService Db { get; } = new();
 
-    /// <summary>The feats a creature knows, as <c>IQuickCastService.KnowsFeat</c> reports them.</summary>
+    /// <summary>The feats a creature knows, as the creature plugin reports them (<c>QuickCastFeatMap.KnowsFeat</c> reads it).</summary>
     public HashSet<(uint Creature, FeatType Feat)> KnownFeats { get; } = new();
 
     /// <summary>
@@ -127,12 +113,15 @@ public sealed partial class StatusEffectBench : IDisposable
     /// </summary>
     public TestStatusEffectService Service { get; }
 
+    /// <summary>A second instance with the same neighbours and no listener registered, as the container builds it before the boot handlers run.</summary>
+    public TestStatusEffectService CreateServiceWithoutListeners() => _createService();
+
     // One accessor per part of the status effect split (Readmes/MaintainabilityRefactorStatusEffectSplit.md). A test calls each
     // member through its part's accessor. Until a part moves, its accessor is the one TestStatusEffectService; the pull request
     // that moves it gives the accessor its own double, and the tests change nowhere.
 
     /// <summary>Part 2, <c>StatusEffectCatalogService</c>: the definition cache and the creation of effects by type.</summary>
-    public TestStatusEffectService Catalog => Service;
+    public TestStatusEffectCatalogService Catalog { get; }
 
     /// <summary>Part 3, <c>StatusEffectApplicationService</c>: applying an effect.</summary>
     public TestStatusEffectService Application => Service;
@@ -171,8 +160,6 @@ public sealed partial class StatusEffectBench : IDisposable
 
     public Func<int, int>? ResistedTicks { get; set; }
 
-    public bool PlayerAgainstPlayer { get; set; }
-
     public bool Recording { get; set; }
 
     /// <summary>Display names that differ from the default <c>name-id</c>.</summary>
@@ -196,7 +183,11 @@ public sealed partial class StatusEffectBench : IDisposable
         }
     }
 
-    public void Dispose() => _engineScope.Dispose();
+    public void Dispose()
+    {
+        _creaturePluginScope.Dispose();
+        _engineScope.Dispose();
+    }
 }
 
 /// <summary>The recording engine, which can also run the removal script from inside <c>RemoveEffectByTag</c>, as the engine does.</summary>

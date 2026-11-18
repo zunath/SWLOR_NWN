@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Domain.Creatures
             // Avoid recasting active buffs or replacing an active, mutually exclusive stance.
             var selfEffects = ability.StatusEffectTypesRemovedOnPerkRefund.ToHashSet();
             var isStance = selfEffects.Any(effect =>
-                StatusEffect.GetStatusEffectSourceType(effect) == StatusEffectSourceType.Stance);
+                StatusEffectCatalog.GetStatusEffectSourceType(effect) == StatusEffectSourceType.Stance);
             return context => context.CurrentEnmityTarget != OBJECT_INVALID &&
                               (!isStance || !StatusEffect.HasAnyActiveEffect(context.Self, StatusEffectSourceType.Stance)) &&
                               !StatusEffect.HasAnyActiveEffect(context.Self, selfEffects)

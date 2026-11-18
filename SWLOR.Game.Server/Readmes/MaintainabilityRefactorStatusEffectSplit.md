@@ -563,3 +563,51 @@ The coordinator reviewed the first draft and settled its nine decisions; the gui
 ## Open decisions
 
 None. The freeze start was confirmed by the owner on 2026-11-17 (Master freeze above).
+
+## Progress
+
+### P5-5c (leaves and statics)
+
+`StatusEffectService` 2,833 -> 2,397 lines, 16 -> 13 services, up `Lazy<>` 2 -> 1 (`ICombatAttackTimingService` gone; `ICombatAbilityImpactService` stays for P5-5d).
+
+- **Part 2** `StatusEffectCatalogService` behind `IStatusEffectCatalogService` (Character, `GameServices.StatusEffectCatalog`; 146 lines, 0 services) holds
+  `CacheData` (the handler, `HandlerRenames.txt` line 320, `ScriptHandlerOrder.txt` and `BootHandlerClassification.txt` renamed in place), the cache, creation,
+  the definition reads and the `GetStatusEffectTypes` seam. Two members the part-1 reads need are added: `FindDefinitionByName(name)` (the saved-toggle search over
+  the cache) and `TryGetCategories(type, out categories)` (`HasStatusEffectCategory(Type, ...)` stays in part 1 and reads it). `TryCreateStatusEffect` is public.
+  `GetStatusEffectsFromIcon(EffectIconType)` moved to the catalog; the creature overload stays in part 1, so `RemovedFacades.json` lists the other five names only.
+- **Statics:** `StatusEffectIconMap` (176 lines), `LeadershipDamageReductionRules` (79), five pure members and `FormatDurationSeconds` into `StatusEffectRules` (123);
+  the three forwarders are gone and callers use the rules. `AbilityAuraService` gains `IStatusEffectCatalogService` (4 -> 5 services).
+- **Down:** `IStatusResistance` (Character, 3 members) is implemented by `IResistanceService` and registered through the same instance; `PlayerControlRules`
+  (`IsPlayer`, `GetControllingPlayer`, `IsPlayerAgainstPlayer`) replaces `IPvpCombatService`; `ConcealmentRules` replaces `IStealthService`;
+  `QuickCastFeatMap.KnowsFeat` (the map moved to Foundation) replaces `IQuickCastService`; `IsAttackDelayReductionSuppressed` reads the stat itself.
+- **Departures from the map:** `StealthService.IsConcealed` and `IsInvisible` keep their bodies, because the invisibility read has the native `AppliedEffects` pre-check
+  behind a test seam that a static cannot keep; `ConcealmentRules` holds the engine iteration (`HasEffect`, shared with `StealthService.HasEffect`) and its
+  own `IsConcealed` without the pre-check (cold path: application and worn-off messages). `PvpCombatRampStep` moves with `PvpCombatRules` (the rules' public tables
+  name it). `PvpCombatService` takes `IStatusEffectService` plainly (its `Lazy<>` became needless when the service lost `IPvpCombatService`; `LazyDependencyCycleTests`).
+- **Tests:** `TestStatusEffectCatalogService` is the part 2 double; the bench scripts the engine for concealment, player control and known feats instead of three
+  proxies; `StatusEffectSource.PartFiles` gains the catalog and the three statics (`ClockSeamFiles.txt` lists them) and four source needles name `StatusEffectRules.`
+  and `ConcealmentRules.` receivers.
+
+### P5-5d (listeners)
+
+`StatusEffectService` 2,397 -> 2,429 lines (the two registration methods and five notices cost more than the seams they replace), 13 -> 10 services (it left
+`ServicesPerType.txt`), up `Lazy<>` 1 -> 0 (`ICombatAbilityImpactService` gone); `IMeleeTechniqueService` and `ICapstoneProofService` are no longer constructor
+parameters, so the Character -> Combat and Character -> Quests references of the file are gone (`UpwardEdges.txt`: 8 + 3 members).
+
+- **Interfaces** (Character, one file each): `IStatusEffectMeleeListener` (`OnStanceChanged`, `OnBeforeDirectDamage`) and `IStatusEffectAppliedListener`
+  (`OnStatusApplied`, `OnHostileDebuffApplied`, `OnApplicationCompleted`). `IStatusEffectService` gains `RegisterMeleeListener` and `RegisterAppliedListener`; each
+  list is `[ReloadState(Runtime)]` and a repeat registration keeps one entry. A notice with an empty list throws `InvalidOperationException` (`RequireMeleeListeners`, `RequireAppliedListeners`), as the stat list does: an empty list means a registration was missed. No notice can fire before the registrations: they run in `OnModuleCacheBefore` after the data caches, and nothing before them applies or removes a stance (`ResetProfiles` walks an `Owners` table that is empty after boot or a reload).
+- **Implementers:** `MeleeTechniqueService` (`PrepareDirectDamage` renamed `OnBeforeDirectDamage`; it and `OnStanceChanged` left `IMeleeTechniqueService`, which no other
+  type called them through), `CombatAbilityImpactService` (the stamina drain and the hostile party buff; its `OnApplicationCompleted` is empty) and `CapstoneProofService`
+  (forwards `OnApplicationCompleted` to `RecordStatusEffect`; the other two are empty; gains `IStatusEffectService`, 2 -> 3 services). Bodies are unchanged; the three
+  call sites keep their place (stamina drain, then party buff, then the refresh; the capstone proof after the application returns).
+- **Registration:** a `Rerun` boot handler `RegisterStatusEffectListener` on each of the three, in `OnModuleCacheBefore` right after `StatusEffectCatalogService.CacheData`
+  in the manifest, in the order melee, impact, capstone (`ScriptHandlerOrder.txt`, `BootHandlerClassification.txt`, `HandlerRenames.txt` line 320). A reload rebuilds the
+  services and reruns these handlers before it adopts the carried state, so the lists are full before the first notice.
+- **Cycle:** the cycle that held `MeleeTechniqueService` to four `Lazy<>` parameters ran through `StatusEffectService`; with it gone `LazyDependencyCycleTests` flags
+  `Lazy<ICombatActivityService>`, `Lazy<ICombatResourcesService>`, `Lazy<IStatService>` and `Lazy<IStatusEffectService>` as needless, so `MeleeTechniqueService` takes all
+  four directly (`DeferredResolution.txt` loses that file). The unit test doubles pass facade forwarders instead of lazy ones.
+- **Tests:** `StatusEffectListenerStandIns` (melee, impact, capstone) replace the two proxies and the two `TestStatusEffectService` seams; the bench registers them in
+  handler order, so the existing log lines and `AHostileDebuff_RunsEveryStepInTheOriginalOrder` keep pinning the order against the surrounding code.
+  `StatusEffectListenerTests` proves the order across listeners (stand-in first, a later listener after it, once per notice even when registered twice) for the applied
+  and melee notices.

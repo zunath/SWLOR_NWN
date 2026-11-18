@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// Disabler suppression riders, the status-applied stamina drain, and the effects of a finished impact by the number of
     /// targets it hit. The same-target hit counts and the area ability hit sequences are this instance's own tables.
     /// </summary>
-    public class CombatAbilityImpactService : ICombatAbilityImpactService
+    public class CombatAbilityImpactService : ICombatAbilityImpactService, IStatusEffectAppliedListener
     {
         private readonly Dictionary<(uint, uint), int> _sameTargetHostileAbilityHitCounts = new();
         private readonly Dictionary<(uint, uint), TargetHitSequenceState> _areaAbilityTargetHitSequences = new();
@@ -78,6 +79,30 @@ namespace SWLOR.Game.Server.Domain.Combat
             _party = party;
             _combatRecorder = combatRecorder;
             _pairedRangedTraits = pairedRangedTraits;
+        }
+
+        /// <summary>
+        /// Gives the status effects this service as a listener of their applied notices. A reload runs boot handlers that rerun
+        /// before it adopts the carried status effects, so the list is full before the first notice.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public void RegisterStatusEffectListener()
+        {
+            _statusEffect.RegisterAppliedListener(this);
+        }
+
+        /// <summary>A status effect was applied or refreshed: the target loses the stamina the source's stat drains.</summary>
+        public void OnStatusApplied(uint source, uint creature, StatusEffectCategory categories) =>
+            ApplyStatusAppliedTargetStaminaDrain(source, creature, categories);
+
+        /// <summary>A hostile debuff was applied or refreshed: the source's party buff for a hostile ability applies.</summary>
+        public void OnHostileDebuffApplied(uint source, AbilityDetail ability) =>
+            ApplyHostileAbilityPartyBuff(source, ability, 0, true);
+
+        /// <summary>Nothing to do when an application completes.</summary>
+        public void OnApplicationCompleted(uint source, uint creature, Type statusEffectType, AbilityDetail ability)
+        {
         }
 
         public int GetAbilityImpactBaseDamageBonus(

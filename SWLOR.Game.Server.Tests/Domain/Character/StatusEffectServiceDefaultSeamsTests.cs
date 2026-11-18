@@ -127,22 +127,6 @@ public class StatusEffectServiceDefaultSeamsTests
     }
 
     [Test]
-    public void ApplyStatusAppliedTargetStaminaDrain_AsksCombatWhichStopsAtAnInvalidActivator()
-    {
-        _application.CallApplyStatusAppliedTargetStaminaDrain(Creature, Creature + 1, StatusEffectCategory.Debuff);
-
-        _engine.CountOf("GetIsObjectValid").Should().Be(1);
-    }
-
-    [Test]
-    public void ApplyHostileAbilityPartyBuff_AsksCombatWhichStopsAtANonHostileAbility()
-    {
-        _application.CallApplyHostileAbilityPartyBuff(Creature, new AbilityDetail { IsHostileAbility = false }, 0, true);
-
-        _engine.Calls.Should().BeEmpty();
-    }
-
-    [Test]
     public void IsAttackDelayReductionSuppressed_ReadsTheSuppressionStat()
     {
         _combatEvents.CallIsAttackDelayReductionSuppressed(Creature).Should().BeFalse();
@@ -183,7 +167,7 @@ public class StatusEffectServiceDefaultSeamsTests
     private abstract class DefaultsBase : StatusEffectService
     {
         protected DefaultsBase()
-            : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActiveAbilityImpact>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>())
+            : base(null!, null!, null!, null!, null!, null!, null!, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActiveAbilityImpact>())
         {
         }
     }
@@ -200,12 +184,6 @@ public class StatusEffectServiceDefaultSeamsTests
     private sealed class ApplicationDefaults : DefaultsBase
     {
         public AbilityImpactSummary CallGetActiveAbilityImpactSummary(uint activator) => GetActiveAbilityImpactSummary(activator);
-
-        public void CallApplyStatusAppliedTargetStaminaDrain(uint activator, uint target, StatusEffectCategory categories) =>
-            ApplyStatusAppliedTargetStaminaDrain(activator, target, categories);
-
-        public void CallApplyHostileAbilityPartyBuff(uint activator, AbilityDetail ability, int damage, bool statusApplied) =>
-            ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
     }
 
     /// <summary>Part 4, <c>StatusEffectDurationService</c>.</summary>

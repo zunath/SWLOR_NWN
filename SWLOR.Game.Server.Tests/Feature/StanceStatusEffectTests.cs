@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -29,7 +30,9 @@ public class StanceStatusEffectTests
     {
         _facades = new FacadeContainer();
         _facadeScope = _facades.Install();
-        StatusEffect.CacheData();
+        StatusEffectCatalog.CacheData();
+        // The boot handler of the melee techniques registers them for the stance notice.
+        ((MeleeTechniqueService)_facades.Get<IMeleeTechniqueService>()).RegisterStatusEffectListener();
         ResetStatusEffects();
     }
 

@@ -587,7 +587,7 @@ public class CapstoneProofServiceTests
     private sealed class TestCapstoneProofService : CapstoneProofService
     {
         public TestCapstoneProofService(ICompanionLookup companions)
-            : base(companions, FacadeForwarder.For<IAbilityCatalog>())
+            : base(companions, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IStatusEffectService>())
         {
         }
 

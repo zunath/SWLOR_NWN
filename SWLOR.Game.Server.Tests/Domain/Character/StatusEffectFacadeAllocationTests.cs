@@ -40,7 +40,7 @@ public class StatusEffectFacadeAllocationTests
         _installed = _container.Install();
         var service = _container.Get<IStatusEffectService>();
         service.OnApplyNWNStatusEffect(Tracked);
-        service.CacheData();
+        _container.Get<IStatusEffectCatalogService>().CacheData();
     }
 
     [TearDown]
@@ -125,12 +125,12 @@ public class StatusEffectFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += StatusEffect.HasStatusEffectDefinition(typeof(BleedStatusEffect)) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += StatusEffect.GetStatusEffectName(typeof(BleedStatusEffect)).Length).Should().Be(0);
-        Allocated(() => sink += (int)StatusEffect.GetStatusEffectSourceType(typeof(BleedStatusEffect))).Should().Be(0);
+        Allocated(() => sink += StatusEffectCatalog.HasStatusEffectDefinition(typeof(BleedStatusEffect)) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += StatusEffectCatalog.GetStatusEffectName(typeof(BleedStatusEffect)).Length).Should().Be(0);
+        Allocated(() => sink += (int)StatusEffectCatalog.GetStatusEffectSourceType(typeof(BleedStatusEffect))).Should().Be(0);
         Allocated(() => sink += StatusEffect.HasStatusEffectCategory(typeof(BleedStatusEffect), StatusEffectCategory.Debuff) ? 1 : 0).Should().Be(0);
-        Allocated(() => sink += (int)StatusEffect.GetEffectTypeFromIcon(EffectIconType.Stunned)).Should().Be(0);
-        Allocated(() => sink += (int)StatusEffect.GetAbilityTypeBuffed(EffectIconType.AbilityIncreaseSTR)).Should().Be(0);
+        Allocated(() => sink += (int)StatusEffectIconMap.GetEffectTypeFromIcon(EffectIconType.Stunned)).Should().Be(0);
+        Allocated(() => sink += (int)StatusEffectIconMap.GetAbilityTypeBuffed(EffectIconType.AbilityIncreaseSTR)).Should().Be(0);
         GC.KeepAlive(sink);
     }
 
@@ -141,10 +141,10 @@ public class StatusEffectFacadeAllocationTests
     {
         var sink = 0;
 
-        Allocated(() => sink += StatusEffect.ClampHardCrowdControlDurationTicks(StatusEffectCategory.HardCrowdControl, 40, 1f)).Should().Be(0);
-        Allocated(() => sink += StatusEffect.ClampConvertedControlDurationTicks(40, 1f, 5f)).Should().Be(0);
-        Allocated(() => sink += (int)StatusEffect.CalculateAdjustedStatusDurationSeconds(10f, 50)).Should().Be(0);
-        Allocated(() => sink += StatusEffect.ShouldAnnounceNearby(false, false) ? 1 : 0).Should().Be(0);
+        Allocated(() => sink += StatusEffectRules.ClampHardCrowdControlDurationTicks(StatusEffectCategory.HardCrowdControl, 40, 1f)).Should().Be(0);
+        Allocated(() => sink += StatusEffectRules.ClampConvertedControlDurationTicks(40, 1f, 5f)).Should().Be(0);
+        Allocated(() => sink += (int)StatusEffectRules.CalculateAdjustedStatusDurationSeconds(10f, 50)).Should().Be(0);
+        Allocated(() => sink += StatusEffectRules.ShouldAnnounceNearby(false, false) ? 1 : 0).Should().Be(0);
         GC.KeepAlive(sink);
     }
 

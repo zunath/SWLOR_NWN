@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace SWLOR.Game.Server.Domain.Combat
+namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// The long-fight rules for player-vs-player combat. These values are the single source for

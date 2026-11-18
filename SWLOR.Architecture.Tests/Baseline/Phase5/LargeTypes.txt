@@ -14,10 +14,10 @@ SWLOR.Game.Server.Domain.Abilities.MimicryService | 1307
 SWLOR.Game.Server.Domain.Character.PerkService | 1486
 SWLOR.Game.Server.Domain.Character.PlayerNameService | 1039
 SWLOR.Game.Server.Domain.Character.SkillService | 1142
-SWLOR.Game.Server.Domain.Character.StatusEffectService | 2833
+SWLOR.Game.Server.Domain.Character.StatusEffectService | 2446
 SWLOR.Game.Server.Domain.Combat.CombatAbilityActivationService | 1200
 SWLOR.Game.Server.Domain.Combat.CombatAbilityBonusService | 1061
-SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1689
+SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService | 1714
 SWLOR.Game.Server.Domain.Combat.CombatDamageModifiersService | 1433
 SWLOR.Game.Server.Domain.Combat.CombatDamageTakenService | 1643
 SWLOR.Game.Server.Domain.Combat.CombatHitEffectsService | 1707

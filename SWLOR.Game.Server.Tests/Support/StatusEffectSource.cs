@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// As in <see cref="StatSource"/>, the text is as it is apart from one rewrite: a call through a field of a part interface
 /// (<c>_native.OnApplyNWNStatusEffect(x)</c>) loses its receiver, because the code called that member on its own instance before
 /// the move. A call on any other injected service keeps its receiver, so a changed condition, a removed or reordered call, or
-/// a different argument still fails a needle. <c>StatusEffectRules.cs</c>, the static beside the service, is not part of it.
+/// a different argument still fails a needle. The statics the service uses (<c>StatusEffectRules.cs</c>, the icon map, the Leadership rules) are part files, as their members were part of it.
 /// </para>
 /// </summary>
 public static class StatusEffectSource
@@ -26,6 +26,10 @@ public static class StatusEffectSource
     public static readonly IReadOnlyList<string> PartFiles = new[]
     {
         "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
+        "SWLOR.Game.Server/Domain/Character/StatusEffectCatalogService.cs",
+        "SWLOR.Game.Server/Domain/Character/StatusEffectIconMap.cs",
+        "SWLOR.Game.Server/Domain/Character/LeadershipDamageReductionRules.cs",
+        "SWLOR.Game.Server/Domain/Character/StatusEffectRules.cs",
     };
 
     /// <summary>
@@ -35,6 +39,7 @@ public static class StatusEffectSource
     public static readonly IReadOnlyList<string> InterfaceFiles = new[]
     {
         "SWLOR.Game.Server/Domain/Character/IStatusEffectService.cs",
+        "SWLOR.Game.Server/Domain/Character/IStatusEffectCatalogService.cs",
     };
 
     /// <summary>
@@ -43,6 +48,7 @@ public static class StatusEffectSource
     public static readonly IReadOnlySet<string> PartInterfaces = new HashSet<string>(StringComparer.Ordinal)
     {
         "IStatusEffectService",
+        "IStatusEffectCatalogService",
     };
 
     private static readonly Lazy<IReadOnlyList<StatSource.SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));

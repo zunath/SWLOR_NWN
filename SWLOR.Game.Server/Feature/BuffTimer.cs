@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using System.Collections.Generic;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Feature
             var buffInt = GetLastGuiEventInteger();
             if (buffInt == (int)EffectIconType.Invalid) return;
 
-            var buffType = StatusEffect.GetEffectTypeFromIcon((EffectIconType)buffInt);
+            var buffType = StatusEffectIconMap.GetEffectTypeFromIcon((EffectIconType)buffInt);
             var statusTypes = StatusEffect.GetStatusEffectsFromIcon(player, (EffectIconType)buffInt);
             var effectName = "Unknown Effect";
 
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.Feature
                 if (GetEffectType(eff) != effectType) continue;
                 if (GetEffectType(eff) == EffectTypeScript.AbilityIncrease)
                 {
-                    var abilityType = StatusEffect.GetAbilityTypeBuffed(effectIcon);
+                    var abilityType = StatusEffectIconMap.GetAbilityTypeBuffed(effectIcon);
                     if (abilityType != (AbilityType)GetEffectInteger(eff, 0)) continue;
                 };
                 var duration = TimeSpan.FromSeconds(GetEffectDurationRemaining(eff)).ToString(@"mm\:ss");
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Feature
                     continue;
 
                 var duration = StatusEffect.GetEffectDuration(player, statusType);
-                var effectName = StatusEffect.GetStatusEffectName(statusType);
+                var effectName = StatusEffectCatalog.GetStatusEffectName(statusType);
 
                 if (duration > 0)
                 {

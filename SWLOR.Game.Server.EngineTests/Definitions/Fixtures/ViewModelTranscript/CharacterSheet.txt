@@ -2770,7 +2770,7 @@ close-npc 5 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-npc 6 state quickbar 0=10:1:;1=10:0:;2=4:28:
 open-high-resource 1 step
 open-high-resource 2 engine NuiCreate <player>, <625 chars hash 1c1a07456f1dd1e35816aee064904106> {"accepts_input":true,"border":true,"closable":true,"collapsed":null,"geometry":{"bind":"Geometry"},"resizable":true,"ro, GUI_WINDOW_CharacterSheet
-open-high-resource 3 engine NuiSetBind <player>, 3, Geometry, {"h":467.0,"w":800.0,"x":0.0,"y":0.0}
+open-high-resource 3 engine NuiSetBind <player>, 3, Geometry, {"h":460.0,"w":800.0,"x":0.0,"y":0.0}
 open-high-resource 4 engine NuiSetBind <player>, 3, ModalInputText, ""
 open-high-resource 5 engine NuiSetBind <player>, 3, IsPlayerMode, false
 open-high-resource 6 engine NuiSetBind <player>, 3, ShowSP, false
@@ -2834,14 +2834,14 @@ open-high-resource 63 engine NuiSetBind <player>, 3, APOrLevel, "0 / 40 (0)"
 open-high-resource 64 engine NuiSetBind <player>, 3, ModalPromptText, "Upgrading your Agility attribute will consume 1 AP. Are you sure you want to upgrade it?"
 open-high-resource 65 engine NuiSetBind <player>, 3, ModalConfirmButtonText, "Yes"
 open-high-resource 66 engine NuiSetBind <player>, 3, ModalCancelButtonText, "No"
-open-high-resource 67 engine NuiSetBind <player>, 3, Geometry, {"h":467.0,"w":800.0,"x":0.0,"y":0.0}
+open-high-resource 67 engine NuiSetBind <player>, 3, Geometry, {"h":460.0,"w":800.0,"x":0.0,"y":0.0}
 open-high-resource 68 engine NuiSetBindWatch <player>, 3, Geometry, True
 open-high-resource 69 property ModalInputText ""
 open-high-resource 70 engine NuiSetBind <player>, 3, ModalInputText, ""
 open-high-resource 71 engine NuiSetBind <player>, 3, ModalInputText, ""
 open-high-resource 72 engine NuiSetBindWatch <player>, 3, ModalInputText, True
 open-high-resource 73 engine NuiSetGroupLayout <player>, 3, _window_, <10977 chars hash c469682cdcacf9a70a73f31f09e7738a> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
-open-high-resource 74 engine NuiSetBind <player>, 3, Geometry, {"h":468.0,"w":800.0,"x":0.0,"y":0.0}
+open-high-resource 74 engine NuiSetBind <player>, 3, Geometry, {"h":461.0,"w":800.0,"x":0.0,"y":0.0}
 open-high-resource 75 property Name "Bandit"
 open-high-resource 76 engine NuiSetBind <player>, 3, Name, "Bandit"
 open-high-resource 77 property Race "Human"
@@ -2891,7 +2891,7 @@ open-high-resource 120 engine NuiSetBind <player>, 3, TopTabId, 0
 open-high-resource 121 property BottomTabId -1
 open-high-resource 122 engine NuiSetBind <player>, 3, BottomTabId, -1
 open-high-resource 123 engine NuiSetGroupLayout <player>, 3, _window_, <21738 chars hash d97eaf0ceba62acf85f9ffaa30231e81> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
-open-high-resource 124 engine NuiSetBind <player>, 3, Geometry, {"h":469.0,"w":800.0,"x":0.0,"y":0.0}
+open-high-resource 124 engine NuiSetBind <player>, 3, Geometry, {"h":462.0,"w":800.0,"x":0.0,"y":0.0}
 open-high-resource 125 property Name "Bandit"
 open-high-resource 126 engine NuiSetBind <player>, 3, Name, "Bandit"
 open-high-resource 127 property Race "Human"
@@ -2992,8 +2992,8 @@ open-high-resource 221 property APOrLevelTooltip "Increase attributes."
 open-high-resource 222 engine NuiSetBind <player>, 3, APOrLevelTooltip, "Increase attributes."
 open-high-resource 223 property PortraitResref "po_hu_f_m02_l"
 open-high-resource 224 engine NuiSetBind <player>, 3, PortraitResref, "po_hu_f_m02_l"
-open-high-resource 225 property HP "3 / 3"
-open-high-resource 226 engine NuiSetBind <player>, 3, HP, "3 / 3"
+open-high-resource 225 property HP "258 / 258"
+open-high-resource 226 engine NuiSetBind <player>, 3, HP, "258 / 258"
 open-high-resource 227 property FP "9999 / 90030"
 open-high-resource 228 engine NuiSetBind <player>, 3, FP, "9999 / 90030"
 open-high-resource 229 property STM "9999 / 90025"
@@ -3149,7 +3149,7 @@ high-resource-stats 17 engine NuiSetBind <player>, 3, StatTooltips_RowCount, 41
 high-resource-stats 18 engine NuiSetBind <player>, 3, StatTooltips_RowVisibility, [true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]
 high-resource-stats 19 engine NuiSetBind <player>, 3, StatTooltips, <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
 high-resource-stats 20 engine NuiSetGroupLayout <player>, 3, _window_, <12455 chars hash 8e6ede611a3e4aaa56d0d812c6016ac5> {"border":false,"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"children":[{"enabled":tru
-high-resource-stats 21 engine NuiSetBind <player>, 3, Geometry, {"h":470.0,"w":800.0,"x":0.0,"y":0.0}
+high-resource-stats 21 engine NuiSetBind <player>, 3, Geometry, {"h":463.0,"w":800.0,"x":0.0,"y":0.0}
 high-resource-stats 22 property Name "Civilian"
 high-resource-stats 23 engine NuiSetBind <player>, 3, Name, "Civilian"
 high-resource-stats 24 property Race "Human"
@@ -3160,8 +3160,8 @@ high-resource-stats 28 property CharacterType "Force Sensitive"
 high-resource-stats 29 engine NuiSetBind <player>, 3, CharacterType, "Force Sensitive"
 high-resource-stats 30 property PortraitResref "po_hu_f_m02_l"
 high-resource-stats 31 engine NuiSetBind <player>, 3, PortraitResref, "po_hu_f_m02_l"
-high-resource-stats 32 property HP "3 / 3"
-high-resource-stats 33 engine NuiSetBind <player>, 3, HP, "3 / 3"
+high-resource-stats 32 property HP "258 / 258"
+high-resource-stats 33 engine NuiSetBind <player>, 3, HP, "258 / 258"
 high-resource-stats 34 property FP "9999 / 90030"
 high-resource-stats 35 engine NuiSetBind <player>, 3, FP, "9999 / 90030"
 high-resource-stats 36 property STM "9999 / 90025"

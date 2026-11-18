@@ -381,3 +381,19 @@ None needs the owner now. Three choices are recorded so they are not lost:
    or a later item adds an eleventh.
 3. **Disguise keeps about 110 lines of room.** Recommended: accept; if master grows it past 1,000 before PR 5 merges, the next responsibility to move is the
    list and slot capacity code (`LoadList`, `RefreshSlotCapacity`), not a numbered piece.
+
+## 8. PR 1 as built (EquipmentStats: writer, vital and craft actions)
+
+- New static types in `Feature/EquipmentStatActions/` (namespace `SWLOR.Game.Server.Feature.EquipmentStatActions`), bodies moved verbatim with only the
+  receiver of `ReapplyNPCStat` changed to `NpcSkinStatWriter`: `NpcSkinStatWriter` (47 lines, no lookups), `EquipmentVitalStatActions` (249 lines: HP, FP, FP regen,
+  STM, STM regen, Combat Readiness; `StatRecord`, `DB`, `CreatureStat`) and `EquipmentCraftStatActions` (174 lines: Control, Craftsmanship, CP Bonus; `StatRecord`, `DB`).
+  The action methods are `public static` so the registration lambdas can reach them. `EquipmentStats` went from 1,131 to 714 lines (417 lines moved, not the ~600 the
+  table estimated: the rating and field actions stay for PR 2).
+- `RegisterStatActions` registers a hand-written lambda for the nine moved actions, in the same order; `HandledPropertyTypes`, the `Rerun` boot line, the three
+  refresh handler names and the writer and reader of `EQUIPMENT_DISPLACED_RECORD_STATS` (both in `EquipmentStats`) are unchanged. The still-private rating and field
+  actions call `NpcSkinStatWriter.ReapplyNPCStat`.
+- `DomainMap.json` lists `EquipmentStatActions` under Gameplay (the coordinator's decision overrides the Character recommendation of open question 1); no upward edge appears.
+- `LegacySource.GearStats` is re-cited to `EquipmentCraftStatActions.cs:25-172` (the old 930-1126 range was stale); `GearItemReader` and `CraftingReport` follow.
+- `CombatReadinessEquipmentTests` and `MaxHitPointsReconciliationTests` read the moved methods from `EquipmentVitalStatActions.cs` as well as `EquipmentStats.cs`.
+- Baselines: `LargeTypes.txt` drops `EquipmentStats`; `StaticLookups.txt` goes from 120 on one file to 87 + 22 + 13 (two more `using static` lines, no new use in code);
+  the two edge records gain the `Feature/EquipmentStatActions` rows and lower the `Feature.EquipmentStats` counts. `PlayerMessageAudit.json` is unchanged (no message moved).

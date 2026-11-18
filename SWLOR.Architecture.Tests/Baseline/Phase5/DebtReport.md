@@ -7,8 +7,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,091 | 13,413 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 30 | 46,738 lines | none over 1,000 lines |
+| 1. Static service lookup | `StaticLookups.txt` | 1,093 | 13,415 uses | none: GameServices and FacadeAccessor deleted |
+| 2. Large types | `LargeTypes.txt` | 29 | 45,607 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 10 | 2,906 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 17 | 271 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 34 | 48 parameters | none |
@@ -20,8 +20,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,091 files, 13,413 uses: 828 using directives and 12,585 uses in code (7,509 in a static context).
-- SWLOR.Game.Server: 644 file(s), 5,878 use(s) (Feature/ 534, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- 1,093 files, 13,415 uses: 830 using directives and 12,585 uses in code (7,509 in a static context).
+- SWLOR.Game.Server: 646 file(s), 5,880 use(s) (Feature/ 536, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 240 file(s), 5,340 use(s).
 - SWLOR.Game.Server.Tests: 178 file(s), 2,037 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
@@ -34,9 +34,9 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
 - Content (Feature/) uses in code: 4,593 (1,685 in a static context).
-- Content (Feature/) types that use it: 531. Static classes: 71. Instance classes that use it from a static member: 204 (156 only from static members).
+- Content (Feature/) types that use it: 533. Static classes: 73. Instance classes that use it from a static member: 204 (156 only from static members).
 
-Largest 15 of 1,091 (all in `StaticLookups.txt`):
+Largest 15 of 1,093 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|
@@ -49,20 +49,20 @@ Largest 15 of 1,091 (all in `StaticLookups.txt`):
 | `SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterSheetViewModel.cs` | 146 | 1 in a static context, 1 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/CombatHealingBudgetEngineTests.cs` | 139 | 139 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/CombatRecorderEngineTests.cs` | 127 | 127 in a static context, 0 import(s) |
-| `SWLOR.Game.Server/Feature/EquipmentStats.cs` | 120 | 119 in a static context, 1 import(s) |
 | `SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/ShipManagementViewModel.cs` | 111 | 0 in a static context, 1 import(s) |
 | `SWLOR.Game.Server.Tests/Service/CombatAttackDelayTests.cs` | 107 | 16 in a static context, 1 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/TankEnmityEngineTests.cs` | 99 | 99 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/DMToolbarEngineTests.cs` | 98 | 97 in a static context, 0 import(s) |
 | `SWLOR.Game.Server.EngineTests/Definitions/TwinPistolCrossSkillEngineTests.cs` | 92 | 92 in a static context, 0 import(s) |
+| `SWLOR.Game.Server.EngineTests/Definitions/TwinPistolCastCancellationEngineTests.cs` | 91 | 91 in a static context, 0 import(s) |
 
 ## 2. Large types
 
-- 30 types over 1,000 lines, 46,738 lines in all.
+- 29 types over 1,000 lines, 45,607 lines in all.
 - Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 30 (all in `LargeTypes.txt`):
+Largest 15 of 29 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|

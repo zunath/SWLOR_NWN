@@ -17,6 +17,11 @@ namespace SWLOR.Game.Server.Domain.UI
         {
             var type = typeof(T);
 
+            // A binding with no declared property is named by a call to the view model's GetBindingValue accessor.
+            if (expression.Body is MethodCallExpression call && call.Method.Name == "GetBindingValue" &&
+                call.Arguments.Count == 1 && call.Arguments[0] is ConstantExpression { Value: string bindingName })
+                return bindingName;
+
             var member = expression.Body as MemberExpression;
             if (member == null)
                 throw new ArgumentException($"Expression '{expression}' refers to a method, not a property.");

@@ -26,10 +26,11 @@ Domain/Administration -> Platform/Entity | 21
 # Administration -> Platform (1 edge)
 Domain/Administration -> Platform/Core | 10
 
-# Character -> Foundation (7 edges)
+# Character -> Foundation (8 edges)
 Domain/Character -> Domain/Foundation | 535
 Domain/Character -> Platform/Entity | 183
 Domain/Character -> Platform/Enumeration | 13
+Feature/AppearanceDefinition -> Domain/Foundation | 2
 Feature/PerkDefinition -> Domain/Foundation | 49
 Feature/PerkDefinition -> Platform/Entity | 1
 Feature/StatusEffectDefinition -> Domain/Foundation | 125

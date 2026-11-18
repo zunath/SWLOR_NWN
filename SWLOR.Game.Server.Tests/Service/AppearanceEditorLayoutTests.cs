@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
@@ -832,12 +833,21 @@ public class AppearanceEditorLayoutTests
 
     private static void AssertSwatch(IGuiWidget root, IGuiWidget swatch, string name, string texture)
     {
+        // The colour swatches of ArmorColorRegionCatalog are bound by name without a declared property; the part and
+        // body mirrors still declare theirs.
+        var catalogued = ArmorColorRegionCatalog.Entries.Any(swatch => swatch.Name == name);
         foreach (var (suffix, type) in new[]
                  {
                      ("Region", typeof(GuiRectangle)), ("Tint", typeof(GuiColor)), ("Custom", typeof(bool)),
                      ("Selected", typeof(bool))
                  })
-            typeof(AppearanceEditorViewModel).GetProperty(name + suffix)!.PropertyType.Should().Be(type, name + suffix);
+        {
+            var property = typeof(AppearanceEditorViewModel).GetProperty(name + suffix);
+            if (catalogued)
+                property.Should().BeNull(name + suffix);
+            else
+                property!.PropertyType.Should().Be(type, name + suffix);
+        }
 
         swatch.Should().BeOfType<GuiButton<AppearanceEditorViewModel>>();
         ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(name + "Selected");

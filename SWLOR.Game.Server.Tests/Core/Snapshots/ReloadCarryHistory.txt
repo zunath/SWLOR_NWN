@@ -17,6 +17,7 @@ SWLOR.Game.Server.Domain.Character.PlayerIntroductionService._inbox
 SWLOR.Game.Server.Domain.Character.PlayerNameService.AfkPlayers
 SWLOR.Game.Server.Domain.Character.StatusEffectService._creatureEffects
 SWLOR.Game.Server.Domain.Character.StatusEffectService._loggedOutPlayerEffects
+SWLOR.Game.Server.Domain.Character.StatusEffectSessionService._loggedOutPlayerEffects
 SWLOR.Game.Server.Domain.Character.TemporaryStatModifierService._modifiers
 SWLOR.Game.Server.Domain.Combat.CombatActivityService._firstCombatAttackConsumed
 SWLOR.Game.Server.Domain.Combat.CombatActivityService._firstHostileAbilityHitCounts

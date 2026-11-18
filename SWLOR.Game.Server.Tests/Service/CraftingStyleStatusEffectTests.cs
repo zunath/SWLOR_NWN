@@ -47,7 +47,12 @@ public class CraftingStyleStatusEffectTests
         "RemoveOtherStanceStatuses",
         "RemoveOtherCommandStatuses",
         "RemoveStatusEffectBySourceType",
-        "RemoveCreature"
+        "RemoveCreature",
+        // Logout only (the session part, P5-5e): what does not persist through it, and what a leaving source put on others.
+        "RemoveNonPersistentStatusEffects",
+        "RemoveTrackedNWNEffects",
+        "RemoveStatusEffectsFromAllTargetsWhenSourceExits",
+        "RemoveStatusEffectById"
     };
 
     private sealed class ProbeEffect : StatusEffectBase

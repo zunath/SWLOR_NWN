@@ -317,11 +317,11 @@ SWLOR.Game.Server.Service.Stat.ClearWalkModeBeforeDMPossessionChange SWLOR.Game.
 SWLOR.Game.Server.Service.Stat.ForgetOutOfCombatMovementState SWLOR.Game.Server.Domain.Character.CreatureStatService.ForgetOutOfCombatMovementState
 SWLOR.Game.Server.Service.Stat.ReapplyFoodHP SWLOR.Game.Server.Domain.Character.CreatureStatService.ReapplyFoodHP
 SWLOR.Game.Server.Service.Stat.RefreshOutOfCombatMovementRate SWLOR.Game.Server.Domain.Character.CreatureStatService.RefreshOutOfCombatMovementRate
-SWLOR.Game.Server.Service.StatusEffect.CacheData SWLOR.Game.Server.Domain.Character.StatusEffectCatalogService.CacheData SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RegisterStatusEffectListener SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService.RegisterStatusEffectListener SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListener
+SWLOR.Game.Server.Service.StatusEffect.CacheData SWLOR.Game.Server.Domain.Character.StatusEffectCatalogService.CacheData SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RegisterStatusEffectListener SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService.RegisterStatusEffectListener SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListener SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.RegisterLoggedOutSource
 SWLOR.Game.Server.Service.StatusEffect.OnApplyStatusEffect SWLOR.Game.Server.Domain.Character.StatusEffectService.OnApplyStatusEffect
 SWLOR.Game.Server.Service.StatusEffect.OnDealtDamage SWLOR.Game.Server.Domain.Character.StatusEffectService.OnDealtDamage
-SWLOR.Game.Server.Service.StatusEffect.OnPlayerEnter SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter
-SWLOR.Game.Server.Service.StatusEffect.OnPlayerExit SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerExit
+SWLOR.Game.Server.Service.StatusEffect.OnPlayerEnter SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerEnter
+SWLOR.Game.Server.Service.StatusEffect.OnPlayerExit SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerExit
 SWLOR.Game.Server.Service.StatusEffect.OnRemoveStatusEffect SWLOR.Game.Server.Domain.Character.StatusEffectService.OnRemoveStatusEffect
 SWLOR.Game.Server.Service.StatusEffect.OnStatusEffectInterval SWLOR.Game.Server.Domain.Character.StatusEffectService.OnStatusEffectInterval
 SWLOR.Game.Server.Service.Targeting.RunTargetedItemAction SWLOR.Game.Server.Domain.Combat.TargetingService.RunTargetedItemAction

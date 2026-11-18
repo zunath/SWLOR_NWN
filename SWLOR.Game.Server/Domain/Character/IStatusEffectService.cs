@@ -33,20 +33,47 @@ namespace SWLOR.Game.Server.Domain.Character
         void RegisterAppliedListener(IStatusEffectAppliedListener listener);
 
         /// <summary>
-        /// When a player enters the server, apply the NWN effect system
+        /// Registers who holds the effects of players who logged out (<see cref="ILoggedOutStatusEffectSource"/>), so a removal by
+        /// source reaches them. Registering the same holder twice keeps one entry.
         /// </summary>
-        void OnPlayerEnter();
+        void RegisterLoggedOutSource(ILoggedOutStatusEffectSource source);
 
-        /// <summary>
-        /// When a player exits the server, hold their status effects until they return.
-        /// </summary>
-        void OnPlayerExit();
+        /// <summary>The creatures that have a status effect tracker.</summary>
+        IReadOnlyCollection<uint> GetTrackedCreatures();
 
-        /// <summary>
-        /// Saves the stances and toggles of everyone online or holding effects from an earlier logout. Those effects are only kept in
-        /// memory, so without this a server restart loses them.
-        /// </summary>
-        void SaveTogglesForRestart();
+        /// <summary>Finds a creature's tracker; false when the creature has none (<see cref="GetCreatureStatusEffects"/> answers an empty one).</summary>
+        bool TryGetCreatureStatusEffects(uint creature, out CreatureStatusEffect effects);
+
+        /// <summary>Gives a creature the tracker of effects it already holds, as a player returning from logout gets theirs back.</summary>
+        void TrackCreatureStatusEffects(uint creature, CreatureStatusEffect effects);
+
+        /// <summary>Applies the native effect of every status effect a creature holds again, and its movement rate when one adjusts a stat.</summary>
+        void ReapplyNWNEffects(uint creature, CreatureStatusEffect effects);
+
+        /// <summary>Tells the stat effect listeners that a player's status effects were restored, so the food bonus returns.</summary>
+        void ReapplyFoodHP(uint player);
+
+        /// <summary>Tells the stat effect listeners that the effects adjusting a creature's stats changed, so its movement rate is recomputed.</summary>
+        void ApplyCreatureMovementRate(uint creature);
+
+        /// <summary>Removes the effects that reach other targets from a source that is leaving, from every tracked creature and every logged-out player.</summary>
+        void RemoveStatusEffectsFromAllTargetsWhenSourceExits(uint source);
+
+        /// <summary>Removes the effects that do not persist through a logout.</summary>
+        void RemoveNonPersistentStatusEffects(uint creature, CreatureStatusEffect effects);
+
+        /// <summary>Removes the native effects the status effects of a creature carry.</summary>
+        void RemoveTrackedNWNEffects(uint creature, CreatureStatusEffect effects);
+
+        /// <summary>Removes one status effect by its id, with the worn-off message when asked.</summary>
+        void RemoveStatusEffectById(
+            uint creature,
+            string statusEffectId,
+            bool sendsWornOffMessage = true,
+            bool removeNativeEffect = true);
+
+        /// <summary>Tells the listeners and the effect's own handler that a status effect was removed.</summary>
+        void NotifyStatusEffectRemoved(uint creature, IStatusEffect statusEffect);
 
         void ClearStatusEffectsOnDeath(uint player);
 

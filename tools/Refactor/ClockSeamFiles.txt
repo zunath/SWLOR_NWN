@@ -55,6 +55,7 @@ Domain/Character/TemporaryStatModifierService.cs
 Service/StatusEffect.cs  # master-only (P2-ZD)
 Domain/Character/StatusEffectService.cs
 Domain/Character/StatusEffectCatalogService.cs
+Domain/Character/StatusEffectSessionService.cs
 Domain/Character/StatusEffectIconMap.cs
 Domain/Character/LeadershipDamageReductionRules.cs
 Domain/Character/CraftSkillBonusType.cs

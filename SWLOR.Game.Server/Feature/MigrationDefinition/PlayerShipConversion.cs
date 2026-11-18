@@ -78,7 +78,8 @@ public static class PlayerShipConversion
     {
         var status = ship.Status;
         var placed = SlotRows.ToDictionary(row => row, _ => new Dictionary<int, ShipStatus.ShipStatusModule>());
-        var waiting = new List<(ShipModuleStep Step, int Slot, ShipStatus.ShipStatusModule Module)>();
+        // Each waiting module keeps the row and slot it came from, which no other module shares, for its returned-item ID.
+        var waiting = new List<(ShipModuleStep Step, ShipModulePowerType SourceRow, int Slot, ShipStatus.ShipStatusModule Module)>();
         var index = 0;
         foreach (var (row, slot, module) in AllModules(status).ToList())
         {
@@ -113,15 +114,15 @@ public static class PlayerShipConversion
             if (step.Row == row && slot >= 1 && slot <= Capacity(hull, row) && !placed[row].ContainsKey(slot))
                 placed[row][slot] = module;
             else
-                waiting.Add((step, slot, module));
+                waiting.Add((step, row, slot, module));
         }
 
-        foreach (var (step, slot, module) in waiting)
+        foreach (var (step, sourceRow, slot, module) in waiting)
         {
             var free = Enumerable.Range(1, Capacity(hull, step.Row)).Where(x => !placed[step.Row].ContainsKey(x)).ToList();
             if (free.Count == 0)
             {
-                Return(ship, module, $"{step.Row}-{slot}-{module.ItemInstanceId}", result);
+                Return(ship, module, $"{sourceRow}-{slot}", result);
                 continue;
             }
             placed[step.Row][free[0]] = module;

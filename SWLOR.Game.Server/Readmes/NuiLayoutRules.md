@@ -154,7 +154,10 @@ mostly of sentences that run past one line, such as an action's summary beside i
 They leave the panel's width unset, so the panel fills the content column and the wrapped
 text reflows when the player resizes the window. Every such sentence is a borderless
 `AddText` tall enough for its lines at the default window width (a text in a list cell
-takes the list's row height); a label clips at the panel edge however wide the window is.
+takes the list's row height); a label clips at the panel edge however wide the window is. In such
+a panel, verified in the client 2026-11: when several labels share a row, give each one a
+width (otherwise the first takes the whole row and the rest are cut to nothing), and give
+every list a height (otherwise it collapses to a sliver).
 
 ### R6 — Re-select the current tab after any modal closes (framework hook)
 Closing `ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back into the root with

@@ -167,6 +167,43 @@ public class CraftWindowLayoutTests
         height.Should().BeGreaterThanOrEqualTo(lines * 20f, $"{bindName} needs {lines} lines in the default window");
     }
 
+    private static IEnumerable<TestCaseData> LabelsSharingARow()
+    {
+        TestCaseData Label<TDefinition>(string partial, string bindName) where TDefinition : IGuiWindowDefinition, new() =>
+            new TestCaseData(typeof(TDefinition), partial, bindName).SetName($"{typeof(TDefinition).Name}_{bindName}");
+
+        yield return Label<ReactionDefinition>(ReactionViewModel.CraftPartial, nameof(ReactionViewModel.PhaseNowText));
+        yield return Label<ReactionDefinition>(ReactionViewModel.CraftPartial, nameof(ReactionViewModel.PhaseNextText));
+        yield return Label<ReactionDefinition>(ReactionViewModel.CraftPartial, nameof(ReactionViewModel.PhaseThenText));
+        yield return Label<SearchDefinition>(SearchViewModel.BoardPartial, nameof(SearchViewModel.FindsText));
+    }
+
+    [TestCaseSource(nameof(LabelsSharingARow))]
+    public void ALabelSharingARowInAPanelWithNoWidth_HasAWidthOfItsOwn(Type definitionType, string partial, string bindName)
+    {
+        var authored = Authored(definitionType);
+        var label = Walk(authored[partial]).Single(widget => TextBindName(widget) == bindName);
+
+        // In the client the first label without a width takes the whole row and its neighbours are cut down to nothing.
+        ReadProperty<float>(label, "Width").Should().BeGreaterThan(0f, $"{bindName} shares its row with other labels");
+    }
+
+    private static IEnumerable<TestCaseData> RecipeDetailLists()
+    {
+        yield return new TestCaseData(typeof(CircuitCraftDefinition), CircuitCraftViewModel.SetupPartial).SetName(nameof(CircuitCraftDefinition));
+        yield return new TestCaseData(typeof(FabricatorCraftDefinition), FabricatorCraftViewModel.SetupPartial).SetName(nameof(FabricatorCraftDefinition));
+    }
+
+    [TestCaseSource(nameof(RecipeDetailLists))]
+    public void TheRecipeDetailList_HasAHeightOfItsOwn(Type definitionType, string partial)
+    {
+        var authored = Authored(definitionType);
+        var list = WalkWithList(authored[partial], null)
+            .Single(found => TextBindName(found.Widget) == nameof(CircuitCraftViewModel.RecipeDescription)).List;
+
+        list.DeclaredHeight.Should().BeGreaterThan(0f, "a list with no height of its own collapses to a sliver in a scrolled panel");
+    }
+
     private static IEnumerable<(IGuiWidget Widget, IGuiWidget List)> WalkWithList(IGuiWidget widget, IGuiWidget list)
     {
         yield return (widget, list);

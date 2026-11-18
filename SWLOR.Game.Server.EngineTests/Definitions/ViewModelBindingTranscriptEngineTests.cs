@@ -1,0 +1,623 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Domain.Companions;
+using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.UI;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+using static SWLOR.Game.Server.EngineTests.Framework.ViewModelTestHelper;
+
+namespace SWLOR.Game.Server.EngineTests.Definitions
+{
+    /// <summary>
+    /// The binding transcripts of the six windows the view model split (P5-16h) touches: the player guide, perks, character sheet,
+    /// incubator, disguises and droid assembly. Each script opens the window with the recorder attached before it is bound, drives the
+    /// window's main interactions on a real saved player record with the clock fixed, and compares the transcript
+    /// (<see cref="ViewModelTranscript"/>) with the one captured on the code before any view model code moved. A run without an embedded
+    /// fixture writes the transcript to /nwn/home and fails, which is how a fixture is captured.
+    /// </summary>
+    public static class ViewModelBindingTranscriptEngineTests
+    {
+        private const string Category = "ViewModelTranscript";
+
+        [EngineTest("Player guide window publishes the same bindings and values as before the split", Category = Category, TimeoutSeconds = 120f)]
+        public static Task PlayerGuide(EngineTestContext ctx) => RunAsync(ctx, "PlayerGuide", null, GuideScriptAsync);
+
+        [EngineTest("Perks window publishes the same bindings and values as before the split", Category = Category, TimeoutSeconds = 240f)]
+        public static Task Perks(EngineTestContext ctx) => RunAsync(ctx, "Perks", SeedPerks, PerksScriptAsync);
+
+        [EngineTest("Character sheet publishes the same bindings and values as before the split", Category = Category, TimeoutSeconds = 240f)]
+        public static Task CharacterSheet(EngineTestContext ctx) => RunAsync(ctx, "CharacterSheet", SeedSheet, SheetScriptAsync);
+
+        [EngineTest("Incubator window publishes the same bindings and values as before the split", Category = Category, TimeoutSeconds = 240f)]
+        public static Task Incubator(EngineTestContext ctx) => RunAsync(ctx, "Incubator", SeedIncubator, IncubatorScriptAsync);
+
+        [EngineTest("Disguise window publishes the same bindings and values as before the split", Category = Category, TimeoutSeconds = 240f)]
+        public static Task Disguise(EngineTestContext ctx) => RunAsync(ctx, "Disguise", SeedDisguise, DisguiseScriptAsync);
+
+        [EngineTest("Droid assembly window publishes the same bindings and values as before the split", Category = Category, TimeoutSeconds = 240f)]
+        public static Task DroidAssembly(EngineTestContext ctx) => RunAsync(ctx, "DroidAssembly", SeedDroid, DroidScriptAsync);
+
+        private sealed class Run
+        {
+            public EngineTestContext Context;
+            public PlayerAbilityFixture Fixture;
+            public ViewModelTranscript Transcript;
+            public TranscriptClock Clock;
+
+            public uint Player => Fixture.Creature;
+
+            /// <summary>Runs an action inside the player's creature context with the recording decorators in front of the engine.</summary>
+            public async Task PhaseAsync(Action action)
+            {
+                await Context.ExecuteInCreatureContextAsync(Player, () =>
+                {
+                    using var frozen = Clock.Freeze();
+                    Transcript.Install();
+                    try
+                    {
+                        action();
+                    }
+                    finally
+                    {
+                        Transcript.Uninstall();
+                    }
+                });
+                await Context.WaitFrameAsync();
+            }
+        }
+
+        private static async Task RunAsync(EngineTestContext ctx, string name, Action<PlayerAbilityFixture> seed,
+            Func<Run, Task> script)
+        {
+            using var clock = new TranscriptClock();
+            using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
+            fixture.Update(record =>
+            {
+                record.Name = "Transcript Player";
+                foreach (var skill in Enum.GetValues<SkillType>())
+                {
+                    if (!record.Skills.ContainsKey(skill))
+                        record.Skills[skill] = new PlayerSkill();
+                    record.Skills[skill].Rank = 50;
+                }
+
+                record.UnallocatedSP = 120;
+                record.DatePerkRefundAvailable = null;
+            });
+            seed?.Invoke(fixture);
+            var transcript = new ViewModelTranscript(fixture);
+            var run = new Run { Context = ctx, Fixture = fixture, Transcript = transcript, Clock = clock };
+            try
+            {
+                await script(run);
+            }
+            finally
+            {
+                transcript.Uninstall();
+                CloseWindows(fixture);
+            }
+
+            Compare(ctx, name, Normalize(transcript.Text));
+        }
+
+        private static string Normalize(string text) => text;
+
+        // ------------------------------------------------------------------ player guide
+
+        private static async Task GuideScriptAsync(Run run)
+        {
+            var t = run.Transcript;
+            PlayerGuideViewModel guide = null;
+            await run.PhaseAsync(() =>
+            {
+                t.Step("open", () => guide = t.Open<PlayerGuideViewModel>(GuiWindowType.PlayerGuide, null));
+                var count = ((IList)Get(guide, "_filteredTopicIndexes")).Count;
+                foreach (var index in new[] { 0, 1, count / 2, count - 1 })
+                    t.Step("select-topic-" + index, () => Call(guide, "SelectTopicByTopicIndex", ((IList<int>)Get(guide, "_filteredTopicIndexes"))[index]));
+                t.Step("search-attack", () =>
+                {
+                    guide.SearchText = "attack";
+                    guide.OnClickSearch()();
+                });
+                t.Step("select-first-result", () => Call(guide, "SelectTopicByTopicIndex", ((IList<int>)Get(guide, "_filteredTopicIndexes"))[0]));
+                t.Step("search-nothing", () =>
+                {
+                    guide.SearchText = "zzzz no such guide text";
+                    guide.OnClickSearch()();
+                });
+                t.Step("clear-search", () => guide.OnClickClearSearch()());
+                t.Step("select-topic-with-related", () =>
+                {
+                    var topics = (IList)GetStatic(typeof(PlayerGuideViewModel), "Topics");
+                    for (var index = 0; index < topics.Count; index++)
+                    {
+                        var related = (IList)topics[index]!.GetType().GetProperty("RelatedTopics")!.GetValue(topics[index])!;
+                        if (related.Count == 0)
+                            continue;
+                        Call(guide, "SelectTopicByTopicIndex", index);
+                        break;
+                    }
+                });
+                t.Step("select-related", () => Call(guide, "SelectTopicByTopicIndex", ((IList<int>)Get(guide, "_relatedTopicIndexes")).FirstOrDefault()));
+                t.Step("close-and-reopen", () => guide = t.Reopen<PlayerGuideViewModel>(GuiWindowType.PlayerGuide, null));
+            });
+        }
+
+        // ------------------------------------------------------------------ perks
+
+        private static void SeedPerks(PlayerAbilityFixture fixture)
+        {
+            var beast = new Beast
+            {
+                OwnerPlayerId = fixture.Id,
+                Name = "Transcript Beast",
+                Level = 20,
+                UnallocatedSP = 8,
+                Type = BeastType.Viper
+            };
+            DB.Set(beast);
+            fixture.Update(record => record.ActiveBeastId = beast.Id);
+        }
+
+        private static async Task PerksScriptAsync(Run run)
+        {
+            var t = run.Transcript;
+            PerksViewModel perks = null;
+            int Count() => ((IList)Get(perks, "_filteredPerks")).Count;
+            int IndexWhere(Func<PerkType, bool> predicate)
+            {
+                var list = ((IList)Get(perks, "_filteredPerks")).Cast<PerkType>().ToList();
+                return list.FindIndex(perk => predicate(perk));
+            }
+
+            void Select(int index) => Call(perks, "SelectPerkAt", index);
+            void Buy()
+            {
+                perks.OnClickBuyUpgrade()();
+                perks.OnModalConfirmClick()();
+            }
+
+            await run.PhaseAsync(() =>
+            {
+                t.Step("open", () => perks = t.Open<PerksViewModel>(GuiWindowType.Perks, null));
+                t.Step("select-first-unowned", () => Select(0));
+                t.Step("select-second", () => Select(1));
+                t.Step("buy-first-rank", () =>
+                {
+                    Select(0);
+                    Buy();
+                });
+                t.Step("select-owned-perk", () => Select(0));
+                t.Step("buy-to-maxed", () =>
+                {
+                    for (var rank = 0; rank < 8 && perks.IsBuyEnabled; rank++)
+                        Buy();
+                });
+                t.Step("select-maxed-perk", () => Select(0));
+                var activeIndex = IndexWhere(perk =>
+                {
+                    var detail = Perk.GetPerkDetails(perk);
+                    return detail.IsActive && detail.PerkLevels.TryGetValue(1, out var level) && level.GrantedFeats.Count > 0 &&
+                           level.Requirements.Count == 0;
+                });
+                t.Step("select-hot-bar-perk", () => Select(activeIndex < 0 ? 1 : activeIndex));
+                t.Step("buy-hot-bar-perk", Buy);
+                t.Step("select-hot-bar-perk-again", () => Select(activeIndex < 0 ? 1 : activeIndex));
+                t.Step("select-refundable-perk", () => Select(0));
+                t.Step("give-refund-tokens", () => Currency.GiveCurrency(run.Player, CurrencyType.PerkRefundToken, 3));
+                t.Step("refund", () =>
+                {
+                    perks.OnClickRefund()();
+                    perks.OnModalConfirmClick()();
+                });
+                t.Step("filter-owned", () => perks.OnClickFilterOwned()());
+                t.Step("filter-can-buy", () => perks.OnClickFilterCanBuy()());
+                t.Step("filter-maxed", () => perks.OnClickFilterMaxed()());
+                t.Step("filter-all", () => perks.OnClickFilterAll()());
+                t.Step("page-next", () => perks.OnClickNextPage()());
+                t.Step("page-previous", () => perks.OnClickPreviousPage()());
+                t.Step("search", () => perks.SearchText = "attack");
+                t.Step("clear-search", () => perks.SearchText = string.Empty);
+                t.Step("category", () => perks.SelectedPerkCategoryId = 1);
+                t.Step("sort", () => perks.SelectedSortOrderId = 1);
+                t.Step("category-all", () => perks.SelectedPerkCategoryId = 0);
+                t.Step("beast-mode", () => perks.OnClickBeastPerks()());
+                t.Step("beast-select", () => Select(0));
+                t.Step("beast-buy", Buy);
+                t.Step("my-perks", () => perks.OnClickMyPerks()());
+                t.Step("refresh-skill-xp", () => perks.Refresh(new SkillXPRefreshEvent(new List<SkillType> { SkillType.Force })));
+                t.Step("refresh-reset", () => perks.Refresh(new PerkResetAcquiredRefreshEvent()));
+                t.Step("refresh-cooldown", () => perks.Refresh(new PerkRefundCooldownResetRefreshEvent()));
+                t.Step("close-and-reopen", () => perks = t.Reopen<PerksViewModel>(GuiWindowType.Perks, null));
+            });
+        }
+
+        // ------------------------------------------------------------------ character sheet
+
+        private static void SeedSheet(PlayerAbilityFixture fixture) => SeedPerks(fixture);
+
+        private static async Task SheetScriptAsync(Run run)
+        {
+            var t = run.Transcript;
+            CharacterSheetViewModel sheet = null;
+            var npc = run.Context.SpawnCreature("nw_bandit001", 3f);
+            var self = new CharacterSheetPayload(run.Player, true);
+            await run.PhaseAsync(() =>
+            {
+                t.Step("open-self", () => sheet = t.Open<CharacterSheetViewModel>(GuiWindowType.CharacterSheet, self));
+                foreach (var tab in new[] { 1, 2, 3, 0 })
+                {
+                    var id = tab;
+                    t.Step("tab-" + id, () => sheet.SelectedTabId = id);
+                }
+
+                t.Step("upgrade-might", () =>
+                {
+                    sheet.OnClickUpgradeMight()();
+                    sheet.OnModalConfirmClick()();
+                });
+                t.Step("upgrade-agility", () =>
+                {
+                    sheet.OnClickUpgradeAgility()();
+                    sheet.OnModalConfirmClick()();
+                });
+                t.Step("skill-xp", () =>
+                {
+                    run.Fixture.Update(record => record.Skills[SkillType.Force].XP += 40);
+                    Gui.PublishRefreshEvent(run.Player, new SkillXPRefreshEvent(new List<SkillType> { SkillType.Force }));
+                });
+                t.Step("stat-adjustment", () => Gui.PublishRefreshEvent(run.Player, new StatAdjustmentRefreshEvent()));
+                t.Step("perk-acquired", () => sheet.Refresh(new PerkAcquiredRefreshEvent(PerkType.CombatAnalyzer)));
+                t.Step("stats-tab", () => sheet.SelectedTabId = 1);
+            });
+
+            // A one-hand weapon, then a second weapon in the off hand, then the main hand weapon off again.
+            await run.Context.EquipItemAsync(run.Player, "nw_wswss001", InventorySlot.RightHand);
+            await run.Context.DelaySecondsAsync(1.5f);
+            await run.PhaseAsync(() =>
+            {
+                t.Step("equip-main-hand", () => Gui.PublishRefreshEvent(run.Player, new EquipItemRefreshEvent()));
+                t.Step("resistances-tab", () => sheet.SelectedTabId = 2);
+                t.Step("stats-tab-again", () => sheet.SelectedTabId = 1);
+            });
+            await run.Context.EquipItemAsync(run.Player, "nw_wswss001", InventorySlot.LeftHand);
+            await run.Context.DelaySecondsAsync(1.5f);
+            await run.PhaseAsync(() =>
+            {
+                t.Step("equip-off-hand", () => Gui.PublishRefreshEvent(run.Player, new EquipItemRefreshEvent()));
+                t.Step("crafting-tab", () => sheet.SelectedTabId = 3);
+                t.Step("stats-tab-dual-wield", () => sheet.SelectedTabId = 1);
+                t.Step("unequip", () => Gui.PublishRefreshEvent(run.Player, new UnequipItemRefreshEvent()));
+                t.Step("close-self", () => Gui.ClosePlayerWindow(run.Player, GuiWindowType.CharacterSheet));
+                t.Step("open-npc", () => sheet = t.Open<CharacterSheetViewModel>(GuiWindowType.CharacterSheet, new CharacterSheetPayload(npc, false)));
+                foreach (var tab in new[] { 1, 2, 3, 0 })
+                {
+                    var id = tab;
+                    t.Step("npc-tab-" + id, () => sheet.SelectedTabId = id);
+                }
+
+                t.Step("close-npc", () => Gui.ClosePlayerWindow(run.Player, GuiWindowType.CharacterSheet));
+                t.Step("open-high-resource", () =>
+                {
+                    run.Fixture.Update(record =>
+                    {
+                        record.MaxFP = 90000;
+                        record.MaxStamina = 90000;
+                        record.MaxHP = 60000;
+                    });
+                    sheet = t.Open<CharacterSheetViewModel>(GuiWindowType.CharacterSheet, self);
+                });
+                t.Step("high-resource-stats", () => sheet.SelectedTabId = 1);
+            });
+        }
+
+        // ------------------------------------------------------------------ incubator
+
+        private static void SeedIncubator(PlayerAbilityFixture fixture) => SeedPerks(fixture);
+
+        private static uint MakeDna(uint player, int attackPurity)
+        {
+            var dna = CreateItemOnObject(BeastMasteryService.DNAResref, player);
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DNAType, (int)BeastType.Viper), dna);
+            AddItemProperty(DurationType.Permanent,
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AttackPurity, attackPurity), dna);
+            AddItemProperty(DurationType.Permanent,
+                ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, 300), dna);
+            return dna;
+        }
+
+        private static async Task IncubatorScriptAsync(Run run)
+        {
+            var t = run.Transcript;
+            IncubatorViewModel incubator = null;
+            var payload = new IncubatorPayload("engine-transcript-incubator/" + run.Fixture.Id, string.Empty);
+            await run.PhaseAsync(() =>
+            {
+                t.Track("jobs", () =>
+                {
+                    var all = new JObject();
+                    var jobs = DB.Search(new DBQuery<IncubationJob>()
+                        .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), payload.PropertyId, false)).ToList();
+                    for (var index = 0; index < jobs.Count; index++)
+                        all["job" + index] = new JObject
+                        {
+                            ["stage"] = jobs[index].CurrentStage, ["type"] = jobs[index].BeastDNAType.ToString(),
+                            ["started"] = jobs[index].DateStarted, ["completed"] = jobs[index].DateCompleted
+                        };
+                    return all;
+                });
+                t.Step("open-new-job", () => incubator = t.Open<IncubatorViewModel>(GuiWindowType.Incubator, payload));
+                t.Step("toggle-resistances", () => incubator.OnClickToggleResistances()());
+                t.Step("toggle-resistances-back", () => incubator.OnClickToggleResistances()());
+                t.Step("toggle-erratic-genius", () => incubator.OnClickErraticGeniusToggled()());
+                t.Step("toggle-allow-mutation", () => incubator.OnClickAllowMutationToggled()());
+            });
+
+            var dna = 0u;
+            await run.PhaseAsync(() =>
+            {
+                dna = MakeDna(run.Player, 500);
+                t.Step("select-dna-prompt", () => incubator.OnClickDNA()());
+                t.Step("select-dna", () => t.Target(dna));
+            });
+            await run.PhaseAsync(() =>
+            {
+                var enzymes = new (string Name, string Resref, Func<Action> Click)[]
+                {
+                    ("hydrolase", "hydrolase_blue", () => incubator.OnClickHydrolase()),
+                    ("isomerase", "isomerase_red", () => incubator.OnClickIsomerase()),
+                    ("lyase", "lyase_blue", () => incubator.OnClickLyase())
+                };
+                foreach (var enzyme in enzymes)
+                {
+                    var item = CreateItemOnObject(enzyme.Resref, run.Player);
+                    var click = enzyme.Click;
+                    t.Step("select-" + enzyme.Name + "-prompt", () => click()());
+                    t.Step("select-" + enzyme.Name, () => t.Target(item));
+                }
+            });
+            await run.PhaseAsync(() =>
+            {
+                t.Step("remove-lyase", () =>
+                {
+                    incubator.OnClickLyase()();
+                    incubator.OnModalConfirmClick()();
+                });
+                var lyase = CreateItemOnObject("lyase_blue", run.Player);
+                t.Step("select-lyase-again-prompt", () => incubator.OnClickLyase()());
+                t.Step("select-lyase-again", () => t.Target(lyase));
+                t.Step("start-job", () =>
+                {
+                    incubator.OnClickStartJob()();
+                    incubator.OnModalConfirmClick()();
+                });
+                t.Step("in-progress-reopen", () => incubator = t.Reopen<IncubatorViewModel>(GuiWindowType.Incubator, payload));
+                t.Step("clock-half-stage", () => FrozenClockAdvance(run, 3600 * 6));
+                t.Step("in-progress-refresh", () => incubator.Refresh(new PerkAcquiredRefreshEvent(PerkType.CombatAnalyzer)));
+                t.Step("stage-complete", () =>
+                {
+                    FrozenClockAdvance(run, 3600 * 40);
+                    incubator = t.Reopen<IncubatorViewModel>(GuiWindowType.Incubator, payload);
+                });
+                t.Step("continue-job", () =>
+                {
+                    incubator.OnClickContinueJob()();
+                    incubator.OnModalConfirmClick()();
+                });
+                t.Step("cancel-job", () =>
+                {
+                    incubator.OnClickCancelJob()();
+                    incubator.OnModalConfirmClick()();
+                });
+                var dna2 = MakeDna(run.Player, 700);
+                t.Step("select-dna-for-complete-prompt", () => incubator.OnClickDNA()());
+                t.Step("select-dna-for-complete", () => t.Target(dna2));
+                t.Step("start-second-job", () =>
+                {
+                    incubator.OnClickStartJob()();
+                    incubator.OnModalConfirmClick()();
+                });
+                t.Step("all-stages-complete", () =>
+                {
+                    FrozenClockAdvance(run, 3600 * 24 * 12);
+                    incubator = t.Reopen<IncubatorViewModel>(GuiWindowType.Incubator, payload);
+                });
+                t.Step("complete-job", () =>
+                {
+                    incubator.OnClickCompleteJob()();
+                    incubator.OnModalConfirmClick()();
+                });
+                var dna3 = MakeDna(run.Player, 900);
+                t.Step("hold-items-prompt", () => incubator.OnClickDNA()());
+                t.Step("hold-items", () => t.Target(dna3));
+                t.Step("close-with-held-items", () =>
+                {
+                    incubator.OnWindowClosed()();
+                    Gui.ClosePlayerWindow(run.Player, GuiWindowType.Incubator);
+                });
+                t.Step("reopen-with-held-items", () => incubator = t.Open<IncubatorViewModel>(GuiWindowType.Incubator, payload));
+            });
+        }
+
+        private static void FrozenClockAdvance(Run run, double seconds) => run.Clock.Advance(seconds);
+
+        // ------------------------------------------------------------------ disguises
+
+        private static void SeedDisguise(PlayerAbilityFixture fixture)
+        {
+        }
+
+        private static async Task DisguiseScriptAsync(Run run)
+        {
+            var t = run.Transcript;
+            DisguiseViewModel disguise = null;
+            await run.PhaseAsync(() =>
+            {
+                t.Step("open-empty", () => disguise = t.Open<DisguiseViewModel>(GuiWindowType.Disguises, null));
+                t.Step("retired-tab", () => disguise.OnClickRetired()());
+                t.Step("available-tab", () => disguise.OnClickAvailable()());
+                t.Step("new", () =>
+                {
+                    disguise.OnClickNew()();
+                    disguise.OnModalConfirmClick()();
+                });
+                t.Step("edit-fields", () =>
+                {
+                    disguise.PrivateName = "Transcript Disguise";
+                    disguise.Descriptor = "a hooded stranger";
+                    disguise.Biography = "Only a transcript.";
+                });
+                t.Step("next-portrait", () => disguise.OnClickNextPortrait()());
+                t.Step("previous-portrait", () => disguise.OnClickPreviousPortrait()());
+                t.Step("sound-set-next-page", () => disguise.OnClickNextSoundSetPage()());
+                t.Step("sound-set-previous-page", () => disguise.OnClickPreviousSoundSetPage()());
+                t.Step("sound-set-select", () => disguise.SelectedSoundSetIndex = 1);
+                t.Step("sound-set-page-select", () => disguise.SelectedSoundSetPageIndex = 1);
+                t.Step("sound-set-preview", () => disguise.OnClickPreviewSoundSet()());
+                t.Step("save", () => disguise.OnClickSave()());
+                t.Step("edit", () => disguise.OnClickEdit()());
+                t.Step("cancel-edit", () => disguise.OnClickCancelEdit()());
+                t.Step("activate", () => disguise.OnClickActivateOrDeactivate()());
+                t.Step("deactivate", () => disguise.OnClickActivateOrDeactivate()());
+                t.Step("retire", () =>
+                {
+                    disguise.OnClickRetire()();
+                    disguise.OnModalConfirmClick()();
+                });
+                t.Step("retired-tab-with-disguise", () => disguise.OnClickRetired()());
+                t.Step("unretire", () =>
+                {
+                    disguise.OnClickUnretire()();
+                    disguise.OnModalConfirmClick()();
+                });
+                t.Step("perk-refunded", () => disguise.Refresh(new PerkRefundedRefreshEvent(PerkType.CombatAnalyzer)));
+                t.Step("perk-acquired", () => disguise.Refresh(new PerkAcquiredRefreshEvent(PerkType.CombatAnalyzer)));
+                t.Step("close-and-reopen", () => disguise = t.Reopen<DisguiseViewModel>(GuiWindowType.Disguises, null));
+            });
+        }
+
+        // ------------------------------------------------------------------ droid assembly
+
+        private static void SeedDroid(PlayerAbilityFixture fixture) =>
+            fixture.Update(record => record.Skills[SkillType.Engineering].Rank = 40);
+
+        private static async Task DroidScriptAsync(Run run)
+        {
+            var t = run.Transcript;
+            DroidAssemblyViewModel droid = null;
+            var parts = new[] { "d_as_cpu1_a", "d_hd_mpv1", "d_bd_mp1", "d_ar_mpv1", "d_lg_mpv1" };
+            await run.PhaseAsync(() => t.Step("open", () => droid = t.Open<DroidAssemblyViewModel>(GuiWindowType.DroidAssembly, null)));
+            var items = new List<uint>();
+            await run.PhaseAsync(() =>
+            {
+                var handlers = new Func<Action>[]
+                {
+                    () => droid.OnClickCPU(), () => droid.OnClickHead(), () => droid.OnClickBody(), () => droid.OnClickArms(),
+                    () => droid.OnClickLegs()
+                };
+                for (var index = 0; index < parts.Length; index++)
+                {
+                    var slot = index;
+                    var item = CreateItemOnObject(parts[index], run.Player);
+                    items.Add(item);
+                    t.Step("install-" + parts[index] + "-prompt", () => handlers[slot]()());
+                    t.Step("install-" + parts[index], () => t.Target(item));
+                }
+
+                t.Step("name", () => droid.Name = "Transcript Droid");
+                t.Step("personality", () => droid.PersonalityIndex = 1);
+                t.Step("remove-legs", () =>
+                {
+                    handlers[4]()();
+                    droid.OnModalConfirmClick()();
+                });
+                var wrong = CreateItemOnObject("d_hd_mpv1", run.Player);
+                t.Step("wrong-part-prompt", () => handlers[4]()());
+                t.Step("wrong-part", () => t.Target(wrong));
+                var legs = CreateItemOnObject("d_lg_mpv1", run.Player);
+                t.Step("reinstall-legs-prompt", () => handlers[4]()());
+                t.Step("reinstall-legs", () => t.Target(legs));
+                t.Step("reset", () =>
+                {
+                    droid.OnClickReset()();
+                    droid.OnModalConfirmClick()();
+                });
+            });
+            await run.PhaseAsync(() =>
+            {
+                var handlers = new Func<Action>[]
+                {
+                    () => droid.OnClickCPU(), () => droid.OnClickHead(), () => droid.OnClickBody(), () => droid.OnClickArms(),
+                    () => droid.OnClickLegs()
+                };
+                for (var index = 0; index < parts.Length; index++)
+                {
+                    var slot = index;
+                    var item = CreateItemOnObject(parts[index], run.Player);
+                    t.Step("assemble-" + parts[index] + "-prompt", () => handlers[slot]()());
+                    t.Step("assemble-" + parts[index], () => t.Target(item));
+                }
+
+                t.Step("construct", () =>
+                {
+                    droid.Name = "Transcript Droid";
+                    droid.OnClickConstruct()();
+                    droid.OnModalConfirmClick()();
+                });
+                t.Step("new-droid", () => droid.OnClickNewDroid()());
+                t.Step("close-and-reopen", () => droid = t.Reopen<DroidAssemblyViewModel>(GuiWindowType.DroidAssembly, null));
+            });
+        }
+
+        // ------------------------------------------------------------------ comparison
+
+        private static object GetStatic(Type type, string name) =>
+            type.GetField(name, System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)!.GetValue(null);
+
+        private static void Compare(EngineTestContext ctx, string name, string actual)
+        {
+            var resource = "ViewModelTranscript/" + name + ".txt";
+            using var stream = typeof(ViewModelBindingTranscriptEngineTests).Assembly.GetManifestResourceStream(resource);
+            var capture = "/nwn/home/viewmodel-transcript-" + name + ".txt";
+            if (stream == null)
+            {
+                if (Directory.Exists("/nwn/home"))
+                    File.WriteAllText(capture, actual);
+                ctx.Assert(false, $"No fixture is embedded; the transcript ({actual.Length} chars) was written to {capture}.");
+                return;
+            }
+
+            var expected = new StreamReader(stream, Encoding.UTF8).ReadToEnd().Replace("\r\n", "\n");
+            if (expected != actual)
+            {
+                if (Directory.Exists("/nwn/home"))
+                    File.WriteAllText(capture, actual);
+                var expectedLines = expected.Split('\n');
+                var actualLines = actual.Split('\n');
+                var index = 0;
+                while (index < expectedLines.Length && index < actualLines.Length && expectedLines[index] == actualLines[index])
+                    index++;
+                ctx.Assert(false, $"{name} transcript differs at line {index + 1}: expected '{Shorten(index < expectedLines.Length ? expectedLines[index] : "<end>")}' " +
+                                  $"but got '{Shorten(index < actualLines.Length ? actualLines[index] : "<end>")}'.");
+                return;
+            }
+
+            ctx.SetResultDetail($"{actual.Split('\n').Length - 1} lines, identical to the captured transcript.");
+        }
+
+        private static string Shorten(string line) => line.Length <= 300 ? line : line.Substring(0, 300) + "...";
+    }
+}

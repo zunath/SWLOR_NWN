@@ -98,19 +98,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RacialAppearanceRegistry.EnsureLoaded();
         }
 
-        public bool IsAppearanceSelected { get => Get<bool>(); set => Set(value); }
+        public bool IsAppearanceSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool IsEquipmentSelected { get => Get<bool>(); set => Set(value); }
+        public bool IsEquipmentSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool IsSettingsSelected { get => Get<bool>(); set => Set(value); }
+        public bool IsSettingsSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool IsTintMapAvailable { get => Get<bool>(); set => Set(value); }
+        public bool IsTintMapAvailable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool IsCustomTintAvailable { get => Get<bool>(); set => Set(value); }
+        public bool IsCustomTintAvailable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool IsCustomTintEditable { get => Get<bool>(); set => Set(value); }
+        public bool IsCustomTintEditable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public string CustomTintTooltip { get => Get<string>(); set => Set(value); }
+        public string CustomTintTooltip
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
 
         public GuiColor SelectedTintColor
         {
@@ -145,99 +173,399 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        public string CustomTintRed { get => Get<string>(); set => AppearanceTintEditorService.SetCustomTintComponent(this, value, nameof(CustomTintRed)); }
+        public string CustomTintRed
+        {
+            get => Get<string>();
+            set => AppearanceTintEditorService.SetCustomTintComponent(this, value, nameof(CustomTintRed));
+        }
 
-        public string CustomTintGreen { get => Get<string>(); set => AppearanceTintEditorService.SetCustomTintComponent(this, value, nameof(CustomTintGreen)); }
+        public string CustomTintGreen
+        {
+            get => Get<string>();
+            set => AppearanceTintEditorService.SetCustomTintComponent(this, value, nameof(CustomTintGreen));
+        }
 
-        public string CustomTintBlue { get => Get<string>(); set => AppearanceTintEditorService.SetCustomTintComponent(this, value, nameof(CustomTintBlue)); }
+        public string CustomTintBlue
+        {
+            get => Get<string>();
+            set => AppearanceTintEditorService.SetCustomTintComponent(this, value, nameof(CustomTintBlue));
+        }
 
-        public bool IsSettingsVisible { get => Get<bool>(); set => Set(value); }
+        public bool IsSettingsVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool IsPlayerSettingsVisible { get => Get<bool>(); set => Set(value); }
+        public bool IsPlayerSettingsVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public string ColorSheetResref { get => Get<string>(); set => Set(value); }
+        public string ColorSheetResref
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
 
-        public bool HasItemEquipped { get => Get<bool>(); set => Set(value); }
+        public bool HasItemEquipped
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool DoesNotHaveItemEquipped { get => Get<bool>(); set => Set(value); }
+        public bool DoesNotHaveItemEquipped
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool IsColorPickerVisible { get => Get<bool>(); set => Set(value); }
+        public bool IsColorPickerVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool ShowHelmet { get => Get<bool>(); set => Set(value); }
+        public bool ShowHelmet
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool ShowCloak { get => Get<bool>(); set => Set(value); }
+        public bool ShowCloak
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public bool IsArmorDisplayVisible { get => Get<bool>(); set => Set(value); }
+        public bool IsArmorDisplayVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<string> ColorCategoryOptions { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> ColorCategoryOptions
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<string> PartCategoryOptions { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> PartCategoryOptions
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<bool> ColorCategorySelected { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> ColorCategorySelected
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<bool> PartCategorySelected { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> PartCategorySelected
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
 
-        public bool IsCopyEnabled { get => Get<bool>(); set => Set(value); }
+        public bool IsCopyEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        public string ColorTargetText { get => Get<string>(); set => Set(value); }
+        public string ColorTargetText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
 
-        public int LeftShoulderSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.LeftShoulder, value); } }
+        public int LeftShoulderSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftShoulder, value);
+            }
+        }
 
-        public int LeftBicepSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.LeftBicep, value); } }
-        public int LeftForearmSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.LeftForearm, value); } }
-        public int LeftHandSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.LeftHand, value); } }
-        public int LeftThighSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.LeftThigh, value); } }
-        public int LeftShinSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.LeftShin, value); } }
-        public int LeftFootSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.LeftFoot, value); } }
-        public int RightShoulderSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.RightShoulder, value); } }
-        public int RightBicepSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.RightBicep, value); } }
-        public int RightForearmSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.RightForearm, value); } }
-        public int RightHandSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.RightHand, value); } }
-        public int RightThighSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.RightThigh, value); } }
-        public int RightShinSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.RightShin, value); } }
-        public int RightFootSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.RightFoot, value); } }
-        public int NeckSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.Neck, value); } }
-        public int ChestSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.Torso, value); } }
-        public int BeltSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.Belt, value); } }
-        public int PelvisSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.Pelvis, value); } }
-        public int RobeSelection { get => Get<int>(); set { Set(value); OnArmorSelectionSet(AppearanceArmor.Robe, value); } }
+        public int LeftBicepSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftBicep, value);
+            }
+        }
+        public int LeftForearmSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftForearm, value);
+            }
+        }
+        public int LeftHandSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftHand, value);
+            }
+        }
+        public int LeftThighSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftThigh, value);
+            }
+        }
+        public int LeftShinSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftShin, value);
+            }
+        }
+        public int LeftFootSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftFoot, value);
+            }
+        }
+        public int RightShoulderSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightShoulder, value);
+            }
+        }
+        public int RightBicepSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightBicep, value);
+            }
+        }
+        public int RightForearmSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightForearm, value);
+            }
+        }
+        public int RightHandSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightHand, value);
+            }
+        }
+        public int RightThighSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightThigh, value);
+            }
+        }
+        public int RightShinSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightShin, value);
+            }
+        }
+        public int RightFootSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightFoot, value);
+            }
+        }
+        public int NeckSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Neck, value);
+            }
+        }
+        public int ChestSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Torso, value);
+            }
+        }
+        public int BeltSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Belt, value);
+            }
+        }
+        public int PelvisSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Pelvis, value);
+            }
+        }
+        public int RobeSelection
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Robe, value);
+            }
+        }
 
-        public GuiBindingList<GuiComboEntry> LeftShoulderOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> LeftShoulderOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> LeftBicepOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> LeftBicepOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> LeftForearmOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> LeftForearmOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> LeftHandOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> LeftHandOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> LeftThighOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> LeftThighOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> LeftShinOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
-        public GuiBindingList<GuiComboEntry> LeftFootOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> LeftShinOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+        public GuiBindingList<GuiComboEntry> LeftFootOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> RightShoulderOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> RightShoulderOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> RightBicepOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> RightBicepOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> RightForearmOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> RightForearmOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> RightHandOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> RightHandOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> RightThighOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> RightThighOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> RightShinOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> RightShinOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> RightFootOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> RightFootOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> NeckOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> NeckOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> ChestOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> ChestOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> BeltOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> BeltOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> PelvisOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> PelvisOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<GuiComboEntry> RobeOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> RobeOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
         public int SelectedColorCategoryIndex
         {
@@ -327,13 +655,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        public int SelectedPartCategoryIndex { get => Get<int>(); set => Set(value); }
+        public int SelectedPartCategoryIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<string> PartOptions { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> PartOptions
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<bool> PartSelected { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> PartSelected
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
 
-        public int SelectedPartIndex { get => Get<int>(); set => Set(value); }
+        public int SelectedPartIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
         // Palette cell geometry shared with the definition; the outline overlay is drawn in these units.
         public const float PaletteHeaderWidth = 20f;
         public const float PaletteHeaderHeight = 16f;
@@ -468,9 +812,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// <summary>Outfits belong to the player, so they appear only while players edit themselves.</summary>
         public bool IsOutfitsVisible { get => Get<bool>(); set => Set(value); }
 
-        public GuiBindingList<string> OutfitSlotNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
+        public GuiBindingList<string> OutfitSlotNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
 
-        public GuiBindingList<bool> OutfitSlotToggles { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> OutfitSlotToggles
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
 
         public string WardrobeCapacityText { get => Get<string>(); set => Set(value); }
         public bool IsOutfitSelected { get => Get<bool>(); set => Set(value); }
@@ -489,7 +841,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        public GuiBindingList<GuiComboEntry> QuickOutfitOptions { get => Get<GuiBindingList<GuiComboEntry>>(); set => Set(value); }
+        public GuiBindingList<GuiComboEntry> QuickOutfitOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
 
         public int QuickOutfitValue { get => Get<int>(); set => Set(value); }
         public bool IsQuickWearEnabled { get => Get<bool>(); set => Set(value); }
@@ -623,8 +979,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 AppearanceTintEditorService.SynchronizeTintControlBindings(this, () => OnPropertyChanged(propertyName));
             }
         }
-        private void OnArmorSelectionSet(AppearanceArmor part, int value) => AppearancePartEditService.ArmorSelectionChanged(this, part, value);
-
         private void LoadItemTypeEditor()
         {
             AppearanceTintEditorService.SuspendArmorClientWatches(this);

@@ -83,14 +83,15 @@ public class AppearanceEditorColorStateTests
 
         var setters = root.DescendantNodes().OfType<PropertyDeclarationSyntax>()
             .Where(property => property.Identifier.ValueText.EndsWith("Selection", StringComparison.Ordinal) &&
-                               property.ToString().Contains("OnArmorSelectionSet", StringComparison.Ordinal))
+                               property.ToString().Contains("AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.", StringComparison.Ordinal))
             .ToArray();
         setters.Should().HaveCount(19);
         // The 19 setters share one body: the part edit service applies the chosen style only for a client change.
         FindMethod(root, "ArmorSelectionChanged").ToString().Should().Contain(
             "host.Session.ArmorClientBindingsWatched && !host.Session.SkipAdjustArmorPart",
             "a client hydration event must not execute the part-changing setter");
-        FindMethod(root, "OnArmorSelectionSet").ToString().Should().Contain("AppearancePartEditService.ArmorSelectionChanged(this, part, value)");
+        foreach (var setter in setters)
+            setter.ToString().Should().Contain(", value);", "each setter passes the part it names and the new value, as the inline copy did");
     }
 
     [Test]

@@ -192,8 +192,9 @@ Open decisions (recommendation first):
 
 ## 9. PR 3 as built
 
-- The view model is one file, `AppearanceEditorViewModel.cs` (983 lines, 9 services: color, outfit, part browser, part edit, part list,
-  settings, swatch, tint editor, `IGuiService`; it was 3,469 lines in six partial files and 9 services). The five partial files are gone.
+- The view model is one file, `AppearanceEditorViewModel.cs` (1,337 lines, 9 services: color, outfit, part browser, part edit, part list,
+  settings, swatch, tint editor, `IGuiService`; it was 3,469 lines in six partial files and 9 services). The five partial files are
+  gone. It is still over the 1,000-line limit: see the numbers below, which go to the owner under decision 2.
 - New content singletons in `Feature/AppearanceEditing` (the services take the view model as `IAppearanceEditorHost`, as in PR 2, and
   never call each other upward; a call back into the lists goes through the host):
   `AppearancePartListService` (659 lines, 10 services), `AppearancePartBrowserService` (525, 5), `AppearanceSwatchService` (497, 3),
@@ -213,13 +214,27 @@ Open decisions (recommendation first):
   new owner). A normalized comparison of 109 moved bodies finds 97 identical after those edits; the rest differ only by the same
   receiver edits (static arrays qualified, a handler body split into its service call), the removed `EnsureLoaded` line, and the
   two methods split between the view model and a service (`OnCloseWindow`, `InitializeSettings`).
-- Departures from the owner's decision 2 (no one-line property reformatting), needed to pass the 1,000-line limit: after the moves the
-  view model was 1,410 lines. The 51 plain multi-line properties are one-line properties (the style the part browser and outfit
-  properties already used), the 19 armor selection setters call one shared helper (`AppearancePartEditService.ArmorSelectionChanged`,
-  the old inline condition and call), and the palette sheet choice of a color category is `AppearanceSwatchService.UpdateColorSheet`.
-  The owner can veto them, but then the view model is over the limit and the guard fails.
-- Guard: `AppearanceEditorSizeTests` fails when the view model is not a single file under 1,000 lines, any editor type is over 1,000
-  lines or has a method over 150 lines, or any editor type takes more than 10 services.
+- Two logic moves beyond the map, and no reformatting (owner decision 2): the 19 armor selection setters called one inline body that
+  differed only in the part; it is now `AppearancePartEditService.ArmorSelectionChanged(host, part, value)`, and each setter is the
+  old setter with that one call, `AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.<its part>, value)`, in place of
+  the inline `if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(),
+  ItemAppearanceType.ArmorModel, (int)AppearanceArmor.<its part>)) AdjustArmorPart(<its part>, 0)`; the same condition and call now sit
+  once in the service (`AppearanceEditorColorStateTests` checks the 19 call sites and the condition). The palette sheet choice of a
+  color category is `AppearanceSwatchService.UpdateColorSheet`, moved whole. All properties keep their original multi-line form.
+- Numbers for the owner (view model, 1,337 lines): 745 lines are declared bindings (20 part option lists at 5 lines each, 19 armor
+  selection setters at 11, about 90 plain properties at 5, and the rest); 117 are handler forwarders; 27 are the explicit host members;
+  362 are logic, of which these still sit in the view model: `Initialize` 75, `SelectEditorTab` 45, the item type page change in the
+  `SelectedItemTypeIndex` setter 39, `SelectedTintColor` setter 32, `GetArmorPartBinding` 26 and `WatchArmorSelections` 24 (both need
+  the view model's own properties), `OnEditorPartialApplied` 19, `RefreshTintMapEditorAfterAppearanceChange` 15,
+  `EquipmentTypeValue` 14, `LoadItemTypeEditor` 13, `OnClientPropertyUpdated` 13, `Refresh(ArmorDisplayChanged)` 10,
+  `ToggleItemEquippedFlags` 10, `InitializeSettings` 10, `OnModalClosedRestore` 7. Moving every one of those that can move (about 250
+  lines: `Initialize`, `SelectEditorTab`, the item type change, the picker setter and the refresh bodies; the tab groups and the
+  `WatchOnClient` calls cannot leave) would leave about 1,090 lines, so no cohesive move reaches 1,000 without declaring fewer
+  bindings. Options for the owner: accept about 1,090 as the floor, or drive more bindings by name (as PR 1 did for the 480 swatch
+  properties) for the 20 option lists and 19 selections.
+- Guard: `AppearanceEditorSizeTests` fails when the view model is not a single file or grows past its measured 1,337 lines, any other
+  editor type is over 1,000 lines, any method is over 150 lines, or any editor type takes more than 10 services. Its constant
+  becomes 1,000 when the owner decides how the view model gets there.
 - Proof: `AppearanceEditorBindingIdentityEngineTests` has two more transcripts, one through the part lists, browser, helmet, cloak,
   weapon and off hand pages, and one through the wardrobe with the headless player fixture. Both are masked for the armor part option
   lists, which depend on which models the server's hak set holds (the other two transcripts, captured earlier, include them and fail

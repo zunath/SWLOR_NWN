@@ -115,7 +115,7 @@ Feature/SnippetDefinition -> Platform/Composition | 20
 Feature/SnippetDefinition -> Platform/Core | 26
 Platform/Entity -> Platform/Core | 1
 
-# Gameplay -> Foundation (60 edges)
+# Gameplay -> Foundation (59 edges)
 Feature.AchievementProgression -> Domain/Foundation | 7
 Feature.AchievementProgression -> Platform/Entity | 6
 Feature.AreaConfiguration -> Domain/Foundation | 1
@@ -135,8 +135,7 @@ Feature.DMAuthorization -> Platform/Enumeration | 1
 Feature.DMToolbarWindow -> Domain/Foundation | 2
 Feature.EchaniTempleMonks -> Domain/Foundation | 1
 Feature.EquipmentRestrictions -> Domain/Foundation | 3
-Feature.EquipmentStats -> Domain/Foundation | 14
-Feature.EquipmentStats -> Platform/Entity | 12
+Feature.EquipmentStats -> Domain/Foundation | 2
 Feature.EventRegistration -> Domain/Foundation | 1
 Feature.EventRegistration -> Platform/Entity | 1
 Feature.ExplorationTrigger -> Domain/Foundation | 1
@@ -174,8 +173,8 @@ Feature.TwinPistolEquipmentValidation -> Domain/Foundation | 3
 Feature.TwinPistolEquipmentValidation -> Feature/MigrationDefinition | 1
 Feature.UnarmedMastery -> Domain/Foundation | 1
 Feature.UsePerkFeat -> Domain/Foundation | 11
-Feature/EquipmentStatActions -> Domain/Foundation | 8
-Feature/EquipmentStatActions -> Platform/Entity | 8
+Feature/EquipmentStatActions -> Domain/Foundation | 20
+Feature/EquipmentStatActions -> Platform/Entity | 20
 
 # Gameplay -> Platform (126 edges)
 Domain/Gameplay -> Platform/Composition | 1
@@ -214,8 +213,8 @@ Feature.EchaniTempleMonks -> Platform/Composition | 2
 Feature.EchaniTempleMonks -> Platform/Core | 1
 Feature.EquipmentRestrictions -> Platform/Composition | 5
 Feature.EquipmentRestrictions -> Platform/Core | 4
-Feature.EquipmentStats -> Platform/Composition | 20
-Feature.EquipmentStats -> Platform/Core | 8
+Feature.EquipmentStats -> Platform/Composition | 8
+Feature.EquipmentStats -> Platform/Core | 6
 Feature.EventRegistration -> Platform/Composition | 2
 Feature.EventRegistration -> Platform/Core | 4
 Feature.EventRegistration -> Platform/Native | 1
@@ -302,8 +301,8 @@ Feature.UnarmedTechniqueProfile -> Platform/Composition | 1
 Feature.UnarmedTechniqueProfile -> Platform/Core | 1
 Feature.UsePerkFeat -> Platform/Composition | 32
 Feature.UsePerkFeat -> Platform/Core | 12
-Feature/EquipmentStatActions -> Platform/Composition | 8
-Feature/EquipmentStatActions -> Platform/Core | 2
+Feature/EquipmentStatActions -> Platform/Composition | 20
+Feature/EquipmentStatActions -> Platform/Core | 4
 
 # Items -> Foundation (6 edges)
 Domain/Items -> Domain/Foundation | 81

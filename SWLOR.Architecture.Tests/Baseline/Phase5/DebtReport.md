@@ -7,7 +7,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,093 | 13,415 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,095 | 13,417 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 29 | 45,607 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 10 | 2,906 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 17 | 271 services | none over 10 services |
@@ -20,8 +20,8 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,093 files, 13,415 uses: 830 using directives and 12,585 uses in code (7,509 in a static context).
-- SWLOR.Game.Server: 646 file(s), 5,880 use(s) (Feature/ 536, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
+- 1,095 files, 13,417 uses: 832 using directives and 12,585 uses in code (7,509 in a static context).
+- SWLOR.Game.Server: 648 file(s), 5,882 use(s) (Feature/ 538, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
 - SWLOR.Game.Server.EngineTests: 240 file(s), 5,340 use(s).
 - SWLOR.Game.Server.Tests: 178 file(s), 2,037 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
@@ -34,9 +34,9 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - SWLOR.CombatSim: 1 file(s), 2 use(s).
 - SWLOR.Toolset.Tests: 1 file(s), 2 use(s).
 - Content (Feature/) uses in code: 4,593 (1,685 in a static context).
-- Content (Feature/) types that use it: 533. Static classes: 73. Instance classes that use it from a static member: 204 (156 only from static members).
+- Content (Feature/) types that use it: 535. Static classes: 75. Instance classes that use it from a static member: 204 (156 only from static members).
 
-Largest 15 of 1,093 (all in `StaticLookups.txt`):
+Largest 15 of 1,095 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|

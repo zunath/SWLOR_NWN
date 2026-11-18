@@ -59,6 +59,7 @@ Domain/Character/StatusEffectSessionService.cs
 Domain/Character/StatusEffectApplicationService.cs
 Domain/Character/StatusEffectDurationService.cs
 Domain/Character/StatusEffectCombatEventService.cs
+Domain/Character/StatusEffectNativeService.cs
 Domain/Character/StatusEffectIconMap.cs
 Domain/Character/LeadershipDamageReductionRules.cs
 Domain/Character/CraftSkillBonusType.cs

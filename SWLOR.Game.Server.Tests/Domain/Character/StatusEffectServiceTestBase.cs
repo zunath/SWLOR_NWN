@@ -34,7 +34,7 @@ public abstract class StatusEffectServiceTestBase
 
     protected TestStatusEffectDurationService Duration => Bench.Duration;
 
-    protected TestStatusEffectService Native => Bench.Native;
+    protected TestStatusEffectNativeService Native => Bench.Native;
 
     protected TestStatusEffectCombatEventService CombatEvents => Bench.CombatEvents;
 

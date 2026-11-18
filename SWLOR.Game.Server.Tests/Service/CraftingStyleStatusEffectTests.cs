@@ -54,7 +54,9 @@ public class CraftingStyleStatusEffectTests
         "RemoveNonPersistentStatusEffects",
         "RemoveTrackedNWNEffects",
         "RemoveStatusEffectsFromAllTargetsWhenSourceExits",
-        "RemoveStatusEffectById"
+        "RemoveStatusEffectById",
+        // The native part (P5-5h) replaces one native effect, named by its tag, and the status effect itself stays.
+        "RemoveNativeStatusEffect"
     };
 
     private sealed class ProbeEffect : StatusEffectBase

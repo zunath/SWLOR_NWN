@@ -38,8 +38,7 @@ public class StatusEffectFacadeAllocationTests
     public void SetUp()
     {
         _installed = _container.Install();
-        var service = _container.Get<IStatusEffectService>();
-        service.OnApplyNWNStatusEffect(Tracked);
+        _container.Get<IStatusEffectNativeService>().OnApplyNWNStatusEffect(Tracked);
         _container.Get<IStatusEffectCatalogService>().CacheData();
     }
 

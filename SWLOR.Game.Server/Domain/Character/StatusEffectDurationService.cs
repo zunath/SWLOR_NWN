@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <summary>
     /// Status effect durations (part 4 of the status effect split): the timing of an application (the outgoing adjustments, the
     /// resistance, immunity and control budget), the refresh in place, the restart, the extension and the refresh of an active
-    /// effect. The trackers, the removal and the native effect stay in <see cref="StatusEffectService"/>; this part calls them
-    /// through <see cref="IStatusEffectService"/>. The stat read and the active ability impact sit behind one-line
+    /// effect. The trackers and the removal stay in <see cref="StatusEffectService"/>; this part calls them
+    /// through <see cref="IStatusEffectService"/> and replaces the native effect through <see cref="IStatusEffectNativeService"/>. The stat read and the active ability impact sit behind one-line
     /// <c>protected virtual</c> methods whose bodies are the original calls.
     /// </summary>
     public class StatusEffectDurationService : IStatusEffectDurationService
@@ -21,19 +21,22 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly ICharacterRecording _combatRecorder;
         private readonly Lazy<IStatService> _stat;
         private readonly IActiveAbilityImpact _activeImpact;
+        private readonly IStatusEffectNativeService _native;
 
         public StatusEffectDurationService(
             IStatusEffectService statusEffect,
             IStatusResistance resistance,
             ICharacterRecording combatRecorder,
             Lazy<IStatService> stat,
-            IActiveAbilityImpact activeImpact)
+            IActiveAbilityImpact activeImpact,
+            IStatusEffectNativeService native)
         {
             _statusEffect = statusEffect;
             _resistance = resistance;
             _combatRecorder = combatRecorder;
             _stat = stat;
             _activeImpact = activeImpact;
+            _native = native;
         }
 
         /// <summary>
@@ -233,7 +236,7 @@ namespace SWLOR.Game.Server.Domain.Character
             ResistanceType resistanceType)
         {
             active.RestartDuration(durationTicks, durationSeconds, tickAnchor);
-            _statusEffect.ReplaceNativeStatusEffect(creature, active, active.DurationTicks, false);
+            _native.ReplaceNativeStatusEffect(creature, active, active.DurationTicks, false);
             if (_combatRecorder.IsRecording)
                 _combatRecorder.RecordStatusApplied(source, creature, active, active.GetRemainingDurationSeconds(Clock.UtcNow), false, true);
 
@@ -338,7 +341,7 @@ namespace SWLOR.Game.Server.Domain.Character
                     continue;
 
                 statusEffect.SetDurationSeconds(statusEffect.GetRemainingDurationSeconds(Clock.UtcNow) + durationSeconds);
-                _statusEffect.ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
+                _native.ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 extended = true;
                 if (_combatRecorder.IsRecording)
                     _combatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(Clock.UtcNow), false, true);
@@ -399,7 +402,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 adjustedSeconds = Math.Min(adjustedSeconds + Math.Max(0, ticks - originalTicks) * Math.Max(1f, statusEffect.Frequency),
                     ticks * Math.Max(1f, statusEffect.Frequency));
                 statusEffect.SetDurationSeconds(Math.Max(statusEffect.GetRemainingDurationSeconds(Clock.UtcNow), adjustedSeconds));
-                _statusEffect.ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
+                _native.ReplaceNativeStatusEffect(creature, statusEffect, statusEffect.DurationTicks, statusEffect.DurationTicks < 0);
                 refreshed = true;
                 if (_combatRecorder.IsRecording)
                     _combatRecorder.RecordStatusApplied(source, creature, statusEffect, statusEffect.GetRemainingDurationSeconds(Clock.UtcNow), false, true);

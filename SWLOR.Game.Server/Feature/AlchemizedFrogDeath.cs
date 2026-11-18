@@ -9,6 +9,6 @@ public static class AlchemizedFrogDeath
     {
         // The spawn service installs the standard death handler over the blueprint's own script.
         if (GetResRef(OBJECT_SELF) == "frogboss")
-            ExecuteScript("sw_frogdeath", OBJECT_SELF);
+            ExecuteScript(ScriptName.AlchemizedFrogDeath, OBJECT_SELF);
     }
 }

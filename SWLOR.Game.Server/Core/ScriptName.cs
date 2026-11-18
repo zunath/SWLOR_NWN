@@ -73,6 +73,7 @@ namespace SWLOR.Game.Server.Core
         public const string OnCreatureDeathBefore = "crea_death_bef";
         public const string OnCreatureLeashStarted = "crea_leash_start";
         public const string OnCreatureLeashEnded = "crea_leash_end";
+        public const string AlchemizedFrogDeath = "sw_frogdeath";
 
         // Item events
         public const string OnItemHit = "item_on_hit";

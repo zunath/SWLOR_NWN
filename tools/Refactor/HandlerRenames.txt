@@ -413,3 +413,4 @@ SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUn
 SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnModuleUnequip SWLOR.Game.Server.Domain.Companions.TintMapService.OnModuleUnequip
 SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap.TintMapService.OnPlayerSpawn SWLOR.Game.Server.Domain.Companions.TintMapService.OnPlayerSpawn
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.CloseAppearanceWindowOnPossessionBefore SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceEditorWindowHandlers.CloseAppearanceWindowOnPossessionBefore
+SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.CacheSpawnBeastEggHelp SWLOR.Game.Server.Feature.ChatCommandDefinition.DMSpawnChatCommand.CacheSpawnBeastEggHelp

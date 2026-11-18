@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json;
+using SWLOR.Game.Server.Domain.Foundation;
 
 namespace SWLOR.Game.Server.Domain.Administration
 {

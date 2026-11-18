@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
+using SWLOR.Game.Server.Domain.Items;
 
 namespace SWLOR.Game.Server.Domain.Companions
 {
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Domain.Companions
     /// Static callers reach the container's instance through <c>GameServices.BeastMastery</c>; the event handlers are on
     /// <see cref="BeastMasteryService"/>.
     /// </summary>
-    public interface IBeastMasteryService
+    public interface IBeastMasteryService : IBeastCorpseInfo
     {
         /// <summary>
         /// When the module caches, loads the beast catalog, the beast roles, the foods, the highest XP delta and the

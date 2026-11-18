@@ -61,6 +61,12 @@ public class StatusEffectFacadeAllocationTests
         return GC.GetAllocatedBytesForCurrentThread() - before;
     }
 
+    // The pins are grouped by the part of the status effect split that serves the read (Readmes/MaintainabilityRefactorStatusEffectSplit.md).
+    // The set-up calls OnApplyNWNStatusEffect (part 5) and RemoveCreature (part 1). Part 1 keeps its reads at zero allocation, so
+    // its group is the one that must not change when a part moves.
+
+    // ---- Part 1, StatusEffectService (stays): the stat reads and the active effect reads ----
+
     [Test]
     public void TheStatReadsAllocateNothing()
     {
@@ -90,6 +96,8 @@ public class StatusEffectFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
+    // ---- Part 1 again: the reads that build a closure ----
+
     /// <summary>
     /// These reads capture their arguments in a lambda, so the compiler builds its closure on entry, as it did in the
     /// old static class: one object per call and nothing the conversion added.
@@ -110,6 +118,8 @@ public class StatusEffectFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
+    // ---- Part 2, StatusEffectCatalogService, and StatusEffectIconMap: the catalog and icon reads ----
+
     [Test]
     public void TheCatalogAndIconReadsAllocateNothing()
     {
@@ -124,6 +134,8 @@ public class StatusEffectFacadeAllocationTests
         GC.KeepAlive(sink);
     }
 
+    // ---- Part 4, StatusEffectDurationService, and StatusEffectRules: the duration rules ----
+
     [Test]
     public void TheDurationRulesAllocateNothing()
     {
@@ -135,6 +147,8 @@ public class StatusEffectFacadeAllocationTests
         Allocated(() => sink += StatusEffect.ShouldAnnounceNearby(false, false) ? 1 : 0).Should().Be(0);
         GC.KeepAlive(sink);
     }
+
+    // ---- Part 6, StatusEffectCombatEventService: the native attack cycle ----
 
     [Test]
     public void TheNativeAttackCycleAllocatesNothing()
@@ -149,6 +163,8 @@ public class StatusEffectFacadeAllocationTests
 
         Allocated(() => StatusEffect.ForgetDestroyedNativeAttackSwing(Untracked)).Should().Be(0);
     }
+
+    // ---- Part 1: the generic reads and the measurement ----
 
     /// <summary>
     /// What the hot reads cost through GameServices, against the instance. Not a pass or fail: run it on its own in Release:

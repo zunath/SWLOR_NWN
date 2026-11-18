@@ -80,7 +80,7 @@ mod_cache_aft  # run by EventRegistration.OnModulePreload through ExecuteScript,
   action      SWLOR.Game.Server.Feature.PowerGlovePairLifecycle.RegisterAttackRules
   action      SWLOR.Game.Server.Feature.TwinPistolPairLifecycle.RegisterUnequipGuard
   action      SWLOR.Game.Server.Feature.UnarmedTechniqueProfile.Register
-  action      SWLOR.Game.Server.Feature.ChatCommandDefinition.DMChatCommand.CacheSpawnBeastEggHelp
+  action      SWLOR.Game.Server.Feature.ChatCommandDefinition.DMSpawnChatCommand.CacheSpawnBeastEggHelp
 
 mod_load  # run by the engine as the module OnModuleLoad event, which EventRegistration.OnModulePreload points at this script
   action      SWLOR.Game.Server.Domain.Character.AchievementService.ReserveGuiIds

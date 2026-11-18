@@ -128,14 +128,14 @@ public class PerformanceAudienceCostTests
         var shared = new[]
         {
             SourcePath("Domain", "Combat", "DeathService.cs"),
-            SourcePath("Domain", "World", "FishingService.cs"),
-            SourcePath("Domain", "Character", "StatusEffectService.cs")
+            SourcePath("Domain", "World", "FishingService.cs")
         };
 
         // Combat and the stat service are one shared system each, however many files hold them.
         var sources = shared.ToDictionary(file => Path.GetFileName(file), file => File.ReadAllText(file));
         sources["Combat"] = CombatSource.Read();
         sources["StatService.cs"] = StatSource.Read();
+        sources["StatusEffectService.cs"] = StatusEffectSource.Read();
 
         foreach (var (name, source) in sources)
         {

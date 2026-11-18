@@ -92,8 +92,8 @@ public class ReloadStateCarrierTests
     [Test]
     public void StatusEffectsKeepTheirTypeFieldsAndSharedInstances()
     {
-        var fields = FieldsOf(typeof(StatusEffectService));
-        var service = ReloadCarrySamples.Owner(typeof(StatusEffectService), fields);
+        var fields = FieldsOf(StatusEffectInternals.CoreType);
+        var service = ReloadCarrySamples.Owner(StatusEffectInternals.CoreType, fields);
         var effects = new CreatureStatusEffect();
         var venom = new VenomStatusEffect();
         venom.RestartDuration(5);
@@ -102,14 +102,14 @@ public class ReloadStateCarrierTests
         guard.RestartDuration(-1);
         effects.Add(guard);
         SetField(service, "_creatureEffects", new Dictionary<uint, CreatureStatusEffect> { [42u] = effects });
-        SetField(service, "_loggedOutPlayerEffects", Activator.CreateInstance(FieldOf(typeof(StatusEffectService), "_loggedOutPlayerEffects").FieldType));
+        SetField(service, "_loggedOutPlayerEffects", Activator.CreateInstance(StatusEffectInternals.LoggedOutField.FieldType));
 
         var text = Carrier().Write(fields, service);
-        var copy = ReloadCarrySamples.Owner(typeof(StatusEffectService), fields);
+        var copy = ReloadCarrySamples.Owner(StatusEffectInternals.CoreType, fields);
         SetField(copy, "_creatureEffects", new Dictionary<uint, CreatureStatusEffect>());
         Carrier().Read(fields, copy, text);
 
-        var carried = ((Dictionary<uint, CreatureStatusEffect>)FieldOf(typeof(StatusEffectService), "_creatureEffects").GetValue(copy))[42u];
+        var carried = ((Dictionary<uint, CreatureStatusEffect>)FieldOf(StatusEffectInternals.CoreType, "_creatureEffects").GetValue(copy))[42u];
         var all = carried.GetAllEffects();
         all.Select(effect => effect.GetType()).Should().BeEquivalentTo(new[] { typeof(VenomStatusEffect), typeof(GuardedStatusEffect) });
         all.Select(effect => effect.Id).Should().BeEquivalentTo(new[] { venom.Id, guard.Id }, "the native effect tags name the status effect ids");

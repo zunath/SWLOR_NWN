@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Core;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -25,14 +24,14 @@ namespace SWLOR.Game.Server.Domain.Items
         public const string CorpseBodyVariable = "CORPSE_BODY";
         private const string CorpseCopyItemVariable = "CORPSE_ITEM_COPY";
 
-        private readonly IBeastMasteryService _beastMastery;
+        private readonly IBeastCorpseInfo _beastCorpse;
         private readonly IItemService _item;
         private readonly IPerkService _perk;
         private readonly IStatService _stat;
 
-        public LootService(IBeastMasteryService beastMastery, IItemService item, IPerkService perk, IStatService stat)
+        public LootService(IBeastCorpseInfo beastCorpse, IItemService item, IPerkService perk, IStatService stat)
         {
-            _beastMastery = beastMastery;
+            _beastCorpse = beastCorpse;
             _item = item;
             _perk = perk;
             _stat = stat;
@@ -306,8 +305,8 @@ namespace SWLOR.Game.Server.Domain.Items
             var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             SetLocalObject(container, CorpseBodyVariable, self);
             SetName(container, $"{GetName(self)}'s Corpse");
-            SetLocalInt(container, BeastMasteryService.BeastTypeVariable, GetLocalInt(self, BeastMasteryService.BeastTypeVariable));
-            SetLocalInt(container, BeastMasteryService.BeastLevelVariable, npcStats.Level);
+            SetLocalInt(container, IBeastCorpseInfo.BeastTypeVariable, GetLocalInt(self, IBeastCorpseInfo.BeastTypeVariable));
+            SetLocalInt(container, IBeastCorpseInfo.BeastLevelVariable, npcStats.Level);
 
             AssignCommand(container, () =>
             {
@@ -408,8 +407,8 @@ namespace SWLOR.Game.Server.Domain.Items
             var container = OBJECT_SELF;
             var firstItem = GetFirstItemInInventory(container);
             var corpseOwner = GetLocalObject(container, CorpseBodyVariable);
-            var beastTypeId = GetLocalInt(container, BeastMasteryService.BeastTypeVariable);
-            var level = GetLocalInt(container, BeastMasteryService.BeastLevelVariable);
+            var beastTypeId = GetLocalInt(container, IBeastCorpseInfo.BeastTypeVariable);
+            var level = GetLocalInt(container, IBeastCorpseInfo.BeastLevelVariable);
 
             if (!GetIsObjectValid(firstItem))
             {
@@ -425,28 +424,28 @@ namespace SWLOR.Game.Server.Domain.Items
                 else
                 {
                     var beastType = (BeastType)beastTypeId;
-                    var beastDetail = GetBeastDetail(beastType);
-                    var extractCorpse = CreateObject(ObjectType.Placeable, BeastMasteryService.ExtractCorpseObjectResref, GetLocation(container));
+                    var beastName = GetBeastName(beastType);
+                    var extractCorpse = CreateObject(ObjectType.Placeable, IBeastCorpseInfo.ExtractCorpseObjectResref, GetLocation(container));
                     SetLocalObject(extractCorpse, CorpseBodyVariable, corpseOwner);
-                    SetLocalInt(extractCorpse, BeastMasteryService.BeastTypeVariable, beastTypeId);
-                    SetLocalInt(extractCorpse, BeastMasteryService.BeastLevelVariable, level);
+                    SetLocalInt(extractCorpse, IBeastCorpseInfo.BeastTypeVariable, beastTypeId);
+                    SetLocalInt(extractCorpse, IBeastCorpseInfo.BeastLevelVariable, level);
 
                     AssignCommand(extractCorpse, () =>
                     {
                         ScheduleCorpseCleanup(extractCorpse);
                     });
-                    SetName(extractCorpse, $"Extract DNA: {beastDetail.Name}");
+                    SetName(extractCorpse, $"Extract DNA: {beastName}");
                 }
             }
         }
 
         /// <summary>
-        /// The details of a beast type. <c>IBeastMasteryService.GetBeastDetail</c> reads the beast cache the module load fills,
+        /// The name of a beast type. <c>IBeastCorpseInfo.GetBeastName</c> reads the beast cache the module load fills,
         /// which a unit test does not load, so a test overrides this.
         /// </summary>
-        protected virtual BeastDetail GetBeastDetail(BeastType type)
+        protected virtual string GetBeastName(BeastType type)
         {
-            return _beastMastery.GetBeastDetail(type);
+            return _beastCorpse.GetBeastName(type);
         }
 
         [NWNEventHandler(ScriptName.OnCorpseDisturbed)]

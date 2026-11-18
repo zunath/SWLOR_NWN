@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// Effects derive from <c>StatusEffectBase</c>, which asks the <c>CombatRecorder</c> facade, so a fixture installs a
 /// <see cref="FacadeContainer"/> around it.
 /// </summary>
-public sealed class StatusEffectBench : IDisposable
+public sealed partial class StatusEffectBench : IDisposable
 {
     public const uint ObjectInvalid = 0x7F000000;
 
@@ -122,7 +122,32 @@ public sealed class StatusEffectBench : IDisposable
     /// <summary>The feats a creature knows, as <c>IQuickCastService.KnowsFeat</c> reports them.</summary>
     public HashSet<(uint Creature, FeatType Feat)> KnownFeats { get; } = new();
 
+    /// <summary>
+    /// Part 1 of the status effect split, <c>StatusEffectService</c> (stays): the trackers, the reads and the removal.
+    /// </summary>
     public TestStatusEffectService Service { get; }
+
+    // One accessor per part of the status effect split (Readmes/MaintainabilityRefactorStatusEffectSplit.md). A test calls each
+    // member through its part's accessor. Until a part moves, its accessor is the one TestStatusEffectService; the pull request
+    // that moves it gives the accessor its own double, and the tests change nowhere.
+
+    /// <summary>Part 2, <c>StatusEffectCatalogService</c>: the definition cache and the creation of effects by type.</summary>
+    public TestStatusEffectService Catalog => Service;
+
+    /// <summary>Part 3, <c>StatusEffectApplicationService</c>: applying an effect.</summary>
+    public TestStatusEffectService Application => Service;
+
+    /// <summary>Part 4, <c>StatusEffectDurationService</c>: timing, refresh, restart and extension.</summary>
+    public TestStatusEffectService Duration => Service;
+
+    /// <summary>Part 5, <c>StatusEffectNativeService</c>: the native effects, the three effect scripts and the ticks.</summary>
+    public TestStatusEffectService Native => Service;
+
+    /// <summary>Part 6, <c>StatusEffectCombatEventService</c>: damage and attack notices and the native attack swing.</summary>
+    public TestStatusEffectService CombatEvents => Service;
+
+    /// <summary>Part 7, <c>StatusEffectSessionService</c>: login, logout, restart and reload.</summary>
+    public TestStatusEffectService Session => Service;
 
     /// <summary>Everything the service did outside itself, in order.</summary>
     public List<string> Log { get; } = new();
@@ -184,65 +209,4 @@ public sealed class StatusEffectEngine : FakeNWScript, INWScript
         RemoveEffectByTag(creature, tags);
         OnRemoveEffectByTag?.Invoke(creature, tags);
     }
-}
-
-/// <summary>The instance with its calls into unconverted code answered by the bench.</summary>
-public sealed class TestStatusEffectService : StatusEffectService
-{
-    private readonly StatusEffectBench _bench;
-
-    public TestStatusEffectService(
-        StatusEffectBench bench,
-        IResistanceService resistance,
-        IPvpCombatService pvpCombat,
-        IStealthService stealth,
-        IMeleeTechniqueService meleeTechnique,
-        ICombatRecorderService combatRecorder,
-        IMessagingService messaging,
-        IPlayerNameService playerName,
-        IGuiService gui,
-        ICapstoneProofService capstoneProof,
-        IDBService db,
-        IQuickCastService quickCast)
-        : base(resistance, pvpCombat, stealth, meleeTechnique, combatRecorder, messaging, playerName, gui, capstoneProof, db, quickCast, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActiveAbilityImpact>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>(), FacadeForwarder.LazyFor<ICombatAttackTimingService>())
-    {
-        _bench = bench;
-    }
-
-    public IReadOnlyList<Type>? DefinitionTypes { get; set; }
-
-    public Dictionary<(uint Creature, StatType Stat), int> Stats { get; } = new();
-
-    public AbilityImpactSummary? ActiveImpact { get; set; }
-
-    public Dictionary<FeatType, AbilityDetail> AbilityDetails { get; } = new();
-
-    public HashSet<uint> AttackDelaySuppressed { get; } = new();
-
-    public IEnumerable<Type> DefaultDefinitionTypes() => base.GetStatusEffectTypes();
-
-    protected override IEnumerable<Type> GetStatusEffectTypes() => DefinitionTypes ?? Array.Empty<Type>();
-
-    protected override void ReapplyFoodHP(uint player) => _bench.Log.Add($"ReapplyFoodHP:{player}");
-
-    protected override IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => AbilityDetails;
-
-    protected override void ApplyCreatureMovementRate(uint creature) => _bench.Log.Add($"ApplyCreatureMovementRate:{creature}");
-
-    protected override int GetCreatureStatAdjustment(uint creature, StatType stat) =>
-        Stats.GetValueOrDefault((creature, stat));
-
-    protected override AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator) => ActiveImpact!;
-
-    protected override void ApplyStatusAppliedTargetStaminaDrain(uint activator, uint target, StatusEffectCategory appliedCategories) =>
-        _bench.Log.Add($"StaminaDrain:{activator}:{target}:{appliedCategories}");
-
-    protected override void ApplyHostileAbilityPartyBuff(uint activator, AbilityDetail ability, int damage, bool statusApplied) =>
-        _bench.Log.Add($"HostileBuff:{activator}:{ability?.Name}:{damage}:{statusApplied}");
-
-    protected override bool IsAttackDelayReductionSuppressed(uint creature) => AttackDelaySuppressed.Contains(creature);
-
-    protected override void ScheduleTemporaryHitPointLimitCheck(uint target) => _bench.Log.Add($"LimitCheck:{target}");
-
-    protected override bool MayHaveEffectTag(uint creature, string tag) => _bench.NativeTags.Contains(tag);
 }

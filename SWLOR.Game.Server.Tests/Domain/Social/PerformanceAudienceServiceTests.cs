@@ -120,6 +120,7 @@ public class PerformanceAudienceServiceTests
         venueScript.On("Combine", arguments => (int)arguments[0]! + ((bool)arguments[1]! ? 1 : 0));
 
         var music = ScriptedProxy.Create<IMusicService>(out _musicScript);
+        _musicScript.On("RegisterMusicReplacedListener", _ => null);
         _musicScript.On("PlayTemporaryTrack", arguments =>
         {
             _played.Add(((uint)arguments[0]!, (int)arguments[1]!));
@@ -613,6 +614,15 @@ public class PerformanceAudienceServiceTests
     }
 
     [Test]
+    public void Starting_the_audience_tick_registers_the_watching_as_the_listener_of_the_replaced_music_notice()
+    {
+        StartTickLoop();
+
+        _musicScript.Calls.Should().ContainSingle(call => call.Member == "RegisterMusicReplacedListener")
+            .Which.Arguments.Single().Should().BeSameAs(_watching);
+    }
+
+    [Test]
     public void LeavingTheModuleAndForgettingTheBandSong()
     {
         Perform(MusicianId, PerformanceKind.Music);
@@ -622,8 +632,8 @@ public class PerformanceAudienceServiceTests
         Tick(0);
         _played.Should().HaveCount(1);
 
-        _watching.ForgetBandSong(WatcherId);
-        _watching.ForgetBandSong(9999);
+        _watching.OnPlayerMusicReplaced(WatcherId);
+        _watching.OnPlayerMusicReplaced(9999);
         Tick();
         _played.Should().HaveCount(2, "the band song is sent again after it was forgotten");
 

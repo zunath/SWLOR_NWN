@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Domain.Crafting.Minigame.Circuit;
 using SWLOR.Game.Server.Domain.Crafting.Minigame.Forge;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -195,10 +196,7 @@ public class CraftingStyleStatusEffectTests
 
     private static List<MethodDeclarationSyntax> StatusEffectMethods()
     {
-        var root = FindRepositoryRoot();
-        var syntax = CSharpSyntaxTree.ParseText(File.ReadAllText(
-            Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Character", "StatusEffectService.cs"))).GetRoot();
-        return syntax.DescendantNodes().OfType<MethodDeclarationSyntax>().ToList();
+        return StatusEffectSource.Nodes<MethodDeclarationSyntax>().ToList();
     }
 
     private static DirectoryInfo FindRepositoryRoot()

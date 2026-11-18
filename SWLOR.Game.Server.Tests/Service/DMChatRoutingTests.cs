@@ -32,7 +32,7 @@ public class DMChatRoutingTests
 
             public static class AreaShout
             {
-                {{Method("Feature/ChatCommandDefinition/DMChatCommand.cs", "GetAreaShoutRecipients")}}
+                {{Method("Feature/ChatCommandDefinition/DMCommunicationChatCommand.cs", "GetAreaShoutRecipients")}}
             }
             """);
     }

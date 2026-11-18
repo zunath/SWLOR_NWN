@@ -11,7 +11,7 @@ public class DiscordWebhookCallerSafetyTests
     [Test]
     public void DMShoutReturnsToGameContextBeforeFailureFeedback()
     {
-        var root = ReadSource("Feature/ChatCommandDefinition/DMChatCommand.cs");
+        var root = ReadSource("Feature/ChatCommandDefinition/DMCommunicationChatCommand.cs");
         var method = FindMethod(root, "SendDMShoutWebhookAsync");
         method.ReturnType.ToString().Should().Be("Task");
         var guardedBody = method.Body!.Statements.OfType<TryStatementSyntax>().Single();
@@ -77,7 +77,7 @@ public class DiscordWebhookCallerSafetyTests
         {
             "BugReportViewModel.SubmitBugReportToDiscord",
             "HoloNetViewModel.SubmitBroadcastAsync",
-            "DMChatCommand.SendDMShoutWebhookAsync",
+            "DMCommunicationChatCommand.SendDMShoutWebhookAsync",
             "PropertyCityGovernanceService.BroadcastPropertyEvent",
             "ServerTasks.SendServerLifecycleNotification"
         }, "each new caller must be checked for native calls after its asynchronous enqueue");

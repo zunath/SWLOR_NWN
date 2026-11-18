@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Domain.Social
         public void StopWatchingOnAreaEnter()
         {
             var player = GetEnteringObject();
-            ForgetBandSong(player);
+            OnPlayerMusicReplaced(player);
             if (_states.TryGetValue(player, out var state))
                 StopWatching(state);
         }
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Domain.Social
         /// Something else replaced the player's music, such as their own music player, so the band song they follow is
         /// sent again at the next tick.
         /// </summary>
-        public void ForgetBandSong(uint player)
+        public void OnPlayerMusicReplaced(uint player)
         {
             if (_states.TryGetValue(player, out var state))
             {

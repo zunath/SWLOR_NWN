@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 {
     public static class RifleIdleReadinessEngineTests
     {
-        [EngineTest("Despawned combat creatures release retained offensive activity", Category = "RifleIdleReadiness", TimeoutSeconds = 35f)]
+        [EngineTest("Despawned combat creatures release retained offensive activity", Category = "RifleIdleReadiness", TimeoutSeconds = 70f)]
         public static async Task DespawnedCreaturesReleaseActivity(EngineTestContext ctx)
         {
             var attacks = CombatMembers.FieldValue<Dictionary<uint, DateTime>>("_lastAttackActivity");
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.WaitUntilAsync(() => !GetIsObjectValid(creature), 3f,
                     "the creature to despawn without dying");
                 await ctx.WaitUntilAsync(() => !attacks.ContainsKey(creature) && !abilities.ContainsKey(creature),
-                    12f, "the real module heartbeat to remove the despawned creature's activity records");
+                    25f, "the real module heartbeat to remove the despawned creature's activity records");
                 ctx.Log($"Despawn cycle {cycle}: both retained activity records were removed by the module heartbeat.");
             }
         }

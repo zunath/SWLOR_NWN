@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Core;
 
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Tests.Core;
 public class ClockSeamSourceGuardTests
 {
     private static readonly string[] LockedSystemEntries =
-    {
+    [
         "Service/Combat.cs",
         "Domain/Combat/CombatService.cs",
         "Domain/Combat/BossCreature.cs",
@@ -19,7 +20,7 @@ public class ClockSeamSourceGuardTests
         "Domain/Combat/OrdinaryAttackTraitsService.cs",
         "Domain/Combat/PairedRangedTraitsService.cs",
         "Service/StatusEffect.cs",
-        "Domain/Character/StatusEffectService.cs",
+        .. StatusEffectSource.PartFiles.Select(file => file["SWLOR.Game.Server/".Length..]),
         "Domain/Character/CreatureStatusEffect.cs",
         "Service/Stat.cs",
         "Domain/Character/StatService.cs",
@@ -32,7 +33,7 @@ public class ClockSeamSourceGuardTests
         "Native/PairedRangedPresentation.cs",
         "Native/OnAIActionAttackObject.cs",
         "NativeSinks/OnAIActionAttackObjectSink.cs",
-    };
+    ];
 
     [Test]
     public void ManifestListsTheLockedSystemsAndEveryEntryExists()

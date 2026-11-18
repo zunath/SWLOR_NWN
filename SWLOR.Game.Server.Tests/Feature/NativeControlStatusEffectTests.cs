@@ -35,12 +35,7 @@ public class NativeControlStatusEffectTests
             "Domain",
             "Character",
             "StatusEffectBase.cs"));
-        var statusEffectService = File.ReadAllText(Path.Combine(
-            root,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Character",
-            "StatusEffectService.cs"));
+        var statusEffectService = StatusEffectSource.Read();
 
         statusEffectBase.Should().Contain("protected Effect TagNativeEffect");
         statusEffectBase.Should().Contain("void RemoveNativeEffects");

@@ -81,7 +81,7 @@ public class SupportCombatPointTests
         foreach (var (name, source) in healingAbilities)
         {
             source.Should().MatchRegex(
-                @"(CombatPoint\.Add(Revive)?SupportCombatPoint|FirstAidTreatmentAdjustments\.GrantCombatPoint)\(",
+                @"(CombatPoint\.Add(Revive)?SupportCombatPoint|FirstAidTreatmentAdjustments\.GrantCombatPoint(For)?)\(",
                 $"{name} heals allies, so the enemies fighting them must award the healer XP");
         }
     }

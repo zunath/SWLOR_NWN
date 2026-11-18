@@ -54,6 +54,21 @@ public class CharacterRebuildSkillAvailabilityTests
         model.RemainingSkillPoints.Should().Be("Skills - 400 Points Remaining");
     }
 
+    /// <summary>The list follows the body being rebuilt: an astromech sees its own skills and none of the closed ones.</summary>
+    [Test]
+    public void ListFollowsTheBodyFrameOfTheCharacterBeingRebuilt()
+    {
+        var humanoid = CreateModel(0);
+        Skills(humanoid).Should().NotContain(new[] { SkillType.Chassis, SkillType.UtilitySystems, SkillType.Armaments });
+        Skills(humanoid).Should().Contain(new[] { SkillType.Armor, SkillType.Pistol, SkillType.Rifle });
+
+        var astromech = CreateModel(0, BodyFrame.Astromech);
+        AssertAvailableSkills(astromech, CharacterType.Standard);
+        Skills(astromech).Should().Contain(new[] { SkillType.Chassis, SkillType.UtilitySystems, SkillType.Armaments });
+        Skills(astromech).Should().NotContain(new[] { SkillType.Armor, SkillType.Pistol, SkillType.Rifle });
+        Skills(astromech).Should().Contain(new[] { SkillType.Devices, SkillType.Engineering }, "shared skills stay");
+    }
+
     /// <summary>Pins the four exclusive skills and verifies that every other skill is shared.</summary>
     [Test]
     public void AllSkillRestrictionsMatchTheCharacterTypeRules()
@@ -90,7 +105,8 @@ public class CharacterRebuildSkillAvailabilityTests
         var model = CreateModel(initialSelection);
         var initialType = initialSelection == 0 ? CharacterType.Standard : CharacterType.ForceSensitive;
         var otherType = initialSelection == 0 ? CharacterType.ForceSensitive : CharacterType.Standard;
-        var sharedSkills = _cache.Where(x => x.Value.CharacterTypeRestriction == CharacterType.Invalid)
+        var sharedSkills = _cache.Where(x => x.Value.CharacterTypeRestriction == CharacterType.Invalid &&
+                                             x.Value.IsAvailableTo(initialType, Frame(model)))
             .Select(x => x.Key).ToHashSet();
         for (var index = 0; index < Skills(model).Count; index++)
             Points(model)[index] = sharedSkills.Contains(Skills(model)[index]) ? 5 : 50;
@@ -189,17 +205,20 @@ public class CharacterRebuildSkillAvailabilityTests
     /// <summary>Verifies the ordered skill identities, labels, allocations, and tooltips as one consistent list.</summary>
     private void AssertAvailableSkills(CharacterFullRebuildViewModel model, CharacterType characterType)
     {
-        var expected = _cache.Where(x => x.Value.CharacterTypeRestriction == CharacterType.Invalid ||
-                                         x.Value.CharacterTypeRestriction == characterType).ToList();
+        // The window also leaves out the skills that belong to another body: a model without a player is a humanoid.
+        var expected = _cache.Where(x => x.Value.IsAvailableTo(characterType, Frame(model))).ToList();
+        expected.Should().OnlyContain(x => x.Value.CharacterTypeRestriction == CharacterType.Invalid ||
+                                           x.Value.CharacterTypeRestriction == characterType);
         Skills(model).Should().Equal(expected.Select(x => x.Key));
         model.SkillNames.Should().Equal(expected.Select((x, index) => $"{x.Value.Name} [{Points(model)[index]}]"));
         model.SkillTooltips.Should().Equal(expected.Select(x => x.Value.Description));
     }
 
     /// <summary>Initializes a rebuilder with production skill data and a mutable budget source.</summary>
-    private static TestRebuildViewModel CreateModel(int selection)
+    private static TestRebuildViewModel CreateModel(int selection, BodyFrame bodyFrame = BodyFrame.Humanoid)
     {
         var model = new TestRebuildViewModel();
+        BodyFrameField.SetValue(model, bodyFrame);
         typeof(CharacterFullRebuildViewModel).GetProperty("CanSelectStandard", PrivateInstance)!.SetValue(model, true);
         typeof(CharacterFullRebuildViewModel).GetProperty("CanSelectForceSensitive", PrivateInstance)!.SetValue(model, true);
         model.CharacterType = selection;
@@ -245,6 +264,12 @@ public class CharacterRebuildSkillAvailabilityTests
         }
         baseType.GetMethod("OnClientPropertyUpdated", PrivateInstance)!.Invoke(model, new object[] { nameof(model.CharacterType) });
     }
+
+    private static readonly FieldInfo BodyFrameField =
+        typeof(CharacterFullRebuildViewModel).GetField("_bodyFrame", PrivateInstance)!;
+
+    /// <summary>The body the window was opened for; the engine sets it from the player's species.</summary>
+    private static BodyFrame Frame(CharacterFullRebuildViewModel model) => (BodyFrame)BodyFrameField.GetValue(model)!;
 
     /// <summary>Reads the skill identities used to map client row indices to allocations.</summary>
     private static List<SkillType> Skills(CharacterFullRebuildViewModel model) =>

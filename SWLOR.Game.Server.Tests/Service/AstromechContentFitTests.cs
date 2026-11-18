@@ -143,6 +143,9 @@ public class AstromechContentFitTests
         {
             if (tokens.Length <= iconColumn || !int.TryParse(tokens[0], out var id) || tokens[iconColumn] == "****")
                 continue;
+            // The quick-cast twin of an ability is the same ability and carries the same icon (QuickCastTests).
+            if (tokens[1].StartsWith("AutoCast", StringComparison.Ordinal))
+                continue;
             if (!icons.TryGetValue(tokens[iconColumn], out var list))
                 icons[tokens[iconColumn]] = list = new List<int>();
             list.Add(id);

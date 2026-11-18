@@ -31,6 +31,10 @@
                       LogicalName="AppearanceEditor/BindingIdentity.txt" />
     <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentityTabs.txt"
                       LogicalName="AppearanceEditor/BindingIdentityTabs.txt" />
+    <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentityParts.txt"
+                      LogicalName="AppearanceEditor/BindingIdentityParts.txt" />
+    <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentityOutfits.txt"
+                      LogicalName="AppearanceEditor/BindingIdentityOutfits.txt" />
   </ItemGroup>
 
   <ItemGroup>

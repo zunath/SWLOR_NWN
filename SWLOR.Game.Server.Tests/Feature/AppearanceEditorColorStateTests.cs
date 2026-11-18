@@ -74,21 +74,23 @@ public class AppearanceEditorColorStateTests
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
         var load = FindMethod(root, "LoadItemParts").ToString();
-        load.IndexOf("AppearanceTintEditorService.SuspendArmorClientWatches(this)", StringComparison.Ordinal).Should()
-            .BeLessThan(load.IndexOf("PopulateItemParts()", StringComparison.Ordinal));
-        load.IndexOf("_session.SkipAdjustArmorPart = true", StringComparison.Ordinal).Should()
-            .BeLessThan(load.IndexOf("PopulateItemParts()", StringComparison.Ordinal));
+        load.IndexOf("AppearanceTintEditorService.SuspendArmorClientWatches(host)", StringComparison.Ordinal).Should()
+            .BeLessThan(load.IndexOf("PopulateItemParts(host)", StringComparison.Ordinal));
+        load.IndexOf("host.Session.SkipAdjustArmorPart = true", StringComparison.Ordinal).Should()
+            .BeLessThan(load.IndexOf("PopulateItemParts(host)", StringComparison.Ordinal));
         load.Should().Contain("finally");
-        load.Should().Contain("_session.SkipAdjustArmorPart = wasSkipping");
+        load.Should().Contain("host.Session.SkipAdjustArmorPart = wasSkipping");
 
         var setters = root.DescendantNodes().OfType<PropertyDeclarationSyntax>()
             .Where(property => property.Identifier.ValueText.EndsWith("Selection", StringComparison.Ordinal) &&
-                               property.ToString().Contains("AdjustArmorPart", StringComparison.Ordinal))
+                               property.ToString().Contains("OnArmorSelectionSet", StringComparison.Ordinal))
             .ToArray();
         setters.Should().HaveCount(19);
-        foreach (var setter in setters)
-            setter.ToString().Should().Contain("_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart",
-                "a client hydration event must not execute the part-changing setter");
+        // The 19 setters share one body: the part edit service applies the chosen style only for a client change.
+        FindMethod(root, "ArmorSelectionChanged").ToString().Should().Contain(
+            "host.Session.ArmorClientBindingsWatched && !host.Session.SkipAdjustArmorPart",
+            "a client hydration event must not execute the part-changing setter");
+        FindMethod(root, "OnArmorSelectionSet").ToString().Should().Contain("AppearancePartEditService.ArmorSelectionChanged(this, part, value)");
     }
 
     [Test]
@@ -124,7 +126,7 @@ public class AppearanceEditorColorStateTests
         var restored = restoredMethod.ToString();
         var order = new[]
         {
-            "AppearanceTintEditorService.SuspendArmorClientWatches(this)", "AppearanceTintEditorService.SynchronizeTintControlBindings(", "UpdatePaletteSheetForChannel()",
+            "AppearanceTintEditorService.SuspendArmorClientWatches(this)", "AppearanceTintEditorService.SynchronizeTintControlBindings(", "AppearanceSwatchService.UpdatePaletteSheetForChannel(this)",
             "RepublishBindings()", "AppearanceTintEditorService.ResumeArmorClientWatches(this)"
         };
         for (var index = 1; index < order.Length; index++)
@@ -142,7 +144,7 @@ public class AppearanceEditorColorStateTests
         synchronized.Should().BeAssignableTo<LambdaExpressionSyntax>();
         var calls = synchronized.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Select(call => call.ToString()).ToArray();
-        calls.Should().Contain(new[] { "UpdatePaletteSheetForChannel()", "RepublishBindings()" });
+        calls.Should().Contain(new[] { "AppearanceSwatchService.UpdatePaletteSheetForChannel(this)", "RepublishBindings()" });
 
         restored.Should().NotContain("RestoreArmorPalette");
         ReadViewModel().Should().NotContain("RestoreArmorPalette", "the nested armor palette partials were removed");
@@ -155,17 +157,17 @@ public class AppearanceEditorColorStateTests
     public void LeavingThePartTabsClosesThePartBrowser()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
-        var browser = CSharpSyntaxTree.ParseText(ReadViewModel("AppearanceEditorViewModel.PartBrowser.cs")).GetRoot();
+        var browser = root;
         var hidden = FindMethod(root, "SelectEditorTab").DescendantNodes().OfType<IfStatementSyntax>()
             .Single(statement => statement.Condition.ToString() == "IsPartEditorHidden");
-        hidden.Statement.ToString().Should().Contain("ClearBrowser()",
+        hidden.Statement.ToString().Should().Contain("ClearBrowser(this)",
             "Wardrobe and Settings must not leave a browser that can still change parts");
-        FindMethod(browser, "ClearBrowser").ToString().Should().Contain("ClosePartBrowser()");
+        FindMethod(browser, "ClearBrowser").ToString().Should().Contain("ClosePartBrowser(host)");
         var emptySlot = FindMethod(root, "ToggleItemEquippedFlags").DescendantNodes().OfType<IfStatementSyntax>()
             .Single(statement => statement.Condition.ToString() == "!hasItemEquipped");
-        emptySlot.Statement.ToString().Should().Contain("ClearBrowser()",
+        emptySlot.Statement.ToString().Should().Contain("ClearBrowser(this)",
             "an empty Main Hand or Off Hand must not leave the last item's parts in the browser");
-        FindMethod(browser, "ApplyBrowserPart").ToString().Should().Contain("if (IsPartEditorHidden)",
+        FindMethod(browser, "ApplyBrowserPart").ToString().Should().Contain("if (host.IsPartEditorHidden)",
             "a late tile click from the browser does nothing on Wardrobe or Settings");
     }
 
@@ -173,7 +175,7 @@ public class AppearanceEditorColorStateTests
     public void GeometryUpdatesNeverRebuildTheEditor()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
-        var browser = CSharpSyntaxTree.ParseText(ReadViewModel("AppearanceEditorViewModel.PartBrowser.cs")).GetRoot();
+        var browser = root;
 
         FindMethod(root, "OnClientPropertyUpdated").ToString().Should().NotContain("nameof(Geometry)",
             "the panels follow a resize on their own, so a move or resize rebuilds nothing");
@@ -216,8 +218,9 @@ public class AppearanceEditorColorStateTests
         FindMethod(root, "LoadTintMapEditor").ToString().Should().Contain("host.Session.TintEditGeneration++");
         var closed = FindMethod(root, "OnCloseWindow").ToString();
         closed.IndexOf("_session.TintEditGeneration++", StringComparison.Ordinal).Should()
-            .BeLessThan(closed.IndexOf("GetIsDM(_session.Target)", StringComparison.Ordinal),
+            .BeLessThan(closed.IndexOf("AppearanceSettingsService.RestoreSavedScales(this)", StringComparison.Ordinal),
                 "closing an NPC editor must cancel drafts before the player-only restoration guard");
+        FindMethod(root, "RestoreSavedScales").ToString().Should().Contain("GetIsDM(host.Session.Target)");
         var commit = FindMethod(root, "CommitCustomTintComponents").ToString();
         commit.Should().Contain("synchronizeComponents: false");
         commit.Should().NotContain("OnPropertyChanged");

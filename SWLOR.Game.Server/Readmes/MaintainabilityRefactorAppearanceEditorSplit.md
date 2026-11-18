@@ -189,3 +189,39 @@ Open decisions (recommendation first):
   partial class whose parts are all listed. The other partials call the services through small private forwarders
   (`LoadTintMapEditor`, `AdjustArmorPart`) in the main part. Tests build it with `Content.Create<AppearanceEditorViewModel>()` and
   reach a service through the property the container injected.
+
+## 9. PR 3 as built
+
+- The view model is one file, `AppearanceEditorViewModel.cs` (983 lines, 9 services: color, outfit, part browser, part edit, part list,
+  settings, swatch, tint editor, `IGuiService`; it was 3,469 lines in six partial files and 9 services). The five partial files are gone.
+- New content singletons in `Feature/AppearanceEditing` (the services take the view model as `IAppearanceEditorHost`, as in PR 2, and
+  never call each other upward; a call back into the lists goes through the host):
+  `AppearancePartListService` (659 lines, 10 services), `AppearancePartBrowserService` (525, 5), `AppearanceSwatchService` (497, 3),
+  `AppearanceOutfitService` (294, 2: `IDBService`, `IWardrobeService`, which already owns the wardrobe rules) and
+  `AppearanceSettingsService` (237, 3). The map listed three; the swatch indicators and the settings and scale code are their own
+  types because the part browser service would have passed 700 lines and the view model would otherwise have stayed over 1,000.
+  `GetItem`, `GetOffHandAppearanceOwner` and `IsValidItem` live with the part list service, so the view model no longer injects the
+  power glove, twin pistol, creature color and database services.
+- `WeaponAppearanceCatalog` is an instance behind `IWeaponAppearanceCatalog`, registered in `ServiceRegistrations` (the content
+  registration rule wants a constructor that takes a registered type, and the catalog needs none). `AppearanceItemEligibility` is a
+  content singleton that takes the catalog; its `IsValid` is an instance method, its flag and part lookups stay static. Injected
+  members carry the interface's name (`IWeaponAppearanceCatalog.Definitions`), which `ContentInjectionRules` requires for an
+  interface that does not end in `Service`. The `RunClassConstructor` boot step is gone: `LoadAppearances` only calls
+  `RacialAppearanceRegistry.EnsureLoaded`. No handler moved, so `HandlerRenames.txt`, `ScriptHandlerOrder.txt` and
+  `BootHandlerClassification.txt` are unchanged.
+- Moved bodies are the old ones with receivers changed (`host.`, `host.Session`, a `host` argument, static helpers qualified by their
+  new owner). A normalized comparison of 109 moved bodies finds 97 identical after those edits; the rest differ only by the same
+  receiver edits (static arrays qualified, a handler body split into its service call), the removed `EnsureLoaded` line, and the
+  two methods split between the view model and a service (`OnCloseWindow`, `InitializeSettings`).
+- Departures from the owner's decision 2 (no one-line property reformatting), needed to pass the 1,000-line limit: after the moves the
+  view model was 1,410 lines. The 51 plain multi-line properties are one-line properties (the style the part browser and outfit
+  properties already used), the 19 armor selection setters call one shared helper (`AppearancePartEditService.ArmorSelectionChanged`,
+  the old inline condition and call), and the palette sheet choice of a color category is `AppearanceSwatchService.UpdateColorSheet`.
+  The owner can veto them, but then the view model is over the limit and the guard fails.
+- Guard: `AppearanceEditorSizeTests` fails when the view model is not a single file under 1,000 lines, any editor type is over 1,000
+  lines or has a method over 150 lines, or any editor type takes more than 10 services.
+- Proof: `AppearanceEditorBindingIdentityEngineTests` has two more transcripts, one through the part lists, browser, helmet, cloak,
+  weapon and off hand pages, and one through the wardrobe with the headless player fixture. Both are masked for the armor part option
+  lists, which depend on which models the server's hak set holds (the other two transcripts, captured earlier, include them and fail
+  on a server home whose haks lack those models, on the base as well). The test also writes an unmasked transcript beside a mismatch,
+  and all four, taken on the base commit and on this branch on one server home, are byte for byte identical.

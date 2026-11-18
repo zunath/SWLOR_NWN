@@ -2349,7 +2349,3 @@ close-and-reopen 322 state carried d_ar_mpv1|d_ar_mpv1|1;d_ar_mpv1|d_ar_mpv1|1;d
 close-and-reopen 323 state worn Chest=farmer_outfit002
 close-and-reopen 324 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-and-reopen 325 state quickbar 0=10:1:;1=10:0:;2=4:28:
-close-and-reopen 326 state record WindowGeometries.DroidAssembly.Height 673.0
-close-and-reopen 327 state record WindowGeometries.DroidAssembly.Width 520.0
-close-and-reopen 328 state record WindowGeometries.DroidAssembly.X 0.0
-close-and-reopen 329 state record WindowGeometries.DroidAssembly.Y 0.0

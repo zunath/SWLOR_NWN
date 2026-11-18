@@ -2554,10 +2554,6 @@ stage-complete 339 state carried lyase_blue|INCUBATION_ENZYME|1;lyase_blue|INCUB
 stage-complete 340 state worn Chest=farmer_outfit002
 stage-complete 341 state feats 2,3,4,10,28,32,45,46,106,258,1089
 stage-complete 342 state quickbar 0=10:1:;1=10:0:;2=4:28:
-stage-complete 343 state record WindowGeometries.Incubator.Height 699.0
-stage-complete 344 state record WindowGeometries.Incubator.Width 920.0
-stage-complete 345 state record WindowGeometries.Incubator.X 0.0
-stage-complete 346 state record WindowGeometries.Incubator.Y 0.0
 stage-2-ready 1 step
 stage-2-ready 2 engine NuiDestroy <player>, 3
 stage-2-ready 3 property IsErraticGeniusChecked false
@@ -2900,8 +2896,7 @@ stage-2-ready 339 state carried lyase_blue|INCUBATION_ENZYME|1;lyase_blue|INCUBA
 stage-2-ready 340 state worn Chest=farmer_outfit002
 stage-2-ready 341 state feats 2,3,4,10,28,32,45,46,106,258,1089
 stage-2-ready 342 state quickbar 0=10:1:;1=10:0:;2=4:28:
-stage-2-ready 343 state record WindowGeometries.Incubator.Height 701.0
-stage-2-ready 344 engine CreateItemOnObject hydrolase_blue, <player>, 1, 
+stage-2-ready 343 engine CreateItemOnObject hydrolase_blue, <player>, 1, 
 stage-2-select-hydrolase-prompt 1 step
 stage-2-select-hydrolase-prompt 2 service ITargetingService.EnterTargetingMode <player>, Item, Select a Hydrolase item from your inventory., False
 stage-2-select-hydrolase-prompt 3 state carried hydrolase_blue|INCUBATION_ENZYME|1;lyase_blue|INCUBATION_ENZYME|1;lyase_blue|INCUBATION_ENZYME|1
@@ -7264,7 +7259,6 @@ hold-items-prompt 3 state carried beast_dna|beast_dna|1;beast_egg|beast_egg|1;ly
 hold-items-prompt 4 state worn Chest=farmer_outfit002
 hold-items-prompt 5 state feats 2,3,4,10,28,32,45,46,106,258,1089
 hold-items-prompt 6 state quickbar 0=10:1:;1=10:0:;2=4:28:
-hold-items-prompt 7 state record WindowGeometries.Incubator.Height 700.0
 hold-items 1 step
 hold-items 2 target obj(beast_dna|beast_dna)
 hold-items 3 property DNAItemResref "iit_ess5_001"
@@ -7377,7 +7371,6 @@ close-with-held-items 5 state carried beast_egg|beast_egg|1;herb_m|herb_m|43;lya
 close-with-held-items 6 state worn Chest=farmer_outfit002
 close-with-held-items 7 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-with-held-items 8 state quickbar 0=10:1:;1=10:0:;2=4:28:
-close-with-held-items 9 state record WindowGeometries.Incubator.Height 690.0
 reopen-with-held-items 1 step
 reopen-with-held-items 2 engine NuiCreate <player>, <619 chars hash 291702ab025a8c2ca9b11ca9387cc95f> {"accepts_input":true,"border":true,"closable":true,"collapsed":null,"geometry":{"bind":"Geometry"},"resizable":true,"ro, GUI_WINDOW_Incubator
 reopen-with-held-items 3 engine NuiSetBind <player>, 9, Geometry, {"h":690.0,"w":920.0,"x":0.0,"y":0.0}

@@ -484,7 +484,3 @@ close-and-reopen 89 state carried
 close-and-reopen 90 state worn Chest=farmer_outfit002
 close-and-reopen 91 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-and-reopen 92 state quickbar 0=10:1:;1=10:0:;2=4:28:
-close-and-reopen 93 state record WindowGeometries.PlayerGuide.Height 642.0
-close-and-reopen 94 state record WindowGeometries.PlayerGuide.Width 980.0
-close-and-reopen 95 state record WindowGeometries.PlayerGuide.X 0.0
-close-and-reopen 96 state record WindowGeometries.PlayerGuide.Y 0.0

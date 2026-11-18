@@ -1517,10 +1517,6 @@ equip-main-hand 79 state carried
 equip-main-hand 80 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 equip-main-hand 81 state feats 2,3,4,10,28,32,45,46,106,258,1089
 equip-main-hand 82 state quickbar 0=10:1:;1=10:0:;2=4:28:
-equip-main-hand 83 state record WindowGeometries.CharacterSheet.Height 460.0
-equip-main-hand 84 state record WindowGeometries.CharacterSheet.Width 800.0
-equip-main-hand 85 state record WindowGeometries.CharacterSheet.X 0.0
-equip-main-hand 86 state record WindowGeometries.CharacterSheet.Y 0.0
 resistances-tab 1 step
 resistances-tab 2 property SelectedTabId 2
 resistances-tab 3 engine NuiSetBind <player>, 1, SelectedTabId, 2
@@ -2102,7 +2098,6 @@ close-self 3 state carried nw_wswss001|NW_WSWSS001|1
 close-self 4 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 close-self 5 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-self 6 state quickbar 0=10:1:;1=10:0:;2=4:28:
-close-self 7 state record WindowGeometries.CharacterSheet.Height 461.0
 open-npc 1 step
 open-npc 2 engine NuiCreate <player>, <625 chars hash 1c1a07456f1dd1e35816aee064904106> {"accepts_input":true,"border":true,"closable":true,"collapsed":null,"geometry":{"bind":"Geometry"},"resizable":true,"ro, GUI_WINDOW_CharacterSheet
 open-npc 3 engine NuiSetBind <player>, 2, Geometry, {"h":461.0,"w":800.0,"x":0.0,"y":0.0}
@@ -2441,7 +2436,6 @@ open-npc 335 state carried nw_wswss001|NW_WSWSS001|1
 open-npc 336 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 open-npc 337 state feats 2,3,4,10,28,32,45,46,106,258,1089
 open-npc 338 state quickbar 0=10:1:;1=10:0:;2=4:28:
-open-npc 339 state record WindowGeometries.CharacterSheet.Height 462.0
 npc-tab-1 1 step
 npc-tab-1 2 property SelectedTabId 1
 npc-tab-1 3 engine NuiSetBind <player>, 2, SelectedTabId, 1
@@ -2774,7 +2768,6 @@ close-npc 3 state carried nw_wswss001|NW_WSWSS001|1
 close-npc 4 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 close-npc 5 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-npc 6 state quickbar 0=10:1:;1=10:0:;2=4:28:
-close-npc 7 state record WindowGeometries.CharacterSheet.Height 467.0
 open-high-resource 1 step
 open-high-resource 2 engine NuiCreate <player>, <625 chars hash 1c1a07456f1dd1e35816aee064904106> {"accepts_input":true,"border":true,"closable":true,"collapsed":null,"geometry":{"bind":"Geometry"},"resizable":true,"ro, GUI_WINDOW_CharacterSheet
 open-high-resource 3 engine NuiSetBind <player>, 3, Geometry, {"h":467.0,"w":800.0,"x":0.0,"y":0.0}
@@ -3136,7 +3129,6 @@ open-high-resource 358 state quickbar 0=10:1:;1=10:0:;2=4:28:
 open-high-resource 359 state record MaxFP 90000
 open-high-resource 360 state record MaxHP 60000
 open-high-resource 361 state record MaxStamina 90000
-open-high-resource 362 state record WindowGeometries.CharacterSheet.Height 468.0
 high-resource-stats 1 step
 high-resource-stats 2 property SelectedTabId 1
 high-resource-stats 3 engine NuiSetBind <player>, 3, SelectedTabId, 1

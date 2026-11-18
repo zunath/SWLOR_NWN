@@ -1,9 +1,15 @@
 {
   "description": "Content the maintainability refactor has converted to constructor injection (SWLOR.Game.Server/Readmes/MaintainabilityRefactorContentInjection.md), read by tools/Refactor/SWLOR.ContentInjection (Apply-ContentInjection.ps1). Repository-relative paths with forward slashes, sorted: a file, or a folder ending in / whose every .cs file is converted (a file master adds there is converted whole at the next sync). Each wave adds its files in the pull request that converts them. While the list is empty the tool converts nothing and only keeps SWLOR.Game.Server/Composition/ContentRegistrations.cs, which it owns.",
   "converted": [
+    "SWLOR.Game.Server/Feature/AppearanceDefinition/ItemAppearance/AppearanceItemEligibility.cs",
     "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceColorService.cs",
     "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceEditorWindowHandlers.cs",
+    "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceOutfitService.cs",
+    "SWLOR.Game.Server/Feature/AppearanceEditing/AppearancePartBrowserService.cs",
     "SWLOR.Game.Server/Feature/AppearanceEditing/AppearancePartEditService.cs",
+    "SWLOR.Game.Server/Feature/AppearanceEditing/AppearancePartListService.cs",
+    "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceSettingsService.cs",
+    "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceSwatchService.cs",
     "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceTintEditorService.cs",
     "SWLOR.Game.Server/Feature/DialogDefinition/",
     "SWLOR.Game.Server/Feature/GuiDefinition/Payload/ExamineItemPayload.cs",

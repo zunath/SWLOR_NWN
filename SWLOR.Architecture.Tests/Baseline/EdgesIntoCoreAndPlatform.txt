@@ -365,11 +365,12 @@ Domain/Space -> Platform/Core | 39
 Feature/ShipModuleDefinition -> Platform/Composition | 21
 Feature/ShipModuleDefinition -> Platform/Core | 4
 
-# UI -> Foundation (7 edges)
+# UI -> Foundation (8 edges)
 Domain/UI -> Domain/Foundation | 169
 Domain/UI -> Platform/Entity | 3
 Domain/UI -> Platform/Enumeration | 7
 Feature/AppearanceEditing -> Domain/Foundation | 1
+Feature/AppearanceEditing -> Platform/Entity | 15
 Feature/GuiDefinition -> Domain/Foundation | 743
 Feature/GuiDefinition -> Platform/Entity | 380
 Feature/GuiDefinition -> Platform/Enumeration | 11

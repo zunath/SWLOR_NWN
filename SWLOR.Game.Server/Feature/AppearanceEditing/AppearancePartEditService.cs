@@ -21,11 +21,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceEditing
     {
         private AppearanceTintEditorService AppearanceTintEditorService { get; }
         private ITintMapCarryService TintMapCarry { get; }
+        private IWeaponAppearanceCatalog IWeaponAppearanceCatalog { get; }
 
-        public AppearancePartEditService(AppearanceTintEditorService appearanceTintEditorService, ITintMapCarryService tintMapCarry)
+        public AppearancePartEditService(AppearanceTintEditorService appearanceTintEditorService, ITintMapCarryService tintMapCarry, IWeaponAppearanceCatalog iWeaponAppearanceCatalog)
         {
             AppearanceTintEditorService = appearanceTintEditorService;
             TintMapCarry = tintMapCarry;
+            IWeaponAppearanceCatalog = iWeaponAppearanceCatalog;
         }
 
         public static InventorySlot GetInventorySlot(IAppearanceEditorHost host)
@@ -109,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceEditing
                 partId %= 100;
             }
 
-            if (WeaponAppearanceCatalog.Definitions.TryGetValue(itemType, out var weapon) && weapon.IsSimple)
+            if (IWeaponAppearanceCatalog.Definitions.TryGetValue(itemType, out var weapon) && weapon.IsSimple)
                 modelType = ItemAppearanceType.SimpleModel;
 
             EquippedItemAppearance.Set(item, modelType, type, partId);
@@ -118,6 +120,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceEditing
             TintMapCarry.QueueItemCustomColorCarry(
                 host.Session.Target, item, item, host.Player, slot, armorPart, tintCarry, applyImmediately: true);
             EquippedItemAppearance.Refresh(host.Session.Target, item);
+        }
+
+        /// <summary>
+        /// What an armor part selection does after its binding is set: a client change of the list (not the editor's own load or
+        /// hydration) applies the chosen style to the item.
+        /// </summary>
+        public void ArmorSelectionChanged(IAppearanceEditorHost host, AppearanceArmor part, int value)
+        {
+            if (host.Session.ArmorClientBindingsWatched && !host.Session.SkipAdjustArmorPart && value != GetItemAppearance(host.GetItem(), ItemAppearanceType.ArmorModel, (int)part))
+                AdjustArmorPart(host, part, 0);
         }
 
         public static AppearanceArmor GetArmorModelType(IAppearanceEditorHost host, AppearanceColorTarget colorTarget)

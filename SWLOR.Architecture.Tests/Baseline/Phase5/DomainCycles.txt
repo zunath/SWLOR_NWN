@@ -38,7 +38,7 @@ Economy <-> Quests | 2
 Foundation <-> Platform | 9
 Foundation <-> UI | 4
 Foundation content <-> Gameplay content | 7
-Gameplay content <-> UI content | 8
+Gameplay content <-> UI content | 9
 Items <-> Platform | 4
 Items <-> World | 2
 Space <-> World | 2

@@ -73,34 +73,6 @@ public class CombatDamageModifiersServiceTests
     private int _rangedIgnore;
     private DeflectionSource _deflectionSource;
 
-    private sealed class TestDamageModifiers : CombatDamageModifiersService
-    {
-        public Func<uint, DeflectionSource, float, bool> Deflection { get; set; } = (_, _, _) => false;
-        public List<string> DeflectionCalls { get; } = new();
-
-        public TestDamageModifiers(
-            ICombatQueriesService queries,
-            ICombatResourcesService resources,
-            IStatService stat,
-            IStatusEffectService statusEffect,
-            IStatusEffectApplicationService statusApplication,
-            ITemporaryStatModifierService temporaryStatModifier,
-            IAbilityImpactState ability,
-            IPlayerFeedbackService playerFeedback)
-            : base(queries, resources, stat, statusEffect, statusApplication, temporaryStatModifier, ability, playerFeedback, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
-        {
-        }
-
-        protected override bool HasRecentDeflection(uint creature, DeflectionSource source, float windowSeconds)
-        {
-            DeflectionCalls.Add($"{creature} {source} {windowSeconds}");
-            return Deflection(creature, source, windowSeconds);
-        }
-
-        public bool BaseHasRecentDeflection(uint creature, DeflectionSource source, float windowSeconds) =>
-            base.HasRecentDeflection(creature, source, windowSeconds);
-    }
-
     [OneTimeSetUp]
     public void BuildFacades()
     {

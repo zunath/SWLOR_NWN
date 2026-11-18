@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.NWN.API.NWNX;
@@ -378,7 +379,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static int GetUnixTimeSeconds()
         {
-            return (int)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            return (int)new DateTimeOffset(Clock.UtcNow).ToUnixTimeSeconds();
         }
 
         // Cancels and releases any deferred grant still waiting for the previous application of this key.

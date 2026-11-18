@@ -75,11 +75,7 @@ public class CombatAbilityTranscriptTests
             bench.Step("activate with no ability" + tag, () =>
                 activation.ApplyAbilityActivatedEffects(Attacker, Defender, FeatType.Invalid, null, null));
             bench.Step("track a queued weapon ability" + tag, () => activation.TrackQueuedWeaponAbilityUse(Attacker, Ability(SkillType.Pistol)));
-            // Raised stats make the spend grant temporary hit points, and TemporaryHitPointEffects stamps the pool expiry with
-            // DateTimeOffset.UtcNow (no Clock seam), so a transcript of that path would change with the second. Only the
-            // zero-stat spend, which grants none, is in the text.
-            if (stat == 0)
-                bench.Step("spend hit points on an ability" + tag, () => activation.ApplyHitPointSpendAbilityEffects(Attacker, 30, 30));
+            bench.Step("spend hit points on an ability" + tag, () => activation.ApplyHitPointSpendAbilityEffects(Attacker, 30, 30));
             bench.Step("forget the activator" + tag, () => activation.ForgetActivationState(Attacker));
         }
 

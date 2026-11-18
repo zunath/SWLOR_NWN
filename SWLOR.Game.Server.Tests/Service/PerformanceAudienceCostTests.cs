@@ -127,12 +127,12 @@ public class PerformanceAudienceCostTests
     {
         var shared = new[]
         {
-            SourcePath("Domain", "Combat", "DeathService.cs"),
             SourcePath("Domain", "World", "FishingService.cs")
         };
 
         // Combat and the stat service are one shared system each, however many files hold them.
         var sources = shared.ToDictionary(file => Path.GetFileName(file), file => File.ReadAllText(file));
+        sources["DeathService.cs"] = DeathSource.Read();
         sources["Combat"] = CombatSource.Read();
         sources["StatService.cs"] = StatSource.Read();
         sources["StatusEffectService.cs"] = StatusEffectSource.Read();
@@ -149,7 +149,7 @@ public class PerformanceAudienceCostTests
         StatSource.Read().Should().Contain("StatType.OutOfCombatMovementSpeedPercentAdjustment");
         File.ReadAllText(SourcePath("Domain", "Crafting", "Minigame", "Line", "LineAnglerEffects.cs"))
             .Should().Contain("StatType.AnglerTensionCap");
-        File.ReadAllText(SourcePath("Domain", "Combat", "DeathService.cs")).Should().Contain("IDeathDebtWaiverStatusEffect");
+        DeathSource.Read().Should().Contain("IDeathDebtWaiverStatusEffect");
     }
 
     [Test]

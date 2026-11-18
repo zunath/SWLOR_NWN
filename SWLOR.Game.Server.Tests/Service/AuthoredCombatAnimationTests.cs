@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade;
@@ -132,7 +133,7 @@ public class AuthoredCombatAnimationTests
         var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln"))) root = root.Parent;
         root.Should().NotBeNull();
-        var death = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Domain", "Combat", "DeathService.cs"));
+        var death = DeathSource.Read();
         var stop = death.IndexOf("_namedAnimation.ClearOnDeath(player);", StringComparison.Ordinal);
         stop.Should().BeGreaterThan(death.IndexOf("var player = GetLastPlayerDied();", StringComparison.Ordinal));
         stop.Should().BeLessThan(death.IndexOf("EffectResurrection()", StringComparison.Ordinal),

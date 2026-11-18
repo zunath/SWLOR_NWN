@@ -74,3 +74,369 @@ events file has 42 lines
 40: {"type":"subdual","ts_ms":1700000001800,"frame":36,"target":1,"subdued_by":2}
 41: {"type":"resurrection","ts_ms":1700000001800,"frame":36,"target":1,"caster":null,"source_kind":"subdual","source_name":null}
 42: {"type":"recording_stopped","ts_ms":1700000001900,"frame":38,"reason":"scripted stop","events":42}
+== step 21 the summary file, line by line
+summary file has 364 lines
+1: {
+2:   "label": "scripted fight",
+3:   "area_name": "Cantina",
+4:   "area_resref": "res-Cantina",
+5:   "started_utc": "2023-11-14T22:13:20.1000000Z",
+6:   "stopped_utc": "2023-11-14T22:13:21.9000000Z",
+7:   "duration_s": 1.8,
+8:   "events": 42,
+9:   "participants": [
+10:     {
+11:       "id": 1,
+12:       "name": "Attacker",
+13:       "player": true,
+14:       "seconds_observed": 1.3,
+15:       "seconds_in_combat": 1.3,
+16:       "deaths": 2,
+17:       "kills": 1,
+18:       "subdued": 1,
+19:       "revives_received": 2,
+20:       "revives_performed": 0,
+21:       "ability_uses": {
+22:         "Strike": 2
+23:       },
+24:       "ability_denials": {
+25:         "Strike": {
+26:           "Not enough FP": 1
+27:         }
+28:       },
+29:       "ability_interruptions": {
+30:         "Strike": {
+31:           "damage": 1,
+32:           "moved": 1
+33:         }
+34:       },
+35:       "damage_dealt": {
+36:         "total_effective": 30,
+37:         "by_source": {
+38:           "Strike": {
+39:             "hits": 1,
+40:             "total": 40,
+41:             "effective": 30,
+42:             "hp_lost": 10,
+43:             "temp_hp_absorbed": 20,
+44:             "overkill": 0
+45:           }
+46:         }
+47:       },
+48:       "damage_taken": {
+49:         "total_effective": 0,
+50:         "by_source": {}
+51:       },
+52:       "healing_done": {
+53:         "total_effective": 10,
+54:         "total_overheal": 0,
+55:         "total_pvp_reduced": 0,
+56:         "by_source": {
+57:           "Unattributed": {
+58:             "count": 1,
+59:             "requested": 10,
+60:             "effective": 10,
+61:             "overheal": 0,
+62:             "pvp_reduced": 0
+63:           }
+64:         }
+65:       },
+66:       "healing_received": {
+67:         "total_effective": 0,
+68:         "total_overheal": 0,
+69:         "total_pvp_reduced": 0,
+70:         "by_source": {}
+71:       },
+72:       "temp_hp_granted": {
+73:         "total": 0,
+74:         "by_source": {}
+75:       },
+76:       "temp_hp_received": {
+77:         "total": 0,
+78:         "by_source": {}
+79:       },
+80:       "temp_hp_absorbed": {
+81:         "total": 0,
+82:         "by_source": {}
+83:       },
+84:       "temp_hp_granted_absorbed": {
+85:         "total": 0,
+86:         "by_source": {}
+87:       },
+88:       "temp_hp_trimmed": {
+89:         "total": 0,
+90:         "by_source": {}
+91:       },
+92:       "fp_spent": {
+93:         "total": 5,
+94:         "by_source": {
+95:           "Unattributed": {
+96:             "count": 1,
+97:             "amount": 5
+98:           }
+99:         }
+100:       },
+101:       "fp_regained": {
+102:         "total": 3,
+103:         "by_source": {
+104:           "Setup": {
+105:             "count": 1,
+106:             "amount": 3
+107:           }
+108:         }
+109:       },
+110:       "stm_spent": {
+111:         "total": 8,
+112:         "by_source": {
+113:           "Unattributed": {
+114:             "count": 1,
+115:             "amount": 8
+116:           }
+117:         }
+118:       },
+119:       "stm_regained": {
+120:         "total": 0,
+121:         "by_source": {}
+122:       },
+123:       "hp_spent": {
+124:         "total": 0,
+125:         "by_source": {}
+126:       },
+127:       "items_consumed": {
+128:         "total": 3,
+129:         "by_source": {
+130:           "medpac": {
+131:             "count": 1,
+132:             "amount": 2
+133:           },
+134:           "res-Item": {
+135:             "count": 1,
+136:             "amount": 1
+137:           }
+138:         }
+139:       }
+140:     },
+141:     {
+142:       "id": 2,
+143:       "name": "Defender",
+144:       "player": false,
+145:       "resref": "res-Defender",
+146:       "seconds_observed": 0,
+147:       "seconds_in_combat": 0,
+148:       "deaths": 1,
+149:       "kills": 2,
+150:       "subdued": 0,
+151:       "revives_received": 1,
+152:       "revives_performed": 0,
+153:       "ability_uses": {},
+154:       "ability_denials": {},
+155:       "ability_interruptions": {},
+156:       "damage_dealt": {
+157:         "total_effective": 0,
+158:         "by_source": {}
+159:       },
+160:       "damage_taken": {
+161:         "total_effective": 30,
+162:         "by_source": {
+163:           "Strike": {
+164:             "hits": 1,
+165:             "total": 40,
+166:             "effective": 30,
+167:             "hp_lost": 10,
+168:             "temp_hp_absorbed": 20,
+169:             "overkill": 0
+170:           }
+171:         }
+172:       },
+173:       "healing_done": {
+174:         "total_effective": 0,
+175:         "total_overheal": 0,
+176:         "total_pvp_reduced": 0,
+177:         "by_source": {}
+178:       },
+179:       "healing_received": {
+180:         "total_effective": 70,
+181:         "total_overheal": -20,
+182:         "total_pvp_reduced": 60,
+183:         "by_source": {
+184:           "Strike": {
+185:             "count": 1,
+186:             "requested": 40,
+187:             "effective": 60,
+188:             "overheal": -20,
+189:             "pvp_reduced": 60
+190:           },
+191:           "Unattributed": {
+192:             "count": 1,
+193:             "requested": 10,
+194:             "effective": 10,
+195:             "overheal": 0,
+196:             "pvp_reduced": 0
+197:           }
+198:         }
+199:       },
+200:       "temp_hp_granted": {
+201:         "total": 30,
+202:         "by_source": {
+203:           "Strike": {
+204:             "count": 1,
+205:             "amount": 30
+206:           }
+207:         }
+208:       },
+209:       "temp_hp_received": {
+210:         "total": 30,
+211:         "by_source": {
+212:           "Strike": {
+213:             "count": 1,
+214:             "amount": 30
+215:           }
+216:         }
+217:       },
+218:       "temp_hp_absorbed": {
+219:         "total": 20,
+220:         "by_source": {
+221:           "Strike": {
+222:             "count": 1,
+223:             "amount": 20
+224:           }
+225:         }
+226:       },
+227:       "temp_hp_granted_absorbed": {
+228:         "total": 20,
+229:         "by_source": {
+230:           "Strike": {
+231:             "count": 1,
+232:             "amount": 20
+233:           }
+234:         }
+235:       },
+236:       "temp_hp_trimmed": {
+237:         "total": 5,
+238:         "by_source": {
+239:           "Strike": {
+240:             "count": 1,
+241:             "amount": 5
+242:           }
+243:         }
+244:       },
+245:       "fp_spent": {
+246:         "total": 0,
+247:         "by_source": {}
+248:       },
+249:       "fp_regained": {
+250:         "total": 0,
+251:         "by_source": {}
+252:       },
+253:       "stm_spent": {
+254:         "total": 0,
+255:         "by_source": {}
+256:       },
+257:       "stm_regained": {
+258:         "total": 4,
+259:         "by_source": {
+260:           "Unattributed": {
+261:             "count": 1,
+262:             "amount": 4
+263:           }
+264:         }
+265:       },
+266:       "hp_spent": {
+267:         "total": 0,
+268:         "by_source": {}
+269:       },
+270:       "items_consumed": {
+271:         "total": 0,
+272:         "by_source": {}
+273:       }
+274:     },
+275:     {
+276:       "id": 3,
+277:       "name": "Other",
+278:       "player": false,
+279:       "resref": "res-Other",
+280:       "seconds_observed": 0,
+281:       "seconds_in_combat": 0,
+282:       "deaths": 0,
+283:       "kills": 0,
+284:       "subdued": 0,
+285:       "revives_received": 0,
+286:       "revives_performed": 0,
+287:       "ability_uses": {},
+288:       "ability_denials": {},
+289:       "ability_interruptions": {},
+290:       "damage_dealt": {
+291:         "total_effective": 0,
+292:         "by_source": {}
+293:       },
+294:       "damage_taken": {
+295:         "total_effective": 0,
+296:         "by_source": {}
+297:       },
+298:       "healing_done": {
+299:         "total_effective": 60,
+300:         "total_overheal": -20,
+301:         "total_pvp_reduced": 60,
+302:         "by_source": {
+303:           "Strike": {
+304:             "count": 1,
+305:             "requested": 40,
+306:             "effective": 60,
+307:             "overheal": -20,
+308:             "pvp_reduced": 60
+309:           }
+310:         }
+311:       },
+312:       "healing_received": {
+313:         "total_effective": 0,
+314:         "total_overheal": 0,
+315:         "total_pvp_reduced": 0,
+316:         "by_source": {}
+317:       },
+318:       "temp_hp_granted": {
+319:         "total": 0,
+320:         "by_source": {}
+321:       },
+322:       "temp_hp_received": {
+323:         "total": 0,
+324:         "by_source": {}
+325:       },
+326:       "temp_hp_absorbed": {
+327:         "total": 0,
+328:         "by_source": {}
+329:       },
+330:       "temp_hp_granted_absorbed": {
+331:         "total": 0,
+332:         "by_source": {}
+333:       },
+334:       "temp_hp_trimmed": {
+335:         "total": 0,
+336:         "by_source": {}
+337:       },
+338:       "fp_spent": {
+339:         "total": 0,
+340:         "by_source": {}
+341:       },
+342:       "fp_regained": {
+343:         "total": 0,
+344:         "by_source": {}
+345:       },
+346:       "stm_spent": {
+347:         "total": 0,
+348:         "by_source": {}
+349:       },
+350:       "stm_regained": {
+351:         "total": 0,
+352:         "by_source": {}
+353:       },
+354:       "hp_spent": {
+355:         "total": 0,
+356:         "by_source": {}
+357:       },
+358:       "items_consumed": {
+359:         "total": 0,
+360:         "by_source": {}
+361:       }
+362:     }
+363:   ]
+364: }

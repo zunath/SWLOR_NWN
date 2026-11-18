@@ -764,8 +764,25 @@ concrete class where a handler is not on an interface).
 - **Engine test** (`StealthRetargetEngineTests`, two tests): an enemy attacking a player who enters stealth (through Ghost Protocol, the engine refuses
   stealth in combat otherwise) drops the player and keeps the enmity, and attacks again when the player is revealed; two enemies do the same. It passed
   on a full engine hak set built in a throwaway worktree.
-- **Not covered, and why.** `TemporaryHitPointEffects` stamps pool expiry with `DateTimeOffset.UtcNow` (no `Clock` seam), so the raised-stat
-  hit point spend is left out of the activation transcript; P5-2 or a Feature owner can add the seam. Paths that reach the native library
-  (`ActionInterruption`, the rifle pacification rider) end their transcript at a marker in two impact steps.
-- **Groundwork not done here.** The "Groundwork as in P5-5b" list of "Tests and the proof plan" (`CombatParts.OtherServices` for the recorder parts,
-  `EnmitySource` and `DeathSource`, the 11 doubles as partial files) is not part of this PR; each moves with the PR that needs it.
+- **Clock seams (behaviour-neutral, the P5-16h PR 0 precedent).** `TemporaryHitPointEffects` stamped the pool expiry
+  `TEMPORARY_HP_POOLS_ACTIVE_UNTIL` with `DateTimeOffset.UtcNow`, and `CombatRecordWriter` stamped the summary file with `DateTime.UtcNow`. Both read
+  `Clock.UtcNow` now (`new DateTimeOffset(Clock.UtcNow)` by hand, because `Apply-ClockSeam.ps1` does not rewrite `DateTimeOffset`; the writer's
+  `Clock.UtcNow` is the tool's own form, written by hand), and both files are in `ClockSeamFiles.txt` (`-Check` stays clean). That put the raised-stat hit point spend back into the
+  activation transcript and the summary file into the recorder transcript. Only `AbilityActivation.txt` and `Recorder.txt` changed.
+- **Not covered, and why.** Paths that reach the native library (`ActionInterruption`, the rifle pacification rider) end their transcript at a
+  marker in two impact steps.
+- **Groundwork (the "Groundwork as in P5-5b" bullet).** `Tests/Support/PartSourceFiles.cs` is the reading half of `StatusEffectSource`; `EnmitySource` and
+  `DeathSource` hold one file list and one part-interface set each, so a PR that moves a part edits one list. The 12 path-reading tests read through
+  them (Enmity: `AIModelTests`, `EnmityAdjustmentTests`, `EnmityTests`, `EspionageSystemTests`, `NPCChaseTests` through
+  `DMPossessionHarness.InstanceMethod(roots, name)`; Death: `AuthoredCombatAnimationTests`, `ForceLightGuardianTests`, `PerformanceAudienceCostTests`,
+  `PerformanceAudienceStateTests`, `StatusEffectDeliveryTests`); `RealEnmityTables` and `ReloadStateCarrierTests` read no path (the tables stay in
+  `EnmityService`). `CombatParts.OtherServices` names `CombatRecordAbilityService` and `CombatRecordDamageService`
+  (the session core is not named `Combat*Service`); `CombatSourceTests` lets a name without a file yet stand if it starts with `CombatRecord`. The
+  doubles are `partial` files in `Tests/Support/`: `TestHitEffects`, `TestDamageTaken`, `TestDamageModifiers`, `TestEnmity`, `TestDeath` (with
+  `TestDeathWaiver` and `DeathScope`, which the test and the double share), `TestRecorder` (`PlainRecorder`, `RecorderProbe`, `ScheduledTask`); a PR
+  that splits a service adds one partial file per part. **The map was wrong that all 11 unit test classes subclass their service:** six do
+  (eight doubles); `CombatAbilityImpactServiceTests`, `CombatAbilityActivationServiceTests`, `CombatAbilityBonusServiceTests`,
+  `CombatAbilityHitServiceTests` and `CombatServiceTests` construct the real class with scripted neighbours, so they have no double to move; the PR
+  that splits each still re-points its constructor calls. The path-reading tests of `CombatRecorderService.cs` (`CombatSourceTests`,
+  `DMPossessionPlayerLoopTests`) and `CombatDamageModifiersService.cs` (`MeleeRepeatedTargetStackTests`) were not re-pointed here: the coordinator's list for this PR was the Enmity and Death readers, and the
+  recorder and damage modifiers readers move with their PRs (P5-7j1, P5-7d).

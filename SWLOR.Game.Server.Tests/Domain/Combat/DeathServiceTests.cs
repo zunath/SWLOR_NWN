@@ -484,83 +484,6 @@ public class DeathServiceTests
 
     private static Vector3 Vector3Of(float x, float y, float z) => new(x, y, z);
 
-    private sealed class TestWaiver
-    {
-        public TestWaiver(bool consumes)
-        {
-            Effect = ScriptedProxy.Create<IDeathDebtWaiverStatusEffect>(out var proxy);
-            proxy.On("TryConsumeDeathDebtWaiver", _ =>
-            {
-                Asked = true;
-                return consumes;
-            });
-        }
-
-        public IDeathDebtWaiverStatusEffect Effect { get; }
-
-        public bool Asked { get; private set; }
-    }
-
-    private sealed class TestDeath : DeathService
-    {
-        public TestDeath(
-            IDBService db,
-            INamedAnimationService animation,
-            IMessagingService messaging,
-            IPlayerNameService names,
-            ICityUpgradeLookup property,
-            IAreaLookup areas)
-            : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatRecorderService>(),
-                Array.Empty<ICreatureRevivedListener>(), FacadeForwarder.For<ICombatDamageTakenService>())
-        {
-        }
-
-        public List<string> Calls { get; } = new();
-        public List<(LogGroup Group, string Details)> Logs { get; } = new();
-        public List<TestWaiver> Waivers { get; } = new();
-        public bool PreventFatal { get; set; }
-        public bool Recording { get; set; }
-
-        protected override bool TryPreventFatalDamageAndGrantTemporaryHP(uint defender, int damage, bool restoreToOneHP)
-        {
-            Calls.Add($"TryPreventFatalDamage:{defender}:{damage}:{restoreToOneHP}");
-            return PreventFatal;
-        }
-
-        protected override void ClearQueuedAbility(uint player) => Calls.Add($"ClearQueuedAbility:{player}");
-
-        protected override void RecordPlayerDeath(uint deceased, uint killer) => Calls.Add($"RecordPlayerDeath:{deceased}:{killer}");
-
-        protected override void ClearStatusEffectsOnDeath(uint player) => Calls.Add($"ClearStatusEffectsOnDeath:{player}");
-
-        protected override List<IDeathDebtWaiverStatusEffect> GetDeathDebtWaiverEffects(uint player)
-        {
-            Calls.Add("RecordDeathDebtWaiver");
-            return Waivers.Select(waiver => waiver.Effect).ToList();
-        }
-
-        protected override bool IsRecording() => Recording;
-
-        protected override void RecordSubdual(uint subdued, uint subduedBy) => Calls.Add($"RecordSubdual:{subdued}:{subduedBy}");
-
-        protected override void RecordRespawn(uint player) => Calls.Add($"RecordRespawn:{player}");
-
-        protected override IDisposable BeginRespawnAttribution()
-        {
-            Calls.Add("BeginRespawnAttribution");
-            return new Scope(() => Calls.Add("EndRespawnAttribution"));
-        }
-
-        protected override void RestoreGhostAfterRevive(uint creature) => Calls.Add($"RestoreGhostAfterRevive:{creature}");
-
-        protected override void ReapplyAuraEffectsForCreature(uint creature) => Calls.Add($"ReapplyAura:{creature}");
-
-        protected override void ApplyStatusEffect(uint source, uint creature, Type statusEffectClass, float durationSeconds) =>
-            Calls.Add($"ApplyStatusEffect:{source}:{creature}:{statusEffectClass.Name}:{durationSeconds}");
-
-        protected override void WriteLog(LogGroup group, string details) => Logs.Add((group, details));
-    }
-
     private sealed class RecordingRevivedListener : ICreatureRevivedListener
     {
         private readonly string _name;
@@ -575,22 +498,4 @@ public class DeathServiceTests
         public void OnCreatureRevived(uint creature) => _heard.Add($"{_name}:{creature}");
     }
 
-    private sealed class ReviveProbe : DeathService
-    {
-        public ReviveProbe(IEnumerable<ICreatureRevivedListener> listeners)
-            : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, listeners, null!)
-        {
-        }
-
-        public void Revive(uint creature) => ReapplyAuraEffectsForCreature(creature);
-    }
-
-    private sealed class Scope : IDisposable
-    {
-        private readonly Action _onDispose;
-
-        public Scope(Action onDispose) => _onDispose = onDispose;
-
-        public void Dispose() => _onDispose();
-    }
 }

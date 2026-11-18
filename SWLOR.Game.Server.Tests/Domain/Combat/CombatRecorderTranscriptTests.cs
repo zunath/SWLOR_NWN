@@ -25,8 +25,7 @@ namespace SWLOR.Game.Server.Tests.Domain.Combat;
 /// interrupted ability, a heal with a nested heal and a reduced heal, temporary hit point grants and trims, resources and items, a
 /// status applied, refreshed and removed, a creature death, a player death, a respawn, a resurrection, a subdual, and a <c>Stop</c>.
 /// The transcript lists, for each step, what the call returned and every line the writer wrote to the events file, byte for byte,
-/// then the log lines the recorder wrote. The summary file is not compared: the writer stamps it with <c>DateTime.UtcNow</c>, which
-/// has no seam. The one double is <c>Probe</c>, which overrides the protected seams the recorder offers (the clock, the frame, the log
+/// then the log lines the recorder wrote. The summary file is compared too: the writer stamps it through <c>Clock</c>. The one double is <c>Probe</c>, which overrides the protected seams the recorder offers (the clock, the frame, the log
 /// folder, the native hooks and the stat reads). Regenerate with <c>SWLOR_UPDATE_SNAPSHOTS=1</c> only for a deliberate change.
 /// </summary>
 [TestFixture]
@@ -289,6 +288,14 @@ public class CombatRecorderTranscriptTests
                 bench.Lines.Add("events file has " + file.Length + " lines");
                 for (var index = 0; index < file.Length; index++)
                     bench.Lines.Add($"{index + 1}: {file[index]}");
+            });
+
+            bench.Step("the summary file, line by line", () =>
+            {
+                var summary = File.ReadAllLines(probe!.LastWriter!.SummaryPath);
+                bench.Lines.Add("summary file has " + summary.Length + " lines");
+                for (var index = 0; index < summary.Length; index++)
+                    bench.Lines.Add($"{index + 1}: {summary[index]}");
             });
 
             // The recordings folder is a temporary folder named for the run; its name is the one value left out of the text.

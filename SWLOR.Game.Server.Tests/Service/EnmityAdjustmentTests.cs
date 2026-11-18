@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -9,7 +10,7 @@ public class EnmityAdjustmentTests
     public void SourceLinkedEnmityAdjustments_UseStrongestMatchingDebuff()
     {
         var root = FindRepositoryRoot();
-        var enmitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs"));
+        var enmitySource = EnmitySource.Read();
 
         enmitySource.Should().Contain("StatType.EnmityToStatusSourcePercentAdjustment");
         enmitySource.Should().Contain(".DefaultIfEmpty(0)");

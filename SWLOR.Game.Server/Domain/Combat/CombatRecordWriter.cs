@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     }
                 }
 
-                var summary = builder.Build(DateTime.UtcNow);
+                var summary = builder.Build(Clock.UtcNow);
                 WriteSummary(summary);
                 _completion.TrySetResult(summary);
             }

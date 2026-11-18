@@ -524,12 +524,7 @@ public class EnmityTests
             "SWLOR.Game.Server",
             "NativeSinks",
             "OnAIActionAttackObjectSink.cs"));
-        var enmitySource = File.ReadAllText(Path.Combine(
-            repositoryRoot,
-            "SWLOR.Game.Server",
-            "Domain",
-            "Combat",
-            "EnmityService.cs"));
+        var enmitySource = EnmitySource.Read();
 
         nativeSource.Should().Contain("CombatRules.GetWeaponEngagementRange(attackSkillType)");
         nativeSource.Should().Contain("CombatRules.IsRangedWeaponSkill(attackSkillType)");

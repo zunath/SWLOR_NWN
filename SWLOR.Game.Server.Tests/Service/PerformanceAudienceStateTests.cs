@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Tests.Support;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -201,7 +202,7 @@ public class PerformanceAudienceStateTests
     [Test]
     public void ASubdualDoesNotClaimRequiem()
     {
-        var source = File.ReadAllText(SourcePath("Domain", "Combat", "DeathService.cs"));
+        var source = DeathSource.Read();
         var death = source.Substring(source.IndexOf("public void OnPlayerDeath()", StringComparison.Ordinal));
         death = death.Substring(0, death.IndexOf("ClearStatusEffectsOnDeath(player);", StringComparison.Ordinal));
 

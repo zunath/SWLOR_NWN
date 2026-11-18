@@ -1,0 +1,227 @@
+== step 1 populate: exit of the attacker
+Engine.DelayCommand(0)
+Engine.DelayCommand(0)
+filled _abilityStaminaCosts, _areaAbilityTargetHitSequences, _attackSwingDebts, _attackSwingDebtsWithoutLimitedReduction, _autoAttackCycleCounts, _autoAttackCycleCriticalCounts, _containmentNormalizationTargets, _criticalHitSequenceStates, _damageDerivedHealingStates, _defeatedEnemyHealingBudgets, _firstCombatAttackConsumed, _firstHostileAbilityHitCounts, _hostileAbilitySequenceStates, _lastAttackActivity, _lastCombatAbilityUse, _lastCombatActivity, _lastHostileAbilityAttemptActivity, _lastHostileIncomingActivity, _meleeAutoAttackCycleCounts, _meleeRepeatedTargetDamageStates, _modifiers, _passiveDamageHealingBudgets, _pendingSuppressionAbilityUses, _rangedRepeatedTargetDamageStates, _recentDamageTaken, _recentDamageTargets, _recentDeflections, _recentGuardedHits, _repeatedTargetDamageStates, _sameTargetHostileAbilityHitCounts, _sameTargetPressureStates, _sourceStatusAutoAttackCycleCounts, _statTriggerCooldowns, _stealthOpeningWindows
+delayed run
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, StatAdjustmentRefreshEvent, Invalid)
+delayed run
+GuiRefreshPublisher.PublishRefreshEvent(Defender, StatAdjustmentRefreshEvent, Invalid)
+== step 2 tables before exit of the attacker
+table _abilityStaminaCosts: [(11, ), (22, ), (33, ), (66, )]
+table _areaAbilityTargetHitSequences: [(11, 22), (22, 11), (22, 33), (33, 22), (33, 66), (66, 33)]
+table _attackSwingDebts: [Ally, Attacker, Defender, Other]
+table _attackSwingDebtsWithoutLimitedReduction: [Ally, Attacker, Defender, Other]
+table _autoAttackCycleCounts: [Ally, Attacker, Defender, Other]
+table _autoAttackCycleCriticalCounts: [Ally, Attacker, Defender, Other]
+table _containmentNormalizationTargets: [Ally, Attacker, Defender, Other]
+table _criticalHitSequenceStates: [Ally, Attacker, Defender, Other]
+table _damageDerivedHealingStates: [Ally, Attacker, Defender, Other]
+table _defeatedEnemyHealingBudgets: [Ally, Attacker, Defender, Other]
+table _firstCombatAttackConsumed: [Ally, Attacker, Defender, Other]
+table _firstHostileAbilityHitCounts: [Ally, Attacker, Defender, Other]
+table _hostileAbilitySequenceStates: [Ally, Attacker, Defender, Other]
+table _lastAttackActivity: [Ally, Attacker, Defender, Other]
+table _lastCombatAbilityUse: [Ally, Attacker, Defender, Other]
+table _lastCombatActivity: [Ally, Attacker, Defender, Other]
+table _lastHostileAbilityAttemptActivity: [Ally, Attacker, Defender, Other]
+table _lastHostileIncomingActivity: [Ally, Attacker, Defender, Other]
+table _meleeAutoAttackCycleCounts: [Ally, Attacker, Defender, Other]
+table _meleeRepeatedTargetDamageStates: [Ally, Attacker, Defender, Other]
+table _modifiers: [Ally, Attacker, Defender, Other]
+table _passiveDamageHealingBudgets: [Ally, Attacker, Defender, Other]
+table _pendingSuppressionAbilityUses: [(11, 22), (22, 11), (22, 33), (33, 22), (33, 66), (66, 33)]
+table _rangedRepeatedTargetDamageStates: [Ally, Attacker, Defender, Other]
+table _recentDamageTaken: [Ally, Attacker, Defender, Other]
+table _recentDamageTargets: [(11, 22), (22, 11), (22, 33), (33, 22), (33, 66), (66, 33)]
+table _recentDeflections: [(11, None), (22, None), (33, None), (66, None)]
+table _recentGuardedHits: [Ally, Attacker, Defender, Other]
+table _repeatedTargetDamageStates: [Ally, Attacker, Defender, Other]
+table _sameTargetHostileAbilityHitCounts: [(11, 22), (22, 11), (22, 33), (33, 22), (33, 66), (66, 33)]
+table _sameTargetPressureStates: [Ally, Attacker, Defender, Other]
+table _sourceStatusAutoAttackCycleCounts: [(11, 22, None), (22, 11, None), (22, 33, None), (33, 22, None), (33, 66, None), (66, 33, None)]
+table _statTriggerCooldowns: [(11, Invalid), (22, Invalid), (33, Invalid), (66, Invalid)]
+table _stealthOpeningWindows: [Ally, Attacker, Defender, Other]
+== step 3 exit of the attacker
+Resources.ForgetResourceTriggerState(Attacker)
+Activity.ForgetActivityState(Attacker)
+DamageTaken.ForgetDamageTakenState(Attacker)
+Suppression.ForgetSuppressionState(Attacker)
+Stat.GetStatAdjustment(Attacker, RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment)
+StatusEffect.RemoveStatusEffect(Attacker, OverwatchStatusEffect, False, True)
+Stat.GetStatAdjustment(Defender, RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment)
+StatusEffect.RemoveStatusEffect(Defender, OverwatchStatusEffect, False, True)
+Activation.ForgetActivationState(Attacker)
+HitEffects.ForgetHitEffectState(Attacker)
+Impact.ForgetImpactState(Attacker)
+Activity.ForgetOpeningActivityState(Attacker)
+Resources.ForgetAbilityStaminaCostState(Attacker)
+AttackTiming.ForgetAttackTimingState(Attacker)
+DamageModifiers.ForgetDamageModifierState(Attacker)
+StatusEffect.RemoveStatusEffect(Attacker, SpottersRhythmStatusEffect, Attacker, False, True)
+TemporaryStatModifier.Clear(Attacker)
+Engine.DelayCommand(0)
+delayed run
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, StatAdjustmentRefreshEvent, Invalid)
+== step 4 tables after exit of the attacker
+table _abilityStaminaCosts: [(22, ), (33, ), (66, )]
+table _areaAbilityTargetHitSequences: [(22, 33), (33, 22), (33, 66), (66, 33)]
+table _attackSwingDebts: [Ally, Defender, Other]
+table _attackSwingDebtsWithoutLimitedReduction: [Ally, Defender, Other]
+table _autoAttackCycleCounts: [Ally, Defender, Other]
+table _autoAttackCycleCriticalCounts: [Ally, Defender, Other]
+table _containmentNormalizationTargets: [Ally, Attacker, Defender, Other]
+table _criticalHitSequenceStates: [Ally, Defender, Other]
+table _damageDerivedHealingStates: [Ally, Attacker, Defender, Other]
+table _defeatedEnemyHealingBudgets: [Ally, Defender, Other]
+table _firstCombatAttackConsumed: [Ally, Defender, Other]
+table _firstHostileAbilityHitCounts: [Ally, Defender, Other]
+table _hostileAbilitySequenceStates: [Ally, Defender, Other]
+table _lastAttackActivity: [Ally, Defender, Other]
+table _lastCombatAbilityUse: [Ally, Defender, Other]
+table _lastCombatActivity: [Ally, Defender, Other]
+table _lastHostileAbilityAttemptActivity: [Ally, Defender, Other]
+table _lastHostileIncomingActivity: [Ally, Defender, Other]
+table _meleeAutoAttackCycleCounts: [Ally, Defender, Other]
+table _meleeRepeatedTargetDamageStates: [Ally, Defender, Other]
+table _modifiers: [Ally, Defender, Other]
+table _passiveDamageHealingBudgets: [Ally, Defender, Other]
+table _pendingSuppressionAbilityUses: [(33, 22), (33, 66), (66, 33)]
+table _rangedRepeatedTargetDamageStates: [Ally, Defender, Other]
+table _recentDamageTaken: [Ally, Defender, Other]
+table _recentDamageTargets: [(22, 33), (33, 22), (33, 66), (66, 33)]
+table _recentDeflections: [(22, None), (33, None), (66, None)]
+table _recentGuardedHits: [Ally, Defender, Other]
+table _repeatedTargetDamageStates: [Ally, Defender, Other]
+table _sameTargetHostileAbilityHitCounts: [(22, 33), (33, 22), (33, 66), (66, 33)]
+table _sameTargetPressureStates: [Ally, Defender, Other]
+table _sourceStatusAutoAttackCycleCounts: [(22, 33, None), (33, 22, None), (33, 66, None), (66, 33, None)]
+table _statTriggerCooldowns: [(22, Invalid), (33, Invalid), (66, Invalid)]
+table _stealthOpeningWindows: [Ally, Defender, Other]
+== step 5 populate: death of the defender
+Engine.DelayCommand(0)
+Engine.DelayCommand(0)
+filled _abilityStaminaCosts, _areaAbilityTargetHitSequences, _attackSwingDebts, _attackSwingDebtsWithoutLimitedReduction, _autoAttackCycleCounts, _autoAttackCycleCriticalCounts, _containmentNormalizationTargets, _criticalHitSequenceStates, _damageDerivedHealingStates, _defeatedEnemyHealingBudgets, _firstCombatAttackConsumed, _firstHostileAbilityHitCounts, _hostileAbilitySequenceStates, _lastAttackActivity, _lastCombatAbilityUse, _lastCombatActivity, _lastHostileAbilityAttemptActivity, _lastHostileIncomingActivity, _meleeAutoAttackCycleCounts, _meleeRepeatedTargetDamageStates, _modifiers, _passiveDamageHealingBudgets, _pendingSuppressionAbilityUses, _rangedRepeatedTargetDamageStates, _recentDamageTaken, _recentDamageTargets, _recentDeflections, _recentGuardedHits, _repeatedTargetDamageStates, _sameTargetHostileAbilityHitCounts, _sameTargetPressureStates, _sourceStatusAutoAttackCycleCounts, _statTriggerCooldowns, _stealthOpeningWindows
+delayed run
+GuiRefreshPublisher.PublishRefreshEvent(Attacker, StatAdjustmentRefreshEvent, Invalid)
+delayed run
+GuiRefreshPublisher.PublishRefreshEvent(Defender, StatAdjustmentRefreshEvent, Invalid)
+== step 6 tables before death of the defender
+table _abilityStaminaCosts: [(11, ), (22, ), (33, ), (66, )]
+table _areaAbilityTargetHitSequences: [(11, 22), (22, 11), (22, 33), (33, 22), (33, 66), (66, 33)]
+table _attackSwingDebts: [Ally, Attacker, Defender, Other]
+table _attackSwingDebtsWithoutLimitedReduction: [Ally, Attacker, Defender, Other]
+table _autoAttackCycleCounts: [Ally, Attacker, Defender, Other]
+table _autoAttackCycleCriticalCounts: [Ally, Attacker, Defender, Other]
+table _containmentNormalizationTargets: [Ally, Attacker, Defender, Other]
+table _criticalHitSequenceStates: [Ally, Attacker, Defender, Other]
+table _damageDerivedHealingStates: [Ally, Attacker, Defender, Other]
+table _defeatedEnemyHealingBudgets: [Ally, Attacker, Defender, Other]
+table _firstCombatAttackConsumed: [Ally, Attacker, Defender, Other]
+table _firstHostileAbilityHitCounts: [Ally, Attacker, Defender, Other]
+table _hostileAbilitySequenceStates: [Ally, Attacker, Defender, Other]
+table _lastAttackActivity: [Ally, Attacker, Defender, Other]
+table _lastCombatAbilityUse: [Ally, Attacker, Defender, Other]
+table _lastCombatActivity: [Ally, Attacker, Defender, Other]
+table _lastHostileAbilityAttemptActivity: [Ally, Attacker, Defender, Other]
+table _lastHostileIncomingActivity: [Ally, Attacker, Defender, Other]
+table _meleeAutoAttackCycleCounts: [Ally, Attacker, Defender, Other]
+table _meleeRepeatedTargetDamageStates: [Ally, Attacker, Defender, Other]
+table _modifiers: [Ally, Attacker, Defender, Other]
+table _passiveDamageHealingBudgets: [Ally, Attacker, Defender, Other]
+table _pendingSuppressionAbilityUses: [(11, 22), (22, 11), (22, 33), (33, 22), (33, 66), (66, 33)]
+table _rangedRepeatedTargetDamageStates: [Ally, Attacker, Defender, Other]
+table _recentDamageTaken: [Ally, Attacker, Defender, Other]
+table _recentDamageTargets: [(11, 22), (22, 11), (22, 33), (33, 22), (33, 66), (66, 33)]
+table _recentDeflections: [(11, None), (22, None), (33, None), (66, None)]
+table _recentGuardedHits: [Ally, Attacker, Defender, Other]
+table _repeatedTargetDamageStates: [Ally, Attacker, Defender, Other]
+table _sameTargetHostileAbilityHitCounts: [(11, 22), (22, 11), (22, 33), (33, 22), (33, 66), (66, 33)]
+table _sameTargetPressureStates: [Ally, Attacker, Defender, Other]
+table _sourceStatusAutoAttackCycleCounts: [(11, 22, None), (22, 11, None), (22, 33, None), (33, 22, None), (33, 66, None), (66, 33, None)]
+table _statTriggerCooldowns: [(11, Invalid), (22, Invalid), (33, Invalid), (66, Invalid)]
+table _stealthOpeningWindows: [Ally, Attacker, Defender, Other]
+== step 7 death of the defender, killed by the other
+Recorder.BeginAttribution(Other, OnKill, null, 0, 0)
+StatusEffect.GetCreatureStatusEffects(Defender)
+StatusEffect.HasStatusEffectCategory(Defender, Bleeding)
+Stat.GetStatAdjustment(Other, DefeatedEnemyStaminaRestore)
+Stat.GetStatAdjustment(Other, DefeatedEnemyFPRestore)
+Stat.GetStatAdjustment(Other, DefeatedEnemyHPPercentRestore)
+Stat.GetStatAdjustment(Other, DefeatedEnemyAttackPercentAdjustment)
+Stat.GetStatAdjustment(Other, DefeatedEnemyAttackDurationSeconds)
+Stat.GetStatAdjustment(Other, DefeatedEnemyAttackDelayReductionPercent)
+Stat.GetStatAdjustment(Other, DefeatedEnemyAttackDelayReductionDurationSeconds)
+Stat.GetStatAdjustment(Other, DefeatedEnemyNearbyAllyPhysicalDefensePercentAdjustment)
+Stat.GetStatAdjustment(Other, DefeatedEnemyNearbyAllyPhysicalDefenseDurationSeconds)
+Stat.GetStatAdjustment(Other, HeavyVibrobladeOffenseSoulAscension)
+Resources.ForgetResourceTriggerState(Defender)
+Activity.ForgetActivityState(Defender)
+DamageTaken.ForgetDamageTakenState(Defender)
+Suppression.ForgetSuppressionState(Defender)
+Stat.GetStatAdjustment(Defender, RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment)
+StatusEffect.RemoveStatusEffect(Defender, OverwatchStatusEffect, False, True)
+Stat.GetStatAdjustment(Attacker, RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment)
+StatusEffect.RemoveStatusEffect(Attacker, OverwatchStatusEffect, False, True)
+Stat.GetStatAdjustment(Other, RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment)
+StatusEffect.RemoveStatusEffect(Other, OverwatchStatusEffect, False, True)
+Activation.ForgetActivationState(Defender)
+HitEffects.ForgetHitEffectState(Defender)
+Impact.ForgetImpactState(Defender)
+Activity.ForgetOpeningActivityState(Defender)
+Resources.ForgetAbilityStaminaCostState(Defender)
+AttackTiming.ForgetAttackTimingState(Defender)
+DamageModifiers.ForgetDamageModifierState(Defender)
+StatusEffect.RemoveStatusEffect(Defender, SpottersRhythmStatusEffect, Defender, False, True)
+TemporaryStatModifier.Clear(Defender)
+Engine.DelayCommand(0)
+delayed run
+GuiRefreshPublisher.PublishRefreshEvent(Defender, StatAdjustmentRefreshEvent, Invalid)
+== step 8 tables after death of the defender
+table _abilityStaminaCosts: [(11, ), (33, ), (66, )]
+table _areaAbilityTargetHitSequences: [(33, 66), (66, 33)]
+table _attackSwingDebts: [Ally, Attacker, Other]
+table _attackSwingDebtsWithoutLimitedReduction: [Ally, Attacker, Other]
+table _autoAttackCycleCounts: [Ally, Attacker, Other]
+table _autoAttackCycleCriticalCounts: [Ally, Attacker, Other]
+table _containmentNormalizationTargets: [Ally, Attacker, Defender, Other]
+table _criticalHitSequenceStates: [Ally, Attacker, Other]
+table _damageDerivedHealingStates: [Ally, Attacker, Defender, Other]
+table _defeatedEnemyHealingBudgets: [Ally, Attacker, Other]
+table _firstCombatAttackConsumed: [Ally, Attacker, Other]
+table _firstHostileAbilityHitCounts: [Ally, Attacker, Other]
+table _hostileAbilitySequenceStates: [Ally, Attacker, Other]
+table _lastAttackActivity: [Ally, Attacker, Other]
+table _lastCombatAbilityUse: [Ally, Attacker, Other]
+table _lastCombatActivity: [Ally, Attacker, Other]
+table _lastHostileAbilityAttemptActivity: [Ally, Attacker, Other]
+table _lastHostileIncomingActivity: [Ally, Attacker, Other]
+table _meleeAutoAttackCycleCounts: [Ally, Attacker, Other]
+table _meleeRepeatedTargetDamageStates: [Ally, Attacker, Other]
+table _modifiers: [Ally, Attacker, Other]
+table _passiveDamageHealingBudgets: [Ally, Attacker, Other]
+table _pendingSuppressionAbilityUses: [(66, 33)]
+table _rangedRepeatedTargetDamageStates: [Ally, Attacker, Other]
+table _recentDamageTaken: [Ally, Attacker, Other]
+table _recentDamageTargets: [(33, 66), (66, 33)]
+table _recentDeflections: [(11, None), (33, None), (66, None)]
+table _recentGuardedHits: [Ally, Attacker, Other]
+table _repeatedTargetDamageStates: [Ally, Attacker, Other]
+table _sameTargetHostileAbilityHitCounts: [(33, 66), (66, 33)]
+table _sameTargetPressureStates: [Ally, Attacker, Other]
+table _sourceStatusAutoAttackCycleCounts: [(33, 66, None), (66, 33, None)]
+table _statTriggerCooldowns: [(11, Invalid), (33, Invalid), (66, Invalid)]
+table _stealthOpeningWindows: [Ally, Attacker, Other]
+== step 9 exit of a creature that holds nothing
+Resources.ForgetResourceTriggerState(Master)
+Activity.ForgetActivityState(Master)
+DamageTaken.ForgetDamageTakenState(Master)
+Suppression.ForgetSuppressionState(Master)
+Activation.ForgetActivationState(Master)
+HitEffects.ForgetHitEffectState(Master)
+Impact.ForgetImpactState(Master)
+Activity.ForgetOpeningActivityState(Master)
+Resources.ForgetAbilityStaminaCostState(Master)
+AttackTiming.ForgetAttackTimingState(Master)
+DamageModifiers.ForgetDamageModifierState(Master)
+StatusEffect.RemoveStatusEffect(Master, SpottersRhythmStatusEffect, Master, False, True)
+TemporaryStatModifier.Clear(Master)

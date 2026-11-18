@@ -187,6 +187,16 @@ internal sealed class DMPossessionHarness
             .ToFullString();
 
     /// <summary>
+    /// As <see cref="InstanceMethod(string, string)"/> for a service whose code lives in several part files: the method is
+    /// found in whichever of the already parsed files declares it.
+    /// </summary>
+    public static string InstanceMethod(IEnumerable<SyntaxNode> roots, string name) =>
+        MakeStatic(roots.SelectMany(root => root.DescendantNodes().OfType<MethodDeclarationSyntax>())
+                .Single(method => method.Identifier.ValueText == name)
+                .WithAttributeLists(default))
+            .ToFullString();
+
+    /// <summary>
     /// Returns the sources of the methods of a converted service's instance class that <paramref name="select"/> accepts,
     /// as static methods, for a name with overloads.
     /// </summary>

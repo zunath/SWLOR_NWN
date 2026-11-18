@@ -1,0 +1,36 @@
+RecordingStarted	{"type":"recording_started","ts_ms":1700000000123,"frame":1,"label":"fight 1","area_name":"The Cantina","area_resref":"cantina_01","started_utc":"2023-11-14T22:13:20.1230000Z"}
+RecordingStopped	{"type":"recording_stopped","ts_ms":1700000090456,"frame":2210,"reason":"stopped by DM","events":412}
+Participant	{"type":"participant","ts_ms":1700000000200,"frame":1,"id":3,"name":"Zeb Orrelios","player":true,"resref":"pc_resref"}
+AbilityCast	{"type":"ability_cast","ts_ms":1700000001000,"frame":20,"caster":3,"target":4,"location":{"x":10.13,"y":-3.5,"z":0},"ability":"Burst Fire","feat_id":101,"feat":"WeaponFocus_Longbow","rank":2,"activation":"casted","delay_s":1.5,"toggled_off":true}
+AbilityQueued	{"type":"ability_queued","ts_ms":1700000001100,"frame":22,"caster":3,"target":4,"location":{"x":1,"y":2,"z":3},"ability":"Burst Fire","feat_id":101,"feat":"WeaponFocus_Longbow","rank":2}
+AbilityDenied	{"type":"ability_denied","ts_ms":1700000001200,"frame":24,"caster":3,"target":4,"ability":"Burst Fire","feat_id":101,"feat":"WeaponFocus_Longbow","rank":2,"reason":"Not enough FP","stage":"completion"}
+AbilityInterrupted	{"type":"ability_interrupted","ts_ms":1700000001300,"frame":26,"caster":3,"ability":"Burst Fire","feat_id":101,"feat":"WeaponFocus_Longbow","rank":2,"cause":"damage","interrupted_by":4,"interrupted_by_kind":"ability","interrupted_by_name":"Stun Bolt"}
+AbilityImpact	{"type":"ability_impact","ts_ms":1700000001400,"frame":28,"caster":3,"target":4,"location":{"x":7,"y":9,"z":0},"ability":"Burst Fire","feat_id":101,"feat":"WeaponFocus_Longbow","rank":2,"targets_hit":5,"critical_hits":2,"damage_queued":144,"recurring":true}
+AbilityCost	{"type":"ability_cost","ts_ms":1700000001500,"frame":30,"caster":3,"ability":"Burst Fire","feat_id":101,"feat":"WeaponFocus_Longbow","rank":2,"fp":12,"stm":9}
+Attack	{"type":"attack","ts_ms":1700000001600,"frame":32,"attacker":3,"defender":4,"mode":"ability","ability":"Burst Fire","result":"critical","hit_chance":87}
+Damage	{"type":"damage","ts_ms":1700000001700,"frame":34,"source":3,"target":4,"source_kind":"ability","source_name":"Burst Fire","feat":"WeaponFocus_Longbow","damage":{"physical":31,"force":7,"fire":5,"poison":4,"electrical":3,"ice":2,"sonic":1,"other":6},"total":59,"hp_lost":200,"overkill":20,"temp_hp_absorbed":20,"hp_before":200,"hp_after":-20,"temp_hp_before":30,"temp_hp_after":10,"max_hp":250,"engine_applied":true}
+TemporaryHitPointsAbsorbed	{"type":"temp_hp_absorb","ts_ms":1700000001800,"frame":36,"attacker":3,"target":4,"effect_key":"BarrierEffect","amount":40,"granted_by":5,"granted_kind":"ability","granted_name":"Barrier"}
+Healing	{"type":"heal","ts_ms":1700000001900,"frame":38,"source":5,"target":4,"source_kind":"ability","source_name":"Field Medic","feat":"WeaponFocus_Longbow","requested":90,"effective":60,"overheal":30,"pvp_reduced":15,"hp_before":100,"hp_after":160,"max_hp":250}
+TemporaryHitPointsGranted	{"type":"temp_hp_grant","ts_ms":1700000002000,"frame":40,"source":5,"target":4,"source_kind":"stat_trigger","source_name":"Second Wind","effect_key":"SecondWindHP","amount":60,"duration_s":12.5}
+Resource	{"type":"resource","ts_ms":1700000002100,"frame":42,"creature":3,"resource":"stm","delta":-14,"after":86,"item":"stim_pack","reason":"item","reason_name":"Stim Pack"}
+StatusApplied	{"type":"status_apply","ts_ms":1700000002200,"frame":44,"source":3,"target":4,"effect":"Bleeding","effect_type":"BleedingStatusEffect","ability":"Burst Fire","duration_s":9}
+StatusRefreshed	{"type":"status_refresh","ts_ms":1700000002300,"frame":46,"source":3,"target":4,"effect":"Bleeding","effect_type":"BleedingStatusEffect","ability":"Burst Fire","duration_s":9}
+StatusRemoved	{"type":"status_remove","ts_ms":1700000002400,"frame":48,"source":3,"target":4,"effect":"Bleeding","effect_type":"BleedingStatusEffect","reason":"expired"}
+Death	{"type":"death","ts_ms":1700000002500,"frame":50,"target":4,"killer":3,"last_damage_source":5}
+Resurrection	{"type":"resurrection","ts_ms":1700000002600,"frame":52,"target":4,"caster":5,"source_kind":"ability","source_name":"Revive","feat":"WeaponFocus_Longbow"}
+Subdual	{"type":"subdual","ts_ms":1700000002700,"frame":54,"target":4,"subdued_by":3}
+Snapshot	{"type":"snapshot","ts_ms":1700000002800,"frame":56,"creature":3,"hp":180,"max_hp":250,"temp_hp":20,"fp":90,"max_fp":120,"stm":70,"max_stm":100,"in_combat":true,"dead":false}
+TemporaryHitPointsTrimmed	{"type":"temp_hp_trim","ts_ms":1700000002900,"frame":58,"target":4,"effect_key":"BarrierEffect","trimmed":15,"remaining":25,"granted_by":5,"granted_kind":"ability","granted_name":"Barrier"}
+variant AbilityCast without a location, not toggled, no feat	{"type":"ability_cast","ts_ms":5,"frame":1,"caster":3,"target":null,"ability":null,"feat":null,"rank":1,"activation":"weapon","delay_s":0,"toggled_off":false}
+variant AbilityDenied at activation with no reason	{"type":"ability_denied","ts_ms":6,"frame":2,"caster":null,"target":null,"ability":"Burst Fire","feat":null,"rank":1,"reason":null,"stage":"activation"}
+variant AbilityInterrupted by nobody	{"type":"ability_interrupted","ts_ms":7,"frame":3,"caster":3,"ability":"Burst Fire","feat":null,"rank":1,"cause":"moved","interrupted_by":null}
+variant AbilityInterrupted by a status effect	{"type":"ability_interrupted","ts_ms":8,"frame":4,"caster":3,"ability":"Burst Fire","feat_id":101,"feat":"WeaponFocus_Longbow","rank":1,"cause":"crowd_control","interrupted_by":4,"interrupted_by_kind":"status_effect","interrupted_by_name":"Stun"}
+variant Attack by an auto-attack, a miss	{"type":"attack","ts_ms":9,"frame":5,"attacker":3,"defender":4,"mode":"autoattack","result":"miss","hit_chance":12}
+variant Damage by an auto-attack, not engine applied, only physical	{"type":"damage","ts_ms":10,"frame":6,"source":null,"target":4,"source_kind":"autoattack","source_name":null,"damage":{"physical":12},"total":12,"hp_lost":12,"overkill":0,"temp_hp_absorbed":0,"hp_before":50,"hp_after":38,"temp_hp_before":0,"temp_hp_after":0,"max_hp":250,"engine_applied":false}
+variant Healing at full health	{"type":"heal","ts_ms":11,"frame":7,"source":null,"target":4,"source_kind":"regeneration","source_name":null,"requested":20,"effective":0,"overheal":20,"pvp_reduced":0,"hp_before":250,"hp_after":250,"max_hp":250}
+variant Resource without an item or a value after	{"type":"resource","ts_ms":12,"frame":8,"creature":3,"resource":"fp","delta":5,"reason":"rest","reason_name":null}
+variant StatusApplied permanent with no ability	{"type":"status_apply","ts_ms":13,"frame":9,"source":null,"target":4,"effect":"Armor Shell","effect_type":null,"ability":null,"duration_s":null}
+variant StatusRemoved replaced	{"type":"status_remove","ts_ms":14,"frame":10,"source":null,"target":4,"effect":"Armor Shell","effect_type":null,"reason":"replaced"}
+variant Participant that is a creature with no resref	{"type":"participant","ts_ms":15,"frame":11,"id":9,"name":"Sith Trooper","player":false}
+variant Resurrection by nobody	{"type":"resurrection","ts_ms":16,"frame":12,"target":4,"caster":null,"source_kind":"dm","source_name":null}
+variant Snapshot of a dead creature out of combat	{"type":"snapshot","ts_ms":17,"frame":13,"creature":9,"hp":0,"max_hp":100,"temp_hp":0,"fp":0,"max_fp":0,"stm":0,"max_stm":0,"in_combat":false,"dead":true}

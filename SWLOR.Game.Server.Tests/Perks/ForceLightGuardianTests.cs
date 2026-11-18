@@ -260,7 +260,7 @@ public class ForceLightGuardianTests
     {
         var root = FindRepositoryRoot();
         var combat = CombatSource.Read();
-        var death = File.ReadAllText((root / "SWLOR.Game.Server" / "Domain" / "Combat" / "DeathService.cs").FullName);
+        var death = DeathSource.Read();
 
         combat.Should().Contain("public static bool TryPreventFatalDamageAndGrantTemporaryHP(");
         combat.Should().Contain("var isDyingFallback = restoreToOneHP && currentHP <= 0;");

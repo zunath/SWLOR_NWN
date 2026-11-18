@@ -44,7 +44,7 @@ public class CombatRecorderServiceTests
     private readonly List<uint> _online = new();
     private string _directory = null!;
     private FakeNWScript _engine = null!;
-    private Probe _recorder = null!;
+    private RecorderProbe _recorder = null!;
     private FacadeContainer _facades = null!;
     private uint _killer;
     private uint _self;
@@ -115,7 +115,7 @@ public class CombatRecorderServiceTests
             db.With(new Player { Id = $"uuid-{player}" });
         var presence = ScriptedProxy.Create<IDMPresenceService>(out var presenceScript);
         presenceScript.On("IsControlledByDM", _ => false);
-        _recorder = new Probe(presence, db, _directory + "/");
+        _recorder = new RecorderProbe(presence, db, _directory + "/");
 
         _facades = new FacadeContainer(services =>
             services.Replace(ServiceDescriptor.Singleton<ICombatRecorderService>(_recorder)));
@@ -339,7 +339,7 @@ public class CombatRecorderServiceTests
     {
         var presence = ScriptedProxy.Create<IDMPresenceService>(out var script);
         script.On("IsControlledByDM", _ => true);
-        var recorder = new Probe(presence, new InMemoryDBService(), _directory + "/");
+        var recorder = new RecorderProbe(presence, new InMemoryDBService(), _directory + "/");
         recorder.Start(AreaOne, "dm", out _).Should().BeTrue();
 
         recorder.Stop("x", out _);
@@ -1262,81 +1262,4 @@ public class CombatRecorderServiceTests
         plain.CallLogDirectory();
     }
 
-    private sealed class PlainRecorder : CombatRecorderService
-    {
-        public PlainRecorder(IDMPresenceService presence, IDBService db)
-            : base(presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
-        {
-        }
-
-        public ulong CallFrame() => CurrentFrame();
-        public long CallMillis() => UnixTimeMilliseconds();
-        public DateTime CallUtcNow() => UtcNow();
-        public void CallWrite() => WriteLog(LogGroup.DM, "default seam");
-        public string CallLogDirectory() => GetLogDirectory();
-    }
-
-    private sealed class ScheduledTask : IDisposable
-    {
-        public ScheduledTask(Action action) => Action = action;
-        public Action Action { get; }
-        public bool Disposed { get; private set; }
-        public void Dispose() => Disposed = true;
-    }
-
-    private sealed class Probe : CombatRecorderService
-    {
-        private readonly string _logDirectory;
-
-        public Probe(IDMPresenceService presence, IDBService db, string logDirectory)
-            : base(presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
-        {
-            _logDirectory = logDirectory;
-        }
-
-        public int Hooks { get; private set; }
-        public Exception? HookFailure { get; set; }
-        public Dictionary<FeatType, AbilityDetail> Abilities { get; } = new();
-        public Dictionary<uint, AbilityImpactSummary> ActiveImpacts { get; } = new();
-        public Dictionary<uint, int> Fp { get; } = new();
-        public Dictionary<uint, int> Stamina { get; } = new();
-        public Dictionary<uint, int> HitPoints { get; } = new();
-        public Dictionary<uint, CombatRecordTemporaryHitPointPool[]> Pools { get; } = new();
-        public List<string> WriteLines { get; } = new();
-        public ScheduledTask? Scheduled { get; private set; }
-        public ulong Frame { get; set; }
-        public long Millis { get; set; } = 1_700_000_000_000;
-
-        protected override void InstallEffectHooks()
-        {
-            if (HookFailure != null)
-                throw HookFailure;
-            Hooks++;
-        }
-
-        protected override IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => Abilities;
-        protected override bool IsFeatRegistered(FeatType feat) => Abilities.ContainsKey(feat);
-        protected override AbilityDetail GetAbilityDetail(FeatType feat) => Abilities[feat];
-        protected override AbilityImpactSummary GetActiveAbilityImpactSummary(uint creature) => ActiveImpacts.GetValueOrDefault(creature)!;
-        protected override SkillType GetEquippedWeaponSkillType(uint creature) => SkillType.Lightsaber;
-        protected override int GetCurrentFP(uint creature, Player dbPlayer = null!) => Fp.GetValueOrDefault(creature, 11);
-        protected override int GetMaxFP(uint creature, Player dbPlayer = null!) => 22;
-        protected override int GetCurrentStamina(uint creature, Player dbPlayer = null!) => Stamina.GetValueOrDefault(creature, 33);
-        protected override int GetMaxStamina(uint creature, Player dbPlayer = null!) => 44;
-        protected override int GetTemporaryHitPoints(uint creature) => 7;
-        protected override int GetHitPointsExcludingTemporary(uint creature) => HitPoints.GetValueOrDefault(creature, 80);
-        protected override CombatRecordTemporaryHitPointPool[] CaptureTemporaryHitPointPools(uint creature) =>
-            Pools.GetValueOrDefault(creature)!;
-        protected override string GetLogDirectory() => _logDirectory;
-
-        protected override IDisposable ScheduleRepeating(Action task, TimeSpan schedule, TimeSpan delay)
-        {
-            Scheduled = new ScheduledTask(task);
-            return Scheduled;
-        }
-
-        protected override void WriteLog(LogGroup group, string details, bool printToConsole = false) => WriteLines.Add(details);
-        protected override ulong CurrentFrame() => Frame;
-        protected override long UnixTimeMilliseconds() => Millis;
-    }
 }

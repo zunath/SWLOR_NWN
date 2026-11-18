@@ -591,7 +591,7 @@ public class AIModelTests
     public void CreatureSpawn_UsesExistingCreatureEventScriptsWithoutBaseNwnCombatScripts()
     {
         var aiSource = CreaturesSource.Members("CreaturePhysicalAttacked", "CreatureSpawn").Replace("\r\n", "\n");
-        var enmitySource = ReadSource("SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs").Replace("\r\n", "\n");
+        var enmitySource = EnmitySource.Read().Replace("\r\n", "\n");
         var attackedScript = ReadSource("Module", "nss", "nw_c2_default5.nss").Replace("\r\n", "\n");
         var damagedScript = ReadSource("Module", "nss", "nw_c2_default6.nss").Replace("\r\n", "\n");
         var disturbedScript = ReadSource("Module", "nss", "nw_c2_default8.nss").Replace("\r\n", "\n");
@@ -667,7 +667,7 @@ public class AIModelTests
     [Test]
     public void NpcAttackReissue_UsesGuardedEnmityAttackBeforeReattacking()
     {
-        var enmitySource = ReadSource("SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs").Replace("\r\n", "\n");
+        var enmitySource = EnmitySource.Read().Replace("\r\n", "\n");
         var attackHighestIndex = enmitySource.IndexOf("public void AttackHighestEnmityTarget", StringComparison.Ordinal);
         var attackHighestBody = enmitySource.Substring(
             attackHighestIndex,
@@ -698,7 +698,7 @@ public class AIModelTests
     [Test]
     public void InvisibleTargets_AreSkippedByNpcDecisionsAndAttackReissue()
     {
-        var enmitySource = ReadSource("SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs").Replace("\r\n", "\n");
+        var enmitySource = EnmitySource.Read().Replace("\r\n", "\n");
         var weaponSource = ReadSource("SWLOR.Game.Server", "Feature", "AbilityDefinition",
             "WeaponActiveAbilityDefinitionBase.cs").Replace("\r\n", "\n");
         var issueBody = ExtractMethodBody(enmitySource, "public void IssueAttackCommand");

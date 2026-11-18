@@ -329,7 +329,7 @@ public class NPCChaseTests
     /// <summary>Compiles the actual production method bodies instead of maintaining test copies.</summary>
     private static string ExtractMethods(params string[] names) =>
         string.Join(Environment.NewLine,
-            names.Select(name => DMPossessionHarness.InstanceMethod("Domain/Combat/EnmityService.cs", name)));
+            names.Select(name => EnmitySource.InstanceMethod(name)));
 
     /// <summary>Finds this checkout's sources for both ordinary and isolated worktree test runs.</summary>
     private static string FindRoot()

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Rewrites DateTime.UtcNow to Clock.UtcNow and Environment.TickCount64 to Clock.TickCount64 in the files listed in
+    Rewrites DateTime.UtcNow to Clock.UtcNow, DateTimeOffset.UtcNow to new DateTimeOffset(Clock.UtcNow), and Environment.TickCount64 to Clock.TickCount64 in the files listed in
     tools/Refactor/ClockSeamFiles.txt, adding `using SWLOR.Game.Server.Core;` where a file needs it.
 
 .DESCRIPTION
@@ -82,6 +82,7 @@ namespace SwlorRefactor
     public sealed class ClockSeamRewriter
     {
         private static readonly Regex Utc = new Regex(@"\G(?:global::)?(?:System\.)?DateTime\.UtcNow\b", RegexOptions.CultureInvariant);
+        private static readonly Regex UtcOffset = new Regex(@"\G(?:global::)?(?:System\.)?DateTimeOffset\.UtcNow\b", RegexOptions.CultureInvariant);
         private static readonly Regex Tick = new Regex(@"\G(?:global::)?(?:System\.)?Environment\.TickCount64\b", RegexOptions.CultureInvariant);
         private static readonly Regex ClockRead = new Regex(@"\GClock\.(?:UtcNow|TickCount64)\b", RegexOptions.CultureInvariant);
 
@@ -166,6 +167,8 @@ namespace SwlorRefactor
             {
                 Match m = Utc.Match(_s, p);
                 if (m.Success) { _o.Append("Clock.UtcNow"); _i += m.Length; _utc++; return; }
+                m = UtcOffset.Match(_s, p);
+                if (m.Success) { _o.Append("new DateTimeOffset(Clock.UtcNow)"); _i += m.Length; _utc++; return; }
                 m = Tick.Match(_s, p);
                 if (m.Success) { _o.Append("Clock.TickCount64"); _i += m.Length; _tick++; return; }
                 if (ClockRead.Match(_s, p).Success) _clock = true;

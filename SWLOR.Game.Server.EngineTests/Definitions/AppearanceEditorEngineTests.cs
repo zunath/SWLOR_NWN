@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
+using SWLOR.Game.Server.Feature.AppearanceEditing;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -231,7 +232,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 nativeSkin = GetColor(civilian, ColorChannel.Skin);
                 savedTint = GetLocalInt(civilian, stateName);
-                editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 800, 900) };
+                editor = Content.Create<AppearanceEditorViewModel>();
+                editor.Geometry = new GuiRectangle(0, 0, 800, 900);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
                     new AppearanceEditorPayload(civilian), OBJECT_INVALID);
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(0, 0, 0), userGesture: false);
@@ -314,7 +316,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AssertActiveColorSwatch(ctx, editor, "Global" + channel + "Selected");
                     AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(layer, 35 + (int)channel),
                         $"{channel}: base swatch selection previews its own native dye");
-                    AssertPaletteRegion(ctx, (GuiRectangle)editor.GetType().GetProperty(regionName).GetValue(editor),
+                    AssertPaletteRegion(ctx, editor.GetBindingValue<GuiRectangle>(regionName),
                         35 + (int)channel, $"{channel}: base swatch region follows its native dye");
                     ctx.Assert(editor.IsPaletteSelectionVisible, $"{channel}: a palette colour is outlined.");
                     AssertPaletteOutline(ctx, editor, 35 + (int)channel, $"{channel}: palette outline");
@@ -329,7 +331,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         $"{part}: the body map highlights the selected slot.");
                     foreach (var (channel, layer) in channels)
                     {
-                        var source = (GuiRectangle)editor.GetType().GetProperty($"{target}{channel}Region").GetValue(editor);
+                        var source = editor.GetBindingValue<GuiRectangle>($"{target}{channel}Region");
                         var mirror = (GuiRectangle)editor.GetType().GetProperty($"SelectedPart{channel}Region").GetValue(editor);
                         ctx.Assert(source.X == mirror.X && source.Y == mirror.Y && source.Width == mirror.Width &&
                             source.Height == mirror.Height, $"{part}/{channel}: the part swatch mirrors its target region.");
@@ -349,8 +351,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 editor.OnSelectAppearance()();
                 editor.OnSelectEquipment()();
                 AssertActiveColorSwatch(ctx, editor, "GlobalLeather1Selected");
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Chest, AppearanceArmorColor.Cloth1)();
-                InvokePrivate(editor, "ResetArmorColorToInheritance", AppearanceEditorViewModel.ColorTarget.Chest, AppearanceArmorColor.Cloth1);
+                editor.OnClickColorTarget(AppearanceColorTarget.Chest, AppearanceArmorColor.Cloth1)();
+                InvokePrivate(editor, "ResetArmorColorToInheritance", AppearanceColorTarget.Chest, AppearanceArmorColor.Cloth1);
                 AssertActiveColorSwatch(ctx, editor, "ChestCloth1Selected");
             });
             ctx.SetResultDetail("Six base and six part swatch buttons serialized region, tint, custom, outline and code bindings; the definitions' captured base-swatch actions selected their native dyes, codes and palette outline. Selecting each of the 19 body-map slots mirrored its six target regions and codes into the part swatches, and all 19x6 native armor targets retained a picker, including Chest70. Seeded raw255/raw0/explicit0/explicit77 cases displayed inherited or explicit colors without armor writes. Headless coverage excludes mouse payload delivery and client rendering.");
@@ -459,12 +461,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     yield return descendant;
         }
 
-        private static PropertyInfo[] MaterialRegionProperties() => typeof(AppearanceEditorViewModel).GetProperties()
-            .Where(property => property.PropertyType == typeof(GuiRectangle) && property.Name.EndsWith("Region") &&
-                !property.Name.StartsWith("SelectedPart", StringComparison.Ordinal) &&
-                !property.Name.StartsWith("Body", StringComparison.Ordinal))
-            .ToArray();
-
         private static void AssertPaletteOutline(EngineTestContext ctx, AppearanceEditorViewModel editor, int colorId, string stage)
         {
             var left = AppearanceEditorViewModel.PaletteHeaderWidth + colorId % 16 * AppearanceEditorViewModel.PaletteCellWidth + 1f;
@@ -479,11 +475,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static void AssertActiveColorSwatch(EngineTestContext ctx, AppearanceEditorViewModel editor, string expected)
         {
             // The 120 Global and per-part material targets; the SelectedPart and Body swatches mirror them.
-            var selectionProperties = MaterialRegionProperties()
-                .Select(property => typeof(AppearanceEditorViewModel).GetProperty(property.Name[..^"Region".Length] + "Selected"))
-                .ToArray();
-            ctx.AssertEqual(120, selectionProperties.Length, "Every material target exposes a glow binding");
-            var active = selectionProperties.Where(property => (bool)property.GetValue(editor)).Select(property => property.Name).ToArray();
+            var selectionNames = ArmorColorRegionCatalog.Entries.Select(swatch => swatch.SelectedName).ToArray();
+            ctx.AssertEqual(120, selectionNames.Length, "Every material target exposes a glow binding");
+            var active = selectionNames.Where(name => editor.GetBindingValue<bool>(name)).ToArray();
             ctx.AssertEqual(1, active.Length, "Exactly one material target is highlighted");
             ctx.AssertEqual(expected, active.Single(), "The highlight moves to the selected target and channel");
         }
@@ -691,7 +685,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var item = GetItemInSlot(InventorySlot.Chest, civilian);
                 SeedInheritance(item);
                 ConfigureRgbArmor(item);
-                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 800, 900) };
+                var editor = Content.Create<AppearanceEditorViewModel>();
+                editor.Geometry = new GuiRectangle(0, 0, 800, 900);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
                     new AppearanceEditorPayload(civilian), OBJECT_INVALID);
                 editor.OnSelectEquipment()();
@@ -724,13 +719,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(new TintMapColor(1, 170, 43).ToStoredValue(), GetLocalInt(item, stateName), "A newer typed draft wins");
 
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(240, 12, 91), flushPicker: false);
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Cloth1)();
                 var clothName = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1);
                 var cloth = GetLocalInt(item, clothName);
                 InvokePrivate(editor, "FlushPendingPickerColor");
                 ctx.AssertEqual(cloth, GetLocalInt(item, clothName), "A pending drag cannot recolor a newly selected channel");
 
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
                 var queuedPartColor = new TintMapColor(37, 121, 209);
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor),
                     new GuiColor(37, 121, 209), flushPicker: false);
@@ -761,7 +756,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var before = ReadArmor(civilian);
                 var editor = BindWithoutClient(civilian);
                 editor.OnSelectEquipment()();
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)();
                 ctx.Assert(editor.IsCustomTintEditable, "The reported ordinary armor layer supports RGB.");
                 var green = new TintMapColor(205, 228, 197);
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(205, 228, 197));
@@ -770,31 +765,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var forearm = TintMapModelResolver.GetCurrentSelections(civilian).Single(selection =>
                     selection.ArmorPart == AppearanceArmor.LeftForearm && selection.Material.Layers.Contains(TintMapLayerType.Leather2));
                 AssertTintInput(ctx, editor, green, "Reported pale green");
-                AssertSwatchRgb(ctx, editor.GlobalLeather2Tint, green, "Global swatch");
-                ctx.Assert(editor.GlobalLeather2Custom, "Global RGB enables the preview fill over the native preset.");
+                AssertSwatchRgb(ctx, editor.GetBindingValue<GuiColor>("GlobalLeather2Tint"), green, "Global swatch");
+                ctx.Assert(editor.GetBindingValue<bool>("GlobalLeather2Custom"), "Global RGB enables the preview fill over the native preset.");
                 TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, green);
                 AssertArmorUnchanged(ctx, before, civilian, "Global RGB leaves item identity, models, native dyes and markers unchanged");
 
                 editor = BindWithoutClient(civilian);
                 editor.OnSelectEquipment()();
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)();
                 AssertTintInput(ctx, editor, green, "New editor loads persisted RGB without a session cache");
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
                 AssertTintInput(ctx, editor, green, "Inherited part previews exact global RGB");
-                AssertInheritedRegion(ctx, editor.LeftForearmLeather2Region, "Inherited RGB part has an empty swatch");
+                AssertInheritedRegion(ctx, editor.GetBindingValue<GuiRectangle>("LeftForearmLeather2Region"), "Inherited RGB part has an empty swatch");
                 var partColor = new TintMapColor(1, 17, 91);
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(200, 17, 91));
                 ApplyWatchedValue(editor, nameof(editor.CustomTintRed), "1");
                 InvokePrivate(editor, "CommitCustomTintComponents");
                 AssertTintInput(ctx, editor, partColor, "R1 remains one");
-                AssertSwatchRgb(ctx, editor.LeftForearmLeather2Tint, partColor, "Part swatch");
-                ctx.Assert(editor.LeftForearmLeather2Custom, "The explicit RGB override has a filled swatch.");
+                AssertSwatchRgb(ctx, editor.GetBindingValue<GuiColor>("LeftForearmLeather2Tint"), partColor, "Part swatch");
+                ctx.Assert(editor.GetBindingValue<bool>("LeftForearmLeather2Custom"), "The explicit RGB override has a filled swatch.");
                 TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, partColor);
                 var laterGlobal = new TintMapColor(13, 149, 71);
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)();
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(13, 149, 71));
                 TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, partColor);
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
                 AssertTintInput(ctx, editor, partColor, "Global change preserves explicit part RGB");
                 using (var publications = new BindingPublications(editor))
                 {
@@ -806,24 +801,24 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
                 editor.CustomTintRed = "120";
                 InvokePrivate(editor, "ResetArmorColorToInheritance",
-                    AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2);
+                    AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2);
                 AssertTintInput(ctx, editor, laterGlobal, "Inheritance reset supersedes pending RGB text");
                 TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, laterGlobal);
                 editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(120, 30, 60);
                 InvokePrivate(editor, "ResetArmorColorToInheritance",
-                    AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2);
+                    AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2);
                 InvokePrivate(editor, "FlushPendingPickerColor");
                 AssertTintInput(ctx, editor, laterGlobal, "Inheritance reset supersedes pending picker input");
                 TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, laterGlobal);
                 editor.OnClickColorPalette(77)();
                 AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(TintMapLayerType.Leather2, 77), "Part preset opts out of global RGB");
-                ctx.Assert(!editor.LeftForearmLeather2Custom, "Preset replaces the part RGB fill.");
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                ctx.Assert(!editor.GetBindingValue<bool>("LeftForearmLeather2Custom"), "Preset replaces the part RGB fill.");
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)();
                 AssertTintInput(ctx, editor, laterGlobal, "Part preset retains global RGB");
                 editor.OnClickColorPalette(66)();
                 ctx.AssertEqual(0, GetLocalInt(outfit, globalName), "Global preset clears persisted RGB");
-                ctx.Assert(!editor.GlobalLeather2Custom, "Global swatch returns to preset mode.");
+                ctx.Assert(!editor.GetBindingValue<bool>("GlobalLeather2Custom"), "Global swatch returns to preset mode.");
 
                 editor.OnSelectAppearance()();
                 var originalSkin = GetColor(civilian, ColorChannel.Skin);
@@ -836,7 +831,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                 EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 187);
                 editor.OnSelectEquipment()();
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Cloth1)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Robe, AppearanceArmorColor.Cloth1)();
                 ctx.Assert(editor.IsCustomTintAvailable && editor.IsCustomTintEditable,
                     "Converted robes expose the same exact RGB editor as other armor parts.");
                 var beforeRobe = ReadArmor(civilian);
@@ -848,14 +843,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     new TintMapColor(205, 228, 197));
                 ctx.Assert((int)GetPhenoType(civilian) >= 34, "RGB installs the robe-bearing body root.");
 
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Cloth1)();
                 using var swatchPublications = new BindingPublications(editor);
                 var purple = new TintMapColor(100, 7, 180);
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(100, 7, 180));
-                AssertSwatchRgb(ctx, editor.GlobalCloth1Tint, purple, "Reported purple global Cloth1 preview");
-                ctx.Assert(editor.GlobalCloth1Custom, "Custom purple replaces the gold preset preview.");
-                ctx.Assert(swatchPublications.Contains(nameof(editor.GlobalCloth1Tint)) &&
-                           swatchPublications.Contains(nameof(editor.GlobalCloth1Custom)),
+                AssertSwatchRgb(ctx, editor.GetBindingValue<GuiColor>("GlobalCloth1Tint"), purple, "Reported purple global Cloth1 preview");
+                ctx.Assert(editor.GetBindingValue<bool>("GlobalCloth1Custom"), "Custom purple replaces the gold preset preview.");
+                ctx.Assert(swatchPublications.Contains("GlobalCloth1Tint") &&
+                           swatchPublications.Contains("GlobalCloth1Custom"),
                     "The client receives both the exact color and the enabled RGB fill.");
             });
             ctx.SetResultDetail("Reported pale green and R1 persisted exactly through native scalar material uploads, fresh editor hydration, inheritance, explicit part overrides and reset/preset actions. RGB leaves equipped item identity and native dyes unchanged. Headless tests exclude client NUI event transport and rendering.");
@@ -895,28 +890,28 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             selection.ArmorPart == AppearanceArmor.Robe && selection.Material.Layers.Contains(layer));
                         ctx.AssertEqual(gender == Gender.Male ? "pmh0_robe003" : "pfh0_robe003", robe.ModelResref,
                             "Stock robe selection resolves the correct sex and keeps its base model after phenotype changes");
-                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                        editor.OnClickColorTarget(AppearanceColorTarget.Global, channel)();
                         ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(100, 7, 180));
                         TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, layer, new TintMapColor(100, 7, 180));
                         ctx.Assert((int)GetPhenoType(civilian) >= 34, "Stock robe RGB activates the converted body root");
                         AssertArmorUnchanged(ctx, before, civilian, "Global RGB preserves equipped item and native appearance");
 
-                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, channel)();
+                        editor.OnClickColorTarget(AppearanceColorTarget.Robe, channel)();
                         ctx.Assert(editor.IsCustomTintEditable, $"Robe3/{channel} exposes individual RGB editing");
                         ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(205, 228, 197));
                         TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, layer, new TintMapColor(205, 228, 197));
                         var prefix = "Robe" + channel;
-                        ctx.Assert((bool)editor.GetType().GetProperty(prefix + "Custom").GetValue(editor), "Individual robe RGB has a preview");
-                        AssertSwatchRgb(ctx, (GuiColor)editor.GetType().GetProperty(prefix + "Tint").GetValue(editor),
+                        ctx.Assert(editor.GetBindingValue<bool>(prefix + "Custom"), "Individual robe RGB has a preview");
+                        AssertSwatchRgb(ctx, editor.GetBindingValue<GuiColor>(prefix + "Tint"),
                             new TintMapColor(205, 228, 197), "Individual robe preview matches the applied value");
-                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                        editor.OnClickColorTarget(AppearanceColorTarget.Global, channel)();
                         ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(167, 219, 3));
                         TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, layer, new TintMapColor(205, 228, 197));
-                        InvokePrivate(editor, "ResetArmorColorToInheritance", AppearanceEditorViewModel.ColorTarget.Robe, channel);
+                        InvokePrivate(editor, "ResetArmorColorToInheritance", AppearanceColorTarget.Robe, channel);
                         TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, layer, new TintMapColor(167, 219, 3));
                         editor = BindWithoutClient(civilian);
                         editor.OnSelectEquipment()();
-                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, channel)();
+                        editor.OnClickColorTarget(AppearanceColorTarget.Robe, channel)();
                         AssertTintInput(ctx, editor, new TintMapColor(167, 219, 3), "Reopening retains inherited stock robe RGB");
                     }
                 });
@@ -967,7 +962,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 $"{stage}: the picker must not be published before the draft commits.");
         }
 
-        private static void ApplyWatchedValue(AppearanceEditorViewModel editor, string propertyName, object value, Action beforeCallback = null,
+        internal static void ApplyWatchedValue(AppearanceEditorViewModel editor, string propertyName, object value, Action beforeCallback = null,
             bool flushPicker = true, bool userGesture = true)
         {
             if (userGesture && propertyName == nameof(editor.SelectedTintColor))
@@ -997,11 +992,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 InvokePrivate(editor, "FlushPendingPickerColor");
         }
 
-        private static void InvokePrivate(AppearanceEditorViewModel editor, string method, params object[] arguments)
+        /// <summary>The service instance the container injected into the editor.</summary>
+        internal static object ServiceOf(AppearanceEditorViewModel editor, Type serviceType) =>
+            editor.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic)
+                .Single(property => property.PropertyType == serviceType).GetValue(editor);
+
+        internal static void InvokePrivate(AppearanceEditorViewModel editor, string method, params object[] arguments)
         {
-            var target = editor.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)
-                ?? throw new InvalidOperationException($"Appearance editor method {method} was not found.");
-            try { target.Invoke(editor, arguments); }
+            var target = editor.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic);
+            var receiver = (object)editor;
+            if (target == null)
+            {
+                // The editor's services hold the tint, color and part code; each takes the editor as its first argument.
+                foreach (var type in new[] { typeof(AppearanceTintEditorService), typeof(AppearanceColorService), typeof(AppearancePartEditService) })
+                {
+                    target = type.GetMethod(method, BindingFlags.Public | BindingFlags.Instance);
+                    if (target == null)
+                        continue;
+                    receiver = ServiceOf(editor, type);
+                    arguments = new object[] { editor }.Concat(arguments).ToArray();
+                    break;
+                }
+                if (target == null)
+                    throw new InvalidOperationException($"Appearance editor method {method} was not found.");
+            }
+            try { target.Invoke(receiver, arguments); }
             catch (TargetInvocationException exception) when (exception.InnerException != null)
             {
                 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
@@ -1036,13 +1051,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual((int)color.Blue, picker["b"].Value<int>(), $"{stage}: published picker blue");
         }
 
-        private static IEnumerable<(AppearanceArmor Part, AppearanceEditorViewModel.ColorTarget Target)> ArmorColorTargets()
+        private static IEnumerable<(AppearanceArmor Part, AppearanceColorTarget Target)> ArmorColorTargets()
         {
-            foreach (var target in Enum.GetValues<AppearanceEditorViewModel.ColorTarget>())
+            foreach (var target in Enum.GetValues<AppearanceColorTarget>())
             {
-                if (target is AppearanceEditorViewModel.ColorTarget.Invalid or AppearanceEditorViewModel.ColorTarget.Global)
+                if (target is AppearanceColorTarget.Invalid or AppearanceColorTarget.Global)
                     continue;
-                var part = target == AppearanceEditorViewModel.ColorTarget.Chest ? AppearanceArmor.Torso
+                var part = target == AppearanceColorTarget.Chest ? AppearanceArmor.Torso
                     : Enum.Parse<AppearanceArmor>(target.ToString());
                 yield return (part, target);
             }
@@ -1056,7 +1071,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 SeedInheritance(GetItemInSlot(InventorySlot.Chest, civilian));
                 var armor = ReadArmor(civilian);
-                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 1200, 900) };
+                var editor = Content.Create<AppearanceEditorViewModel>();
+                editor.Geometry = new GuiRectangle(0, 0, 1200, 900);
                 using var publications = new BindingPublications(editor);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
                     new AppearanceEditorPayload(civilian), OBJECT_INVALID);
@@ -1104,7 +1120,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 SetLocalInt(civilian, savedCreatureTintName, savedCreatureTint);
                 var armor = ReadArmor(civilian);
                 var creatureColors = Enum.GetValues<ColorChannel>().Select(channel => GetColor(civilian, channel)).ToArray();
-                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 1240, 720) };
+                var editor = Content.Create<AppearanceEditorViewModel>();
+                editor.Geometry = new GuiRectangle(0, 0, 1240, 720);
                 var converter = new GuiPropertyConverter();
                 using var publications = new BindingPublications(editor);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
@@ -1116,7 +1133,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     if (isArmor)
                     {
                         editor.OnSelectEquipment()();
-                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Metal2)();
+                        editor.OnClickColorTarget(AppearanceColorTarget.Robe, AppearanceArmorColor.Metal2)();
                     }
                     else editor.OnSelectAppearance()();
                     var expectedBindings = publications.SnapshotWithoutGeometry();
@@ -1144,7 +1161,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(height, editor.Geometry.Height, $"{stage}: no layout redraw height nudge");
                         foreach (var (name, expected) in expectedBindings)
                         {
-                            var current = editor.GetType().GetProperty(name).GetValue(editor);
+                            var current = editor.GetBindingValue<object>(name);
                             ctx.Assert(JToken.DeepEquals(expected, JToken.Parse(JsonDump(converter.ToJson(current)))),
                                 $"{stage}: cached {name} must remain unchanged without replay.");
                         }
@@ -1351,7 +1368,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             private void Record(object sender, PropertyChangedEventArgs args)
             {
                 _sequence++;
-                var value = _editor.GetType().GetProperty(args.PropertyName)?.GetValue(_editor);
+                var value = _editor.GetBindingValue<object>(args.PropertyName);
                 if (value == null)
                     return;
                 // The token-zero harness cannot inspect NuiGetBind. Exercise the real native
@@ -1445,19 +1462,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     $"{stage}: {prefix} selected model must occur in its published options or be a retained bare style.");
             }
 
-            var regions = MaterialRegionProperties();
+            var regions = ArmorColorRegionCatalog.Entries;
             ctx.AssertEqual(120, regions.Length, "All six dyes for Global and nineteen armor parts");
-            foreach (var property in regions)
+            foreach (var swatch in regions)
             {
-                var rectangle = values.AfterLayout(ctx, property.Name, stage);
+                var rectangle = values.AfterLayout(ctx, swatch.RegionName, stage);
                 var x = rectangle["x"].Value<float>();
                 var y = rectangle["y"].Value<float>();
                 var width = rectangle["w"].Value<float>();
                 var height = rectangle["h"].Value<float>();
                 ctx.Assert(width == 1f && height == 1f || width == 16f && height == 16f,
-                    $"{stage}: {property.Name} must crop one color or neutral pixel, never the whole atlas.");
+                    $"{stage}: {swatch.RegionName} must crop one color or neutral pixel, never the whole atlas.");
                 ctx.Assert(x >= 0f && y >= 0f && x + width <= 256f && y + height <= 176f,
-                    $"{stage}: {property.Name} must be bounded by the palette texture.");
+                    $"{stage}: {swatch.RegionName} must be bounded by the palette texture.");
             }
         }
 
@@ -1488,9 +1505,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(-1, editor.SettingsTabToggleValue, "Inactive settings toggle");
                     ctx.AssertEqual("Global / Leather 1", editor.ColorTargetText, "Default armor dye target");
                     ctx.Assert(editor.IsCustomTintAvailable, "Global armor color picker must be enabled.");
-                    AssertInheritedRegion(ctx, editor.LeftFootLeather1Region, "Legacy raw-zero part");
-                    AssertInheritedRegion(ctx, editor.RightFootLeather1Region, "Raw-255 part");
-                    AssertPaletteRegion(ctx, editor.RobeLeather1Region, 0, "Explicit palette-zero part");
+                    AssertInheritedRegion(ctx, editor.GetBindingValue<GuiRectangle>("LeftFootLeather1Region"), "Legacy raw-zero part");
+                    AssertInheritedRegion(ctx, editor.GetBindingValue<GuiRectangle>("RightFootLeather1Region"), "Raw-255 part");
+                    AssertPaletteRegion(ctx, editor.GetBindingValue<GuiRectangle>("RobeLeather1Region"), 0, "Explicit palette-zero part");
                     foreach (var (channel, layer) in new[]
                     {
                         (AppearanceArmorColor.Leather1, TintMapLayerType.Leather1),
@@ -1501,7 +1518,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         (AppearanceArmorColor.Metal2, TintMapLayerType.Metal2)
                     })
                     {
-                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                        editor.OnClickColorTarget(AppearanceColorTarget.Global, channel)();
                         ctx.Assert(editor.IsCustomTintAvailable, $"Global {channel} picker must be enabled even without a visible material layer.");
                         var colorId = GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, (int)channel);
                         var color = TintMapPaletteColors.GetColor(layer, colorId);
@@ -1546,18 +1563,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 editor.OnClickColorPalette(selected)();
                 AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, selected, "Global preset picker");
                 AssertInheritedAndExplicitParts(ctx, outfit);
-                AssertPaletteRegion(ctx, editor.GlobalLeather1Region, selected, "Global swatch after preset picker");
+                AssertPaletteRegion(ctx, editor.GetBindingValue<GuiRectangle>("GlobalLeather1Region"), selected, "Global swatch after preset picker");
 
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Leather1)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Robe, AppearanceArmorColor.Leather1)();
                 editor.OnClickColorPalette(77)();
                 AssertNativeColor(ctx, outfit, PartIndex(AppearanceArmor.Robe), 77, "Per-part preset edit");
                 AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, selected, "Part edit retains global dye");
                 editor.OnClickColorPalette(0)();
                 AssertNativeColor(ctx, outfit, PartIndex(AppearanceArmor.Robe), 0, "Explicit per-part palette zero");
                 ctx.AssertEqual(1, GetLocalInt(outfit, OverrideName(AppearanceArmor.Robe)), "Explicit-zero override marker");
-                AssertPaletteRegion(ctx, editor.RobeLeather1Region, 0, "Explicit-zero swatch");
+                AssertPaletteRegion(ctx, editor.GetBindingValue<GuiRectangle>("RobeLeather1Region"), 0, "Explicit-zero swatch");
 
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather1)();
                 editor.OnClickColorPalette(66)();
                 AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, 66, "Later global preset");
                 AssertInheritedAndExplicitParts(ctx, outfit);
@@ -1568,17 +1585,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(expected.Red, editor.SelectedTintColor.R, "Global picker red after rehydration");
                 ctx.AssertEqual(expected.Green, editor.SelectedTintColor.G, "Global picker green after rehydration");
                 ctx.AssertEqual(expected.Blue, editor.SelectedTintColor.B, "Global picker blue after rehydration");
-                AssertInheritedRegion(ctx, editor.LeftFootLeather1Region, "Inherited raw-zero swatch after global edit");
-                AssertInheritedRegion(ctx, editor.RightFootLeather1Region, "Inherited raw-255 swatch after global edit");
-                AssertPaletteRegion(ctx, editor.RobeLeather1Region, 0, "Explicit zero remains distinct from inheritance");
+                AssertInheritedRegion(ctx, editor.GetBindingValue<GuiRectangle>("LeftFootLeather1Region"), "Inherited raw-zero swatch after global edit");
+                AssertInheritedRegion(ctx, editor.GetBindingValue<GuiRectangle>("RightFootLeather1Region"), "Inherited raw-255 swatch after global edit");
+                AssertPaletteRegion(ctx, editor.GetBindingValue<GuiRectangle>("RobeLeather1Region"), 0, "Explicit zero remains distinct from inheritance");
             });
             ctx.SetResultDetail("Actual VM preset actions edited global and robe dyes independently. Native raw0/raw255 inherited parts stayed unset; APC-marked palette0 survived a later global edit and tab rehydration. No client renderer or mouse-event transport is attached.");
         }
 
-        private static AppearanceEditorViewModel BindWithoutClient(uint target)
+        internal static AppearanceEditorViewModel BindWithoutClient(uint target)
         {
             var geometry = new GuiRectangle(0, 0, 1200, 900);
-            var editor = new AppearanceEditorViewModel { Geometry = geometry };
+            var editor = Content.Create<AppearanceEditorViewModel>();
+            editor.Geometry = geometry;
             // Exercise the public hydration path without creating a window or connecting a PC.
             // The invalid viewer/zero token cannot send client updates; Target is the real NPC.
             editor.Bind(OBJECT_INVALID, 0, geometry, GuiWindowType.AppearanceEditor,
@@ -1659,7 +1677,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.Assert(expected.Projections.SequenceEqual(actual.Projections), $"{stage}: native projection baselines must remain unchanged.");
         }
 
-        private static async Task<uint> SpawnCivilianAsync(EngineTestContext ctx)
+        internal static async Task<uint> SpawnCivilianAsync(EngineTestContext ctx)
         {
             var civilian = ctx.SpawnCreature("civilian");
             await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, civilian)),
@@ -1702,7 +1720,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 .ToArray();
         }
 
-        private static async Task RunAssignedAsync(EngineTestContext ctx, uint creature, Action action)
+        internal static async Task RunAssignedAsync(EngineTestContext ctx, uint creature, Action action)
         {
             var completed = false;
             Exception failure = null;

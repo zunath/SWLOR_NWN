@@ -107,7 +107,7 @@ public class AppearanceEditorWeaponEligibilityTests
     }
 
     private static bool AllowsFlags(BaseItem type, bool plot, bool cursed, string resref) =>
-        (bool)typeof(AppearanceEditorViewModel).GetMethod("AllowsItemFlags", BindingFlags.Static | BindingFlags.NonPublic)!
+        (bool)typeof(AppearanceItemEligibility).GetMethod("AllowsItemFlags", BindingFlags.Static | BindingFlags.NonPublic)!
             .Invoke(null, new object[] { type, plot, cursed, resref })!;
 
     private static bool AllowsParts(WeaponAppearanceBaseDefinition appearance, int top, int middle, int bottom) =>

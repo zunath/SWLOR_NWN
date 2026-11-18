@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     /// An area with live spawns across hot reloads (the P5-8c test plan: the spawn registry adopts and no area spawns twice).
     /// Like <see cref="HotReloadPlayersEngineTests"/> it runs in phases, one per generation of the build:
     /// <list type="number">
-    /// <item>The first run puts a headless player in the Abandoned Station, enters the area through the spawn handler, waits for
+    /// <item>The first run puts a headless player in Smesk's palace (not the Abandoned Station: the dock master scenarios start that area clean, and a reload would carry these spawns into them), enters the area through the spawn handler, waits for
     /// its spawns to be placed, sends three back to the respawn queue and records the registry's active and queued spawns for the area
     /// and the spawned objects standing in it.</item>
     /// <item>Each run after a reload reads the same counts from the new build's registry and the world, and requires the
@@ -27,8 +27,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     public static class HotReloadSpawnsEngineTests
     {
         private const string Prefix = "SWLOR_HRS_";
-        private const string AreaResref = "zomb_abanstation";
-        private const string LandingTag = "ABANDONED_STATION_DOCK_LANDING";
+        private const string AreaResref = "smesks_palace";
         private const int ReloadsToVerify = 2;
         private static readonly string GenerationToken = Guid.NewGuid().ToString("N");
 
@@ -62,10 +61,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var module = GetModule();
             var area = Area.GetAreaByResref(AreaResref);
-            ctx.Assert(GetIsObjectValid(area), "the packed module contains the Abandoned Station");
-            var landing = GetWaypointByTag(LandingTag);
-            ctx.Assert(GetIsObjectValid(landing), "the station landing waypoint resolves");
-            ctx.AssertEqual(0, Read(area).Active, "the station starts without active spawns");
+            ctx.Assert(GetIsObjectValid(area), "the packed module contains the palace area");
+            var landing = FirstWaypoint(area);
+            ctx.Assert(GetIsObjectValid(landing), "the area has a waypoint to stand on");
+            ctx.AssertEqual(0, Read(area).Active, "the area starts without active spawns");
 
             var areaContext = new EngineTestContext(ctx.TestName, area, GetLocation(landing));
             var fixture = await PlayerAbilityFixture.CreateAsync(areaContext);
@@ -137,6 +136,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetLocalInt(module, Prefix + "COUNT", now.Objects.Count);
             for (var index = 0; index < now.Objects.Count; index++)
                 SetLocalObject(module, Prefix + "OBJ" + index, now.Objects[index]);
+        }
+
+        private static uint FirstWaypoint(uint area)
+        {
+            for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+            {
+                if (GetObjectType(obj) == ObjectType.Waypoint)
+                    return obj;
+            }
+
+            return OBJECT_INVALID;
         }
 
         private sealed record AreaState(int Active, int Queued, int All, int SpawnIds, List<uint> Objects, HashSet<uint> ActiveObjects);

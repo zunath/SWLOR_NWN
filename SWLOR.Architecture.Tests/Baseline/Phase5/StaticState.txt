@@ -43,6 +43,7 @@ SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveHandFitC
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveHandFitOverrides | 1
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.PowerGloveOpenFrameFits | 2
 SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.TrainingSaberCatalog | 2
+SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponAppearanceCatalog | 1
 SWLOR.Game.Server.Feature.AppearanceDefinition.Preview.AppearancePartNames | 2
 SWLOR.Game.Server.Feature.AppearanceDefinition.Species.RacialAppearanceRegistry | 2
 SWLOR.Game.Server.Feature.BasicVibrobladeCompatibility | 1
@@ -53,7 +54,7 @@ SWLOR.Game.Server.Feature.EventRegistration | 1
 SWLOR.Game.Server.Feature.GuiDefinition.AppearanceEditorDefinition | 1
 SWLOR.Game.Server.Feature.GuiDefinition.ExamineItemText | 1
 SWLOR.Game.Server.Feature.GuiDefinition.PerformanceFootworkDefinition | 2
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel | 9
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel | 7
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.BugReportViewModel | 1
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 6
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DMPlayerExamineViewModel | 1

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceEditing;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI;
@@ -119,12 +120,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
                 EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, 6);
                 var editor = BindEditor(creature);
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.Global, AppearanceArmorColor.Leather2)();
                 ctx.Assert(editor.IsCustomTintEditable, "RGB safety fixture has a tintable armor material.");
                 editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(205, 228, 197);
                 editor.OnMouseUpTintPicker()();
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                editor.OnClickColorTarget(AppearanceColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
                 editor.OnMouseDownTintPicker()();
                 editor.SelectedTintColor = new GuiColor(1, 17, 91);
                 editor.OnMouseUpTintPicker()();
@@ -188,8 +189,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await AssignedAsync(ctx, creature, () =>
                 {
                     var editor = BindEditor(creature);
-                    editor.OnClickColorTarget(copyToRight ? AppearanceEditorViewModel.ColorTarget.LeftForearm :
-                        AppearanceEditorViewModel.ColorTarget.RightForearm, AppearanceArmorColor.Leather2)();
+                    editor.OnClickColorTarget(copyToRight ? AppearanceColorTarget.LeftForearm :
+                        AppearanceColorTarget.RightForearm, AppearanceArmorColor.Leather2)();
                     ctx.Assert(editor.IsCustomTintEditable, "The source forearm has a custom Leather2 channel.");
                     editor.OnMouseDownTintPicker()();
                     editor.SelectedTintColor = new GuiColor(1, 17, 91);
@@ -211,8 +212,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AssertForearmColors("copy commits the pending source value");
                     // Replay the delayed handlers after copying; neither may restore an older color.
                     editor.OnMouseUpTintPicker()();
-                    typeof(AppearanceEditorViewModel).GetMethod("CommitCustomTintComponents",
-                        BindingFlags.Instance | BindingFlags.NonPublic).Invoke(editor, null);
+                    ((AppearanceTintEditorService)AppearanceEditorEngineTests.ServiceOf(editor, typeof(AppearanceTintEditorService))).CommitCustomTintComponents(editor);
                     AssertForearmColors("late callbacks preserve both copied colors");
                 });
                 await AssertSettledAsync(ctx, before, observation, $"copy {(copyToRight ? "right" : "left")} {(typed ? "text" : "picker")}");
@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                              AppearanceArmorColor.Leather1, AppearanceArmorColor.Leather2,
                              AppearanceArmorColor.Metal1, AppearanceArmorColor.Metal2 })
                 {
-                    editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                    editor.OnClickColorTarget(AppearanceColorTarget.Global, channel)();
                     editor.OnClickColorPalette(77)();
                 }
                 // Catalogued robes render through their generated root with or without RGB.
@@ -686,15 +686,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static AppearanceEditorViewModel BindEditor(uint creature)
         {
             var geometry = new GuiRectangle(0, 0, 1200, 900);
-            var editor = new AppearanceEditorViewModel { Geometry = geometry };
+            var editor = Content.Create<AppearanceEditorViewModel>();
+            editor.Geometry = geometry;
             editor.Bind(OBJECT_INVALID, 0, geometry, GuiWindowType.AppearanceEditor, new AppearanceEditorPayload(creature), OBJECT_INVALID);
             editor.OnSelectEquipment()();
             return editor;
         }
 
         private static void InvokeModify(AppearanceEditorViewModel editor, int index, int model, int color = -1) =>
-            typeof(AppearanceEditorViewModel).GetMethod("ModifyItemPart", BindingFlags.Instance | BindingFlags.NonPublic)
-                .Invoke(editor, new object[] { index, model, color });
+            ((AppearancePartEditService)AppearanceEditorEngineTests.ServiceOf(editor, typeof(AppearancePartEditService))).ModifyItemPart(editor, index, model, color);
 
         private static async Task AssignedAsync(EngineTestContext ctx, uint creature, Action action)
         {

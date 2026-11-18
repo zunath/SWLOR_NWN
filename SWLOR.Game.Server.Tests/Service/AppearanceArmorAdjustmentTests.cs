@@ -1,5 +1,7 @@
 using System.Reflection;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceEditing;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Domain.UI.Component;
@@ -9,13 +11,17 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class AppearanceArmorAdjustmentTests
 {
+    private SWLOR.Game.Server.Core.IContentFactory Content { get; } = SWLOR.Game.Server.Tests.Support.TestContent.WithoutServices;
+
     private static IEnumerable<AppearanceArmor> Parts => Enum.GetValues<AppearanceArmor>()
         .Where(part => part >= AppearanceArmor.RightFoot && part < AppearanceArmor.Robe);
 
     [TestCaseSource(nameof(Parts))]
     public void UnloadedEmptyAndStaleOptionsDoNotEditArmor(AppearanceArmor part)
     {
-        var editor = new AppearanceEditorViewModel { IsEquipmentSelected = true, HasItemEquipped = true };
+        var editor = Content.Create<AppearanceEditorViewModel>();
+        editor.IsEquipmentSelected = true;
+        editor.HasItemEquipped = true;
         var options = typeof(AppearanceEditorViewModel).GetProperty(PropertyPrefix(part) + "Options")!;
         var notifications = new List<string>();
         editor.PropertyChanged += (_, change) => notifications.Add(change.PropertyName!);
@@ -23,25 +29,27 @@ public class AppearanceArmorAdjustmentTests
         foreach (var values in new GuiBindingList<GuiComboEntry>[]
                  {
                      null,
-                     new(),
-                     new() { new("Unavailable selection", 20) }
+                     new GuiBindingList<GuiComboEntry>(),
+                     new GuiBindingList<GuiComboEntry> { new GuiComboEntry("Unavailable selection", 20) }
                  })
         {
             options.SetValue(editor, values);
             notifications.Clear();
             Assert.DoesNotThrow(() => Adjust(editor, part, 1));
             Assert.That(notifications, Is.Empty, "unloaded or stale controls must not change the item");
-            Assert.That(SkipField.GetValue(editor), Is.False);
+            Assert.That(Session(editor).SkipAdjustArmorPart, Is.False);
         }
     }
 
     [TestCaseSource(nameof(Parts))]
     public void SelectionUsesModelIdsAndRestoresSuppressionAfterFailure(AppearanceArmor part)
     {
-        var editor = new AppearanceEditorViewModel { IsEquipmentSelected = true, HasItemEquipped = true };
+        var editor = Content.Create<AppearanceEditorViewModel>();
+        editor.IsEquipmentSelected = true;
+        editor.HasItemEquipped = true;
         var prefix = PropertyPrefix(part);
         typeof(AppearanceEditorViewModel).GetProperty(prefix + "Options")!.SetValue(editor,
-            new GuiBindingList<GuiComboEntry> { new("None", 0), new("Twenty", 20) });
+            new GuiBindingList<GuiComboEntry> { new GuiComboEntry("None", 0), new GuiComboEntry("Twenty", 20) });
         var selection = typeof(AppearanceEditorViewModel).GetProperty(prefix + "Selection")!;
         editor.PropertyChanged += (_, change) =>
         {
@@ -53,11 +61,11 @@ public class AppearanceArmorAdjustmentTests
 
         foreach (var wasSkipping in new[] { false, true })
         {
-            SkipField.SetValue(editor, wasSkipping);
+            Session(editor).SkipAdjustArmorPart = wasSkipping;
             var failure = Assert.Throws<TargetInvocationException>(() => Adjust(editor, part, 1));
             Assert.That(failure!.InnerException, Is.TypeOf<InvalidOperationException>());
             Assert.That(failure.InnerException!.Message, Is.EqualTo("Selection publication failed"));
-            Assert.That(SkipField.GetValue(editor), Is.EqualTo(wasSkipping));
+            Assert.That(Session(editor).SkipAdjustArmorPart, Is.EqualTo(wasSkipping));
         }
     }
 
@@ -70,9 +78,9 @@ public class AppearanceArmorAdjustmentTests
     [TestCase(999, 1, null)]
     public void AdjustmentClampsAtTheEndsAndPreservesSparseModelIds(int value, int adjustBy, int? expected)
     {
-        var options = new GuiBindingList<GuiComboEntry> { new("One", 1), new("Twenty", 20), new("Seventy-five", 75) };
-        var result = typeof(AppearanceEditorViewModel)
-            .GetMethod("ResolveAdjustedArmorValue", BindingFlags.NonPublic | BindingFlags.Static)!
+        var options = new GuiBindingList<GuiComboEntry> { new GuiComboEntry("One", 1), new GuiComboEntry("Twenty", 20), new GuiComboEntry("Seventy-five", 75) };
+        var result = typeof(AppearancePartEditService)
+            .GetMethod("ResolveAdjustedArmorValue", BindingFlags.Public | BindingFlags.Static)!
             .Invoke(null, new object[] { options, value, adjustBy });
         Assert.That(result, Is.EqualTo(expected));
     }
@@ -82,7 +90,9 @@ public class AppearanceArmorAdjustmentTests
     [TestCase(true, 0, false)]
     public void AdjustmentIgnoresInactiveOrUnequippedArmor(bool equipmentSelected, int itemType, bool equipped)
     {
-        var editor = new AppearanceEditorViewModel { IsEquipmentSelected = equipmentSelected, HasItemEquipped = equipped };
+        var editor = Content.Create<AppearanceEditorViewModel>();
+        editor.IsEquipmentSelected = equipmentSelected;
+        editor.HasItemEquipped = equipped;
         // Use the binding store to avoid loading equipment through the native engine.
         typeof(AppearanceEditorViewModel).BaseType!.GetMethod("Set", BindingFlags.NonPublic | BindingFlags.Instance)!
             .MakeGenericMethod(typeof(int)).Invoke(editor, new object[] { itemType, nameof(editor.SelectedItemTypeIndex) });
@@ -91,12 +101,12 @@ public class AppearanceArmorAdjustmentTests
             Assert.DoesNotThrow(() => editor.OnClickAdjustArmorPart(AppearanceArmor.LeftBicep, 1)());
     }
 
-    private static FieldInfo SkipField => typeof(AppearanceEditorViewModel)
-        .GetField("_skipAdjustArmorPart", BindingFlags.NonPublic | BindingFlags.Instance)!;
+    private static AppearanceEditorSession Session(AppearanceEditorViewModel editor) => (AppearanceEditorSession)typeof(AppearanceEditorViewModel)
+        .GetField("_session", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(editor)!;
 
     private static string PropertyPrefix(AppearanceArmor part) => part == AppearanceArmor.Torso ? "Chest" : part.ToString();
 
     private static void Adjust(AppearanceEditorViewModel editor, AppearanceArmor part, int adjustBy) =>
-        typeof(AppearanceEditorViewModel).GetMethod("AdjustArmorPart", BindingFlags.NonPublic | BindingFlags.Instance)!
-            .Invoke(editor, new object[] { part, adjustBy });
+        typeof(AppearancePartEditService).GetMethod("AdjustArmorPart", BindingFlags.Public | BindingFlags.Instance)!
+            .Invoke(AppearanceEditingServices.Create<AppearancePartEditService>(), new object[] { editor, part, adjustBy });
 }

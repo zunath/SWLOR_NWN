@@ -26,6 +26,11 @@
     -->
     <EmbeddedResource Include="Characterization\Snapshots\**\*.json"
                       LogicalName="Characterization/Snapshots/%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- The appearance editor's binding transcript, captured before the per-channel colour bindings stopped being declared properties (P5-16e). -->
+    <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentity.txt"
+                      LogicalName="AppearanceEditor/BindingIdentity.txt" />
+    <EmbeddedResource Include="Definitions\Fixtures\AppearanceEditorBindingIdentityTabs.txt"
+                      LogicalName="AppearanceEditor/BindingIdentityTabs.txt" />
   </ItemGroup>
 
   <ItemGroup>

@@ -230,7 +230,7 @@ public class TintMapReviewTests
         var setCustomTintComponent = FindMethod(viewModel, "SetCustomTintComponent");
         setCustomTintComponent.ToString().Should().Contain("DelayCommand(0.4f",
             "RGB components remain drafts until typing settles");
-        setCustomTintComponent.ToString().Should().Contain("CommitCustomTintComponents()");
+        setCustomTintComponent.ToString().Should().Contain("CommitCustomTintComponents(host)");
         setCustomTintComponent.ToString().Should().NotContain("ApplyCustomTintColor(",
             "typing one digit must not reload the palette over the other two draft components");
         setCustomTintComponent.ToString().Should().NotContain("SelectedTintColor =",
@@ -238,13 +238,13 @@ public class TintMapReviewTests
         var commitCustomTintComponents = FindMethod(viewModel, "CommitCustomTintComponents");
         commitCustomTintComponents.ToString().Should().Contain("synchronizeComponents: false, capturedEdit: apply");
         var applyCustomTintColor = FindMethod(viewModel, "ApplyCustomTintColor");
-        applyCustomTintColor.ToString().Should().Contain("SetSelectedTintColor(value, synchronizeComponents)",
+        applyCustomTintColor.ToString().Should().Contain("SetSelectedTintColor(host, value, synchronizeComponents)",
             "the picker must retain the requested RGB rather than rewriting input with the nearest palette row");
         applyCustomTintColor.ToString().Should().Contain("synchronizeComponents");
         applyCustomTintColor.ToString().Should().NotContain("GetClosestColorId",
             "RGB edits must persist the actual color instead of a native palette approximation");
-        applyCustomTintColor.ToString().Should().Contain("_applyingTintColor = true");
-        applyCustomTintColor.ToString().Should().Contain("_applyingTintColor = false");
+        applyCustomTintColor.ToString().Should().Contain("host.Session.ApplyingTintColor = true");
+        applyCustomTintColor.ToString().Should().Contain("host.Session.ApplyingTintColor = false");
         var applySelectedPaletteColor = FindMethod(viewModel, "ApplySelectedPaletteColor");
         applySelectedPaletteColor.ToString().Should().Contain("if (reloadEditor)");
         var setSelectedTintColor = FindMethod(viewModel, "SetSelectedTintColor");
@@ -252,15 +252,15 @@ public class TintMapReviewTests
         var synchronizeBindings = FindMethod(viewModel, "SynchronizeTintControlBindings");
         var setBindingsWatched = FindMethod(viewModel, "SetTintControlBindingsWatched");
         var clientUpdated = FindMethod(viewModel, "OnClientPropertyUpdated");
-        clientUpdated.ToString().Should().Contain("_tintComponentCorrection == propertyName",
+        clientUpdated.ToString().Should().Contain("_session.TintComponentCorrection == propertyName",
             "only normalized invalid input needs a corrective write after its setter finishes");
         clientUpdated.ToString().Should().Contain("SynchronizeTintControlBindings");
         setSelectedTintColor.ToString().Should().Contain("SynchronizeTintControlBindings",
             "server picker updates must not return through the watched input as a second tint edit");
         synchronizeComponents.ToString().Should().Contain("SynchronizeTintControlBindings",
             "server RGB updates must not return through their watched inputs as extra tint edits");
-        synchronizeBindings.ToString().Should().Contain("SetTintControlBindingsWatched(false)");
-        synchronizeBindings.ToString().Should().Contain("SetTintControlBindingsWatched(true)");
+        synchronizeBindings.ToString().Should().Contain("SetTintControlBindingsWatched(host, false)");
+        synchronizeBindings.ToString().Should().Contain("SetTintControlBindingsWatched(host, true)");
         foreach (var propertyName in new[]
                  {
                      "SelectedTintColor",
@@ -269,9 +269,9 @@ public class TintMapReviewTests
                      "CustomTintBlue"
                  })
         {
-            setBindingsWatched.ToString().Should().Contain($"nameof({propertyName})");
+            setBindingsWatched.ToString().Should().Contain($"AppearanceEditorBindings.{propertyName}");
         }
-        viewModel.Should().Contain("_tintControlBindingsWatched = true;",
+        viewModel.Should().Contain("_session.TintControlBindingsWatched = true;",
             "the four bindings become suppressible after their initial watches are registered");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedTintColor)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintRed)");
@@ -314,7 +314,7 @@ public class TintMapReviewTests
             var body = method.ToString();
             body.Should().NotContain("TintMapApply.ApplyCurrentColors",
                 "opening a color editor must not rewrite native palettes or material state");
-            body.Should().Contain("LoadTintMapEditor()",
+            body.Should().Contain("LoadTintMapEditor(this)",
                 "the picker reads the current effective colors without reapplying them");
         }
     }
@@ -394,7 +394,7 @@ public class TintMapReviewTests
             .ToDictionary(method => method.Identifier.ValueText);
 
         methods["TryGetSelectedTintLayer"].ToString().Should().Contain("SelectedColorCategoryIndex switch");
-        methods["TryGetSelectedTintLayer"].ToString().Should().Contain("_selectedColorChannel switch");
+        methods["TryGetSelectedTintLayer"].ToString().Should().Contain("host.Session.SelectedColorChannel switch");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "selection.GetPaletteSource(selectedLayerType) == paletteSource");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
@@ -402,7 +402,7 @@ public class TintMapReviewTests
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "selection.Material.Layers.Contains(selectedLayerType)");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
-            "_colorTarget != ColorTarget.Global",
+            "host.Session.ColorTarget != AppearanceColorTarget.Global",
             "material selection must remain scoped to the selected armor part");
         methods["TryGetEditableTintSelections"].ToString().Should().NotContain(
             "selections.Count == 0",
@@ -417,16 +417,16 @@ public class TintMapReviewTests
         var synchronizeControls = methods["SynchronizeCustomTintControlsToPaletteColor"].ToString();
         synchronizeControls.Should().Contain("TintMapPaletteColors.GetColor(layerType, colorId)",
             "preset selection must display the exact selected palette row");
-        synchronizeControls.Should().Contain("SetSelectedTintColor(new GuiColor",
+        synchronizeControls.Should().Contain("SetSelectedTintColor(host, new GuiColor",
             "preset selection must update the color picker and its bound RGB fields");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
-        methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(_target");
+        methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(host.Session.Target");
         methods["ApplyArmorPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["OnClickColorTarget"].ToString().Should().Contain("LoadTintMapEditor");
         methods["ResetCurrentCustomTintOverrides"].ToString().Should()
-            .Contain("TryGetSelectedTintLayer(out var selectedLayerType)");
+            .Contain("TryGetSelectedTintLayer(host, out var selectedLayerType)");
         methods["ResetCurrentCustomTintOverrides"].ToString().Should()
-            .Contain("ResetCreatureCustomColor(_target, selectedLayerType)",
+            .Contain("ResetCreatureCustomColor(host.Session.Target, selectedLayerType)",
                 "selecting a preset must clear an inactive creature channel's persisted RGB tint");
     }
 
@@ -511,12 +511,12 @@ public class TintMapReviewTests
         var method = FindMethod(source, "OnClickClearColor");
 
         method.ToString().Should().Contain(
-            "ResetArmorColorToInheritance(colorTarget, colorChannel)");
-        method.ToString().Should().NotContain("ResetCurrentCustomTintOverrides()");
+            "AppearanceColorService.ResetArmorColorToInheritance(this, colorTarget, colorChannel)");
+        method.ToString().Should().NotContain("ResetCurrentCustomTintOverrides(host)");
         var reset = FindMethod(source, "ResetArmorColorToInheritance").ToString();
-        reset.Should().Contain("ResetCustomTintOverrides(colorTarget, colorChannel)");
+        reset.Should().Contain("ResetCustomTintOverrides(host, colorTarget, colorChannel)");
         reset.IndexOf("SetItemColorInPlace", StringComparison.Ordinal).Should()
-            .BeLessThan(reset.IndexOf("LoadTintMapEditor()", StringComparison.Ordinal),
+            .BeLessThan(reset.IndexOf("LoadTintMapEditor(host)", StringComparison.Ordinal),
                 "the picker must read inheritance after the native override is cleared");
 
         var rightClickReset = CSharpSyntaxTree.ParseText(source)
@@ -525,7 +525,7 @@ public class TintMapReviewTests
             .OfType<MethodDeclarationSyntax>()
             .Single(node =>
                 node.Identifier.ValueText == "ResetCustomTintOverrides" &&
-                node.ParameterList.Parameters.Count == 2);
+                node.ParameterList.Parameters.Count == 3);
         rightClickReset.ToString().Should().Contain(
             "TintMapItemColor.ResetInactiveItemCustomColor",
             "right-clicking a preset must clear stale custom state even when that armor part no longer exposes the layer");
@@ -716,7 +716,7 @@ public class TintMapReviewTests
             .OfType<MethodDeclarationSyntax>()
             .Single(method =>
                 method.Identifier.ValueText == "ResetCustomTintOverrides" &&
-                method.ParameterList.Parameters.Count == 4);
+                method.ParameterList.Parameters.Count == 5);
         resetEditor.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layerType)");
         resetEditor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
@@ -730,10 +730,10 @@ public class TintMapReviewTests
         var service = ReadTintMapSource();
         var editor = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "AppearanceEditorViewModel.cs");
         var palette = FindMethod(editor, "ApplySelectedPaletteColor").ToString();
-        palette.IndexOf("TintMapApply.RefreshAfterColorChange(_target)", StringComparison.Ordinal)
-            .Should().BeGreaterThan(palette.LastIndexOf("SetColor(_target", StringComparison.Ordinal),
+        palette.IndexOf("TintMapApply.RefreshAfterColorChange(host.Session.Target)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(palette.LastIndexOf("SetColor(host.Session.Target", StringComparison.Ordinal),
                 "the palette must be stored before tint state is refreshed");
-        palette.Should().NotContain("TintMapApply.ApplyCurrentColors(_target)");
+        palette.Should().NotContain("TintMapApply.ApplyCurrentColors(_session.Target)");
 
         var refresh = FindMethod(service, nameof(ITintMapApplyService.RefreshAfterColorChange));
         refresh.ParameterList.Parameters.Should().HaveCount(1,
@@ -815,14 +815,14 @@ public class TintMapReviewTests
             .GetRoot()
             .DescendantNodes()
             .OfType<PropertyDeclarationSyntax>()
-            .Single(property => property.Identifier.ValueText == "SelectedTintColor");
+            .Single(property => property.Identifier.ValueText == "SelectedTintColor" && property.ExplicitInterfaceSpecifier == null);
         selectedTintColor.ToString().Should().Contain("FlushPendingPickerColor");
         selectedTintColor.ToString().Should().NotContain("ApplyCustomTintColor(",
             "drag samples must be batched before publishing material updates");
         FindMethod(viewModelSource, "FlushPendingPickerColor").ToString()
             .Should().Contain("synchronizePicker: false", "deferred commits must not echo old samples into the live picker");
         var applyCustomTintColor = FindMethod(viewModelSource, "ApplyCustomTintColor");
-        applyCustomTintColor.ToString().Should().Contain("capturedEdit ?? CaptureTintColorEdit()");
+        applyCustomTintColor.ToString().Should().Contain("capturedEdit ?? CaptureTintColorEdit(host)");
         FindMethod(viewModelSource, "CaptureTintColorEdit").ToString().Should()
             .Contain("TintMapCreatureColor.SetCreatureCustomColor");
         applyCustomTintColor.ToString().Should().NotContain("ApplySelectedPaletteColor");
@@ -1096,7 +1096,7 @@ public class TintMapReviewTests
             "AppearanceEditorViewModel.cs");
         var method = FindMethod(source, "TryGetEditableTintSelections");
 
-        method.ToString().Should().Contain("IsEquipmentSelected && !IsValidItem()");
+        method.ToString().Should().Contain("host.IsEquipmentSelected && !host.IsValidItem()");
     }
 
     [Test]
@@ -1221,7 +1221,7 @@ public class TintMapReviewTests
             "the old material keys must be read before the model fields change");
         modifyCalls.Should().Contain("QueueItemCustomColorCarry",
             "custom colors must follow the new model materials");
-        modifyMethod.ToString().Should().Contain("_target, item, item, Player, slot, armorPart, tintCarry, applyImmediately: true",
+        modifyMethod.ToString().Should().Contain("host.Session.Target, item, item, host.Player, slot, armorPart, tintCarry, applyImmediately: true",
             "in-place edits carry their colors immediately on the same equipped item");
         modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
             "one modular armor part must not overwrite another part's custom dyes");
@@ -1230,7 +1230,7 @@ public class TintMapReviewTests
         setColorInPlace.ToString().Should().Contain("EquippedItemAppearance.Set(",
             "color-only edits must mutate the equipped item instead of creating a replacement");
         setColorInPlace.ToString().Should().Contain(
-            "EquippedItemAppearance.Refresh(_target, item, resetShaderOverrides: false)",
+            "EquippedItemAppearance.Refresh(host.Session.Target, item, resetShaderOverrides: false)",
             "a color-only refresh must preserve unrelated material shader overrides");
         var equippedSource = ReadSource("SWLOR.Game.Server", "Feature", "AppearanceDefinition",
             "ItemAppearance", "EquippedItemAppearance.cs");
@@ -1243,7 +1243,7 @@ public class TintMapReviewTests
         setColorInPlace.ToString().Should().NotContain("DestroyObject");
 
         var paletteMethod = FindMethod(viewModelSource, "ApplyArmorPaletteColor");
-        paletteMethod.ToString().Should().Contain("SetItemColorInPlace(item, colorIndex, colorId)");
+        paletteMethod.ToString().Should().Contain("SetItemColorInPlace(host, item, colorIndex, colorId)");
         paletteMethod.ToString().Should().NotContain("CopyItemAndModify");
         paletteMethod.ToString().Should().NotContain("DestroyObject");
         paletteMethod.ToString().Should().NotContain("ActionEquipItem");
@@ -1255,7 +1255,7 @@ public class TintMapReviewTests
                 "the selected layer revision must advance before the equipped item is recolored");
 
         var clearMethod = FindMethod(viewModelSource, "ResetArmorColorToInheritance");
-        clearMethod.ToString().Should().Contain("SetItemColorInPlace(item, index, 255)",
+        clearMethod.ToString().Should().Contain("SetItemColorInPlace(host, item, index, 255)",
             "right-click reset must clear the equipped item's per-part color in place");
         clearMethod.ToString().Should().NotContain("CopyItemAndModify");
         clearMethod.ToString().Should().NotContain("DestroyObject");
@@ -1265,7 +1265,7 @@ public class TintMapReviewTests
                 "reset intent must invalidate only its layer before the item is recolored");
 
         var helmetCloakColor = FindMethod(viewModelSource, "ModifyHelmetCloakColor").ToString();
-        helmetCloakColor.Should().Contain("SetItemColorInPlace(item, (int)colorChannel, colorId)");
+        helmetCloakColor.Should().Contain("SetItemColorInPlace(host, item, (int)colorChannel, colorId)");
         helmetCloakColor.Should().NotContain("CopyItemAndModify");
         helmetCloakColor.Should().NotContain("DestroyObject");
 
@@ -2942,7 +2942,8 @@ public class TintMapReviewTests
             .GetRoot()
             .DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == methodName);
+            .Where(node => node.Identifier.ValueText == methodName && node.ExplicitInterfaceSpecifier == null)
+            .OrderByDescending(node => node.Body != null).First();
     }
 
     private static string GetInvokedMethodName(InvocationExpressionSyntax invocation)
@@ -3007,6 +3008,8 @@ public class TintMapReviewTests
     private static string ReadSource(params string[] pathParts)
     {
         var repositoryRoot = FindRepositoryRoot();
+        if (pathParts[^1] == "AppearanceEditorViewModel.cs")
+            return Support.AppearanceEditorSource.Read(repositoryRoot.FullName);
         var fullPath = Path.Combine(new[] { repositoryRoot.FullName }.Concat(pathParts).ToArray());
         return File.ReadAllText(fullPath);
     }

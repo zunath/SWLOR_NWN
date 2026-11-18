@@ -440,8 +440,11 @@ public class LightsaberWorkbenchTests
             "GuiDefinition",
             "ViewModel",
             "LightsaberWorkbenchViewModel.cs"));
-        viewModel.Should().Contain("var lightColor = (LightColor)resolvedLightColor;");
+        viewModel.Should().Contain("lightColor = (LightColor)resolvedLightColor;");
         viewModel.Should().Contain("ApplyBladeLight(item, lightColor, lightBrightness);");
+        viewModel.IndexOf("TryResolveLight(out var lightColor, out var lightBrightness)", StringComparison.Ordinal)
+            .Should().BeInRange(0, viewModel.IndexOf("ApplyBladeLight(item, lightColor, lightBrightness);", StringComparison.Ordinal),
+                "the light is resolved before it is applied");
         Regex.Replace(viewModel, @"\s+", " ").Should().Contain("SelectedLightBrightnessIndex == 0 ? LightBrightness.Dim : LightBrightness.Low");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedLightColor);");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedLightBrightnessIndex);");

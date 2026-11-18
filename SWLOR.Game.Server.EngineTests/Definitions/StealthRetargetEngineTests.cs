@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var player = await CreateStealthPlayerAsync(ctx);
             var creature = player.Creature;
-            var enemy = SpawnEnemy(ctx, creature, 2f);
+            var enemy = SpawnEnemy(ctx, creature, 2f, 0f);
 
             // The enemy is attacking the player, and the player is on its enmity table.
             Enmity.ModifyEnmity(creature, enemy, 100);
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(creature, Enmity.GetHighestEnmityAttackTarget(enemy), "the player is the enemy's attack target");
 
             // The player enters stealth: the retarget drops the player as the attack target and keeps the enmity.
-            await SetStealthAsync(ctx, creature, true);
+            await EnterStealthInCombatAsync(ctx, creature);
             await ctx.WaitUntilAsync(() => GetAttackTarget(enemy) != creature, 4f, "the enemy to stop attacking the player who entered stealth");
             ctx.Assert(Stealth.IsHiddenFrom(enemy, creature), "the enemy has not detected the stealthed player");
             ctx.AssertEqual(OBJECT_INVALID, Enmity.GetHighestEnmityAttackTarget(enemy), "no creature on the enemy's table can be attacked while hidden");
@@ -59,12 +59,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             using var player = await CreateStealthPlayerAsync(ctx);
             var creature = player.Creature;
-            var enemies = new[] { SpawnEnemy(ctx, creature, 2f), SpawnEnemy(ctx, creature, 3f) };
+            var enemies = new[] { SpawnEnemy(ctx, creature, 2f, 0f), SpawnEnemy(ctx, creature, 0f, 2f) };
             foreach (var enemy in enemies)
                 Enmity.ModifyEnmity(creature, enemy, 100);
             await ctx.WaitUntilAsync(() => enemies.All(enemy => GetAttackTarget(enemy) == creature), 8f, "both enemies to attack the player");
 
-            await SetStealthAsync(ctx, creature, true);
+            await EnterStealthInCombatAsync(ctx, creature);
             await ctx.WaitUntilAsync(() => enemies.All(enemy => GetAttackTarget(enemy) != creature), 4f, "both enemies to drop the stealthed player");
             foreach (var enemy in enemies)
                 ctx.Assert(Enmity.GetEnmityTable(enemy).ContainsKey(creature), "each enemy keeps the player on its enmity table");
@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             player.Update(record =>
             {
                 record.Perks[PerkType.Stealth] = 1;
+                record.Perks[PerkType.GhostProtocol] = 1;
                 record.Stealth = UndetectableStealth;
             });
             // The enemies must not defeat the player during the test.
@@ -87,9 +88,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return player;
         }
 
-        private static uint SpawnEnemy(EngineTestContext ctx, uint player, float xOffset)
+        private static uint SpawnEnemy(EngineTestContext ctx, uint player, float xOffset, float yOffset)
         {
-            var enemy = ctx.SpawnCreature(EnemyResref, xOffset);
+            var enemy = ctx.SpawnCreature(EnemyResref, xOffset, yOffset);
             ctx.SuppressNPCNaturalRegen(enemy);
             // The enemy's own AI is off, so only the retarget the stealth service asks for changes what it attacks.
             SetAILevel(enemy, AILevel.VeryLow);
@@ -97,6 +98,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             SetLocalLocation(enemy, "HOME_LOCATION", GetLocation(enemy));
             ctx.SetNPCResources(enemy, 100, 100);
             return enemy;
+        }
+
+        // The engine refuses stealth while the player is in combat; Ghost Protocol is the ability that enters it there.
+        private static async Task EnterStealthInCombatAsync(EngineTestContext ctx, uint creature)
+        {
+            var ability = AbilityCatalog.GetAbilityDetail(FeatType.GhostProtocol);
+            await ctx.ExecuteInCreatureContextAsync(creature,
+                () => ability.ImpactAction(creature, creature, 1, GetLocation(creature)));
+            await ctx.WaitUntilAsync(() => GetActionMode(creature, ActionMode.Stealth), 5f, "Ghost Protocol to enter stealth");
         }
 
         private static async Task SetStealthAsync(EngineTestContext ctx, uint creature, bool enabled)

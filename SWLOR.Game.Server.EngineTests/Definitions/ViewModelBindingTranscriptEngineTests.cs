@@ -61,6 +61,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             public uint Player => Fixture.Creature;
 
+            /// <summary>The scripts' own checks that a flow did what the transcript is meant to cover; reported after the transcript is compared.</summary>
+            public List<string> Problems { get; } = new();
+
+            public void Check(bool condition, string expectation)
+            {
+                if (!condition)
+                    Problems.Add(expectation);
+            }
+
             /// <summary>Runs an action inside the player's creature context with the recording decorators in front of the engine.</summary>
             public async Task PhaseAsync(Action action)
             {
@@ -116,7 +125,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 CloseWindows(fixture);
             }
 
-            Compare(ctx, name, CaptureHeader + transcript.Text);
+            var problems = run.Problems.Count == 0 ? string.Empty : " The script did not cover its flows: " + string.Join(" ", run.Problems);
+            Compare(ctx, name, CaptureHeader + transcript.Text, problems);
         }
 
         /// <summary>
@@ -227,7 +237,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                            level.GrantedFeats.Any(feat => AbilityCatalog.IsFeatRegistered(feat) &&
                                                           AbilityCatalog.GetAbilityDetail(feat).ImpactAction != null);
                 });
-                t.Step("hot-bar-perk-found", () => run.Context.Assert(hotBarIndex >= 0, "A perk that grants a quick bar feat is in the list."));
+                t.Step("hot-bar-perk-found", () => run.Check(hotBarIndex >= 0, "A perk that grants a quick bar feat is in the list."));
                 t.Step("hot-bar-perk-select", () => Select(hotBarIndex));
                 t.Step("hot-bar-perk-buy", Buy);
                 t.Step("hot-bar-slot-assigned", () => { });
@@ -266,7 +276,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 t.Step("beast-select", () => Select(IndexWhere(perk => CanBuyFirstRankForBeast(run.Player, perk, beastSkillPoints))));
                 t.Step("beast-buy", Buy);
                 var beastAfter = DB.Get<Beast>(beastId);
-                run.Context.Assert(beastAfter.UnallocatedSP < beastSkillPoints && beastAfter.Perks.Values.Sum() > beastPerkRanks,
+                run.Check(beastAfter.UnallocatedSP < beastSkillPoints && beastAfter.Perks.Values.Sum() > beastPerkRanks,
                     "The beast bought a perk rank and spent skill points.");
                 t.Step("my-perks", () => perks.OnClickMyPerks()());
                 t.Step("refresh-skill-xp", () => perks.Refresh(new SkillXPRefreshEvent(new List<SkillType> { SkillType.Force })));
@@ -551,9 +561,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     incubator.OnModalConfirmClick()();
                 });
                 // The job reached its last stage, so completing it hands out the egg and closes the job.
-                run.Context.AssertEqual(1, FullInventoryFixture.CountCarried(run.Player, "beast_egg"), "Completing the last stage creates the egg.");
-                run.Context.AssertEqual(0, DB.Search(new DBQuery<IncubationJob>()
-                    .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), payload.PropertyId, false)).Count(), "Completing the job closes it.");
+                run.Check(FullInventoryFixture.CountCarried(run.Player, "beast_egg") == 1, "Completing the last stage creates the egg.");
+                run.Check(!DB.Search(new DBQuery<IncubationJob>()
+                    .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), payload.PropertyId, false)).Any(), "Completing the job closes it.");
             });
 
             // The inventory is full while the window closes, so the DNA cannot go back to the player and stays held.
@@ -572,14 +582,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     incubator.OnWindowClosed()();
                     Gui.ClosePlayerWindow(run.Player, GuiWindowType.Incubator);
                 });
-                run.Context.Assert(!string.IsNullOrWhiteSpace((string)Get(incubator, "_dnaItem")), "The DNA stays held when the inventory is full.");
+                run.Check(!string.IsNullOrWhiteSpace((string)Get(incubator, "_dnaItem")), "The DNA stays held when the inventory is full.");
             });
             await run.Context.ExecuteInCreatureContextAsync(run.Player, () => FullInventoryFixture.Free(fillers));
             await run.Context.WaitFrameAsync();
             await run.PhaseAsync(() =>
             {
                 t.Step("reopen-with-held-items", () => incubator = t.Open<IncubatorViewModel>(GuiWindowType.Incubator, payload));
-                run.Context.Assert(!string.IsNullOrWhiteSpace((string)Get(incubator, "_dnaItem")), "The held DNA is in the slot after the window opens again.");
+                run.Check(!string.IsNullOrWhiteSpace((string)Get(incubator, "_dnaItem")), "The held DNA is in the slot after the window opens again.");
             });
         }
 
@@ -722,7 +732,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     droid.OnClickConstruct()();
                     droid.OnModalConfirmClick()();
                 });
-                run.Context.AssertEqual(1, FullInventoryFixture.CountCarried(run.Player, DroidService.DroidControlItemResref),
+                run.Check(FullInventoryFixture.CountCarried(run.Player, DroidService.DroidControlItemResref) == 1,
                     "Constructing creates the droid controller.");
                 t.Step("new-droid", () => droid.OnClickNewDroid()());
                 t.Step("close-and-reopen", () => droid = t.Reopen<DroidAssemblyViewModel>(GuiWindowType.DroidAssembly, null));
@@ -734,7 +744,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static object GetStatic(Type type, string name) =>
             type.GetField(name, System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public)!.GetValue(null);
 
-        private static void Compare(EngineTestContext ctx, string name, string actual)
+        private static void Compare(EngineTestContext ctx, string name, string actual, string problems)
         {
             var resource = "ViewModelTranscript/" + name + ".txt";
             using var stream = typeof(ViewModelBindingTranscriptEngineTests).Assembly.GetManifestResourceStream(resource);
@@ -757,7 +767,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             if (stream == null)
             {
-                ctx.Assert(false, $"No fixture is embedded; {Capture()}.");
+                ctx.Assert(false, $"No fixture is embedded; {Capture()}.{problems}");
                 return;
             }
 
@@ -771,10 +781,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 while (index < expectedLines.Length && index < actualLines.Length && expectedLines[index] == actualLines[index])
                     index++;
                 ctx.Assert(false, $"{name} transcript differs at line {index + 1}: expected '{Shorten(index < expectedLines.Length ? expectedLines[index] : "<end>")}' " +
-                                  $"but got '{Shorten(index < actualLines.Length ? actualLines[index] : "<end>")}'; {captured}.");
+                                  $"but got '{Shorten(index < actualLines.Length ? actualLines[index] : "<end>")}'; {captured}.{problems}");
                 return;
             }
 
+            ctx.Assert(problems.Length == 0, problems.Trim());
             ctx.SetResultDetail($"{actual.Split('\n').Length - 1} lines, identical to the captured transcript.");
         }
 

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.CombatAnalyzer
                 .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(OverloadStatusEffect))
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    if (StatusEffect.ApplyStatusEffect(activator, activator, new OverloadStatusEffect(), 12f))
+                    if (StatusEffectApplication.ApplyStatusEffect(activator, activator, new OverloadStatusEffect(), 12f))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), activator);
                 })

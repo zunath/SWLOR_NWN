@@ -14,8 +14,8 @@ public sealed class TestAbilityStatusApplicationService : AbilityStatusApplicati
 {
     private readonly AbilityBench _bench;
 
-    public TestAbilityStatusApplicationService(AbilityBench bench, IStatusEffectService statusEffect, IResistanceService resistance, IAbilityImpactState impactState)
-        : base(statusEffect, resistance, impactState, FacadeForwarder.For<ICombatAbilityBonusService>())
+    public TestAbilityStatusApplicationService(AbilityBench bench, IStatusEffectService statusEffect, IStatusEffectApplicationService application, IResistanceService resistance, IAbilityImpactState impactState)
+        : base(statusEffect, application, resistance, impactState, FacadeForwarder.For<ICombatAbilityBonusService>())
     {
         _bench = bench;
     }

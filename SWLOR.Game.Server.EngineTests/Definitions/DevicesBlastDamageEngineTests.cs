@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 StatusEffect.RemoveStatusEffect(typeof(BleedStatusEffect), target);
                 StatusEffect.RemoveStatusEffect(typeof(BurnStatusEffect), target);
                 if (bleedingTarget)
-                    StatusEffect.ApplyStatusEffect(player, target, new BleedStatusEffect(), 30f);
+                    StatusEffectApplication.ApplyStatusEffect(player, target, new BleedStatusEffect(), 30f);
                 AssignCommand(player, () => ClearAllActions());
                 await ctx.WaitFrameAsync();
                 var hitPoints = GetCurrentHitPoints(target);

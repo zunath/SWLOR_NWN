@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .HasRecastDelay(RecastGroup.FieldTool, FieldToolRecastSeconds)
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
-                    StatusEffect.ApplyStatusEffect(user, user, new StonewakeRelayStatusEffect(), 90f);
+                    StatusEffectApplication.ApplyStatusEffect(user, user, new StonewakeRelayStatusEffect(), 90f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), user);
                 });
 

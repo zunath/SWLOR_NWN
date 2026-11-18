@@ -25,11 +25,13 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private readonly DateTime _epoch = new(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ICombatPointService _combatPoint;
 
-        public PoisonsService(IStatusEffectService statusEffect, ICombatPointService combatPoint)
+        public PoisonsService(IStatusEffectService statusEffect, IStatusEffectApplicationService statusEffectApplication, ICombatPointService combatPoint)
         {
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _combatPoint = combatPoint;
         }
 
@@ -103,7 +105,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect.RefreshStatusEffectDuration(creature, statusEffectClass, source, durationSeconds);
 
         protected virtual bool ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds) =>
-            _statusEffect.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
+            _statusEffectApplication.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
 
         protected virtual void AddEspionageCombatPoint(uint player, uint creature) =>
             _combatPoint.AddCombatPoint(player, creature, SkillType.Espionage);

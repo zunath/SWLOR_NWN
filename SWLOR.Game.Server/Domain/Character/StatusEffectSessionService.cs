@@ -25,17 +25,20 @@ namespace SWLOR.Game.Server.Domain.Character
         [ReloadCarriedFrom("SWLOR.Game.Server.Domain.Character.StatusEffectService")]
         private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly IStatusEffectCatalogService _statusCatalog;
         private readonly IDBService _db;
         private readonly IAbilityCatalog _catalog;
 
         public StatusEffectSessionService(
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             IStatusEffectCatalogService statusCatalog,
             IDBService db,
             IAbilityCatalog catalog)
         {
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _statusCatalog = statusCatalog;
             _db = db;
             _catalog = catalog;
@@ -183,7 +186,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
                 statusEffect.OriginatingAbility = ability;
                 _statusEffect.RemoveOtherStanceStatuses(player, type);
-                _statusEffect.ApplyStatusEffect(player, player, statusEffect, 0f);
+                _statusEffectApplication.ApplyStatusEffect(player, player, statusEffect, 0f);
             }
         }
 

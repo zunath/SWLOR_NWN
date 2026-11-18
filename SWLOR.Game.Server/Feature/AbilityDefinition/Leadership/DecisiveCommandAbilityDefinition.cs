@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(DecisiveCommand1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(DecisiveCommand1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 affected.Add(friendly);

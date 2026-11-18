@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.DelaySecondsAsync(1f);
             ctx.AssertEqual(0, Stat.GetCurrentFP(caster), "FP starts empty and nothing else restores it");
 
-            StatusEffect.ApplyStatusEffect(caster, caster, typeof(ForceConvergenceStatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(caster, caster, typeof(ForceConvergenceStatusEffect), 30f);
             var total = GameMath.PercentOf(maxFP, ForceConvergenceStatusEffect.FPRestorePercent);
 
             await ctx.WaitUntilAsync(() => Stat.GetCurrentFP(caster) >= total, 28f, $"Convergence to restore {total} FP");

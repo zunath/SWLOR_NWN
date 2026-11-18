@@ -19,9 +19,9 @@ namespace SWLOR.Game.Server.Tests.Support;
 /// <summary>The stand-ins for the converted neighbours the ability instance takes, which answer from the bench and log what they are asked.</summary>
 public sealed partial class AbilityBench
 {
-    private IStatusEffectService StatusEffects()
+    private IStatusEffectApplicationService StatusApplications()
     {
-        var service = ScriptedProxy.Create<IStatusEffectService>(out var proxy);
+        var service = ScriptedProxy.Create<IStatusEffectApplicationService>(out var proxy);
         proxy.On("ApplyStatusEffect", args =>
             {
                 var effect = args[2] as IStatusEffect;
@@ -31,7 +31,14 @@ public sealed partial class AbilityBench
                     return false;
                 ActiveEffects[((uint)args[1]!, type)] = effect ?? ((IStatusEffect)Activator.CreateInstance(type)!);
                 return true;
-            })
+            });
+        return service;
+    }
+
+    private IStatusEffectService StatusEffects()
+    {
+        var service = ScriptedProxy.Create<IStatusEffectService>(out var proxy);
+        proxy
             .On("GetCreatureStatusEffects", args => CreatureEffects.TryGetValue((uint)args[0]!, out var found)
                 ? found
                 : new CreatureStatusEffect { StatGroup = new StatGroup() })

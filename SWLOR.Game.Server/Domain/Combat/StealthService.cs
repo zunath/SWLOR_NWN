@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Lazy<IPerkService> _perk;
         private readonly Lazy<IStatService> _stat;
         private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly Lazy<IStatusEffectApplicationService> _statusEffectApplication;
         private readonly Lazy<IEnmityService> _enmity;
         private readonly IAIService _ai;
         private readonly Lazy<IEspionageInfiltrationService> _espionageInfiltration;
@@ -56,6 +57,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             Lazy<IPerkService> perk,
             Lazy<IStatService> stat,
             Lazy<IStatusEffectService> statusEffect,
+            Lazy<IStatusEffectApplicationService> statusEffectApplication,
             Lazy<IEnmityService> enmity,
             IAIService ai,
             Lazy<IEspionageInfiltrationService> espionageInfiltration)
@@ -63,6 +65,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _perk = perk;
             _stat = stat;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _enmity = enmity;
             _ai = ai;
             _espionageInfiltration = espionageInfiltration;
@@ -813,7 +816,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect.Value.HasStatusEffect<StealthStatusEffect>(creature);
 
         protected virtual bool ApplyStealthStatus(uint creature) =>
-            _statusEffect.Value.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
+            _statusEffectApplication.Value.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
 
         protected virtual bool HasRestStatus(uint creature) =>
             _statusEffect.Value.HasStatusEffect<RestStatusEffect>(creature);

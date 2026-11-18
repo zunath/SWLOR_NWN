@@ -63,7 +63,7 @@ public static class TwinPistolCastCancellationEngineTests
                 ApplyEffectToObject(DurationType.Instant, EffectResurrection(), actor);
                 ctx.Assert(!GetIsDead(actor) && GetCurrentHitPoints(actor) > 0, "The native resurrection restores a living actor");
                 ctx.MakeHostile(target);
-                StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 ctx.Assert((DateTime.UtcNow - earnedAt).TotalSeconds < 2,
                     "The first revived hit occurs before the original two-second cooldown could expire");
                 OrdinaryAttackTraits.RecordHit(actor, target, long.MaxValue - 10);
@@ -352,7 +352,7 @@ public static class TwinPistolCastCancellationEngineTests
 
     private static void SeedExistingTraits(uint actor, uint target)
     {
-        StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+        StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
         // Controlled event setup isolates cancellation; Cadence generation has its own engine coverage.
         CadenceFixture.Grant(actor, 3);
         for (var index = 0; index < 3; index++)

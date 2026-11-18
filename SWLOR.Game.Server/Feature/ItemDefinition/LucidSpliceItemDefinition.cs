@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location, itemPropertyIndex) =>
                 {
                     Stat.RestoreFP(user, GameMath.PercentOf(Stat.GetMaxFP(user), 15));
-                    StatusEffect.ApplyStatusEffect(user, user, new LucidSpliceStatusEffect(), 90f);
+                    StatusEffectApplication.ApplyStatusEffect(user, user, new LucidSpliceStatusEffect(), 90f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), user);
                 });
 

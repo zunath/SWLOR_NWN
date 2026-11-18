@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 TemporaryStatModifier.Add(source, StatType.LowHPDamageDealtHPRestoreThresholdPercent, 40, 30f);
                 TemporaryStatModifier.Add(source, StatType.LowHPDamageDealtHPPercentRestore, 8, 30f);
             }
-            ctx.Assert(StatusEffect.ApplyStatusEffect(ascended, ascended, typeof(SoulAscensionBurstStatusEffect), 45f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(ascended, ascended, typeof(SoulAscensionBurstStatusEffect), 45f),
                 "Soul Ascension applies its real lifesteal buff");
             for (var i = 0; i < 6; i++)
             {
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.SetNPCPerkLevel(source, PerkType.LifeSiphon, 1);
                 ctx.AssertEqual(8, Stat.GetStatAdjustment(source, StatType.LowHPDamageDealtHPPercentRestore),
                     "Life Siphon supplies its authored 8% recovery");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(source, source, typeof(SoulAscensionBurstStatusEffect), 45f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(source, source, typeof(SoulAscensionBurstStatusEffect), 45f),
                     "Soul Ascension applies its real lifesteal buff");
             }
             foreach (var source in new[] { criticalFirst, passiveFirst })

@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             // Healing someone else still pays better. A caster healing themselves gets the FP
             // half of the trait rather than nothing, so Light has an FP engine while solo.
             var restoresStamina = target != activator;
-            StatusEffect.ApplyStatusEffect(
+            StatusEffectApplication.ApplyStatusEffect(
                 activator, target, new SereneFocusStatusEffect(restoresStamina), SereneFocusDurationSeconds);
         }
 
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                          .Take(2))
             {
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, ally, HarmonicRestorationHeal);
-                StatusEffect.ApplyStatusEffect(activator, ally, typeof(HarmonicRestorationStatusEffect), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, ally, typeof(HarmonicRestorationStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), ally);
                 healed.Add(ally);
             }

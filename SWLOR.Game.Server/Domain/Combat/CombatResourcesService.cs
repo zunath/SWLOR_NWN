@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatQueriesService _queries;
         private readonly IAbilityImpactState _impactState;
         private readonly IStatService _stat;
-        private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffect;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IPvpCombatService _pvpCombat;
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatQueriesService queries,
             IAbilityImpactState impactState,
             IStatService stat,
-            IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffect,
             ICombatRecorderService combatRecorder,
             ITemporaryStatModifierService temporaryStatModifier,
             IPvpCombatService pvpCombat,

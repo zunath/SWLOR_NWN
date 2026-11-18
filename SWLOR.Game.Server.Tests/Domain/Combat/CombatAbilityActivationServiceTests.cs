@@ -220,8 +220,9 @@ public class CombatAbilityActivationServiceTests
             {
                 _asked.Add($"Status {args[0]} {((Type)args[1]!).Name}");
                 return _currentForceAttack;
-            })
-            .On(nameof(IStatusEffectService.ApplyStatusEffect), args =>
+            });
+        var statusApplication = ScriptedProxy.Create<IStatusEffectApplicationService>(out var statusApplicationCalls);
+        statusApplicationCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), args =>
             {
                 _log.Add($"Apply {args[0]}>{args[1]} {Describe(args[2]!)} {args[3]}");
                 return _statusApplies;
@@ -265,7 +266,7 @@ public class CombatAbilityActivationServiceTests
                 return default(CombatRecordAttributionScope);
             });
 
-        return new CombatAbilityActivationService(queries, resources, timing, activity, damageTaken, stat, statusEffect, temporary,
+        return new CombatAbilityActivationService(queries, resources, timing, activity, damageTaken, stat, statusEffect, statusApplication, temporary,
             ability, perk, recast, enmity, recorder);
     }
 

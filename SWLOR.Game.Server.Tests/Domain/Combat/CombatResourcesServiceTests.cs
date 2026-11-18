@@ -96,8 +96,8 @@ public class CombatResourcesServiceTests
             .On(nameof(IStatService.GetCurrentFP), _ => _currentFP)
             .On(nameof(IStatService.GetMaxStamina), _ => _maxStamina)
             .On(nameof(IStatService.GetCurrentStamina), _ => _currentStamina);
-        var statusEffect = ScriptedProxy.Create<IStatusEffectService>(out _statusCalls);
-        _statusCalls.On(nameof(IStatusEffectService.ApplyStatusEffect), _ => true);
+        var statusEffect = ScriptedProxy.Create<IStatusEffectApplicationService>(out _statusCalls);
+        _statusCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), _ => true);
         var recorder = ScriptedProxy.Create<ICombatRecorderService>(out _recorderCalls);
         _recorderCalls
             .On(nameof(ICombatRecorderService.BeginRiderAttribution), _ => default(CombatRecordAttributionScope))

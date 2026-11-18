@@ -144,6 +144,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IStatusEffectService, StatusEffectService>();
             // Part 7 of the status effect split (P5-5e): login, logout, restart and reload; it registers as the holder of logged-out effects.
             services.AddSingleton<IStatusEffectSessionService, StatusEffectSessionService>();
+            // Part 3 of the status effect split (P5-5f): applying a status effect.
+            services.AddSingleton<IStatusEffectApplicationService, StatusEffectApplicationService>();
             services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
             services.AddSingleton<ITintMapStateService, TintMapStateService>();
         }

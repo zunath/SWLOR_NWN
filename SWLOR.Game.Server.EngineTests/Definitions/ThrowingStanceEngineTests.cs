@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature("nw_rat001", 3f);
             await ctx.WaitFrameAsync();
             Prepare(ctx, ordnance, plain, target);
-            ctx.Assert(StatusEffect.ApplyStatusEffect<OrdnanceStanceStatusEffect>(ordnance, ordnance, 60f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<OrdnanceStanceStatusEffect>(ordnance, ordnance, 60f),
                 "Ordnance Stance applies");
 
             var singleTarget = AbilityCatalog.GetAbilityDetail(FeatType.SeveringToss1);
@@ -51,9 +51,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var healthy = ctx.SpawnCreature("nw_bandit001", 3f, 2f);
             await ctx.WaitFrameAsync();
             Prepare(ctx, flurry, bleeding, healthy);
-            ctx.Assert(StatusEffect.ApplyStatusEffect<FlurryStanceStatusEffect>(flurry, flurry, 60f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<FlurryStanceStatusEffect>(flurry, flurry, 60f),
                 "Flurry Stance applies");
-            ctx.Assert(StatusEffect.ApplyStatusEffect(flurry, bleeding, new BleedStatusEffect(), 60f), "Bleed applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(flurry, bleeding, new BleedStatusEffect(), 60f), "Bleed applies");
 
             ctx.AssertEqual(0, Stat.GetStatAdjustment(flurry, StatType.AttackDelayReductionPercent),
                 "Flurry Stance no longer grants unconditional Haste");

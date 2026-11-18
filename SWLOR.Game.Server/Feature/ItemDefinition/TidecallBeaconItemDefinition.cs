@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         "TIDECALL_BEACON",
                         12 + GameMath.PercentOf(GetMaxHitPoints(user), 6),
                         60f);
-                    StatusEffect.ApplyStatusEffect(user, user, new TidecallBeaconStatusEffect(), 60f);
+                    StatusEffectApplication.ApplyStatusEffect(user, user, new TidecallBeaconStatusEffect(), 60f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), user);
                 });
 

@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var unmarked = Hit(marker, target);
             ctx.Assert(unmarked > 0, "the baseline hit must deal damage");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect(marker, target, typeof(MarkedForDeathStatusEffect), 60f, CombatDamageType.Physical),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(marker, target, typeof(MarkedForDeathStatusEffect), 60f, CombatDamageType.Physical),
                 "Marked for Death applies");
             var mark = (MarkedForDeathStatusEffect)StatusEffect.GetStatusEffect(target, typeof(MarkedForDeathStatusEffect));
 

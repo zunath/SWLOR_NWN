@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     if (existing != null)
                         StatusEffect.RemoveStatusEffect(activator, typeof(FinishingDriveMomentumStatusEffect), activator, false);
 
-                    if (StatusEffect.ApplyStatusEffect(activator, activator, new FinishingDriveMomentumStatusEffect(stacks), MomentumDurationSeconds))
+                    if (StatusEffectApplication.ApplyStatusEffect(activator, activator, new FinishingDriveMomentumStatusEffect(stacks), MomentumDurationSeconds))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 });
 

@@ -78,7 +78,7 @@ public class StatusEffectListenerTests : StatusEffectServiceTestBase
         var bare = Bench.CreateServiceWithoutListeners();
         var effect = Probe<ProbeEffect>();
 
-        var apply = () => bare.ApplyStatusEffect(Caster, Target, effect, 10f);
+        var apply = () => Bench.CreateApplicationOver(bare).ApplyStatusEffect(Caster, Target, effect, 10f);
 
         apply.Should().Throw<InvalidOperationException>().WithMessage("*applied listener*");
     }

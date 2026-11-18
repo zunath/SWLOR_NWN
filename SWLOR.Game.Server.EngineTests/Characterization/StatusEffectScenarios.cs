@@ -69,7 +69,7 @@ public static class StatusEffectScenarios
             var start = clock.ElapsedSeconds;
             scenario.SeedRandom(Seed);
             var effect = plan.Create();
-            var applied = StatusEffect.ApplyStatusEffect(source, target, effect, plan.DurationSeconds);
+            var applied = StatusEffectApplication.ApplyStatusEffect(source, target, effect, plan.DurationSeconds);
             await SettleAsync(scenario);
             table.Add(Row(plan.Label, 0, applied ? "apply" : "apply rejected", Round(clock.ElapsedSeconds - start),
                 Observe(plan, target, effect, applied ? string.Empty : "rejected")));
@@ -118,11 +118,11 @@ public static class StatusEffectScenarios
             {
                 new Step("advance 5", 5),
                 new Step("apply Bolster Attack II", 0, (source, target) =>
-                    StatusEffect.ApplyStatusEffect(source, target, new BolsterAttack2StatusEffect(), 20f)
+                    StatusEffectApplication.ApplyStatusEffect(source, target, new BolsterAttack2StatusEffect(), 20f)
                         ? "II applied" : "II rejected"),
                 new Step("advance 5", 5),
                 new Step("apply Bolster Attack I again", 0, (source, target) =>
-                    StatusEffect.ApplyStatusEffect(source, target, new BolsterAttack1StatusEffect(), 20f)
+                    StatusEffectApplication.ApplyStatusEffect(source, target, new BolsterAttack1StatusEffect(), 20f)
                         ? "I applied" : "I rejected"),
                 new Step("advance 20", 20)
             });
@@ -130,7 +130,7 @@ public static class StatusEffectScenarios
         {
             new Step("advance 4", 4),
             new Step("apply Stunned again", 0, (source, target) =>
-                StatusEffect.ApplyStatusEffect(source, target, new StunnedStatusEffect(), 30f)
+                StatusEffectApplication.ApplyStatusEffect(source, target, new StunnedStatusEffect(), 30f)
                     ? "second stun applied" : "second stun rejected"),
             new Step("advance 4", 4),
             new Step("advance 4", 4),

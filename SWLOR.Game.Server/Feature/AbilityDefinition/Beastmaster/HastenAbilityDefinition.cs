@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void ApplySelfStatus(uint activator, Type statusEffect, float duration, VisualEffect visualEffect)
         {
-            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
+            StatusEffectApplication.ApplyStatusEffect(activator, activator, statusEffect, duration);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(visualEffect), activator);
         }
 

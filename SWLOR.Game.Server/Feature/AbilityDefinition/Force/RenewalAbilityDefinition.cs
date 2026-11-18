@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
             var affinityMultiplier = CombatAbilityMagnitude.GetActiveForceAffinityRestorativeMagnitudeMultiplier(activator);
             var credited = new HashSet<uint>();
-            if (StatusEffect.ApplyStatusEffect(
+            if (StatusEffectApplication.ApplyStatusEffect(
                 activator,
                 friendly,
                 new RegenerativeHealingStatusEffect(name, healPerTick, affinityMultiplier, supportSkill: SkillType.Force, supportCredited: credited),

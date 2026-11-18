@@ -171,9 +171,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, Resistance.GetResistance(defender.Creature, ResistanceType.Mobility), "the player has no Mobility resistance");
                 ctx.AssertEqual(0, Resistance.GetResistance(npc, ResistanceType.Mobility), "the NPC has no Mobility resistance");
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker.Creature, defender.Creature, typeof(StunnedStatusEffect), 10f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker.Creature, defender.Creature, typeof(StunnedStatusEffect), 10f),
                     "the stun lands on the player");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker.Creature, npc, typeof(StunnedStatusEffect), 10f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker.Creature, npc, typeof(StunnedStatusEffect), 10f),
                     "the stun lands on the NPC");
 
                 var onPlayer = StatusEffect.GetStatusEffect<StunnedStatusEffect>(defender.Creature).GetRemainingDurationSeconds(System.DateTime.UtcNow);

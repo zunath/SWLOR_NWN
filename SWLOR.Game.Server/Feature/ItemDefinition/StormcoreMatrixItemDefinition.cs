@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         "STORMCORE_MATRIX",
                         15 + GameMath.PercentOf(GetMaxHitPoints(user), 8),
                         60f);
-                    StatusEffect.ApplyStatusEffect(user, user, new StormcoreMatrixStatusEffect(), 60f);
+                    StatusEffectApplication.ApplyStatusEffect(user, user, new StormcoreMatrixStatusEffect(), 60f);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), user);
                 });
 

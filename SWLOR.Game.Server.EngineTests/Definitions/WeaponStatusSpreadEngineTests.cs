@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             // Shattering Strike I strength, below the 15% default.
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, source, new SunderStatusEffect(12), 60f), "setup Sunder must apply");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, source, new SunderStatusEffect(12), 60f), "setup Sunder must apply");
             var ability = new SunderingSweepAbilityDefinition().BuildAbilities()[FeatType.SunderingSweep1];
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     if (!testsHitProc)
                     {
                         foreach (var source in sources)
-                            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, source, statusEffect, 60f), "setup status must apply");
+                            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, source, statusEffect, 60f), "setup status must apply");
                         ctx.Assert(GetDistanceBetween(sources[0], sources[1]) < GetDistanceBetween(sources[0], recipients[0]),
                             "the nearest neighbor must already carry the status, ahead of the clean recipient");
                     }

@@ -10,9 +10,9 @@ namespace SWLOR.Game.Server.Domain.Combat
     /// </summary>
     public class ResourceRestoredEffectsService : IResourceRestoredEffectsService
     {
-        private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffect;
 
-        public ResourceRestoredEffectsService(IStatusEffectService statusEffect)
+        public ResourceRestoredEffectsService(IStatusEffectApplicationService statusEffect)
         {
             _statusEffect = statusEffect;
         }

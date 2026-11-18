@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 if (GetArea(activator) == GetAreaFromLocation(destination) &&
                     GetDistanceBetweenLocations(GetLocation(activator), destination) < 2f &&
                     GetIsReactionTypeHostile(target, activator))
-                    StatusEffect.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
+                    StatusEffectApplication.ApplyStatusEffect(activator, target, typeof(StunnedStatusEffect),
                         StunDurationSeconds, CombatDamageType.Force);
             });
         }

@@ -67,7 +67,7 @@ public static class SaberWardConversionEngineTests
                     0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
                 TemporaryStatModifier.Add(target, StatType.MeleeDeflection, -100, 60f);
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), target, 60f);
-                ctx.Assert(StatusEffect.ApplyStatusEffect(target, target, new SaberWardStatusEffect(30, 6, 9), 60f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(target, target, new SaberWardStatusEffect(30, 6, 9), 60f),
                     "Saber Ward IV applies to the defender");
                 ctx.MakeHostile(target);
             });

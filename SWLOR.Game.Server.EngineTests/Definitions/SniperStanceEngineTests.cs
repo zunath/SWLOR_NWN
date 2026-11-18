@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), creature, 60f);
             }
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect<SniperStanceStatusEffect>(sniper, sniper, 60f),
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<SniperStanceStatusEffect>(sniper, sniper, 60f),
                 "Sniper Stance applies");
             ctx.AssertEqual(10, Stat.GetStatAdjustment(sniper, StatType.RangedAbilityLongRangeMinimumRangeMeters),
                 "Sniper Stance supplies its own 10m long-range threshold");

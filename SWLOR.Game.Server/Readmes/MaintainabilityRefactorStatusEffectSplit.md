@@ -652,3 +652,45 @@ parameters, so the Character -> Combat and Character -> Quests references of the
   through both reloads on both sides. With `HotReloadPlayers|StatusEffect` the base and the branch fail alike: the Piercing Toss bleed test (7 ticks, expected 6)
   in every generation and the `_creatureEffects` digest (34 and 67 entries, whose effects the status engine tests leave running) after each reload; the logged-out
   table matches in both.
+
+### P5-5f (application part)
+
+`StatusEffectService` 2,245 -> 1,912 lines, 8 services (unchanged: the apply timing, refresh and restart still use all eight until P5-5g).
+
+- **Part 3** `StatusEffectApplicationService` behind `IStatusEffectApplicationService` (Character, `GameServices.StatusEffectApplication`; 484 lines, 5 services:
+  `IStatusEffectService`, `IStatusEffectCatalogService`, `IMessagingService`, `IPlayerNameService`, `IActiveAbilityImpact`) holds the eight `ApplyStatusEffect` and
+  `ApplyPermanentStatusEffect` overloads, `ApplyAndProfileStatusEffect`, `RecordCapstoneProof`, the application steps and `SendStatusEffectFailure`. It has no state, handlers or
+  carried fields. `GetActiveAbilityImpactSummary` is its one `protected virtual` seam (part 1 keeps its own copy for refresh and restart until P5-5g).
+- **`ApplyStatusEffectInternal`** is 234 -> 52 lines: step 1 `TryDeferNativeAttackStatusEffect` (builds the closure only when `IsDeferredNativeAttackStatusEffect` says so, then
+  `DeferNativeAttackStatusEffect(creature, Action)` on part 1), step 2 `ResolveApplicationTiming` (public on part 1 until P5-5g moves it to part 4; returns the readonly record
+  struct `StatusApplicationTiming`), step 3 `ResolveReplacedEffects` (takes the timing by `ref`), step 4 `ValidateApplication`, step 5 `TryRefreshInPlace` (part 1, promoted),
+  step 6 `ClearConflictingEffects` (returns the tick anchor, which the original read before the removals), step 7 `ActivateEffect`, step 8 `AnnounceApplication`. Every
+  statement and its order is kept; no step is over 55 lines. The longest method in the file is gone from `LongMethods.txt`.
+- **Promoted on part 1** (public, on `IStatusEffectService`): `ResolveApplicationTiming`, `TryRefreshInPlace`, `EnsureCreatureStatusEffectTracker`, `ApplyTrackedNWNEffect`,
+  `HasStatAdjustment`, `PublishStatusEffectReceivedRefresh`, `NotifyStatusApplied`, `NotifyHostileDebuffApplied`, `NotifyApplicationCompleted`,
+  `IsDeferredNativeAttackStatusEffect`, `DeferNativeAttackStatusEffect` and `RemoveStatusEffectForReplacement` (a public wrapper for the private removal overload with
+  `sendsWornOffMessage: false, removeNativeEffect: true, isReplacement: true`, which every application call used; it is listed in `RemovalsThatNameTheirTarget`).
+- **Departures from the map:** `HasStatAdjustment` and `PublishStatusEffectReceivedRefresh` stay in part 1 (public) instead of moving to part 3, because removal, reapply and
+  restart use them too, so part 3 needs no `IGuiRefreshPublisher`. `StealthService` takes `Lazy<IStatusEffectApplicationService>` (not plain): a plain parameter makes the cycle
+  `IMessagingService -> IStealthService -> IStatusEffectApplicationService -> IMessagingService`, the same one that holds its `Lazy<IStatusEffectService>`; P5-5h tries to make both plain.
+- **Holders.** Apply-only holders swap their type to `IStatusEffectApplicationService` (`CombatResourcesService`, `ResourceRestoredEffectsService`, `BeastMasteryService`,
+  `DroidService`, `TrapsService`; count unchanged). The 19 that use part 1 as well gain it as an extra parameter: `AbilityAuraService` 5, `AbilityStatusApplicationService` 5,
+  `StatusEffectSessionService` 5, `CombatActivityService` 10, `CombatDamageModifiersService` 9, `CombatSuppressionService` 5, `OrdinaryAttackTraitsService` 3,
+  `PairedRangedTraitsService` 7, `PoisonsService` 3, `PvpCombatService` 3, `MeleeTechniqueService` 7, `StealthService` 7 (one `Lazy<>` replaces nothing; see above),
+  `CraftStyleEffectsService` 3, `PerformanceInspiredService` 2, `DeathService` 10 (the guard counts 10 services; it has 11 parameters with its listener list). Accepted growth
+  (decision 1 and 10), each removed by P5-7: `CombatHitEffectsService` 17 -> 18, `CombatDamageTakenService` 18 -> 19, `CombatAbilityImpactService` 14 -> 15,
+  `CombatAbilityActivationService` 13 -> 14, `DeathService` 9 -> 10 by the guard (11 parameters).
+- **New debt from the facade tool:** `HeavyVibrobladeActiveAbilityDefinitionBase` (content, static `GameServices` lookups) goes from 10 to 11 services because its calls to
+  `ApplyStatusEffect` now name `StatusEffectApplication`; `WeaponActiveAbilityDefinitionBase` goes 22 -> 23. Both stay until the P5-16 content split (P5-16f splits the weapon base).
+- **Callers:** `Apply-FacadeRemoval.ps1` rewrote 271 static call sites in 130 files (`RemovedFacades.json` lists `ApplyStatusEffect` and `ApplyPermanentStatusEffect` under
+  owner `StatusEffectApplication`); `-Check` of it, of `Apply-ContentInjection.ps1` and of the other mechanical scripts reports nothing to change.
+- **Tests:** `TestStatusEffectApplicationService` is the part 3 double (`Bench.Application`; `CreateApplicationOver(service)` builds one over a tracker with no listener);
+  `StatusEffectSource.PartFiles` and `InterfaceFiles` gain the part; `ClockSeamFiles.txt` lists it (`ResolveReplacedEffects` reads the clock). The ability bench has a second
+  scripted proxy for `IStatusEffectApplicationService`; tests that scripted `ApplyStatusEffect` on the status proxy script it on an application proxy that shares their log.
+  Two `StatusEffectDeliveryTests` read the steps by name (`ResolveApplicationTiming`, `ResolveReplacedEffects`, `AnnounceApplication`, `ActivateEffect`) and the order in which
+  `ApplyStatusEffectInternal` calls them. `PlayerMessageAudit.json`: 7 rows re-keyed (`ResolveApplicationTiming`, `AnnounceApplication`, `SendStatusEffectFailure`).
+- **Readings and runs:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs, Markdown and JSON) and its ability table are
+  byte-identical to the base's (`fd7ea7054`). `SWLOR.Game.Server.Tests` (no exclusions) fails the same 121 tests with the same messages on the base and the branch (the
+  ones that read `SWLOR_Haks` content the sparse checkout lacks): 19,013 passed on the base, 19,016 on the branch (3 new tests of the application double). The engine run
+  filtered with `StatusEffect|HotReloadPlayers` (host entry, server-only haks) passes 26 of 28 with 1 skipped (hot reload off); the one failure is the Piercing Toss bleed test
+  (7 ticks, expected 6) that P5-5e recorded failing alike on its base. No hot-reload check ran: this part holds no state, handlers or carried fields.

@@ -75,6 +75,60 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>Tells the listeners and the effect's own handler that a status effect was removed.</summary>
         void NotifyStatusEffectRemoved(uint creature, IStatusEffect statusEffect);
 
+        /// <summary>The tracker of a creature's status effects, created when it has none.</summary>
+        CreatureStatusEffect EnsureCreatureStatusEffectTracker(uint creature);
+
+        /// <summary>
+        /// Works out how long an application lasts (the outgoing adjustments, resistance, immunity and the control budget). False,
+        /// with the "resisted" message sent to the source, when nothing is left of the duration. Moves to the duration part.
+        /// </summary>
+        bool ResolveApplicationTiming(
+            IStatusEffect statusEffect,
+            uint source,
+            uint creature,
+            float durationSeconds,
+            bool isPermanent,
+            ResistanceType resistanceOverride,
+            CombatDamageType sourceDamageType,
+            out StatusApplicationTiming timing);
+
+        /// <summary>Refreshes an active effect of the same type in place when applying it again would produce the same state; false when the effect must be applied fresh.</summary>
+        bool TryRefreshInPlace(
+            IStatusEffect statusEffect,
+            uint source,
+            uint creature,
+            int durationTicks,
+            int durationTicksWithoutResistance,
+            float durationSeconds,
+            ResistanceType resistanceType);
+
+        /// <summary>Removes every instance of a type, from one source or any (<c>OBJECT_INVALID</c>), because an application replaces it: no worn-off message, the native effect removed.</summary>
+        void RemoveStatusEffectForReplacement(Type type, uint creature, uint source);
+
+        /// <summary>Whether a limited attack-timing effect granted to a creature now must wait for its native attack cycle to end.</summary>
+        bool IsDeferredNativeAttackStatusEffect(IStatusEffect statusEffect, uint creature);
+
+        /// <summary>Holds an application until the outermost native attack cycle of the creature ends, and runs it then.</summary>
+        void DeferNativeAttackStatusEffect(uint creature, Action applyDeferredEffect);
+
+        /// <summary>Applies the native effect of a status effect and tracks it, so a restart or logout finds it.</summary>
+        void ApplyTrackedNWNEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent);
+
+        /// <summary>Whether an effect adjusts any stat.</summary>
+        bool HasStatAdjustment(IStatusEffect statusEffect);
+
+        /// <summary>Refreshes the character sheet of a creature that received a status effect.</summary>
+        void PublishStatusEffectReceivedRefresh(uint creature);
+
+        /// <summary>Tells the applied listeners an effect was applied, so the stamina drain and the like run.</summary>
+        void NotifyStatusApplied(uint source, uint creature, StatusEffectCategory categories);
+
+        /// <summary>Tells the applied listeners a hostile debuff was applied, so the party buff runs.</summary>
+        void NotifyHostileDebuffApplied(uint source, AbilityDetail ability);
+
+        /// <summary>Tells the applied listeners an application finished, so the capstone proof counts it.</summary>
+        void NotifyApplicationCompleted(uint source, uint creature, Type statusEffectType, AbilityDetail ability);
+
         void ClearStatusEffectsOnDeath(uint player);
 
         /// <summary>
@@ -108,11 +162,6 @@ namespace SWLOR.Game.Server.Domain.Character
 
         bool HasAnyActiveEffect(uint creature, StatusEffectSourceType sourceType);
 
-        void ApplyPermanentStatusEffect<T>(uint source, uint creature)
-            where T: IStatusEffect;
-
-        void ApplyPermanentStatusEffect(Type type, uint source, uint creature);
-
         /// <summary>
         /// Restarts an active effect's duration exactly as re-applying the same effect from the same
         /// source would, without replacing it or repeating its application message. For effects whose
@@ -123,49 +172,6 @@ namespace SWLOR.Game.Server.Domain.Character
             Type statusEffectClass,
             uint source,
             float durationSeconds);
-
-        bool ApplyStatusEffect<T>(
-            uint source,
-            uint creature,
-            float durationSeconds,
-            ResistanceType resistanceOverride = ResistanceType.Invalid)
-            where T: IStatusEffect;
-
-        bool ApplyStatusEffect<T>(
-            uint source,
-            uint creature,
-            float durationSeconds,
-            CombatDamageType sourceDamageType)
-            where T : IStatusEffect;
-
-        bool ApplyStatusEffect(
-            uint source,
-            uint creature,
-            IStatusEffect statusEffect,
-            float durationSeconds,
-            ResistanceType resistanceOverride = ResistanceType.Invalid);
-
-        bool ApplyStatusEffect(
-            uint source,
-            uint creature,
-            IStatusEffect statusEffect,
-            float durationSeconds,
-            CombatDamageType sourceDamageType);
-
-        bool ApplyStatusEffect(
-            uint source,
-            uint creature,
-            Type statusEffectClass,
-            float durationSeconds,
-            ResistanceType resistanceOverride = ResistanceType.Invalid);
-
-        bool ApplyStatusEffect(
-            uint source,
-            uint creature,
-            Type statusEffectClass,
-            float durationSeconds,
-            CombatDamageType sourceDamageType,
-            Type replacedStatusEffectType = null);
 
         bool HasStatusEffect(uint creature, Type statusEffectClass);
 

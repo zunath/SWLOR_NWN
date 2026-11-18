@@ -30,7 +30,7 @@ public abstract class StatusEffectServiceTestBase
 
     protected TestStatusEffectCatalogService Catalog => Bench.Catalog;
 
-    protected TestStatusEffectService Application => Bench.Application;
+    protected TestStatusEffectApplicationService Application => Bench.Application;
 
     protected TestStatusEffectService Duration => Bench.Duration;
 

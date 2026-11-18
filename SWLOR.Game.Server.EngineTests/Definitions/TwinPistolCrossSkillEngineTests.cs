@@ -70,7 +70,7 @@ public static class TwinPistolCrossSkillEngineTests
                     ctx.SetNPCResources(actor, 100, 100);
                     ctx.SetNPCPerkLevel(actor, PerkType.Headshot, 1);
                     CreaturePlugin.AddFeat(actor, FeatType.Headshot1);
-                    if (stance) StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                    if (stance) StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                     var bonus = PairedRangedTraits.BeginAbility(actor, false, false);
                     PairedRangedTraits.CompleteAbility(actor, bonus, false, 0, 0, 6, 25, 12);
                     ctx.SeedRandom(94561);
@@ -174,11 +174,11 @@ public static class TwinPistolCrossSkillEngineTests
                 ctx.Assert(StatusEffect.GetStatusEffect<TwinSunsStatusEffect>(actor) == null,
                     "The sixth ordinary attempt exhausts the Twin Suns status");
 
-                StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 GrantTwinSuns(12);
                 AssertDamage(Sample(8, 0, true), 0, -30, true, "Akimbo on one pistol with Twin Suns");
                 StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
-                StatusEffect.ApplyPermanentStatusEffect<CrossfireStanceStatusEffect>(actor, actor);
+                StatusEffectApplication.ApplyPermanentStatusEffect<CrossfireStanceStatusEffect>(actor, actor);
                 GrantTwinSuns(12);
                 AssertDamage(Sample(8, 0, true), 0, -20, true, "Crossfire on one pistol with Twin Suns");
                 StatusEffect.RemoveStatusEffect<CrossfireStanceStatusEffect>(actor);
@@ -307,12 +307,12 @@ public static class TwinPistolCrossSkillEngineTests
                         });
                     }
                     var baseline = Sample();
-                    StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                    StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                     var akimbo = Sample();
                     ctx.Assert(akimbo / baseline is > .67 and < .71,
                         $"The same {resref} pays Akimbo's native ordinary damage cost ({baseline:0.00}->{akimbo:0.00})");
                     StatusEffect.RemoveStatusEffect<AkimboStanceStatusEffect>(actor);
-                    StatusEffect.ApplyPermanentStatusEffect<CrossfireStanceStatusEffect>(actor, actor);
+                    StatusEffectApplication.ApplyPermanentStatusEffect<CrossfireStanceStatusEffect>(actor, actor);
                     var crossfire = Sample();
                     ctx.Assert(crossfire / baseline is > .77 and < .81,
                         $"The same {resref} pays Crossfire's native ordinary damage cost ({baseline:0.00}->{crossfire:0.00})");
@@ -336,7 +336,7 @@ public static class TwinPistolCrossSkillEngineTests
                     return count;
                 }
                 var ordinaryCount = await CountActualAttacks();
-                await ctx.ExecuteInCreatureContextAsync(actor, () => StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor));
+                await ctx.ExecuteInCreatureContextAsync(actor, () => StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor));
                 var hastedCount = await CountActualAttacks();
                 ctx.Assert(hastedCount > ordinaryCount, $"The unchanged {resref} actually attacks faster with global Haste ({ordinaryCount}->{hastedCount} in24s)");
                 ctx.Log($"{resref}:actual native hit counts in matched24s windows baseline={ordinaryCount}, Akimbo={hastedCount}");

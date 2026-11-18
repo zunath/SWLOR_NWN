@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ? typeof(TriageProtocol2StatusEffect)
                 : typeof(TriageProtocol1StatusEffect);
 
-            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (rank >= 2)
                 {
-                    StatusEffect.ApplyStatusEffect(activator, friendly, typeof(BolsterResolve2StatusEffect), durationSeconds);
+                    StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(BolsterResolve2StatusEffect), durationSeconds);
                 }
 
                 bolstered.Add(friendly);

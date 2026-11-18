@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 {
                     foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 8.0f))
                     {
-                        if (StatusEffect.ApplyStatusEffect(activator, ally, new FinalMandateStatusEffect(), 30f))
+                        if (StatusEffectApplication.ApplyStatusEffect(activator, ally, new FinalMandateStatusEffect(), 30f))
                             Ability.PlaySuccessfulImpactVisualEffect(activator, ally);
                     }
                 });

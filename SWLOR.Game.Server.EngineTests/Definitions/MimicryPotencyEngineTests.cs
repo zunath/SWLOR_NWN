@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 ctx.Log("Testing Inner Circle Surge primary and chain impacts with zero and three Momentum stacks.");
                 var baseline = await MeasureImpactAsync(ctx, caster, FeatType.InnerCircleSurgeTechnique, withChainTarget: true);
-                StatusEffect.ApplyStatusEffect(caster, caster, new FinishingDriveMomentumStatusEffect(3), 30f);
+                StatusEffectApplication.ApplyStatusEffect(caster, caster, new FinishingDriveMomentumStatusEffect(3), 30f);
                 var boosted = await MeasureImpactAsync(ctx, caster, FeatType.InnerCircleSurgeTechnique, withChainTarget: true);
                 for (var index = 0; index < baseline.Length; index++)
                 {
@@ -86,8 +86,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var target = ctx.SpawnCreature("nw_rat001", 2f);
             await ctx.WaitFrameAsync();
             PrepareCreature(ctx, target);
-            StatusEffect.ApplyStatusEffect(caster, caster, new FinishingDriveMomentumStatusEffect(3), 30f);
-            StatusEffect.ApplyStatusEffect(caster, caster, new OverloadStatusEffect(), 30f);
+            StatusEffectApplication.ApplyStatusEffect(caster, caster, new FinishingDriveMomentumStatusEffect(3), 30f);
+            StatusEffectApplication.ApplyStatusEffect(caster, caster, new OverloadStatusEffect(), 30f);
             ctx.Log($"Rounding and exclusion setup: caster={caster}, target={target}, stacks=3, Overload active, potency={Stat.GetStatAdjustment(caster, StatType.MimicryPotencyPercent)}%, expected potency=74%.");
             ctx.AssertEqual(74, Stat.GetStatAdjustment(caster, StatType.MimicryPotencyPercent), "potency sources add");
             var roundedDamage = GameServices.CombatDamageModifiers.ApplyMimicryAbilityDamageModifier(caster, 9, SkillType.Mimicry, true);

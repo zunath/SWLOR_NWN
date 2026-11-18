@@ -60,7 +60,7 @@ public static class AbilityRun
         try
         {
             foreach (var effectType in behaviorCase.TargetSetupStatusEffects)
-                StatusEffect.ApplyStatusEffect(caster, target, effectType, 60f);
+                StatusEffectApplication.ApplyStatusEffect(caster, target, effectType, 60f);
 
             ctx.SetResources(caster, ResourcePool, ResourcePool);
             CreaturePlugin.AddFeat(caster, behaviorCase.Feat);

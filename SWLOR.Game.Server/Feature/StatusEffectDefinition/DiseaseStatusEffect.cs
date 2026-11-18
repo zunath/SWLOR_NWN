@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Disease_S), creature);
-            StatusEffect.ApplyStatusEffect(source, creature, typeof(DiseaseVitalityPenaltyStatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(source, creature, typeof(DiseaseVitalityPenaltyStatusEffect), 30f);
         }
 
         protected override void Remove(uint creature)

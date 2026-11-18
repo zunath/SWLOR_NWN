@@ -55,7 +55,7 @@ public static class MimicryTraitPotencyEngineTests
         var iron = AbilityCatalog.GetAbilityDetail(FeatType.IronCarapaceTechnique);
         var before = Stat.GetStatSources(player, StatType.PhysicalDefensePercentAdjustment)
             .Single(source => source.Key == $"trait:{(int)FeatType.IronCarapaceTechnique}");
-        StatusEffect.ApplyStatusEffect(player, player, new OverloadStatusEffect(), 30f);
+        StatusEffectApplication.ApplyStatusEffect(player, player, new OverloadStatusEffect(), 30f);
         ctx.AssertEqual(12, TraitStatBonus(player, StatType.PhysicalDefensePercentAdjustment), "only equipped Iron Carapace contributes");
         var boosted = Stat.GetStatSources(player, StatType.PhysicalDefensePercentAdjustment)
             .Single(source => source.Key == before.Key);

@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Apply(uint creature, int durationTicks)
         {
             TrackGuardedTarget(Source, creature);
-            StatusEffect.ApplyStatusEffect(Source, Source, typeof(GuardingStatusEffect), 0f);
+            StatusEffectApplication.ApplyStatusEffect(Source, Source, typeof(GuardingStatusEffect), 0f);
             RefreshGuardBenefit(creature);
             SendGuardingMessages(creature);
         }

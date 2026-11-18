@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             }
 
             StatusEffect.RemoveStatusEffect(defender, typeof(EmbattledStatusEffect), false);
-            StatusEffect.ApplyStatusEffect(
+            StatusEffectApplication.ApplyStatusEffect(
                 defender,
                 defender,
                 new EmbattledStatusEffect(stackCount, defense, forceDefense, mobility),

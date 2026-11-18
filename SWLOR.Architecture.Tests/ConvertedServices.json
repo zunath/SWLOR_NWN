@@ -114,6 +114,7 @@
     { "name": "Stat", "domain": "Character" },
     { "name": "StatRecord", "domain": "Character" },
     { "name": "StatusEffect", "domain": "Character" },
+    { "name": "StatusEffectApplication", "domain": "Character" },
     { "name": "StatusEffectCatalog", "domain": "Character" },
     { "name": "StatusEffectSession", "domain": "Character" },
     { "name": "Stealth", "domain": "Combat" },

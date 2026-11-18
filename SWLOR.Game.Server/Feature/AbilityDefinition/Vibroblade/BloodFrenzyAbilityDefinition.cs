@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
                 .IsCastedAbility()
                 .BreaksStealth()
                 .HasImpactAction((activator, target, level, location) =>
-                    StatusEffect.ApplyStatusEffect(activator, activator, new BloodFrenzyStatusEffect(),
+                    StatusEffectApplication.ApplyStatusEffect(activator, activator, new BloodFrenzyStatusEffect(),
                         CapstoneAbility.ActiveDurationSeconds));
 
             return builder.Build();

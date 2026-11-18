@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition;
 using SWLOR.Game.Server.Service.CraftService;
@@ -134,9 +135,15 @@ public class PowerGloveContentTests
         appearances.BottomParts.Should().Equal(101);
         appearances.MiddleParts.Select(partId => appearances.GetPartName(AppearanceWeapon.Middle, partId))
             .Should().Equal("Power Glove", "Vibroknuckler", "Blastknuckle", "Shock Glove", "Power Fist", "Bare Fists (Invisible)",
-                "Rivet Knuckler", "Arc Knuckler", "Breacher Cestus", "Fang Claws", "Pulse Cestus", "Talon Knuckler",
-                "Aegis Guard", "Cinder Knuckler", "Obsidian Cestus", "Rail Claws", "Thunder Knuckle", "Spine Cestus",
-                "Ion Guard", "Impact Knuckler", "Relic Claws");
+                "Rivet Knuckler", "Arc Knuckler", "Breach Cestus", "Fang Claws", "Pulse Cestus", "Talon Knuckler",
+                "Aegis Guard", "Cinder Knuckle", "Obsidian Fist", "Rail Claws", "Thunder Fist", "Spine Cestus",
+                "Ion Guard", "Impact Fist", "Relic Claws");
+        foreach (var partId in appearances.MiddleParts)
+        {
+            var tileName = AppearancePartNames.TileName(appearances.GetPartName(AppearanceWeapon.Middle, partId));
+            AppearancePartNames.Width(tileName).Should().BeLessThanOrEqualTo(AppearancePartNames.MaxWidth,
+                $"\"{tileName}\" is drawn under a Part Browser tile");
+        }
         appearances.GetPartName(AppearanceWeapon.Top, 101).Should().Be("Part #101");
         appearances.GetPartName(AppearanceWeapon.Bottom, 101).Should().Be("Part #101");
         new KatarAppearanceDefinition().GetPartName(AppearanceWeapon.Middle, 101).Should().Be("Part #101",

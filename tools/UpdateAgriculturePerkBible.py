@@ -32,6 +32,7 @@ PERK_DEFINITIONS = ROOT / "SWLOR.Game.Server" / "Feature" / "PerkDefinition"
 SHEET = "Agriculture"
 
 TEMPLATE_PERK_ROW = 9
+STYLE_TOTAL_NOTE = "Counts one of the two rank-20 styles; they exclude each other."
 FARMING_TOTAL_ROW = 14
 FIRST_LINE_ROW = 16
 
@@ -50,11 +51,6 @@ ACTION_CP = {"KitchenReduce": ["12", "11"]}
 # A perk the player switches on or off for each dish.
 TOGGLE_PERKS = {"SeasonedPalate"}
 
-DESCRIPTION_MARKER = "The Chef (Kitchen) and Angler"
-DESCRIPTION_SUFFIX = (
-    " The Chef (Kitchen) and Angler (Line) lines are two optional lines of 25 SP each at Agriculture"
-    " 5/10/15/20/25/30/35/40/45/50, with a choice of two exclusive styles at rank 20 and a capstone at rank 50. Farming is not started,"
-    " so Total SP counts its rows beside the two lines.")
 
 
 def parse_line(path: Path) -> list[dict]:
@@ -145,6 +141,8 @@ def update_sheet(sheet: Bible.Sheet, lines: list[tuple[str, str, list[dict]]]) -
     styles = {col: Bible.cell_style(cell) for col, cell in sheet.row_cells(TEMPLATE_PERK_ROW).items()}
     total_styles = {col: Bible.cell_style(cell) for col, cell in sheet.row_cells(FARMING_TOTAL_ROW).items()}
     names = {purchase["perk"]: purchase["name"] for _line, _engine, purchases in lines for purchase in purchases}
+    notes_col = sheet.header_columns(8)["Notes"]
+    notes_style = styles.get(notes_col, styles["G"])
 
     row = FIRST_LINE_ROW
     total_rows, totals, summary = [], [], {}
@@ -164,6 +162,7 @@ def update_sheet(sheet: Bible.Sheet, lines: list[tuple[str, str, list[dict]]]) -
             "A": Bible.text_cell(f"A{row}", total_styles["A"], "Total"),
             "B": Bible.num_cell(f"B{row}", total_styles["B"], total, f"SUM(B{first}:B{last})-B{alternative_row}"),
             "C": Bible.blank_cell(f"C{row}", total_styles.get("C", total_styles["B"])),
+            notes_col: Bible.text_cell(f"{notes_col}{row}", notes_style, STYLE_TOTAL_NOTE),
         }, after=row - 1)
         total_rows.append(row)
         totals.append(total)
@@ -175,11 +174,6 @@ def update_sheet(sheet: Bible.Sheet, lines: list[tuple[str, str, list[dict]]]) -
     grand = farming + sum(totals)
     Bible.set_formula(sheet, "D4", f"SUM({refs})", grand)
 
-    cell = sheet.row_cells(3)["B"]
-    text = sheet.text_of(cell)
-    if DESCRIPTION_MARKER in text:
-        text = text[:text.index(DESCRIPTION_MARKER)].rstrip()
-    sheet.set_cell(3, "B", Bible.text_cell("B3", Bible.cell_style(cell), text + DESCRIPTION_SUFFIX))
     summary["total_sp"] = grand
     return summary
 

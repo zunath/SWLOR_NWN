@@ -27,7 +27,11 @@ public class GeneratedWeaponPerkBehaviorTests
     private IDisposable _facadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildFacades() => _facades = new FacadeContainer();
+    public void BuildFacades()
+    {
+        _facades = new FacadeContainer();
+        _facades.Get<IStatusEffectService>().RegisterAppliedListener(StatusEffectListenerStandIns.Silent.Instance);
+    }
 
     [OneTimeTearDown]
     public void DisposeFacades() => _facades.Dispose();
@@ -1758,7 +1762,7 @@ public class GeneratedWeaponPerkBehaviorTests
         staminaDrainedIndex.Should().BeGreaterThan(reduceStaminaIndex);
         feedbackIndex.Should().BeGreaterThan(staminaDrainedIndex);
         staminaDrainMethod.Should().NotContain("ColorToken.Combat($\"-{staminaDrain} STM\")");
-        statusEffectSource.Should().Contain("ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories)");
+        statusEffectSource.Should().Contain("NotifyStatusApplied(source, creature, statusEffect.Categories)");
         usePerkFeatSource.Should().Contain("public static bool InterruptAbilityActivation(uint activator)");
         usePerkFeatSource.Should().Contain("activation.Ability.ChannelInterruptAction?.Invoke(activator)");
         combatSource.Should().Contain("StatusEffectCategory.Infection => typeof(InfectionStatusEffect)");

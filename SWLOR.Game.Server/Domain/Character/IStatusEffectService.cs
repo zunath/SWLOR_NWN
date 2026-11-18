@@ -21,6 +21,18 @@ namespace SWLOR.Game.Server.Domain.Character
         void RegisterStatEffectListener(IStatEffectListener listener);
 
         /// <summary>
+        /// Registers who is told about stance removal and about direct hits about to land (<see cref="IStatusEffectMeleeListener"/>).
+        /// Registering the same listener twice keeps one entry.
+        /// </summary>
+        void RegisterMeleeListener(IStatusEffectMeleeListener listener);
+
+        /// <summary>
+        /// Registers who is told when a status effect is applied or refreshed (<see cref="IStatusEffectAppliedListener"/>), in the
+        /// order they register. Registering the same listener twice keeps one entry.
+        /// </summary>
+        void RegisterAppliedListener(IStatusEffectAppliedListener listener);
+
+        /// <summary>
         /// When a player enters the server, apply the NWN effect system
         /// </summary>
         void OnPlayerEnter();

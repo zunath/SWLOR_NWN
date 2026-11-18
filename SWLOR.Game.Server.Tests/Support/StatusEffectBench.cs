@@ -25,6 +25,7 @@ public sealed partial class StatusEffectBench : IDisposable
     private readonly IDisposable _engineScope;
     private readonly IDisposable _creaturePluginScope;
     private readonly HashSet<object> _ranClosures = new(ReferenceEqualityComparer.Instance);
+    private readonly Func<TestStatusEffectService> _createService;
 
     public StatusEffectBench()
     {
@@ -61,19 +62,6 @@ public sealed partial class StatusEffectBench : IDisposable
                 return ResistedTicks?.Invoke((int)args[2]!) ?? (int)args[2]!;
             });
 
-        var melee = ScriptedProxy.Create<IMeleeTechniqueService>(out var meleeProxy);
-        meleeProxy
-            .On("OnStanceChanged", args =>
-            {
-                Log.Add($"OnStanceChanged:{args[0]}");
-                return null;
-            })
-            .On("PrepareDirectDamage", args =>
-            {
-                Log.Add($"PrepareDirectDamage:{args[0]}:{args[1]}:{args[2]}");
-                return null;
-            });
-
         var recorder = ScriptedProxy.Create<ICombatRecorderService>(out var recorderProxy);
         recorderProxy
             .On("get_IsRecording", args => Recording)
@@ -102,15 +90,12 @@ public sealed partial class StatusEffectBench : IDisposable
             return null;
         });
 
-        var capstone = ScriptedProxy.Create<ICapstoneProofService>(out var capstoneProxy);
-        capstoneProxy.On("RecordStatusEffect", args =>
-        {
-            Log.Add($"CapstoneProof:{args[0]}:{args[1]}:{((Type)args[2]!).Name}:{(args[3] as AbilityDetail)?.Name}");
-            return null;
-        });
-
         Catalog = new TestStatusEffectCatalogService(this);
-        Service = new TestStatusEffectService(this, resistance, Catalog, melee, recorder, messaging, playerName, gui, capstone, Db);
+        _createService = () => new TestStatusEffectService(this, resistance, Catalog, recorder, messaging, playerName, gui, Db);
+        Service = _createService();
+        Service.RegisterMeleeListener(new StatusEffectListenerStandIns.Melee(Log));
+        Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Impact(Log));
+        Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Capstone(Log));
     }
 
     /// <summary>The creature <see cref="IMessagingService.SendMessageNearbyToPlayers(uint, BuildMessageDelegate, float)"/> builds its text for.</summary>
@@ -127,6 +112,9 @@ public sealed partial class StatusEffectBench : IDisposable
     /// Part 1 of the status effect split, <c>StatusEffectService</c> (stays): the trackers, the reads and the removal.
     /// </summary>
     public TestStatusEffectService Service { get; }
+
+    /// <summary>A second instance with the same neighbours and no listener registered, as the container builds it before the boot handlers run.</summary>
+    public TestStatusEffectService CreateServiceWithoutListeners() => _createService();
 
     // One accessor per part of the status effect split (Readmes/MaintainabilityRefactorStatusEffectSplit.md). A test calls each
     // member through its part's accessor. Until a part moves, its accessor is the one TestStatusEffectService; the pull request

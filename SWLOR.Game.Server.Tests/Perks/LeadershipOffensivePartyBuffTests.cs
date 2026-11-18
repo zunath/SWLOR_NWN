@@ -212,6 +212,6 @@ public class LeadershipOffensivePartyBuffTests
         buff.Should().Contain("sequence.TryTriggerPartyBuff()");
         var statuses = StatusEffectSource.Read();
         statuses.Should().Contain("source != creature && GetIsReactionTypeHostile(creature, source)");
-        statuses.Should().Contain("ApplyHostileAbilityPartyBuff(source, GetActiveAbilityImpactSummary(source)?.Ability, 0, true);");
+        statuses.Should().Contain("NotifyHostileDebuffApplied(source, GetActiveAbilityImpactSummary(source)?.Ability);");
     }
 }

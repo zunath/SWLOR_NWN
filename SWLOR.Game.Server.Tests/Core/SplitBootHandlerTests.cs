@@ -35,6 +35,8 @@ public class SplitBootHandlerTests
         "SWLOR.Game.Server.Service.Mimicry.CacheData",
         // P5-4e, stat split part 2: the stat effect listener's registration splits out of Stat.CacheData.
         "SWLOR.Game.Server.Service.Stat.CacheData",
+        // P5-5d, status effect split: the melee, impact and capstone listeners register out of StatusEffect.CacheData.
+        "SWLOR.Game.Server.Service.StatusEffect.CacheData",
     };
 
     private static IReadOnlyList<string[]> Splits()

@@ -14,7 +14,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>Enemy-bound melee sequences driven by ability metadata and source-scoped stats.</summary>
-    public class MeleeTechniqueService : IMeleeTechniqueService
+    public class MeleeTechniqueService : IMeleeTechniqueService, IStatusEffectMeleeListener
     {
         private readonly Dictionary<SkillType, MeleeTechniqueProfile> Profiles = new();
         [ReloadState(ReloadStateKind.Runtime)]
@@ -25,20 +25,20 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly Dictionary<uint, OrdinaryAttempt> OrdinaryAttempts = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, DirectDamageSnapshot> DirectDamage = new();
-        private readonly Lazy<IStatService> _stat;
+        private readonly IStatService _stat;
         private readonly ICombatImpactGeometryService _geometry;
         private readonly ICombatRecorderService _combatRecorder;
-        private readonly Lazy<IStatusEffectService> _statusEffect;
-        private readonly Lazy<ICombatActivityService> _combatActivity;
-        private readonly Lazy<ICombatResourcesService> _resources;
+        private readonly IStatusEffectService _statusEffect;
+        private readonly ICombatActivityService _combatActivity;
+        private readonly ICombatResourcesService _resources;
 
         public MeleeTechniqueService(
-            Lazy<IStatService> stat,
+            IStatService stat,
             ICombatImpactGeometryService geometry,
             ICombatRecorderService combatRecorder,
-            Lazy<IStatusEffectService> statusEffect,
-            Lazy<ICombatActivityService> combatActivity,
-            Lazy<ICombatResourcesService> resources)
+            IStatusEffectService statusEffect,
+            ICombatActivityService combatActivity,
+            ICombatResourcesService resources)
         {
             _stat = stat;
             _geometry = geometry;
@@ -70,6 +70,17 @@ namespace SWLOR.Game.Server.Domain.Combat
                 owner.Profile = null;
                 owner.ProfileSkill = SkillType.Invalid;
             }
+        }
+
+        /// <summary>
+        /// Gives the status effects this service as the listener of their stance and direct damage notices. A reload runs boot
+        /// handlers that rerun before it adopts the carried status effects, so the list is full before the first notice.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public void RegisterStatusEffectListener()
+        {
+            _statusEffect.RegisterMeleeListener(this);
         }
 
         [BootPhase(BootReload.Rerun)]
@@ -427,7 +438,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         /// <summary>Captures actual HP before a typed direct hit; periodic/triggered/reflected paths never enter.</summary>
-        public void PrepareDirectDamage(uint attacker, uint defender, CombatDamageDeliveryType deliveryType)
+        public void OnBeforeDirectDamage(uint attacker, uint defender, CombatDamageDeliveryType deliveryType)
         {
             if (deliveryType != CombatDamageDeliveryType.Direct || attacker == defender ||
                 !GetIsObjectValid(defender) || !GetIsObjectValid(attacker) ||
@@ -696,10 +707,10 @@ namespace SWLOR.Game.Server.Domain.Combat
             GetIsReactionTypeHostile(target, creature);
 
         protected virtual IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat) =>
-            _stat.Value.GetStatSources(creature, payloadStat);
+            _stat.GetStatSources(creature, payloadStat);
 
         protected virtual int GetStatAdjustment(uint creature, StatType stat) =>
-            _stat.Value.GetStatAdjustment(creature, stat);
+            _stat.GetStatAdjustment(creature, stat);
 
         protected virtual IReadOnlyList<uint> GetHostileTargetsInSphere(uint activator, Location location, float radius) =>
             _geometry.GetHostileTargetsInSphere(activator, location, radius);
@@ -714,31 +725,31 @@ namespace SWLOR.Game.Server.Domain.Combat
             WeaponDamage.GetDamageType(weapon);
 
         protected virtual int GetPaidAbilityStaminaCost(uint creature, AbilityDetail ability) =>
-            _resources.Value.GetPaidAbilityStaminaCost(creature, ability);
+            _resources.GetPaidAbilityStaminaCost(creature, ability);
 
         protected virtual int RestoreAbilityHitStamina(uint creature, AbilityDetail ability, int requested, bool retainMinimumCost) =>
-            _resources.Value.RestoreAbilityHitStamina(creature, ability, requested, retainMinimumCost: retainMinimumCost);
+            _resources.RestoreAbilityHitStamina(creature, ability, requested, retainMinimumCost: retainMinimumCost);
 
         protected virtual int ApplyPercentDamageAdjustment(int damage, int adjustment) =>
             CombatRules.ApplyPercentDamageAdjustment(damage, adjustment);
 
         protected virtual bool HasRecentHostileCombatActivity(uint creature) =>
-            _combatActivity.Value.HasRecentHostileCombatActivity(creature);
+            _combatActivity.HasRecentHostileCombatActivity(creature);
 
         protected virtual CombatRecordAttributionScope BeginStatTriggerAttribution(uint creature, StatType stat) =>
             _combatRecorder.BeginStatTriggerAttribution(creature, stat);
 
         protected virtual bool ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds) =>
-            _statusEffect.Value.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
+            _statusEffect.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
 
         protected virtual bool ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds, CombatDamageType sourceDamageType) =>
-            _statusEffect.Value.ApplyStatusEffect(source, creature, statusEffect, durationSeconds, sourceDamageType);
+            _statusEffect.ApplyStatusEffect(source, creature, statusEffect, durationSeconds, sourceDamageType);
 
         protected virtual void RemoveStatusEffect(uint creature, Type statusEffectClass, uint source, bool sendsWornOffMessage) =>
-            _statusEffect.Value.RemoveStatusEffect(creature, statusEffectClass, source, sendsWornOffMessage);
+            _statusEffect.RemoveStatusEffect(creature, statusEffectClass, source, sendsWornOffMessage);
 
         protected virtual bool HasStatusEffect(uint creature, Type statusEffectClass, uint source) =>
-            _statusEffect.Value.HasStatusEffect(creature, statusEffectClass, source);
+            _statusEffect.HasStatusEffect(creature, statusEffectClass, source);
 
         protected virtual int GetTemporaryHitPoints(uint target) =>
             TemporaryHitPointEffects.GetRemaining(target);

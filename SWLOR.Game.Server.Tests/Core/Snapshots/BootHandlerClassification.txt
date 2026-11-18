@@ -18,7 +18,7 @@ db_loaded (1)
 mod_content_chg (1)
   BootOnly    SWLOR.Game.Server.Domain.Foundation.WalkmeshService.LoadWalkmeshes
 
-mod_cache_bef (45)
+mod_cache_bef (48)
   Rerun       SWLOR.Game.Server.Domain.Abilities.AbilityCatalogService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.AchievementService.LoadAchievements
   Rerun       SWLOR.Game.Server.Domain.World.AreaService.CacheData
@@ -55,6 +55,9 @@ mod_cache_bef (45)
   Rerun       SWLOR.Game.Server.Domain.Character.StatService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.CreatureStatService.RegisterStatEffectListener
   Rerun       SWLOR.Game.Server.Domain.Character.StatusEffectCatalogService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RegisterStatusEffectListener
+  Rerun       SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService.RegisterStatusEffectListener
+  Rerun       SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListener
   Rerun       SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
   Rerun       SWLOR.Game.Server.Domain.World.WeatherService.LoadData
   Rerun       SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration
@@ -138,5 +141,5 @@ app_shutdown (2)
 == TOTALS ==
 BootOnly    19
 NativeHook  15
-Rerun       80
+Rerun       83
 Retire      2

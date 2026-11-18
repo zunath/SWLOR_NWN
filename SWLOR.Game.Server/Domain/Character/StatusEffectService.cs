@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
-using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
@@ -41,51 +39,46 @@ namespace SWLOR.Game.Server.Domain.Character
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly List<IStatEffectListener> _statEffectListeners = new();
         [ReloadState(ReloadStateKind.Runtime)]
+        private readonly List<IStatusEffectMeleeListener> _meleeListeners = new();
+        [ReloadState(ReloadStateKind.Runtime)]
+        private readonly List<IStatusEffectAppliedListener> _appliedListeners = new();
+        [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, int> _nativeAttackSwingDepth = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, List<Action>> _deferredNativeAttackStatusEffects = new();
         private readonly IStatusResistance _resistance;
         private readonly IStatusEffectCatalogService _statusCatalog;
-        private readonly IMeleeTechniqueService _meleeTechnique;
         private readonly ICharacterRecording _combatRecorder;
         private readonly IMessagingService _messaging;
         private readonly IPlayerNameService _playerName;
         private readonly IGuiRefreshPublisher _gui;
-        private readonly ICapstoneProofService _capstoneProof;
         private readonly IDBService _db;
         private readonly Lazy<IStatService> _stat;
         private readonly IAbilityCatalog _catalog;
         private readonly IActiveAbilityImpact _activeImpact;
-        private readonly Lazy<ICombatAbilityImpactService> _abilityImpact;
 
         public StatusEffectService(
             IStatusResistance resistance,
             IStatusEffectCatalogService statusCatalog,
-            IMeleeTechniqueService meleeTechnique,
             ICharacterRecording combatRecorder,
             IMessagingService messaging,
             IPlayerNameService playerName,
             IGuiRefreshPublisher gui,
-            ICapstoneProofService capstoneProof,
             IDBService db,
             Lazy<IStatService> stat,
             IAbilityCatalog catalog,
-            IActiveAbilityImpact activeImpact,
-            Lazy<ICombatAbilityImpactService> abilityImpact)
+            IActiveAbilityImpact activeImpact)
         {
             _resistance = resistance;
             _statusCatalog = statusCatalog;
-            _meleeTechnique = meleeTechnique;
             _combatRecorder = combatRecorder;
             _messaging = messaging;
             _playerName = playerName;
             _gui = gui;
-            _capstoneProof = capstoneProof;
             _db = db;
             _stat = stat;
             _catalog = catalog;
             _activeImpact = activeImpact;
-            _abilityImpact = abilityImpact;
         }
 
         /// <summary>
@@ -97,6 +90,26 @@ namespace SWLOR.Game.Server.Domain.Character
         {
             if (!_statEffectListeners.Contains(listener))
                 _statEffectListeners.Add(listener);
+        }
+
+        /// <summary>
+        /// Registers who is told about stance removal and direct hits about to land. Registering the same listener twice keeps one
+        /// entry; the list holds service instances, so a reload rebuilds it through the boot handler that registers the listener.
+        /// </summary>
+        public void RegisterMeleeListener(IStatusEffectMeleeListener listener)
+        {
+            if (!_meleeListeners.Contains(listener))
+                _meleeListeners.Add(listener);
+        }
+
+        /// <summary>
+        /// Registers who is told when a status effect is applied or refreshed, in registration order. Registering the same
+        /// listener twice keeps one entry; a reload rebuilds the list through the boot handlers that register the listeners.
+        /// </summary>
+        public void RegisterAppliedListener(IStatusEffectAppliedListener listener)
+        {
+            if (!_appliedListeners.Contains(listener))
+                _appliedListeners.Add(listener);
         }
 
         /// <summary>
@@ -525,7 +538,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private bool RecordCapstoneProof(bool applied, IStatusEffect statusEffect, uint source, uint creature)
         {
             if (applied)
-                _capstoneProof.RecordStatusEffect(source, creature, statusEffect.GetType(),
+                NotifyApplicationCompleted(source, creature, statusEffect.GetType(),
                     statusEffect.OriginatingAbility ?? GetActiveAbilityImpactSummary(source)?.Ability);
 
             return applied;
@@ -712,11 +725,11 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, isPermanent);
-            ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories);
+            NotifyStatusApplied(source, creature, statusEffect.Categories);
             if ((statusEffect.Categories & StatusEffectCategory.Debuff) != 0 &&
                 source != creature && GetIsReactionTypeHostile(creature, source))
             {
-                ApplyHostileAbilityPartyBuff(source, GetActiveAbilityImpactSummary(source)?.Ability, 0, true);
+                NotifyHostileDebuffApplied(source, GetActiveAbilityImpactSummary(source)?.Ability);
             }
             PublishStatusEffectReceivedRefresh(creature);
 
@@ -901,11 +914,11 @@ namespace SWLOR.Game.Server.Domain.Character
             if (_combatRecorder.IsRecording)
                 _combatRecorder.RecordStatusApplied(source, creature, active, active.GetRemainingDurationSeconds(Clock.UtcNow), false, true);
 
-            ApplyStatusAppliedTargetStaminaDrain(source, creature, active.Categories);
+            NotifyStatusApplied(source, creature, active.Categories);
             if ((active.Categories & StatusEffectCategory.Debuff) != 0 &&
                 source != creature && GetIsReactionTypeHostile(creature, source))
             {
-                ApplyHostileAbilityPartyBuff(source, GetActiveAbilityImpactSummary(source)?.Ability, 0, true);
+                NotifyHostileDebuffApplied(source, GetActiveAbilityImpactSummary(source)?.Ability);
             }
             PublishStatusEffectReceivedRefresh(creature);
 
@@ -1711,7 +1724,7 @@ namespace SWLOR.Game.Server.Domain.Character
             if (_statusCatalog.GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Stance)
                 return;
 
-            _meleeTechnique.OnStanceChanged(creature);
+            NotifyStanceChanged(creature);
 
             RemoveStatusEffectBySourceType(
                 creature,
@@ -1936,7 +1949,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private void NotifyStatusEffectRemoved(uint creature, IStatusEffect statusEffect)
         {
             if (statusEffect.SourceType == StatusEffectSourceType.Stance)
-                _meleeTechnique.OnStanceChanged(creature);
+                NotifyStanceChanged(creature);
             if (statusEffect is IStatusEffectRemovedHandler handler)
                 handler.AfterRemoved(creature);
         }
@@ -2146,7 +2159,7 @@ namespace SWLOR.Game.Server.Domain.Character
             {
                 effect.OnBeforeDamageTaken(defender, attacker, damage, damageType, deliveryType);
             }
-            _meleeTechnique.PrepareDirectDamage(attacker, defender, deliveryType);
+            NotifyBeforeDirectDamage(attacker, defender, deliveryType);
         }
 
         /// <summary>
@@ -2362,15 +2375,51 @@ namespace SWLOR.Game.Server.Domain.Character
         protected virtual int GetCreatureStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
 
         protected virtual AbilityImpactSummary GetActiveAbilityImpactSummary(uint activator) => _activeImpact.GetActiveAbilityImpactSummary(activator);
-
-        protected virtual void ApplyStatusAppliedTargetStaminaDrain(uint activator, uint target, StatusEffectCategory appliedCategories)
+        private void NotifyStanceChanged(uint creature)
         {
-            _abilityImpact.Value.ApplyStatusAppliedTargetStaminaDrain(activator, target, appliedCategories);
+            RequireMeleeListeners();
+            foreach (var listener in _meleeListeners)
+                listener.OnStanceChanged(creature);
         }
 
-        protected virtual void ApplyHostileAbilityPartyBuff(uint activator, AbilityDetail ability, int damage, bool statusApplied)
+        private void NotifyBeforeDirectDamage(uint attacker, uint defender, CombatDamageDeliveryType deliveryType)
         {
-            _abilityImpact.Value.ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
+            RequireMeleeListeners();
+            foreach (var listener in _meleeListeners)
+                listener.OnBeforeDirectDamage(attacker, defender, deliveryType);
+        }
+
+        private void NotifyStatusApplied(uint source, uint creature, StatusEffectCategory categories)
+        {
+            RequireAppliedListeners();
+            foreach (var listener in _appliedListeners)
+                listener.OnStatusApplied(source, creature, categories);
+        }
+
+        private void NotifyHostileDebuffApplied(uint source, AbilityDetail ability)
+        {
+            RequireAppliedListeners();
+            foreach (var listener in _appliedListeners)
+                listener.OnHostileDebuffApplied(source, ability);
+        }
+
+        private void NotifyApplicationCompleted(uint source, uint creature, Type statusEffectType, AbilityDetail ability)
+        {
+            RequireAppliedListeners();
+            foreach (var listener in _appliedListeners)
+                listener.OnApplicationCompleted(source, creature, statusEffectType, ability);
+        }
+
+        private void RequireMeleeListeners()
+        {
+            if (_meleeListeners.Count == 0)
+                throw new InvalidOperationException("No melee listener is registered with the status effects.");
+        }
+
+        private void RequireAppliedListeners()
+        {
+            if (_appliedListeners.Count == 0)
+                throw new InvalidOperationException("No applied listener is registered with the status effects.");
         }
 
         protected virtual bool IsAttackDelayReductionSuppressed(uint creature) => GetCreatureStatAdjustment(creature, StatType.AttackDelayReductionSuppressed) > 0;

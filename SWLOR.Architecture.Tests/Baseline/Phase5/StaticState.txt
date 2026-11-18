@@ -65,7 +65,7 @@ SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.MarketBuyViewModel | 3
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerformanceCueViewModelBase | 1
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerformanceOptionsViewModel | 4
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerformanceSessionViewModel | 1
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideViewModel | 1
+SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideTopicCatalog | 1
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerListViewModel | 1
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ProspectingViewModel | 2
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ReactionViewModel | 1

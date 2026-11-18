@@ -65,7 +65,7 @@ public static class NamedAnimation
         if (Astromech.IsAstromech(creature))
         {
             // The authored clips are humanoid motions. An astromech works with its tool arm out for the same time,
-            // or with its rod when the clip is a fishing one. Its token ends the motion through StopIfCurrent.
+            // or with its rod when the clip is a fishing one. StopIfCurrent ends the motion by its token.
             return AstromechWorkAnimation.Play(creature, clip, duration);
         }
         if (!AbilityAnimationEquipment.IsCompatible(equipmentRequirement, creature)) return null;
@@ -108,15 +108,19 @@ public static class NamedAnimation
     /// </summary>
     public static bool CanLoop(uint creature) => AbilityAnimationEquipment.ReadHold(creature) == AnimationWeaponHold.None;
 
-    /// <summary>Stops only this caller's playback, preserving a newer animation started by an ability.</summary>
-    public static bool StopIfCurrent(uint creature, string token) => Astromech.IsAstromech(creature)
-        ? AstromechWorkAnimation.StopIfCurrent(creature, token)
-        : Playback.StopIfCurrent(creature, token);
+    /// <summary>
+    /// Stops only this caller's playback, preserving a newer animation started by an ability. The token's owner ends
+    /// it: an astromech's work motion, or this playback (a named clip, or a native preview on any creature).
+    /// </summary>
+    public static bool StopIfCurrent(uint creature, string token) =>
+        AstromechWorkAnimation.StopIfCurrent(creature, token) || Playback.StopIfCurrent(creature, token);
 
     /// <summary>Previews a native one-shot with the same stop and supersession ownership as named clips.</summary>
     public static string PlayNativePreview(uint creature, Animation animation, float speed = 1f)
     {
         if (!float.IsFinite(speed) || speed <= 0f) throw new ArgumentOutOfRangeException(nameof(speed));
+        // An astromech's work motion gives way too, so the preview's token is the only one held.
+        AstromechWorkAnimation.ReleaseForNativePlayback(creature);
         var token = Playback.BeginNative(creature);
         try
         {

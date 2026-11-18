@@ -235,7 +235,7 @@ public class AstromechContentFitTests
         named.Should().Contain("AstromechWorkAnimation.Play(creature, clip, duration);");
         var work = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "AstromechService", "AstromechWorkAnimation.cs"));
         work.Should().Contain("ActionPlayAnimation(AstromechAnimations.Work, 1f, duration);");
-        work.Should().Contain("AssignCommand(creature, () => PlayAnimation(AstromechAnimations.Work, 1f, duration));");
+        work.Should().Contain("PlayAnimation(AstromechAnimations.Work, 1f, duration);");
 
         var export = File.ReadAllText(Path.Combine(Root, "tools", "AstromechCreatureExport.py"));
         export.Should().Contain("for name, lean in (('cgetmid', -5), ('cgetlow', -16)):");
@@ -271,20 +271,21 @@ public class AstromechContentFitTests
         AstromechAnimations.TryGetRodClips(WorkAnimation.ForGathering(GatheringAction.Survey), out _).Should().BeFalse();
         AstromechAnimations.TryGetRodClips(null, out _).Should().BeFalse();
 
-        // The work animation's own clips are the ones swapped, and the swap is undone when the action ends.
-        var work = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "AstromechService", "AstromechWorkAnimation.cs"));
-        work.Should().Contain("public const string EntrySource = \"cgetmid\";");
-        work.Should().Contain("public const string LoopSource = \"cgetmidlp\";");
-        work.Should().Contain("DelayCommand(duration + ReleaseGraceSeconds, () => Release(creature, token))");
+        // The work animation's own clips are the ones swapped (AstromechWorkPlaybackTests covers the swap and its end).
+        AstromechWorkPlayback.EntrySource.Should().Be("cgetmid");
+        AstromechWorkPlayback.LoopSource.Should().Be("cgetmidlp");
         AstromechAnimations.Work.Should().Be(Animation.LoopingGetMid);
 
         // The caller can end the motion early (a cancelled cast, a craft that ends): the play hands back a token, and
-        // stopping it stows the rod or draws the tool arm in at once instead of when the clip's time is up.
+        // the token's owner ends it, so a native preview on an astromech stops as it does on any creature.
         var named = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "NamedAnimation.cs"));
         named.Should().Contain("return AstromechWorkAnimation.Play(creature, clip, duration);");
-        named.Should().Contain("? AstromechWorkAnimation.StopIfCurrent(creature, token)");
-        work.Should().Contain("public static string Play(uint creature, AnimationClip clip, float duration)");
-        work.Should().Contain("public static bool StopIfCurrent(uint creature, string token)");
+        named.Should().Contain(
+            "AstromechWorkAnimation.StopIfCurrent(creature, token) || Playback.StopIfCurrent(creature, token);");
+        // Each start releases the other owner, so only one token is ever held.
+        named.Should().Contain("AstromechWorkAnimation.ReleaseForNativePlayback(creature);");
+        var work = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Service", "AstromechService", "AstromechWorkAnimation.cs"));
+        work.Should().Contain("NamedAnimation.ReleaseForNativePlayback(creature);");
     }
 
     private static string FindRepositoryRoot()

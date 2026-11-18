@@ -227,19 +227,9 @@ namespace SWLOR.Game.Server.Service
                 LeftHandId = 45
             };
 
-            // An astromech has one creature model and no body parts; only the chassis and scale apply.
-            _defaultRaceAppearancesMale[RacialType.Astromech] = new RacialAppearance
-            {
-                AppearanceType = AppearanceType.SWLORAstromechChassis1,
-                SkinColorId = 0,
-                HairColorId = 0
-            };
-            _defaultRaceAppearancesFemale[RacialType.Astromech] = new RacialAppearance
-            {
-                AppearanceType = AppearanceType.SWLORAstromechChassis1,
-                SkinColorId = 0,
-                HairColorId = 0
-            };
+            // An astromech is built from a dome, a barrel and two legs; it has no neck, arms, pelvis, shins or feet.
+            _defaultRaceAppearancesMale[RacialType.Astromech] = CreateAstromechAppearance();
+            _defaultRaceAppearancesFemale[RacialType.Astromech] = CreateAstromechAppearance();
 
             _defaultRaceAppearancesMale[RacialType.Droid] = new RacialAppearance
             {
@@ -575,9 +565,6 @@ namespace SWLOR.Game.Server.Service
 
                 // Appearance, Skin, and Hair
                 SetCreatureAppearanceType(player, raceConfig.AppearanceType);
-                if (GetBodyFrame(racialType) != BodyFrame.Humanoid)
-                    return;
-
                 SetColor(player, ColorChannel.Skin, raceConfig.SkinColorId);
                 SetColor(player, ColorChannel.Hair, raceConfig.HairColorId);
 
@@ -603,6 +590,32 @@ namespace SWLOR.Game.Server.Service
                 SetCreatureBodyPart(CreaturePart.LeftFoot, raceConfig.LeftFootId, player);
             }
 
+            private static RacialAppearance CreateAstromechAppearance()
+            {
+                return new RacialAppearance
+                {
+                    AppearanceType = AppearanceType.Astromech,
+                    SkinColorId = 0,
+                    HairColorId = 0,
+                    HeadId = 1,
+                    TorsoId = 1,
+                    RightThighId = 1,
+                    LeftThighId = 1,
+                    NeckId = 0,
+                    PelvisId = 0,
+                    RightBicepId = 0,
+                    RightForearmId = 0,
+                    RightHandId = 0,
+                    RightShinId = 0,
+                    RightFootId = 0,
+                    LeftBicepId = 0,
+                    LeftForearmId = 0,
+                    LeftHandId = 0,
+                    LeftShinId = 0,
+                    LeftFootId = 0
+                };
+            }
+
             /// <summary>
             /// Retrieves the default racial appearance of a specific race.
             /// </summary>
@@ -617,7 +630,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             /// <summary>
-            /// The body frame of a species. Every species but the astromech has the part-based humanoid body.
+            /// The body frame of a species: the humanoid body, or the astromech's dome, barrel and legs.
             /// </summary>
             public static BodyFrame GetBodyFrame(RacialType race)
             {

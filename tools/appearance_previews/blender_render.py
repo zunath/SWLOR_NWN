@@ -2,8 +2,7 @@
 
 blender -b --python blender_render.py -- <batch.json> <out_dir> <size>
 batch.json: [{"key": str, "ascii": path, "nodes": {node: material}, "textures": {material: {"color", "metal"}},
-              "weapon": "" | "weapon" | "shield", "emitters": [{"node", "image", "width", "length"}],
-              "hidden": [node]}]
+              "weapon": "" | "weapon" | "shield", "emitters": [{"node", "image", "width", "length"}]}]
 Writes <out_dir>/<key>_<f|b|a>.png with a transparent background. A weapon part with nothing to draw
 prints PREVIEW_EMPTY and writes no pictures.
 """
@@ -227,12 +226,6 @@ def render_job(scene, job, out_dir):
     clear_scene()
     bpy.ops.scene.nvb_mdlimport(filepath=job["ascii"], import_walkmesh=False, mat_import=False,
                               anim_import=False, hide_fading=False)
-    hidden = {name.lower() for name in job.get("hidden", [])}
-    for obj in scene.objects:
-        # Blender may add a .00N suffix to a repeated node name.
-        base, _, suffix = obj.name.lower().rpartition(".")
-        if obj.name.lower() in hidden or suffix.isdigit() and base in hidden:
-            obj.hide_render = True
     meshes = [o for o in scene.objects if o.type == "MESH" and not o.hide_render and len(o.data.polygons)]
     quads = emitter_quads(scene, job) if job.get("weapon") else []
     if not meshes and not quads:

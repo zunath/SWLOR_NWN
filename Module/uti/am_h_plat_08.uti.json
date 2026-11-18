@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 23
+    "value": 171
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 23
+    "value": 93
   },
   "Comment": {
     "type": "cexostring",
@@ -144,7 +144,7 @@
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 44
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",

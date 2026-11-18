@@ -3,6 +3,8 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AstromechService;
@@ -244,54 +246,122 @@ public class AstromechSpeciesTests
     }
 
     [Test]
-    public void EveryChassisIsDistinctAndTheFirstIsTheStartingOne()
+    public void EveryDesignHasADomeABarrelAndTwoLegsInTheHak()
     {
-        var all = AstromechChassisCatalog.All;
+        var haks = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks");
+        var definition = new AstromechRacialAppearanceDefinition();
+        var designs = Enumerable.Range(1, AstromechBody.DesignCount).ToArray();
 
-        all.Should().HaveCount(8);
-        all.Select(chassis => chassis.Appearance).Should().OnlyHaveUniqueItems();
-        all.Select(chassis => chassis.Model).Should().OnlyHaveUniqueItems();
-        all.Select(chassis => chassis.Name).Should().OnlyHaveUniqueItems();
-        AstromechChassisCatalog.Default.Appearance.Should().Be(AppearanceType.SWLORAstromechChassis1);
-        AstromechChassisCatalog.IsChassis(AppearanceType.Human).Should().BeFalse();
-        AstromechChassisCatalog.Get(AppearanceType.Human).Should().BeSameAs(AstromechChassisCatalog.Default);
-        AstromechChassisCatalog.Get(AppearanceType.SWLORAstromechChassis7).Model.Should().Be("c_astro_07");
-    }
-
-    [Test]
-    public void PaintVariablesFollowTheChassisAndFallBackToItsOwnPaint()
-    {
-        var chassis = AstromechChassisCatalog.Get(AppearanceType.SWLORAstromechChassis3);
-        var chosen = new Dictionary<AstromechPaintZone, int>
+        definition.MaleHeads.Should().Equal(designs);
+        definition.FemaleHeads.Should().Equal(designs);
+        definition.Torsos.Should().Equal(designs);
+        definition.RightThigh.Should().Equal(designs);
+        definition.LeftThigh.Should().Equal(designs);
+        foreach (var absent in new[]
+                 {
+                     definition.Pelvis, definition.RightBicep, definition.RightForearm, definition.RightHand,
+                     definition.RightShin, definition.RightFoot, definition.LeftBicep, definition.LeftForearm,
+                     definition.LeftHand, definition.LeftShin, definition.LeftFoot
+                 })
         {
-            [AstromechPaintZone.Primary] = new TintMapColor(10, 20, 30).ToStoredValue(),
-            [AstromechPaintZone.Trim] = 12
+            absent.Should().Equal(0);
+        }
+
+        var tintModels = Rows(Path.Combine(haks, "sw_2da", "tintmap.2da"))
+            .Select(row => row.Length > 1 ? row[1] : string.Empty)
+            .ToHashSet();
+        var parts = new[]
+        {
+            ("sw_pt_head", "head"), ("sw_pt_chest", "chest"), ("sw_pt_lthigh", "legl"), ("sw_pt_rthigh", "legr")
         };
+        foreach (var gender in new[] { "m", "f" })
+        foreach (var design in designs)
+        foreach (var (folder, part) in parts)
+        {
+            var model = $"p{gender}r0_{part}{design:D3}";
+            File.Exists(Path.Combine(haks, folder, model + ".mdl")).Should().BeTrue($"{model} is a part the editor offers");
+            tintModels.Should().Contain(model, "a part without a tint row cannot be painted");
+        }
 
-        var variables = AstromechChassisCatalog.BuildPaintVariables(chassis, chosen);
-
-        variables.Keys.Should().BeEquivalentTo("TM_c_astro_03_5", "TM_c_astro_03_4", "TM_c_astro_03_3");
-        variables["TM_c_astro_03_5"].Should().Be(new TintMapColor(10, 20, 30).ToStoredValue());
-        variables["TM_c_astro_03_4"].Should().Be(chassis.DefaultSecondary.ToStoredValue());
-        variables["TM_c_astro_03_3"].Should().Be(chassis.DefaultTrim.ToStoredValue(),
-            "a value that is not a stored color is ignored");
-        AstromechChassisCatalog.BuildPaintVariables(chassis, null).Values
-            .Should().OnlyContain(value => value > 0);
+        foreach (var root in new[] { "pmr0", "pfr0" })
+            File.Exists(Path.Combine(haks, "sw_pt_root", root + ".mdl")).Should().BeTrue();
     }
 
     [Test]
-    public void TheBrightestWhitesAreStoredOneStepBelowTheBrokenRange()
+    public void ANewAstromechStartsInTheFirstDesignWithNoHumanoidParts()
     {
-        // 255,255,254 and 255,255,255 round past the top of the range the tint shaders decode and render red.
-        AstromechChassisCatalog.NormalizePaint(new TintMapColor(255, 255, 255)).Should().Be(new TintMapColor(255, 255, 252));
-        AstromechChassisCatalog.NormalizePaint(new TintMapColor(255, 255, 253)).Should().Be(new TintMapColor(255, 255, 252));
-        AstromechChassisCatalog.NormalizePaint(new TintMapColor(255, 255, 252)).Should().Be(new TintMapColor(255, 255, 252));
-        AstromechChassisCatalog.NormalizePaint(new TintMapColor(255, 254, 255)).Should().Be(new TintMapColor(255, 254, 255));
-        AstromechChassisCatalog.NormalizePaint(new TintMapColor(10, 20, 30)).Should().Be(new TintMapColor(10, 20, 30));
+        Race.LoadRaces();
+
+        foreach (var gender in new[] { Gender.Male, Gender.Female })
+        {
+            var appearance = Race.GetDefaultAppearance(RacialType.Astromech, gender);
+
+            appearance.AppearanceType.Should().Be(AppearanceType.Astromech);
+            new[] { appearance.HeadId, appearance.TorsoId, appearance.RightThighId, appearance.LeftThighId }
+                .Should().OnlyContain(part => part == AstromechBody.DefaultDesign);
+            new[]
+            {
+                appearance.NeckId, appearance.PelvisId, appearance.RightBicepId, appearance.RightForearmId,
+                appearance.RightHandId, appearance.RightShinId, appearance.RightFootId, appearance.LeftBicepId,
+                appearance.LeftForearmId, appearance.LeftHandId, appearance.LeftShinId, appearance.LeftFootId
+            }.Should().OnlyContain(part => part == 0);
+        }
     }
 
     [Test]
-    public void EveryChassisPortraitShipsInTheHakAtEverySize()
+    public void ADomeIsSeatedOnTheBarrelItIsWornWith()
+    {
+        for (var design = 1; design <= AstromechBody.DesignCount; design++)
+            AstromechBody.GetDomeOffset(design, design).Should().Be(0f, "a matched dome and barrel already meet");
+
+        AstromechBody.GetDomeOffset(4, 3).Should().BeApproximately(0.078f, 0.0005f, "a low dome is raised onto a tall barrel");
+        AstromechBody.GetDomeOffset(3, 4).Should().BeApproximately(-0.078f, 0.0005f);
+        AstromechBody.GetDomeOffset(0, 3).Should().Be(0f);
+        AstromechBody.GetDomeOffset(3, 104).Should().Be(0f, "a part that is not a chassis design is left where it is");
+    }
+
+    [Test]
+    public void TheDomeKeepsItsSize()
+    {
+        var definition = new AstromechRacialAppearanceDefinition();
+
+        definition.MinimumHeadScale.Should().Be(1f);
+        definition.MaximumHeadScale.Should().Be(1f);
+        RacialAppearanceRegistry.TryGet(AppearanceType.Astromech, out var registered).Should().BeTrue();
+        registered.Should().BeOfType<AstromechRacialAppearanceDefinition>();
+    }
+
+    [Test]
+    public void ABareChassisIsPaintedOnItsThreePaintLayersOnly()
+    {
+        foreach (var layer in new[] { TintMapLayerType.Metal2, TintMapLayerType.Cloth1, TintMapLayerType.Cloth2 })
+        {
+            AstromechBody.TryGetBarePaint(layer, out var colorId).Should().BeTrue();
+            colorId.Should().BeInRange(0, TintMapMaterialRegistry.PaletteColorCount - 1);
+        }
+
+        AstromechBody.TryGetBarePaint(TintMapLayerType.Skin, out _).Should().BeFalse();
+        AstromechBody.TryGetBarePaint(TintMapLayerType.Metal1, out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void ModulesBringOnlyTheirDyes()
+    {
+        var definition = ArmorAppearanceCatalog.Definitions[AppearanceType.Astromech];
+
+        foreach (var styles in new[]
+                 {
+                     definition.Helmet, definition.Cloak, definition.Neck, definition.Torso, definition.Belt,
+                     definition.Pelvis, definition.Shoulder, definition.Bicep, definition.Forearm, definition.Hand,
+                     definition.Thigh, definition.Shin, definition.Foot, definition.Robe
+                 })
+        {
+            styles.Should().Equal(0);
+        }
+    }
+
+    [Test]
+    public void EveryAstromechPortraitShipsInTheHakAtEverySize()
     {
         var haks = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks");
         var registered = Rows(Path.Combine(haks, "sw_2da", "portraits.2da"))
@@ -299,26 +369,50 @@ public class AstromechSpeciesTests
             .Select(row => "po_" + row[1])
             .ToList();
 
-        foreach (var chassis in AstromechChassisCatalog.All)
+        registered.Should().HaveCount(AstromechBody.DesignCount);
+        registered.Should().Contain(Astromech.DefaultPortrait);
+        foreach (var portrait in registered)
         {
-            registered.Should().Contain(chassis.Portrait);
-            (chassis.Portrait.Length + 1).Should().BeLessThanOrEqualTo(16, "a resource name holds 16 characters");
+            (portrait.Length + 1).Should().BeLessThanOrEqualTo(16, "a resource name holds 16 characters");
             foreach (var size in new[] { "l", "m", "s", "t" })
-                File.Exists(Path.Combine(haks, "sw_portrait", chassis.Portrait + size + ".dds")).Should().BeTrue(
-                    $"{chassis.Portrait}{size} is a portrait size the game asks for");
+                File.Exists(Path.Combine(haks, "sw_portrait", portrait + size + ".dds")).Should().BeTrue(
+                    $"{portrait}{size} is a portrait size the game asks for");
         }
-
-        registered.Should().HaveCount(AstromechChassisCatalog.All.Count);
     }
 
     [Test]
-    public void ScaleStaysInsideTheChassisRange()
+    public void EveryToolBlueprintHasAHeldModelAndAnIconOfItsOwnItemClass()
     {
-        AstromechChassisCatalog.ClampScale(0.5f).Should().Be(AstromechChassisCatalog.MinimumScale);
-        AstromechChassisCatalog.ClampScale(2f).Should().Be(AstromechChassisCatalog.MaximumScale);
-        AstromechChassisCatalog.ClampScale(1.05f).Should().Be(1.05f);
-        AstromechChassisCatalog.ClampScale(0f).Should().Be(1f);
-        AstromechChassisCatalog.ClampScale(float.NaN).Should().Be(1f);
+        var root = FindRepositoryRoot().FullName;
+        var haks = Path.Combine(root, "SWLOR_Haks");
+        var baseItems = Path.Combine(haks, "sw_2da", "baseitems.2da");
+        var columns = Columns(baseItems);
+        var classes = new Dictionary<int, string>
+        {
+            [(int)BaseItem.ShockProd] = Row(baseItems, (int)BaseItem.ShockProd)[columns["ItemClass"]].ToLowerInvariant(),
+            [(int)BaseItem.BlasterMount] = Row(baseItems, (int)BaseItem.BlasterMount)[columns["ItemClass"]].ToLowerInvariant()
+        };
+
+        // A held item is drawn on the dynamic body, so a tool cannot borrow the staff or rifle item class it copies.
+        classes[(int)BaseItem.ShockProd].Should().Be("wampr");
+        classes[(int)BaseItem.BlasterMount].Should().Be("wambl");
+
+        var blueprints = Directory.GetFiles(Path.Combine(root, "Module", "uti"), "am_w_*.uti.json");
+        blueprints.Should().NotBeEmpty();
+        foreach (var blueprint in blueprints)
+        {
+            using var item = System.Text.Json.JsonDocument.Parse(File.ReadAllText(blueprint));
+            var fields = item.RootElement;
+            var itemClass = classes[fields.GetProperty("BaseItem").GetProperty("value").GetInt32()];
+            foreach (var (letter, field) in new[] { ("b", "ModelPart1"), ("m", "ModelPart2"), ("t", "ModelPart3") })
+            {
+                var part = $"{itemClass}_{letter}_{fields.GetProperty(field).GetProperty("value").GetInt32():D3}";
+                File.Exists(Path.Combine(haks, "sw_weapon", part + ".mdl")).Should().BeTrue(
+                    $"{Path.GetFileName(blueprint)} is drawn from {part}");
+                Directory.GetFiles(Path.Combine(haks, "sw_weapon"), $"i{part}.*").Should().NotBeEmpty(
+                    $"{Path.GetFileName(blueprint)} shows the icon i{part}");
+            }
+        }
     }
 
     [Test]
@@ -341,22 +435,22 @@ public class AstromechSpeciesTests
 
         race[raceColumns["Label"]].Should().Be("Astromech");
         race[raceColumns["PlayerRace"]].Should().Be("1");
-        race[raceColumns["Appearance"]].Should().Be(((int)AstromechChassisCatalog.Default.Appearance).ToString());
+        race[raceColumns["Appearance"]].Should().Be(((int)AppearanceType.Astromech).ToString());
 
         Rows(Path.Combine(haks, "cls_pres_stand.2da")).Should().Contain(row => row.Contains("170"),
             "the Standard class must be offered to the species in character creation");
         Rows(Path.Combine(haks, "cls_pres_force.2da")).Should().NotContain(row => row.Contains("170"),
             "an astromech can never be Force sensitive");
 
+        // Playable species are part-based: the body is drawn from part models named for the race letter.
         var appearanceColumns = Columns(Path.Combine(haks, "appearance.2da"));
-        var tintModels = Rows(Path.Combine(haks, "tintmap.2da")).Select(row => row.Length > 1 ? row[1] : string.Empty).ToHashSet();
-        foreach (var chassis in AstromechChassisCatalog.All)
-        {
-            var appearance = Row(Path.Combine(haks, "appearance.2da"), (int)chassis.Appearance);
-            appearance[appearanceColumns["RACE"]].Should().Be(chassis.Model);
-            appearance[appearanceColumns["MODELTYPE"]].Should().Be("S");
-            tintModels.Should().Contain(chassis.Model);
-        }
+        var appearance = Row(Path.Combine(haks, "appearance.2da"), (int)AppearanceType.Astromech);
+        appearance[appearanceColumns["RACE"]].Should().Be("R");
+        appearance[appearanceColumns["MODELTYPE"]].Should().Be("P");
+        appearance[appearanceColumns["RACIALTYPE"]].Should().Be(((int)RacialType.Astromech).ToString());
+        Rows(Path.Combine(haks, "appearance.2da")).Should().NotContain(
+            row => int.Parse(row[0]) > (int)AppearanceType.Astromech,
+            "the astromech is one appearance; its designs are parts");
 
         var soundset = Row(Path.Combine(haks, "soundset.2da"), Astromech.SoundSetId);
         soundset[1].Should().Be("Astromech");

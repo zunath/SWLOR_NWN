@@ -75,14 +75,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.AppearancePreview
         /// <summary>
         /// The name of a part picture key (see <see cref="AppearancePreview"/>), or the fallback when
         /// the picture has no name. A head of another body type falls back to the human head's name,
-        /// as its picture does.
+        /// as its picture does. A body whose parts are not the shared armor shapes (the astromech's
+        /// barrel and legs) names them under their own picture keys, which are looked up first.
         /// </summary>
         public static string Get(string pictureKey, string fallback)
         {
             if (string.IsNullOrEmpty(pictureKey))
                 return fallback;
-            if (Names.Value.TryGetValue(NameKey(pictureKey), out var name))
+            if (Names.Value.TryGetValue(pictureKey.ToLowerInvariant(), out var name) ||
+                Names.Value.TryGetValue(NameKey(pictureKey), out name))
+            {
                 return name;
+            }
             var twin = AppearancePreview.HumanTwinKey(pictureKey);
             return twin != null && Names.Value.TryGetValue(NameKey(twin), out name) ? name : fallback;
         }

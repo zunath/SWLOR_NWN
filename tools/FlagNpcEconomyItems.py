@@ -81,6 +81,8 @@ def collect():
         "SlicingCacheSmitheryRecipes.cs", "SlicingCacheCookingRecipes.cs", "TraceFuseRecipes.cs",
         "SlicingTerminalFurnitureRecipes.cs", "ConcentratedVenomRecipes.cs", "ShipSalvageItems.cs",
         "RevampComponentCatalog.cs", "RevampRewardCatalog.cs", "SpaceSlicingItems.cs",
+        # The astromech form of an item is handed out wherever a quest rewards the item it copies.
+        "AstromechItemTwins.Generated.cs",
     )
     # Space revamp catalogs: each hull and module Tag is the output resref of a RevampStarshipRecipes recipe.
     revamp_catalogs = ("RevampModuleCatalog.cs", "RevampShipCatalog.cs")
@@ -104,7 +106,7 @@ def collect():
 
     # The crate and the manure are created by the livestock code from constants, not literals at a call site.
     for r in ("beast_dna", "beast_egg", "blueprint", "survival_knife",
-              "fresh_bread", "dlarproto", "traveler_m", "traveler_f",
+              "fresh_bread", "dlarproto", "traveler_m", "traveler_f", "am_plat_start",
               "ls_custom", "ss_custom", "livestock_crate",
               "manure_t1", "manure_t2", "manure_t3", "manure_t4", "manure_t5"):
         add(obtainable, r)

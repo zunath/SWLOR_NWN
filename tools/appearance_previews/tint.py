@@ -47,42 +47,11 @@ def cloak_tile(atlases, index: int):
     return pixels[..., 0], np.clip((pixels[..., 1] / 255.0 * 10.0).astype(np.int32), 0, 9)
 
 
-PALETTE_COLORS = 176  # swatches per layer; mirrors TintMapMaterialRegistry.PaletteColorCount
-LUMINANCE = np.array([0.2126, 0.7152, 0.0722], np.float32)
-
-
-def exact_color_ramp(atlas, layer: int, rgb):
-    """The 256 shades (RGBA, 0..1) of an exact RGB colour on a layer, as fs_plt_tinter draws it.
-
-    The colour is shaded with the row of its nearest palette swatch (compared at the shade-128
-    midtone, the earlier swatch on a tie): the swatch row plus the colour's difference from the
-    swatch, scaled by the row's shading. An all-black swatch lends no shading, so the layer's
-    first row shades the difference instead.
-    """
-    rows = atlas[atlas.shape[0] - 1 - (LAYER_BASE[layer] + np.arange(PALETTE_COLORS))]  # palette TGA is bottom-up
-    midtones = rows[:, 128, :3]
-    target = np.asarray(rgb, np.float32) / 255.0
-    nearest = int(np.argmin(((midtones - target) ** 2).sum(axis=1)))
-    swatch, midpoint = rows[nearest], midtones[nearest]
-    ramp, ramp_midpoint = swatch[:, :3], midpoint
-    if float(midpoint @ LUMINANCE) < 0.5 / 255.0:
-        ramp, ramp_midpoint = rows[0][:, :3], midtones[0]
-    scale = np.maximum((ramp @ LUMINANCE) / max(float(ramp_midpoint @ LUMINANCE), 1.0 / 255.0), 0.0)
-    shaded = np.clip(swatch[:, :3] + (target - midpoint) * scale[:, None], 0.0, 1.0)
-    return np.concatenate([shaded, swatch[:, 3:4]], axis=1)
-
-
-def bake(shade, layer, palette: Path, dyes=PREVIEW_DYES, paints=None):
-    """RGB (uint8) and metal mask (uint8) images, top-down.
-
-    paints: {layer index: (red, green, blue)} for layers that wear an exact colour instead of a
-    preview dye (an astromech chassis in the paint it comes with)."""
+def bake(shade, layer, palette: Path, dyes=PREVIEW_DYES):
+    """RGB (uint8) and metal mask (uint8) images, top-down."""
     atlas = np.asarray(Image.open(palette).convert("RGBA")).astype(np.float32) / 255.0
     rows = np.array([LAYER_BASE[i] + dyes[i] for i in range(10)])
-    ramps = atlas[atlas.shape[0] - 1 - rows].copy()  # palette TGA is bottom-up
-    for index, rgb in (paints or {}).items():
-        ramps[int(index)] = exact_color_ramp(atlas, int(index), rgb)
-    color = ramps[np.clip(layer, 0, 9), np.clip(shade, 0, 255)]
+    color = atlas[atlas.shape[0] - 1 - rows[np.clip(layer, 0, 9)], np.clip(shade, 0, 255)]  # palette TGA is bottom-up
     environment = 1.0 - color[..., 3]
     rgb = color[..., :3] * (1.0 - environment[..., None]) + 0.666667 * environment[..., None]
     return (rgb * 255).clip(0, 255).astype(np.uint8), (environment * 255).clip(0, 255).astype(np.uint8)

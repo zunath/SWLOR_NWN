@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -110,7 +111,12 @@ public class AstromechModuleContentTests
         Text(item, "Tag").Should().Be(module.Resref);
         Text(item, "TemplateResRef").Should().Be(module.Resref);
 
-        var changed = new[] { "LocalizedName", "Tag", "TemplateResRef", "PropertiesList" };
+        // Chassis Plating paints the chassis with its dyes, so it wears a paint job in place of its source's dyes.
+        var paint = new[] { "Cloth2Color", "Cloth1Color", "Metal2Color" };
+        var plating = module.Resref.Contains("_plat_");
+        var changed = new[] { "LocalizedName", "Tag", "TemplateResRef", "PropertiesList" }
+            .Concat(plating ? paint : Array.Empty<string>())
+            .ToArray();
         var sourceFields = source.EnumerateObject().Where(field => !changed.Contains(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
         var itemFields = item.EnumerateObject().Where(field => !changed.Contains(field.Name)).ToDictionary(field => field.Name, field => field.Value.GetRawText());
         itemFields.Should().BeEquivalentTo(sourceFields);
@@ -124,6 +130,40 @@ public class AstromechModuleContentTests
         expected.Add(new PropertyShape((int)ItemPropertyType.UseLimitationRacialType, AstromechRace, 0, 0, 255, 0, 100));
 
         Properties(item).Should().Equal(expected);
+    }
+
+    [Test]
+    public void EveryChassisPlatingWearsAPaintJob_AndNoTwoOfATierMatch()
+    {
+        var jobs = new Dictionary<string, (int Main, int Accent, int Trim)>();
+        foreach (var module in Modules.Where(module => module.Resref.Contains("_plat_")))
+        {
+            var item = ReadBlueprint(module.Resref);
+            var job = (Number(item, "Cloth2Color"), Number(item, "Cloth1Color"), Number(item, "Metal2Color"));
+            job.Item1.Should().NotBe(job.Item2, $"{module.Resref} needs an accent that shows on its main paint");
+            jobs[module.Resref] = job;
+        }
+
+        jobs.Should().HaveCount(20);
+        for (var tier = 1; tier <= 10; tier++)
+            jobs[$"am_h_plat_{tier:00}"].Should().NotBe(jobs[$"am_t_plat_{tier:00}"]);
+    }
+
+    [Test]
+    public void TheStarterPlatingHasNoStats_AndOnlyAnAstromechWearsIt()
+    {
+        var item = ReadBlueprint(Astromech.StarterPlatingResref);
+
+        Text(item, "Tag").Should().Be(Astromech.StarterPlatingResref);
+        Text(item, "TemplateResRef").Should().Be(Astromech.StarterPlatingResref);
+        Number(item, "BaseItem").Should().Be((int)BaseItem.Armor);
+        Properties(item).Should().Equal(
+            new PropertyShape((int)ItemPropertyType.UseLimitationRacialType, AstromechRace, 0, 0, 255, 0, 100));
+        var name = item.GetProperty("LocalizedName").GetProperty("value").GetProperty("0").GetString();
+        name.Should().Be("Basic Chassis Plating");
+        var description = item.GetProperty("Description").GetProperty("value").GetProperty("0").GetString();
+        description.Should().NotContain("clothes");
+        Encoding.UTF8.GetByteCount(description).Should().Be(description.Length, "item text is ASCII");
     }
 
     [Test]
@@ -197,6 +237,8 @@ public class AstromechModuleContentTests
     private static int Int(JsonElement element, string name) => element.GetProperty(name).GetProperty("value").GetInt32();
 
     private static string Text(JsonElement element, string name) => element.GetProperty(name).GetProperty("value").GetString()!;
+
+    private static int Number(JsonElement element, string name) => element.GetProperty(name).GetProperty("value").GetInt32();
 
     private static JsonElement ReadBlueprint(string resref)
     {

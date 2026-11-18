@@ -91,17 +91,13 @@
       "JournalQuest": "",
       "Text": [
         {
-          "Text": "\"'Ey there, little fella! Just call me Salvatore - Sal for short.\n\nI got nothin' on the rack that'll fit a droid, but there's time before we land to swap your shell or lay on a fresh coat of paint. Want to take a look?\"",
+          "Text": "\"'Ey there, little fella! Just call me Salvatore - Sal for short.\n\nI got nothin' on the rack that'll fit a droid, but I can tell you where to find parts once we land. Want to hear it?\"",
           "Style": 0,
           "Color": null
         }
       ],
       "OnEnterActions": [],
       "Choices": [
-        {
-          "ChoiceId": "reply-00004",
-          "Conditions": []
-        },
         {
           "ChoiceId": "reply-00005",
           "Conditions": []
@@ -218,29 +214,6 @@
           "Arguments": [
             "StartingItems"
           ]
-        }
-      ],
-      "Next": [],
-      "EndsConversation": true,
-      "IsAutomatic": false
-    },
-    "reply-00004": {
-      "Id": "reply-00004",
-      "Text": {
-        "Text": "[Open the Chassis Workshop.]",
-        "Style": 4,
-        "Color": null
-      },
-      "SoundResref": "",
-      "Animation": 0,
-      "AnimationLoops": true,
-      "Delay": 4294967295,
-      "Comment": "",
-      "JournalQuest": "",
-      "Actions": [
-        {
-          "Key": "action-open-chassis-workshop",
-          "Arguments": []
         }
       ],
       "Next": [],

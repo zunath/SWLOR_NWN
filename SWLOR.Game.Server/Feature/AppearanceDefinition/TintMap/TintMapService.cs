@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AstromechService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -154,6 +155,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             HornFit.Apply(creature);
             TwinPistolEquipment.RefreshAppearance(creature);
             WeaponHandFit.Apply(creature);
+            AstromechBody.FitDome(creature);
 
             // Rebuild the complete tint state in one pass. Parameter-scoped wildcard resets are
             // not reliable for modular creatures: on the game client they can discard palette
@@ -1672,6 +1674,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         private static int GetCreatureStandardColor(uint creature, TintMapLayerType layer)
         {
             var creatureColor = GetCreatureColorChannel(layer);
+            if ((int)creatureColor < 0 && Astromech.IsAstromech(creature) &&
+                AstromechBody.TryGetBarePaint(layer, out var barePaint))
+            {
+                return barePaint;
+            }
 
             return (int)creatureColor >= 0 && GetObjectType(creature) == ObjectType.Creature
                 ? Math.Clamp(GetNativePaletteBaseline(creature, (int)layer, GetColor(creature, creatureColor)),

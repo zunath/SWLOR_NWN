@@ -428,10 +428,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    // An astromech changes its chassis in the workshop. A creature a DM controls keeps the editor.
-                    if (!DMPresence.IsControlledByDM(user) && AstromechWorkshop.TryOpenInsteadOfAppearanceEditor(user))
-                        return;
-
                     var payload = new AppearanceEditorPayload(user);
 
                     // A DM's window can still be open on the avatar or a creature they possessed before; DMPresence
@@ -459,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     if (Astromech.IsAstromech(user))
                     {
-                        return AstromechWorkshop.HeadScaleMessage;
+                        return Astromech.HeadScaleMessage;
                     }
 
                     if (!RacialAppearanceRegistry.TryGet(GetAppearanceType(user), out var appearance))

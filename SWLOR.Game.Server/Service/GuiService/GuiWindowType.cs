@@ -115,7 +115,6 @@ namespace SWLOR.Game.Server.Service.GuiService
         HouseSpecialization = 117,
         CityProjects = 118,
         ShipHud = 119,
-        ChassisWorkshop = 120,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

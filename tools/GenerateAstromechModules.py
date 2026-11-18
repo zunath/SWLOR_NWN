@@ -10,7 +10,8 @@ requirement in place of the Armor (skill 6) rank, and the astromech-only propert
 
 Writes (all derived from the source blueprints and the source Smithery recipes, so a change to a humanoid item is
 picked up by rerunning, and caught by AstromechModuleContentTests):
-  - Module/uti/am_<h|t>_<code>_<01..10>.uti.json, 160 blueprints
+  - Module/uti/am_<h|t>_<code>_<01..10>.uti.json, 160 blueprints; each Chassis Plating wears a paint job (PAINT_JOBS)
+  - Module/uti/am_plat_start.uti.json, the stat-less plating a new astromech starts in
   - SWLOR.Game.Server/Feature/RecipeDefinition/EngineeringRecipeDefinition/AstromechModuleRecipes.cs
     (the .CircuitParameters(...) values are written by tools/SWLOR.RecipeParameters and kept across reruns)
   - the generated RecipeType block (5071-5230) in SWLOR.Game.Server/Service/CraftService/RecipeType.cs
@@ -61,6 +62,21 @@ SLOTS = [
     ("cloak", "Deflector Emitter", "defl", "cloak", "cloak", "cloak", "cloak"),
 ]
 LADDERS = [("h", "Hardened", HARDENED), ("t", "Tuned", TUNED)]
+
+# Chassis Plating is the chest module, and a worn chest piece dyes the body it covers: on an astromech its second cloth
+# dye is the main paint, its first cloth dye the accent panels and its second metal dye the trim. A copied humanoid piece
+# carries dyes picked for cloth and armor, so each plating takes one of these paint jobs instead (palette rows: main,
+# accent, trim). A Tuned plating starts four jobs after the Hardened one of its tier, so the two never match.
+PAINT_FIELDS = ("Cloth2Color", "Cloth1Color", "Metal2Color")
+PAINT_JOBS = [(20, 27, 132), (35, 133, 126), (106, 93, 132), (171, 90, 1),
+              (7, 143, 126), (20, 90, 1), (27, 20, 132), (93, 171, 1)]
+
+# The plating a new astromech starts in, as others start in Traveler's Clothes: no stats, only paint to change.
+STARTER_SOURCE = "traveler_m"
+STARTER_RESREF = "am_plat_start"
+STARTER_NAME = "Basic Chassis Plating"
+STARTER_DESCRIPTION = ("Factory plating for an astromech chassis. It protects nothing a careful owner would not, "
+                       "but it takes paint well.")
 
 
 class Module:
@@ -155,8 +171,9 @@ NEW_PROPERTY = (
     '      }' % (RACIAL_PROPERTY, ASTROMECH_RACE))
 
 
-def module_blueprint(module: Module) -> str:
-    path = UTI / f"{module.source}.uti.json"
+def renamed(source: str, resref: str, name: str) -> str:
+    """The source blueprint under a new resref and name."""
+    path = UTI / f"{source}.uti.json"
     if not path.exists():
         raise SystemExit(f"missing source blueprint {path}")
     text = read(path)
@@ -164,16 +181,47 @@ def module_blueprint(module: Module) -> str:
     name_pattern = re.compile(
         r'  "LocalizedName": \{\r\n(?:    "id": \d+,\r\n)?    "type": "cexolocstring",\r\n    "value": \{\r\n      "0": "[^"\r\n]*"\r\n    \}\r\n  \},')
     if len(name_pattern.findall(text)) != 1:
-        raise SystemExit(f"{module.source}: LocalizedName has an unexpected shape")
+        raise SystemExit(f"{source}: LocalizedName has an unexpected shape")
     new_name = ('  "LocalizedName": {\r\n    "type": "cexolocstring",\r\n    "value": {\r\n'
-                f'      "0": "{module.name}"\r\n    }}\r\n  }},')
+                f'      "0": "{name}"\r\n    }}\r\n  }},')
     text = name_pattern.sub(lambda _m: new_name, text)
 
     for key, kind in (("Tag", "cexostring"), ("TemplateResRef", "resref")):
-        pattern = re.compile(rf'  "{key}": \{{\r\n    "type": "{kind}",\r\n    "value": "{re.escape(module.source)}"\r\n  \}}')
+        pattern = re.compile(rf'  "{key}": \{{\r\n    "type": "{kind}",\r\n    "value": "{re.escape(source)}"\r\n  \}}')
         if len(pattern.findall(text)) != 1:
-            raise SystemExit(f"{module.source}: {key} is not the resref")
-        text = pattern.sub(lambda _m: f'  "{key}": {{\r\n    "type": "{kind}",\r\n    "value": "{module.resref}"\r\n  }}', text)
+            raise SystemExit(f"{source}: {key} is not the resref")
+        text = pattern.sub(lambda _m: f'  "{key}": {{\r\n    "type": "{kind}",\r\n    "value": "{resref}"\r\n  }}', text)
+    return text
+
+
+def painted(text: str, source: str, job: tuple) -> str:
+    """The blueprint with a paint job in place of the dyes its source wore."""
+    for field, row in zip(PAINT_FIELDS, job):
+        pattern = re.compile(rf'(  "{field}": \{{\r\n    "type": "byte",\r\n    "value": )\d+(\r\n  \}})')
+        if len(pattern.findall(text)) != 1:
+            raise SystemExit(f"{source}: {field} has an unexpected shape")
+        text = pattern.sub(lambda m, row=row: f"{m.group(1)}{row}{m.group(2)}", text)
+    return text
+
+
+def starter_blueprint() -> str:
+    text = renamed(STARTER_SOURCE, STARTER_RESREF, STARTER_NAME)
+    for key in ("DescIdentified", "Description"):
+        pattern = re.compile(
+            rf'(  "{key}": \{{\r\n    "type": "cexolocstring",\r\n    "value": \{{\r\n      "0": ")[^"\r\n]*("\r\n    \}}\r\n  \}})')
+        if len(pattern.findall(text)) != 1:
+            raise SystemExit(f"{STARTER_SOURCE}: {key} has an unexpected shape")
+        text = pattern.sub(lambda m: f"{m.group(1)}{STARTER_DESCRIPTION}{m.group(2)}", text)
+    empty = '  "PropertiesList": {\r\n    "type": "list",\r\n    "value": []\r\n  },'
+    if text.count(empty) != 1:
+        raise SystemExit(f"{STARTER_SOURCE}: expected no item properties")
+    text = text.replace(empty, '  "PropertiesList": {\r\n    "type": "list",\r\n    "value": [\r\n'
+                        + NEW_PROPERTY + '\r\n    ]\r\n  },')
+    return painted(text, STARTER_SOURCE, PAINT_JOBS[0])
+
+
+def module_blueprint(module: Module) -> str:
+    text = renamed(module.source, module.resref, module.name)
 
     changed = 0
     for match in PROPERTY_BLOCK.finditer(text):
@@ -196,6 +244,9 @@ def module_blueprint(module: Module) -> str:
     if text.count(tail) != 1:
         raise SystemExit(f"{module.source}: PropertiesList has an unexpected end")
     text = text.replace(tail, '      },\r\n' + NEW_PROPERTY + '\r\n    ]\r\n  },\r\n  "StackSize"')
+    if module.slot_key == "chest":
+        job = module.tier + (len(PAINT_JOBS) // 2 if module.letter == "t" else 0)
+        text = painted(text, module.source, PAINT_JOBS[job % len(PAINT_JOBS)])
     return text
 
 
@@ -341,6 +392,7 @@ def expected_outputs() -> dict:
     outputs = {}
     for module in MODULES:
         outputs[UTI / f"{module.resref}.uti.json"] = module_blueprint(module).encode("latin-1")
+    outputs[UTI / f"{STARTER_RESREF}.uti.json"] = starter_blueprint().encode("latin-1")
     outputs[RECIPES_CS] = recipes_source(smithery).encode("utf-8")
     outputs[RECIPE_TYPE_CS] = recipe_type_text(read(RECIPE_TYPE_CS, "utf-8")).encode("utf-8")
     outputs[STORE] = store_text(read(STORE)).encode("latin-1")

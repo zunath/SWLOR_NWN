@@ -196,7 +196,7 @@ public class AstromechContentFitTests
     }
 
     [Test]
-    public void TheShuttleMerchant_OffersAnAstromechTheChassisWorkshop_NotClothes()
+    public void TheShuttleMerchant_TellsAnAstromechWhereToFindParts_NotClothes()
     {
         using var conversation = JsonDocument.Parse(File.ReadAllText(
             Path.Combine(Root, "SWLOR.Game.Server", "ConversationData", "starting_items.conversation.json")));
@@ -215,18 +215,16 @@ public class AstromechContentFitTests
             .SelectMany(choice => choice.GetProperty("Actions").EnumerateArray())
             .Select(action => action.GetProperty("Key").GetString())
             .ToList();
-        actions.Should().Contain("action-open-chassis-workshop");
         actions.Should().NotContain("action-open-store", "the store sells clothing an astromech cannot wear");
 
         var snippets = File.ReadAllText(Path.Combine(Root, "SWLOR.Game.Server", "Feature", "SnippetDefinition", "AstromechSnippetDefinition.cs"));
         snippets.Should().Contain("_builder.Create(\"condition-player-is-astromech\")");
-        snippets.Should().Contain("_builder.Create(\"action-open-chassis-workshop\")");
     }
 
     [Test]
     public void AnAstromech_HasTheWorkingAnimations()
     {
-        // Crafting, gathering and item use play these; the chassis has a clip for each (cgetmid, cgetlow and their loops).
+        // Crafting, gathering and item use play these; the chassis has a clip for each (getmid, getlow and their loops).
         AstromechAnimations.CanPlay(Animation.LoopingGetMid).Should().BeTrue();
         AstromechAnimations.CanPlay(Animation.LoopingGetLow).Should().BeTrue();
 
@@ -245,9 +243,9 @@ public class AstromechContentFitTests
     }
 
     [Test]
-    public void AnAstromech_FishesWithItsBuiltInRod()
+    public void AnAstromech_FishesWithTheRodClipsOfItsBody()
     {
-        // Held items are not drawn on the chassis, so the rod is part of the model and only the fishing clips bring it out.
+        // The body holds the rod like any held item; its fishing clips swing the hand that carries it.
         var export = File.ReadAllText(Path.Combine(Root, "tools", "AstromechCreatureExport.py"));
         var declared = System.Text.RegularExpressions.Regex.Match(export, @"FISHING_CLIPS = \(([^)]*)\)").Groups[1].Value
             .Split(',').Select(name => name.Trim().Trim('\'')).ToHashSet();
@@ -275,8 +273,11 @@ public class AstromechContentFitTests
         AstromechAnimations.TryGetRodClips(null, out _).Should().BeFalse();
 
         // The work animation's own clips are the ones swapped (AstromechWorkPlaybackTests covers the swap and its end).
-        AstromechWorkPlayback.EntrySource.Should().Be("cgetmid");
-        AstromechWorkPlayback.LoopSource.Should().Be("cgetmidlp");
+        AstromechWorkPlayback.EntrySource.Should().Be("getmid");
+        AstromechWorkPlayback.LoopSource.Should().Be("getmidlp");
+        var body = File.ReadAllText(Path.Combine(Root, "tools", "AstromechDynamicBody.py"));
+        foreach (var name in declared)
+            body.Should().Contain($"'{name}'", "the body's animation bank keeps every rod clip by name");
         AstromechAnimations.Work.Should().Be(Animation.LoopingGetMid);
 
         // The caller can end the motion early (a cancelled cast, a craft that ends): the play hands back a token, and

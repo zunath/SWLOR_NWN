@@ -126,17 +126,6 @@ public class EmotesWindowLifecycleTests
                 public Dictionary<string, ChatCommandDetail> Build() => new();
             }
             public class AppearanceEditorPayload : GuiPayloadBase { public AppearanceEditorPayload(uint target) { } }
-            public static class AstromechWorkshop
-            {
-                public static readonly HashSet<uint> Astromechs = new();
-                public static readonly List<uint> Opened = new();
-                public static bool TryOpenInsteadOfAppearanceEditor(uint player)
-                {
-                    if (!Astromechs.Contains(player)) return false;
-                    Opened.Add(player);
-                    return true;
-                }
-            }
             public class CharacterChatCommand
             {
                 private readonly ChatCommandBuilder _builder = new();
@@ -152,7 +141,6 @@ public class EmotesWindowLifecycleTests
                 public static void Reset()
                 {
                     Gui.Reset(); DMPresence.Reset(); NativeGui.Windows.Clear(); DB.Records.Clear();
-                    AstromechWorkshop.Astromechs.Clear(); AstromechWorkshop.Opened.Clear();
                     new SystemChatCommand();
                     new DiceChatCommand().BuildChatCommands();
                     new CharacterChatCommand();
@@ -182,8 +170,6 @@ public class EmotesWindowLifecycleTests
                 public static int OpenWindows() => NativeGui.Windows.Count;
                 public static int Binds(uint owner) => Gui.GetPlayerWindow(owner, GuiWindowType.Emotes).ViewModel.Binds;
                 public static void DirectCreatureToggle(uint actor) => Gui.TogglePlayerWindow(actor, GuiWindowType.Emotes);
-                public static void MakeAstromech(uint creature) => AstromechWorkshop.Astromechs.Add(creature);
-                public static int WorkshopOpens() => AstromechWorkshop.Opened.Count;
             }
             """);
     }
@@ -292,27 +278,6 @@ public class EmotesWindowLifecycleTests
         OpenWindows.Should().Be(1);
         Window(DM, alias).Should().BeSameAs(window);
         Owners.Should().Be(1);
-    }
-
-    // An astromech changes its chassis in the workshop, so /customize never opens the appearance editor for it. A DM who
-    // controls an astromech creature keeps the editor, as for any creature.
-    [TestCase(DMPossess)]
-    [TestCase(DMPossessFullPower)]
-    public void CustomizeOpensTheWorkshopForAnAstromechAndTheEditorForADMControllingOne(int possessionType)
-    {
-        Login(Player);
-        _harness.Invoke("Driver", "MakeAstromech", Player);
-        Command(Player, "customize");
-        OpenWindows.Should().Be(0);
-        _harness.Invoke<int>("Driver", "WorkshopOpens").Should().Be(1);
-
-        Login(DM, isDM: true);
-        _harness.Invoke("Driver", "MakeAstromech", Creature);
-        _harness.Possess(DM, Creature, possessionType);
-        Command(Creature, "customize");
-        OpenWindows.Should().Be(1);
-        BoundTo(DM, "customize").Should().Be(Creature);
-        _harness.Invoke<int>("Driver", "WorkshopOpens").Should().Be(1, "the DM gets the editor");
     }
 
     private void Login(uint player, bool isDM = false)

@@ -430,11 +430,6 @@ namespace SWLOR.Game.Server.Entity
         /// The kind of body the character has, set from its species at creation and checked on each login.
         /// </summary>
         public BodyFrame BodyFrame { get; set; }
-
-        /// <summary>
-        /// The paint an astromech chose, by zone, as stored tint colors. A missing zone wears the paint its chassis comes with.
-        /// </summary>
-        public Dictionary<AstromechPaintZone, int> AstromechPaint { get; set; }
     }
 
     public class MapPin

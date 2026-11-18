@@ -386,8 +386,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 // Character creation offers every voice and portrait; an astromech starts with its own.
                 SetSoundset(player, Astromech.SoundSetId);
-                SetPortraitResRef(player, Astromech.GetChassis(dbPlayer).Portrait);
-                Astromech.ApplyPaint(player, dbPlayer, true);
+                SetPortraitResRef(player, Astromech.DefaultPortrait);
             }
         }
 
@@ -405,11 +404,15 @@ namespace SWLOR.Game.Server.Feature
                     throw new InvalidOperationException($"The starting item {resref} could not be created.");
                 return created;
             }
-            // An astromech has no hands or clothes; it starts with a basic shock prod, as others start with a
-            // knife, and the same credits.
+            // An astromech starts with a basic shock prod, as others start with a knife, basic plating in place of
+            // clothes (its paint is the plating's dyes), and the same credits.
             if (Race.GetBodyFrame(race) == BodyFrame.Astromech)
             {
                 SetItemCursedFlag(CreateStarterItem("am_w_prod_01"), true);
+                var plating = CreateStarterItem(Astromech.StarterPlatingResref);
+                CreaturePlugin.RunEquip(player, plating, InventorySlot.Chest);
+                if (GetItemInSlot(InventorySlot.Chest, player) != plating)
+                    throw new InvalidOperationException("The starting plating could not be equipped.");
                 GiveGoldToCreature(player, 200);
                 return;
             }

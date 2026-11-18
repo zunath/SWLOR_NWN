@@ -39,6 +39,7 @@ class GearGeneratorLineEndingTests(unittest.TestCase):
         """A copy of every file the generators read or write, in one line-ending form, with the tools pointed at it."""
         needed = set(modules.expected_outputs()) | set(tools.expected_outputs())
         needed |= {modules.UTI / f"{m.source}.uti.json" for m in modules.MODULES}
+        needed.add(modules.UTI / f"{modules.STARTER_SOURCE}.uti.json")
         needed |= {tools.UTI / f"{t.source}.uti.json" for t in tools.TOOLS}
         needed |= set(modules.SMITHERY.glob("*.cs"))
         # The placed copy of the store, which both generators stock.

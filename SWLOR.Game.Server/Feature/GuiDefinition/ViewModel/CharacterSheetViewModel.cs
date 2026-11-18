@@ -585,9 +585,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAppearance() => () =>
         {
-            if (AstromechWorkshop.TryOpenInsteadOfAppearanceEditor(Player))
-                return;
-
             var payload = new AppearanceEditorPayload(Player);
             Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor, payload);
         };

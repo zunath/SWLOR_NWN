@@ -535,6 +535,9 @@ public class PowerGloveFitTests
         foreach (var species in RacialAppearanceRegistry.GetAppearanceTypes())
         {
             RacialAppearanceRegistry.TryGet(species, out var definition).Should().BeTrue();
+            // A body with no hands (the astromech) has none to fit a glove to.
+            if (definition.RightHand.Concat(definition.LeftHand).All(hand => hand <= 0))
+                continue;
             var race = appearances.GetValue((int)species, "RACE");
             foreach (var gender in new[] { Gender.Male, Gender.Female })
             foreach (var appearance in VisibleGloveAppearances())

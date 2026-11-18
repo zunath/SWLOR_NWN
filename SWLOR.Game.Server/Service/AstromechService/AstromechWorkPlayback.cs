@@ -10,10 +10,10 @@ namespace SWLOR.Game.Server.Service.AstromechService
     public sealed class AstromechWorkPlayback
     {
         /// <summary>The chassis clip that starts <see cref="AstromechAnimations.Work"/>.</summary>
-        public const string EntrySource = "cgetmid";
+        public const string EntrySource = "getmid";
 
         /// <summary>The chassis clip <see cref="AstromechAnimations.Work"/> loops.</summary>
-        public const string LoopSource = "cgetmidlp";
+        public const string LoopSource = "getmidlp";
 
         /// <summary>How long after the motion's time is up its clips stay chosen, so its last frames keep them.</summary>
         public const float ReleaseGraceSeconds = .5f;

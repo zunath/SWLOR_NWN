@@ -1,16 +1,16 @@
 # Astromech Playable Species Plan
 
-**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 (go verdict), Phase 1 (chassis, animation, tools, dyes, voice set), Phase 2 (the playable species itself), Phase 3 (skills, perks, modules and tools), Phase 4 (ship role) and Phase 5 (Player Guide and the quest audit) are done; see their results sections. What remains is the owner's: review of the choices made without check-ins, the release notes once it merges, and a play test.** No new balance numbers were introduced: every astromech skill is a number-for-number copy of an existing humanoid skill family (Phase 3 results).
+**Status: design direction approved by the owner on 2026-11-15 (see [Decisions](#decisions)). Phase 0 (go verdict), Phase 1 (chassis, animation, tools, dyes, voice set), Phase 2 (the playable species itself), Phase 3 (skills, perks, modules and tools), Phase 4 (ship role) and Phase 5 (Player Guide and the quest audit) are done; see their results sections. The body was then rebuilt as a dynamic (part-based) body on 2026-11-18 (see [Dynamic body rebuild](#dynamic-body-rebuild)), which replaces the single-model chassis, the built-in tools and rod, and the Chassis Workshop described in the phase results. What remains is the owner's: review of the choices made without check-ins, the release notes once it merges, and a play test.** No new balance numbers were introduced: every astromech skill is a number-for-number copy of an existing humanoid skill family (Phase 3 results).
 
 **Base: this builds on the space revamp** (`feature/space-revamp`, read at `0e2bc7231`, and its `Readmes/SpaceRevampPlan.md`). It assumes crew stations, droid crew, power routing and the space jobs of Engineering, Espionage and Leadership exist. It ships as its own release after space, so it never delays the space release.
 
-Sections: Summary · What exists today · Species rules · Skills and perks · Equipment · 3D models (Meshy) · Animation · 2D art · Sound · Code work · Phase 0 results · Phase 1 results · Phase 2 results · Phases · Risks · Separate droid healing · Decisions
+Sections: Summary · What exists today · Species rules · Skills and perks · Equipment · 3D models (Meshy) · Animation · 2D art · Sound · Code work · Phase 0 results · Phase 1 results · Phase 2 results · Dynamic body rebuild · Phases · Risks · Separate droid healing · Decisions
 
 ## Summary
 
 Add the astromech as a second droid species beside the existing humanoid Droid. It is the first player character that is not a part-based humanoid body, so it gets its own rule set instead of exceptions scattered through the humanoid one:
 
-- **Body:** a single creature model per chassis (no body parts, no clothing, no held humanoid weapons), with paint instead of dyes.
+- **Body:** a dynamic (part-based) body of its own shape: a dome, a barrel and two legs, each in eight designs, on its own skeleton. It wears no clothing; the dyes of its Chassis Plating are its paint. Phases 0 to 5 built it as one creature model per chassis; the owner's rule that playable species are dynamic replaced that (see [Dynamic body rebuild](#dynamic-body-rebuild)), so read the body, tool, rod and Chassis Workshop passages of the phase results as history.
 - **Role:** support and control first on the ground, with modest damage; a ship's droid in space.
 - **Kit:** three astromech-only skills (Chassis, Armaments, Utility Systems) replace Armor, the weapon skills and the humanoid support skills. A short list of body-neutral skills stays shared.
 - **Gear:** astromech-only modules in the normal equipment slots, crafted through Engineering.
@@ -504,6 +504,62 @@ The gaps the first pass left were closed, and client checks found two defects th
 - The play test on the test server is the owner's step.
 - The compressed voice set was validated by decoding every file; it was not listened to in the client, whose stock container has no audio.
 - The simulator does not model the Rifle line, so the Blaster Mount line has no weapon-formula scenario; it can be run with calibrated damage profiles like any Rifle build.
+
+## Dynamic body rebuild
+
+Done on 2026-11-18, on the owner's rule that every playable species has a dynamic (part-based) body
+(`ContentStandards.md`). Evidence is in `C:\Temp\astro-spike\dyn\evidence21`.
+
+**What changed**
+
+| Before (phases 1 to 5) | Now |
+|---|---|
+| Eight appearance rows 10300-10307, simple type, one model per chassis | One row 10300, `MODELTYPE` `P`, race letter `R`: skeleton `pmr0`/`pfr0`, animation bank `a_astro` |
+| A chassis picked as a whole in the Chassis Workshop | Dome (head), body (torso) and two legs (thighs) picked in the regular Appearance Editor, eight designs each, mixed freely |
+| Paint stored on the player, three zones in the Workshop | Paint is the dye of the worn Chassis Plating, set on the editor's Equipment tab; a chassis with no plating wears factory white and blue |
+| Prod and blaster built into the model; equipped tools invisible | The shock prod and blaster mount are held items with their own item classes (`WAmPr`, `WAmBl`) that slide out of the body in the attack clips |
+| Fishing rod built into every chassis | The astromech holds the fishing rod item; the fishing clips swing the hand |
+| Clip names of simple creatures (`cwalk`, `ca1slashr`, ...) | Every engine-native humanoid name, each a chassis clip with its nodes renamed |
+
+**Delivered**
+
+- `tools/AstromechDynamicBody.py` (with tests): re-cuts the exporter's chassis into the skeleton, the animation bank
+  (171 native names and the eight fishing clips), 64 part models and the held tool models with their icons. The
+  steps after it (tint bindings, pictures) are in `BlasterModelImport.md`.
+- Species data: `AstromechRacialAppearanceDefinition`, `AstromechArmorAppearanceDefinition` (every module part is
+  style 0, so the chassis shows through), `AppearanceType.Astromech`, the `Race` defaults (design 1, no humanoid
+  parts), part pictures and part names (`Classic Dome`, `Courier Body`, `Scout Leg`, ...).
+- `AstromechBody`: seats the dome of one design on the body of another (a head-scope visual transform, applied
+  whenever the body is redrawn) and holds the paint of a bare chassis.
+- Chassis Plating paint jobs and the stat-less `Basic Chassis Plating` a new astromech starts in
+  (`tools/GenerateAstromechModules.py`).
+- Helmet- and cloak-slot modules are hidden on an astromech; the dome keeps its size (`/headscale` refuses).
+- Removed: the Chassis Workshop (window, view model, service, snippet action, conversation choice), the chassis
+  catalog, paint zones, `Player.AstromechPaint`, the simple chassis models and their pictures.
+
+**Client evidence** (fresh character through native character creation)
+
+| Check | Result | Evidence |
+|---|---|---|
+| New character | Enters as the dynamic body in design 1, wearing Basic Chassis Plating, with its portrait and voice set | `g4_entered.png`, `b1_body_front.png` |
+| Appearance Editor | `/customize` opens the regular editor; the slots show the dome, body and legs with pictures and names; stepping a slot swaps the part | `e1_editor.png`, `e2_head4.png`, `n2_editor_body_named.png`, `n3_editor_leg_named.png` |
+| Mixed parts | A dome of one design sits on the body of another (4 on 1, 1 on 5, 1 on 8) | `e3_head4_on_barrel1.png`, `n2_dome1_barrel5.png`, `f2_torso_changed_in_editor.png` |
+| Paint | Dyeing the plating on the Equipment tab repaints dome, body and legs; without plating the chassis is white and blue | `q1_equipment_tab.png`, `q3_dyed_droid.png`, `u1_bare_chassis.png` |
+| Held tools | The prod and the blaster slide out of the body in a real fight and land hits | `k3_fight_sheet.png`, `k4_blast_sheet.png` |
+| Fishing rod | The held rod is drawn and swings on the cast | `r_fish_sheet.png`, `r_rod_idle_sheet.png` |
+| Hidden modules | Head and cloak modules are worn and nothing is drawn for them | `h1_head_cloak_modules.png` |
+| Size | The Settings tab changes and saves the height | `n4_editor_settings.png`, `n5_after_settings.png` |
+
+**Left as it is**
+
+- Module and tool inventory icons are still the icons of the humanoid pieces they copy (a tunic for plating, a
+  staff sliver for the prod). The tools now have icon files of their own, so drawing proper icons is possible; it
+  was not part of this rebuild.
+- Module descriptions are still the text of the humanoid piece they copy.
+- The editor shows the Skin, Hair and Tattoo swatches and the Show Helmet and Show Cloak boxes to an astromech, as it
+  does to everyone; they change nothing on a chassis.
+- Legs are not fitted to the body they are worn with. The eight designs share one leg joint, and the mixes looked
+  right in the client.
 
 ## Phases
 

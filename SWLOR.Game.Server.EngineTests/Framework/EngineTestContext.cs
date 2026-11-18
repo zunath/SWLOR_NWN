@@ -173,6 +173,15 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         }
 
         /// <summary>
+        /// Waits for a spawned NPC's spawn handler (AI.CreatureSpawn) to run. That handler reloads the
+        /// NPC's FP and Stamina to their maximums, so a test that spends a pool and then awaits must let
+        /// it finish first or the refill lands mid-test.
+        /// </summary>
+        public Task WaitForSpawnInitializationAsync(uint npc) =>
+            WaitUntilAsync(() => GetLocalString(npc, "X2_SPECIAL_COMBAT_AI_SCRIPT") == "xxx", 5f,
+                "the NPC's spawn initialization to run");
+
+        /// <summary>
         /// Raises an NPC's effective maximum pools before setting current FP and Stamina.
         /// Call after spawn initialization, which otherwise overwrites these pools.
         /// </summary>

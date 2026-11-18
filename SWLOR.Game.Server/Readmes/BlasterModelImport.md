@@ -543,7 +543,8 @@ need a module repack and the new resources need a hak rebuild. Player structures
 the new appearance after both.
 
 `--config` points the tool at another model list in the same format. `tools/TrophyStandModels.json` holds the ten furniture
-Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place.
+Trophy Stands, which are new blueprints (resref = model name) rather than stations swapped in place;
+`tools/FieldCotModels.json` holds the five Meshy Field Cots the same way.
 `tools/GardenPlotModels.json` holds the garden plots: the empty bed is the Garden Plot blueprint, and the sprouting, ripe
 and withered models have a null `blueprint` because Farming creates them at run time (their rows are the `FarmingRules`
 stage appearances). Each stage is only its plants: Meshy builds a whole bed per concept image and the frames came out
@@ -576,7 +577,16 @@ seedlings came out as pegs and plants as blobs. Meshy output differs from TRELLI
   one vertex, export stops with "Missing source tangent requires splitting a Mikk seam". Re-export that GLB from Blender 4.0
   with `export_tangents=True` (it splits those vertices) and replace any zero-length tangent with a unit vector
   perpendicular to its normal ("Degenerate/nonfinite tangent basis" names it; one per model on two stands), then record the
-  new file's `sha256` in the manifest.
+  new file's `sha256` in the manifest. "Authored tangent conflict at compiled vertex" from `package` means corners that
+  share a position, UV and normal (which the compiler welds) carry different tangents: give each such group one tangent
+  in the GLB (projected sum, majority sign) before export.
+- **Atlas seams.** Meshy packs its 2048 atlas charts edge to edge. After the downscale and mipmaps, neighbouring charts
+  bleed into each other, which showed as dark specks on the Veilcarved Field Cot's cloth in the client. The Field Cots were
+  re-baked in Blender 4.0 onto a padded Smart UV layout: same mesh, base color, roughness and metallic baked through an
+  Emission shader from the old UV map into the new one (`margin` 16), no ray casting. Their normal maps were flat
+  (Meshy's tilt the surface by about 2 degrees on average, and a re-baked map added visible island seams).
+- **Geometry.** Smart topology can model fur as rows of dents: the first Resonant Field Cot came out polka-dotted, with a
+  nearly flat normal map. Render each GLB from a three-quarter view before importing and regenerate any that read wrong.
 
 Meshy faces the front of the concept image toward -Y after import; `yaw_degrees: 180` turns it to +Y, which points along
 the placeable's `GetFacing`.

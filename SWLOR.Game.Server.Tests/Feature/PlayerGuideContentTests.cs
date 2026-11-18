@@ -480,7 +480,7 @@ public class PlayerGuideContentTests : SkillFacadeFixture
 
     private static List<object> GetTopics()
     {
-        var field = typeof(PlayerGuideViewModel).GetField("Topics", BindingFlags.NonPublic | BindingFlags.Static);
+        var field = typeof(PlayerGuideViewModel).Assembly.GetType("SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideTopicCatalog")!.GetField("Topics", BindingFlags.NonPublic | BindingFlags.Static);
         field.Should().NotBeNull();
 
         return ((IEnumerable)field!.GetValue(null)!).Cast<object>().ToList();

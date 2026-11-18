@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 t.Step("clear-search", () => guide.OnClickClearSearch()());
                 t.Step("select-topic-with-related", () =>
                 {
-                    var topics = (IList)GetStatic(typeof(PlayerGuideViewModel), "Topics");
+                    var topics = (IList)GetStatic(typeof(PlayerGuideViewModel).Assembly.GetType("SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PlayerGuideTopicCatalog")!, "Topics");
                     for (var index = 0; index < topics.Count; index++)
                     {
                         var related = (IList)topics[index]!.GetType().GetProperty("RelatedTopics")!.GetValue(topics[index])!;

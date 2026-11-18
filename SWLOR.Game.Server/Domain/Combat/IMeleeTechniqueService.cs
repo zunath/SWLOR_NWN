@@ -75,14 +75,9 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         int GetStaminaDiscount(uint creature, AbilityDetail ability, int cost, bool consume);
 
-        /// <summary>Captures actual HP before a typed direct hit; periodic/triggered/reflected paths never enter.</summary>
-        void PrepareDirectDamage(uint attacker, uint defender, CombatDamageDeliveryType deliveryType);
-
         void OnDirectDamageApplied();
 
         void ClearSetup(uint creature);
-
-        void OnStanceChanged(uint creature);
 
         void ClearBenefits(uint creature);
 

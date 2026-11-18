@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Feature.QuestDefinition;
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Domain.Quests
     /// (heals and buffs on allies) stay on the player for a short window. Static callers reach the container's
     /// instance through <c>GameServices.CapstoneProof</c>.
     /// </summary>
-    public class CapstoneProofService : ICapstoneProofService
+    public class CapstoneProofService : ICapstoneProofService, IStatusEffectAppliedListener
     {
         /// <summary>How long a support proof holds.</summary>
         public const float SupportWindowSeconds = 30f;
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Domain.Quests
 
         private readonly ICompanionLookup _companions;
         private readonly IAbilityCatalog _catalog;
+        private readonly IStatusEffectService _statusEffect;
         private readonly Dictionary<string, CapstoneProofDefinition> _proofs = new();
         private readonly Dictionary<Type, List<CapstoneProofDefinition>> _byEnemyStatus = new();
         private readonly Dictionary<Type, List<CapstoneProofDefinition>> _bySupportStatus = new();
@@ -38,14 +40,40 @@ namespace SWLOR.Game.Server.Domain.Quests
         /// Registers the capstone proofs the quest definitions name. That only fills dictionaries from static data (no
         /// engine, database or service call), as the static constructor of the old class did on first use.
         /// </summary>
-        public CapstoneProofService(ICompanionLookup companions, IAbilityCatalog catalog)
+        public CapstoneProofService(ICompanionLookup companions, IAbilityCatalog catalog, IStatusEffectService statusEffect)
         {
             _companions = companions;
             _catalog = catalog;
+            _statusEffect = statusEffect;
 
             foreach (var proof in CapstoneProofDefinitions.All)
                 Register(proof);
         }
+
+        /// <summary>
+        /// Gives the status effects this service as a listener of their applied notices. A reload runs boot handlers that rerun
+        /// before it adopts the carried status effects, so the list is full before the first notice.
+        /// </summary>
+        [BootPhase(BootReload.Rerun)]
+        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
+        public void RegisterStatusEffectListener()
+        {
+            _statusEffect.RegisterAppliedListener(this);
+        }
+
+        /// <summary>Nothing to do when a status effect is applied; the proof is recorded when the application completes.</summary>
+        public void OnStatusApplied(uint source, uint creature, StatusEffectCategory categories)
+        {
+        }
+
+        /// <summary>Nothing to do for a hostile debuff.</summary>
+        public void OnHostileDebuffApplied(uint source, AbilityDetail ability)
+        {
+        }
+
+        /// <summary>An application completed: recorded as <see cref="RecordStatusEffect"/>.</summary>
+        public void OnApplicationCompleted(uint source, uint creature, Type statusEffectType, AbilityDetail ability) =>
+            RecordStatusEffect(source, creature, statusEffectType, ability);
 
         public void Register(CapstoneProofDefinition proof)
         {

@@ -2,7 +2,6 @@ using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
-using SWLOR.Game.Server.Domain.Quests;
 using SWLOR.Game.Server.Domain.UI;
 
 namespace SWLOR.Game.Server.Tests.Support;
@@ -23,14 +22,12 @@ public sealed partial class TestStatusEffectService : StatusEffectService
         StatusEffectBench bench,
         IStatusResistance resistance,
         IStatusEffectCatalogService statusCatalog,
-        IMeleeTechniqueService meleeTechnique,
         ICombatRecorderService combatRecorder,
         IMessagingService messaging,
         IPlayerNameService playerName,
         IGuiService gui,
-        ICapstoneProofService capstoneProof,
         IDBService db)
-        : base(resistance, statusCatalog, meleeTechnique, combatRecorder, messaging, playerName, gui, capstoneProof, db, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActiveAbilityImpact>(), FacadeForwarder.LazyFor<ICombatAbilityImpactService>())
+        : base(resistance, statusCatalog, combatRecorder, messaging, playerName, gui, db, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IActiveAbilityImpact>())
     {
         _bench = bench;
     }

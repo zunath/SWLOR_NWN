@@ -61,19 +61,6 @@ public sealed partial class StatusEffectBench : IDisposable
                 return ResistedTicks?.Invoke((int)args[2]!) ?? (int)args[2]!;
             });
 
-        var melee = ScriptedProxy.Create<IMeleeTechniqueService>(out var meleeProxy);
-        meleeProxy
-            .On("OnStanceChanged", args =>
-            {
-                Log.Add($"OnStanceChanged:{args[0]}");
-                return null;
-            })
-            .On("PrepareDirectDamage", args =>
-            {
-                Log.Add($"PrepareDirectDamage:{args[0]}:{args[1]}:{args[2]}");
-                return null;
-            });
-
         var recorder = ScriptedProxy.Create<ICombatRecorderService>(out var recorderProxy);
         recorderProxy
             .On("get_IsRecording", args => Recording)
@@ -102,15 +89,11 @@ public sealed partial class StatusEffectBench : IDisposable
             return null;
         });
 
-        var capstone = ScriptedProxy.Create<ICapstoneProofService>(out var capstoneProxy);
-        capstoneProxy.On("RecordStatusEffect", args =>
-        {
-            Log.Add($"CapstoneProof:{args[0]}:{args[1]}:{((Type)args[2]!).Name}:{(args[3] as AbilityDetail)?.Name}");
-            return null;
-        });
-
         Catalog = new TestStatusEffectCatalogService(this);
-        Service = new TestStatusEffectService(this, resistance, Catalog, melee, recorder, messaging, playerName, gui, capstone, Db);
+        Service = new TestStatusEffectService(this, resistance, Catalog, recorder, messaging, playerName, gui, Db);
+        Service.RegisterMeleeListener(new StatusEffectListenerStandIns.Melee(Log));
+        Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Impact(Log));
+        Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Capstone(Log));
     }
 
     /// <summary>The creature <see cref="IMessagingService.SendMessageNearbyToPlayers(uint, BuildMessageDelegate, float)"/> builds its text for.</summary>

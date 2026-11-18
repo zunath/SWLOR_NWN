@@ -3,14 +3,18 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 {
-    /// <summary>The weapon appearance definition of each base item the appearance editor can restyle.</summary>
-    public static class WeaponAppearanceCatalog
+    /// <summary>
+    /// The weapon appearance definition of each base item the appearance editor can restyle. The container builds it once, with
+    /// the definitions, so no boot step fills it (ServiceRegistrations).
+    /// </summary>
+    public class WeaponAppearanceCatalog : IWeaponAppearanceCatalog
     {
-        public static readonly IReadOnlyDictionary<BaseItem, WeaponAppearanceBaseDefinition> Definitions = Build();
+        public IReadOnlyDictionary<BaseItem, WeaponAppearanceBaseDefinition> Definitions { get; }
 
-        /// <summary>Builds the definitions now, as the boot handler did when it filled the editor's dictionary.</summary>
-        public static void EnsureLoaded() =>
-            System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(WeaponAppearanceCatalog).TypeHandle);
+        public WeaponAppearanceCatalog()
+        {
+            Definitions = Build();
+        }
 
         private static Dictionary<BaseItem, WeaponAppearanceBaseDefinition> Build()
         {

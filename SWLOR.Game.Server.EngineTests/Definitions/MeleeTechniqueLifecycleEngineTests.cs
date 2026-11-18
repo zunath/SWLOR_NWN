@@ -93,7 +93,7 @@ public static class MeleeTechniqueLifecycleEngineTests
             // and the eighteen-second grant gate must keep the counter bound to the victim.
             await context.ExecuteInCreatureContextAsync(victim.Creature, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(victim.Creature, counterOwner, 5, CombatDamageType.Physical);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(victim.Creature, counterOwner, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), counterOwner);
             });
             await context.WaitUntilAsync(() => MeleeTechnique.GetPendingRetaliationPower(counterOwner, victim.Creature) == 12,

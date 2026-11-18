@@ -97,6 +97,12 @@ namespace SWLOR.Game.Server.Composition
         /// <summary>Applying a status effect: the apply family, its checks, conflicts and messages (part 3 of the status effect split, P5-5f).</summary>
         public static IStatusEffectApplicationService StatusEffectApplication => FacadeAccessor.Resolve<IStatusEffectApplicationService>();
 
+        /// <summary>The timing of an application, the refresh in place, the restart, the extension and the refresh of a status effect (part 4 of the status effect split, P5-5g).</summary>
+        public static IStatusEffectDurationService StatusEffectDuration => FacadeAccessor.Resolve<IStatusEffectDurationService>();
+
+        /// <summary>The damage and attack notices, the guarded hit, the native attack swing and the limited attack-timing reads (part 6 of the status effect split, P5-5g).</summary>
+        public static IStatusEffectCombatEventService StatusEffectCombatEvent => FacadeAccessor.Resolve<IStatusEffectCombatEventService>();
+
         /// <summary>
         /// Timed stat modifiers a creature carries (the facade <c>Service.TemporaryStatModifier</c> until P2-ZG). Combat and content
         /// write them and the stat read reads them, so they are Character's (P5-4b).

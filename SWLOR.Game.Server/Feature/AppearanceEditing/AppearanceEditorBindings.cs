@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 
 namespace SWLOR.Game.Server.Feature.AppearanceEditing
 {
-    /// <summary>The names of the view model bindings the editor services address.</summary>
+    /// <summary>The names of the view model bindings the editor services address, and the one helper they share to set them.</summary>
     public static class AppearanceEditorBindings
     {
         public const string CustomTintBlue = nameof(AppearanceEditorViewModel.CustomTintBlue);
@@ -21,5 +22,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceEditing
         public const string SelectedColorCategoryIndex = nameof(AppearanceEditorViewModel.SelectedColorCategoryIndex);
         public const string SelectedItemTypeIndex = nameof(AppearanceEditorViewModel.SelectedItemTypeIndex);
         public const string SelectedTintColor = nameof(AppearanceEditorViewModel.SelectedTintColor);
+
+        /// <summary>Sets a binding only when its value differs, so the client is not sent an unchanged one.</summary>
+        public static void SetIfChanged<TValue>(this IAppearanceEditorHost host, string propertyName, TValue value)
+        {
+            if (!EqualityComparer<TValue>.Default.Equals(host.Get<TValue>(propertyName), value))
+                host.Set(value, propertyName);
+        }
     }
 }

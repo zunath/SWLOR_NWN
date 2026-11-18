@@ -120,7 +120,7 @@ public class PerformanceInspiredServiceTests
     private sealed class TestInspired : PerformanceInspiredService
     {
         public TestInspired()
-            : base(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>())
+            : base(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<IStatusEffectDurationService>())
         {
         }
 

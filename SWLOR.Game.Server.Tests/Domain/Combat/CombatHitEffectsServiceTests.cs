@@ -89,6 +89,8 @@ public class CombatHitEffectsServiceTests
             IStatService stat,
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusApplication,
+            IStatusEffectCombatEventService statusCombat,
+            IStatusEffectDurationService statusDuration,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState ability,
             IPairedRangedTraitsService pairedRangedTraits,
@@ -97,7 +99,7 @@ public class CombatHitEffectsServiceTests
             IResistanceService resistance,
             IPartyService party)
             : base(queries, resources, attackTiming, suppression, combatActivity, damageModifiers, abilityHit, stat, statusEffect, statusApplication,
-                temporaryStatModifier, ability, pairedRangedTraits, combatRecorder, capstoneProof, resistance, party, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
+                statusCombat, statusDuration, temporaryStatModifier, ability, pairedRangedTraits, combatRecorder, capstoneProof, resistance, party, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
         {
             _log = log;
             _taken = taken;
@@ -245,22 +247,25 @@ public class CombatHitEffectsServiceTests
                 : _statuses.Contains(((uint)args[0]!, (Type)args[1]!)))
             .On(nameof(IStatusEffectService.HasStatusEffectCategory), args => _categories.Contains(((uint)args[0]!, (StatusEffectCategory)args[1]!)))
             .On(nameof(IStatusEffectService.RemoveStatusEffect), args => Log($"Remove {args[0]} {((Type)args[1]!).Name} {args[2]}"))
-            .On(nameof(IStatusEffectService.ExtendStatusEffectDuration), args =>
-            {
-                _log.Add($"Extend {args[0]} {((Type)args[1]!).Name} {args[2]} {args[3]}");
-                return true;
-            })
-            .On(nameof(IStatusEffectService.RefreshStatusEffectDuration), args =>
-            {
-                _log.Add($"Refresh {args[0]} {((Type)args[1]!).Name} {args[2]} {args[3]} {args[5]}");
-                return true;
-            })
             .On(nameof(IStatusEffectService.GetStatusEffect), args => args.Length == 1
                 ? _toxicRush
                 : _effects.GetValueOrDefault(((uint)args[0]!, (Type)args[1]!, (uint)args[2]!)))
             .On(nameof(IStatusEffectService.GetCreatureStatusEffects), args =>
-                _creatureEffects.TryGetValue((uint)args[0]!, out var effects) ? effects : new CreatureStatusEffect { StatGroup = new StatGroup() })
-            .On(nameof(IStatusEffectService.NotifyDamageStatusEffects), args => Log($"Notify {string.Join(" ", args)}"));
+                _creatureEffects.TryGetValue((uint)args[0]!, out var effects) ? effects : new CreatureStatusEffect { StatGroup = new StatGroup() });
+        var statusDuration = ScriptedProxy.Create<IStatusEffectDurationService>(out var statusDurationCalls);
+        statusDurationCalls
+            .On(nameof(IStatusEffectDurationService.ExtendStatusEffectDuration), args =>
+            {
+                _log.Add($"Extend {args[0]} {((Type)args[1]!).Name} {args[2]} {args[3]}");
+                return true;
+            })
+            .On(nameof(IStatusEffectDurationService.RefreshStatusEffectDuration), args =>
+            {
+                _log.Add($"Refresh {args[0]} {((Type)args[1]!).Name} {args[2]} {args[3]} {args[5]}");
+                return true;
+            });
+        var statusCombat = ScriptedProxy.Create<IStatusEffectCombatEventService>(out var statusCombatCalls);
+        statusCombatCalls.On(nameof(IStatusEffectCombatEventService.NotifyDamageStatusEffects), args => Log($"Notify {string.Join(" ", args)}"));
         var statusApplication = ScriptedProxy.Create<IStatusEffectApplicationService>(out var statusApplicationCalls);
         statusApplicationCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), args =>
             {
@@ -337,7 +342,7 @@ public class CombatHitEffectsServiceTests
         });
 
         return new TestHitEffects(_log, () => _taken, queries, resources, timing, suppression, activity, modifiers, abilityHit, stat,
-            statusEffect, statusApplication, temporary, ability, traits, recorder, capstone, resistance, party);
+            statusEffect, statusApplication, statusCombat, statusDuration, temporary, ability, traits, recorder, capstone, resistance, party);
     }
 
     [TearDown]

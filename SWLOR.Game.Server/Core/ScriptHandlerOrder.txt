@@ -1161,7 +1161,7 @@ swlor_comp_qst
 
 swlor_damage
   action      SWLOR.Game.Server.Domain.Combat.PoisonsService.ConsumePoisonCoating
-  action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnDealtDamage
+  action      SWLOR.Game.Server.Domain.Character.StatusEffectCombatEventService.OnDealtDamage
   action      SWLOR.Game.Server.Domain.Combat.StealthService.BreakStealthOnDamageDealt
 
 swlor_del_prop

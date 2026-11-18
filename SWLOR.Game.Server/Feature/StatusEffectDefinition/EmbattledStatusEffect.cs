@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             // Unchanged stacks restart the window in place, without another application message.
             if (StatusEffect.GetStatusEffect(defender, typeof(EmbattledStatusEffect), defender) is EmbattledStatusEffect current &&
                 current.HasValues(stackCount, defense, forceDefense, mobility) &&
-                StatusEffect.RestartStatusEffectDuration(defender, typeof(EmbattledStatusEffect), defender, PressureWindowSeconds))
+                StatusEffectDuration.RestartStatusEffectDuration(defender, typeof(EmbattledStatusEffect), defender, PressureWindowSeconds))
             {
                 return;
             }

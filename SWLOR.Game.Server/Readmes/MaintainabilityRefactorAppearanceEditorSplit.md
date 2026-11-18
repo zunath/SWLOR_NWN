@@ -152,6 +152,11 @@ Open decisions (recommendation first):
    `IAppearanceBindingSink` goes in the domain of the services (below Feature). The view model's constructor follows
    `MaintainabilityRefactorContentInjection.md`. Client captures of the eight editor states before, after PR 1 and after PR 3.
 
+Decision 6 (2026-11-18), on the view model's size after the real moves: "We need to be pragmatic. Sometimes files will be longer than
+desired but it's ok to keep in this case." `AppearanceEditorViewModel` stays at its measured size (about 1,337 lines) with its declared
+properties; no more logic moves and no name-driven bindings. It is recorded in `Exemptions.json` (type size only, category "owner
+exception"); its services (10) and methods (150 lines) are still measured.
+
 ## 7. PR 1 as built
 
 - `ArmorColorRegionCatalog` and `ArmorColorRegion` (`Feature/AppearanceDefinition/ItemAppearance`): the swatches are generated
@@ -189,3 +194,52 @@ Open decisions (recommendation first):
   partial class whose parts are all listed. The other partials call the services through small private forwarders
   (`LoadTintMapEditor`, `AdjustArmorPart`) in the main part. Tests build it with `Content.Create<AppearanceEditorViewModel>()` and
   reach a service through the property the container injected.
+
+## 9. PR 3 as built
+
+- The view model is one file, `AppearanceEditorViewModel.cs` (1,337 lines, 9 services: color, outfit, part browser, part edit, part list,
+  settings, swatch, tint editor, `IGuiService`; it was 3,469 lines in six partial files and 9 services). The five partial files are
+  gone. It is over the 1,000-line limit and exempt from the type size measure by owner decision 6 (section 6); the numbers behind that are below.
+- New content singletons in `Feature/AppearanceEditing` (the services take the view model as `IAppearanceEditorHost`, as in PR 2, and
+  never call each other upward; a call back into the lists goes through the host):
+  `AppearancePartListService` (659 lines, 10 services), `AppearancePartBrowserService` (525, 5), `AppearanceSwatchService` (497, 3),
+  `AppearanceOutfitService` (294, 2: `IDBService`, `IWardrobeService`, which already owns the wardrobe rules) and
+  `AppearanceSettingsService` (237, 3). The map listed three; the swatch indicators and the settings and scale code are their own
+  types because the part browser service would have passed 700 lines and the view model would otherwise have stayed over 1,000.
+  `GetItem`, `GetOffHandAppearanceOwner` and `IsValidItem` live with the part list service, so the view model no longer injects the
+  power glove, twin pistol, creature color and database services.
+- `WeaponAppearanceCatalog` is an instance behind `IWeaponAppearanceCatalog`, registered in `ServiceRegistrations` (the content
+  registration rule wants a constructor that takes a registered type, and the catalog needs none). `AppearanceItemEligibility` is a
+  content singleton that takes the catalog; its `IsValid` is an instance method, its flag and part lookups stay static. Injected
+  members carry the interface's name (`IWeaponAppearanceCatalog.Definitions`), which `ContentInjectionRules` requires for an
+  interface that does not end in `Service`. The `RunClassConstructor` boot step is gone: `LoadAppearances` only calls
+  `RacialAppearanceRegistry.EnsureLoaded`. No handler moved, so `HandlerRenames.txt`, `ScriptHandlerOrder.txt` and
+  `BootHandlerClassification.txt` are unchanged.
+- Moved bodies are the old ones with receivers changed (`host.`, `host.Session`, a `host` argument, static helpers qualified by their
+  new owner). A normalized comparison of 109 moved bodies finds 97 identical after those edits; the rest differ only by the same
+  receiver edits (static arrays qualified, a handler body split into its service call), the removed `EnsureLoaded` line, and the
+  two methods split between the view model and a service (`OnCloseWindow`, `InitializeSettings`).
+- Two logic moves beyond the map, and no reformatting (owner decision 2): the 19 armor selection setters called one inline body that
+  differed only in the part; it is now `AppearancePartEditService.ArmorSelectionChanged(host, part, value)`, and each setter is the
+  old setter with that one call, `AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.<its part>, value)`, in place of
+  the inline `if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(),
+  ItemAppearanceType.ArmorModel, (int)AppearanceArmor.<its part>)) AdjustArmorPart(<its part>, 0)`; the same condition and call now sit
+  once in the service (`AppearanceEditorColorStateTests` checks the 19 call sites and the condition). The palette sheet choice of a
+  color category is `AppearanceSwatchService.UpdateColorSheet`, moved whole. All properties keep their original multi-line form.
+- Numbers for the owner (view model, 1,337 lines): 745 lines are declared bindings (20 part option lists at 5 lines each, 19 armor
+  selection setters at 11, about 90 plain properties at 5, and the rest); 117 are handler forwarders; 27 are the explicit host members;
+  362 are logic, of which these still sit in the view model: `Initialize` 75, `SelectEditorTab` 45, the item type page change in the
+  `SelectedItemTypeIndex` setter 39, `SelectedTintColor` setter 32, `GetArmorPartBinding` 26 and `WatchArmorSelections` 24 (both need
+  the view model's own properties), `OnEditorPartialApplied` 19, `RefreshTintMapEditorAfterAppearanceChange` 15,
+  `EquipmentTypeValue` 14, `LoadItemTypeEditor` 13, `OnClientPropertyUpdated` 13, `Refresh(ArmorDisplayChanged)` 10,
+  `ToggleItemEquippedFlags` 10, `InitializeSettings` 10, `OnModalClosedRestore` 7. Moving every one of those that can move (about 250
+  lines: `Initialize`, `SelectEditorTab`, the item type change, the picker setter and the refresh bodies; the tab groups and the
+  `WatchOnClient` calls cannot leave) would leave about 1,090 lines, so no cohesive move reaches 1,000 without declaring fewer
+  bindings. The owner decided (decision 6) to keep the view model at its measured size, 1,337 lines, with no further moves.
+- Guard: `AppearanceEditorSizeTests` fails when the view model is not a single file or grows past its measured 1,337 lines (the exemption
+  above), any other editor type is over 1,000 lines, any method is over 150 lines, or any editor type takes more than 10 services.
+- Proof: `AppearanceEditorBindingIdentityEngineTests` has two more transcripts, one through the part lists, browser, helmet, cloak,
+  weapon and off hand pages, and one through the wardrobe with the headless player fixture. Both are masked for the armor part option
+  lists, which depend on which models the server's hak set holds (the other two transcripts, captured earlier, include them and fail
+  on a server home whose haks lack those models, on the base as well). The test also writes an unmasked transcript beside a mismatch,
+  and all four, taken on the base commit and on this branch on one server home, are byte for byte identical.

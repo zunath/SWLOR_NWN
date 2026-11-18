@@ -116,6 +116,8 @@
     { "name": "StatusEffect", "domain": "Character" },
     { "name": "StatusEffectApplication", "domain": "Character" },
     { "name": "StatusEffectCatalog", "domain": "Character" },
+    { "name": "StatusEffectCombatEvent", "domain": "Character" },
+    { "name": "StatusEffectDuration", "domain": "Character" },
     { "name": "StatusEffectSession", "domain": "Character" },
     { "name": "Stealth", "domain": "Combat" },
     { "name": "Targeting", "domain": "Combat" },

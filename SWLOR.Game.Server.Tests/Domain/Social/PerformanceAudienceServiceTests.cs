@@ -132,7 +132,7 @@ public class PerformanceAudienceServiceTests
             return null;
         });
 
-        var inspired = new PerformanceInspiredService(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>());
+        var inspired = new PerformanceInspiredService(FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<IStatusEffectDurationService>());
         var registry = FacadeForwarder.For<IPerformanceRegistryService>();
         _audience = new AudienceBench
         {

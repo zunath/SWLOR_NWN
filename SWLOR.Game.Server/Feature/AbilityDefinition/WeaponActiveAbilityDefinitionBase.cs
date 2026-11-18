@@ -586,7 +586,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     if (statusEffectType == null)
                         continue;
 
-                    if (StatusEffect.ExtendStatusEffectDuration(
+                    if (StatusEffectDuration.ExtendStatusEffectDuration(
                         target,
                         statusEffectType,
                         activator,

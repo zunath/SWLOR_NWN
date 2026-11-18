@@ -65,10 +65,10 @@ namespace SWLOR.Game.Server.Domain.Abilities
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly IGuiService _gui;
         private readonly IAbilityCatalog _catalog;
-        private readonly Lazy<IPerkService> _perk;
+        private readonly IPerkService _perk;
         private readonly Lazy<IStatService> _stat;
         private readonly ISkillService _skill;
-        private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly IStatusEffectService _statusEffect;
         private readonly Lazy<ICombatPointService> _combatPoint;
 
         public MimicryService(
@@ -78,10 +78,10 @@ namespace SWLOR.Game.Server.Domain.Abilities
             IPlayerFeedbackService playerFeedback,
             IGuiService gui,
             IAbilityCatalog catalog,
-            Lazy<IPerkService> perk,
+            IPerkService perk,
             Lazy<IStatService> stat,
             ISkillService skill,
-            Lazy<IStatusEffectService> statusEffect,
+            IStatusEffectService statusEffect,
             Lazy<ICombatPointService> combatPoint)
         {
             _db = db;
@@ -1272,7 +1272,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
         protected virtual AbilityDetail GetAbilityDetail(FeatType feat) => _catalog.GetAbilityDetail(feat);
 
         /// <summary>The unconverted <c>Perk</c> service.</summary>
-        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.Value.GetPerkLevel(creature, perkType);
+        protected virtual int GetPerkLevel(uint creature, PerkType perkType) => _perk.GetPerkLevel(creature, perkType);
 
         /// <summary>The unconverted <c>Stat</c> service.</summary>
         protected virtual int GetStatAdjustment(uint creature, StatType stat) => _stat.Value.GetStatAdjustment(creature, stat);
@@ -1290,12 +1290,12 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual void RemoveStatusEffect(uint creature, Type statusEffectType, bool sendsWornOffMessage) =>
-            _statusEffect.Value.RemoveStatusEffect(creature, statusEffectType, sendsWornOffMessage);
+            _statusEffect.RemoveStatusEffect(creature, statusEffectType, sendsWornOffMessage);
 
         /// <summary>The unconverted <c>StatusEffect</c> service.</summary>
         protected virtual void RemoveStatusEffectsFromAllTargetsBySource(uint source, Type statusEffectType,
             bool sendsWornOffMessage, AbilityDetail originatingAbility) =>
-            _statusEffect.Value.RemoveStatusEffectsFromAllTargetsBySource(source, statusEffectType, sendsWornOffMessage,
+            _statusEffect.RemoveStatusEffectsFromAllTargetsBySource(source, statusEffectType, sendsWornOffMessage,
                 originatingAbility);
 
         /// <summary>The unconverted <c>CombatPoint</c> service.</summary>

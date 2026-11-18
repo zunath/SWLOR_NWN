@@ -15,7 +15,13 @@ namespace SWLOR.Game.Server.Composition
         {
             services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceColorService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceEditorWindowHandlers>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.AppearanceItemEligibility>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceOutfitService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearancePartBrowserService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearancePartEditService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearancePartListService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceSettingsService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceSwatchService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceTintEditorService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.MigrationDefinition.CharacterLoginRestoration>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlaceableScripts>();

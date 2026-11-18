@@ -32,7 +32,7 @@ public class AppearanceEditorItemValidityTests
             .Where(node => node.Identifier.Text is "IsValid" or "AllowsItemFlags" or "GetWeaponPartId" or "GetWeaponPartOptions")
             .Select(node => node.ToFullString().Replace("IWeaponAppearanceDefinition", "WeaponAppearanceBaseDefinition")
                 .Replace("ArmorAppearanceCatalog.Definitions", "_armorAppearances")
-                .Replace("WeaponAppearanceCatalog.Definitions", "_weaponAppearances")));
+                .Replace("IWeaponAppearanceCatalog.Definitions", "_weaponAppearances")));
         var harness = $$"""
             using System;
             using System.Collections.Generic;
@@ -90,7 +90,7 @@ public class AppearanceEditorItemValidityTests
                         BaseItem.Lightsaber or BaseItem.Saberstaff => 3,
                         _ => 2
                     };
-                    return IsValid(2, Item, selectedItemTypeIndex);
+                    return new Harness().IsValid(2, Item, selectedItemTypeIndex);
                 }
             }
             """;

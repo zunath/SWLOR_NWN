@@ -32,11 +32,11 @@ public abstract class StatusEffectServiceTestBase
 
     protected TestStatusEffectApplicationService Application => Bench.Application;
 
-    protected TestStatusEffectService Duration => Bench.Duration;
+    protected TestStatusEffectDurationService Duration => Bench.Duration;
 
     protected TestStatusEffectService Native => Bench.Native;
 
-    protected TestStatusEffectService CombatEvents => Bench.CombatEvents;
+    protected TestStatusEffectCombatEventService CombatEvents => Bench.CombatEvents;
 
     protected TestStatusEffectSessionService Session => Bench.Session;
 

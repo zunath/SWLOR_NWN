@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatQueriesService _queries;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectCombatEventService _statusEffectCombatEvents;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly ITwinPistolEquipmentService _twinPistolEquipment;
         private readonly IPlayerFeedbackService _playerFeedback;
@@ -34,6 +35,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatQueriesService queries,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectCombatEventService statusEffectCombatEvents,
             ITemporaryStatModifierService temporaryStatModifier,
             ITwinPistolEquipmentService twinPistolEquipment,
             IPlayerFeedbackService playerFeedback,
@@ -42,6 +44,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _queries = queries;
             _stat = stat;
             _statusEffect = statusEffect;
+            _statusEffectCombatEvents = statusEffectCombatEvents;
             _temporaryStatModifier = temporaryStatModifier;
             _twinPistolEquipment = twinPistolEquipment;
             _playerFeedback = playerFeedback;
@@ -70,7 +73,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return 100;
 
             var temporaryReductionPercent = ConsumeNextAbilityDelayReductionPercent(creature, skillType);
-            var hasLimitedReduction = _statusEffect.TryGetLimitedAttackDelayReduction(
+            var hasLimitedReduction = _statusEffectCombatEvents.TryGetLimitedAttackDelayReduction(
                 creature,
                 skillType,
                 out var limitedReductionPercent,

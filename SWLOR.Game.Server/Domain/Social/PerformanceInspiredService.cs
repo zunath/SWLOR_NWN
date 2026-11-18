@@ -12,11 +12,13 @@ namespace SWLOR.Game.Server.Domain.Social
     {
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
+        private readonly IStatusEffectDurationService _statusEffectDuration;
 
-        public PerformanceInspiredService(IStatusEffectService statusEffect, IStatusEffectApplicationService statusEffectApplication)
+        public PerformanceInspiredService(IStatusEffectService statusEffect, IStatusEffectApplicationService statusEffectApplication, IStatusEffectDurationService statusEffectDuration)
         {
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
+            _statusEffectDuration = statusEffectDuration;
         }
 
         public bool Apply(uint creature, InspiredEffectData data, double remainingSeconds, bool bankedAgain)
@@ -61,7 +63,7 @@ namespace SWLOR.Game.Server.Domain.Social
             _statusEffect.GetStatusEffect<InspiredStatusEffect>(creature);
 
         protected virtual void RefreshDuration(uint creature, float seconds) =>
-            _statusEffect.RefreshStatusEffectDuration(creature, typeof(InspiredStatusEffect), creature, seconds);
+            _statusEffectDuration.RefreshStatusEffectDuration(creature, typeof(InspiredStatusEffect), creature, seconds);
 
         protected virtual bool ApplyEffect(uint creature, InspiredStatusEffect effect, float seconds) =>
             _statusEffectApplication.ApplyStatusEffect(creature, creature, effect, seconds);

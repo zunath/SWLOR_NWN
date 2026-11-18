@@ -11,8 +11,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
     /// Which equipped items the appearance editor may restyle: the flag gate, the armor part gate, the helmet and cloak
     /// model gate and the weapon part gate, plus the weapon part lookups they share with the editor's part lists.
     /// </summary>
-    public static class AppearanceItemEligibility
+    public class AppearanceItemEligibility
     {
+        private IWeaponAppearanceCatalog IWeaponAppearanceCatalog { get; }
+
+        public AppearanceItemEligibility(IWeaponAppearanceCatalog iWeaponAppearanceCatalog)
+        {
+            IWeaponAppearanceCatalog = iWeaponAppearanceCatalog;
+        }
+
         private static readonly ImmutableArray<AppearanceArmor> EditedArmorParts = ImmutableArray.Create(
             AppearanceArmor.Neck, AppearanceArmor.Torso, AppearanceArmor.Belt, AppearanceArmor.Pelvis,
             AppearanceArmor.LeftShoulder, AppearanceArmor.LeftBicep, AppearanceArmor.LeftForearm, AppearanceArmor.LeftHand,
@@ -32,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
         /// Whether <paramref name="item"/>, the worn item behind the editor's <paramref name="selectedItemTypeIndex"/>
         /// page (0 armor, 1 helmet, 2 cloak, 3 main hand, 4 off hand), can be restyled on <paramref name="target"/>.
         /// </summary>
-        public static bool IsValid(uint target, uint item, int selectedItemTypeIndex)
+        public bool IsValid(uint target, uint item, int selectedItemTypeIndex)
         {
             // The item must be valid. Restricted flags are checked below.
             if (!GetIsObjectValid(item))
@@ -65,10 +72,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             if (selectedItemTypeIndex == 3 || selectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
             {
                 var itemType = GetBaseItemType(item);
-                if (!WeaponAppearanceCatalog.Definitions.ContainsKey(itemType))
+                if (!IWeaponAppearanceCatalog.Definitions.ContainsKey(itemType))
                     return false;
 
-                var appearance = WeaponAppearanceCatalog.Definitions[itemType];
+                var appearance = IWeaponAppearanceCatalog.Definitions[itemType];
 
                 if (appearance.IsSimple)
                 {

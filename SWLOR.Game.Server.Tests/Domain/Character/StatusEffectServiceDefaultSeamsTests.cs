@@ -161,13 +161,13 @@ public class StatusEffectServiceDefaultSeamsTests
     }
 
     // Each part's seams run on a subclass of that part, so the pull request that moves a part changes one base type. Until then
-    // every part is StatusEffectService and shares the constructor of DefaultsBase. Part 2's search and part 7's ability details
+    // parts 5 shares StatusEffectService and the constructor of DefaultsBase. Part 2's search and part 7's ability details
     // are answered by the bench's double and read no unconverted code, so they have no default to run.
 
     private abstract class DefaultsBase : StatusEffectService
     {
         protected DefaultsBase()
-            : base(null!, null!, null!, null!, null!, null!, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IActiveAbilityImpact>())
+            : base(null!, null!, null!, null!)
         {
         }
     }
@@ -181,14 +181,24 @@ public class StatusEffectServiceDefaultSeamsTests
     }
 
     /// <summary>Part 3, <c>StatusEffectApplicationService</c>.</summary>
-    private sealed class ApplicationDefaults : DefaultsBase
+    private sealed class ApplicationDefaults : StatusEffectApplicationService
     {
+        public ApplicationDefaults()
+            : base(null!, null!, null!, null!, FacadeForwarder.For<IActiveAbilityImpact>(), null!, null!)
+        {
+        }
+
         public AbilityImpactSummary CallGetActiveAbilityImpactSummary(uint activator) => GetActiveAbilityImpactSummary(activator);
     }
 
     /// <summary>Part 4, <c>StatusEffectDurationService</c>.</summary>
-    private sealed class DurationDefaults : DefaultsBase
+    private sealed class DurationDefaults : StatusEffectDurationService
     {
+        public DurationDefaults()
+            : base(null!, null!, null!, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IActiveAbilityImpact>())
+        {
+        }
+
         public int CallGetCreatureStatAdjustment(uint creature, StatType stat) => GetCreatureStatAdjustment(creature, stat);
     }
 
@@ -199,8 +209,13 @@ public class StatusEffectServiceDefaultSeamsTests
     }
 
     /// <summary>Part 6, <c>StatusEffectCombatEventService</c>.</summary>
-    private sealed class CombatEventsDefaults : DefaultsBase
+    private sealed class CombatEventsDefaults : StatusEffectCombatEventService
     {
+        public CombatEventsDefaults()
+            : base(null!, FacadeForwarder.LazyFor<IStatService>())
+        {
+        }
+
         public bool CallIsAttackDelayReductionSuppressed(uint creature) => IsAttackDelayReductionSuppressed(creature);
     }
 }

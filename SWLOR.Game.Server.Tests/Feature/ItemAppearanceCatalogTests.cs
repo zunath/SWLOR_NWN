@@ -294,7 +294,7 @@ public class ItemAppearanceCatalogTests
     }
 
     private static IReadOnlyDictionary<BaseItem, WeaponAppearanceBaseDefinition> LoadWeaponCatalogs() =>
-        WeaponAppearanceCatalog.Definitions.ToDictionary(pair => pair.Key, pair => pair.Value);
+        new WeaponAppearanceCatalog().Definitions.ToDictionary(pair => pair.Key, pair => pair.Value);
 
     private static DirectoryInfo FindRepositoryRoot()
     {

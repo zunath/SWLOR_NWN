@@ -78,38 +78,14 @@ namespace SWLOR.Game.Server.Domain.Character
         /// <summary>The tracker of a creature's status effects, created when it has none.</summary>
         CreatureStatusEffect EnsureCreatureStatusEffectTracker(uint creature);
 
-        /// <summary>
-        /// Works out how long an application lasts (the outgoing adjustments, resistance, immunity and the control budget). False,
-        /// with the "resisted" message sent to the source, when nothing is left of the duration. Moves to the duration part.
-        /// </summary>
-        bool ResolveApplicationTiming(
-            IStatusEffect statusEffect,
-            uint source,
-            uint creature,
-            float durationSeconds,
-            bool isPermanent,
-            ResistanceType resistanceOverride,
-            CombatDamageType sourceDamageType,
-            out StatusApplicationTiming timing);
-
-        /// <summary>Refreshes an active effect of the same type in place when applying it again would produce the same state; false when the effect must be applied fresh.</summary>
-        bool TryRefreshInPlace(
-            IStatusEffect statusEffect,
-            uint source,
-            uint creature,
-            int durationTicks,
-            int durationTicksWithoutResistance,
-            float durationSeconds,
-            ResistanceType resistanceType);
-
         /// <summary>Removes every instance of a type, from one source or any (<c>OBJECT_INVALID</c>), because an application replaces it: no worn-off message, the native effect removed.</summary>
         void RemoveStatusEffectForReplacement(Type type, uint creature, uint source);
 
-        /// <summary>Whether a limited attack-timing effect granted to a creature now must wait for its native attack cycle to end.</summary>
-        bool IsDeferredNativeAttackStatusEffect(IStatusEffect statusEffect, uint creature);
+        /// <summary>Replaces the native effect of a status effect with one for the given duration, as a restart, refresh or extension does.</summary>
+        void ReplaceNativeStatusEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent);
 
-        /// <summary>Holds an application until the outermost native attack cycle of the creature ends, and runs it then.</summary>
-        void DeferNativeAttackStatusEffect(uint creature, Action applyDeferredEffect);
+        /// <summary>Tells the melee listeners a direct hit is about to land, so the stand-ins and techniques validate their state.</summary>
+        void NotifyBeforeDirectDamage(uint attacker, uint defender, CombatDamageDeliveryType deliveryType);
 
         /// <summary>Applies the native effect of a status effect and tracks it, so a restart or logout finds it.</summary>
         void ApplyTrackedNWNEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent);
@@ -162,36 +138,11 @@ namespace SWLOR.Game.Server.Domain.Character
 
         bool HasAnyActiveEffect(uint creature, StatusEffectSourceType sourceType);
 
-        /// <summary>
-        /// Restarts an active effect's duration exactly as re-applying the same effect from the same
-        /// source would, without replacing it or repeating its application message. For effects whose
-        /// re-application changes nothing else, such as Embattled with unchanged stacks.
-        /// </summary>
-        bool RestartStatusEffectDuration(
-            uint creature,
-            Type statusEffectClass,
-            uint source,
-            float durationSeconds);
-
         bool HasStatusEffect(uint creature, Type statusEffectClass);
 
         IStatusEffect GetStatusEffect(uint creature, Type statusEffectClass);
 
         IStatusEffect GetStatusEffect(uint creature, Type statusEffectClass, uint source);
-
-        bool ExtendStatusEffectDuration(
-            uint creature,
-            Type statusEffectClass,
-            uint source,
-            float durationSeconds);
-
-        bool RefreshStatusEffectDuration(
-            uint creature,
-            Type statusEffectClass,
-            uint source,
-            float durationSeconds,
-            ResistanceType resistanceOverride = ResistanceType.Invalid,
-            CombatDamageType sourceDamageType = CombatDamageType.Invalid);
 
         bool HasStatusEffect<T>(uint creature)
             where T : IStatusEffect;
@@ -349,75 +300,5 @@ namespace SWLOR.Game.Server.Domain.Character
         /// </summary>
         void RemoveCreature(uint creature, bool removeNativeEffect = true);
 
-        void OnDealtDamage();
-
-        void NotifyDamageStatusEffects(
-            uint attacker,
-            uint defender,
-            int damage,
-            CombatDamageType damageType,
-            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct);
-
-        /// <summary>
-        /// Notifies status effects that must validate their state before an originating hit is
-        /// applied. Ordinary damage reactions remain in NotifyDamageStatusEffects so they observe
-        /// the defender's post-hit state whenever the damage path supports it.
-        /// </summary>
-        void NotifyPreDamageStatusEffects(
-            uint attacker,
-            uint defender,
-            int damage,
-            CombatDamageType damageType,
-            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct);
-
-        /// <summary>
-        /// Notifies limited-attack status effects once per originating hostile attack, including
-        /// misses and deflections. Effects exhausted by the attempt are removed immediately so
-        /// they cannot affect another attack before the next status-effect tick.
-        /// </summary>
-        void NotifyAttackAttemptStatusEffects(
-            uint attacker,
-            SkillType skillType,
-            AbilityImpactSummary abilityImpact = null);
-
-        /// <summary>
-        /// Marks the start of a native attack cycle. Limited attack-timing effects granted
-        /// while its already-scheduled rolls resolve are deferred until the outermost cycle ends.
-        /// Dual-wield cycles retain this scope across the gap between hands.
-        /// </summary>
-        void BeginNativeAttackSwing(uint attacker);
-
-        /// <summary>
-        /// Discards a destroyed attacker's open native attack cycle and its deferred effects without applying them,
-        /// so a reused object ID never starts inside a stale cycle.
-        /// </summary>
-        void ForgetDestroyedNativeAttackSwing(uint attacker);
-
-        /// <summary>
-        /// Ends (or cancels) a native attack cycle and applies limited attack-timing effects
-        /// granted while its precomputed rolls resolved.
-        /// </summary>
-        void EndNativeAttackSwing(uint attacker);
-
-        /// <summary>
-        /// Gets the attack-delay reduction and earliest remaining charge count supplied by active
-        /// limited-attack effects that apply to the requested skill.
-        /// </summary>
-        bool TryGetLimitedAttackDelayReduction(
-            uint attacker,
-            SkillType skillType,
-            out int reductionPercent,
-            out int remainingAttacks);
-
-        /// <summary>
-        /// Gets the earliest remaining charge count supplied by active limited no-delay effects
-        /// that apply to the requested attack skill.
-        /// </summary>
-        bool TryGetLimitedAttackNoDelay(
-            uint attacker,
-            SkillType skillType,
-            out int remainingAttacks);
-
-        void OnGuardedHit(uint defender, uint attacker, int preventedDamage);
     }
 }

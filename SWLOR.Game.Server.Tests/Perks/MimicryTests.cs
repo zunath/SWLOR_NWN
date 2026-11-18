@@ -217,13 +217,13 @@ public class MimicryTests
 
         seismic.Should().MatchRegex(@"ResolveSkillType\(activator, profile\),\s*28,\s*6,\s*typeof\(KnockdownStatusEffect\)");
         rupturing.Should().MatchRegex(@"ResolveSkillType\(activator, profile\),\s*40,\s*6,\s*typeof\(KnockdownStatusEffect\)");
-        rupturing.Should().Contain("StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, hitTarget, 30f");
+        rupturing.Should().Contain("StatusEffectApplication.ApplyStatusEffect<SunderStatusEffect>(activator, hitTarget, 30f");
         rupturing.Should().NotContain("additionalStatusEffects: new[] { typeof(SunderStatusEffect) }");
         disorienting.Should().MatchRegex(@"ResolveSkillType\(activator, profile\),\s*0,\s*30,\s*typeof\(DisorientedStatusEffect\)");
-        lockstep.Should().Contain("StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f");
+        lockstep.Should().Contain("StatusEffectApplication.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f");
         lockstep.Should().NotContain("additionalStatusEffects: new[] { typeof(SunderStatusEffect) }");
         merciless.Should().Contain("if (StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect), typeof(HemorrhageStatusEffect)))");
-        merciless.Should().Contain("StatusEffect.ApplyStatusEffect<HemorrhageStatusEffect>(activator, target, 30f");
+        merciless.Should().Contain("StatusEffectApplication.ApplyStatusEffect<HemorrhageStatusEffect>(activator, target, 30f");
         merciless.Should().NotContain("typeof(HemorrhageStatusEffect),\r\n                CombatImpactAreaShape.Cone");
     }
 
@@ -253,7 +253,7 @@ public class MimicryTests
         stimCanister.Should().Contain(
             "AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 4.0f)");
         stimCanister.Should().Contain(
-            "StatusEffect.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f)");
+            "StatusEffectApplication.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f)");
         abilityTargeting.Should().Contain("bool includeActivator = true");
         abilityTargeting.Should().Contain(
             "if (creature == activator ? includeActivator : PartyRoster.IsInParty(activator, creature))",

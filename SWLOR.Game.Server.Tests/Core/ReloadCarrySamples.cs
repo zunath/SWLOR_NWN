@@ -126,6 +126,21 @@ internal static class ReloadCarrySamples
     /// <summary>The instance a carried class's instance fields live on in a test: the class without its constructor.</summary>
     public static object Owner(Type type, IReadOnlyList<FieldInfo> fields)
     {
+        if (type == typeof(StatusEffectSessionService))
+            return NewStatusEffectSession();
+
         return fields.All(field => field.IsStatic) ? null : RuntimeHelpers.GetUninitializedObject(type);
+    }
+
+    /// <summary>
+    /// The session part of the status effects reads the trackers of the part that stays when it settles a reload (P5-5e), so it is
+    /// built over a tracker service with an empty table, as the container builds it, and not as an empty shell.
+    /// </summary>
+    private static object NewStatusEffectSession()
+    {
+        var trackers = RuntimeHelpers.GetUninitializedObject(typeof(StatusEffectService));
+        typeof(StatusEffectService).GetField("_creatureEffects", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .SetValue(trackers, new Dictionary<uint, CreatureStatusEffect>());
+        return new StatusEffectSessionService((IStatusEffectService)trackers, null!, null!, null!, null!);
     }
 }

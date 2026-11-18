@@ -102,7 +102,6 @@ public class ReloadStateCarrierTests
         guard.RestartDuration(-1);
         effects.Add(guard);
         SetField(service, "_creatureEffects", new Dictionary<uint, CreatureStatusEffect> { [42u] = effects });
-        SetField(service, "_loggedOutPlayerEffects", Activator.CreateInstance(StatusEffectInternals.LoggedOutField.FieldType));
 
         var text = Carrier().Write(fields, service);
         var copy = ReloadCarrySamples.Owner(StatusEffectInternals.CoreType, fields);
@@ -116,6 +115,138 @@ public class ReloadStateCarrierTests
         carried.GetAllTickEffects().Should().OnlyContain(effect => all.Contains(effect), "an effect in two sets is one object again");
         all.OfType<VenomStatusEffect>().Single().DurationTicks.Should().Be(5);
         all.OfType<GuardedStatusEffect>().Single().DurationTicks.Should().Be(-1);
+    }
+
+    [Test]
+    public void ALoggedOutPlayersEffectsKeepTheirCreatureTheTimeAndTheirEffects()
+    {
+        var fields = FieldsOf(StatusEffectInternals.SessionType);
+        var session = ReloadCarrySamples.Owner(StatusEffectInternals.SessionType, fields);
+        var held = LoggedOutPlayers(42u, out var venom);
+        SetField(session, "_loggedOutPlayerEffects", held);
+
+        var text = Carrier().Write(fields, session);
+        var copy = ReloadCarrySamples.Owner(StatusEffectInternals.SessionType, fields);
+        SetField(copy, "_loggedOutPlayerEffects", Activator.CreateInstance(StatusEffectInternals.LoggedOutField.FieldType));
+        Carrier().Read(fields, copy, text);
+
+        var carried = (System.Collections.IDictionary)FieldOf(StatusEffectInternals.SessionType, "_loggedOutPlayerEffects").GetValue(copy)!;
+        carried.Keys.Cast<string>().Should().Equal("player-1");
+        var entry = carried["player-1"]!;
+        entry.GetType().GetProperty("Creature")!.GetValue(entry).Should().Be(42u);
+        entry.GetType().GetProperty("LoggedOutAt")!.GetValue(entry).Should().Be(ReloadCarrySamples.SampleTime);
+        ((CreatureStatusEffect)entry.GetType().GetProperty("Effects")!.GetValue(entry)!).GetAllEffects().Should().ContainSingle()
+            .Which.Id.Should().Be(venom.Id);
+    }
+
+    [Test]
+    public void AReloadFromTheParentBuildReadsTheTrackersAndTheLoggedOutEffectsFromTheOneTextTheStatusEffectServiceWrote()
+    {
+        // The parent build carried both tables in StatusEffectService, one text under its name. The tracker part (same name) reads
+        // its table from it and skips the logged-out one; the session part finds nothing under its own name and reads the
+        // logged-out table from the same text, taken once.
+        const string former = ReloadStateCarrier.KeyPrefix + "SWLOR.Game.Server.Domain.Character.StatusEffectService";
+        var coreFields = FieldsOf(StatusEffectInternals.CoreType);
+        var core = ReloadCarrySamples.Owner(StatusEffectInternals.CoreType, coreFields);
+        var tracked = new CreatureStatusEffect();
+        tracked.Add(new VenomStatusEffect());
+        SetField(core, "_creatureEffects", new Dictionary<uint, CreatureStatusEffect> { [7u] = tracked });
+        var sessionFields = FieldsOf(StatusEffectInternals.SessionType);
+        var session = ReloadCarrySamples.Owner(StatusEffectInternals.SessionType, sessionFields);
+        SetField(session, "_loggedOutPlayerEffects", LoggedOutPlayers(42u, out _));
+        var parentText = Newtonsoft.Json.Linq.JObject.Parse(Carrier().Write(coreFields, core));
+        parentText.Merge(Newtonsoft.Json.Linq.JObject.Parse(Carrier().Write(sessionFields, session)));
+        var store = new Dictionary<string, string> { [former] = parentText.ToString(Formatting.None) };
+
+        var freshCore = ReloadCarrySamples.Owner(StatusEffectInternals.CoreType, coreFields);
+        SetField(freshCore, "_creatureEffects", new Dictionary<uint, CreatureStatusEffect>());
+        var freshSession = ReloadCarrySamples.Owner(StatusEffectInternals.SessionType, sessionFields);
+        SetField(freshSession, "_loggedOutPlayerEffects", Activator.CreateInstance(StatusEffectInternals.LoggedOutField.FieldType));
+        var taken = new List<string>();
+        using var engine = NoPlayersOnline();
+
+        Carrier().Invoking(carrier => carrier.AdoptAll(
+            type => type == StatusEffectInternals.CoreType ? freshCore : type == StatusEffectInternals.SessionType ? freshSession : null,
+            key =>
+            {
+                taken.Add(key);
+                return store.TryGetValue(key, out var text) ? text : null;
+            })).Should().NotThrow();
+
+        ((Dictionary<uint, CreatureStatusEffect>)FieldOf(StatusEffectInternals.CoreType, "_creatureEffects").GetValue(freshCore)!)[7u]
+            .GetAllEffects().Should().ContainSingle().Which.Should().BeOfType<VenomStatusEffect>();
+        var carried = (System.Collections.IDictionary)FieldOf(StatusEffectInternals.SessionType, "_loggedOutPlayerEffects").GetValue(freshSession)!;
+        carried.Keys.Cast<string>().Should().Equal("player-1");
+        taken.Count(key => key == former).Should().Be(1, "each key is taken once");
+    }
+
+    [Test]
+    public void TheTrackersAreAdoptedBeforeTheSessionSettlesThemAndNoClassSitsBetweenThem()
+    {
+        // ReloadStateCarrier.AdoptAll walks the carried classes in the ordinal order of their full names and calls
+        // OnCarriedStateAdopted right after it reads a class's fields. The session part's adoption settles the creatures the
+        // tracker part holds (and notifies the stat listener), so the tracker part's name has to sort first. Before P5-5e both
+        // tables were one class's, so nothing else was adopted between them; nothing is now.
+        var names = ReloadStateCarrier.CarriedClasses(Game).Select(entry => entry.Type.FullName).ToList();
+        var tracker = names.IndexOf(typeof(StatusEffectService).FullName);
+        var session = names.IndexOf(typeof(StatusEffectSessionService).FullName);
+        tracker.Should().BeGreaterThanOrEqualTo(0);
+        session.Should().Be(tracker + 1, "the session part follows the tracker part directly in the adoption order");
+        string.CompareOrdinal(names[tracker], names[session]).Should().BeNegative();
+        typeof(StatusEffectService).GetInterfaces().Should().NotContain(typeof(IReloadStateAdopter), "the session part settles the carried effects");
+        typeof(StatusEffectSessionService).GetInterfaces().Should().Contain(typeof(IReloadStateAdopter));
+
+        // And the adoption itself: the session part's adoption sees the trackers the tracker part just took from the same carry.
+        var trackerFields = FieldsOf(typeof(StatusEffectService));
+        var changed = new List<uint>();
+        var written = NewTrackers(new Dictionary<uint, CreatureStatusEffect> { [42u] = new CreatureStatusEffect() }, changed);
+        var trackers = NewTrackers(new Dictionary<uint, CreatureStatusEffect>(), changed);
+        var sessionService = new StatusEffectSessionService(trackers, null!, null!, null!, null!);
+        var store = new Dictionary<string, string>
+        {
+            [ReloadStateCarrier.KeyPrefix + typeof(StatusEffectService).FullName] = Carrier().Write(trackerFields, written),
+            [ReloadStateCarrier.KeyPrefix + typeof(StatusEffectSessionService).FullName] = "{\"_loggedOutPlayerEffects\":{}}",
+        };
+        using var engine = NoPlayersOnline();
+
+        Carrier().Invoking(carrier => carrier.AdoptAll(
+            type => type == typeof(StatusEffectService) ? trackers : type == typeof(StatusEffectSessionService) ? sessionService : null,
+            key => store.TryGetValue(key, out var text) ? text : null)).Should().NotThrow();
+
+        changed.Should().Equal(new[] { 42u }, "the session part's adoption recomputes the movement rate of the creature the tracker part carried");
+    }
+
+    private static StatusEffectService NewTrackers(Dictionary<uint, CreatureStatusEffect> table, List<uint> changed)
+    {
+        var trackers = (StatusEffectService)System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject(typeof(StatusEffectService));
+        FieldOf(typeof(StatusEffectService), "_creatureEffects").SetValue(trackers, table);
+        FieldOf(typeof(StatusEffectService), "_statEffectListeners").SetValue(trackers, new List<IStatEffectListener> { new MovementProbe(changed) });
+        return trackers;
+    }
+
+    private static object LoggedOutPlayers(uint creature, out VenomStatusEffect venom)
+    {
+        var effects = new CreatureStatusEffect();
+        venom = new VenomStatusEffect();
+        venom.RestartDuration(5);
+        effects.Add(venom);
+        var table = (System.Collections.IDictionary)Activator.CreateInstance(StatusEffectInternals.LoggedOutField.FieldType)!;
+        var entryType = StatusEffectInternals.LoggedOutField.FieldType.GenericTypeArguments[1];
+        table["player-1"] = Activator.CreateInstance(entryType, creature, effects, ReloadCarrySamples.SampleTime);
+        return table;
+    }
+
+    private sealed class MovementProbe : IStatEffectListener
+    {
+        private readonly List<uint> _changed;
+
+        public MovementProbe(List<uint> changed) => _changed = changed;
+
+        public void OnStatusEffectsRestored(uint player)
+        {
+        }
+
+        public void OnStatAdjustingEffectsChanged(uint creature) => _changed.Add(creature);
     }
 
     [Test]

@@ -101,8 +101,9 @@ public sealed partial class AbilityBench : IDisposable
         Geometry = new CombatImpactGeometryService(telegraph);
         Magnitude = new TestCombatAbilityMagnitudeService(this, ImpactState);
         var statusEffects = StatusEffects();
+        var statusApplications = StatusApplications();
         var combatPoints = CombatPoints();
-        Aura = new TestAbilityAuraService(this, statusEffects, StatusCatalog(), Party(), combatPoints);
+        Aura = new TestAbilityAuraService(this, statusEffects, statusApplications, StatusCatalog(), Party(), combatPoints);
         Immunity = new AbilityImmunityService(statusEffects);
         ActivationState = new AbilityActivationStateService();
         var meleeTechnique = MeleeTechnique();
@@ -116,7 +117,7 @@ public sealed partial class AbilityBench : IDisposable
         ImpactVisual = new AbilityImpactVisualService(Stealth());
         DarkForce = new TestAbilityDarkForceService(this, ImpactState, CombatRecorder);
         DamageDelivery = new TestAbilityDamageDeliveryService(this, statusEffects, CombatRecorder, DarkForce);
-        StatusApplication = new TestAbilityStatusApplicationService(this, statusEffects, resistance, ImpactState);
+        StatusApplication = new TestAbilityStatusApplicationService(this, statusEffects, statusApplications, resistance, ImpactState);
         DamageInput = new TestAbilityDamageInputService(this, ImpactState, Magnitude, resistance);
         DamageStage = new TestAbilityDamageStageService(this, DamageInput, ImpactState, Magnitude, resistance);
         Lifecycle = new TestAbilityImpactLifecycleService(this, ImpactState, meleeTechnique, CombatRecorder, DamageDelivery, statusEffects);

@@ -5,6 +5,7 @@ using SWLOR.Game.Server;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Tests.Support;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -453,7 +454,7 @@ public class RoleplayXPOOCPenaltyTests
             "Components",
             "PlayerOverview.razor"));
 
-        var playerGuideSource = ReadServerSource("Feature", "GuiDefinition", "ViewModel", "PlayerGuideViewModel.cs");
+        var playerGuideSource = PlayerGuideSource.Read();
 
         roleplayXpSource.Should().NotContain("OOC message detected");
         playerGuideSource.Should().NotContainAny(new[] { "allowance", "OOC messages each day", "reduces your next RP XP" },

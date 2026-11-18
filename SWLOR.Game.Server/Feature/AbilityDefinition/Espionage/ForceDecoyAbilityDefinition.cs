@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
 
             foreach (var enemy in attackers)
             {
-                var applied = StatusEffect.ApplyStatusEffect(
+                var applied = StatusEffectApplication.ApplyStatusEffect(
                     activator,
                     enemy,
                     new DecoyStatusEffect(accuracyPenaltyPercent),

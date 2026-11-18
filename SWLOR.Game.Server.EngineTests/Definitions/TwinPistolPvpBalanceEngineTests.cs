@@ -351,7 +351,7 @@ public static class TwinPistolPvpBalanceEngineTests
                     TemporaryStatModifier.Add(target, StatType.LowHPTemporaryHPCooldownSeconds, 30, 30f);
                 }
                 else if (channel == "redirect")
-                    ctx.Assert(StatusEffect.ApplyStatusEffect(protector, target, new ForceIntercept1StatusEffect(), 30f),
+                    ctx.Assert(StatusEffectApplication.ApplyStatusEffect(protector, target, new ForceIntercept1StatusEffect(), 30f),
                         "A real one-use source-owned redirect is active");
                 else
                     ApplyEffectToObject(DurationType.Temporary, EffectDamageReduction(9999, DamagePower.PlusOne, 5), target, 30f);

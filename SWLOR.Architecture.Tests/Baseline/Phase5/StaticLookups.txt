@@ -115,7 +115,7 @@ SWLOR.Game.Server.EngineTests/Definitions/HitPointCostAbilityEngineTests.cs | 13
 SWLOR.Game.Server.EngineTests/Definitions/HitPointLimitEngineTests.cs | 16
 SWLOR.Game.Server.EngineTests/Definitions/HoloComHologramEngineTests.cs | 23
 SWLOR.Game.Server.EngineTests/Definitions/HostileAbilityDelayEngineTests.cs | 24
-SWLOR.Game.Server.EngineTests/Definitions/HotReloadPlayersEngineTests.cs | 7
+SWLOR.Game.Server.EngineTests/Definitions/HotReloadPlayersEngineTests.cs | 8
 SWLOR.Game.Server.EngineTests/Definitions/HotReloadSpawnsEngineTests.cs | 5
 SWLOR.Game.Server.EngineTests/Definitions/IncubatorCompleteJobEngineTests.cs | 6
 SWLOR.Game.Server.EngineTests/Definitions/InvisibilityEngagementEngineTests.cs | 11
@@ -253,6 +253,7 @@ SWLOR.Game.Server.EngineTests/Definitions/UnarmedMasteryEngineTests.cs | 67
 SWLOR.Game.Server.EngineTests/Definitions/UnnervingRoarEngineTests.cs | 11
 SWLOR.Game.Server.EngineTests/Definitions/VelesSewerEngineTests.cs | 3
 SWLOR.Game.Server.EngineTests/Definitions/VelesSewersSpawnReachabilityEngineTests.cs | 1
+SWLOR.Game.Server.EngineTests/Definitions/ViewModelBindingTranscriptEngineTests.cs | 23
 SWLOR.Game.Server.EngineTests/Definitions/VisorAppearanceMigrationEngineTests.cs | 4
 SWLOR.Game.Server.EngineTests/Definitions/VitalityHitPointsEngineTests.cs | 1
 SWLOR.Game.Server.EngineTests/Definitions/WalkModeEngineTests.cs | 26
@@ -269,6 +270,7 @@ SWLOR.Game.Server.EngineTests/Framework/FullInventoryFixture.cs | 2
 SWLOR.Game.Server.EngineTests/Framework/PlayerAbilityFixture.cs | 7
 SWLOR.Game.Server.EngineTests/Framework/SavedCharacterMigration.cs | 2
 SWLOR.Game.Server.EngineTests/Framework/ViewModelTestHelper.cs | 6
+SWLOR.Game.Server.EngineTests/Framework/ViewModelTranscript.cs | 7
 SWLOR.Game.Server.EngineTests/GlobalUsings.cs | 1
 SWLOR.Game.Server.IntegrationTests/Chains/PerkRefundChainTests.cs | 5
 SWLOR.Game.Server.IntegrationTests/Chains/PlayerFirstEntryTests.cs | 2

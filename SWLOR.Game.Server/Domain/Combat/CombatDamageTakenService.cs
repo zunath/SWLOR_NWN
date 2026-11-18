@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly IStatService _stat;
         private readonly ICombatRatingService _combatRating;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IPvpCombatService _pvpCombat;
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             IStatService stat,
             ICombatRatingService combatRating,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             ITemporaryStatModifierService temporaryStatModifier,
             ICombatRecorderService combatRecorder,
             IPvpCombatService pvpCombat,
@@ -77,6 +79,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _stat = stat;
             _combatRating = combatRating;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _temporaryStatModifier = temporaryStatModifier;
             _combatRecorder = combatRecorder;
             _pvpCombat = pvpCombat;
@@ -415,7 +418,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (forceDefense <= 0 || durationSeconds <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 defender,
                 defender,
                 new ForceWardingStatusEffect(forceDefense),
@@ -641,7 +644,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
 
             // A visible status effect carries the defense bonus so the player can track the trigger.
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 defender,
                 defender,
                 new UnbreakableStatusEffect(defensePercent),
@@ -787,7 +790,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 !_resources.TryUseStatTrigger(guardRecipient, StatType.LowHPGuard, cooldown))
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 guardRecipient,
                 guardRecipient,
                 new GuardianReflexesStatusEffect(guardChance),
@@ -893,7 +896,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (deflection <= 0 || statusEffectIcon == EffectIconType.Invalid)
                 return;
 
-            if (_statusEffect.ApplyStatusEffect(
+            if (_statusEffectApplication.ApplyStatusEffect(
                     creature,
                     creature,
                     new RangedDeflectionStatusEffect(deflection, statusEffectIcon),

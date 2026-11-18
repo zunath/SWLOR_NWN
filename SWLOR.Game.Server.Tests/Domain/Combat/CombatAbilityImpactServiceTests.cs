@@ -283,21 +283,6 @@ public class CombatAbilityImpactServiceTests
                 ? _sourceStatuses.Contains(((uint)args[0]!, (Type)args[1]!, source))
                 : _statuses.Contains(((uint)args[0]!, (Type)args[1]!)))
             .On(nameof(IStatusEffectService.HasStatusEffectCategory), args => _categories.Contains(((uint)args[0]!, (StatusEffectCategory)args[1]!)))
-            .On(nameof(IStatusEffectService.ApplyStatusEffect), args =>
-            {
-                var type = args[2] as Type ?? args[2]!.GetType();
-                var detail = args[2] switch
-                {
-                    DamageDealtAdjustmentStatusEffect dealt => $" {dealt.Name} {dealt.Icon} {dealt.CleanseTypes} {dealt.ResistanceType}",
-                    FoggyMindStatusEffect => " foggy",
-                    SunderStatusEffect sunder => $" {sunder.StatGroup.Stats.GetValueOrDefault(StatType.PhysicalDefensePercentAdjustment)}",
-                    ChallengeEnmityStatusEffect challenge => $" {challenge.StatGroup.Stats.GetValueOrDefault(StatType.EnmityToStatusSourcePercentAdjustment)}",
-                    HostileAbilityPartyBuffStatusEffect buff => $" {buff.Name}",
-                    _ => string.Empty
-                };
-                _log.Add($"Apply {args[0]}>{args[1]} {type.Name}{detail} {args[3]}" + (args.Length > 4 && args[4] is not (null or ResistanceType.Invalid) ? $" {args[4]}" : string.Empty));
-                return _statusApplies;
-            })
             .On(nameof(IStatusEffectService.ExtendStatusEffectDuration), args =>
             {
                 _log.Add($"Extend {args[0]} {((Type)args[1]!).Name} {args[2]} {args[3]}");
@@ -311,6 +296,22 @@ public class CombatAbilityImpactServiceTests
             })
             .On(nameof(IStatusEffectService.GetCreatureStatusEffects), args =>
                 _creatureEffects.TryGetValue((uint)args[0]!, out var effects) ? effects : new CreatureStatusEffect { StatGroup = new StatGroup() });
+        var statusApplication = ScriptedProxy.Create<IStatusEffectApplicationService>(out var statusApplicationCalls);
+        statusApplicationCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), args =>
+            {
+                var type = args[2] as Type ?? args[2]!.GetType();
+                var detail = args[2] switch
+                {
+                    DamageDealtAdjustmentStatusEffect dealt => $" {dealt.Name} {dealt.Icon} {dealt.CleanseTypes} {dealt.ResistanceType}",
+                    FoggyMindStatusEffect => " foggy",
+                    SunderStatusEffect sunder => $" {sunder.StatGroup.Stats.GetValueOrDefault(StatType.PhysicalDefensePercentAdjustment)}",
+                    ChallengeEnmityStatusEffect challenge => $" {challenge.StatGroup.Stats.GetValueOrDefault(StatType.EnmityToStatusSourcePercentAdjustment)}",
+                    HostileAbilityPartyBuffStatusEffect buff => $" {buff.Name}",
+                    _ => string.Empty
+                };
+                _log.Add($"Apply {args[0]}>{args[1]} {type.Name}{detail} {args[3]}" + (args.Length > 4 && args[4] is not (null or ResistanceType.Invalid) ? $" {args[4]}" : string.Empty));
+                return _statusApplies;
+            });
         var temporary = ScriptedProxy.Create<ITemporaryStatModifierService>(out var temporaryCalls);
         temporaryCalls
             .On(nameof(ITemporaryStatModifierService.Consume), args =>
@@ -359,7 +360,7 @@ public class CombatAbilityImpactServiceTests
         });
 
         return new CombatAbilityImpactService(queries, resources, timing, activity, hitEffects, damageTaken, stat, statusEffect,
-            temporary, ability, enmity, _partyProxy, recorder, pairedRangedTraits);
+            statusApplication, temporary, ability, enmity, _partyProxy, recorder, pairedRangedTraits);
     }
 
     [TearDown]

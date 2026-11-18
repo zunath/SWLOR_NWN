@@ -17,7 +17,7 @@ public sealed class TestCombatResourcesService : CombatResourcesService
     public TestCombatResourcesService(
         StatBench bench,
         IStatService stat,
-        IStatusEffectService statusEffect,
+        IStatusEffectApplicationService statusEffect,
         ICombatRecorderService combatRecorder,
         IPvpCombatService pvpCombat,
         ICompanionLookup companions)

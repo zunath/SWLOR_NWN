@@ -133,7 +133,7 @@ public class ForceDarkManipulatorTests
         creepingTerror.Should().Contain("EffectAreaOfEffect(areaOfEffect)");
         creepingTerror.Should().Contain("AreaOfEffect.CreepingTerrorTentacles");
         creepingTerror.Should().Contain("AreaOfEffect.CreepingTerrorLargeTentacles");
-        creepingTerror.Should().NotContain("StatusEffect.ApplyStatusEffect(activator, hostile, typeof(HobbleStatusEffect)");
+        creepingTerror.Should().NotContain("StatusEffectApplication.ApplyStatusEffect(activator, hostile, typeof(HobbleStatusEffect)");
         creepingTerror.Should().NotContain("AssignCommand(");
         creepingTerror.Should().NotContain("EffectDamage(damage, CombatDamageType.Force.GetNWScriptDamageType())");
         creepingTerror.Should().NotContain("Vfx_Fnf_Howl_Mind");

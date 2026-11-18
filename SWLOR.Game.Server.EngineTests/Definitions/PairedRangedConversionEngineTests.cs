@@ -101,8 +101,8 @@ public static class PairedRangedConversionEngineTests
                 SetCommandable(false, target);
                 ctx.SetNPCResources(target, 100, 100);
                 ctx.MakeHostile(target);
-                ctx.Assert(StatusEffect.ApplyStatusEffect(actor, target, probe, 60f), "The native reaction probe is active");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(actor, actor, new BloodWeaponStatusEffect(), 60f), "A real direct-hit Blood Weapon rider is active");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(actor, target, probe, 60f), "The native reaction probe is active");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(actor, actor, new BloodWeaponStatusEffect(), 60f), "A real direct-hit Blood Weapon rider is active");
                 ObjectPlugin.SetCurrentHitPoints(actor, 10000);
                 ctx.Assert(TwinPistolEquipment.IsActivePair(actor), "The fixture equips a real companion pair");
             });

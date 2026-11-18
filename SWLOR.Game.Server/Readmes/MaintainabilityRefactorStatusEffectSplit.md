@@ -587,3 +587,110 @@ None. The freeze start was confirmed by the owner on 2026-11-17 (Master freeze a
 - **Tests:** `TestStatusEffectCatalogService` is the part 2 double; the bench scripts the engine for concealment, player control and known feats instead of three
   proxies; `StatusEffectSource.PartFiles` gains the catalog and the three statics (`ClockSeamFiles.txt` lists them) and four source needles name `StatusEffectRules.`
   and `ConcealmentRules.` receivers.
+
+### P5-5d (listeners)
+
+`StatusEffectService` 2,397 -> 2,429 lines (the two registration methods and five notices cost more than the seams they replace), 13 -> 10 services (it left
+`ServicesPerType.txt`), up `Lazy<>` 1 -> 0 (`ICombatAbilityImpactService` gone); `IMeleeTechniqueService` and `ICapstoneProofService` are no longer constructor
+parameters, so the Character -> Combat and Character -> Quests references of the file are gone (`UpwardEdges.txt`: 8 + 3 members).
+
+- **Interfaces** (Character, one file each): `IStatusEffectMeleeListener` (`OnStanceChanged`, `OnBeforeDirectDamage`) and `IStatusEffectAppliedListener`
+  (`OnStatusApplied`, `OnHostileDebuffApplied`, `OnApplicationCompleted`). `IStatusEffectService` gains `RegisterMeleeListener` and `RegisterAppliedListener`; each
+  list is `[ReloadState(Runtime)]` and a repeat registration keeps one entry. A notice with an empty list throws `InvalidOperationException` (`RequireMeleeListeners`, `RequireAppliedListeners`), as the stat list does: an empty list means a registration was missed. No notice can fire before the registrations: they run in `OnModuleCacheBefore` after the data caches, and nothing before them applies or removes a stance (`ResetProfiles` walks an `Owners` table that is empty after boot or a reload).
+- **Implementers:** `MeleeTechniqueService` (`PrepareDirectDamage` renamed `OnBeforeDirectDamage`; it and `OnStanceChanged` left `IMeleeTechniqueService`, which no other
+  type called them through), `CombatAbilityImpactService` (the stamina drain and the hostile party buff; its `OnApplicationCompleted` is empty) and `CapstoneProofService`
+  (forwards `OnApplicationCompleted` to `RecordStatusEffect`; the other two are empty; gains `IStatusEffectService`, 2 -> 3 services). Bodies are unchanged; the three
+  call sites keep their place (stamina drain, then party buff, then the refresh; the capstone proof after the application returns).
+- **Registration:** a `Rerun` boot handler `RegisterStatusEffectListener` on each of the three, in `OnModuleCacheBefore` right after `StatusEffectCatalogService.CacheData`
+  in the manifest, in the order melee, impact, capstone (`ScriptHandlerOrder.txt`, `BootHandlerClassification.txt`, `HandlerRenames.txt` line 320). A reload rebuilds the
+  services and reruns these handlers before it adopts the carried state, so the lists are full before the first notice.
+- **Cycle:** the cycle that held `MeleeTechniqueService` to four `Lazy<>` parameters ran through `StatusEffectService`; with it gone `LazyDependencyCycleTests` flags
+  `Lazy<ICombatActivityService>`, `Lazy<ICombatResourcesService>`, `Lazy<IStatService>` and `Lazy<IStatusEffectService>` as needless, so `MeleeTechniqueService` takes all
+  four directly (`DeferredResolution.txt` loses that file). The unit test doubles pass facade forwarders instead of lazy ones.
+- **Tests:** `StatusEffectListenerStandIns` (melee, impact, capstone) replace the two proxies and the two `TestStatusEffectService` seams; the bench registers them in
+  handler order, so the existing log lines and `AHostileDebuff_RunsEveryStepInTheOriginalOrder` keep pinning the order against the surrounding code.
+  `StatusEffectListenerTests` proves the order across listeners (stand-in first, a later listener after it, once per notice even when registered twice) for the applied
+  and melee notices.
+
+### P5-5e (session part)
+
+`StatusEffectService` 2,446 -> 2,238 lines, 10 -> 8 services (`IDBService` and `IAbilityCatalog` left; it is no longer an `IReloadStateAdopter`).
+
+- **Part 7** `StatusEffectSessionService` behind `IStatusEffectSessionService` (Character, `GameServices.StatusEffectSession`; 296 lines, 4 services:
+  `IStatusEffectService`, `IStatusEffectCatalogService`, `IDBService`, `IAbilityCatalog`) holds `OnPlayerEnter`, `OnPlayerExit`, `SaveTogglesForRestart`,
+  `OnCarriedStateAdopted`, the toggle save and restore, the two logged-out reconciliation steps, `NotifyStatusEffectsRestored` and the nested
+  `LoggedOutStatusEffects`; bodies are verbatim except that the trackers and removal are reached through `IStatusEffectService`. `MayHaveEffectTag` and
+  `GetAllAbilityDetails` are its two `protected virtual` seams. `ServerRestart` calls `StatusEffectSession.SaveTogglesForRestart()` (`RemovedFacades.json`
+  lists the three names under owner `StatusEffectSession`).
+- **Carried state:** `_loggedOutPlayerEffects` is `[ReloadState(Carried)]` and `[ReloadCarriedFrom("SWLOR.Game.Server.Domain.Character.StatusEffectService")]`;
+  its key becomes `...StatusEffectSessionService._loggedOutPlayerEffects` (`ReloadCarryHistory.txt` gains the line, the old one stays; `ReloadAdoption.txt`
+  renames it). `_creatureEffects` stays in part 1 under the same key. The adoption order is as the guide says: the names sort `StatusEffectService` then
+  `StatusEffectSessionService` with no carried class between them.
+- **Departure from the map: the session part registers as a holder.** `RemoveStatusEffectsFromAllTargetsBySource` (public, used by `PerkService` and
+  `MimicryService`) and `RemoveStatusEffectsFromAllTargetsWhenSourceExits` (part 1) also remove effects held by logged-out players, so part 1 still needs to see
+  the table that moved. A constructor parameter would make a cycle (part 7 depends on part 1), and splitting the loops would give every caller two calls, so part 1
+  holds a `[ReloadState(Runtime)]` list of `ILoggedOutStatusEffectSource` (`RegisterLoggedOutSource`, one entry per holder; a removal by source with no holder throws
+  `InvalidOperationException` (`RequireLoggedOutSources`), as the listener lists do: an empty list means the registration was missed) and the session part registers itself from a `Rerun` boot handler `RegisterLoggedOutSource` in `OnModuleCacheBefore`, after the three
+  listener registrations (`ScriptHandlerOrder.txt`, `BootHandlerClassification.txt`, `HandlerRenames.txt` line 320 with a fifth branch name). A reload reruns it before it
+  adopts the carried state, as for the listeners. The two loops read `GetLoggedOutEffects()`; their bodies are otherwise unchanged. The map listed no new handler for
+  this PR; the reload reruns went from 84 to 85.
+- **Promoted on part 1** (public, on `IStatusEffectService`): `TryGetCreatureStatusEffects`, `GetTrackedCreatures`, `TrackCreatureStatusEffects`,
+  `ReapplyNWNEffects`, `ReapplyFoodHP` and `ApplyCreatureMovementRate` (the two stat notices, still `virtual` seams), `RemoveStatusEffectsFromAllTargetsWhenSourceExits`,
+  `RemoveNonPersistentStatusEffects`, `RemoveTrackedNWNEffects`, `RemoveStatusEffectById` and `NotifyStatusEffectRemoved`; the next PRs move them where their owner lands.
+  The three removals are added to `CraftingStyleStatusEffectTests.RemovalsThatNameTheirTarget` (the rule asks every new public removal to be listed).
+- **Handlers:** `OnPlayerEnter` (`ScriptHandlerOrder.txt` line 767, `LoginOnly`) and `OnPlayerExit` (line 837, `LogoutOnly`) renamed in place
+  (`HandlerRenames.txt` lines 323, 324; `PlayerSessionClassification.txt` 65 and 175).
+- **Tests:** `TestStatusEffectSessionService` is the part 7 double (`Bench.Session`; the bench registers it with the tracker double); `StatusEffectSource.PartFiles`
+  gains the session file and `InterfaceFiles` its interface; `ClockSeamFiles.txt` lists it. `ReloadCarrySamples.Owner` builds the session over a tracker service with an
+  empty table, as the container does. New in `ReloadStateCarrierTests`: a logged-out entry round trip, a reload from the parent build (one text under
+  `StatusEffectService` feeding both classes, taken once), and the adoption-order test (the session part follows the tracker part in the adoption order, and its
+  adoption recomputes the movement rate of a creature the tracker part carried in the same pass). The needles that read the loops now read `GetLoggedOutEffects()`.
+  `HotReloadPlayersEngineTests` also holds one logged-out player's effect (a reflection write into the table, found on whichever service owns it) and checks it in
+  each generation.
+- **Reload check** (`run-hot-reload-check.sh --reloads 2 --engine-filter HotReloadPlayers`): passes on the base (`5eb8eecc8`, with the same engine-test edit) and on the
+  branch, three generations each, 251 cache digests and 86 adopted digests match at every reload; the logged-out table digests as `count=1` and keeps its hash
+  through both reloads on both sides. With `HotReloadPlayers|StatusEffect` the base and the branch fail alike: the Piercing Toss bleed test (7 ticks, expected 6)
+  in every generation and the `_creatureEffects` digest (34 and 67 entries, whose effects the status engine tests leave running) after each reload; the logged-out
+  table matches in both.
+
+### P5-5f (application part)
+
+`StatusEffectService` 2,245 -> 1,912 lines, 8 services (unchanged: the apply timing, refresh and restart still use all eight until P5-5g).
+
+- **Part 3** `StatusEffectApplicationService` behind `IStatusEffectApplicationService` (Character, `GameServices.StatusEffectApplication`; 484 lines, 5 services:
+  `IStatusEffectService`, `IStatusEffectCatalogService`, `IMessagingService`, `IPlayerNameService`, `IActiveAbilityImpact`) holds the eight `ApplyStatusEffect` and
+  `ApplyPermanentStatusEffect` overloads, `ApplyAndProfileStatusEffect`, `RecordCapstoneProof`, the application steps and `SendStatusEffectFailure`. It has no state, handlers or
+  carried fields. `GetActiveAbilityImpactSummary` is its one `protected virtual` seam (part 1 keeps its own copy for refresh and restart until P5-5g).
+- **`ApplyStatusEffectInternal`** is 234 -> 52 lines: step 1 `TryDeferNativeAttackStatusEffect` (builds the closure only when `IsDeferredNativeAttackStatusEffect` says so, then
+  `DeferNativeAttackStatusEffect(creature, Action)` on part 1), step 2 `ResolveApplicationTiming` (public on part 1 until P5-5g moves it to part 4; returns the readonly record
+  struct `StatusApplicationTiming`), step 3 `ResolveReplacedEffects` (takes the timing by `ref`), step 4 `ValidateApplication`, step 5 `TryRefreshInPlace` (part 1, promoted),
+  step 6 `ClearConflictingEffects` (returns the tick anchor, which the original read before the removals), step 7 `ActivateEffect`, step 8 `AnnounceApplication`. Every
+  statement and its order is kept; no step is over 55 lines. The longest method in the file is gone from `LongMethods.txt`.
+- **Promoted on part 1** (public, on `IStatusEffectService`): `ResolveApplicationTiming`, `TryRefreshInPlace`, `EnsureCreatureStatusEffectTracker`, `ApplyTrackedNWNEffect`,
+  `HasStatAdjustment`, `PublishStatusEffectReceivedRefresh`, `NotifyStatusApplied`, `NotifyHostileDebuffApplied`, `NotifyApplicationCompleted`,
+  `IsDeferredNativeAttackStatusEffect`, `DeferNativeAttackStatusEffect` and `RemoveStatusEffectForReplacement` (a public wrapper for the private removal overload with
+  `sendsWornOffMessage: false, removeNativeEffect: true, isReplacement: true`, which every application call used; it is listed in `RemovalsThatNameTheirTarget`).
+- **Departures from the map:** `HasStatAdjustment` and `PublishStatusEffectReceivedRefresh` stay in part 1 (public) instead of moving to part 3, because removal, reapply and
+  restart use them too, so part 3 needs no `IGuiRefreshPublisher`. `StealthService` takes `Lazy<IStatusEffectApplicationService>` (not plain): a plain parameter makes the cycle
+  `IMessagingService -> IStealthService -> IStatusEffectApplicationService -> IMessagingService`, the same one that holds its `Lazy<IStatusEffectService>`; P5-5h tries to make both plain.
+- **Holders.** Apply-only holders swap their type to `IStatusEffectApplicationService` (`CombatResourcesService`, `ResourceRestoredEffectsService`, `BeastMasteryService`,
+  `DroidService`, `TrapsService`; count unchanged). The 19 that use part 1 as well gain it as an extra parameter: `AbilityAuraService` 5, `AbilityStatusApplicationService` 5,
+  `StatusEffectSessionService` 5, `CombatActivityService` 10, `CombatDamageModifiersService` 9, `CombatSuppressionService` 5, `OrdinaryAttackTraitsService` 3,
+  `PairedRangedTraitsService` 7, `PoisonsService` 3, `PvpCombatService` 3, `MeleeTechniqueService` 7, `StealthService` 7 (one `Lazy<>` replaces nothing; see above),
+  `CraftStyleEffectsService` 3, `PerformanceInspiredService` 2, `DeathService` 10 (the guard counts 10 services; it has 11 parameters with its listener list). Accepted growth
+  (decision 1 and 10), each removed by P5-7: `CombatHitEffectsService` 17 -> 18, `CombatDamageTakenService` 18 -> 19, `CombatAbilityImpactService` 14 -> 15,
+  `CombatAbilityActivationService` 13 -> 14, `DeathService` 9 -> 10 by the guard (11 parameters).
+- **New debt from the facade tool:** `HeavyVibrobladeActiveAbilityDefinitionBase` (content, static `GameServices` lookups) goes from 10 to 11 services because its calls to
+  `ApplyStatusEffect` now name `StatusEffectApplication`; `WeaponActiveAbilityDefinitionBase` goes 22 -> 23. Both stay until the P5-16 content split (P5-16f splits the weapon base).
+- **Callers:** `Apply-FacadeRemoval.ps1` rewrote 271 static call sites in 130 files (`RemovedFacades.json` lists `ApplyStatusEffect` and `ApplyPermanentStatusEffect` under
+  owner `StatusEffectApplication`); `-Check` of it, of `Apply-ContentInjection.ps1` and of the other mechanical scripts reports nothing to change.
+- **Tests:** `TestStatusEffectApplicationService` is the part 3 double (`Bench.Application`; `CreateApplicationOver(service)` builds one over a tracker with no listener);
+  `StatusEffectSource.PartFiles` and `InterfaceFiles` gain the part; `ClockSeamFiles.txt` lists it (`ResolveReplacedEffects` reads the clock). The ability bench has a second
+  scripted proxy for `IStatusEffectApplicationService`; tests that scripted `ApplyStatusEffect` on the status proxy script it on an application proxy that shares their log.
+  Two `StatusEffectDeliveryTests` read the steps by name (`ResolveApplicationTiming`, `ResolveReplacedEffects`, `AnnounceApplication`, `ActivateEffect`) and the order in which
+  `ApplyStatusEffectInternal` calls them. `PlayerMessageAudit.json`: 7 rows re-keyed (`ResolveApplicationTiming`, `AnnounceApplication`, `SendStatusEffectFailure`).
+- **Readings and runs:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs, Markdown and JSON) and its ability table are
+  byte-identical to the base's (`fd7ea7054`). `SWLOR.Game.Server.Tests` (no exclusions) fails the same 121 tests with the same messages on the base and the branch (the
+  ones that read `SWLOR_Haks` content the sparse checkout lacks): 19,013 passed on the base, 19,016 on the branch (3 new tests of the application double). The engine run
+  filtered with `StatusEffect|HotReloadPlayers` (host entry, server-only haks) passes 26 of 28 with 1 skipped (hot reload off); the one failure is the Piercing Toss bleed test
+  (7 ticks, expected 6) that P5-5e recorded failing alike on its base. No hot-reload check ran: this part holds no state, handlers or carried fields.

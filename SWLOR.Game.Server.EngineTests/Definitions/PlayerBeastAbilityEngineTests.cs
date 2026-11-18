@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                             ctx.AssertEqual(2, GetItemStackSize(treat), "two pet treats before Reward");
                         }
                         if (feat == FeatType.SoothePet)
-                            ctx.Assert(StatusEffect.ApplyStatusEffect(player, pet, new PoisonStatusEffect(), 30f), "cleanseable pet poison applies");
+                            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(player, pet, new PoisonStatusEffect(), 30f), "cleanseable pet poison applies");
                     }
                 }
 

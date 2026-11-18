@@ -63,7 +63,7 @@ public class StatServiceDefaultSeamsTests
         _deflectionSeams = new DefaultDeflectionSeams(
             _facades.Get<ICombatRecorderService>(), _facades.Get<IRecastService>(), _facades.Get<IStatService>());
         _resourcesSeams = new DefaultResourcesSeams(
-            _facades.Get<IStatService>(), _facades.Get<IStatusEffectService>(), _facades.Get<ICombatRecorderService>(),
+            _facades.Get<IStatService>(), _facades.Get<IStatusEffectApplicationService>(), _facades.Get<ICombatRecorderService>(),
             _facades.Get<IPvpCombatService>(), _facades.Get<ICompanionLookup>());
     }
 
@@ -254,7 +254,7 @@ public class StatServiceDefaultSeamsTests
     // Part 7 of the stat split (P5-4d): the healing adjustments' temporary modifier seam with its default body.
     private sealed class DefaultResourcesSeams : CombatResourcesService
     {
-        public DefaultResourcesSeams(IStatService stat, IStatusEffectService statusEffect, ICombatRecorderService combatRecorder,
+        public DefaultResourcesSeams(IStatService stat, IStatusEffectApplicationService statusEffect, ICombatRecorderService combatRecorder,
             IPvpCombatService pvpCombat, ICompanionLookup companions)
             : base(FacadeForwarder.For<ICombatQueriesService>(), FacadeForwarder.For<IAbilityImpactState>(), stat, statusEffect, combatRecorder,
                 FacadeForwarder.For<ITemporaryStatModifierService>(), pvpCombat, companions)

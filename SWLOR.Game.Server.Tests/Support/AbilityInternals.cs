@@ -35,7 +35,7 @@ public static class AbilityInternals
         var damageDelivery = new AbilityDamageDeliveryService(null!, null!, darkForce, FacadeForwarder.For<ICombatFeedbackService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatHitEffectsService>(), FacadeForwarder.For<ICombatDamageTakenService>(),
             FacadeForwarder.For<ICombatAbilityBonusService>());
-        var statusApplication = new AbilityStatusApplicationService(null!, null!, impactState, FacadeForwarder.For<ICombatAbilityBonusService>());
+        var statusApplication = new AbilityStatusApplicationService(null!, null!, null!, impactState, FacadeForwarder.For<ICombatAbilityBonusService>());
         var damageStage = new AbilityDamageStageService(damageInput, impactState, FacadeForwarder.For<IPerkService>(), FacadeForwarder.For<ICombatAbilityHitService>(),
             FacadeForwarder.For<ICombatDamageModifiersService>(), FacadeForwarder.For<ICombatDamageTakenService>(), FacadeForwarder.For<ICombatFeedbackService>(),
             FacadeForwarder.For<ICombatHitEffectsService>(), magnitude, null!);

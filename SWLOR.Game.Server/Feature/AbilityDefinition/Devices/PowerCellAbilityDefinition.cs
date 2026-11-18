@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 10));
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell1StatusEffect), 30f))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(PowerCell1StatusEffect), 30f))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, false))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell2StatusEffect), 30f))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(PowerCell2StatusEffect), 30f))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             foreach (var friendly in GetPowerCell3Targets(activator, target, targetLocation))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 30f))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 30f))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyPowerCellRiders(activator, friendly, isInitialTarget);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);

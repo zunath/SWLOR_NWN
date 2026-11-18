@@ -38,19 +38,19 @@ public class StaminaRecoveryEngineTests : WeaponActiveAbilityDefinitionBase
         CreaturePlugin.SetRawAbilityScore(player, AbilityType.Might, 10);
         CreaturePlugin.SetRawAbilityScore(player, AbilityType.Social, 10);
         fixture.Update(record => record.Stamina = 0);
-        StatusEffect.ApplyStatusEffect(player, player, new RestStatusEffect(), 30f);
+        StatusEffectApplication.ApplyStatusEffect(player, player, new RestStatusEffect(), 30f);
         await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(player) > 0, 7f, "Rest's six-second tick");
         ctx.AssertEqual(11, Stat.GetCurrentStamina(player), "Rest grants 1 + Might");
         StatusEffect.RemoveStatusEffect(player, typeof(RestStatusEffect));
 
         fixture.Update(record => record.Stamina = 0);
-        StatusEffect.ApplyStatusEffect(player, player, new FieldRecovery2StatusEffect(), 30f);
+        StatusEffectApplication.ApplyStatusEffect(player, player, new FieldRecovery2StatusEffect(), 30f);
         await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(player) > 0, 5f, "Field Recovery's four-second tick");
         ctx.AssertEqual(2, Stat.GetCurrentStamina(player), "base Field Recovery II payout used by the group model");
         StatusEffect.RemoveStatusEffect(player, typeof(FieldRecovery2StatusEffect));
 
         fixture.Update(record => record.Stamina = 0);
-        StatusEffect.ApplyStatusEffect(player, player, new AdrenalStimStatusEffect(1), 30f);
+        StatusEffectApplication.ApplyStatusEffect(player, player, new AdrenalStimStatusEffect(1), 30f);
         await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(player) > 0, 4f, "Adrenal Stim's three-second tick");
         ctx.AssertEqual(1, Stat.GetCurrentStamina(player), "the stim's timed payout is independent of natural recovery");
     }

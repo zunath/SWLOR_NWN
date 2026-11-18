@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
     public class AbilityAuraService : IAbilityAuraService
     {
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly IStatusEffectCatalogService _statusCatalog;
         private readonly IPartyRoster _party;
         private readonly IStatService _stat;
@@ -26,12 +27,14 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
         public AbilityAuraService(
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             IStatusEffectCatalogService statusCatalog,
             IPartyRoster party,
             IStatService stat,
             ICombatPointService combatPoint)
         {
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _statusCatalog = statusCatalog;
             _party = party;
             _stat = stat;
@@ -102,7 +105,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             if (statusEffect is IAuraStatusEffect aura && detail != null)
                 aura.AnnouncesApplication = !detail.AnnouncedTo.Contains(recipient);
 
-            if (!_statusEffect.ApplyStatusEffect(source, recipient, statusEffect, 0f))
+            if (!_statusEffectApplication.ApplyStatusEffect(source, recipient, statusEffect, 0f))
                 return;
 
             detail?.AnnouncedTo.Add(recipient);

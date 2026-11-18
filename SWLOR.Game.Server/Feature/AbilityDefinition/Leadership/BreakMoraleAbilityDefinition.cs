@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var hostile in AbilityTargeting.GetHostileTargetsNearLocation(activator, location, radius, 0))
             {
-                var applied = StatusEffect.ApplyStatusEffect(
+                var applied = StatusEffectApplication.ApplyStatusEffect(
                     activator,
                     hostile,
                     new FlashStatusEffect(ScaleSocialPenalty(activator, flashBasePenalty, flashMaximumPenalty)),
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
                 if (weakenedBasePenalty > 0)
                 {
-                    applied |= StatusEffect.ApplyStatusEffect(
+                    applied |= StatusEffectApplication.ApplyStatusEffect(
                         activator,
                         hostile,
                         new WeakenedStatusEffect(ScaleSocialPenalty(activator, weakenedBasePenalty, weakenedMaximumPenalty)),

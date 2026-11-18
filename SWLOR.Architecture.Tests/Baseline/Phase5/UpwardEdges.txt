@@ -24,8 +24,6 @@ SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Abilities | 4
 SWLOR.Game.Server/Domain/Character/PerkService.cs: Character -> Combat | 3
 SWLOR.Game.Server/Domain/Character/PlayerNameService.cs: Character -> Social | 4
 SWLOR.Game.Server/Domain/Character/SkillService.cs: Character -> Combat | 3
-SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Combat | 8
-SWLOR.Game.Server/Domain/Character/StatusEffectService.cs: Character -> Quests | 3
 SWLOR.Game.Server/Domain/Combat/CombatAbilityActivationService.cs: Combat -> Abilities | 2
 SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs: Combat -> Social | 3
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs: Combat -> Quests | 3

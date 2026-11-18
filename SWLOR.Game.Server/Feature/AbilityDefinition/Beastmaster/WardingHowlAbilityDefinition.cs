@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(WardingHowl1StatusEffect), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(WardingHowl1StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             }
         }
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(WardingHowl2StatusEffect), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(WardingHowl2StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             }
         }
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in SWLOR.Game.Server.Domain.Combat.AbilityTargeting.GetFriendlyTargets(activator, target, true))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(WardingHowl3StatusEffect), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(WardingHowl3StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
             }
         }

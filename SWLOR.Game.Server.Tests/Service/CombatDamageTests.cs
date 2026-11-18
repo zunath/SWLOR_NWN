@@ -1179,7 +1179,7 @@ public class CombatDamageTests
 
         combatSource.Should().Contain("public static void ApplyLowHPGuardEffectFromProtectedTarget(uint guardRecipient, uint protectedTarget, int damage)");
         combatSource.Should().Contain("ApplyLowHPGuardEffect(protectedTarget, damage, guardRecipient);");
-        lowHPGuardTrigger.Should().Contain("_statusEffect.ApplyStatusEffect(");
+        lowHPGuardTrigger.Should().Contain("_statusEffectApplication.ApplyStatusEffect(");
         lowHPGuardTrigger.Should().Contain("new GuardianReflexesStatusEffect(guardChance)");
         lowHPGuardTrigger.Should().Contain("StatType.LowHPGuard");
         lowHPGuardTrigger.Should().Contain("TryUseStatTrigger(guardRecipient, StatType.LowHPGuard, cooldown)");

@@ -27,6 +27,8 @@ public static class StatusEffectSource
     {
         "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
         "SWLOR.Game.Server/Domain/Character/StatusEffectCatalogService.cs",
+        "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+        "SWLOR.Game.Server/Domain/Character/StatusEffectSessionService.cs",
         "SWLOR.Game.Server/Domain/Character/StatusEffectIconMap.cs",
         "SWLOR.Game.Server/Domain/Character/LeadershipDamageReductionRules.cs",
         "SWLOR.Game.Server/Domain/Character/StatusEffectRules.cs",
@@ -40,6 +42,8 @@ public static class StatusEffectSource
     {
         "SWLOR.Game.Server/Domain/Character/IStatusEffectService.cs",
         "SWLOR.Game.Server/Domain/Character/IStatusEffectCatalogService.cs",
+        "SWLOR.Game.Server/Domain/Character/IStatusEffectApplicationService.cs",
+        "SWLOR.Game.Server/Domain/Character/IStatusEffectSessionService.cs",
     };
 
     /// <summary>
@@ -49,6 +53,8 @@ public static class StatusEffectSource
     {
         "IStatusEffectService",
         "IStatusEffectCatalogService",
+        "IStatusEffectApplicationService",
+        "IStatusEffectSessionService",
     };
 
     private static readonly Lazy<IReadOnlyList<StatSource.SourceFile>> Loaded = new(() => Load(FindRepositoryRoot()));

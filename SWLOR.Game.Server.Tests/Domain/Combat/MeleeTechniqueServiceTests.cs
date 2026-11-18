@@ -571,16 +571,16 @@ public class MeleeTechniqueServiceTests
     public void PrepareDirectDamage_SkipsPeriodicSelfInvalidAndUnreactiveHits()
     {
         _melee.AdjustmentOf[StatType.TechniqueRetaliationPower] = 5;
-        _melee.PrepareDirectDamage(Enemy, Player, CombatDamageDeliveryType.DamageOverTime);
-        _melee.PrepareDirectDamage(Player, Player, CombatDamageDeliveryType.Direct);
+        _melee.OnBeforeDirectDamage(Enemy, Player, CombatDamageDeliveryType.DamageOverTime);
+        _melee.OnBeforeDirectDamage(Player, Player, CombatDamageDeliveryType.Direct);
         _invalid.Add(Enemy);
-        _melee.PrepareDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
+        _melee.OnBeforeDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
         _invalid.Clear();
         _hostile = false;
-        _melee.PrepareDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
+        _melee.OnBeforeDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
         _hostile = true;
         _melee.AdjustmentOf.Clear();
-        _melee.PrepareDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
+        _melee.OnBeforeDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
         _self = Player;
         _hitPoints = 10;
 
@@ -595,7 +595,7 @@ public class MeleeTechniqueServiceTests
         _melee.AdjustmentOf[StatType.TechniqueRetaliationPower] = 5;
         _melee.AddRetaliationSource(Player, 25);
 
-        _melee.PrepareDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
+        _melee.OnBeforeDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
         _hitPoints = 50;
         _now = _now.AddSeconds(2);
         _melee.OnDirectDamageApplied();
@@ -603,19 +603,19 @@ public class MeleeTechniqueServiceTests
 
         _now = _now.AddSeconds(-2);
         _hitPoints = 100;
-        _melee.PrepareDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
+        _melee.OnBeforeDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
         _lastDamager = Enemy2;
         _hitPoints = 50;
         _melee.OnDirectDamageApplied();
 
         _lastDamager = Enemy;
-        _melee.PrepareDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
+        _melee.OnBeforeDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
         _dead.Add(Player);
         _hitPoints = 50;
         _melee.OnDirectDamageApplied();
         _dead.Clear();
 
-        _melee.PrepareDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
+        _melee.OnBeforeDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
         _melee.TemporaryHitPoints = 0;
         _melee.OnDirectDamageApplied();
 
@@ -683,7 +683,7 @@ public class MeleeTechniqueServiceTests
     {
         Open(Opener());
         _melee.TriggerDirectDamage(Player, Enemy, 60, discount: 6);
-        _melee.PrepareDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
+        _melee.OnBeforeDirectDamage(Enemy, Player, CombatDamageDeliveryType.Direct);
         _now = _now.AddSeconds(5);
 
         _melee.RefreshAll();
@@ -805,7 +805,7 @@ public class MeleeTechniqueServiceTests
     private sealed class TestMelee : MeleeTechniqueService
     {
         public TestMelee()
-            : base(FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<ICombatImpactGeometryService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.LazyFor<IStatusEffectService>(), FacadeForwarder.LazyFor<ICombatActivityService>(), FacadeForwarder.LazyFor<ICombatResourcesService>())
+            : base(FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatImpactGeometryService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatResourcesService>())
         {
         }
 
@@ -877,7 +877,7 @@ public class MeleeTechniqueServiceTests
                     [StatType.DirectHostileDamageNextAbilityDiscountCooldownSeconds] = 0
                 }));
             }
-            PrepareDirectDamage(attacker, owner, CombatDamageDeliveryType.Direct);
+            OnBeforeDirectDamage(attacker, owner, CombatDamageDeliveryType.Direct);
             Hit?.Invoke(hp);
             OnDirectDamageApplied();
         }

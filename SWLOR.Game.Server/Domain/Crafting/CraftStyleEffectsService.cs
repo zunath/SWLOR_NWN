@@ -10,11 +10,13 @@ public class CraftStyleEffectsService : ICraftStyleEffectsService
 {
     private readonly IDBService _db;
     private readonly IStatusEffectService _statusEffect;
+    private readonly IStatusEffectApplicationService _statusEffectApplication;
 
-    public CraftStyleEffectsService(IDBService db, IStatusEffectService statusEffect)
+    public CraftStyleEffectsService(IDBService db, IStatusEffectService statusEffect, IStatusEffectApplicationService statusEffectApplication)
     {
         _db = db;
         _statusEffect = statusEffect;
+        _statusEffectApplication = statusEffectApplication;
     }
 
     private static bool IsPlayer(uint creature) =>
@@ -75,7 +77,7 @@ public class CraftStyleEffectsService : ICraftStyleEffectsService
 
     /// <summary>Applies the effect to the creature for good. StatusEffect is not converted yet.</summary>
     protected virtual void ApplyPermanentEffect(Type effect, uint creature) =>
-        _statusEffect.ApplyPermanentStatusEffect(effect, creature, creature);
+        _statusEffectApplication.ApplyPermanentStatusEffect(effect, creature, creature);
 
     /// <summary>Removes the effect from the creature. StatusEffect is not converted yet.</summary>
     protected virtual void RemoveEffect(uint creature, Type effect) => _statusEffect.RemoveStatusEffect(creature, effect);

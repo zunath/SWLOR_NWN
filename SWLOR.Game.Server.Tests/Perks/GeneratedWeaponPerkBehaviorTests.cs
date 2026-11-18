@@ -27,7 +27,11 @@ public class GeneratedWeaponPerkBehaviorTests
     private IDisposable _facadeScope = null!;
 
     [OneTimeSetUp]
-    public void BuildFacades() => _facades = new FacadeContainer();
+    public void BuildFacades()
+    {
+        _facades = new FacadeContainer();
+        _facades.Get<IStatusEffectService>().RegisterAppliedListener(StatusEffectListenerStandIns.Silent.Instance);
+    }
 
     [OneTimeTearDown]
     public void DisposeFacades() => _facades.Dispose();
@@ -711,7 +715,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "statusEffect is ILimitedAttackNoDelayStatusEffect");
         statusEffectSource.Should().Contain("_nativeAttackSwingDepth.Remove(attacker);");
         statusEffectSource.Should().Contain(
-            "deferredEffects.Add(() => ApplyAndProfileStatusEffect(",
+            "DeferNativeAttackStatusEffect(creature, () => ApplyAndProfileStatusEffect(",
             "a speed effect granted by a precomputed roll must become active only after the swing ends");
     }
 
@@ -745,7 +749,7 @@ public class GeneratedWeaponPerkBehaviorTests
         try
         {
             StatusEffect.BeginNativeAttackSwing(creature);
-            StatusEffect.ApplyStatusEffect(creature, creature, statusEffect, 30f)
+            StatusEffectApplication.ApplyStatusEffect(creature, creature, statusEffect, 30f)
                 .Should()
                 .BeTrue();
 
@@ -794,7 +798,7 @@ public class GeneratedWeaponPerkBehaviorTests
         applyStart.Should().BeGreaterThanOrEqualTo(0);
         applyEnd.Should().BeGreaterThan(applyStart);
         var applyRangedDeflection = combat[applyStart..applyEnd];
-        applyRangedDeflection.Should().Contain("if (_statusEffect.ApplyStatusEffect(");
+        applyRangedDeflection.Should().Contain("if (_statusEffectApplication.ApplyStatusEffect(");
         applyRangedDeflection.Should().Contain(
             "_stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)");
         applyRangedDeflection.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
@@ -1758,7 +1762,7 @@ public class GeneratedWeaponPerkBehaviorTests
         staminaDrainedIndex.Should().BeGreaterThan(reduceStaminaIndex);
         feedbackIndex.Should().BeGreaterThan(staminaDrainedIndex);
         staminaDrainMethod.Should().NotContain("ColorToken.Combat($\"-{staminaDrain} STM\")");
-        statusEffectSource.Should().Contain("ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories)");
+        statusEffectSource.Should().Contain("NotifyStatusApplied(source, creature, statusEffect.Categories)");
         usePerkFeatSource.Should().Contain("public static bool InterruptAbilityActivation(uint activator)");
         usePerkFeatSource.Should().Contain("activation.Ability.ChannelInterruptAction?.Invoke(activator)");
         combatSource.Should().Contain("StatusEffectCategory.Infection => typeof(InfectionStatusEffect)");

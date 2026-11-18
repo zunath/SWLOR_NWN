@@ -24,7 +24,7 @@ public class MovementAbilityStunTests
             "Feature", "AbilityDefinition", folder, definitionType.Name + ".cs"));
         var calls = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
             .OfType<InvocationExpressionSyntax>().ToArray();
-        var stun = calls.Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
+        var stun = calls.Single(call => call.Expression.ToString() == "StatusEffectApplication.ApplyStatusEffect");
         var arrival = stun.Ancestors().First(node =>
             node is LocalFunctionStatementSyntax ||
             node is InvocationExpressionSyntax call && call.Expression.ToString() is "ActionDoCommand" or "AssignCommand");
@@ -59,7 +59,7 @@ public class MovementAbilityStunTests
         var jump = calls.Single(call => call.Expression.ToString() == "ActionJumpToLocation");
         var arrival = LocalFunction(root, "CompleteArrival");
         var stun = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(call => call.Expression.ToString() == "StatusEffect.ApplyStatusEffect");
+            .Single(call => call.Expression.ToString() == "StatusEffectApplication.ApplyStatusEffect");
         var turnBack = arrival.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Single(call => call.Expression.ToString() == "SetFacing");
         var facingCapture = root.DescendantNodes().OfType<VariableDeclaratorSyntax>()

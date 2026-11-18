@@ -100,7 +100,7 @@ public static class TwinPistolCompanionArrivalEngineTests
                 TemporaryStatModifier.Add(actor, StatType.PairedRangedRepeatedTargetRequiredHits, 1, 30f);
                 TemporaryStatModifier.Add(actor, StatType.PairedRangedRepeatedTargetDamagePercent, 5, 30f);
                 TemporaryStatModifier.Add(actor, StatType.PairedRangedRepeatedTargetDurationSeconds, 6, 30f);
-                StatusEffect.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
+                StatusEffectApplication.ApplyPermanentStatusEffect<AkimboStanceStatusEffect>(actor, actor);
                 GrantOrdinaryAttempts(ctx, actor);
                 traitState = GetTraitState(ctx, actor);
                 var attemptsBeforeLaunch = AttemptReceipts(ctx, traitState);

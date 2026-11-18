@@ -39,6 +39,7 @@ public class CombatDamageModifiersServiceTests
     private readonly List<string> _triggers = new();
     private FacadeContainer _facades = null!;
     private IStatusEffectService _statusEffect = null!;
+    private IStatusEffectApplicationService _statusApplication = null!;
     private FakeNWScript _engine = null!;
     private TemporaryStatModifierService _modifiers = null!;
     private TestDamageModifiers _service = null!;
@@ -82,10 +83,11 @@ public class CombatDamageModifiersServiceTests
             ICombatResourcesService resources,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusApplication,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState ability,
             IPlayerFeedbackService playerFeedback)
-            : base(queries, resources, stat, statusEffect, temporaryStatModifier, ability, playerFeedback, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
+            : base(queries, resources, stat, statusEffect, statusApplication, temporaryStatModifier, ability, playerFeedback, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
         {
         }
 
@@ -114,15 +116,6 @@ public class CombatDamageModifiersServiceTests
             })
             .On(nameof(IStatusEffectService.HasStatusEffectCategory), args =>
                 _categories.Contains(((uint)args[0]!, (StatusEffectCategory)args[1]!)))
-            .On(nameof(IStatusEffectService.ApplyStatusEffect), args =>
-            {
-                var type = args[2] as Type ?? args[2]!.GetType();
-                if (args[2] is IStatusEffect effect)
-                    _applied.Add(effect);
-                _statusLog.Add($"Apply {args[0]}>{args[1]} {type.Name} {args[3]}" + (args[4] is CombatDamageType damage ? $" {damage}" : string.Empty));
-                _statuses.Add(((uint)args[1]!, type));
-                return true;
-            })
             .On(nameof(IStatusEffectService.RemoveStatusEffect), args =>
             {
                 var type = (Type)args[1]!;
@@ -130,7 +123,17 @@ public class CombatDamageModifiersServiceTests
                 _statuses.Remove(((uint)args[0]!, type));
                 return null;
             });
-        _facades = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton(_statusEffect)));
+        _statusApplication = ScriptedProxy.Create<IStatusEffectApplicationService>(out var statusApplicationCalls);
+        statusApplicationCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), args =>
+            {
+                var type = args[2] as Type ?? args[2]!.GetType();
+                if (args[2] is IStatusEffect effect)
+                    _applied.Add(effect);
+                _statusLog.Add($"Apply {args[0]}>{args[1]} {type.Name} {args[3]}" + (args[4] is CombatDamageType damage ? $" {damage}" : string.Empty));
+                _statuses.Add(((uint)args[1]!, type));
+                return true;
+            });
+        _facades = new FacadeContainer(services => services.Replace(ServiceDescriptor.Singleton(_statusEffect)).Replace(ServiceDescriptor.Singleton(_statusApplication)));
     }
 
     [OneTimeTearDown]
@@ -213,7 +216,7 @@ public class CombatDamageModifiersServiceTests
         });
         _modifiers = new TemporaryStatModifierService(FacadeForwarder.For<IGuiService>());
 
-        _service = new TestDamageModifiers(queries, resources, stat, _statusEffect, _modifiers, ability, feedback);
+        _service = new TestDamageModifiers(queries, resources, stat, _statusEffect, _statusApplication, _modifiers, ability, feedback);
     }
 
     [TearDown]

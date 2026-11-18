@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (Stat.GetStatAdjustment(activator, StatType.PowerCellInitialTargetPowerSurge) <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(activator, target, new PowerSurgeStatusEffect(), 30f);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, new PowerSurgeStatusEffect(), 30f);
         }
 
         public static void ApplyFieldSupportAllyBuffRiders(uint activator, uint target)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, new TacticalUplinkStatusEffect(), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, new TacticalUplinkStatusEffect(), 30f);
             }
         }
 
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     if (evasionPenalty > 0 && durationSeconds > 0)
                     {
-                        StatusEffect.ApplyStatusEffect(
+                        StatusEffectApplication.ApplyStatusEffect(
                             activator,
                             creature,
                             new DiagnosticSweepStatusEffect(evasionPenalty),
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ? new RayshieldScreen2StatusEffect()
                 : new RayshieldScreen1StatusEffect();
 
-            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
         }
 
         private static void ApplyDampeningFieldRider(uint activator, uint target)
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ? new DampeningField2StatusEffect()
                 : new DampeningField1StatusEffect();
 
-            StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
         }
 
         private static void ApplyOverclockRoutine(uint activator, uint target)
@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (Stat.GetStatAdjustment(activator, StatType.FieldSupportAllyOverclockRoutine) <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 30f);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 30f);
         }
 
         public static float ApplyBlastRadiusBonus(uint activator, float baseRadius)

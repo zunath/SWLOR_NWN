@@ -54,6 +54,10 @@ mod_cache_bef  # run by EventRegistration.OnModulePreload through ExecuteScript
   action      SWLOR.Game.Server.Domain.Character.StatService.CacheData
   action      SWLOR.Game.Server.Domain.Character.CreatureStatService.RegisterStatEffectListener
   action      SWLOR.Game.Server.Domain.Character.StatusEffectCatalogService.CacheData
+  action      SWLOR.Game.Server.Domain.Combat.MeleeTechniqueService.RegisterStatusEffectListener
+  action      SWLOR.Game.Server.Domain.Combat.CombatAbilityImpactService.RegisterStatusEffectListener
+  action      SWLOR.Game.Server.Domain.Quests.CapstoneProofService.RegisterStatusEffectListener
+  action      SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.RegisterLoggedOutSource
   action      SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
   action      SWLOR.Game.Server.Domain.World.WeatherService.LoadData
   action      SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration
@@ -761,7 +765,7 @@ mod_enter
   action      SWLOR.Game.Server.Domain.Character.SkillService.AddMissingSkills
   action      SWLOR.Game.Server.Domain.Space.SpaceService.EnterServer
   action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ApplyPlayerStats
-  action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter
+  action      SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerEnter
   action      SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnEnter
   action      SWLOR.Game.Server.Domain.Quests.QuestEncounterService.OnModuleEnter
   action      SWLOR.Game.Server.Domain.Crafting.CraftDeviceService.RestoreCraftingStylesOnEnter
@@ -831,7 +835,7 @@ mod_exit
   action      SWLOR.Game.Server.Domain.World.ShuttleService.ExitServer
   action      SWLOR.Game.Server.Domain.Space.SpaceService.ExitServer
   action      SWLOR.Game.Server.Domain.Character.CreatureStatService.ForgetOutOfCombatMovementState
-  action      SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerExit
+  action      SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerExit
   action      SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnExit
   action      SWLOR.Game.Server.Domain.Combat.TelegraphService.ForgetShaderStateOnExit
   action      SWLOR.Game.Server.Domain.Crafting.SlicingSessionService.OnPlayerExit

@@ -21,7 +21,7 @@ SWLOR.Game.Server/Domain/Character/PlayerDescriptorService.cs -> Character (insi
 SWLOR.Game.Server/Domain/Character/PlayerNameService.cs -> Character (inside) | 2
 SWLOR.Game.Server/Domain/Character/SkillService.cs -> Character (inside) | 1
 SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Character (inside) | 1
-SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Combat (up) | 2
+SWLOR.Game.Server/Domain/Character/StatusEffectService.cs -> Combat (up) | 1
 SWLOR.Game.Server/Domain/Combat/CombatDamageModifiersService.cs -> Combat (inside) | 1
 SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs -> Combat (inside) | 1
 SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs -> Combat (inside) | 1
@@ -29,7 +29,6 @@ SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Combat/CombatRecorderService.cs -> Combat (inside) | 1
 SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Character (down) | 2
 SWLOR.Game.Server/Domain/Combat/MeleeTechniqueService.cs -> Combat (inside) | 2
-SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs -> Character (down) | 1
 SWLOR.Game.Server/Domain/Combat/ResistanceService.cs -> Character (down) | 2
 SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Character (down) | 4
 SWLOR.Game.Server/Domain/Combat/StealthService.cs -> Combat (inside) | 1

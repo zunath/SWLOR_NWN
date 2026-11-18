@@ -1335,12 +1335,280 @@ activate 12 property ModalConfirmButtonText "Yes"
 activate 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, <json>
 activate 14 property ModalCancelButtonText "No"
 activate 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, <json>
-activate 16 state carried
-activate 17 state worn Chest=farmer_outfit002
-activate 18 state feats 2,3,4,10,28,32,45,46,106,258,1089
-activate 19 state quickbar 0=10:1:;1=10:0:;2=4:28:
+activate 16 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+activate 17 engine NuiSetBind <player>, 1, Geometry, <json>
+activate 18 property SlotBarLabel "Disguise Slots   1 / 1"
+activate 19 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+activate 20 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+activate 21 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+activate 22 property SlotUsageProgress 1.0
+activate 23 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+activate 24 property DisguiseColors [{"a":255,"b":192,"g":220,"r":224}]
+activate 25 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+activate 26 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+activate 27 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+activate 28 property DisguiseNames ["Transcript Disguise"]
+activate 29 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+activate 30 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+activate 31 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+activate 32 property StatusColor {"a":255,"b":138,"g":162,"r":170}
+activate 33 engine NuiSetBind <player>, 1, StatusColor, <json>
+activate 34 property StatusText "Inactive"
+activate 35 engine NuiSetBind <player>, 1, StatusText, <json>
+activate 36 property PortraitResref "po_hu_f_m02_l"
+activate 37 engine NuiSetBind <player>, 1, PortraitResref, <json>
+activate 38 property IsEditMode false
+activate 39 engine NuiSetBind <player>, 1, IsEditMode, <json>
+activate 40 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+activate 41 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+activate 42 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+activate 43 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+activate 44 property ActivateButtonText "Activate"
+activate 45 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+activate 46 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+activate 47 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+activate 48 engine SendMessageToPC <player>, <cü>Disguise activated.</c>
+activate 49 property IsAvailableSelected true
+activate 50 engine NuiSetBind <player>, 1, IsAvailableSelected, <json>
+activate 51 property IsRetiredSelected false
+activate 52 engine NuiSetBind <player>, 1, IsRetiredSelected, <json>
+activate 53 property IsEditMode false
+activate 54 engine NuiSetBind <player>, 1, IsEditMode, <json>
+activate 55 property IsViewMode true
+activate 56 engine NuiSetBind <player>, 1, IsViewMode, <json>
+activate 57 property ShowActivateButton true
+activate 58 engine NuiSetBind <player>, 1, ShowActivateButton, <json>
+activate 59 property ShowEditButton true
+activate 60 engine NuiSetBind <player>, 1, ShowEditButton, <json>
+activate 61 property ShowRetireButton true
+activate 62 engine NuiSetBind <player>, 1, ShowRetireButton, <json>
+activate 63 property ShowUnretireButton false
+activate 64 engine NuiSetBind <player>, 1, ShowUnretireButton, <json>
+activate 65 property ActivateButtonText "Deactivate"
+activate 66 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+activate 67 property StatusText "? Active"
+activate 68 engine NuiSetBind <player>, 1, StatusText, <json>
+activate 69 property StatusColor {"a":255,"b":140,"g":210,"r":120}
+activate 70 engine NuiSetBind <player>, 1, StatusColor, <json>
+activate 71 property SlotCountText "Slots Used: 1 / 1"
+activate 72 engine NuiSetBind <player>, 1, SlotCountText, <json>
+activate 73 property SlotBarLabel "Disguise Slots   1 / 1"
+activate 74 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+activate 75 property SlotUsageProgress 1.0
+activate 76 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+activate 77 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+activate 78 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+activate 79 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+activate 80 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+activate 81 property DisguiseNames ["Transcript Disguise (Active)"]
+activate 82 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+activate 83 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+activate 84 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+activate 85 property DisguiseToggles [true]
+activate 86 engine NuiSetBind <player>, 1, DisguiseToggles_RowCount, <json>
+activate 87 engine NuiSetBind <player>, 1, DisguiseToggles_RowVisibility, <json>
+activate 88 engine NuiSetBind <player>, 1, DisguiseToggles, <json>
+activate 89 property DisguiseColors [{"a":255,"b":140,"g":210,"r":120}]
+activate 90 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+activate 91 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+activate 92 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+activate 93 property DisguiseToggles [true]
+activate 94 engine NuiSetBind <player>, 1, DisguiseToggles_RowCount, <json>
+activate 95 engine NuiSetBind <player>, 1, DisguiseToggles_RowVisibility, <json>
+activate 96 engine NuiSetBind <player>, 1, DisguiseToggles, <json>
+activate 97 property IsEditMode false
+activate 98 engine NuiSetBind <player>, 1, IsEditMode, <json>
+activate 99 property IsViewMode true
+activate 100 engine NuiSetBind <player>, 1, IsViewMode, <json>
+activate 101 property ShowActivateButton true
+activate 102 engine NuiSetBind <player>, 1, ShowActivateButton, <json>
+activate 103 property ShowEditButton true
+activate 104 engine NuiSetBind <player>, 1, ShowEditButton, <json>
+activate 105 property ShowRetireButton true
+activate 106 engine NuiSetBind <player>, 1, ShowRetireButton, <json>
+activate 107 property ShowUnretireButton false
+activate 108 engine NuiSetBind <player>, 1, ShowUnretireButton, <json>
+activate 109 property ActivateButtonText "Deactivate"
+activate 110 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+activate 111 property StatusText "? Active"
+activate 112 engine NuiSetBind <player>, 1, StatusText, <json>
+activate 113 property StatusColor {"a":255,"b":140,"g":210,"r":120}
+activate 114 engine NuiSetBind <player>, 1, StatusColor, <json>
+activate 115 property HasSelection true
+activate 116 engine NuiSetBind <player>, 1, HasSelection, <json>
+activate 117 property ShowEmptyState false
+activate 118 engine NuiSetBind <player>, 1, ShowEmptyState, <json>
+activate 119 property IsViewMode true
+activate 120 engine NuiSetBind <player>, 1, IsViewMode, <json>
+activate 121 property PrivateName "Transcript Disguise"
+activate 122 engine NuiSetBind <player>, 1, PrivateName, <json>
+activate 123 property Descriptor "a hooded stranger"
+activate 124 engine NuiSetBind <player>, 1, Descriptor, <json>
+activate 125 property Biography "Only a transcript."
+activate 126 engine NuiSetBind <player>, 1, Biography, <json>
+activate 127 property PortraitInternalId "1460"
+activate 128 engine NuiSetBind <player>, 1, PortraitInternalId, <json>
+activate 129 property PortraitResref "po_hu_f_m02_l"
+activate 130 engine NuiSetBind <player>, 1, PortraitResref, <json>
+activate 131 property ScrambleAccountId true
+activate 132 engine NuiSetBind <player>, 1, ScrambleAccountId, <json>
+activate 133 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+activate 134 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+activate 135 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+activate 136 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+activate 137 property SelectedSoundSetPageIndex 1
+activate 138 engine NuiSetBind <player>, 1, SelectedSoundSetPageIndex, <json>
+activate 139 property SelectedSoundSetIndex 0
+activate 140 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, <json>
+activate 141 property SoundSetName "Bear, Dire"
+activate 142 engine NuiSetBind <player>, 1, SoundSetName, <json>
+activate 143 property Instructions ""
+activate 144 engine NuiSetBind <player>, 1, Instructions, <json>
+activate 145 property EmptyStateTitle ""
+activate 146 engine NuiSetBind <player>, 1, EmptyStateTitle, <json>
+activate 147 property EmptyStateText ""
+activate 148 engine NuiSetBind <player>, 1, EmptyStateText, <json>
+activate 149 property ShowActivateButton true
+activate 150 engine NuiSetBind <player>, 1, ShowActivateButton, <json>
+activate 151 property ShowEditButton true
+activate 152 engine NuiSetBind <player>, 1, ShowEditButton, <json>
+activate 153 property ShowRetireButton true
+activate 154 engine NuiSetBind <player>, 1, ShowRetireButton, <json>
+activate 155 property ShowUnretireButton false
+activate 156 engine NuiSetBind <player>, 1, ShowUnretireButton, <json>
+activate 157 property ActivateButtonText "Deactivate"
+activate 158 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+activate 159 property StatusText "? Active"
+activate 160 engine NuiSetBind <player>, 1, StatusText, <json>
+activate 161 property StatusColor {"a":255,"b":140,"g":210,"r":120}
+activate 162 engine NuiSetBind <player>, 1, StatusColor, <json>
+activate 163 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+activate 164 engine NuiSetBind <player>, 1, Geometry, <json>
+activate 165 property SlotBarLabel "Disguise Slots   1 / 1"
+activate 166 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+activate 167 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+activate 168 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+activate 169 property SlotUsageProgress 1.0
+activate 170 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+activate 171 property DisguiseColors [{"a":255,"b":140,"g":210,"r":120}]
+activate 172 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+activate 173 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+activate 174 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+activate 175 property DisguiseNames ["Transcript Disguise (Active)"]
+activate 176 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+activate 177 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+activate 178 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+activate 179 property StatusColor {"a":255,"b":140,"g":210,"r":120}
+activate 180 engine NuiSetBind <player>, 1, StatusColor, <json>
+activate 181 property StatusText "? Active"
+activate 182 engine NuiSetBind <player>, 1, StatusText, <json>
+activate 183 property PortraitResref "po_hu_f_m02_l"
+activate 184 engine NuiSetBind <player>, 1, PortraitResref, <json>
+activate 185 property IsEditMode false
+activate 186 engine NuiSetBind <player>, 1, IsEditMode, <json>
+activate 187 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+activate 188 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+activate 189 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+activate 190 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+activate 191 property ActivateButtonText "Deactivate"
+activate 192 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+activate 193 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+activate 194 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+activate 195 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+activate 196 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+activate 197 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+activate 198 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+activate 199 property SelectedSoundSetPageIndex 1
+activate 200 engine NuiSetBind <player>, 1, SelectedSoundSetPageIndex, <json>
+activate 201 property SelectedSoundSetIndex 0
+activate 202 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, <json>
+activate 203 property SoundSetName "Bear, Dire"
+activate 204 engine NuiSetBind <player>, 1, SoundSetName, <json>
+activate 205 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+activate 206 engine NuiSetBind <player>, 1, Geometry, <json>
+activate 207 property SlotBarLabel "Disguise Slots   1 / 1"
+activate 208 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+activate 209 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+activate 210 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+activate 211 property SlotUsageProgress 1.0
+activate 212 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+activate 213 property DisguiseColors [{"a":255,"b":140,"g":210,"r":120}]
+activate 214 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+activate 215 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+activate 216 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+activate 217 property DisguiseNames ["Transcript Disguise (Active)"]
+activate 218 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+activate 219 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+activate 220 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+activate 221 property StatusColor {"a":255,"b":140,"g":210,"r":120}
+activate 222 engine NuiSetBind <player>, 1, StatusColor, <json>
+activate 223 property StatusText "? Active"
+activate 224 engine NuiSetBind <player>, 1, StatusText, <json>
+activate 225 property PortraitResref "po_hu_f_m02_l"
+activate 226 engine NuiSetBind <player>, 1, PortraitResref, <json>
+activate 227 property IsEditMode false
+activate 228 engine NuiSetBind <player>, 1, IsEditMode, <json>
+activate 229 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+activate 230 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+activate 231 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+activate 232 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+activate 233 property ActivateButtonText "Deactivate"
+activate 234 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+activate 235 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+activate 236 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+activate 237 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+activate 238 engine NuiSetBind <player>, 1, Geometry, <json>
+activate 239 property SlotBarLabel "Disguise Slots   1 / 1"
+activate 240 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+activate 241 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+activate 242 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+activate 243 property SlotUsageProgress 1.0
+activate 244 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+activate 245 property DisguiseColors [{"a":255,"b":140,"g":210,"r":120}]
+activate 246 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+activate 247 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+activate 248 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+activate 249 property DisguiseNames ["Transcript Disguise (Active)"]
+activate 250 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+activate 251 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+activate 252 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+activate 253 property StatusColor {"a":255,"b":140,"g":210,"r":120}
+activate 254 engine NuiSetBind <player>, 1, StatusColor, <json>
+activate 255 property StatusText "? Active"
+activate 256 engine NuiSetBind <player>, 1, StatusText, <json>
+activate 257 property PortraitResref "po_hu_f_m02_l"
+activate 258 engine NuiSetBind <player>, 1, PortraitResref, <json>
+activate 259 property IsEditMode false
+activate 260 engine NuiSetBind <player>, 1, IsEditMode, <json>
+activate 261 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+activate 262 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+activate 263 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+activate 264 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+activate 265 property ActivateButtonText "Deactivate"
+activate 266 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+activate 267 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+activate 268 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+activate 269 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+activate 270 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+activate 271 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+activate 272 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+activate 273 property SelectedSoundSetPageIndex 1
+activate 274 engine NuiSetBind <player>, 1, SelectedSoundSetPageIndex, <json>
+activate 275 property SelectedSoundSetIndex 0
+activate 276 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, <json>
+activate 277 property SoundSetName "Bear, Dire"
+activate 278 engine NuiSetBind <player>, 1, SoundSetName, <json>
+activate 279 state carried
+activate 280 state worn Chest=farmer_outfit002
+activate 281 state feats 2,3,4,10,28,32,45,46,106,258,1089
+activate 282 state quickbar 0=10:1:;1=10:0:;2=4:28:
+activate 283 state record ActiveDisguiseId "<disguise>"
+activate 284 state record HasUndisguisedDescriptionSnapshot true
+activate 285 state record UndisguisedPortraitId 3901
+activate 286 state record UndisguisedPortraitResref "po_hu_f_m02_"
+activate 287 state record UndisguisedSoundSetId 166
 deactivate 1 step
-deactivate 2 property ModalPromptText "Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?"
+deactivate 2 property ModalPromptText "Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?"
 deactivate 3 engine NuiSetBind <player>, 1, ModalPromptText, <json>
 deactivate 4 property ModalConfirmButtonText "Yes"
 deactivate 5 engine NuiSetBind <player>, 1, ModalConfirmButtonText, <json>
@@ -1348,16 +1616,284 @@ deactivate 6 property ModalCancelButtonText "No"
 deactivate 7 engine NuiSetBind <player>, 1, ModalCancelButtonText, <json>
 deactivate 8 engine NuiSetGroupLayout <player>, 1, _window_, <json>
 deactivate 9 engine NuiSetBind <player>, 1, Geometry, <json>
-deactivate 10 property ModalPromptText "Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?"
+deactivate 10 property ModalPromptText "Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?"
 deactivate 11 engine NuiSetBind <player>, 1, ModalPromptText, <json>
 deactivate 12 property ModalConfirmButtonText "Yes"
 deactivate 13 engine NuiSetBind <player>, 1, ModalConfirmButtonText, <json>
 deactivate 14 property ModalCancelButtonText "No"
 deactivate 15 engine NuiSetBind <player>, 1, ModalCancelButtonText, <json>
-deactivate 16 state carried
-deactivate 17 state worn Chest=farmer_outfit002
-deactivate 18 state feats 2,3,4,10,28,32,45,46,106,258,1089
-deactivate 19 state quickbar 0=10:1:;1=10:0:;2=4:28:
+deactivate 16 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+deactivate 17 engine NuiSetBind <player>, 1, Geometry, <json>
+deactivate 18 property SlotBarLabel "Disguise Slots   1 / 1"
+deactivate 19 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+deactivate 20 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+deactivate 21 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+deactivate 22 property SlotUsageProgress 1.0
+deactivate 23 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+deactivate 24 property DisguiseColors [{"a":255,"b":140,"g":210,"r":120}]
+deactivate 25 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+deactivate 26 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+deactivate 27 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+deactivate 28 property DisguiseNames ["Transcript Disguise (Active)"]
+deactivate 29 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+deactivate 30 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+deactivate 31 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+deactivate 32 property StatusColor {"a":255,"b":140,"g":210,"r":120}
+deactivate 33 engine NuiSetBind <player>, 1, StatusColor, <json>
+deactivate 34 property StatusText "? Active"
+deactivate 35 engine NuiSetBind <player>, 1, StatusText, <json>
+deactivate 36 property PortraitResref "po_hu_f_m02_l"
+deactivate 37 engine NuiSetBind <player>, 1, PortraitResref, <json>
+deactivate 38 property IsEditMode false
+deactivate 39 engine NuiSetBind <player>, 1, IsEditMode, <json>
+deactivate 40 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+deactivate 41 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+deactivate 42 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+deactivate 43 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+deactivate 44 property ActivateButtonText "Deactivate"
+deactivate 45 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+deactivate 46 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+deactivate 47 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+deactivate 48 engine SendMessageToPC <player>, <cü>Disguise deactivated.</c>
+deactivate 49 property IsAvailableSelected true
+deactivate 50 engine NuiSetBind <player>, 1, IsAvailableSelected, <json>
+deactivate 51 property IsRetiredSelected false
+deactivate 52 engine NuiSetBind <player>, 1, IsRetiredSelected, <json>
+deactivate 53 property IsEditMode false
+deactivate 54 engine NuiSetBind <player>, 1, IsEditMode, <json>
+deactivate 55 property IsViewMode true
+deactivate 56 engine NuiSetBind <player>, 1, IsViewMode, <json>
+deactivate 57 property ShowActivateButton true
+deactivate 58 engine NuiSetBind <player>, 1, ShowActivateButton, <json>
+deactivate 59 property ShowEditButton true
+deactivate 60 engine NuiSetBind <player>, 1, ShowEditButton, <json>
+deactivate 61 property ShowRetireButton true
+deactivate 62 engine NuiSetBind <player>, 1, ShowRetireButton, <json>
+deactivate 63 property ShowUnretireButton false
+deactivate 64 engine NuiSetBind <player>, 1, ShowUnretireButton, <json>
+deactivate 65 property ActivateButtonText "Activate"
+deactivate 66 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+deactivate 67 property StatusText "Inactive"
+deactivate 68 engine NuiSetBind <player>, 1, StatusText, <json>
+deactivate 69 property StatusColor {"a":255,"b":138,"g":162,"r":170}
+deactivate 70 engine NuiSetBind <player>, 1, StatusColor, <json>
+deactivate 71 property SlotCountText "Slots Used: 1 / 1"
+deactivate 72 engine NuiSetBind <player>, 1, SlotCountText, <json>
+deactivate 73 property SlotBarLabel "Disguise Slots   1 / 1"
+deactivate 74 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+deactivate 75 property SlotUsageProgress 1.0
+deactivate 76 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+deactivate 77 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+deactivate 78 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+deactivate 79 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+deactivate 80 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+deactivate 81 property DisguiseNames ["Transcript Disguise"]
+deactivate 82 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+deactivate 83 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+deactivate 84 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+deactivate 85 property DisguiseToggles [true]
+deactivate 86 engine NuiSetBind <player>, 1, DisguiseToggles_RowCount, <json>
+deactivate 87 engine NuiSetBind <player>, 1, DisguiseToggles_RowVisibility, <json>
+deactivate 88 engine NuiSetBind <player>, 1, DisguiseToggles, <json>
+deactivate 89 property DisguiseColors [{"a":255,"b":192,"g":220,"r":224}]
+deactivate 90 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+deactivate 91 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+deactivate 92 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+deactivate 93 property DisguiseToggles [true]
+deactivate 94 engine NuiSetBind <player>, 1, DisguiseToggles_RowCount, <json>
+deactivate 95 engine NuiSetBind <player>, 1, DisguiseToggles_RowVisibility, <json>
+deactivate 96 engine NuiSetBind <player>, 1, DisguiseToggles, <json>
+deactivate 97 property IsEditMode false
+deactivate 98 engine NuiSetBind <player>, 1, IsEditMode, <json>
+deactivate 99 property IsViewMode true
+deactivate 100 engine NuiSetBind <player>, 1, IsViewMode, <json>
+deactivate 101 property ShowActivateButton true
+deactivate 102 engine NuiSetBind <player>, 1, ShowActivateButton, <json>
+deactivate 103 property ShowEditButton true
+deactivate 104 engine NuiSetBind <player>, 1, ShowEditButton, <json>
+deactivate 105 property ShowRetireButton true
+deactivate 106 engine NuiSetBind <player>, 1, ShowRetireButton, <json>
+deactivate 107 property ShowUnretireButton false
+deactivate 108 engine NuiSetBind <player>, 1, ShowUnretireButton, <json>
+deactivate 109 property ActivateButtonText "Activate"
+deactivate 110 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+deactivate 111 property StatusText "Inactive"
+deactivate 112 engine NuiSetBind <player>, 1, StatusText, <json>
+deactivate 113 property StatusColor {"a":255,"b":138,"g":162,"r":170}
+deactivate 114 engine NuiSetBind <player>, 1, StatusColor, <json>
+deactivate 115 property HasSelection true
+deactivate 116 engine NuiSetBind <player>, 1, HasSelection, <json>
+deactivate 117 property ShowEmptyState false
+deactivate 118 engine NuiSetBind <player>, 1, ShowEmptyState, <json>
+deactivate 119 property IsViewMode true
+deactivate 120 engine NuiSetBind <player>, 1, IsViewMode, <json>
+deactivate 121 property PrivateName "Transcript Disguise"
+deactivate 122 engine NuiSetBind <player>, 1, PrivateName, <json>
+deactivate 123 property Descriptor "a hooded stranger"
+deactivate 124 engine NuiSetBind <player>, 1, Descriptor, <json>
+deactivate 125 property Biography "Only a transcript."
+deactivate 126 engine NuiSetBind <player>, 1, Biography, <json>
+deactivate 127 property PortraitInternalId "1460"
+deactivate 128 engine NuiSetBind <player>, 1, PortraitInternalId, <json>
+deactivate 129 property PortraitResref "po_hu_f_m02_l"
+deactivate 130 engine NuiSetBind <player>, 1, PortraitResref, <json>
+deactivate 131 property ScrambleAccountId true
+deactivate 132 engine NuiSetBind <player>, 1, ScrambleAccountId, <json>
+deactivate 133 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+deactivate 134 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+deactivate 135 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+deactivate 136 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+deactivate 137 property SelectedSoundSetPageIndex 1
+deactivate 138 engine NuiSetBind <player>, 1, SelectedSoundSetPageIndex, <json>
+deactivate 139 property SelectedSoundSetIndex 0
+deactivate 140 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, <json>
+deactivate 141 property SoundSetName "Bear, Dire"
+deactivate 142 engine NuiSetBind <player>, 1, SoundSetName, <json>
+deactivate 143 property Instructions ""
+deactivate 144 engine NuiSetBind <player>, 1, Instructions, <json>
+deactivate 145 property EmptyStateTitle ""
+deactivate 146 engine NuiSetBind <player>, 1, EmptyStateTitle, <json>
+deactivate 147 property EmptyStateText ""
+deactivate 148 engine NuiSetBind <player>, 1, EmptyStateText, <json>
+deactivate 149 property ShowActivateButton true
+deactivate 150 engine NuiSetBind <player>, 1, ShowActivateButton, <json>
+deactivate 151 property ShowEditButton true
+deactivate 152 engine NuiSetBind <player>, 1, ShowEditButton, <json>
+deactivate 153 property ShowRetireButton true
+deactivate 154 engine NuiSetBind <player>, 1, ShowRetireButton, <json>
+deactivate 155 property ShowUnretireButton false
+deactivate 156 engine NuiSetBind <player>, 1, ShowUnretireButton, <json>
+deactivate 157 property ActivateButtonText "Activate"
+deactivate 158 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+deactivate 159 property StatusText "Inactive"
+deactivate 160 engine NuiSetBind <player>, 1, StatusText, <json>
+deactivate 161 property StatusColor {"a":255,"b":138,"g":162,"r":170}
+deactivate 162 engine NuiSetBind <player>, 1, StatusColor, <json>
+deactivate 163 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+deactivate 164 engine NuiSetBind <player>, 1, Geometry, <json>
+deactivate 165 property SlotBarLabel "Disguise Slots   1 / 1"
+deactivate 166 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+deactivate 167 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+deactivate 168 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+deactivate 169 property SlotUsageProgress 1.0
+deactivate 170 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+deactivate 171 property DisguiseColors [{"a":255,"b":192,"g":220,"r":224}]
+deactivate 172 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+deactivate 173 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+deactivate 174 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+deactivate 175 property DisguiseNames ["Transcript Disguise"]
+deactivate 176 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+deactivate 177 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+deactivate 178 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+deactivate 179 property StatusColor {"a":255,"b":138,"g":162,"r":170}
+deactivate 180 engine NuiSetBind <player>, 1, StatusColor, <json>
+deactivate 181 property StatusText "Inactive"
+deactivate 182 engine NuiSetBind <player>, 1, StatusText, <json>
+deactivate 183 property PortraitResref "po_hu_f_m02_l"
+deactivate 184 engine NuiSetBind <player>, 1, PortraitResref, <json>
+deactivate 185 property IsEditMode false
+deactivate 186 engine NuiSetBind <player>, 1, IsEditMode, <json>
+deactivate 187 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+deactivate 188 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+deactivate 189 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+deactivate 190 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+deactivate 191 property ActivateButtonText "Activate"
+deactivate 192 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+deactivate 193 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+deactivate 194 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+deactivate 195 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+deactivate 196 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+deactivate 197 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+deactivate 198 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+deactivate 199 property SelectedSoundSetPageIndex 1
+deactivate 200 engine NuiSetBind <player>, 1, SelectedSoundSetPageIndex, <json>
+deactivate 201 property SelectedSoundSetIndex 0
+deactivate 202 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, <json>
+deactivate 203 property SoundSetName "Bear, Dire"
+deactivate 204 engine NuiSetBind <player>, 1, SoundSetName, <json>
+deactivate 205 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+deactivate 206 engine NuiSetBind <player>, 1, Geometry, <json>
+deactivate 207 property SlotBarLabel "Disguise Slots   1 / 1"
+deactivate 208 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+deactivate 209 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+deactivate 210 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+deactivate 211 property SlotUsageProgress 1.0
+deactivate 212 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+deactivate 213 property DisguiseColors [{"a":255,"b":192,"g":220,"r":224}]
+deactivate 214 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+deactivate 215 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+deactivate 216 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+deactivate 217 property DisguiseNames ["Transcript Disguise"]
+deactivate 218 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+deactivate 219 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+deactivate 220 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+deactivate 221 property StatusColor {"a":255,"b":138,"g":162,"r":170}
+deactivate 222 engine NuiSetBind <player>, 1, StatusColor, <json>
+deactivate 223 property StatusText "Inactive"
+deactivate 224 engine NuiSetBind <player>, 1, StatusText, <json>
+deactivate 225 property PortraitResref "po_hu_f_m02_l"
+deactivate 226 engine NuiSetBind <player>, 1, PortraitResref, <json>
+deactivate 227 property IsEditMode false
+deactivate 228 engine NuiSetBind <player>, 1, IsEditMode, <json>
+deactivate 229 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+deactivate 230 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+deactivate 231 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+deactivate 232 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+deactivate 233 property ActivateButtonText "Activate"
+deactivate 234 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+deactivate 235 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+deactivate 236 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+deactivate 237 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+deactivate 238 engine NuiSetBind <player>, 1, Geometry, <json>
+deactivate 239 property SlotBarLabel "Disguise Slots   1 / 1"
+deactivate 240 engine NuiSetBind <player>, 1, SlotBarLabel, <json>
+deactivate 241 property SlotUsageColor {"a":255,"b":70,"g":100,"r":200}
+deactivate 242 engine NuiSetBind <player>, 1, SlotUsageColor, <json>
+deactivate 243 property SlotUsageProgress 1.0
+deactivate 244 engine NuiSetBind <player>, 1, SlotUsageProgress, <json>
+deactivate 245 property DisguiseColors [{"a":255,"b":192,"g":220,"r":224}]
+deactivate 246 engine NuiSetBind <player>, 1, DisguiseColors_RowCount, <json>
+deactivate 247 engine NuiSetBind <player>, 1, DisguiseColors_RowVisibility, <json>
+deactivate 248 engine NuiSetBind <player>, 1, DisguiseColors, <json>
+deactivate 249 property DisguiseNames ["Transcript Disguise"]
+deactivate 250 engine NuiSetBind <player>, 1, DisguiseNames_RowCount, <json>
+deactivate 251 engine NuiSetBind <player>, 1, DisguiseNames_RowVisibility, <json>
+deactivate 252 engine NuiSetBind <player>, 1, DisguiseNames, <json>
+deactivate 253 property StatusColor {"a":255,"b":138,"g":162,"r":170}
+deactivate 254 engine NuiSetBind <player>, 1, StatusColor, <json>
+deactivate 255 property StatusText "Inactive"
+deactivate 256 engine NuiSetBind <player>, 1, StatusText, <json>
+deactivate 257 property PortraitResref "po_hu_f_m02_l"
+deactivate 258 engine NuiSetBind <player>, 1, PortraitResref, <json>
+deactivate 259 property IsEditMode false
+deactivate 260 engine NuiSetBind <player>, 1, IsEditMode, <json>
+deactivate 261 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+deactivate 262 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+deactivate 263 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+deactivate 264 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+deactivate 265 property ActivateButtonText "Activate"
+deactivate 266 engine NuiSetBind <player>, 1, ActivateButtonText, <json>
+deactivate 267 property ActivationDelayNote "Activating starts a 30-minute cooldown before you can activate another disguise."
+deactivate 268 engine NuiSetBind <player>, 1, ActivationDelayNote, <json>
+deactivate 269 property SoundSetPageNumbers [["Page 1",0],["Page 2",1],["Page 3",2],["Page 4",3],["Page 5",4],["Page 6",5],["Page 7",6],["Page 8",7],["Page 9",8],["Page 10",9],["Page 11",10],["Page 12",11],["Page 13",12],["Page 14",13],["Page 15",14],["Page 16",15],["Page 17",16],["Page 18",17]]
+deactivate 270 engine NuiSetBind <player>, 1, SoundSetPageNumbers, <json>
+deactivate 271 property SoundSetOptions <462 chars hash 36e3c338336754fdee12bf1f55411567> [["Bear, Dire",0],["Beetle",1],["Beholder",2],["Beholder, Eyeball",3],["Beholder, Mage",4],["Berger",5],["Bith",6],["Boa
+deactivate 272 engine NuiSetBind <player>, 1, SoundSetOptions, <json>
+deactivate 273 property SelectedSoundSetPageIndex 1
+deactivate 274 engine NuiSetBind <player>, 1, SelectedSoundSetPageIndex, <json>
+deactivate 275 property SelectedSoundSetIndex 0
+deactivate 276 engine NuiSetBind <player>, 1, SelectedSoundSetIndex, <json>
+deactivate 277 property SoundSetName "Bear, Dire"
+deactivate 278 engine NuiSetBind <player>, 1, SoundSetName, <json>
+deactivate 279 state carried
+deactivate 280 state worn Chest=farmer_outfit002
+deactivate 281 state feats 2,3,4,10,28,32,45,46,106,258,1089
+deactivate 282 state quickbar 0=10:1:;1=10:0:;2=4:28:
+deactivate 283 state record ActiveDisguiseId ""
+deactivate 284 state record HasUndisguisedDescriptionSnapshot false
+deactivate 285 state record UndisguisedPortraitId -1
+deactivate 286 state record UndisguisedPortraitResref ""
+deactivate 287 state record UndisguisedSoundSetId -1
 retire 1 step
 retire 2 property ModalPromptText "Retiring this disguise will make it unavailable until an Identity Broker wipes it. Retired disguises still occupy disguise slots. Are you sure?"
 retire 3 engine NuiSetBind <player>, 1, ModalPromptText, <json>
@@ -2374,7 +2910,7 @@ close-and-reopen 342 state carried
 close-and-reopen 343 state worn Chest=farmer_outfit002
 close-and-reopen 344 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-and-reopen 345 state quickbar 0=10:1:;1=10:0:;2=4:28:
-close-and-reopen 346 state record WindowGeometries.Disguises.Height 632.0
+close-and-reopen 346 state record WindowGeometries.Disguises.Height 640.0
 close-and-reopen 347 state record WindowGeometries.Disguises.Width 792.0
 close-and-reopen 348 state record WindowGeometries.Disguises.X 0.0
 close-and-reopen 349 state record WindowGeometries.Disguises.Y 0.0

@@ -317,7 +317,25 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 t.Step("equip-off-hand", () => Gui.PublishRefreshEvent(run.Player, new EquipItemRefreshEvent()));
                 t.Step("crafting-tab", () => sheet.SelectedTabId = 3);
                 t.Step("stats-tab-dual-wield", () => sheet.SelectedTabId = 1);
-                t.Step("unequip", () => Gui.PublishRefreshEvent(run.Player, new UnequipItemRefreshEvent()));
+            });
+            // The main hand weapon really leaves the hand in the engine. The engine then slides the off hand weapon into the main hand,
+            // so the off hand is empty and the main hand holds the second weapon.
+            var removed = OBJECT_INVALID;
+            await run.Context.ExecuteInCreatureContextAsync(run.Player, () =>
+            {
+                removed = GetItemInSlot(InventorySlot.RightHand, run.Player);
+                ClearAllActions();
+                ActionUnequipItem(removed);
+            });
+            await run.Context.WaitUntilAsync(() => !GetIsObjectValid(GetItemInSlot(InventorySlot.LeftHand, run.Player)), 5f,
+                "the main hand weapon to be unequipped");
+            await run.Context.DelaySecondsAsync(1.5f);
+            run.Context.Assert(GetItemPossessor(removed) == run.Player && GetItemInSlot(InventorySlot.RightHand, run.Player) != removed,
+                "The unequipped weapon is back in the pack, out of the main hand.");
+            await run.PhaseAsync(() =>
+            {
+                t.Step("unequip-main-hand", () => Gui.PublishRefreshEvent(run.Player, new UnequipItemRefreshEvent()));
+                t.Step("stats-tab-after-unequip", () => sheet.SelectedTabId = 1);
                 t.Step("close-self", () => Gui.ClosePlayerWindow(run.Player, GuiWindowType.CharacterSheet));
                 t.Step("open-npc", () => sheet = t.Open<CharacterSheetViewModel>(GuiWindowType.CharacterSheet, new CharacterSheetPayload(npc, false)));
                 foreach (var tab in new[] { 1, 2, 3, 0 })
@@ -408,6 +426,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             });
             await run.PhaseAsync(() =>
             {
+                void SelectEnzymes(string label)
+                {
+                    foreach (var enzyme in new[] { ("hydrolase", "hydrolase_blue"), ("isomerase", "isomerase_red"), ("lyase", "lyase_blue") })
+                    {
+                        var item = CreateItemOnObject(enzyme.Item2, run.Player);
+                        var click = enzyme.Item1 == "hydrolase" ? incubator.OnClickHydrolase()
+                            : enzyme.Item1 == "isomerase" ? incubator.OnClickIsomerase() : incubator.OnClickLyase();
+                        t.Step(label + "-select-" + enzyme.Item1 + "-prompt", () => click());
+                        t.Step(label + "-select-" + enzyme.Item1, () => t.Target(item));
+                    }
+                }
+
                 t.Step("remove-lyase", () =>
                 {
                     incubator.OnClickLyase()();
@@ -429,11 +459,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     FrozenClockAdvance(run, 3600 * 40);
                     incubator = t.Reopen<IncubatorViewModel>(GuiWindowType.Incubator, payload);
                 });
+                t.Step("stage-2-ready", () =>
+                {
+                    FrozenClockAdvance(run, 3600 * 40);
+                    incubator = t.Reopen<IncubatorViewModel>(GuiWindowType.Incubator, payload);
+                });
+                SelectEnzymes("stage-2");
                 t.Step("continue-job", () =>
                 {
                     incubator.OnClickContinueJob()();
                     incubator.OnModalConfirmClick()();
                 });
+                t.Step("reopen-after-continue", () => incubator = t.Reopen<IncubatorViewModel>(GuiWindowType.Incubator, payload));
                 t.Step("cancel-job", () =>
                 {
                     incubator.OnClickCancelJob()();
@@ -447,9 +484,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     incubator.OnClickStartJob()();
                     incubator.OnModalConfirmClick()();
                 });
+                // Every stage runs: finish it, put the enzymes in, start the next one.
+                for (var stage = 2; stage <= IncubationProjection.NumberOfStages; stage++)
+                {
+                    var number = stage;
+                    t.Step("stage-" + number + "-ready", () =>
+                    {
+                        FrozenClockAdvance(run, 3600 * 40);
+                        incubator = t.Reopen<IncubatorViewModel>(GuiWindowType.Incubator, payload);
+                    });
+                    SelectEnzymes("second-stage-" + number);
+                    t.Step("second-job-start-stage-" + number, () =>
+                    {
+                        incubator.OnClickContinueJob()();
+                        incubator.OnModalConfirmClick()();
+                    });
+                }
+
                 t.Step("all-stages-complete", () =>
                 {
-                    FrozenClockAdvance(run, 3600 * 24 * 12);
+                    FrozenClockAdvance(run, 3600 * 40);
                     incubator = t.Reopen<IncubatorViewModel>(GuiWindowType.Incubator, payload);
                 });
                 t.Step("complete-job", () =>
@@ -507,8 +561,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 t.Step("save", () => disguise.OnClickSave()());
                 t.Step("edit", () => disguise.OnClickEdit()());
                 t.Step("cancel-edit", () => disguise.OnClickCancelEdit()());
-                t.Step("activate", () => disguise.OnClickActivateOrDeactivate()());
-                t.Step("deactivate", () => disguise.OnClickActivateOrDeactivate()());
+                // The disguise id is a new Guid every run; the transcript names it.
+                t.Mask(DB.Search(new DBQuery<PlayerDisguise>().AddFieldSearch(nameof(PlayerDisguise.PlayerId), run.Fixture.Id, false)).First().Id,
+                    "<disguise>");
+                t.Step("activate", () =>
+                {
+                    disguise.OnClickActivateOrDeactivate()();
+                    disguise.OnModalConfirmClick()();
+                });
+                t.Step("deactivate", () =>
+                {
+                    disguise.OnClickActivateOrDeactivate()();
+                    disguise.OnModalConfirmClick()();
+                });
                 t.Step("retire", () =>
                 {
                     disguise.OnClickRetire()();

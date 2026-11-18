@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
     /// </list>
     /// After every step the engine state of the player is dumped: the carried and worn items, the feats, the quick bar and what changed in the saved
     /// <see cref="Player"/> record since the step before. A long JSON value is written as its length and SHA-1 with a short preview, so a one-character
-    /// change still fails the comparison. The player's id is written as <c>&lt;player&gt;</c>, and no other text is masked.
+    /// change still fails the comparison. The player's id is written as <c>&lt;player&gt;</c>, and the only other masked text is an id a script names with <see cref="Mask"/> (a disguise's Guid changes every run).
     /// </summary>
     public sealed class ViewModelTranscript : IDisposable
     {
@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
 
         private readonly PlayerAbilityFixture _fixture;
         private readonly StringBuilder _text = new();
+        private readonly Dictionary<string, string> _masks = new();
         private readonly List<IDisposable> _scopes = new();
         private readonly List<KeyValuePair<string, Func<object>>> _tracked = new();
         private readonly Dictionary<string, Dictionary<string, string>> _previous = new();
@@ -195,7 +196,16 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             _text.Append('\n');
         }
 
-        private string Clean(string text) => text.Replace(_fixture.Id, "<player>");
+        private string Clean(string text)
+        {
+            text = text.Replace(_fixture.Id, "<player>");
+            foreach (var mask in _masks)
+                text = text.Replace(mask.Key, mask.Value);
+            return text;
+        }
+
+        /// <summary>Writes a generated id (a new Guid every run, such as a disguise's) as a fixed name from here on.</summary>
+        public void Mask(string value, string replacement) => _masks[value] = replacement;
 
         private static string FirstLine(string text) => text.Split('\n')[0].TrimEnd('\r');
 

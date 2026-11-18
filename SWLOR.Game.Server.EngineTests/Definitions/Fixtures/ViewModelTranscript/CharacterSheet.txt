@@ -1899,139 +1899,210 @@ stats-tab-dual-wield 68 state carried
 stats-tab-dual-wield 69 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
 stats-tab-dual-wield 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
 stats-tab-dual-wield 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
-unequip 1 step
-unequip 2 property HP "3 / 3"
-unequip 3 engine NuiSetBind <player>, 1, HP, <json>
-unequip 4 property FP "9999 / 10030"
-unequip 5 engine NuiSetBind <player>, 1, FP, <json>
-unequip 6 property STM "9999 / 10025"
-unequip 7 engine NuiSetBind <player>, 1, STM, <json>
-unequip 8 property Name "Civilian"
-unequip 9 engine NuiSetBind <player>, 1, Name, <json>
-unequip 10 property Might 17
-unequip 11 engine NuiSetBind <player>, 1, Might, <json>
-unequip 12 property Perception 13
-unequip 13 engine NuiSetBind <player>, 1, Perception, <json>
-unequip 14 property Vitality 16
-unequip 15 engine NuiSetBind <player>, 1, Vitality, <json>
-unequip 16 property Willpower 10
-unequip 17 engine NuiSetBind <player>, 1, Willpower, <json>
-unequip 18 property Agility 10
-unequip 19 engine NuiSetBind <player>, 1, Agility, <json>
-unequip 20 property Social 9
-unequip 21 engine NuiSetBind <player>, 1, Social, <json>
-unequip 22 property IsMightUpgradeAvailable false
-unequip 23 engine NuiSetBind <player>, 1, IsMightUpgradeAvailable, <json>
-unequip 24 property IsPerceptionUpgradeAvailable false
-unequip 25 engine NuiSetBind <player>, 1, IsPerceptionUpgradeAvailable, <json>
-unequip 26 property IsVitalityUpgradeAvailable false
-unequip 27 engine NuiSetBind <player>, 1, IsVitalityUpgradeAvailable, <json>
-unequip 28 property IsWillpowerUpgradeAvailable false
-unequip 29 engine NuiSetBind <player>, 1, IsWillpowerUpgradeAvailable, <json>
-unequip 30 property IsAgilityUpgradeAvailable false
-unequip 31 engine NuiSetBind <player>, 1, IsAgilityUpgradeAvailable, <json>
-unequip 32 property IsSocialUpgradeAvailable false
-unequip 33 engine NuiSetBind <player>, 1, IsSocialUpgradeAvailable, <json>
-unequip 34 property StatNames <611 chars hash d6bd8dee30236a60390442f7006ec127> ["HP Regen","FP Regen","STM Regen","Combat Readiness","Melee Deflection","Ranged Deflection","Shield Deflection","Guard"
-unequip 35 engine NuiSetBind <player>, 1, StatNames_RowCount, <json>
-unequip 36 engine NuiSetBind <player>, 1, StatNames_RowVisibility, <json>
-unequip 37 engine NuiSetBind <player>, 1, StatNames, <json>
-unequip 38 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
-unequip 39 engine NuiSetBind <player>, 1, StatValues_RowCount, <json>
-unequip 40 engine NuiSetBind <player>, 1, StatValues_RowVisibility, <json>
-unequip 41 engine NuiSetBind <player>, 1, StatValues, <json>
-unequip 42 property StatTooltips <3905 chars hash 037d59fc9b29446a03f584d82d8a3fbf> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
-unequip 43 engine NuiSetBind <player>, 1, StatTooltips_RowCount, <json>
-unequip 44 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, <json>
-unequip 45 engine NuiSetBind <player>, 1, StatTooltips, <json>
-unequip 46 property AttackDelay "3.83s"
-unequip 47 engine NuiSetBind <player>, 1, AttackDelay, <json>
-unequip 48 property AttackDelayTooltip "Est. Delay: 3.83s (5.58s attacker - 1.75s default) | 2 attacks per cycle, about 1.92s each (Delay 220 main + 220 off)"
-unequip 49 engine NuiSetBind <player>, 1, AttackDelayTooltip, <json>
-unequip 50 property MainHandDMG "1 DMG"
-unequip 51 engine NuiSetBind <player>, 1, MainHandDMG, <json>
-unequip 52 property MainHandTooltip "Est. Damage: 2 - 3"
-unequip 53 engine NuiSetBind <player>, 1, MainHandTooltip, <json>
-unequip 54 property OffHandDMG "1 DMG"
-unequip 55 engine NuiSetBind <player>, 1, OffHandDMG, <json>
-unequip 56 property OffHandTooltip "Est. Damage: 2 - 3"
-unequip 57 engine NuiSetBind <player>, 1, OffHandTooltip, <json>
-unequip 58 property Attack 275
-unequip 59 engine NuiSetBind <player>, 1, Attack, <json>
-unequip 60 property AttackTooltip "Physical attack rating used to scale weapon and physical ability damage. Off hand: 275."
-unequip 61 engine NuiSetBind <player>, 1, AttackTooltip, <json>
-unequip 62 property ForceAttack 268
-unequip 63 engine NuiSetBind <player>, 1, ForceAttack, <json>
-unequip 64 property PhysicalDefense 84
-unequip 65 engine NuiSetBind <player>, 1, PhysicalDefense, <json>
-unequip 66 property ForceDefense 78
-unequip 67 engine NuiSetBind <player>, 1, ForceDefense, <json>
-unequip 68 property WeaponAccuracy 271
-unequip 69 engine NuiSetBind <player>, 1, WeaponAccuracy, <json>
-unequip 70 property WeaponAccuracy 271
-unequip 71 engine NuiSetBind <player>, 1, WeaponAccuracy, <json>
-unequip 72 property OffHandAccuracy "271"
-unequip 73 engine NuiSetBind <player>, 1, OffHandAccuracy, <json>
-unequip 74 property ForceAccuracy 268
-unequip 75 engine NuiSetBind <player>, 1, ForceAccuracy, <json>
-unequip 76 property Evasion 218
-unequip 77 engine NuiSetBind <player>, 1, Evasion, <json>
-unequip 78 property ResistanceNames ["Fire","Poison","Electrical","Ice","Mind","Mobility","Trauma","Disruption"]
-unequip 79 engine NuiSetBind <player>, 1, ResistanceNames_RowCount, <json>
-unequip 80 engine NuiSetBind <player>, 1, ResistanceNames_RowVisibility, <json>
-unequip 81 engine NuiSetBind <player>, 1, ResistanceNames, <json>
-unequip 82 property ResistanceScores ["0","0","0","0","0","0","0","0"]
-unequip 83 engine NuiSetBind <player>, 1, ResistanceScores_RowCount, <json>
-unequip 84 engine NuiSetBind <player>, 1, ResistanceScores_RowVisibility, <json>
-unequip 85 engine NuiSetBind <player>, 1, ResistanceScores, <json>
-unequip 86 property ResistanceDamageTaken ["100% taken","100% taken","100% taken","100% taken","100% taken","100% taken","100% taken","100% taken"]
-unequip 87 engine NuiSetBind <player>, 1, ResistanceDamageTaken_RowCount, <json>
-unequip 88 engine NuiSetBind <player>, 1, ResistanceDamageTaken_RowVisibility, <json>
-unequip 89 engine NuiSetBind <player>, 1, ResistanceDamageTaken, <json>
-unequip 90 property ResistanceStatusDurations ["Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration"]
-unequip 91 engine NuiSetBind <player>, 1, ResistanceStatusDurations_RowCount, <json>
-unequip 92 engine NuiSetBind <player>, 1, ResistanceStatusDurations_RowVisibility, <json>
-unequip 93 engine NuiSetBind <player>, 1, ResistanceStatusDurations, <json>
-unequip 94 property CraftNames ["Smithery","Fabrication","Agriculture","Engineering","Espionage"]
-unequip 95 engine NuiSetBind <player>, 1, CraftNames_RowCount, <json>
-unequip 96 engine NuiSetBind <player>, 1, CraftNames_RowVisibility, <json>
-unequip 97 engine NuiSetBind <player>, 1, CraftNames, <json>
-unequip 98 property CraftControls ["0","0","0","0","0"]
-unequip 99 engine NuiSetBind <player>, 1, CraftControls_RowCount, <json>
-unequip 100 engine NuiSetBind <player>, 1, CraftControls_RowVisibility, <json>
-unequip 101 engine NuiSetBind <player>, 1, CraftControls, <json>
-unequip 102 property CraftCraftsmanship ["0","0","0","0","0"]
-unequip 103 engine NuiSetBind <player>, 1, CraftCraftsmanship_RowCount, <json>
-unequip 104 engine NuiSetBind <player>, 1, CraftCraftsmanship_RowVisibility, <json>
-unequip 105 engine NuiSetBind <player>, 1, CraftCraftsmanship, <json>
-unequip 106 property Control "0/0/0/0/0"
-unequip 107 engine NuiSetBind <player>, 1, Control, <json>
-unequip 108 property Craftsmanship "0/0/0/0/0"
-unequip 109 engine NuiSetBind <player>, 1, Craftsmanship, <json>
-unequip 110 property StatNames <611 chars hash d6bd8dee30236a60390442f7006ec127> ["HP Regen","FP Regen","STM Regen","Combat Readiness","Melee Deflection","Ranged Deflection","Shield Deflection","Guard"
-unequip 111 engine NuiSetBind <player>, 1, StatNames_RowCount, <json>
-unequip 112 engine NuiSetBind <player>, 1, StatNames_RowVisibility, <json>
-unequip 113 engine NuiSetBind <player>, 1, StatNames, <json>
-unequip 114 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
-unequip 115 engine NuiSetBind <player>, 1, StatValues_RowCount, <json>
-unequip 116 engine NuiSetBind <player>, 1, StatValues_RowVisibility, <json>
-unequip 117 engine NuiSetBind <player>, 1, StatValues, <json>
-unequip 118 property StatTooltips <3905 chars hash 037d59fc9b29446a03f584d82d8a3fbf> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
-unequip 119 engine NuiSetBind <player>, 1, StatTooltips_RowCount, <json>
-unequip 120 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, <json>
-unequip 121 engine NuiSetBind <player>, 1, StatTooltips, <json>
-unequip 122 service IGuiService.PublishRefreshEvent <player>, {}, 2130706432
-unequip 123 state carried
-unequip 124 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
-unequip 125 state feats 2,3,4,10,28,32,45,46,106,258,1089
-unequip 126 state quickbar 0=10:1:;1=10:0:;2=4:28:
+unequip-main-hand 1 step
+unequip-main-hand 2 property HP "3 / 3"
+unequip-main-hand 3 engine NuiSetBind <player>, 1, HP, <json>
+unequip-main-hand 4 property FP "9999 / 10030"
+unequip-main-hand 5 engine NuiSetBind <player>, 1, FP, <json>
+unequip-main-hand 6 property STM "9999 / 10025"
+unequip-main-hand 7 engine NuiSetBind <player>, 1, STM, <json>
+unequip-main-hand 8 property Name "Civilian"
+unequip-main-hand 9 engine NuiSetBind <player>, 1, Name, <json>
+unequip-main-hand 10 property Might 17
+unequip-main-hand 11 engine NuiSetBind <player>, 1, Might, <json>
+unequip-main-hand 12 property Perception 13
+unequip-main-hand 13 engine NuiSetBind <player>, 1, Perception, <json>
+unequip-main-hand 14 property Vitality 16
+unequip-main-hand 15 engine NuiSetBind <player>, 1, Vitality, <json>
+unequip-main-hand 16 property Willpower 10
+unequip-main-hand 17 engine NuiSetBind <player>, 1, Willpower, <json>
+unequip-main-hand 18 property Agility 10
+unequip-main-hand 19 engine NuiSetBind <player>, 1, Agility, <json>
+unequip-main-hand 20 property Social 9
+unequip-main-hand 21 engine NuiSetBind <player>, 1, Social, <json>
+unequip-main-hand 22 property IsMightUpgradeAvailable false
+unequip-main-hand 23 engine NuiSetBind <player>, 1, IsMightUpgradeAvailable, <json>
+unequip-main-hand 24 property IsPerceptionUpgradeAvailable false
+unequip-main-hand 25 engine NuiSetBind <player>, 1, IsPerceptionUpgradeAvailable, <json>
+unequip-main-hand 26 property IsVitalityUpgradeAvailable false
+unequip-main-hand 27 engine NuiSetBind <player>, 1, IsVitalityUpgradeAvailable, <json>
+unequip-main-hand 28 property IsWillpowerUpgradeAvailable false
+unequip-main-hand 29 engine NuiSetBind <player>, 1, IsWillpowerUpgradeAvailable, <json>
+unequip-main-hand 30 property IsAgilityUpgradeAvailable false
+unequip-main-hand 31 engine NuiSetBind <player>, 1, IsAgilityUpgradeAvailable, <json>
+unequip-main-hand 32 property IsSocialUpgradeAvailable false
+unequip-main-hand 33 engine NuiSetBind <player>, 1, IsSocialUpgradeAvailable, <json>
+unequip-main-hand 34 property StatNames <611 chars hash d6bd8dee30236a60390442f7006ec127> ["HP Regen","FP Regen","STM Regen","Combat Readiness","Melee Deflection","Ranged Deflection","Shield Deflection","Guard"
+unequip-main-hand 35 engine NuiSetBind <player>, 1, StatNames_RowCount, <json>
+unequip-main-hand 36 engine NuiSetBind <player>, 1, StatNames_RowVisibility, <json>
+unequip-main-hand 37 engine NuiSetBind <player>, 1, StatNames, <json>
+unequip-main-hand 38 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","20%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
+unequip-main-hand 39 engine NuiSetBind <player>, 1, StatValues_RowCount, <json>
+unequip-main-hand 40 engine NuiSetBind <player>, 1, StatValues_RowVisibility, <json>
+unequip-main-hand 41 engine NuiSetBind <player>, 1, StatValues, <json>
+unequip-main-hand 42 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
+unequip-main-hand 43 engine NuiSetBind <player>, 1, StatTooltips_RowCount, <json>
+unequip-main-hand 44 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, <json>
+unequip-main-hand 45 engine NuiSetBind <player>, 1, StatTooltips, <json>
+unequip-main-hand 46 property AttackDelay "1.92s"
+unequip-main-hand 47 engine NuiSetBind <player>, 1, AttackDelay, <json>
+unequip-main-hand 48 property AttackDelayTooltip "Est. Delay: 1.92s (3.67s attacker - 1.75s default)"
+unequip-main-hand 49 engine NuiSetBind <player>, 1, AttackDelayTooltip, <json>
+unequip-main-hand 50 property MainHandDMG "1 DMG"
+unequip-main-hand 51 engine NuiSetBind <player>, 1, MainHandDMG, <json>
+unequip-main-hand 52 property MainHandTooltip "Est. Damage: 2 - 3"
+unequip-main-hand 53 engine NuiSetBind <player>, 1, MainHandTooltip, <json>
+unequip-main-hand 54 property OffHandDMG "-"
+unequip-main-hand 55 engine NuiSetBind <player>, 1, OffHandDMG, <json>
+unequip-main-hand 56 property OffHandTooltip "Est. Damage: N/A"
+unequip-main-hand 57 engine NuiSetBind <player>, 1, OffHandTooltip, <json>
+unequip-main-hand 58 property Attack 275
+unequip-main-hand 59 engine NuiSetBind <player>, 1, Attack, <json>
+unequip-main-hand 60 property AttackTooltip "Physical attack rating used to scale weapon and physical ability damage."
+unequip-main-hand 61 engine NuiSetBind <player>, 1, AttackTooltip, <json>
+unequip-main-hand 62 property ForceAttack 268
+unequip-main-hand 63 engine NuiSetBind <player>, 1, ForceAttack, <json>
+unequip-main-hand 64 property PhysicalDefense 84
+unequip-main-hand 65 engine NuiSetBind <player>, 1, PhysicalDefense, <json>
+unequip-main-hand 66 property ForceDefense 78
+unequip-main-hand 67 engine NuiSetBind <player>, 1, ForceDefense, <json>
+unequip-main-hand 68 property WeaponAccuracy 271
+unequip-main-hand 69 engine NuiSetBind <player>, 1, WeaponAccuracy, <json>
+unequip-main-hand 70 property WeaponAccuracy 271
+unequip-main-hand 71 engine NuiSetBind <player>, 1, WeaponAccuracy, <json>
+unequip-main-hand 72 property OffHandAccuracy "-"
+unequip-main-hand 73 engine NuiSetBind <player>, 1, OffHandAccuracy, <json>
+unequip-main-hand 74 property ForceAccuracy 268
+unequip-main-hand 75 engine NuiSetBind <player>, 1, ForceAccuracy, <json>
+unequip-main-hand 76 property Evasion 218
+unequip-main-hand 77 engine NuiSetBind <player>, 1, Evasion, <json>
+unequip-main-hand 78 property ResistanceNames ["Fire","Poison","Electrical","Ice","Mind","Mobility","Trauma","Disruption"]
+unequip-main-hand 79 engine NuiSetBind <player>, 1, ResistanceNames_RowCount, <json>
+unequip-main-hand 80 engine NuiSetBind <player>, 1, ResistanceNames_RowVisibility, <json>
+unequip-main-hand 81 engine NuiSetBind <player>, 1, ResistanceNames, <json>
+unequip-main-hand 82 property ResistanceScores ["0","0","0","0","0","0","0","0"]
+unequip-main-hand 83 engine NuiSetBind <player>, 1, ResistanceScores_RowCount, <json>
+unequip-main-hand 84 engine NuiSetBind <player>, 1, ResistanceScores_RowVisibility, <json>
+unequip-main-hand 85 engine NuiSetBind <player>, 1, ResistanceScores, <json>
+unequip-main-hand 86 property ResistanceDamageTaken ["100% taken","100% taken","100% taken","100% taken","100% taken","100% taken","100% taken","100% taken"]
+unequip-main-hand 87 engine NuiSetBind <player>, 1, ResistanceDamageTaken_RowCount, <json>
+unequip-main-hand 88 engine NuiSetBind <player>, 1, ResistanceDamageTaken_RowVisibility, <json>
+unequip-main-hand 89 engine NuiSetBind <player>, 1, ResistanceDamageTaken, <json>
+unequip-main-hand 90 property ResistanceStatusDurations ["Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration","Full Duration"]
+unequip-main-hand 91 engine NuiSetBind <player>, 1, ResistanceStatusDurations_RowCount, <json>
+unequip-main-hand 92 engine NuiSetBind <player>, 1, ResistanceStatusDurations_RowVisibility, <json>
+unequip-main-hand 93 engine NuiSetBind <player>, 1, ResistanceStatusDurations, <json>
+unequip-main-hand 94 property CraftNames ["Smithery","Fabrication","Agriculture","Engineering","Espionage"]
+unequip-main-hand 95 engine NuiSetBind <player>, 1, CraftNames_RowCount, <json>
+unequip-main-hand 96 engine NuiSetBind <player>, 1, CraftNames_RowVisibility, <json>
+unequip-main-hand 97 engine NuiSetBind <player>, 1, CraftNames, <json>
+unequip-main-hand 98 property CraftControls ["0","0","0","0","0"]
+unequip-main-hand 99 engine NuiSetBind <player>, 1, CraftControls_RowCount, <json>
+unequip-main-hand 100 engine NuiSetBind <player>, 1, CraftControls_RowVisibility, <json>
+unequip-main-hand 101 engine NuiSetBind <player>, 1, CraftControls, <json>
+unequip-main-hand 102 property CraftCraftsmanship ["0","0","0","0","0"]
+unequip-main-hand 103 engine NuiSetBind <player>, 1, CraftCraftsmanship_RowCount, <json>
+unequip-main-hand 104 engine NuiSetBind <player>, 1, CraftCraftsmanship_RowVisibility, <json>
+unequip-main-hand 105 engine NuiSetBind <player>, 1, CraftCraftsmanship, <json>
+unequip-main-hand 106 property Control "0/0/0/0/0"
+unequip-main-hand 107 engine NuiSetBind <player>, 1, Control, <json>
+unequip-main-hand 108 property Craftsmanship "0/0/0/0/0"
+unequip-main-hand 109 engine NuiSetBind <player>, 1, Craftsmanship, <json>
+unequip-main-hand 110 property StatNames <611 chars hash d6bd8dee30236a60390442f7006ec127> ["HP Regen","FP Regen","STM Regen","Combat Readiness","Melee Deflection","Ranged Deflection","Shield Deflection","Guard"
+unequip-main-hand 111 engine NuiSetBind <player>, 1, StatNames_RowCount, <json>
+unequip-main-hand 112 engine NuiSetBind <player>, 1, StatNames_RowVisibility, <json>
+unequip-main-hand 113 engine NuiSetBind <player>, 1, StatNames, <json>
+unequip-main-hand 114 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","20%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
+unequip-main-hand 115 engine NuiSetBind <player>, 1, StatValues_RowCount, <json>
+unequip-main-hand 116 engine NuiSetBind <player>, 1, StatValues_RowVisibility, <json>
+unequip-main-hand 117 engine NuiSetBind <player>, 1, StatValues, <json>
+unequip-main-hand 118 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
+unequip-main-hand 119 engine NuiSetBind <player>, 1, StatTooltips_RowCount, <json>
+unequip-main-hand 120 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, <json>
+unequip-main-hand 121 engine NuiSetBind <player>, 1, StatTooltips, <json>
+unequip-main-hand 122 service IGuiService.PublishRefreshEvent <player>, {}, 2130706432
+unequip-main-hand 123 state carried nw_wswss001|NW_WSWSS001|1
+unequip-main-hand 124 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
+unequip-main-hand 125 state feats 2,3,4,10,28,32,45,46,106,258,1089
+unequip-main-hand 126 state quickbar 0=10:1:;1=10:0:;2=4:28:
+stats-tab-after-unequip 1 step
+stats-tab-after-unequip 2 property SelectedTabId 1
+stats-tab-after-unequip 3 engine NuiSetBind <player>, 1, SelectedTabId, <json>
+stats-tab-after-unequip 4 property TopTabId 1
+stats-tab-after-unequip 5 engine NuiSetBind <player>, 1, TopTabId, <json>
+stats-tab-after-unequip 6 property BottomTabId -1
+stats-tab-after-unequip 7 engine NuiSetBind <player>, 1, BottomTabId, <json>
+stats-tab-after-unequip 8 property StatNames <611 chars hash d6bd8dee30236a60390442f7006ec127> ["HP Regen","FP Regen","STM Regen","Combat Readiness","Melee Deflection","Ranged Deflection","Shield Deflection","Guard"
+stats-tab-after-unequip 9 engine NuiSetBind <player>, 1, StatNames_RowCount, <json>
+stats-tab-after-unequip 10 engine NuiSetBind <player>, 1, StatNames_RowVisibility, <json>
+stats-tab-after-unequip 11 engine NuiSetBind <player>, 1, StatNames, <json>
+stats-tab-after-unequip 12 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","20%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
+stats-tab-after-unequip 13 engine NuiSetBind <player>, 1, StatValues_RowCount, <json>
+stats-tab-after-unequip 14 engine NuiSetBind <player>, 1, StatValues_RowVisibility, <json>
+stats-tab-after-unequip 15 engine NuiSetBind <player>, 1, StatValues, <json>
+stats-tab-after-unequip 16 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
+stats-tab-after-unequip 17 engine NuiSetBind <player>, 1, StatTooltips_RowCount, <json>
+stats-tab-after-unequip 18 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, <json>
+stats-tab-after-unequip 19 engine NuiSetBind <player>, 1, StatTooltips, <json>
+stats-tab-after-unequip 20 engine NuiSetGroupLayout <player>, 1, _window_, <json>
+stats-tab-after-unequip 21 engine NuiSetBind <player>, 1, Geometry, <json>
+stats-tab-after-unequip 22 property Name "Civilian"
+stats-tab-after-unequip 23 engine NuiSetBind <player>, 1, Name, <json>
+stats-tab-after-unequip 24 property Race "Human"
+stats-tab-after-unequip 25 engine NuiSetBind <player>, 1, Race, <json>
+stats-tab-after-unequip 26 property IsPlayerMode true
+stats-tab-after-unequip 27 engine NuiSetBind <player>, 1, IsPlayerMode, <json>
+stats-tab-after-unequip 28 property CharacterType "Force Sensitive"
+stats-tab-after-unequip 29 engine NuiSetBind <player>, 1, CharacterType, <json>
+stats-tab-after-unequip 30 property PortraitResref "po_hu_f_m02_l"
+stats-tab-after-unequip 31 engine NuiSetBind <player>, 1, PortraitResref, <json>
+stats-tab-after-unequip 32 property HP "3 / 3"
+stats-tab-after-unequip 33 engine NuiSetBind <player>, 1, HP, <json>
+stats-tab-after-unequip 34 property FP "9999 / 10030"
+stats-tab-after-unequip 35 engine NuiSetBind <player>, 1, FP, <json>
+stats-tab-after-unequip 36 property STM "9999 / 10025"
+stats-tab-after-unequip 37 engine NuiSetBind <player>, 1, STM, <json>
+stats-tab-after-unequip 38 property SkillRanks "1450 / 400"
+stats-tab-after-unequip 39 engine NuiSetBind <player>, 1, SkillRanks, <json>
+stats-tab-after-unequip 40 property ShowSkillRanks true
+stats-tab-after-unequip 41 engine NuiSetBind <player>, 1, ShowSkillRanks, <json>
+stats-tab-after-unequip 42 property SP "410 / 410 (120)"
+stats-tab-after-unequip 43 engine NuiSetBind <player>, 1, SP, <json>
+stats-tab-after-unequip 44 property ShowSP true
+stats-tab-after-unequip 45 engine NuiSetBind <player>, 1, ShowSP, <json>
+stats-tab-after-unequip 46 property APOrLevelTooltip "Increase attributes."
+stats-tab-after-unequip 47 engine NuiSetBind <player>, 1, APOrLevelTooltip, <json>
+stats-tab-after-unequip 48 property APOrLevelLabel "AP"
+stats-tab-after-unequip 49 engine NuiSetBind <player>, 1, APOrLevelLabel, <json>
+stats-tab-after-unequip 50 property APOrLevel "0 / 40 (0)"
+stats-tab-after-unequip 51 engine NuiSetBind <player>, 1, APOrLevel, <json>
+stats-tab-after-unequip 52 property ShowAPOrLevel true
+stats-tab-after-unequip 53 engine NuiSetBind <player>, 1, ShowAPOrLevel, <json>
+stats-tab-after-unequip 54 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
+stats-tab-after-unequip 55 engine NuiSetBind <player>, 1, StatTooltips_RowCount, <json>
+stats-tab-after-unequip 56 engine NuiSetBind <player>, 1, StatTooltips_RowVisibility, <json>
+stats-tab-after-unequip 57 engine NuiSetBind <player>, 1, StatTooltips, <json>
+stats-tab-after-unequip 58 property StatNames <611 chars hash d6bd8dee30236a60390442f7006ec127> ["HP Regen","FP Regen","STM Regen","Combat Readiness","Melee Deflection","Ranged Deflection","Shield Deflection","Guard"
+stats-tab-after-unequip 59 engine NuiSetBind <player>, 1, StatNames_RowCount, <json>
+stats-tab-after-unequip 60 engine NuiSetBind <player>, 1, StatNames_RowVisibility, <json>
+stats-tab-after-unequip 61 engine NuiSetBind <player>, 1, StatNames, <json>
+stats-tab-after-unequip 62 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","20%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
+stats-tab-after-unequip 63 engine NuiSetBind <player>, 1, StatValues_RowCount, <json>
+stats-tab-after-unequip 64 engine NuiSetBind <player>, 1, StatValues_RowVisibility, <json>
+stats-tab-after-unequip 65 engine NuiSetBind <player>, 1, StatValues, <json>
+stats-tab-after-unequip 66 property IsTechniquesEnabled true
+stats-tab-after-unequip 67 engine NuiSetBind <player>, 1, IsTechniquesEnabled, <json>
+stats-tab-after-unequip 68 state carried nw_wswss001|NW_WSWSS001|1
+stats-tab-after-unequip 69 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
+stats-tab-after-unequip 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
+stats-tab-after-unequip 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
 close-self 1 step
 close-self 2 engine NuiDestroy <player>, 1
-close-self 3 state carried
-close-self 4 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
+close-self 3 state carried nw_wswss001|NW_WSWSS001|1
+close-self 4 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 close-self 5 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-self 6 state quickbar 0=10:1:;1=10:0:;2=4:28:
-close-self 7 state record WindowGeometries.CharacterSheet.Height 462.0
+close-self 7 state record WindowGeometries.CharacterSheet.Height 461.0
 open-npc 1 step
 open-npc 2 engine NuiCreate <player>, <json>, GUI_WINDOW_CharacterSheet
 open-npc 3 engine NuiSetBind <player>, 2, Geometry, <json>
@@ -2216,15 +2287,15 @@ open-npc 181 property MainHandTooltip "Est. Damage: 2 - 3"
 open-npc 182 engine NuiSetBind <player>, 2, MainHandTooltip, <json>
 open-npc 183 property MainHandDMG "1 DMG"
 open-npc 184 engine NuiSetBind <player>, 2, MainHandDMG, <json>
-open-npc 185 property OffHandTooltip "Est. Damage: 2 - 3"
+open-npc 185 property OffHandTooltip "Est. Damage: N/A"
 open-npc 186 engine NuiSetBind <player>, 2, OffHandTooltip, <json>
-open-npc 187 property OffHandDMG "1 DMG"
+open-npc 187 property OffHandDMG "-"
 open-npc 188 engine NuiSetBind <player>, 2, OffHandDMG, <json>
-open-npc 189 property AttackDelayTooltip "Est. Delay: 3.83s (5.58s attacker - 1.75s default) | 2 attacks per cycle, about 1.92s each (Delay 220 main + 220 off)"
+open-npc 189 property AttackDelayTooltip "Est. Delay: 1.92s (3.67s attacker - 1.75s default)"
 open-npc 190 engine NuiSetBind <player>, 2, AttackDelayTooltip, <json>
-open-npc 191 property AttackDelay "3.83s"
+open-npc 191 property AttackDelay "1.92s"
 open-npc 192 engine NuiSetBind <player>, 2, AttackDelay, <json>
-open-npc 193 property AttackTooltip "Physical attack rating used to scale weapon and physical ability damage. Off hand: 275."
+open-npc 193 property AttackTooltip "Physical attack rating used to scale weapon and physical ability damage."
 open-npc 194 engine NuiSetBind <player>, 2, AttackTooltip, <json>
 open-npc 195 property Attack 275
 open-npc 196 engine NuiSetBind <player>, 2, Attack, <json>
@@ -2232,7 +2303,7 @@ open-npc 197 property ForceAttack 268
 open-npc 198 engine NuiSetBind <player>, 2, ForceAttack, <json>
 open-npc 199 property WeaponAccuracy 271
 open-npc 200 engine NuiSetBind <player>, 2, WeaponAccuracy, <json>
-open-npc 201 property OffHandAccuracy "271"
+open-npc 201 property OffHandAccuracy "-"
 open-npc 202 engine NuiSetBind <player>, 2, OffHandAccuracy, <json>
 open-npc 203 property ForceAccuracy 268
 open-npc 204 engine NuiSetBind <player>, 2, ForceAccuracy, <json>
@@ -2366,11 +2437,11 @@ open-npc 331 engine NuiSetBind <player>, 2, TopTabId, <json>
 open-npc 332 engine NuiSetBindWatch <player>, 2, TopTabId, True
 open-npc 333 engine NuiSetBind <player>, 2, BottomTabId, <json>
 open-npc 334 engine NuiSetBindWatch <player>, 2, BottomTabId, True
-open-npc 335 state carried
-open-npc 336 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
+open-npc 335 state carried nw_wswss001|NW_WSWSS001|1
+open-npc 336 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 open-npc 337 state feats 2,3,4,10,28,32,45,46,106,258,1089
 open-npc 338 state quickbar 0=10:1:;1=10:0:;2=4:28:
-open-npc 339 state record WindowGeometries.CharacterSheet.Height 463.0
+open-npc 339 state record WindowGeometries.CharacterSheet.Height 462.0
 npc-tab-1 1 step
 npc-tab-1 2 property SelectedTabId 1
 npc-tab-1 3 engine NuiSetBind <player>, 2, SelectedTabId, <json>
@@ -2438,8 +2509,8 @@ npc-tab-1 64 engine NuiSetBind <player>, 2, StatValues_RowVisibility, <json>
 npc-tab-1 65 engine NuiSetBind <player>, 2, StatValues, <json>
 npc-tab-1 66 property IsTechniquesEnabled true
 npc-tab-1 67 engine NuiSetBind <player>, 2, IsTechniquesEnabled, <json>
-npc-tab-1 68 state carried
-npc-tab-1 69 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
+npc-tab-1 68 state carried nw_wswss001|NW_WSWSS001|1
+npc-tab-1 69 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 npc-tab-1 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
 npc-tab-1 71 state quickbar 0=10:1:;1=10:0:;2=4:28:
 npc-tab-2 1 step
@@ -2517,8 +2588,8 @@ npc-tab-2 72 engine NuiSetBind <player>, 2, ResistanceStatusDurations_RowVisibil
 npc-tab-2 73 engine NuiSetBind <player>, 2, ResistanceStatusDurations, <json>
 npc-tab-2 74 property IsTechniquesEnabled true
 npc-tab-2 75 engine NuiSetBind <player>, 2, IsTechniquesEnabled, <json>
-npc-tab-2 76 state carried
-npc-tab-2 77 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
+npc-tab-2 76 state carried nw_wswss001|NW_WSWSS001|1
+npc-tab-2 77 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 npc-tab-2 78 state feats 2,3,4,10,28,32,45,46,106,258,1089
 npc-tab-2 79 state quickbar 0=10:1:;1=10:0:;2=4:28:
 npc-tab-3 1 step
@@ -2592,8 +2663,8 @@ npc-tab-3 68 engine NuiSetBind <player>, 2, CraftCraftsmanship_RowVisibility, <j
 npc-tab-3 69 engine NuiSetBind <player>, 2, CraftCraftsmanship, <json>
 npc-tab-3 70 property IsTechniquesEnabled true
 npc-tab-3 71 engine NuiSetBind <player>, 2, IsTechniquesEnabled, <json>
-npc-tab-3 72 state carried
-npc-tab-3 73 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
+npc-tab-3 72 state carried nw_wswss001|NW_WSWSS001|1
+npc-tab-3 73 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 npc-tab-3 74 state feats 2,3,4,10,28,32,45,46,106,258,1089
 npc-tab-3 75 state quickbar 0=10:1:;1=10:0:;2=4:28:
 npc-tab-0 1 step
@@ -2693,17 +2764,17 @@ npc-tab-0 94 property ForceDefense 20
 npc-tab-0 95 engine NuiSetBind <player>, 2, ForceDefense, <json>
 npc-tab-0 96 property IsTechniquesEnabled true
 npc-tab-0 97 engine NuiSetBind <player>, 2, IsTechniquesEnabled, <json>
-npc-tab-0 98 state carried
-npc-tab-0 99 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
+npc-tab-0 98 state carried nw_wswss001|NW_WSWSS001|1
+npc-tab-0 99 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 npc-tab-0 100 state feats 2,3,4,10,28,32,45,46,106,258,1089
 npc-tab-0 101 state quickbar 0=10:1:;1=10:0:;2=4:28:
 close-npc 1 step
 close-npc 2 engine NuiDestroy <player>, 2
-close-npc 3 state carried
-close-npc 4 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
+close-npc 3 state carried nw_wswss001|NW_WSWSS001|1
+close-npc 4 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 close-npc 5 state feats 2,3,4,10,28,32,45,46,106,258,1089
 close-npc 6 state quickbar 0=10:1:;1=10:0:;2=4:28:
-close-npc 7 state record WindowGeometries.CharacterSheet.Height 468.0
+close-npc 7 state record WindowGeometries.CharacterSheet.Height 467.0
 open-high-resource 1 step
 open-high-resource 2 engine NuiCreate <player>, <json>, GUI_WINDOW_CharacterSheet
 open-high-resource 3 engine NuiSetBind <player>, 3, Geometry, <json>
@@ -2964,29 +3035,29 @@ open-high-resource 257 property StatNames <611 chars hash d6bd8dee30236a60390442
 open-high-resource 258 engine NuiSetBind <player>, 3, StatNames_RowCount, <json>
 open-high-resource 259 engine NuiSetBind <player>, 3, StatNames_RowVisibility, <json>
 open-high-resource 260 engine NuiSetBind <player>, 3, StatNames, <json>
-open-high-resource 261 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
+open-high-resource 261 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","20%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
 open-high-resource 262 engine NuiSetBind <player>, 3, StatValues_RowCount, <json>
 open-high-resource 263 engine NuiSetBind <player>, 3, StatValues_RowVisibility, <json>
 open-high-resource 264 engine NuiSetBind <player>, 3, StatValues, <json>
-open-high-resource 265 property StatTooltips <3905 chars hash 037d59fc9b29446a03f584d82d8a3fbf> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
+open-high-resource 265 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
 open-high-resource 266 engine NuiSetBind <player>, 3, StatTooltips_RowCount, <json>
 open-high-resource 267 engine NuiSetBind <player>, 3, StatTooltips_RowVisibility, <json>
 open-high-resource 268 engine NuiSetBind <player>, 3, StatTooltips, <json>
-open-high-resource 269 property AttackDelay "3.83s"
+open-high-resource 269 property AttackDelay "1.92s"
 open-high-resource 270 engine NuiSetBind <player>, 3, AttackDelay, <json>
-open-high-resource 271 property AttackDelayTooltip "Est. Delay: 3.83s (5.58s attacker - 1.75s default) | 2 attacks per cycle, about 1.92s each (Delay 220 main + 220 off)"
+open-high-resource 271 property AttackDelayTooltip "Est. Delay: 1.92s (3.67s attacker - 1.75s default)"
 open-high-resource 272 engine NuiSetBind <player>, 3, AttackDelayTooltip, <json>
 open-high-resource 273 property MainHandDMG "1 DMG"
 open-high-resource 274 engine NuiSetBind <player>, 3, MainHandDMG, <json>
 open-high-resource 275 property MainHandTooltip "Est. Damage: 2 - 3"
 open-high-resource 276 engine NuiSetBind <player>, 3, MainHandTooltip, <json>
-open-high-resource 277 property OffHandDMG "1 DMG"
+open-high-resource 277 property OffHandDMG "-"
 open-high-resource 278 engine NuiSetBind <player>, 3, OffHandDMG, <json>
-open-high-resource 279 property OffHandTooltip "Est. Damage: 2 - 3"
+open-high-resource 279 property OffHandTooltip "Est. Damage: N/A"
 open-high-resource 280 engine NuiSetBind <player>, 3, OffHandTooltip, <json>
 open-high-resource 281 property Attack 275
 open-high-resource 282 engine NuiSetBind <player>, 3, Attack, <json>
-open-high-resource 283 property AttackTooltip "Physical attack rating used to scale weapon and physical ability damage. Off hand: 275."
+open-high-resource 283 property AttackTooltip "Physical attack rating used to scale weapon and physical ability damage."
 open-high-resource 284 engine NuiSetBind <player>, 3, AttackTooltip, <json>
 open-high-resource 285 property ForceAttack 268
 open-high-resource 286 engine NuiSetBind <player>, 3, ForceAttack, <json>
@@ -2998,7 +3069,7 @@ open-high-resource 291 property WeaponAccuracy 271
 open-high-resource 292 engine NuiSetBind <player>, 3, WeaponAccuracy, <json>
 open-high-resource 293 property WeaponAccuracy 271
 open-high-resource 294 engine NuiSetBind <player>, 3, WeaponAccuracy, <json>
-open-high-resource 295 property OffHandAccuracy "271"
+open-high-resource 295 property OffHandAccuracy "-"
 open-high-resource 296 engine NuiSetBind <player>, 3, OffHandAccuracy, <json>
 open-high-resource 297 property ForceAccuracy 268
 open-high-resource 298 engine NuiSetBind <player>, 3, ForceAccuracy, <json>
@@ -3040,11 +3111,11 @@ open-high-resource 333 property StatNames <611 chars hash d6bd8dee30236a60390442
 open-high-resource 334 engine NuiSetBind <player>, 3, StatNames_RowCount, <json>
 open-high-resource 335 engine NuiSetBind <player>, 3, StatNames_RowVisibility, <json>
 open-high-resource 336 engine NuiSetBind <player>, 3, StatNames, <json>
-open-high-resource 337 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
+open-high-resource 337 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","20%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
 open-high-resource 338 engine NuiSetBind <player>, 3, StatValues_RowCount, <json>
 open-high-resource 339 engine NuiSetBind <player>, 3, StatValues_RowVisibility, <json>
 open-high-resource 340 engine NuiSetBind <player>, 3, StatValues, <json>
-open-high-resource 341 property StatTooltips <3905 chars hash 037d59fc9b29446a03f584d82d8a3fbf> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
+open-high-resource 341 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
 open-high-resource 342 engine NuiSetBind <player>, 3, StatTooltips_RowCount, <json>
 open-high-resource 343 engine NuiSetBind <player>, 3, StatTooltips_RowVisibility, <json>
 open-high-resource 344 engine NuiSetBind <player>, 3, StatTooltips, <json>
@@ -3058,14 +3129,14 @@ open-high-resource 351 engine NuiSetBind <player>, 3, TopTabId, <json>
 open-high-resource 352 engine NuiSetBindWatch <player>, 3, TopTabId, True
 open-high-resource 353 engine NuiSetBind <player>, 3, BottomTabId, <json>
 open-high-resource 354 engine NuiSetBindWatch <player>, 3, BottomTabId, True
-open-high-resource 355 state carried
-open-high-resource 356 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
+open-high-resource 355 state carried nw_wswss001|NW_WSWSS001|1
+open-high-resource 356 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 open-high-resource 357 state feats 2,3,4,10,28,32,45,46,106,258,1089
 open-high-resource 358 state quickbar 0=10:1:;1=10:0:;2=4:28:
 open-high-resource 359 state record MaxFP 90000
 open-high-resource 360 state record MaxHP 60000
 open-high-resource 361 state record MaxStamina 90000
-open-high-resource 362 state record WindowGeometries.CharacterSheet.Height 469.0
+open-high-resource 362 state record WindowGeometries.CharacterSheet.Height 468.0
 high-resource-stats 1 step
 high-resource-stats 2 property SelectedTabId 1
 high-resource-stats 3 engine NuiSetBind <player>, 3, SelectedTabId, <json>
@@ -3077,11 +3148,11 @@ high-resource-stats 8 property StatNames <611 chars hash d6bd8dee30236a60390442f
 high-resource-stats 9 engine NuiSetBind <player>, 3, StatNames_RowCount, <json>
 high-resource-stats 10 engine NuiSetBind <player>, 3, StatNames_RowVisibility, <json>
 high-resource-stats 11 engine NuiSetBind <player>, 3, StatNames, <json>
-high-resource-stats 12 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
+high-resource-stats 12 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","20%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
 high-resource-stats 13 engine NuiSetBind <player>, 3, StatValues_RowCount, <json>
 high-resource-stats 14 engine NuiSetBind <player>, 3, StatValues_RowVisibility, <json>
 high-resource-stats 15 engine NuiSetBind <player>, 3, StatValues, <json>
-high-resource-stats 16 property StatTooltips <3905 chars hash 037d59fc9b29446a03f584d82d8a3fbf> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
+high-resource-stats 16 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
 high-resource-stats 17 engine NuiSetBind <player>, 3, StatTooltips_RowCount, <json>
 high-resource-stats 18 engine NuiSetBind <player>, 3, StatTooltips_RowVisibility, <json>
 high-resource-stats 19 engine NuiSetBind <player>, 3, StatTooltips, <json>
@@ -3119,7 +3190,7 @@ high-resource-stats 50 property APOrLevel "0 / 40 (0)"
 high-resource-stats 51 engine NuiSetBind <player>, 3, APOrLevel, <json>
 high-resource-stats 52 property ShowAPOrLevel true
 high-resource-stats 53 engine NuiSetBind <player>, 3, ShowAPOrLevel, <json>
-high-resource-stats 54 property StatTooltips <3905 chars hash 037d59fc9b29446a03f584d82d8a3fbf> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
+high-resource-stats 54 property StatTooltips <3890 chars hash e0178b1cff49bf24d0e67e9fd2507406> ["Amount of HP restored automatically by natural regeneration.","Amount of FP restored automatically by natural regenera
 high-resource-stats 55 engine NuiSetBind <player>, 3, StatTooltips_RowCount, <json>
 high-resource-stats 56 engine NuiSetBind <player>, 3, StatTooltips_RowVisibility, <json>
 high-resource-stats 57 engine NuiSetBind <player>, 3, StatTooltips, <json>
@@ -3127,13 +3198,13 @@ high-resource-stats 58 property StatNames <611 chars hash d6bd8dee30236a60390442
 high-resource-stats 59 engine NuiSetBind <player>, 3, StatNames_RowCount, <json>
 high-resource-stats 60 engine NuiSetBind <player>, 3, StatNames_RowVisibility, <json>
 high-resource-stats 61 engine NuiSetBind <player>, 3, StatNames, <json>
-high-resource-stats 62 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
+high-resource-stats 62 property StatValues ["16","3","14","0%","0%","0%","0%","0%","20%","100%","100%","0%","0%","0%","0%","0%","0%","0%","10%","0%","5%","28","0%","0%","0%","0%","0%","0%","0%","0%","0%","20%","0%","Inactive","Inactive","1.25x","0%","0","23","20","0%"]
 high-resource-stats 63 engine NuiSetBind <player>, 3, StatValues_RowCount, <json>
 high-resource-stats 64 engine NuiSetBind <player>, 3, StatValues_RowVisibility, <json>
 high-resource-stats 65 engine NuiSetBind <player>, 3, StatValues, <json>
 high-resource-stats 66 property IsTechniquesEnabled true
 high-resource-stats 67 engine NuiSetBind <player>, 3, IsTechniquesEnabled, <json>
-high-resource-stats 68 state carried
-high-resource-stats 69 state worn Chest=farmer_outfit002;RightHand=nw_wswss001;LeftHand=nw_wswss001
+high-resource-stats 68 state carried nw_wswss001|NW_WSWSS001|1
+high-resource-stats 69 state worn Chest=farmer_outfit002;RightHand=nw_wswss001
 high-resource-stats 70 state feats 2,3,4,10,28,32,45,46,106,258,1089
 high-resource-stats 71 state quickbar 0=10:1:;1=10:0:;2=4:28:

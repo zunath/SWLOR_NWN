@@ -253,7 +253,7 @@ SWLOR.Game.Server.EngineTests/Definitions/UnarmedMasteryEngineTests.cs | 67
 SWLOR.Game.Server.EngineTests/Definitions/UnnervingRoarEngineTests.cs | 11
 SWLOR.Game.Server.EngineTests/Definitions/VelesSewerEngineTests.cs | 3
 SWLOR.Game.Server.EngineTests/Definitions/VelesSewersSpawnReachabilityEngineTests.cs | 1
-SWLOR.Game.Server.EngineTests/Definitions/ViewModelBindingTranscriptEngineTests.cs | 15
+SWLOR.Game.Server.EngineTests/Definitions/ViewModelBindingTranscriptEngineTests.cs | 16
 SWLOR.Game.Server.EngineTests/Definitions/VisorAppearanceMigrationEngineTests.cs | 4
 SWLOR.Game.Server.EngineTests/Definitions/VitalityHitPointsEngineTests.cs | 1
 SWLOR.Game.Server.EngineTests/Definitions/WalkModeEngineTests.cs | 26

@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.NWN.API.NWNX;
@@ -605,14 +606,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     incubator.OnWindowClosed()();
                     Gui.ClosePlayerWindow(run.Player, GuiWindowType.Incubator);
                 });
-                run.Check(!string.IsNullOrWhiteSpace((string)Get(incubator, "_dnaItem")), "The DNA stays held when the inventory is full.");
+                run.Check(!string.IsNullOrWhiteSpace(((IIncubatorHost)incubator).Session.DnaItem), "The DNA stays held when the inventory is full.");
             });
             await run.Context.ExecuteInCreatureContextAsync(run.Player, () => FullInventoryFixture.Free(fillers));
             await run.Context.WaitFrameAsync();
             await run.PhaseAsync(() =>
             {
                 t.Step("reopen-with-held-items", () => incubator = t.Open<IncubatorViewModel>(GuiWindowType.Incubator, payload));
-                run.Check(!string.IsNullOrWhiteSpace((string)Get(incubator, "_dnaItem")), "The held DNA is in the slot after the window opens again.");
+                run.Check(!string.IsNullOrWhiteSpace(((IIncubatorHost)incubator).Session.DnaItem), "The held DNA is in the slot after the window opens again.");
             });
         }
 

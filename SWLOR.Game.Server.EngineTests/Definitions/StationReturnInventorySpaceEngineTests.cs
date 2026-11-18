@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition.IncubatorWindow;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI;
@@ -144,31 +145,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     var model = OpenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
-                    Set(model, "_dnaItem", SerializeNewItem(ctx, Dna));
-                    Set(model, "_hydrolaseItem", SerializeNewItem(ctx, Hydrolase));
-                    Call(model, "RestoreHeldItems");
+                    ((IIncubatorHost)model).Session.DnaItem = SerializeNewItem(ctx, Dna);
+                    ((IIncubatorHost)model).Session.HydrolaseItem = SerializeNewItem(ctx, Hydrolase);
+                    ((IncubatorItemService)Get(model, "IncubatorItemService")).RestoreHeldItems((IIncubatorHost)model);
 
                     var fillers = Fill(ctx, player);
                     var carried = Snapshot(player);
                     model.OnClickHydrolase()();
                     model.OnModalConfirmClick()();
-                    ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_hydrolaseItem")), "A removed enzyme without room stays");
+                    ctx.Assert(!string.IsNullOrEmpty(((IIncubatorHost)model).Session.HydrolaseItem), "A removed enzyme without room stays");
 
                     model.OnClickDNA()();
                     model.OnModalConfirmClick()();
-                    ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_dnaItem")), "The DNA stays while its enzyme does");
+                    ctx.Assert(!string.IsNullOrEmpty(((IIncubatorHost)model).Session.DnaItem), "The DNA stays while its enzyme does");
 
                     model.OnWindowClosed()();
                     model = ReopenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, payload);
                     AssertCarriedIntact(ctx, player, carried);
-                    ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_dnaItem")) && !string.IsNullOrEmpty((string)Get(model, "_hydrolaseItem")),
+                    ctx.Assert(!string.IsNullOrEmpty(((IIncubatorHost)model).Session.DnaItem) && !string.IsNullOrEmpty(((IIncubatorHost)model).Session.HydrolaseItem),
                         "A closed incubator keeps the items that did not fit");
                     ctx.Assert(model.DNAItemResref != "Blank" && model.HydrolaseItemResref != "Blank",
                         "The reopened incubator shows the kept items");
 
                     ReopenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, otherPayload);
                     ctx.Assert(!Gui.IsWindowOpen(player, GuiWindowType.Incubator), "Another incubator does not open while it would take the kept items");
-                    ctx.Assert(!string.IsNullOrEmpty((string)Get(model, "_dnaItem")), "The first incubator keeps its items");
+                    ctx.Assert(!string.IsNullOrEmpty(((IIncubatorHost)model).Session.DnaItem), "The first incubator keeps its items");
                     AssertCarriedIntact(ctx, player, carried);
                     Free(fillers);
                 });
@@ -176,17 +177,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
                 {
                     var model = OpenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, otherPayload);
-                    ctx.Assert(string.IsNullOrEmpty((string)Get(model, "_dnaItem")) && string.IsNullOrEmpty((string)Get(model, "_hydrolaseItem")),
+                    ctx.Assert(string.IsNullOrEmpty(((IIncubatorHost)model).Session.DnaItem) && string.IsNullOrEmpty(((IIncubatorHost)model).Session.HydrolaseItem),
                         "Opening another incubator with room returns the kept items");
                     ctx.AssertEqual(1, CountCarried(player, Dna), "The kept DNA returns to the inventory");
                     ctx.AssertEqual(1, CountCarried(player, Hydrolase), "The kept enzyme returns to the inventory");
 
-                    Set(model, "_dnaItem", SerializeNewItem(ctx, Dna));
-                    Set(model, "_hydrolaseItem", SerializeNewItem(ctx, Hydrolase));
-                    Call(model, "RestoreHeldItems");
+                    ((IIncubatorHost)model).Session.DnaItem = SerializeNewItem(ctx, Dna);
+                    ((IIncubatorHost)model).Session.HydrolaseItem = SerializeNewItem(ctx, Hydrolase);
+                    ((IncubatorItemService)Get(model, "IncubatorItemService")).RestoreHeldItems((IIncubatorHost)model);
                     model.OnClickDNA()();
                     model.OnModalConfirmClick()();
-                    ctx.Assert(string.IsNullOrEmpty((string)Get(model, "_dnaItem")) && string.IsNullOrEmpty((string)Get(model, "_hydrolaseItem")),
+                    ctx.Assert(string.IsNullOrEmpty(((IIncubatorHost)model).Session.DnaItem) && string.IsNullOrEmpty(((IIncubatorHost)model).Session.HydrolaseItem),
                         "Removing the DNA with room returns everything");
                     ctx.AssertEqual(2, CarriedStackTotal(player, Dna), "The DNA returns to the inventory");
                     ctx.AssertEqual(2, CarriedStackTotal(player, Hydrolase), "The enzyme returns to the inventory");
@@ -215,8 +216,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Call(droid, "AddPart", Droid.LoadDroidPartItemPropertyDetails(cpu), cpu);
 
                     var incubator = OpenWindow<IncubatorViewModel>(fixture, GuiWindowType.Incubator, incubatorPayload);
-                    Set(incubator, "_dnaItem", SerializeNewItem(ctx, Dna));
-                    Call(incubator, "RestoreHeldItems");
+                    ((IIncubatorHost)incubator).Session.DnaItem = SerializeNewItem(ctx, Dna);
+                    ((IncubatorItemService)Get(incubator, "IncubatorItemService")).RestoreHeldItems((IIncubatorHost)incubator);
                 });
                 await ctx.WaitFrameAsync();
                 await ctx.ExecuteInCreatureContextAsync(player, () =>
@@ -227,7 +228,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     Gui.ClosePlayerWindow(player, GuiWindowType.Incubator);
                     ctx.Assert(string.IsNullOrEmpty((string)Get(droid, "_cpuItem")), "A server close returns the droid parts");
                     ctx.AssertEqual(1, CountCarried(player, Cpu), "The CPU reaches the inventory");
-                    ctx.Assert(string.IsNullOrEmpty((string)Get(incubator, "_dnaItem")), "A server close returns the incubator items");
+                    ctx.Assert(string.IsNullOrEmpty(((IIncubatorHost)incubator).Session.DnaItem), "A server close returns the incubator items");
                     ctx.AssertEqual(1, CountCarried(player, Dna), "The DNA reaches the inventory");
                 });
             }

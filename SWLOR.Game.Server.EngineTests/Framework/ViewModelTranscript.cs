@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;
@@ -76,7 +77,9 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         {
             Baseline();
             _scopes.Add(Activate());
-            _scopes.Add(CompositionRoot.InstallForTests(new SpyProvider(CompositionRoot.ServerHost.Provider, this)));
+            var spies = new SpyProvider(CompositionRoot.ServerHost.Provider, this);
+            _content = (IContentFactory)spies.GetService(typeof(IContentFactory));
+            _scopes.Add(CompositionRoot.InstallForTests(spies));
             _scopes.Add(NWScriptRuntime.Override(Spy<INWScript>(NWScriptRuntime.Current, name => NWScriptNames.Contains(name))));
             _scopes.Add(EventsPluginRuntime.Override(Spy<IEventsPlugin>(EventsPluginRuntime.Current, name => name == "SignalEvent")));
             _scopes.Add(PlayerPluginRuntime.Override(Spy<IPlayerPlugin>(PlayerPluginRuntime.Current, name => name is "SetQuickBarSlot" or "PlaySound")));
@@ -87,6 +90,9 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         }
 
         private bool _baselined;
+
+        /// <summary>The factory of the spy container: view models and the content singletons they use are built from the spies.</summary>
+        private IContentFactory _content;
 
         /// <summary>Takes the saved record as the baseline the first dump compares with, so what opening the window changes is written.</summary>
         private void Baseline()
@@ -112,7 +118,8 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             if (!byType.ContainsKey(type))
             {
                 var template = Gui.GetWindowTemplate(type);
-                var window = template.CreatePlayerWindowAction();
+                // Built like the window service builds it, with the factory of the spy container, so the view model's own services are spied.
+                var window = new GuiPlayerWindow(_content.Create<IGuiViewModel>(typeof(T)));
                 window.ViewModel.Geometry = template.InitialGeometry;
                 byType[type] = window;
                 Attach(window.ViewModel);
@@ -453,6 +460,24 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             public object GetService(Type serviceType)
             {
                 var real = _real.GetService(serviceType);
+                if (serviceType == typeof(IContentFactory))
+                {
+                    // View models and content singletons are built from this provider, so their services are the spies.
+                    if (!_spies.TryGetValue(serviceType, out var factory))
+                        _spies[serviceType] = factory = new ContentFactory(this);
+                    return factory;
+                }
+
+                if (real != null && !serviceType.IsInterface && serviceType.Namespace?.StartsWith(ContentFactory.ContentNamespace + ".") == true)
+                {
+                    // A content singleton took its services from the real container when the server booted, so its calls would
+                    // bypass the spies. The transcript builds its own copy from this provider, so the singleton's service calls are
+                    // recorded like a view model's own.
+                    if (!_spies.TryGetValue(serviceType, out var content))
+                        _spies[serviceType] = content = ActivatorUtilities.CreateInstance(this, serviceType);
+                    return content;
+                }
+
                 if (real == null || !SpiedTypes.Contains(serviceType))
                     return real;
                 if (!_spies.TryGetValue(serviceType, out var spy))

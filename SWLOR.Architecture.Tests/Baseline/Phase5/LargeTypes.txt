@@ -32,7 +32,6 @@ SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase | 
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterSheetViewModel | 1516
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DisguiseViewModel | 1029
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.DroidAssemblyViewModel | 1023
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.IncubatorViewModel | 1190
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.PerksViewModel | 1544
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.ShipManagementViewModel | 2081
 SWLOR.Game.Server.Feature.UsePerkFeat | 1687

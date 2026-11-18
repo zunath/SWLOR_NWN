@@ -69,21 +69,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 BeamVisualEffect = beamVisualEffect;
                 MarkerObject = OBJECT_INVALID;
                 AreaIndicatorId = string.Empty;
+                // The cast's stamina cost context ends with the cast, but its pulses land later: each pulse runs
+                // inside the context of the activation that scheduled it, so its hit rewards share that
+                // activation's paid stamina and a recast of the same ability keeps its own.
+                var inCostContext = Combat.CaptureAbilityStaminaCostContext(
+                    activator, Ability.GetActiveAbilityImpactSummary(activator)?.Ability) ?? (impact => impact());
                 if (IsAreaPulse && !HasShotVisual)
                 {
-                    ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator,
+                    var applyAreaPulse = Ability.CaptureRepeatedAbilityImpact(activator,
                         () => ApplyAreaHostilePulse(this), baseDamage: baseDamage);
+                    ApplyPulse = () => inCostContext(applyAreaPulse);
                 }
                 else if (IsAreaPulse)
                 {
-                    CreateAreaImpactBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
+                    var createBatch = Ability.CaptureRepeatedAbilityImpactBatch<uint>(activator,
                         target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
+                    CreateAreaImpactBatch = count =>
+                    {
+                        var applyShot = createBatch(count);
+                        return target => inCostContext(() => applyShot(target));
+                    };
                     ApplyPulse = () => ApplyAreaHostileShots(this);
                 }
                 else
                 {
-                    ApplyTargetImpact = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
+                    var applyTargetPulse = Ability.CaptureRepeatedAbilityImpact<uint>(activator,
                         target => ApplySingleHostilePulseImpact(this, target), baseDamage: baseDamage);
+                    ApplyTargetImpact = target => inCostContext(() => applyTargetPulse(target));
                     ApplyPulse = () => ApplySingleHostilePulse(this);
                 }
             }

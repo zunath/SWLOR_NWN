@@ -82,6 +82,48 @@ public class CraftWindowLayoutTests
         }
     }
 
+    [Test]
+    public void ProspectingPanel_HasNoFixedWidth_SoItsTextReflowsWithTheWindow()
+    {
+        var authored = Authored(typeof(ProspectingDefinition));
+        var panel = authored[ProspectingViewModel.NodePartial].Elements.SelectMany(Walk).First(IsGroup);
+
+        ReadProperty<float>(panel, "Width").Should().Be(0f, "a fixed-width panel leaves the text clipped however wide the window is made");
+    }
+
+    private static IEnumerable<TestCaseData> ProspectingSentences()
+    {
+        for (var index = 0; index < ProspectingViewModel.ActionCount; index++)
+            yield return new TestCaseData(ProspectingViewModel.ActionSummaryProperty(index), 3).SetName($"Prospecting_{ProspectingViewModel.ActionSummaryProperty(index)}");
+
+        for (var index = 0; index < ProspectingViewModel.SeamRows; index++)
+            yield return new TestCaseData(ProspectingViewModel.SeamTextProperty(index), 2).SetName($"Prospecting_{ProspectingViewModel.SeamTextProperty(index)}");
+
+        yield return new TestCaseData(nameof(ProspectingViewModel.QuickHarvestText), 3).SetName("Prospecting_QuickHarvestText");
+        yield return new TestCaseData(nameof(ProspectingViewModel.CoreSampleText), 2).SetName("Prospecting_CoreSampleText");
+        yield return new TestCaseData(nameof(ProspectingViewModel.StyleHeader), 2).SetName("Prospecting_StyleHeader");
+        yield return new TestCaseData(nameof(ProspectingViewModel.StyleLabels), 3).SetName("Prospecting_StyleLabels");
+    }
+
+    [TestCaseSource(nameof(ProspectingSentences))]
+    public void ProspectingSentence_IsWrappedText_TallEnoughForItsLines(string bindName, int lines)
+    {
+        var authored = Authored(typeof(ProspectingDefinition));
+        var matches = Walk(authored[ProspectingViewModel.NodePartial]).Where(widget => TextBindName(widget) == bindName).ToArray();
+
+        matches.Should().ContainSingle($"{bindName} is bound once");
+        var text = matches.Single();
+        text.GetType().GetGenericTypeDefinition().Should().Be(typeof(GuiText<>), "a label cuts a long sentence off at one line");
+        ReadProperty<bool>(text, "ShowBorder").Should().BeFalse();
+        ReadProperty<NuiScrollbars>(text, "Scrollbars").Should().Be(NuiScrollbars.None);
+
+        // A text in a list cell takes the list's row height; any other text declares its own.
+        var height = bindName == nameof(ProspectingViewModel.StyleLabels)
+            ? ReadProperty<float>(Walk(authored[ProspectingViewModel.NodePartial]).Single(IsList), "RowHeight")
+            : text.DeclaredHeight;
+        height.Should().BeGreaterThanOrEqualTo(lines * 20f, $"{bindName} needs {lines} lines in the default window");
+    }
+
     private static IReadOnlyDictionary<string, IGuiWidget> Authored(Type definitionType)
     {
         using var validation = GuiLayoutValidator.BeginValidationOnlyBuild();
@@ -97,6 +139,9 @@ public class CraftWindowLayoutTests
 
     private static bool IsGroup(IGuiWidget widget) =>
         widget.GetType().IsGenericType && widget.GetType().GetGenericTypeDefinition() == typeof(GuiGroup<>);
+
+    private static bool IsList(IGuiWidget widget) =>
+        widget.GetType().IsGenericType && widget.GetType().GetGenericTypeDefinition() == typeof(GuiList<>);
 
     private static string TextBindName(IGuiWidget widget) =>
         widget.GetType().IsGenericType &&

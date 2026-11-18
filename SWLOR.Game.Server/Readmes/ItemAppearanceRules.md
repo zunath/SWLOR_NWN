@@ -84,6 +84,7 @@ not yet upgraded receive migration 23 at the next boot. Saved DM creatures recei
 correction within their existing artwork visit, retaining authored stats and equipment slots.
 Valid custom models and the reserved NPC prop remain untouched. Keep the appearance, type and
 stat corrections in one combined visit per release rather than adding another pass; a later
-stored-item correction goes into the next release's stored-item sweep (`Migrations.md`). The release after
-player migration 25 and server migration 30 gives owned Sandstorm Gaderffii staffs their look back in its
-enzyme and building-icon visit (`GaderffiiAppearanceMigration`).
+stored-item correction goes into the next release's stored-item sweep (`Migrations.md`). Player migration 26
+and server migration 31 gave owned Sandstorm Gaderffii staffs their look back in their enzyme and
+building-icon visit (`GaderffiiAppearanceMigration`); production has run both, and server migrations through
+31 are retired.

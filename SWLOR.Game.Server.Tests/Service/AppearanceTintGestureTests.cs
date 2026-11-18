@@ -2,6 +2,8 @@ using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.AppearanceEditing;
+using SWLOR.Game.Server.Tests.Support;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Domain.Companions;
@@ -10,12 +12,14 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class AppearanceTintGestureTests
 {
+    private SWLOR.Game.Server.Core.IContentFactory Content { get; } = SWLOR.Game.Server.Tests.Support.TestContent.WithoutServices;
+
     [TestCase(NuiMouseButton.Left)]
     [TestCase(NuiMouseButton.Middle)]
     [TestCase(NuiMouseButton.Right)]
     public void HydrationThenClickWithoutColorUpdateDoesNotQueueAnEdit(NuiMouseButton button)
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         Stage(editor, new GuiColor(0, 0, 0))();
         Begin(editor, applied.Add, button);
@@ -31,7 +35,7 @@ public class AppearanceTintGestureTests
     [TestCase(0, 0, 0)]
     public void ColorWatchBeforeMouseDownAppliesTheClickOnce(byte red, byte green, byte blue)
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         var expireWatch = Stage(editor, new GuiColor(red, green, blue));
         applied.Should().BeEmpty();
@@ -49,7 +53,7 @@ public class AppearanceTintGestureTests
     [Test]
     public void ExpiryOfAnOlderWatchDoesNotDiscardTheNextClickColor()
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         var expireOldWatch = Stage(editor, new GuiColor(10, 20, 30));
         var expireClickWatch = Stage(editor, new GuiColor(140, 94, 53));
@@ -64,7 +68,7 @@ public class AppearanceTintGestureTests
     [Test]
     public void LoadingAnotherColorDiscardsAnUnclaimedWatch()
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         var expireWatch = Stage(editor, new GuiColor(140, 94, 53));
         Invoke(editor, "SetSelectedTintColor", new GuiColor(100, 110, 120), true);
@@ -82,7 +86,7 @@ public class AppearanceTintGestureTests
     [TestCase(NuiMouseButton.Right)]
     public void OtherMouseButtonsDiscardAnUnclaimedWatch(NuiMouseButton button)
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         Stage(editor, new GuiColor(140, 94, 53));
         Begin(editor, applied.Add, button);
@@ -96,7 +100,7 @@ public class AppearanceTintGestureTests
     [TestCase(0, 0, 0)]
     public void ColorWatchAfterMouseUpDoesNotApplyWithoutAnotherPress(byte red, byte green, byte blue)
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         Begin(editor, applied.Add);
         Release(editor);
@@ -108,7 +112,7 @@ public class AppearanceTintGestureTests
     [Test]
     public void DragStillAppliesThePressAndLiveColorsThroughRelease()
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         Stage(editor, new GuiColor(10, 20, 30));
         Begin(editor, applied.Add);
@@ -125,7 +129,7 @@ public class AppearanceTintGestureTests
     [Test]
     public void ConsecutiveClicksCaptureTheirOwnTargets()
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var firstTarget = new List<TintMapColor>();
         var nextTarget = new List<TintMapColor>();
         Stage(editor, new GuiColor(10, 20, 30));
@@ -142,7 +146,7 @@ public class AppearanceTintGestureTests
     [Test]
     public void LoadingAnotherColorCancelsPendingDragColors()
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         Begin(editor, applied.Add);
         Queue(editor, new GuiColor(70, 80, 90));
@@ -160,7 +164,7 @@ public class AppearanceTintGestureTests
     [TestCase(NuiMouseButton.Right)]
     public void OtherMouseButtonsDoNotAuthorizeColorWatches(NuiMouseButton button)
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         Begin(editor, applied.Add, button);
         Queue(editor, new GuiColor(70, 80, 90)).Should().BeFalse();
@@ -172,7 +176,7 @@ public class AppearanceTintGestureTests
     [TestCase(NuiMouseButton.Right)]
     public void OtherMouseButtonReleasesDoNotEndAnActiveLeftDrag(NuiMouseButton button)
     {
-        var editor = new AppearanceEditorViewModel();
+        var editor = Content.Create<AppearanceEditorViewModel>();
         var applied = new List<TintMapColor>();
         Begin(editor, applied.Add);
         Queue(editor, new GuiColor(10, 20, 30));
@@ -201,9 +205,14 @@ public class AppearanceTintGestureTests
     private static Action Stage(AppearanceEditorViewModel editor, GuiColor color) =>
         (Action)Invoke(editor, "StageTintPickerColor", color);
 
-    private static object Invoke(AppearanceEditorViewModel editor, string method, params object[] args) =>
-        typeof(AppearanceEditorViewModel).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)!
-            .Invoke(editor, args);
+    // The editor's tint code is a content singleton; a member that reaches no service stays static.
+    private static object Invoke(AppearanceEditorViewModel editor, string method, params object[] args)
+    {
+        var target = typeof(AppearanceTintEditorService)
+            .GetMethod(method, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)!;
+        return target.Invoke(target.IsStatic ? null : AppearanceEditingServices.Create<AppearanceTintEditorService>(),
+            new object[] { editor }.Concat(args).ToArray());
+    }
 
     private static object Field(AppearanceEditorViewModel editor, string name) =>
         typeof(AppearanceEditorSession).GetProperty(name)!.GetValue(typeof(AppearanceEditorViewModel)

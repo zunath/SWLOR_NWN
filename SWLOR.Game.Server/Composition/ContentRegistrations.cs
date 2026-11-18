@@ -13,6 +13,10 @@ namespace SWLOR.Game.Server.Composition
     {
         internal static void Register(IServiceCollection services)
         {
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceColorService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceEditorWindowHandlers>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearancePartEditService>();
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceEditing.AppearanceTintEditorService>();
             services.AddSingleton<SWLOR.Game.Server.Feature.MigrationDefinition.CharacterLoginRestoration>();
             services.AddSingleton<SWLOR.Game.Server.Feature.PlaceableScripts>();
         }

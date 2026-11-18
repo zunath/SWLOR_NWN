@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsFrontViewSelected = true;
             IsBackViewSelected = false;
             IsAngleViewSelected = false;
-            PageOptions = new GuiBindingList<GuiComboEntry> { new("Page 1 of 1", 0) };
+            PageOptions = new GuiBindingList<GuiComboEntry> { new GuiComboEntry("Page 1 of 1", 0) };
             PageIndex = 0;
             PartNumberText = string.Empty;
             for (var tile = 0; tile < TileCount; tile++)

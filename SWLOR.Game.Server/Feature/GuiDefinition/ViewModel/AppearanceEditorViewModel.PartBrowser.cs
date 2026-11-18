@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Feature.AppearanceEditing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -383,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     part = AppearanceArmor.Torso;
                 }
                 SyncSelectedPartSwatches();
-                var (options, _) = GetArmorPartBinding(part);
+                var (options, _, _) = GetArmorPartBinding(part);
                 var slot = _session.SelectedSlot;
                 // A retained bare style shows as the list's bare option; the item keeps it until the player picks a part.
                 var current = DisplayedArmorStyle(part,
@@ -452,7 +453,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ApplyArmorPartFromBrowser(AppearanceArmor part, int partId)
         {
-            var (options, select) = GetArmorPartBinding(part);
+            var (options, _, select) = GetArmorPartBinding(part);
             if (options == null || options.All(option => option.Value != partId))
                 return;
             var wasSkippingAdjustment = _session.SkipAdjustArmorPart;

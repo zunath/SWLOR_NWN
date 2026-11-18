@@ -171,3 +171,21 @@ Open decisions (recommendation first):
 - Proof: `ArmorColorRegionCatalogTests` (mapping and the 480 declared names against a fixture captured on the base commit) and
   `AppearanceEditorBindingIdentityEngineTests` (every binding name, order and JSON value through the opening and 16 colour steps,
   against a transcript captured on the base commit).
+
+## 8. PR 2 as built
+
+- `Feature/AppearanceEditing` (new folder, `DomainMap.json` UI): three content singletons the container builds (`ContentInjection.json`,
+  `ContentRegistrations.cs`): `AppearanceTintEditorService` (tint editor and picker gestures, one type: the two call each other, and the
+  container cannot build singletons that need each other), `AppearanceColorService`, `AppearancePartEditService`; plus
+  `AppearanceEditorWindowHandlers` (the DM possession handler, moved off the view model because made content may not hold a static
+  member that reaches a service; one `HandlerRenames.txt` line and the two `ScriptHandlerOrder.txt` lines), `IAppearanceEditorHost` and
+  `AppearanceEditorBindings`.
+- A service method takes the view model as `IAppearanceEditorHost`, which the view model implements explicitly by delegating to its own
+  members, so every property setter keeps its logic. The moved bodies are the old ones with receivers changed (`host.`, `host.Session`,
+  a `host` argument). Differences beyond receivers: the 19 armor-selection watches (`WatchArmorSelections`) and the 19-case part switch
+  (`GetArmorPartBinding` now returns the selection too) stay in the view model as host methods, `nameof(Binding)` became
+  `AppearanceEditorBindings.Binding`, and the window-open check is `host.IsWindowOpen()`.
+- The view model is made content: only `AppearanceEditorViewModel.cs` is in `ContentInjection.json`, because the tool refuses a
+  partial class whose parts are all listed. The other partials call the services through small private forwarders
+  (`LoadTintMapEditor`, `AdjustArmorPart`) in the main part. Tests build it with `Content.Create<AppearanceEditorViewModel>()` and
+  reach a service through the property the container injected.

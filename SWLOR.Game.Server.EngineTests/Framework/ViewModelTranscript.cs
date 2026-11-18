@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.EngineTests.Framework
     /// </list>
     /// After every step the engine state of the player is dumped: the carried and worn items, the feats, the quick bar and what changed in the saved
     /// <see cref="Player"/> record since the step before. A long JSON value is written as its length and SHA-1 with a short preview, so a one-character
-    /// change still fails the comparison. The player's id is written as <c>&lt;player&gt;</c>, and the only other masked text is an id a script names with <see cref="Mask"/> (a disguise's Guid changes every run).
+    /// change still fails the comparison. The player's id is written as <c>&lt;player&gt;</c>, the Guid a widget declares as its own id is written as a number, and the only other masked text is an id a script names with <see cref="Mask"/> (a disguise's Guid changes every run). Other Guid-shaped text is recorded as it is.
     /// </summary>
     public sealed class ViewModelTranscript : IDisposable
     {
@@ -202,18 +202,24 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             text = text.Replace(_fixture.Id, "<player>");
             foreach (var mask in _masks)
                 text = text.Replace(mask.Key, mask.Value);
-            // The window elements take a new Guid for an id every run; each is written as a number in the order it first appears, so the
-            // same widget keeps the same name and a changed layout still changes the text and its hash.
-            return GuidPattern.Replace(text, match =>
+            // The window elements take a new Guid for an id every run. Only a Guid a widget declares as its own "id" is generated: it is
+            // written as a number in the order it first appears, and every later reference to it gets the same name, so the same widget
+            // keeps the same name and a changed layout still changes the text and its hash. Any other Guid-shaped text is a literal
+            // value a bind published and stays as it is (a fixture id that changes every run is named with Mask instead).
+            foreach (System.Text.RegularExpressions.Match match in WidgetIdPattern.Matches(text))
             {
-                if (!_guids.TryGetValue(match.Value, out var name))
-                    _guids[match.Value] = name = "<guid-" + (_guids.Count + 1) + ">";
-                return name;
-            });
+                var id = match.Groups[1].Value;
+                if (!_guids.ContainsKey(id))
+                    _guids[id] = "<guid-" + (_guids.Count + 1) + ">";
+            }
+
+            foreach (var guid in _guids)
+                text = text.Replace(guid.Key, guid.Value);
+            return text;
         }
 
-        private static readonly System.Text.RegularExpressions.Regex GuidPattern =
-            new(@"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}", System.Text.RegularExpressions.RegexOptions.Compiled);
+        private static readonly System.Text.RegularExpressions.Regex WidgetIdPattern =
+            new(@"""id""\s*:\s*""([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})""", System.Text.RegularExpressions.RegexOptions.Compiled);
 
         private readonly Dictionary<string, string> _guids = new(StringComparer.Ordinal);
 

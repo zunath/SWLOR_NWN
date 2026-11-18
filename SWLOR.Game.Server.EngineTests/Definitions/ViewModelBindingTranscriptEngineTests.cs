@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.Item.Property;
@@ -384,6 +385,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
 
                 t.Step("close-npc", () => Gui.ClosePlayerWindow(run.Player, GuiWindowType.CharacterSheet));
+            });
+            // The sheet reads its HP maximum from the engine creature, so the large maximum is set on the creature and checked before the
+            // sheet opens; the ordinary cases above keep the small one as the control.
+            const int LargeMaxHitPoints = 30000;
+            await run.Context.ExecuteInCreatureContextAsync(run.Player, () =>
+            {
+                ObjectPlugin.SetMaxHitPoints(run.Player, LargeMaxHitPoints);
+                SetCurrentHitPoints(run.Player, LargeMaxHitPoints);
+            });
+            await run.Context.WaitFrameAsync();
+            await run.Context.ExecuteInCreatureContextAsync(run.Player, () =>
+                run.Check(GetMaxHitPoints(run.Player) >= LargeMaxHitPoints,
+                    "The player creature holds a large live HP maximum before the high-resource sheet opens."));
+            await run.PhaseAsync(() =>
+            {
                 t.Step("open-high-resource", () =>
                 {
                     run.Fixture.Update(record =>
@@ -729,7 +745,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     t.Step("assemble-" + parts[index], () => t.Target(item));
                 }
 
-                t.Step("personality-before-construct", () => droid.PersonalityIndex = 1);
+                const int droidPersonalityIndex = 1;
+                t.Step("personality-before-construct", () => droid.PersonalityIndex = droidPersonalityIndex);
                 t.Step("construct", () =>
                 {
                     droid.Name = "Transcript Droid";
@@ -738,6 +755,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
                 run.Check(FullInventoryFixture.CountCarried(run.Player, DroidService.DroidControlItemResref) == 1,
                     "Constructing creates the droid controller.");
+                var controller = GetFirstItemInInventory(run.Player);
+                while (GetIsObjectValid(controller) && GetResRef(controller) != DroidService.DroidControlItemResref)
+                    controller = GetNextItemInInventory(run.Player);
+                var personality = false;
+                for (var property = GetFirstItemProperty(controller); GetIsItemPropertyValid(property); property = GetNextItemProperty(controller))
+                {
+                    if (GetItemPropertyType(property) == ItemPropertyType.DroidPersonality)
+                        personality |= GetItemPropertySubType(property) == droidPersonalityIndex;
+                }
+
+                run.Check(personality, "The droid controller carries a DroidPersonality item property with the chosen personality.");
                 t.Step("new-droid", () => droid.OnClickNewDroid()());
                 t.Step("close-and-reopen", () => droid = t.Reopen<DroidAssemblyViewModel>(GuiWindowType.DroidAssembly, null));
             });

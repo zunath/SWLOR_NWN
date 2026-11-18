@@ -87,7 +87,8 @@ public class EquipmentStatsWornGearTranscriptTests
         var gui = ScriptedProxy.Create<IGuiService>(out var guiProxy);
         guiProxy.On("PublishRefreshEvent", args =>
         {
-            _effects.Add("refresh " + args[1]!.GetType().Name + ":" + JsonConvert.SerializeObject(args[1]));
+            // The recipient and the UI target are part of the entry: they decide where the service sends the refresh.
+            _effects.Add("refresh to " + Format(args[0]) + " target " + Format(args[2]) + " " + args[1]!.GetType().Name + ":" + JsonConvert.SerializeObject(args[1]));
             return null;
         });
         _facades = new FacadeContainer(services =>
@@ -107,7 +108,7 @@ public class EquipmentStatsWornGearTranscriptTests
             NWScriptRuntime.Override(Ordered<INWScript>(_engine)),
             ObjectPluginRuntime.Override(Ordered<IObjectPlugin>(_object)),
             EventsPluginRuntime.Override(_events),
-            CreaturePluginRuntime.Override(new FakeCreaturePlugin())
+            CreaturePluginRuntime.Override(Ordered<ICreaturePlugin>(new FakeCreaturePlugin()))
         };
         _engine.SetReturnHandler("OBJECT_SELF", _ => _self);
         _engine.SetReturnHandler("GetObjectUUID", args => "uuid-" + (uint)args[0]!);
@@ -122,6 +123,8 @@ public class EquipmentStatsWornGearTranscriptTests
             return _items.Property(Made, _made++);
         });
         // The maximum hit points a wearer holds: what SetMaxHitPoints last stored for that wearer, else 100.
+        // Player1 holds one level in the first class, so a hit point change writes the per-level maximums through the creature plugin.
+        _engine.SetReturnHandler("GetLevelByPosition", args => (int)args[0]! == 1 && (uint)args[1]! == Player1 ? 1 : 0);
         _engine.SetReturnHandler("GetMaxHitPoints", args => _maxHitPoints.GetValueOrDefault((uint)args[0]!, 100));
 
         _items.Add(Made);
@@ -140,14 +143,14 @@ public class EquipmentStatsWornGearTranscriptTests
             _saved[player] = Flatten(JObject.FromObject(_records[player]));
         }
 
-        // A save is recorded with the record as it was written, apart from the in-memory record each step ends with.
+        // A save is recorded with the entity as it was written, found by its database id, apart from the stored record each step ends with.
         _db.OnSet = entity =>
         {
-            foreach (var (creature, record) in _records)
+            foreach (var creature in _records.Keys)
             {
-                if (!ReferenceEquals(record, entity))
+                if (entity.Id != "uuid-" + creature)
                     continue;
-                var current = Flatten(JObject.FromObject(record));
+                var current = Flatten(JObject.FromObject(entity));
                 var changes = DescribeChanges(_saved[creature], current);
                 _saved[creature] = current;
                 _effects.Add("save " + creature + (changes.Count == 0 ? " (no change)" : " " + string.Join("; ", changes)));
@@ -246,9 +249,9 @@ public class EquipmentStatsWornGearTranscriptTests
             // Calls, saves, refreshes and exceptions in the order they happened, then what each record holds in memory after the step.
             for (var index = 0; index < _effects.Count; index++)
                 text.Append('#').Append(index + 1).Append(' ').Append(_effects[index]).Append('\n');
-            foreach (var (creature, record) in _records)
+            foreach (var creature in _records.Keys)
             {
-                var current = Flatten(JObject.FromObject(record));
+                var current = Flatten(JObject.FromObject(_db.Get<Player>("uuid-" + creature)));
                 foreach (var change in DescribeChanges(previous[creature], current))
                     text.Append("record ").Append(creature).Append(' ').Append(change).Append('\n');
                 previous[creature] = current;

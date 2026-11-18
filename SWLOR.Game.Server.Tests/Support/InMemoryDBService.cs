@@ -74,7 +74,10 @@ public sealed class InMemoryDBService : IDBService
         return _entities.TryGetValue(id, out var entity) ? (T)entity : null;
     }
 
-    /// <summary>Called with each entity <see cref="Set{T}"/> saves, at the moment of the write.</summary>
+    /// <summary>
+    /// Called with each entity <see cref="Set{T}"/> saves, after the write is complete: the store, <see cref="Saved"/> and the write
+    /// version already hold it. An exception thrown by the callback reaches the caller of <see cref="Set{T}"/> and does not roll the write back.
+    /// </summary>
     public Action<EntityBase>? OnSet { get; set; }
 
     public void Set<T>(T entity)
@@ -82,8 +85,8 @@ public sealed class InMemoryDBService : IDBService
     {
         _entities[entity.Id] = entity;
         Saved.Add(entity);
-        OnSet?.Invoke(entity);
         _writeVersions[typeof(T)] = GetWriteVersion<T>() + 1;
+        OnSet?.Invoke(entity);
     }
 
     public void Delete<T>(string id)

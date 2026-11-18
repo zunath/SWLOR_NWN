@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace SWLOR.Game.Server.Tests.Support;
 
 /// <summary>
@@ -37,7 +39,29 @@ public static class PlayerGuideSource
         // A guide that moved out of the discovery rules would read as an empty text, and every NotContain check on it would pass.
         if (files.Length == 0)
             throw new InvalidOperationException($"No player guide file matched the discovery rules under '{folder}'; update PlayerGuideSource.Find to the guide's new files.");
+        RequireEveryTopicBodyDiscovered(root, files);
         return files;
+    }
+
+    /// <summary>
+    /// A topic body is the text handed to an <c>ArticleBlock</c> or a <c>QuestionAnswer</c>. A file anywhere in the server that
+    /// builds one but is not among the discovered files would leave its text out of <see cref="Read"/>, so a <c>NotContain</c> check
+    /// could pass without checking it: the check fails and names the file instead.
+    /// </summary>
+    private static void RequireEveryTopicBodyDiscovered(string root, IReadOnlyList<string> discovered)
+    {
+        var known = new HashSet<string>(discovered.Select(Path.GetFullPath), StringComparer.OrdinalIgnoreCase);
+        var construction = new Regex(@"\b(ArticleBlock|QuestionAnswer)\s*\(", RegexOptions.CultureInvariant);
+        var outside = Directory.EnumerateFiles(Path.Combine(root, "SWLOR.Game.Server"), "*.cs", SearchOption.AllDirectories)
+            .Where(path => !path.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}") &&
+                           !path.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
+            .Where(path => !known.Contains(Path.GetFullPath(path)))
+            .Where(path => construction.IsMatch(File.ReadAllText(path)))
+            .ToArray();
+        if (outside.Length > 0)
+            throw new InvalidOperationException(
+                "Guide topic text sits outside the files PlayerGuideSource discovers; update PlayerGuideSource.Find to include: " +
+                string.Join(", ", outside.Select(path => Path.GetRelativePath(root, path))));
     }
 
     private static string FindRepositoryRoot()

@@ -102,14 +102,30 @@ public class DiscordEventImportTests
     }
 
     [Test]
-    public void Parse_SkipsEntriesWithoutAnIdOrStartAndRepeatedIds()
+    public void Parse_SkipsEntriesWithoutAnIdAndRepeatedIds()
     {
-        var noStart = DiscordEvent("2");
-        noStart.Remove("scheduled_start_time");
-
-        var events = DiscordEventImport.Parse(Snapshot(DiscordEvent(""), noStart, DiscordEvent("3"), DiscordEvent("3", name: "Copy")));
+        var events = DiscordEventImport.Parse(Snapshot(DiscordEvent(""), DiscordEvent("3"), DiscordEvent("3", name: "Copy")));
 
         events.Should().ContainSingle().Which.Name.Should().Be("Cantina Night");
+    }
+
+    [TestCase(null)]
+    [TestCase("next Friday")]
+    public void Parse_RejectsTheSnapshotWhenAListedEventHasNoReadableStart(string start)
+    {
+        // Dropping the entry would remove an event a DM may have set up.
+        var unreadable = DiscordEvent("2");
+        unreadable["scheduled_start_time"] = start;
+
+        DiscordEventImport.Parse(Snapshot(DiscordEvent("1"), unreadable)).Should().BeNull();
+    }
+
+    [Test]
+    public void Parse_IgnoresAnUnreadableStartOnAFinishedEvent()
+    {
+        var finished = DiscordEvent("2", status: 3, start: "not a date");
+
+        DiscordEventImport.Parse(Snapshot(DiscordEvent("1"), finished)).Should().ContainSingle();
     }
 
     [Test]

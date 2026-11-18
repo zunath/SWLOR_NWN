@@ -34,6 +34,16 @@ namespace SWLOR.Game.Server.Entity
         // Players who joined and have not left. They keep their way back if the event ends first.
         public HashSet<string> ParticipantPlayerIds { get; set; }
 
+        /// <summary>
+        /// A copy to change and save before it replaces this event in the cache.
+        /// </summary>
+        public HostedEvent Copy()
+        {
+            var copy = (HostedEvent)MemberwiseClone();
+            copy.ParticipantPlayerIds = new HashSet<string>(ParticipantPlayerIds ?? new HashSet<string>());
+            return copy;
+        }
+
         public HostedEvent()
         {
             Name = string.Empty;

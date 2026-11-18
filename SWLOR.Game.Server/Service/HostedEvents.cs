@@ -431,28 +431,31 @@ namespace SWLOR.Game.Server.Service
             {
                 var hostedEvent = new HostedEvent { CreatedBy = DiscordCreatedBy };
                 DiscordEventImport.Apply(hostedEvent, discord);
-                Events[hostedEvent.Id] = hostedEvent;
                 DB.Set(hostedEvent);
+                Events[hostedEvent.Id] = hostedEvent;
                 Log.Write(LogGroup.DM, $"Listed Discord event '{hostedEvent.Name}' ({hostedEvent.Id}, Discord {discord.Id}).");
             }
 
+            // Each change reaches the cache only after it is saved, so a failed save is planned again on the next sync.
             foreach (var (hostedEvent, discord) in plan.Update)
             {
-                DiscordEventImport.Apply(hostedEvent, discord);
-                DB.Set(hostedEvent);
+                var updated = hostedEvent.Copy();
+                DiscordEventImport.Apply(updated, discord);
+                DB.Set(updated);
+                Events[updated.Id] = updated;
             }
 
             foreach (var hostedEvent in plan.Remove)
             {
-                Events.Remove(hostedEvent.Id);
                 DB.Delete<HostedEvent>(hostedEvent.Id);
+                Events.Remove(hostedEvent.Id);
                 Log.Write(LogGroup.DM, $"Removed Discord event '{hostedEvent.Name}' ({hostedEvent.Id}): Discord no longer lists it.");
             }
 
             foreach (var discordId in plan.DropDismissals)
             {
-                DiscordDismissals.Remove(discordId);
                 DB.Delete<DiscordEventDismissal>(discordId);
+                DiscordDismissals.Remove(discordId);
             }
 
             if (plan.Create.Count > 0 || plan.Update.Count > 0 || plan.Remove.Count > 0)
@@ -466,12 +469,12 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var occurrenceStart = DiscordEventImport.GetOccurrenceStart(hostedEvent);
-            DiscordDismissals[hostedEvent.DiscordEventId] = occurrenceStart;
             DB.Set(new DiscordEventDismissal
             {
                 Id = hostedEvent.DiscordEventId,
                 ScheduledStartUtc = occurrenceStart,
             });
+            DiscordDismissals[hostedEvent.DiscordEventId] = occurrenceStart;
         }
 
         private static void PostStartToDiscord(HostedEvent hostedEvent)

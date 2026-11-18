@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service.HostedEventService
 
         /// <summary>
         /// Reads the events in a snapshot that are scheduled or running on Discord.
-        /// Returns null when there is no snapshot or it cannot be read, so nothing is removed on a bad read.
+        /// Returns null when there is no snapshot or any listed event cannot be read, so nothing is removed on a bad read.
         /// </summary>
         public static List<DiscordScheduledEvent> Parse(string snapshotJson)
         {
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Service.HostedEventService
                         CultureInfo.InvariantCulture,
                         DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal,
                         out var startUtc))
-                    continue;
+                    return null;
 
                 var creator = item["creator"] as JObject;
                 var host = ToGameText(ReadString(creator, "global_name"), HostedEventRules.MaxHostLength, singleLine: true);

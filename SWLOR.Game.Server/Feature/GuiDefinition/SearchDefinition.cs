@@ -210,6 +210,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddButton()
                         .BindText(Binding<string>(SearchViewModel.ActionTextProperty(index)))
                         .BindTooltip(Binding<string>(SearchViewModel.ActionTooltipProperty(index)))
+                        .BindColor(Binding<GuiColor>(SearchViewModel.ActionButtonColorProperty(index)))
+                        // Clickable for the whole visit: see SearchActionButton.
                         .BindIsEnabled(Binding<bool>(SearchViewModel.ActionEnabledProperty(index)))
                         .BindOnClicked(model => model.OnClickAction(index))
                         .SetWidth(ActionButtonWidth)

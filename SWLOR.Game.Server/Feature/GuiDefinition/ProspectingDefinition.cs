@@ -15,14 +15,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Prospecting window: the node session a harvester opens on a vein or a tree.</summary>
     public class ProspectingDefinition : IGuiWindowDefinition
     {
-        private const float PanelWidth = 560f;
         private const float StatusTextHeight = 66f;
+        /// <summary>Two wrapped lines: a seam, the Core Sample line and the style heading run past one line in the default window.</summary>
+        private const float TwoLineTextHeight = 44f;
+        /// <summary>Three wrapped lines: an action's summary beside its button, such as "Takes 1 units (5%) or 3 units (10%). Stability 100 -> 75, Charges 12 -> 11".</summary>
+        private const float ActionTextHeight = 66f;
         private const float ActionButtonWidth = 130f;
         private const float ActionButtonHeight = 32f;
         private const float MeterLabelHeight = 20f;
         private const float MeterBarHeight = 18f;
-        private const float SeamRowHeight = 20f;
-        private const float StyleRowHeight = 40f;
+        /// <summary>Three wrapped lines: the Strip Mining description beside its Select button.</summary>
+        private const float StyleRowHeight = 66f;
         private const float StyleListHeight = 3 * StyleRowHeight + 8f;
 
         private static string Number(double value) => value.ToString("0.#", CultureInfo.InvariantCulture);
@@ -91,14 +94,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
+                    // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
                     row.AddGroup(panel =>
                     {
                         panel.SetShowBorder(false);
                         // Auto: the host group only hands this panel the viewport height, so the panel is what scrolls on a short screen.
                         panel.SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(AddContent);
-                    })
-                        .SetWidth(PanelWidth);
+                    });
                 });
             });
         }
@@ -142,29 +145,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 var index = seam;
                 content.AddRow(row =>
                 {
-                    row.AddLabel()
-                        .BindText(Binding<string>(ProspectingViewModel.SeamTextProperty(index)))
-                        .BindColor(Binding<GuiColor>(ProspectingViewModel.SeamColorProperty(index)))
-                        .SetHeight(SeamRowHeight)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    AddWrappedText(row, Binding<string>(ProspectingViewModel.SeamTextProperty(index)), TwoLineTextHeight)
+                        .BindColor(Binding<GuiColor>(ProspectingViewModel.SeamColorProperty(index)));
                 });
             }
 
-            content.AddRow(row =>
-            {
-                row.AddLabel()
-                    .BindText(model => model.CoreSampleText)
-                    .SetHeight(MeterLabelHeight)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-            });
-
-            content.AddRow(row =>
-            {
-                row.AddLabel()
-                    .BindText(model => model.StyleHeader)
-                    .SetHeight(MeterLabelHeight)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-            });
+            content.AddRow(row => AddWrappedText(row, model => model.CoreSampleText, TwoLineTextHeight));
+            content.AddRow(row => AddWrappedText(row, model => model.StyleHeader, TwoLineTextHeight));
             content.AddRow(row => row.AddList(template =>
                 {
                     template.AddCell(cell => cell.AddText()
@@ -205,12 +192,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindOnClicked(model => model.OnClickAction(index))
                         .SetWidth(ActionButtonWidth)
                         .SetHeight(ActionButtonHeight);
-                    row.AddLabel()
-                        .BindText(Binding<string>(ProspectingViewModel.ActionSummaryProperty(index)))
-                        .BindColor(Binding<GuiColor>(ProspectingViewModel.ActionColorProperty(index)))
-                        .SetHeight(ActionButtonHeight)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetVerticalAlign(NuiVerticalAlign.Middle);
+                    AddWrappedText(row, Binding<string>(ProspectingViewModel.ActionSummaryProperty(index)), ActionTextHeight)
+                        .BindColor(Binding<GuiColor>(ProspectingViewModel.ActionColorProperty(index)));
                 });
             }
 
@@ -223,11 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOnClicked(model => model.OnClickQuickHarvest())
                     .SetWidth(ActionButtonWidth)
                     .SetHeight(ActionButtonHeight);
-                row.AddLabel()
-                    .BindText(model => model.QuickHarvestText)
-                    .SetHeight(ActionButtonHeight)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                AddWrappedText(row, model => model.QuickHarvestText, ActionTextHeight);
             });
 
             content.AddRow(row =>
@@ -241,6 +220,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOnClicked(model => model.OnClickClose());
                 row.AddSpacer();
             });
+        }
+
+        /// <summary>A borderless, unscrolled text box: it wraps a sentence to the panel's width, where a label cuts it off at one line.</summary>
+        private static GuiText<ProspectingViewModel> AddWrappedText(
+            GuiRow<ProspectingViewModel> row,
+            Expression<Func<ProspectingViewModel, string>> text,
+            float height)
+        {
+            return row.AddText()
+                .BindText(text)
+                .SetHeight(height)
+                .SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None);
         }
 
         private static void AddMeter(

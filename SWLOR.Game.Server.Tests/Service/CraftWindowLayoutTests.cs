@@ -91,6 +91,7 @@ public class CraftWindowLayoutTests
         yield return Case<ReactionDefinition>(ReactionViewModel.SetupPartial, ReactionViewModel.CraftPartial);
         yield return Case<LineDefinition>(LineViewModel.FightPartial);
         yield return Case<SearchDefinition>(SearchViewModel.BoardPartial);
+        yield return Case<ProspectingDefinition>(ProspectingViewModel.NodePartial);
     }
 
     [TestCaseSource(nameof(WindowsThatReflow))]
@@ -109,6 +110,15 @@ public class CraftWindowLayoutTests
     {
         TestCaseData Sentence<TDefinition>(string partial, string bindName, int lines) where TDefinition : IGuiWindowDefinition, new() =>
             new TestCaseData(typeof(TDefinition), partial, bindName, lines).SetName($"{typeof(TDefinition).Name}_{bindName}");
+
+        for (var index = 0; index < ProspectingViewModel.ActionCount; index++)
+            yield return Sentence<ProspectingDefinition>(ProspectingViewModel.NodePartial, ProspectingViewModel.ActionSummaryProperty(index), 3);
+        for (var index = 0; index < ProspectingViewModel.SeamRows; index++)
+            yield return Sentence<ProspectingDefinition>(ProspectingViewModel.NodePartial, ProspectingViewModel.SeamTextProperty(index), 2);
+        yield return Sentence<ProspectingDefinition>(ProspectingViewModel.NodePartial, nameof(ProspectingViewModel.QuickHarvestText), 3);
+        yield return Sentence<ProspectingDefinition>(ProspectingViewModel.NodePartial, nameof(ProspectingViewModel.CoreSampleText), 2);
+        yield return Sentence<ProspectingDefinition>(ProspectingViewModel.NodePartial, nameof(ProspectingViewModel.StyleHeader), 2);
+        yield return Sentence<ProspectingDefinition>(ProspectingViewModel.NodePartial, nameof(ProspectingViewModel.StyleLabels), 3);
 
         for (var index = 0; index < ReactionViewModel.ActionCount; index++)
             yield return Sentence<ReactionDefinition>(ReactionViewModel.CraftPartial, ReactionViewModel.ActionSummaryProperty(index), 3);

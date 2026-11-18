@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "notes": "Furniture Field Cot placeables with their own Meshy model (the other five sets use existing beds). Same format as StationModels.json: each blueprint (resref = model) points at its own placeables.2da row, appended by PlaceableAppearanceTool install-haks.",
+  "stations": [
+    {
+      "blueprint": "swc_cot_ash",
+      "structure_type": "AshmarkFieldCot",
+      "model": "swc_cot_ash",
+      "label": "[SWLOR] Furniture - Ashmark Field Cot",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_cot_gutter",
+      "structure_type": "GuttermarkFieldCot",
+      "model": "swc_cot_gutter",
+      "label": "[SWLOR] Furniture - Guttermark Field Cot",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_cot_stone",
+      "structure_type": "StonewakeFieldCot",
+      "model": "swc_cot_stone",
+      "label": "[SWLOR] Furniture - Stonewake Field Cot",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_cot_reson",
+      "structure_type": "ResonantFieldCot",
+      "model": "swc_cot_reson",
+      "label": "[SWLOR] Furniture - Resonant Field Cot",
+      "sound_app_type": null
+    },
+    {
+      "blueprint": "swc_cot_veil",
+      "structure_type": "VeilcarvedFieldCot",
+      "model": "swc_cot_veil",
+      "label": "[SWLOR] Furniture - Veilcarved Field Cot",
+      "sound_app_type": null
+    }
+  ]
+}

@@ -50071,6 +50071,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ashmark Field Cot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_cot_ash"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guttermark Field Cot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_cot_gutter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stonewake Field Cot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_cot_stone"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Resonant Field Cot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_cot_reson"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veilcarved Field Cot"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swc_cot_veil"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Personal Shield Device"
                     },
                     "RESREF": {

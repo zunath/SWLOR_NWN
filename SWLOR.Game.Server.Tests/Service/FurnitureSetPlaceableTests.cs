@@ -112,17 +112,17 @@ public class FurnitureSetPlaceableTests
         return root?.FullName ?? throw new DirectoryNotFoundException("Repository root not found.");
     }
 
-    // Each set's Field Cot blueprint: existing bed placeables no other structure uses.
+    // Each set's Field Cot blueprint: a Meshy model (swc_cot_*, resref = model) or an existing bed no other structure uses.
     private static readonly Dictionary<StructureType, string> FieldCotResrefs = new()
     {
-        [StructureType.AshmarkFieldCot] = "zep_bedrolls007",
-        [StructureType.GuttermarkFieldCot] = "zep_bedrolls002",
+        [StructureType.AshmarkFieldCot] = "swc_cot_ash",
+        [StructureType.GuttermarkFieldCot] = "swc_cot_gutter",
         [StructureType.TrailmarkFieldCot] = "_mdrn_pl_cotsimp",
-        [StructureType.StonewakeFieldCot] = "zep_bedrolls004",
+        [StructureType.StonewakeFieldCot] = "swc_cot_stone",
         [StructureType.AegislineFieldCot] = "_mdrn_pl_bedsgrd",
-        [StructureType.VeilcarvedFieldCot] = "swlor_0771",
+        [StructureType.VeilcarvedFieldCot] = "swc_cot_veil",
         [StructureType.SurgewakeFieldCot] = "_mdrn_pl_bedmtl2",
-        [StructureType.ResonantFieldCot] = "zep_bedrolls001",
+        [StructureType.ResonantFieldCot] = "swc_cot_reson",
         [StructureType.FieldlineFieldCot] = "_mdrn_pl_bedenli",
         [StructureType.CommandlineFieldCot] = "swlor_0622",
     };

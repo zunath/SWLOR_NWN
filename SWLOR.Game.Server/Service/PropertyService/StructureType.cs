@@ -1984,7 +1984,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SpeakerStanding = 330,
 
         [Structure("Ashmark Field Cot",
-            "zep_bedrolls007",
+            "swc_cot_ash",
             "",
             true,
             1)]
@@ -2054,7 +2054,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AshmarkWorkStool = 340,
 
         [Structure("Guttermark Field Cot",
-            "zep_bedrolls002",
+            "swc_cot_gutter",
             "",
             true,
             1)]
@@ -2194,7 +2194,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         TrailmarkWorkStool = 360,
 
         [Structure("Stonewake Field Cot",
-            "zep_bedrolls004",
+            "swc_cot_stone",
             "",
             true,
             1)]
@@ -2334,7 +2334,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AegislineWorkStool = 380,
 
         [Structure("Veilcarved Field Cot",
-            "swlor_0771",
+            "swc_cot_veil",
             "",
             true,
             1)]
@@ -2474,7 +2474,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         SurgewakeWorkStool = 400,
 
         [Structure("Resonant Field Cot",
-            "zep_bedrolls001",
+            "swc_cot_reson",
             "",
             true,
             1)]

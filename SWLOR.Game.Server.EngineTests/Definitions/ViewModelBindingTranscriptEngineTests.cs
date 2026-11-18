@@ -273,11 +273,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var beastBefore = DB.Get<Beast>(beastId);
                 var beastSkillPoints = beastBefore.UnallocatedSP;
                 var beastPerkRanks = beastBefore.Perks.Values.Sum();
-                t.Step("beast-select", () => Select(IndexWhere(perk => CanBuyFirstRankForBeast(run.Player, perk, beastSkillPoints))));
+                var beastPick = -2;
+                t.Step("beast-select", () => Select(beastPick = IndexWhere(perk => CanBuyFirstRankForBeast(run.Player, perk, beastSkillPoints))));
                 t.Step("beast-buy", Buy);
                 var beastAfter = DB.Get<Beast>(beastId);
                 run.Check(beastAfter.UnallocatedSP < beastSkillPoints && beastAfter.Perks.Values.Sum() > beastPerkRanks,
-                    "The beast bought a perk rank and spent skill points.");
+                    $"The beast bought a perk rank and spent skill points (picked {beastPick}, SP {beastSkillPoints} to {beastAfter.UnallocatedSP}, {Count()} perks; {string.Join(" | ", ((IList)Get(perks, "_filteredPerks")).Cast<PerkType>().Take(8).Select(perk => perk + ":" + string.Join(",", Perk.GetPerkDetails(perk).PerkLevels[1].Requirements.Select(requirement => requirement.CheckRequirements(run.Player)))))}).");
                 t.Step("my-perks", () => perks.OnClickMyPerks()());
                 t.Step("refresh-skill-xp", () => perks.Refresh(new SkillXPRefreshEvent(new List<SkillType> { SkillType.Force })));
                 t.Step("refresh-reset", () => perks.Refresh(new PerkResetAcquiredRefreshEvent()));

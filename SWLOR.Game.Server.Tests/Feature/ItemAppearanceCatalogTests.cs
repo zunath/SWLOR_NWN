@@ -293,13 +293,8 @@ public class ItemAppearanceCatalogTests
             .ToList();
     }
 
-    private static IReadOnlyDictionary<BaseItem, WeaponAppearanceBaseDefinition> LoadWeaponCatalogs()
-    {
-        var editor = typeof(AppearanceEditorViewModel);
-        editor.GetMethod("LoadWeaponAppearances", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, null);
-        var loaded = (IDictionary)editor.GetField("_weaponAppearances", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-        return loaded.Keys.Cast<BaseItem>().ToDictionary(key => key, key => (WeaponAppearanceBaseDefinition)loaded[key]!);
-    }
+    private static IReadOnlyDictionary<BaseItem, WeaponAppearanceBaseDefinition> LoadWeaponCatalogs() =>
+        WeaponAppearanceCatalog.Definitions.ToDictionary(pair => pair.Key, pair => pair.Value);
 
     private static DirectoryInfo FindRepositoryRoot()
     {

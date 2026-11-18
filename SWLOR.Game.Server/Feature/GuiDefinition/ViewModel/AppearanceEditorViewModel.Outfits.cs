@@ -15,10 +15,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         public const string OutfitsPartial = "OUTFITS_PARTIAL";
 
-        private readonly List<string> _outfitIds = new();
-        private readonly List<string> _quickOutfitIds = new();
-        private int _selectedOutfitIndex = -1;
-        private PlayerOutfit _undoLook;
 
         public int OutfitsTabToggleValue
         {
@@ -60,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                IsOutfitRenameEnabled = _selectedOutfitIndex > -1;
+                IsOutfitRenameEnabled = _session.SelectedOutfitIndex > -1;
             }
         }
 
@@ -77,11 +73,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void InitializeOutfits()
         {
-            _outfitIds.Clear();
-            _quickOutfitIds.Clear();
-            _selectedOutfitIndex = -1;
-            _undoLook = null;
-            IsOutfitsVisible = IsPlayerSettingsVisible && _target == Player;
+            _session.OutfitIds.Clear();
+            _session.QuickOutfitIds.Clear();
+            _session.SelectedOutfitIndex = -1;
+            _session.UndoLook = null;
+            IsOutfitsVisible = IsPlayerSettingsVisible && _session.Target == Player;
             Set(-1, nameof(OutfitsTabToggleValue));
             IsOutfitsSelected = false;
             OutfitSlotNames = new GuiBindingList<string>();
@@ -103,35 +99,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadOutfits()
         {
-            var outfits = Wardrobe.GetOutfits(GetObjectUUID(_target));
+            var outfits = Wardrobe.GetOutfits(GetObjectUUID(_session.Target));
             var names = new GuiBindingList<string>();
             var toggles = new GuiBindingList<bool>();
             var quickOptions = new GuiBindingList<GuiComboEntry>();
-            var selectedId = _selectedOutfitIndex > -1 && _selectedOutfitIndex < _outfitIds.Count
-                ? _outfitIds[_selectedOutfitIndex]
+            var selectedId = _session.SelectedOutfitIndex > -1 && _session.SelectedOutfitIndex < _session.OutfitIds.Count
+                ? _session.OutfitIds[_session.SelectedOutfitIndex]
                 : null;
-            var quickId = QuickOutfitValue >= 0 && QuickOutfitValue < _quickOutfitIds.Count
-                ? _quickOutfitIds[QuickOutfitValue]
+            var quickId = QuickOutfitValue >= 0 && QuickOutfitValue < _session.QuickOutfitIds.Count
+                ? _session.QuickOutfitIds[QuickOutfitValue]
                 : null;
 
-            _outfitIds.Clear();
-            _quickOutfitIds.Clear();
-            _selectedOutfitIndex = -1;
+            _session.OutfitIds.Clear();
+            _session.QuickOutfitIds.Clear();
+            _session.SelectedOutfitIndex = -1;
             var quickValue = 0;
             foreach (var outfit in outfits)
             {
                 if (outfit.Id == selectedId)
-                    _selectedOutfitIndex = _outfitIds.Count;
-                _outfitIds.Add(outfit.Id);
+                    _session.SelectedOutfitIndex = _session.OutfitIds.Count;
+                _session.OutfitIds.Add(outfit.Id);
                 names.Add(outfit.Name);
                 toggles.Add(outfit.Id == selectedId);
 
                 if (!Wardrobe.HasClothes(outfit))
                     continue;
                 if (outfit.Id == quickId)
-                    quickValue = _quickOutfitIds.Count;
-                quickOptions.Add(new GuiComboEntry(outfit.Name, _quickOutfitIds.Count));
-                _quickOutfitIds.Add(outfit.Id);
+                    quickValue = _session.QuickOutfitIds.Count;
+                quickOptions.Add(new GuiComboEntry(outfit.Name, _session.QuickOutfitIds.Count));
+                _session.QuickOutfitIds.Add(outfit.Id);
             }
 
             if (quickOptions.Count == 0)
@@ -141,21 +137,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OutfitSlotToggles = toggles;
             QuickOutfitOptions = quickOptions;
             QuickOutfitValue = quickValue;
-            IsQuickWearEnabled = _quickOutfitIds.Count > 0;
+            IsQuickWearEnabled = _session.QuickOutfitIds.Count > 0;
             UpdateWardrobeCapacity(outfits.Count);
             ShowSelectedOutfit();
         }
 
         private void UpdateWardrobeCapacity(int outfitCount)
         {
-            var limit = Wardrobe.GetSlotLimit(DB.Get<Player>(GetObjectUUID(_target)));
+            var limit = Wardrobe.GetSlotLimit(DB.Get<Player>(GetObjectUUID(_session.Target)));
             WardrobeCapacityText = $"{outfitCount} / {limit} outfits";
         }
 
         private PlayerOutfit GetSelectedOutfit()
         {
-            return _selectedOutfitIndex > -1 && _selectedOutfitIndex < _outfitIds.Count
-                ? DB.Get<PlayerOutfit>(_outfitIds[_selectedOutfitIndex])
+            return _session.SelectedOutfitIndex > -1 && _session.SelectedOutfitIndex < _session.OutfitIds.Count
+                ? DB.Get<PlayerOutfit>(_session.OutfitIds[_session.SelectedOutfitIndex])
                 : null;
         }
 
@@ -202,30 +198,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickOutfitSlot() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            if (index < 0 || index >= _outfitIds.Count)
+            if (index < 0 || index >= _session.OutfitIds.Count)
                 return;
 
-            if (_selectedOutfitIndex > -1 && _selectedOutfitIndex < OutfitSlotToggles.Count)
-                OutfitSlotToggles[_selectedOutfitIndex] = false;
-            _selectedOutfitIndex = index;
+            if (_session.SelectedOutfitIndex > -1 && _session.SelectedOutfitIndex < OutfitSlotToggles.Count)
+                OutfitSlotToggles[_session.SelectedOutfitIndex] = false;
+            _session.SelectedOutfitIndex = index;
             OutfitSlotToggles[index] = true;
             ShowSelectedOutfit();
 
-            var quickIndex = _quickOutfitIds.IndexOf(_outfitIds[index]);
+            var quickIndex = _session.QuickOutfitIds.IndexOf(_session.OutfitIds[index]);
             if (quickIndex > -1)
                 QuickOutfitValue = quickIndex;
         };
 
         public Action OnClickNewOutfit() => () =>
         {
-            var playerId = GetObjectUUID(_target);
+            var playerId = GetObjectUUID(_session.Target);
             var count = Wardrobe.CountOutfits(playerId);
             var limit = Wardrobe.GetSlotLimit(DB.Get<Player>(playerId));
             if (count >= limit)
             {
                 FloatingTextStringOnCreature(limit < WardrobeService.MaxSlotLimit
                     ? $"Your wardrobe holds {limit} outfits. {WardrobeService.ExpansionHint}"
-                    : $"Your wardrobe holds {limit} outfits.", _target, false);
+                    : $"Your wardrobe holds {limit} outfits.", _session.Target, false);
                 return;
             }
 
@@ -235,8 +231,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 PlayerId = playerId
             };
             DB.Set(outfit);
-            _outfitIds.Add(outfit.Id);
-            _selectedOutfitIndex = _outfitIds.Count - 1;
+            _session.OutfitIds.Add(outfit.Id);
+            _session.SelectedOutfitIndex = _session.OutfitIds.Count - 1;
             LoadOutfits();
         };
 
@@ -252,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
 
                 DB.Delete<PlayerOutfit>(outfit.Id);
-                _selectedOutfitIndex = -1;
+                _session.SelectedOutfitIndex = -1;
                 LoadOutfits();
             });
         };
@@ -281,8 +277,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (current == null)
                     return;
 
-                Wardrobe.Store(_target, current, out var message);
-                FloatingTextStringOnCreature(message, _target, false);
+                Wardrobe.Store(_session.Target, current, out var message);
+                FloatingTextStringOnCreature(message, _session.Target, false);
                 LoadOutfits();
             }
 
@@ -296,22 +292,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickQuickWear() => () =>
         {
-            if (QuickOutfitValue < 0 || QuickOutfitValue >= _quickOutfitIds.Count)
+            if (QuickOutfitValue < 0 || QuickOutfitValue >= _session.QuickOutfitIds.Count)
                 return;
-            WearOutfit(DB.Get<PlayerOutfit>(_quickOutfitIds[QuickOutfitValue]));
+            WearOutfit(DB.Get<PlayerOutfit>(_session.QuickOutfitIds[QuickOutfitValue]));
         };
 
         public Action OnClickUndoOutfit() => () =>
         {
-            if (_undoLook == null)
+            if (_session.UndoLook == null)
                 return;
 
-            var look = _undoLook;
-            _undoLook = null;
+            var look = _session.UndoLook;
+            _session.UndoLook = null;
             IsUndoOutfitEnabled = false;
-            if (Wardrobe.Wear(_target, look, out var message))
+            if (Wardrobe.Wear(_session.Target, look, out var message))
                 message = string.IsNullOrEmpty(message) ? "Restored your previous look." : message;
-            FloatingTextStringOnCreature(message, _target, false);
+            FloatingTextStringOnCreature(message, _session.Target, false);
             RefreshTintMapEditorAfterAppearanceChange(refreshItemParts: true);
         };
 
@@ -321,16 +317,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (outfit == null)
                 return;
 
-            var previous = Wardrobe.CaptureWornLook(_target);
-            if (!Wardrobe.Wear(_target, outfit, out var message))
+            var previous = Wardrobe.CaptureWornLook(_session.Target);
+            if (!Wardrobe.Wear(_session.Target, outfit, out var message))
             {
-                FloatingTextStringOnCreature(message, _target, false);
+                FloatingTextStringOnCreature(message, _session.Target, false);
                 return;
             }
 
-            _undoLook = previous;
+            _session.UndoLook = previous;
             IsUndoOutfitEnabled = previous != null;
-            FloatingTextStringOnCreature(string.IsNullOrEmpty(message) ? $"Now wearing {outfit.Name}." : message, _target, false);
+            FloatingTextStringOnCreature(string.IsNullOrEmpty(message) ? $"Now wearing {outfit.Name}." : message, _session.Target, false);
             RefreshTintMapEditorAfterAppearanceChange(refreshItemParts: true);
         }
     }

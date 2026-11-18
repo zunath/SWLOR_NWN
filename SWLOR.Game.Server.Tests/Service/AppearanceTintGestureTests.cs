@@ -19,12 +19,12 @@ public class AppearanceTintGestureTests
         var applied = new List<TintMapColor>();
         Stage(editor, new GuiColor(0, 0, 0))();
         Begin(editor, applied.Add, button);
-        Field(editor, "_tintPickerActive").Should().Be(button == NuiMouseButton.Left);
+        Field(editor, "TintPickerActive").Should().Be(button == NuiMouseButton.Left);
         Release(editor, button);
         applied.Should().BeEmpty();
-        Field(editor, "_pendingPickerColor").Should().BeNull();
-        Field(editor, "_pendingPickerApply").Should().BeNull();
-        Field(editor, "_tintPickerActive").Should().Be(false);
+        Field(editor, "PendingPickerColor").Should().BeNull();
+        Field(editor, "PendingPickerApply").Should().BeNull();
+        Field(editor, "TintPickerActive").Should().Be(false);
     }
 
     [TestCase(140, 94, 53)]
@@ -112,7 +112,7 @@ public class AppearanceTintGestureTests
         var applied = new List<TintMapColor>();
         Stage(editor, new GuiColor(10, 20, 30));
         Begin(editor, applied.Add);
-        Field(editor, "_tintPickerActive").Should().Be(true);
+        Field(editor, "TintPickerActive").Should().Be(true);
         Queue(editor, new GuiColor(40, 50, 60));
         Invoke(editor, "FlushPendingPickerColor");
         Queue(editor, new GuiColor(70, 80, 90));
@@ -133,7 +133,7 @@ public class AppearanceTintGestureTests
         Release(editor);
         Stage(editor, new GuiColor(70, 80, 90));
         Begin(editor, nextTarget.Add);
-        Field(editor, "_tintPickerActive").Should().Be(true);
+        Field(editor, "TintPickerActive").Should().Be(true);
         Release(editor);
         firstTarget.Should().Equal(new TintMapColor(10, 20, 30));
         nextTarget.Should().Equal(new TintMapColor(70, 80, 90));
@@ -178,7 +178,7 @@ public class AppearanceTintGestureTests
         Queue(editor, new GuiColor(10, 20, 30));
 
         Release(editor, button);
-        Field(editor, "_tintPickerActive").Should().Be(true);
+        Field(editor, "TintPickerActive").Should().Be(true);
         applied.Should().BeEmpty();
         Queue(editor, new GuiColor(40, 50, 60)).Should().BeTrue();
         Invoke(editor, "FlushPendingPickerColor");
@@ -206,5 +206,6 @@ public class AppearanceTintGestureTests
             .Invoke(editor, args);
 
     private static object Field(AppearanceEditorViewModel editor, string name) =>
-        typeof(AppearanceEditorViewModel).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(editor);
+        typeof(AppearanceEditorSession).GetProperty(name)!.GetValue(typeof(AppearanceEditorViewModel)
+            .GetField("_session", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(editor));
 }

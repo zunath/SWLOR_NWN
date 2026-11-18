@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Domain.Character;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -729,8 +731,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             // Sample 9x7 texels of the unfiltered sheet and draw them at exactly 2x
                             // (18x14 inside the 20x16 cell) so gradient swatches stay even.
                             var region = new GuiRectangle(
-                                x * AppearanceEditorViewModel.ColorSize + 3,
-                                rowIndex * AppearanceEditorViewModel.ColorSize + 4,
+                                x * ArmorColorRegionCatalog.ColorSize + 3,
+                                rowIndex * ArmorColorRegionCatalog.ColorSize + 4,
                                 9, 7);
                             CreateFilledButton(
                                     uiRow,
@@ -864,8 +866,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private static Expression<System.Func<AppearanceEditorViewModel, TValue>> Bind<TValue>(string propertyName)
         {
             var model = Expression.Parameter(typeof(AppearanceEditorViewModel), "model");
-            return Expression.Lambda<System.Func<AppearanceEditorViewModel, TValue>>(
-                Expression.Property(model, propertyName), model);
+            // The colour swatch bindings (ArmorColorRegionCatalog) have no declared property; the others do.
+            Expression binding = typeof(AppearanceEditorViewModel).GetProperty(propertyName) != null
+                ? Expression.Property(model, propertyName)
+                : Expression.Call(model,
+                    typeof(AppearanceEditorViewModel).GetMethod(nameof(AppearanceEditorViewModel.GetBindingValue))!.MakeGenericMethod(typeof(TValue)),
+                    Expression.Constant(propertyName));
+            return Expression.Lambda<System.Func<AppearanceEditorViewModel, TValue>>(binding, model);
         }
 
         // ---------------------------------------------------------------- outfits

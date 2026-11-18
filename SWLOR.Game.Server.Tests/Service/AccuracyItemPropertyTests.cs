@@ -91,7 +91,7 @@ public class AccuracyItemPropertyTests
         }
 
         var equipmentStats = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"));
-        equipmentStats.Should().Contain("Stat.RegisterEquipmentStatAction(ItemPropertyType.Accuracy, ApplyAccuracy);");
+        equipmentStats.Should().Contain("Stat.RegisterEquipmentStatAction(ItemPropertyType.Accuracy, (creature, item, ip, adding) => EquipmentRatingStatActions.ApplyAccuracy(creature, item, ip, adding));");
     }
 
     [Test]

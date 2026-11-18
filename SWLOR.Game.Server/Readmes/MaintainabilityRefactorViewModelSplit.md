@@ -397,3 +397,16 @@ None needs the owner now. Three choices are recorded so they are not lost:
 - `CombatReadinessEquipmentTests` and `MaxHitPointsReconciliationTests` read the moved methods from `EquipmentVitalStatActions.cs` as well as `EquipmentStats.cs`.
 - Baselines: `LargeTypes.txt` drops `EquipmentStats`; `StaticLookups.txt` goes from 120 on one file to 87 + 22 + 13 (two more `using static` lines, no new use in code);
   the two edge records gain the `Feature/EquipmentStatActions` rows and lower the `Feature.EquipmentStats` counts. `PlayerMessageAudit.json` is unchanged (no message moved).
+
+## 9. PR 2 as built (EquipmentStats: rating and field actions)
+
+- New static types in `Feature/EquipmentStatActions/`, bodies moved verbatim (only `private` became `public`): `EquipmentRatingStatActions` (314 lines: Attack, Accuracy, Force Attack,
+  Defense, Resistance, Evasion; 30 lookups) and `EquipmentFieldStatActions` (235 lines: Stealth, Detection, trap bonus, disarm, poison, lockpicking; 25 lookups). No new lookups
+  in code: the 87 `EquipmentStats` lookups of PR 1 became 34 (stay-type) + 30 + 25, with two more `using static` lines.
+- `EquipmentStats` went from 714 to 203 lines (511 moved). The map estimated ~270 and ~530: the stay-type is smaller because `ApplyItemStats`, `ApplyStatAmount` and the three refresh
+  handlers are shorter than estimated. All 21 registrations are now hand-written lambdas in the original order; `HandledPropertyTypes`, the `Rerun` boot line, the refresh handler
+  names and the writer and reader of `EQUIPMENT_DISPLACED_RECORD_STATS` are unchanged.
+- Proof: `EquipmentStatsWornGearTranscriptTests` passes unchanged against its committed fixture (no recapture). `AccuracyItemPropertyTests` now expects the lambda registration text.
+  No `LegacySource` or `PlayerMessageAudit.json` change (no craft code or message moved).
+- Baselines: `StaticLookups.txt` as above; the two edge records gain `Feature/EquipmentStatActions -> Domain/Combat` and `-> Domain/Items` and lose
+  `Feature.EquipmentStats -> Platform/Entity`, with the `Gameplay -> Foundation` header 60 to 59; other member-count churn from regeneration was reverted.

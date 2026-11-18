@@ -312,7 +312,7 @@ Feature.CivilianPatrol -> Domain/Character | 2
 Feature.DMToolbarWindow -> Domain/Character | 4
 Feature.EchaniTempleMonks -> Domain/Character | 2
 Feature.EquipmentRestrictions -> Domain/Character | 2
-Feature.EquipmentStats -> Domain/Character | 20
+Feature.EquipmentStats -> Domain/Character | 9
 Feature.NaturalRegeneration -> Domain/Character | 2
 Feature.OrdinaryAttackCombatLifecycle -> Domain/Character | 1
 Feature.PlaceableScripts -> Domain/Character | 4
@@ -327,11 +327,11 @@ Feature.UnarmedMastery -> Domain/Character | 3
 Feature.UnarmedTechniqueProfile -> Domain/Character | 2
 Feature.UnarmedTechniqueProfile -> Feature/StatusEffectDefinition | 1
 Feature.UsePerkFeat -> Domain/Character | 23
-Feature/EquipmentStatActions -> Domain/Character | 8
+Feature/EquipmentStatActions -> Domain/Character | 19
 
-# Gameplay -> Combat (15 edges)
+# Gameplay -> Combat (16 edges)
 Feature.EquipmentRestrictions -> Domain/Combat | 3
-Feature.EquipmentStats -> Domain/Combat | 3
+Feature.EquipmentStats -> Domain/Combat | 2
 Feature.KatarAnimationRemap -> Domain/Combat | 2
 Feature.NaturalRegeneration -> Domain/Combat | 1
 Feature.OrdinaryAttackCombatLifecycle -> Domain/Combat | 7
@@ -345,6 +345,7 @@ Feature.TwinPistolPairLifecycle -> Domain/Combat | 8
 Feature.UnarmedMastery -> Domain/Combat | 1
 Feature.UnarmedTechniqueProfile -> Domain/Combat | 1
 Feature.UsePerkFeat -> Domain/Combat | 19
+Feature/EquipmentStatActions -> Domain/Combat | 1
 
 # Gameplay -> Companions (4 edges)
 Feature.ArmorDisplay -> Domain/Companions | 3
@@ -368,9 +369,9 @@ Feature.UsePerkFeat -> Domain/Creatures | 5
 # Gameplay -> Economy (1 edge)
 Feature.PlaceableScripts -> Domain/Economy | 4
 
-# Gameplay -> Items (14 edges)
+# Gameplay -> Items (15 edges)
 Feature.EquipmentRestrictions -> Domain/Items | 4
-Feature.EquipmentStats -> Domain/Items | 2
+Feature.EquipmentStats -> Domain/Items | 1
 Feature.KatarAnimationRemap -> Domain/Items | 4
 Feature.MiniMaps -> Domain/Items | 1
 Feature.PersistentMapProgression -> Domain/Items | 1
@@ -383,6 +384,7 @@ Feature.TrashCan -> Domain/Items | 2
 Feature.TwinPistolCombatLifecycle -> Domain/Items | 1
 Feature.TwinPistolEquipmentValidation -> Domain/Items | 2
 Feature.TwinPistolPairLifecycle -> Domain/Items | 1
+Feature/EquipmentStatActions -> Domain/Items | 1
 
 # Gameplay -> Quests (2 edges)
 Feature.BeastStableTrials -> Domain/Quests | 1

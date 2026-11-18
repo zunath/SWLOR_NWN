@@ -17,8 +17,9 @@ public class AppearanceEditorSizeTests
     private const int MaximumTypeLines = 1000;
     private const int MaximumServices = 10;
 
-    // The view model's bindings alone (745 lines of declared properties) leave it above MaximumTypeLines once everything that can
-    // move has moved; its measured size is held here until the owner decides (MaintainabilityRefactorAppearanceEditorSplit.md, section 9).
+    // Owner decision 2026-11-18 (MaintainabilityRefactorAppearanceEditorSplit.md, section 6): the view model's declared bindings keep it
+    // above MaximumTypeLines once the real moves are done; it is exempt from the type size measure (Exemptions.json) and held at its
+    // measured size so it does not grow. Its services and methods keep their limits.
     private const int MaximumViewModelLines = 1337;
     private const int MaximumMethodLines = 150;
 

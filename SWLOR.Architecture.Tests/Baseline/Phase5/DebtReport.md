@@ -8,7 +8,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
 | 1. Static service lookup | `StaticLookups.txt` | 1,087 | 13,366 uses | none: GameServices and FacadeAccessor deleted |
-| 2. Large types | `LargeTypes.txt` | 30 | 45,051 lines | none over 1,000 lines |
+| 2. Large types | `LargeTypes.txt` | 29 | 43,714 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 11 | 3,140 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 17 | 268 services | none over 10 services |
 | 5. Deferred resolution | `DeferredResolution.txt` | 37 | 52 parameters | none |
@@ -58,11 +58,11 @@ Largest 15 of 1,087 (all in `StaticLookups.txt`):
 
 ## 2. Large types
 
-- 30 types over 1,000 lines, 45,051 lines in all.
-- Exempt and over the limit: 190 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1).
+- 29 types over 1,000 lines, 43,714 lines in all.
+- Exempt and over the limit: 191 (generated code 174, content data 8, attribute-row enum 4, migration 3, fluent builder 1, owner exception 1).
 - GUI window definitions over 1,000 lines (layout, measured per method only): 2 (AppearanceEditorDefinition, DebugNuiGalleryDefinition).
 
-Largest 15 of 30 (all in `LargeTypes.txt`):
+Largest 15 of 29 (all in `LargeTypes.txt`):
 
 | Entry | Lines | Detail |
 |---|---:|---|
@@ -319,6 +319,7 @@ Owner decision 1 (2026-11-14) exempts these from the size and services measures 
 | data catalog member | member `SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen.KitchenComponentTable.BuildFlavors` | typeSize, methodSize | One row per cooking ingredient (resref and three flavor numbers) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16g). |
 | data catalog member | member `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CombatStyleGuideTopics.Create` | typeSize, methodSize | Lists the combat style guide topics (title, summary, style blocks, related topics) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16g). |
 | fluent builder | type `SWLOR.Game.Server.Domain.Abilities.AbilityBuilder` | typeSize | Many short builder methods; its methods are still measured. |
+| owner exception | type `SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel` | typeSize | owner decision 2026-11-18: real moves exhausted; the rest is declared bindings (P5-16e PR 3). Its services and methods are still measured. |
 
 Owner decision 3 (2026-11-14) keeps these static entry points static:
 

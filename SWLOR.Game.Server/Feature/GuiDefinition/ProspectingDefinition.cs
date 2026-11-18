@@ -15,6 +15,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Prospecting window: the node session a harvester opens on a vein or a tree.</summary>
     public class ProspectingDefinition : IGuiWindowDefinition
     {
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 620f;
+
         private const float StatusTextHeight = 66f;
         /// <summary>Two wrapped lines: a seam, the Core Sample line and the style heading run past one line in the default window.</summary>
         private const float TwoLineTextHeight = 44f;
@@ -74,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Prospecting)
-                .SetInitialGeometry(0, 0, 620f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("Prospecting")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)

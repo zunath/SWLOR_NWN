@@ -9,8 +9,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     /// <summary>The Plasma Forge: the window every Smithery recipe is crafted in.</summary>
     public class ForgeDefinition : IGuiWindowDefinition
     {
-        private const float ContentPanelWidth = 600f;
-        private const float ContentWidth = ContentPanelWidth - 24f;
+        /// <summary>The default width, and the narrowest the window can be made: its text boxes are sized for this width.</summary>
+        public const float WindowWidth = 680f;
+
+        /// <summary>Two wrapped lines: a status line such as the Thermal zone, a perk summary or the enhancement thresholds.</summary>
+        private const float TwoLineTextHeight = 44f;
         private const float ButtonWidth = 190f;
         private const float MeterBarHeight = 18f;
         private const float SlotIconSize = 36f;
@@ -61,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             var window = _builder.CreateWindow(GuiWindowType.Forge)
-                .SetInitialGeometry(0, 0, 680f, 660f)
+                .SetInitialGeometry(0, 0, WindowWidth, 660f)
                 .SetTitle("Plasma Forge")
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
@@ -78,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddSetup(GuiGroup<ForgeViewModel> host)
         {
+            // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
             host.AddColumn(root => root.AddRow(row => row.AddGroup(panel =>
             {
                 panel.SetShowBorder(false);
@@ -89,7 +93,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     content.AddRow(row => row.AddText()
                         .BindText(model => model.FailureRuleText)
-                        .SetWidth(ContentWidth)
                         .SetHeight(66f)
                         .SetShowBorder(false)
                         .SetScrollbars(NuiScrollbars.Auto));
@@ -111,20 +114,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetHeight(SlotIconSize)
                                 .BindOnClicked(model => model.OnClickEnhancementSlot());
                         });
-                        template.AddCell(cell => cell.AddLabel()
+                        template.AddCell(cell => cell.AddText()
                             .BindText(model => model.SlotLabels)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle));
+                            .SetShowBorder(false)
+                            .SetScrollbars(NuiScrollbars.None));
                     })
                         .BindRowCount(model => model.SlotLabels)
-                        .SetWidth(ContentWidth)
                         .SetRowHeight(SlotIconSize + 8f)
                         .SetHeight(130f));
 
-                    content.AddRow(row => row.AddLabel()
-                        .BindText(model => model.EnhancementSummaryText)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetHeight(20f));
+                    content.AddRow(row => AddWrappedText(row, model => model.EnhancementSummaryText));
 
                     content.AddRow(row => row.AddList(template =>
                     {
@@ -135,7 +134,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetVerticalAlign(NuiVerticalAlign.Middle));
                     })
                         .BindRowCount(model => model.RecipeDescription)
-                        .SetWidth(ContentWidth)
                         .SetRowHeight(22f)
                         .SetHeight(210f));
 
@@ -161,7 +159,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         });
                     })
                         .BindRowCount(model => model.StyleLabels)
-                        .SetWidth(ContentWidth)
                         .SetRowHeight(StyleRowHeight)
                         .SetHeight(StyleListHeight));
 
@@ -184,11 +181,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                     });
                 });
-            }).SetWidth(ContentPanelWidth)));
+            })));
         }
 
         private static void AddCraft(GuiGroup<ForgeViewModel> host)
         {
+            // No fixed width: the panel takes the window's width, so the wrapped sentences reflow when the window is resized.
             host.AddColumn(root => root.AddRow(row => row.AddGroup(panel =>
             {
                 panel.SetShowBorder(false);
@@ -198,26 +196,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     AddHeader(content);
 
-                    content.AddRow(row => row.AddLabel()
-                        .BindText(model => model.OpportunityText)
-                        .BindColor(model => model.OpportunityTextColor)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetHeight(22f));
+                    content.AddRow(row => AddWrappedText(row, model => model.OpportunityText)
+                        .BindColor(model => model.OpportunityTextColor));
 
                     AddMeter(content, model => model.ThermalText, model => model.ThermalValue, model => model.ThermalColor);
                     AddMeter(content, model => model.ShapeText, model => model.ShapeValue, 50, 205, 50);
                     AddMeter(content, model => model.FinishText, model => model.FinishValue, 0, 191, 255);
-                    content.AddRow(row => row.AddLabel()
-                        .BindText(model => model.ThresholdsText)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetHeight(20f));
+                    content.AddRow(row => AddWrappedText(row, model => model.ThresholdsText));
                     AddMeter(content, model => model.IntegrityText, model => model.IntegrityValue, 169, 169, 169);
                     AddMeter(content, model => model.CpText, model => model.CpValue, 255, 215, 0);
 
-                    content.AddRow(row => row.AddLabel()
-                        .BindText(model => model.PerkText)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                        .SetHeight(20f));
+                    content.AddRow(row => AddWrappedText(row, model => model.PerkText));
 
                     content.AddRow(row => row.AddLabel()
                         .SetText("Actions")
@@ -237,19 +226,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetHeight(34f)
                                 .BindOnClicked(model => model.OnClickAction());
                         });
-                        template.AddCell(cell => cell.AddLabel()
+                        // Wrapped text: a preview with several meters or outcomes runs past one line.
+                        template.AddCell(cell => cell.AddText()
                             .BindText(model => model.ActionPreviews)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Middle));
+                            .SetShowBorder(false)
+                            .SetScrollbars(NuiScrollbars.None));
                     })
                         .BindRowCount(model => model.ActionNames)
-                        .SetWidth(ContentWidth)
                         .SetRowHeight(ActionRowHeight)
                         .SetHeight(ActionListHeight));
 
                     content.AddRow(row => row.AddText()
                         .BindText(model => model.LastResultText)
-                        .SetWidth(ContentWidth)
                         .SetHeight(44f)
                         .SetShowBorder(false)
                         .SetScrollbars(NuiScrollbars.Auto));
@@ -266,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                     });
                 });
-            }).SetWidth(ContentPanelWidth)));
+            })));
         }
 
         private static void AddHeader(GuiColumn<ForgeViewModel> content)
@@ -290,6 +278,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindText(model => model.YourSkillText)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left)
                 .SetHeight(20f));
+        }
+
+        /// <summary>A borderless, unscrolled text box: it wraps a sentence to the panel's width, where a label cuts it off at one line.</summary>
+        private static GuiText<ForgeViewModel> AddWrappedText(
+            GuiRow<ForgeViewModel> row,
+            System.Linq.Expressions.Expression<Func<ForgeViewModel, string>> text)
+        {
+            return row.AddText()
+                .BindText(text)
+                .SetHeight(TwoLineTextHeight)
+                .SetShowBorder(false)
+                .SetScrollbars(NuiScrollbars.None);
         }
 
         private static void AddMeter(
@@ -316,10 +316,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             System.Linq.Expressions.Expression<Func<ForgeViewModel, float>> value,
             System.Linq.Expressions.Expression<Func<ForgeViewModel, GuiColor>> color)
         {
-            content.AddRow(row => row.AddLabel()
-                .BindText(text)
-                .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                .SetHeight(20f));
+            // Wrapped: the Thermal line names the working range and what the zone does, which runs past one line when too hot or cold.
+            content.AddRow(row => AddWrappedText(row, text));
             content.AddRow(row => row.AddProgressBar()
                 .BindValue(value)
                 .BindColor(color)

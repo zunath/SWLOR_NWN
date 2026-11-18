@@ -131,8 +131,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public static string ActionButtonColorProperty(int index) => $"ActionButtonColor{index}";
         public static string ActionEnabledProperty(int index) => $"ActionEnabled{index}";
 
+        protected override float MinimumWindowWidth => SearchDefinition.WindowWidth;
+
         protected override void Initialize(SearchPayload initialPayload)
         {
+            KeepMinimumWidth();
             _session = initialPayload.Session;
             _selected = -1;
 

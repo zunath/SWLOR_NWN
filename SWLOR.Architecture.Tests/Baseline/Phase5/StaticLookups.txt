@@ -115,7 +115,7 @@ SWLOR.Game.Server.EngineTests/Definitions/HitPointCostAbilityEngineTests.cs | 13
 SWLOR.Game.Server.EngineTests/Definitions/HitPointLimitEngineTests.cs | 16
 SWLOR.Game.Server.EngineTests/Definitions/HoloComHologramEngineTests.cs | 23
 SWLOR.Game.Server.EngineTests/Definitions/HostileAbilityDelayEngineTests.cs | 24
-SWLOR.Game.Server.EngineTests/Definitions/HotReloadPlayersEngineTests.cs | 7
+SWLOR.Game.Server.EngineTests/Definitions/HotReloadPlayersEngineTests.cs | 8
 SWLOR.Game.Server.EngineTests/Definitions/HotReloadSpawnsEngineTests.cs | 5
 SWLOR.Game.Server.EngineTests/Definitions/IncubatorCompleteJobEngineTests.cs | 6
 SWLOR.Game.Server.EngineTests/Definitions/InvisibilityEngagementEngineTests.cs | 11

@@ -96,7 +96,8 @@ namespace SWLOR.Game.Server.Service
             hostedEvent.Name = name.Trim();
             hostedEvent.HostName = string.IsNullOrWhiteSpace(hostName) ? GetName(DMPresence.GetDM(dm)) : hostName.Trim();
             hostedEvent.Description = description ?? string.Empty;
-            hostedEvent.ScheduledStartUtc = startUtc;
+            hostedEvent.ScheduledStartUtc = HostedEventRules.GetStartToSave(
+                isNew ? null : hostedEvent.ScheduledStartUtc, startText, zone, startUtc);
             hostedEvent.IsJoinOpen = isJoinOpen;
             hostedEvent.AnnounceOnStart = announceOnStart;
 

@@ -141,6 +141,10 @@ namespace SWLOR.Game.Server.Service.TimeZoneService
         {
             zone ??= Utc;
             var info = GetInfo(zone);
+            // A zone this host could not resolve shows UTC times, so its own names would be wrong.
+            if (info.Equals(TimeZoneInfo.Utc))
+                return "UTC";
+
             var abbreviation = info.IsDaylightSavingTime(DateTime.SpecifyKind(utc, DateTimeKind.Utc))
                 ? zone.DaylightAbbreviation
                 : zone.StandardAbbreviation;

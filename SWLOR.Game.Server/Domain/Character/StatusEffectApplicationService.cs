@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Domain.Character
     /// Applying status effects (part 3 of the status effect split): the public <c>ApplyStatusEffect</c> family, the checks, the
     /// replaced and conflicting effects, the activation and the messages. The trackers, the removal, the durations and the native
     /// effect stay in <see cref="StatusEffectService"/>; this part calls them through <see cref="IStatusEffectService"/>, the timing and refresh
-    /// through <see cref="IStatusEffectDurationService"/> and the swing deferral through <see cref="IStatusEffectCombatEventService"/>. The
+    /// through <see cref="IStatusEffectDurationService"/>, the swing deferral through <see cref="IStatusEffectCombatEventService"/> and the native effect through <see cref="IStatusEffectNativeService"/>. The
     /// application is cut into named steps that keep the original's order of reads and writes. The active ability impact sits behind
     /// a one-line <c>protected virtual</c> method whose body is the original call.
     /// </summary>
@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IActiveAbilityImpact _activeImpact;
         private readonly IStatusEffectDurationService _duration;
         private readonly IStatusEffectCombatEventService _combatEvents;
+        private readonly IStatusEffectNativeService _native;
 
         public StatusEffectApplicationService(
             IStatusEffectService statusEffect,
@@ -32,7 +33,8 @@ namespace SWLOR.Game.Server.Domain.Character
             IPlayerNameService playerName,
             IActiveAbilityImpact activeImpact,
             IStatusEffectDurationService duration,
-            IStatusEffectCombatEventService combatEvents)
+            IStatusEffectCombatEventService combatEvents,
+            IStatusEffectNativeService native)
         {
             _statusEffect = statusEffect;
             _statusCatalog = statusCatalog;
@@ -41,6 +43,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _activeImpact = activeImpact;
             _duration = duration;
             _combatEvents = combatEvents;
+            _native = native;
         }
 
         public void ApplyPermanentStatusEffect<T>(uint source, uint creature)
@@ -419,7 +422,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 _statusEffect.ApplyCreatureMovementRate(creature);
             }
 
-            _statusEffect.ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, isPermanent);
+            _native.ApplyTrackedNWNEffect(creature, statusEffect, statusEffect.DurationTicks, isPermanent);
             _statusEffect.NotifyStatusApplied(source, creature, statusEffect.Categories);
             if ((statusEffect.Categories & StatusEffectCategory.Debuff) != 0 &&
                 source != creature && GetIsReactionTypeHostile(creature, source))

@@ -16,8 +16,9 @@ public sealed class TestStatusEffectDurationService : StatusEffectDurationServic
         StatusEffectBench bench,
         IStatusEffectService statusEffect,
         IStatusResistance resistance,
-        ICombatRecorderService combatRecorder)
-        : base(statusEffect, resistance, combatRecorder, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IActiveAbilityImpact>())
+        ICombatRecorderService combatRecorder,
+        IStatusEffectNativeService native)
+        : base(statusEffect, resistance, combatRecorder, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IActiveAbilityImpact>(), native)
     {
         _bench = bench;
     }

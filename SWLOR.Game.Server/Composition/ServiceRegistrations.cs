@@ -150,6 +150,8 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<IStatusEffectDurationService, StatusEffectDurationService>();
             // Part 6 of the status effect split (P5-5g): the damage and attack notices and the native attack swing.
             services.AddSingleton<IStatusEffectCombatEventService, StatusEffectCombatEventService>();
+            // Part 5 of the status effect split (P5-5h): the native effect, the three effect scripts and the ticks.
+            services.AddSingleton<IStatusEffectNativeService, StatusEffectNativeService>();
             services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
             services.AddSingleton<ITintMapStateService, TintMapStateService>();
         }

@@ -23,7 +23,7 @@ public static class StatusEffectInternals
     public static readonly Type CoreType = typeof(StatusEffectService);
 
     /// <summary>Part 5, the native effect side: <c>GetStatusEffectDurationSeconds</c>.</summary>
-    public static readonly Type NativeType = typeof(StatusEffectService);
+    public static readonly Type NativeType = typeof(StatusEffectNativeService);
 
     /// <summary>Part 6, the combat events: the native attack swing depth and the deferred list.</summary>
     public static readonly Type CombatEventsType = typeof(StatusEffectCombatEventService);
@@ -61,7 +61,7 @@ public static class StatusEffectInternals
     // One resolver per part; each is the one line a part's move changes.
     private static object Core => Resolve<IStatusEffectService>();
 
-    private static object Native => Resolve<IStatusEffectService>();
+    private static object Native => Resolve<IStatusEffectNativeService>();
 
     private static object CombatEvents => Resolve<IStatusEffectCombatEventService>();
 

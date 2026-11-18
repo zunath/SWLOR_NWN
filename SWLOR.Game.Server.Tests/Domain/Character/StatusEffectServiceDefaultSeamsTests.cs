@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Tests.Domain.Character;
 
 /// <summary>
 /// The default of each call into unconverted code reaches the real static code. The engine fake reports the creature as
-/// gone or not a player, so each call stops at its first check. <c>MayHaveEffectTag</c> reads the native engine and is left
-/// to the in-engine tests.
+/// gone or not a player, so each call stops at its first check. The native part's <c>MayHaveEffectTag</c> reads the native engine
+/// and is left to the in-engine tests.
 /// </summary>
 [TestFixture]
 public class StatusEffectServiceDefaultSeamsTests
@@ -26,7 +26,6 @@ public class StatusEffectServiceDefaultSeamsTests
     private CoreDefaults _core = null!;
     private ApplicationDefaults _application = null!;
     private DurationDefaults _duration = null!;
-    private NativeDefaults _native = null!;
     private CombatEventsDefaults _combatEvents = null!;
 
     [OneTimeSetUp]
@@ -44,7 +43,6 @@ public class StatusEffectServiceDefaultSeamsTests
         _core = new CoreDefaults();
         _application = new ApplicationDefaults();
         _duration = new DurationDefaults();
-        _native = new NativeDefaults();
         _combatEvents = new CombatEventsDefaults();
     }
 
@@ -143,7 +141,7 @@ public class StatusEffectServiceDefaultSeamsTests
     [Test]
     public void ScheduleTemporaryHitPointLimitCheck_AsksTheFeatureWhichStopsAtAnInvalidTarget()
     {
-        _native.CallScheduleTemporaryHitPointLimitCheck(Creature);
+        _core.CallScheduleTemporaryHitPointLimitCheck(Creature);
 
         _engine.CountOf("GetIsObjectValid").Should().Be(1);
         _engine.CountOf("AssignCommand").Should().Be(0);
@@ -160,9 +158,8 @@ public class StatusEffectServiceDefaultSeamsTests
         public void OnStatAdjustingEffectsChanged(uint creature) => Changed.Add(creature);
     }
 
-    // Each part's seams run on a subclass of that part, so the pull request that moves a part changes one base type. Until then
-    // parts 5 shares StatusEffectService and the constructor of DefaultsBase. Part 2's search and part 7's ability details
-    // are answered by the bench's double and read no unconverted code, so they have no default to run.
+    // Each part's seams run on a subclass of that part. Part 2's search, part 5's native tag read and part 7's ability details
+    // are answered by the bench's double and read no unconverted code a unit test can reach, so they have no default to run.
 
     private abstract class DefaultsBase : StatusEffectService
     {
@@ -172,19 +169,21 @@ public class StatusEffectServiceDefaultSeamsTests
         }
     }
 
-    /// <summary>Part 1, <c>StatusEffectService</c> (stays): the listener notices.</summary>
+    /// <summary>Part 1, <c>StatusEffectService</c> (stays): the listener notices and the hit point limit check.</summary>
     private sealed class CoreDefaults : DefaultsBase
     {
         public void CallReapplyFoodHP(uint player) => ReapplyFoodHP(player);
 
         public void CallApplyCreatureMovementRate(uint creature) => ApplyCreatureMovementRate(creature);
+
+        public void CallScheduleTemporaryHitPointLimitCheck(uint target) => ScheduleTemporaryHitPointLimitCheck(target);
     }
 
     /// <summary>Part 3, <c>StatusEffectApplicationService</c>.</summary>
     private sealed class ApplicationDefaults : StatusEffectApplicationService
     {
         public ApplicationDefaults()
-            : base(null!, null!, null!, null!, FacadeForwarder.For<IActiveAbilityImpact>(), null!, null!)
+            : base(null!, null!, null!, null!, FacadeForwarder.For<IActiveAbilityImpact>(), null!, null!, null!)
         {
         }
 
@@ -195,17 +194,11 @@ public class StatusEffectServiceDefaultSeamsTests
     private sealed class DurationDefaults : StatusEffectDurationService
     {
         public DurationDefaults()
-            : base(null!, null!, null!, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IActiveAbilityImpact>())
+            : base(null!, null!, null!, FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IActiveAbilityImpact>(), null!)
         {
         }
 
         public int CallGetCreatureStatAdjustment(uint creature, StatType stat) => GetCreatureStatAdjustment(creature, stat);
-    }
-
-    /// <summary>Part 5, <c>StatusEffectNativeService</c>.</summary>
-    private sealed class NativeDefaults : DefaultsBase
-    {
-        public void CallScheduleTemporaryHitPointLimitCheck(uint target) => ScheduleTemporaryHitPointLimitCheck(target);
     }
 
     /// <summary>Part 6, <c>StatusEffectCombatEventService</c>.</summary>

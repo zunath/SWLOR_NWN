@@ -141,6 +141,6 @@ internal static class ReloadCarrySamples
         var trackers = RuntimeHelpers.GetUninitializedObject(typeof(StatusEffectService));
         typeof(StatusEffectService).GetField("_creatureEffects", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetValue(trackers, new Dictionary<uint, CreatureStatusEffect>());
-        return new StatusEffectSessionService((IStatusEffectService)trackers, null!, null!, null!, null!);
+        return new StatusEffectSessionService((IStatusEffectService)trackers, null!, null!, null!, null!, null!);
     }
 }

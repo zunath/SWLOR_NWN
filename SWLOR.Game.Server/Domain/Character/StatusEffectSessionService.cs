@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private readonly IStatusEffectService _statusEffect;
         private readonly IStatusEffectApplicationService _statusEffectApplication;
+        private readonly IStatusEffectNativeService _native;
         private readonly IStatusEffectCatalogService _statusCatalog;
         private readonly IDBService _db;
         private readonly IAbilityCatalog _catalog;
@@ -33,12 +34,14 @@ namespace SWLOR.Game.Server.Domain.Character
         public StatusEffectSessionService(
             IStatusEffectService statusEffect,
             IStatusEffectApplicationService statusEffectApplication,
+            IStatusEffectNativeService native,
             IStatusEffectCatalogService statusCatalog,
             IDBService db,
             IAbilityCatalog catalog)
         {
             _statusEffect = statusEffect;
             _statusEffectApplication = statusEffectApplication;
+            _native = native;
             _statusCatalog = statusCatalog;
             _db = db;
             _catalog = catalog;
@@ -83,7 +86,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 if (effects.GetAllEffects().Count > 0)
                 {
                     _statusEffect.TrackCreatureStatusEffects(player, effects);
-                    _statusEffect.ReapplyNWNEffects(player, effects);
+                    _native.ReapplyNWNEffects(player, effects);
                     NotifyStatusEffectsRestored(player, effects);
                 }
             }

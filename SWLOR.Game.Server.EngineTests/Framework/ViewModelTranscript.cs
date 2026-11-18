@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Composition;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.Game.Server.Domain.Character;
@@ -112,7 +113,8 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             if (!byType.ContainsKey(type))
             {
                 var template = Gui.GetWindowTemplate(type);
-                var window = template.CreatePlayerWindowAction();
+                // Built like the window service builds it, with the factory of the spy container, so the view model's own services are spied.
+                var window = new GuiPlayerWindow(Content.Create<IGuiViewModel>(typeof(T)));
                 window.ViewModel.Geometry = template.InitialGeometry;
                 byType[type] = window;
                 Attach(window.ViewModel);
@@ -453,6 +455,14 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             public object GetService(Type serviceType)
             {
                 var real = _real.GetService(serviceType);
+                if (serviceType == typeof(IContentFactory))
+                {
+                    // View models and content singletons are built from this provider, so their services are the spies.
+                    if (!_spies.TryGetValue(serviceType, out var factory))
+                        _spies[serviceType] = factory = new ContentFactory(this);
+                    return factory;
+                }
+
                 if (real != null && !serviceType.IsInterface && serviceType.Namespace?.StartsWith(ContentFactory.ContentNamespace + ".") == true)
                 {
                     // A content singleton took its services from the real container when the server booted, so its calls would

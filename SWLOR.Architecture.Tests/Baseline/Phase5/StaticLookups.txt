@@ -761,7 +761,9 @@ SWLOR.Game.Server/Feature/DMAuthorization.cs | 2
 SWLOR.Game.Server/Feature/DMToolbarWindow.cs | 18
 SWLOR.Game.Server/Feature/EchaniTempleMonks.cs | 7
 SWLOR.Game.Server/Feature/EquipmentRestrictions.cs | 30
-SWLOR.Game.Server/Feature/EquipmentStats.cs | 120
+SWLOR.Game.Server/Feature/EquipmentStatActions/EquipmentCraftStatActions.cs | 13
+SWLOR.Game.Server/Feature/EquipmentStatActions/EquipmentVitalStatActions.cs | 22
+SWLOR.Game.Server/Feature/EquipmentStats.cs | 87
 SWLOR.Game.Server/Feature/EventRegistration.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/KeyItemsDefinition.cs | 2
 SWLOR.Game.Server/Feature/GuiDefinition/SkillsDefinition.cs | 2

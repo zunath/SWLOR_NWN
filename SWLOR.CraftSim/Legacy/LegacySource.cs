@@ -25,7 +25,7 @@ namespace SWLOR.CraftSim.Legacy
         public const string ScavengeSite = Server + "Feature/ScavengePoint.cs";
         public const string Refinery = Server + "Feature/GuiDefinition/ViewModel/RefineryViewModel.cs";
         public const string FishingFight = Server + "Domain/World/FishingFightLifecycle.cs";
-        public const string EquipmentStats = Server + "Feature/EquipmentStats.cs";
+        public const string EquipmentCraftStatActions = Server + "Feature/EquipmentStatActions/EquipmentCraftStatActions.cs";
 
         public static readonly SourceReference ActionRanks = SourceReference.Frozen(
             "Craft action unlock ranks", CraftViewModel, 39, 48, CraftViewModelCommit);
@@ -83,7 +83,7 @@ namespace SWLOR.CraftSim.Legacy
             "var requiredRank = recipe.Level - RecipeSkillUnlockOffset;", "return Math.Max(requiredRank, 0);");
 
         public static readonly SourceReference GearStats = new(
-            "Crafting gear stats", EquipmentStats, 930, 1126,
+            "Crafting gear stats", EquipmentCraftStatActions, 25, 172,
             "StatRecord.AdjustControl(dbPlayer, skillType, amount);", "StatRecord.AdjustCraftsmanship(dbPlayer, skillType, amount);",
             "StatRecord.AdjustCPBonus(dbPlayer, skillType, amount);", "GetItemPropertyCostTableValue(ip)");
 

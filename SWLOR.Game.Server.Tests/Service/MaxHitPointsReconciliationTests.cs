@@ -51,10 +51,11 @@ public class MaxHitPointsReconciliationTests
         root.Should().NotBeNull();
         _root = root!.FullName;
         var methods = StatHarnessSource.Methods(node => node.Identifier.ValueText is "AdjustPlayerMaxHP" or "RefreshPlayerMaxHP" or "GetEquippedHPBonus");
-        var equipmentMethods = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
-                "SWLOR.Game.Server", "Feature", "EquipmentStats.cs"))).GetRoot()
+        var equipmentMethods = new[] { "EquipmentStats.cs", Path.Combine("EquipmentStatActions", "EquipmentVitalStatActions.cs") }
+            .SelectMany(file => CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(_root,
+                "SWLOR.Game.Server", "Feature", file))).GetRoot()
             .DescendantNodes().OfType<MethodDeclarationSyntax>()
-            .Where(node => node.Identifier.ValueText is "ApplyHPBonus" or "RefreshMaxHPAfterEquipmentChange");
+            .Where(node => node.Identifier.ValueText is "ApplyHPBonus" or "RefreshMaxHPAfterEquipmentChange"));
         // Execute the real HP application, before handler, after handler, and reconciliation.
         // Substitute only the native level and equipment queries and the database.
         var source = $$"""

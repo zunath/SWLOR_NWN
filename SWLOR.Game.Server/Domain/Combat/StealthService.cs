@@ -569,17 +569,8 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private bool HasEffect(uint creature, EffectTypeScript effectType, EffectTypeScript otherEffectType)
         {
-            if (!MayHaveScriptType(creature, effectType, otherEffectType))
-                return false;
-
-            for (var effect = GetFirstEffect(creature); GetIsEffectValid(effect); effect = GetNextEffect(creature))
-            {
-                var type = GetEffectType(effect);
-                if (type == effectType || type == otherEffectType)
-                    return true;
-            }
-
-            return false;
+            return MayHaveScriptType(creature, effectType, otherEffectType) &&
+                   ConcealmentRules.HasEffect(creature, effectType, otherEffectType);
         }
 
         [NWNEventHandler(ScriptName.OnDoListenDetectionBefore)]

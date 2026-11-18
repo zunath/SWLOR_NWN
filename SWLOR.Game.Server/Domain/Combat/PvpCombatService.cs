@@ -37,20 +37,17 @@ namespace SWLOR.Game.Server.Domain.Combat
         };
 
         private readonly Type[] _allStatusEffects;
-        private readonly Lazy<IStatusEffectService> _statusEffect;
+        private readonly IStatusEffectService _statusEffect;
         private readonly ICombatRecorderService _combatRecorder;
 
-        public PvpCombatService(Lazy<IStatusEffectService> statusEffect, ICombatRecorderService combatRecorder)
+        public PvpCombatService(IStatusEffectService statusEffect, ICombatRecorderService combatRecorder)
         {
             _statusEffect = statusEffect;
             _combatRecorder = combatRecorder;
             _allStatusEffects = new[] { typeof(PvpCombatStatusEffect) }.Concat(_healingStepStatusEffects).ToArray();
         }
 
-        public bool IsPlayer(uint creature)
-        {
-            return GetIsObjectValid(creature) && GetIsPC(creature) && !GetIsDM(creature) && !GetIsDMPossessed(creature);
-        }
+        public bool IsPlayer(uint creature) => PlayerControlRules.IsPlayer(creature);
 
         public bool IsPlayerControlled(uint creature)
         {
@@ -58,26 +55,10 @@ namespace SWLOR.Game.Server.Domain.Combat
         }
 
         /// <summary>The player a creature fights for: the player itself, or the master of a player's pet.</summary>
-        public uint GetControllingPlayer(uint creature)
-        {
-            if (!GetIsObjectValid(creature))
-                return OBJECT_INVALID;
-            if (IsPlayer(creature))
-                return creature;
-
-            var master = GetMaster(creature);
-            return IsPlayer(master) ? master : OBJECT_INVALID;
-        }
+        public uint GetControllingPlayer(uint creature) => PlayerControlRules.GetControllingPlayer(creature);
 
         /// <summary>Whether a player or a player's pet is acting on a different player.</summary>
-        public bool IsPlayerAgainstPlayer(uint source, uint target)
-        {
-            if (!IsPlayer(target))
-                return false;
-
-            var player = GetControllingPlayer(source);
-            return GetIsObjectValid(player) && player != target;
-        }
+        public bool IsPlayerAgainstPlayer(uint source, uint target) => PlayerControlRules.IsPlayerAgainstPlayer(source, target);
 
         public bool IsInPvpCombat(uint player)
         {
@@ -337,12 +318,12 @@ namespace SWLOR.Game.Server.Domain.Combat
             Scheduler.ScheduleRepeating(task, schedule);
 
         protected virtual bool HasStatusEffect(uint creature, Type statusEffectClass) =>
-            _statusEffect.Value.HasStatusEffect(creature, statusEffectClass);
+            _statusEffect.HasStatusEffect(creature, statusEffectClass);
 
         protected virtual void RemoveStatusEffect(uint creature, Type statusEffectClass, bool sendsWornOffMessage) =>
-            _statusEffect.Value.RemoveStatusEffect(creature, statusEffectClass, sendsWornOffMessage);
+            _statusEffect.RemoveStatusEffect(creature, statusEffectClass, sendsWornOffMessage);
 
         protected virtual void ApplyStatusEffect(uint source, uint creature, Type statusEffectClass, float durationSeconds) =>
-            _statusEffect.Value.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
+            _statusEffect.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
     }
 }

@@ -31,7 +31,7 @@ public class AppearanceArmorAdjustmentTests
             notifications.Clear();
             Assert.DoesNotThrow(() => Adjust(editor, part, 1));
             Assert.That(notifications, Is.Empty, "unloaded or stale controls must not change the item");
-            Assert.That(SkipField.GetValue(editor), Is.False);
+            Assert.That(Session(editor).SkipAdjustArmorPart, Is.False);
         }
     }
 
@@ -53,11 +53,11 @@ public class AppearanceArmorAdjustmentTests
 
         foreach (var wasSkipping in new[] { false, true })
         {
-            SkipField.SetValue(editor, wasSkipping);
+            Session(editor).SkipAdjustArmorPart = wasSkipping;
             var failure = Assert.Throws<TargetInvocationException>(() => Adjust(editor, part, 1));
             Assert.That(failure!.InnerException, Is.TypeOf<InvalidOperationException>());
             Assert.That(failure.InnerException!.Message, Is.EqualTo("Selection publication failed"));
-            Assert.That(SkipField.GetValue(editor), Is.EqualTo(wasSkipping));
+            Assert.That(Session(editor).SkipAdjustArmorPart, Is.EqualTo(wasSkipping));
         }
     }
 
@@ -91,8 +91,8 @@ public class AppearanceArmorAdjustmentTests
             Assert.DoesNotThrow(() => editor.OnClickAdjustArmorPart(AppearanceArmor.LeftBicep, 1)());
     }
 
-    private static FieldInfo SkipField => typeof(AppearanceEditorViewModel)
-        .GetField("_skipAdjustArmorPart", BindingFlags.NonPublic | BindingFlags.Instance)!;
+    private static AppearanceEditorSession Session(AppearanceEditorViewModel editor) => (AppearanceEditorSession)typeof(AppearanceEditorViewModel)
+        .GetField("_session", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(editor)!;
 
     private static string PropertyPrefix(AppearanceArmor part) => part == AppearanceArmor.Torso ? "Chest" : part.ToString();
 

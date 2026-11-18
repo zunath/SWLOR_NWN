@@ -112,10 +112,10 @@ public class AppearanceEditorSettingsTests
             }
             public class Harness
             {
-                private uint _target = 2;
+                private sealed class EditorSession { public uint Target = 2; public bool IsDMArmorDisplay; }
+                private readonly EditorSession _session = new();
                 public uint Player = 1;
                 public bool IsSettingsVisible, IsPlayerSettingsVisible, IsArmorDisplayVisible, ShowHelmet, ShowCloak;
-                private bool _isDMArmorDisplay;
                 private int _watches;
                 private void WatchOnClient(Expression<Func<Harness, bool>> binding) => _watches++;
                 private void UpdateArmorDisplay() { }

@@ -20,8 +20,6 @@ SWLOR.Game.Server.Feature.AbilityDefinition.WeaponActiveAbilityDefinitionBase.Co
 SWLOR.Game.Server.Feature.DialogDefinition.StarportDockDialog.MainPageInit | 186
 SWLOR.Game.Server.Feature.GuiDefinition.ShipManagementDefinition.BuildWindow | 414
 SWLOR.Game.Server.Feature.GuiDefinition.StablesDefinition.BuildWindow | 741
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.InitializeRegions | 167
-SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel.RegisterColorMappings | 188
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CharacterFullRebuildViewModel.OnClickResetEverything | 158
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CombatStyleGuideTopics.Create | 224
 SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.LightsaberWorkbenchViewModel.ConstructSaber | 151

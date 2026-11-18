@@ -1,45 +1,15 @@
 #nullable enable
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Administration;
 using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Tests.Support;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript;
-using SWLOR.NWN.API.Testing;
-using System.Text.Json;
 
 namespace SWLOR.Game.Server.Tests.Support;
-
-internal sealed partial class PlainRecorder : CombatRecorderService
-{
-    public PlainRecorder(IDMPresenceService presence, IDBService db)
-        : base(presence, db, FacadeForwarder.For<IAbilityCatalog>(), FacadeForwarder.For<IAbilityImpactState>(), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<ICombatQueriesService>())
-    {
-    }
-
-    public ulong CallFrame() => CurrentFrame();
-    public long CallMillis() => UnixTimeMilliseconds();
-    public DateTime CallUtcNow() => UtcNow();
-    public void CallWrite() => WriteLog(LogGroup.DM, "default seam");
-    public string CallLogDirectory() => GetLogDirectory();
-}
-
-internal sealed partial class ScheduledTask : IDisposable
-{
-    public ScheduledTask(Action action) => Action = action;
-    public Action Action { get; }
-    public bool Disposed { get; private set; }
-    public void Dispose() => Disposed = true;
-}
 
 internal sealed partial class RecorderProbe : CombatRecorderService
 {

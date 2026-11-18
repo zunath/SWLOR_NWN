@@ -363,7 +363,7 @@
   },
   "ScriptDeath": {
     "type": "resref",
-    "value": ""
+    "value": "sw_frogdeath"
   },
   "ScriptDialogue": {
     "type": "resref",

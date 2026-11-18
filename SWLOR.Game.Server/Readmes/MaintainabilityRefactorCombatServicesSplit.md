@@ -727,4 +727,45 @@ coordinator decisions that take this guide's recommendation.
 
 ## Progress
 
-P5-7a: this guide (2026-11-18), revised after the coordinator's review. Next: P5-7b (the proof), after P5-7a is merged.
+P5-7a: this guide (2026-11-18), revised after the coordinator's review. P5-7b: the proof (2026-11-18, "P5-7b as built" below). Next: P5-7c.
+
+### P5-7b as built (2026-11-18)
+
+Tests only; no production file changed. Later PRs run every test below unchanged except for receivers (`bench.Get<I...>()` types and the casts to a
+concrete class where a handler is not on an interface).
+
+- **The bench** (`Tests/Support/CombatTranscriptBench.cs`, `TranscriptLeaf.cs`, `ForwardingRecorder.cs`, `CombatTableState.cs`): the real container
+  (`FacadeContainer`) with recording stand-ins at its leaves (`CombatTranscriptBench.DefaultLeaves`: stat, the four status effect services, temporary
+  stat modifiers, resources, the recorder and its three interfaces, enmity, activity, attack timing, suppression, paired ranged traits, capstone proof,
+  resistance, party, rating), an engine fake whose writes are recorded in order (`DelayCommand` and `ActionDoCommand` run after the step's own calls),
+  an in-memory database with two players, the `Clock` held still, and `Random` replaced by a seeded generator that records every draw. A leaf answers
+  from a table or with the empty value of its return type; a step that throws fails the test, except at the native library (the transcript ends there
+  with a marker). Every other Combat service is real, so a transcript crosses the seams the split moves. The recorder's `get_IsRecording` reads are
+  left out (the split changes how they are served). Fixtures are in `Tests/Fixtures/CombatTranscripts/*.txt`, `-text` in `.gitattributes`, LF.
+- **Transcripts** (each with every stat at zero and again at 5, so the gates and every rider are pinned; weapon-family riders once per weapon skill):
+  `CombatHitEffectsTranscriptTests` (`ApplyDamageDealtEffects`, `ApplyTriggeredDamage`, `ApplyCriticalHitEffects`, `ApplyNonCriticalAbilityEffects`,
+  `ApplyAutoAttackDamageModifiers`, the cycle bonus, `ApplyDefeatedEnemyEffects`), `CombatDamageTakenTranscriptTests` (`ApplyDamageTakenModifiers`,
+  the damage-over-time and fatal-damage members, `ApplyGuardedHitModifiers`, the `ApplyDamageTakenEffects` handler, reflection and force conversion),
+  `CombatAbilityTranscriptTests` (`ApplyAbilityActivatedEffects` for 15 skills, `ApplySuccessfulAbilityImpactRiders` for 15 skills,
+  `ApplyAbilityImpactEffects`, the status-applied listener notices through the registered listener, `ApplyDamageDealtModifiers` for 15 skills,
+  `TryResolveAbilityHit` with the overrides, the bonus reads), `CombatDeathTranscriptTests` (the three `DeathService` handlers, the login handler,
+  `CombatService`'s three handlers and the tracker refresh).
+- **Cleanup order** (`CombatCleanupOrderTests`): ten real parts decorated to record their forgets and the temporary modifier clear, a bench with 34 tables populated for
+  four creatures, the exit and the death path. The transcript shows the tables before and after, the forgets in order including the second
+  `CombatActivity` and `CombatResources` calls, the two overwatch removals of the suppression forget, the `SpottersRhythm` removal of the damage
+  modifiers forget and the refresh notice of the final `TemporaryStatModifier.Clear`. Two tables are not cleared today (`_containmentNormalizationTargets`,
+  `_damageDerivedHealingStates`); the transcript pins that.
+- **Recorder** (`CombatRecorderTranscriptTests`): a scripted fight of 20 steps through the real writer, 42 event lines compared byte for byte. The
+  double `Probe` names the recorder's constructor; P5-7j1 updates it. The summary file is not compared (the writer stamps `DateTime.UtcNow`, no seam).
+  **Serializer** (`CombatRecordSerializerGoldenTests`): one golden line for each of the 23 event types plus 13 variants of the other branch.
+- **Enmity** (`EnmityTranscriptTests`): 31 steps (damage, attack, heals with a nested heal, taunts, reduces, proximity, removal, limbo, death, destroy,
+  player death and exit, the attack command, the hidden-target hold, the stale proximity target, the leash starting and already running), the six
+  tables dumped after each, and a reload round trip of the carried keys through `ReloadStateCarrier`.
+- **Engine test** (`StealthRetargetEngineTests`, two tests): an enemy attacking a player who enters stealth (through Ghost Protocol, the engine refuses
+  stealth in combat otherwise) drops the player and keeps the enmity, and attacks again when the player is revealed; two enemies do the same. It passed
+  on a full engine hak set built in a throwaway worktree.
+- **Not covered, and why.** `TemporaryHitPointEffects` stamps pool expiry with `DateTimeOffset.UtcNow` (no `Clock` seam), so the raised-stat
+  hit point spend is left out of the activation transcript; P5-2 or a Feature owner can add the seam. Paths that reach the native library
+  (`ActionInterruption`, the rifle pacification rider) end their transcript at a marker in two impact steps.
+- **Groundwork not done here.** The "Groundwork as in P5-5b" list of "Tests and the proof plan" (`CombatParts.OtherServices` for the recorder parts,
+  `EnmitySource` and `DeathSource`, the 11 doubles as partial files) is not part of this PR; each moves with the PR that needs it.

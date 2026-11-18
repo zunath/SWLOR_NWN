@@ -225,6 +225,7 @@ SWLOR.Game.Server.EngineTests/Definitions/StationReturnInventorySpaceEngineTests
 SWLOR.Game.Server.EngineTests/Definitions/StatusEffectEngineTests.cs | 20
 SWLOR.Game.Server.EngineTests/Definitions/StatusEffectRefreshInPlaceEngineTests.cs | 30
 SWLOR.Game.Server.EngineTests/Definitions/StatusEffectTickStatEngineTests.cs | 24
+SWLOR.Game.Server.EngineTests/Definitions/StealthRetargetEngineTests.cs | 13
 SWLOR.Game.Server.EngineTests/Definitions/StealthedPlayerAreaAbilityEngineTests.cs | 10
 SWLOR.Game.Server.EngineTests/Definitions/StoredItemUpdateEngineTests.cs | 2
 SWLOR.Game.Server.EngineTests/Definitions/TankEnmityEngineTests.cs | 99

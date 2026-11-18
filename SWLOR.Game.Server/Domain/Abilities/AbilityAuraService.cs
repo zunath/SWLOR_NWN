@@ -19,17 +19,20 @@ namespace SWLOR.Game.Server.Domain.Abilities
     public class AbilityAuraService : IAbilityAuraService
     {
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectCatalogService _statusCatalog;
         private readonly IPartyRoster _party;
         private readonly IStatService _stat;
         private readonly ICombatPointService _combatPoint;
 
         public AbilityAuraService(
             IStatusEffectService statusEffect,
+            IStatusEffectCatalogService statusCatalog,
             IPartyRoster party,
             IStatService stat,
             ICombatPointService combatPoint)
         {
             _statusEffect = statusEffect;
+            _statusCatalog = statusCatalog;
             _party = party;
             _stat = stat;
             _combatPoint = combatPoint;
@@ -95,7 +98,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
             var detail = _playerAuras.TryGetValue(source, out var playerAura)
                 ? playerAura.Auras.FirstOrDefault(x => x.StatusEffect == type)
                 : null;
-            var statusEffect = _statusEffect.CreateStatusEffect(type);
+            var statusEffect = _statusCatalog.CreateStatusEffect(type);
             if (statusEffect is IAuraStatusEffect aura && detail != null)
                 aura.AnnouncesApplication = !detail.AnnouncedTo.Contains(recipient);
 
@@ -208,7 +211,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 return;
 
             var maxAuras = GetMaxNumberOfAuras(activator);
-            var effectName = _statusEffect.GetStatusEffectName(type);
+            var effectName = _statusCatalog.GetStatusEffectName(type);
 
             while (aura.Auras.Count >= maxAuras)
             {
@@ -324,7 +327,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
 
             // Aura is active and player wants to deactivate it.
             // Remove it from the list and send a notification message.
-            var effectName = _statusEffect.GetStatusEffectName(type);
+            var effectName = _statusCatalog.GetStatusEffectName(type);
             if (RemoveAura(activator, type))
             {
                 SendMessageToPC(activator, ColorToken.Red($"Aura '{effectName}' deactivated."));

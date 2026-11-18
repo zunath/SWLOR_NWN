@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NWN.Native.API;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Domain.Foundation;
@@ -7,7 +8,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 namespace SWLOR.Game.Server.Domain.Combat
 {
     /// <summary>Resistances and vulnerabilities: reading them, and what they do to damage and status durations.</summary>
-    public interface IResistanceService
+    public interface IResistanceService : IStatusResistance
     {
         void LoadResistanceTypes();
 

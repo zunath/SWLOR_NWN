@@ -278,7 +278,7 @@ public class CraftingStyleSelectionTests
     public void TheFullRebuildClearsTheSelectionsWithTheRefundedPerks_BeforeSavingTheRecord()
     {
         var rebuild = Source("Feature", "GuiDefinition", "ViewModel", "CharacterFullRebuildViewModel.cs");
-        var refund = rebuild.DescendantNodes().OfType<LocalFunctionStatementSyntax>()
+        var refund = rebuild.DescendantNodes().OfType<MethodDeclarationSyntax>()
             .Single(function => function.Identifier.ValueText == "RefundAllPerks");
 
         var calls = refund.DescendantNodes().OfType<InvocationExpressionSyntax>().ToList();

@@ -298,7 +298,7 @@ SWLOR.Game.Server.Tests/Domain/Character/SkillFacadeAllocationTests.cs | 11
 SWLOR.Game.Server.Tests/Domain/Character/StatFacadeAllocationTests.cs | 57
 SWLOR.Game.Server.Tests/Domain/Character/StatRulesTests.cs | 11
 SWLOR.Game.Server.Tests/Domain/Character/StatServiceDefaultSeamsTests.cs | 12
-SWLOR.Game.Server.Tests/Domain/Character/StatusEffectFacadeAllocationTests.cs | 41
+SWLOR.Game.Server.Tests/Domain/Character/StatusEffectFacadeAllocationTests.cs | 35
 SWLOR.Game.Server.Tests/Domain/Character/TemporaryStatModifierFacadeAllocationTests.cs | 9
 SWLOR.Game.Server.Tests/Domain/Combat/CombatDamageCatalogServiceTests.cs | 7
 SWLOR.Game.Server.Tests/Domain/Combat/CombatDamageTakenServiceTests.cs | 1
@@ -332,7 +332,7 @@ SWLOR.Game.Server.Tests/Feature/AbandonedStationTests.cs | 3
 SWLOR.Game.Server.Tests/Feature/AbilityDescriptionTests.cs | 6
 SWLOR.Game.Server.Tests/Feature/BeastXPProgressionTests.cs | 14
 SWLOR.Game.Server.Tests/Feature/BloodFrenzyQuestDefinitionTests.cs | 3
-SWLOR.Game.Server.Tests/Feature/DamageOverTimeStatusEffectTests.cs | 3
+SWLOR.Game.Server.Tests/Feature/DamageOverTimeStatusEffectTests.cs | 1
 SWLOR.Game.Server.Tests/Feature/DoubleWeaponRecalibrationTests.cs | 2
 SWLOR.Game.Server.Tests/Feature/EquipmentRestrictionsTests.cs | 2
 SWLOR.Game.Server.Tests/Feature/EquipmentStatsTests.cs | 3
@@ -376,7 +376,7 @@ SWLOR.Game.Server.Tests/Perks/FabricationPerkLineTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/FabricationPerkLines.cs | 2
 SWLOR.Game.Server.Tests/Perks/FirstAidCombatUpgradeTests.cs | 4
 SWLOR.Game.Server.Tests/Perks/ForceLightConsularTests.cs | 11
-SWLOR.Game.Server.Tests/Perks/ForceSensitiveEspionageTests.cs | 5
+SWLOR.Game.Server.Tests/Perks/ForceSensitiveEspionageTests.cs | 4
 SWLOR.Game.Server.Tests/Perks/GatheringPerkLineTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/GeneratedWeaponPerkBehaviorTests.cs | 91
 SWLOR.Game.Server.Tests/Perks/IndependentBuffWindowTests.cs | 3
@@ -384,7 +384,7 @@ SWLOR.Game.Server.Tests/Perks/LeadershipOffensivePartyBuffTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/LightsaberPerkBehaviorTests.cs | 10
 SWLOR.Game.Server.Tests/Perks/MimicryPotencyTests.cs | 3
 SWLOR.Game.Server.Tests/Perks/MimicryTests.cs | 29
-SWLOR.Game.Server.Tests/Perks/PerkCombinationBehaviorTests.cs | 34
+SWLOR.Game.Server.Tests/Perks/PerkCombinationBehaviorTests.cs | 25
 SWLOR.Game.Server.Tests/Perks/PerkRankProgressionTests.cs | 4
 SWLOR.Game.Server.Tests/Perks/SaberstaffAreaEffectsTests.cs | 8
 SWLOR.Game.Server.Tests/Perks/SkillSelectorStackingTests.cs | 2
@@ -445,7 +445,7 @@ SWLOR.Game.Server.Tests/Service/SkillMappingTests.cs | 14
 SWLOR.Game.Server.Tests/Service/SkillRankLimitTests.cs | 35
 SWLOR.Game.Server.Tests/Service/StaminaSustainTests.cs | 2
 SWLOR.Game.Server.Tests/Service/StatAdjustmentSourceTests.cs | 19
-SWLOR.Game.Server.Tests/Service/StatusEffectDeliveryTests.cs | 8
+SWLOR.Game.Server.Tests/Service/StatusEffectDeliveryTests.cs | 1
 SWLOR.Game.Server.Tests/Service/TankThreatTests.cs | 21
 SWLOR.Game.Server.Tests/Service/TwinPistolEquipmentTests.cs | 15
 SWLOR.Game.Server.Tests/Service/WeaponAttackEligibilityTests.cs | 14
@@ -729,7 +729,7 @@ SWLOR.Game.Server/Feature/AreaConfiguration.cs | 2
 SWLOR.Game.Server/Feature/ArmorDisplay.cs | 10
 SWLOR.Game.Server/Feature/Auditing.cs | 10
 SWLOR.Game.Server/Feature/BeastStableTrials.cs | 2
-SWLOR.Game.Server/Feature/BuffTimer.cs | 8
+SWLOR.Game.Server/Feature/BuffTimer.cs | 6
 SWLOR.Game.Server/Feature/CZ220FlightsTerminal.cs | 2
 SWLOR.Game.Server/Feature/ChatCommandDefinition/AdminChatCommand.cs | 5
 SWLOR.Game.Server/Feature/ChatCommandDefinition/CharacterAppearanceChatCommand.cs | 6
@@ -824,7 +824,7 @@ SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/NotesViewModel.cs | 21
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceCueViewModelBase.cs | 5
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceOptionsViewModel.cs | 41
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerformanceWatchingViewModel.cs | 8
-SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs | 62
+SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs | 61
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerListViewModel.cs | 42
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerStatusPortraitSpaceViewModel.cs | 4
 SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PlayerStatusPortraitViewModel.cs | 6

@@ -146,6 +146,18 @@
       "reason": "Lists the emote chat commands (name, description, animation) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16c)."
     },
     {
+      "match": "member", "value": "SWLOR.Game.Server.Domain.Crafting.Minigame.Kitchen.KitchenComponentTable.BuildFlavors",
+      "measures": ["typeSize", "methodSize"],
+      "category": "data catalog member",
+      "reason": "One row per cooking ingredient (resref and three flavor numbers) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16g)."
+    },
+    {
+      "match": "member", "value": "SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.CombatStyleGuideTopics.Create",
+      "measures": ["typeSize", "methodSize"],
+      "category": "data catalog member",
+      "reason": "Lists the combat style guide topics (title, summary, style blocks, related topics) and nothing else; cutting the alphabetical list into numbered pieces would make it harder to read (P5-16g)."
+    },
+    {
       "match": "type", "value": "SWLOR.Game.Server.Domain.Abilities.AbilityBuilder",
       "measures": ["typeSize"],
       "category": "fluent builder",

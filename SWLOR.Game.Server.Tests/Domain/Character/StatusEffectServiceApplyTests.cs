@@ -275,7 +275,8 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
         Application.ApplyStatusEffect(Caster, Target, cc, 100f);
         cc.DurationTicks.Should().Be(StatusEffectRules.MaximumHardCrowdControlDurationSeconds);
 
-        Bench.PlayerAgainstPlayer = true;
+        Bench.Players.Add(Caster);
+        Bench.Players.Add(Bystander);
         var pvp = Probe<OtherProbeEffect>(probe => probe.CategoriesValue = StatusEffectCategory.HardCrowdControl);
         Application.ApplyStatusEffect(Caster, Bystander, pvp, 100f);
         pvp.DurationTicks.Should().Be(15);
@@ -455,26 +456,26 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     public void GetRefreshTickAnchor_FollowsTheStackingRules()
     {
         var incoming = Probe<ProbeEffect>(probe => probe.PreservesTicks = true);
-        Service.GetRefreshTickAnchor(incoming, Array.Empty<IStatusEffect>(), Caster).Should().BeNull();
+        StatusEffectRules.GetRefreshTickAnchor(incoming, Array.Empty<IStatusEffect>(), Caster).Should().BeNull();
 
         var active = Probe<ProbeEffect>();
         active.ApplyEffect(Bystander, Target, 5);
-        Service.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Caster).Should().Be(active.LastTickTime);
+        StatusEffectRules.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Caster).Should().Be(active.LastTickTime);
 
         incoming.StackValue = StatusEffectStackType.StackFromMultipleSources;
-        Service.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Caster).Should().BeNull("only the same source shares a schedule");
-        Service.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Bystander).Should().Be(active.LastTickTime);
+        StatusEffectRules.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Caster).Should().BeNull("only the same source shares a schedule");
+        StatusEffectRules.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Bystander).Should().Be(active.LastTickTime);
 
         incoming.StackValue = StatusEffectStackType.UnlimitedStacking;
-        Service.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Bystander).Should().BeNull();
+        StatusEffectRules.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Bystander).Should().BeNull();
 
         incoming.StackValue = StatusEffectStackType.Disabled;
         incoming.PreservesTicks = false;
-        Service.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Bystander).Should().BeNull();
+        StatusEffectRules.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Bystander).Should().BeNull();
 
         incoming.PreservesTicks = true;
         active.Flag();
-        Service.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Bystander).Should().BeNull();
+        StatusEffectRules.GetRefreshTickAnchor(incoming, new IStatusEffect[] { active }, Bystander).Should().BeNull();
     }
 
     [Test]
@@ -616,7 +617,7 @@ public class StatusEffectServiceApplyTests : StatusEffectServiceTestBase
     [TestCase(true, true, false)]
     public void ShouldAnnounceNearby_NeedsNeitherToBeHidden(bool bearerHidden, bool sourceHidden, bool expected)
     {
-        Service.ShouldAnnounceNearby(bearerHidden, sourceHidden).Should().Be(expected);
+        StatusEffectRules.ShouldAnnounceNearby(bearerHidden, sourceHidden).Should().Be(expected);
     }
 
     [Test]

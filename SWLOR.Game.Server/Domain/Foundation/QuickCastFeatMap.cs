@@ -2,9 +2,10 @@ using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
-namespace SWLOR.Game.Server.Domain.Abilities;
+namespace SWLOR.Game.Server.Domain.Foundation;
 
 /// <summary>Native presentation IDs retain the identity of their ordinary ability feat.</summary>
 public static class QuickCastFeatMap
@@ -20,6 +21,14 @@ public static class QuickCastFeatMap
     public static FeatType GetOriginal(FeatType feat) => _originals.TryGetValue(feat, out var original) ? original : feat;
     public static bool IsAlias(FeatType feat) => _originals.ContainsKey(feat);
     public static bool TryGetAlias(FeatType feat, out FeatType alias) => _aliases.TryGetValue(GetOriginal(feat), out alias);
+
+    /// <summary>Whether the creature knows the feat in either representation: the ordinary feat or its automatic targeting alias.</summary>
+    public static bool KnowsFeat(uint creature, FeatType feat)
+    {
+        var original = GetOriginal(feat);
+        return CreaturePlugin.GetKnowsFeat(creature, original) ||
+               TryGetAlias(original, out var alias) && CreaturePlugin.GetKnowsFeat(creature, alias);
+    }
 
     private static ImmutableSortedDictionary<FeatType, FeatType> BuildOriginals()
     {

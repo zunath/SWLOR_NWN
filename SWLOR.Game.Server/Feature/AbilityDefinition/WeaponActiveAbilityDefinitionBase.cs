@@ -573,7 +573,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             private static StatusEffectCategory? GetAppliedCategories(bool applied, Type statusEffectType) =>
-                applied ? StatusEffect.CreateStatusEffect(statusEffectType).Categories : null;
+                applied ? StatusEffectCatalog.CreateStatusEffect(statusEffectType).Categories : null;
 
             private void ExtendSourceStatusEffects(uint activator, uint target)
             {
@@ -2175,7 +2175,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return true;
 
             StatusEffect.RemoveStatusEffect(activator, type, false);
-            SendMessageToPC(activator, $"{StatusEffect.GetStatusEffectName(type)} deactivated.");
+            SendMessageToPC(activator, $"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.");
             if (CombatRecorder.IsRecording)
                 CombatRecorder.NoteToggleDeactivated(activator);
             return false;

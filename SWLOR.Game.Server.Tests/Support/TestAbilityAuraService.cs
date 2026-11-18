@@ -12,8 +12,8 @@ public sealed class TestAbilityAuraService : AbilityAuraService
 {
     private readonly AbilityBench _bench;
 
-    public TestAbilityAuraService(AbilityBench bench, IStatusEffectService statusEffect, IPartyRoster party, ICombatPointService combatPoint)
-        : base(statusEffect, party, FacadeForwarder.For<IStatService>(), combatPoint)
+    public TestAbilityAuraService(AbilityBench bench, IStatusEffectService statusEffect, IStatusEffectCatalogService statusCatalog, IPartyRoster party, ICombatPointService combatPoint)
+        : base(statusEffect, statusCatalog, party, FacadeForwarder.For<IStatService>(), combatPoint)
     {
         _bench = bench;
     }

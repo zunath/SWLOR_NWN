@@ -332,9 +332,9 @@ public class PerkCombinationBehaviorTests
     public void SelfAppliedSubdualControl_PreservesItsSixtySecondDuration()
     {
         var categories = new KnockdownStatusEffect().Categories;
-        StatusEffect.ClampHardCrowdControlDurationTicks(categories, 60, 1f, isSelfApplied: true)
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(categories, 60, 1f, isSelfApplied: true)
             .Should().Be(60, "subdual applies its knockdown from the defeated player to themselves");
-        StatusEffect.ClampHardCrowdControlDurationTicks(categories, 60, 1f, isSelfApplied: false)
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(categories, 60, 1f, isSelfApplied: false)
             .Should().Be(30, "externally applied combat control must retain its budget");
     }
 
@@ -354,10 +354,10 @@ public class PerkCombinationBehaviorTests
     [TestCase(-1, 1f, -1)]
     public void HardControl_FinalDurationIsBoundedAfterAllModifiers(int ticks, float frequency, int expected)
     {
-        StatusEffect.ClampHardCrowdControlDurationTicks(
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(
             StatusEffectCategory.Debuff | StatusEffectCategory.Control | StatusEffectCategory.HardCrowdControl,
             ticks, frequency).Should().Be(expected);
-        StatusEffect.ClampHardCrowdControlDurationTicks(StatusEffectCategory.Debuff, ticks, frequency)
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(StatusEffectCategory.Debuff, ticks, frequency)
             .Should().Be(ticks, "soft debuff duration bonuses retain their value");
     }
 
@@ -368,11 +368,11 @@ public class PerkCombinationBehaviorTests
         var ironGrip = PerkSource<KatarPerkDefinition>("IronGrip", PerkType.IronGrip);
         foreach (var effect in new StatusEffectBase[] { new FoggyMindStatusEffect(), new ForceDisruptionStatusEffect(),
                      new EclipseOfResolve1StatusEffect(), new FracturedFocusStatusEffect() })
-            StatusEffect.GetOutgoingDurationPercentAdjustment(effect.Categories, stat => expert[stat] + ironGrip[stat])
+            StatusEffectRules.GetOutgoingDurationPercentAdjustment(effect.Categories, stat => expert[stat] + ironGrip[stat])
                 .Should().Be(45, effect.Name);
         foreach (var effect in new StatusEffectBase[] { new DazedStatusEffect(), new StunnedStatusEffect(),
                      new ImmobilizedStatusEffect(), new BleedStatusEffect(), new PoisonStatusEffect() })
-            StatusEffect.GetOutgoingDurationPercentAdjustment(effect.Categories, stat => expert[stat] + ironGrip[stat])
+            StatusEffectRules.GetOutgoingDurationPercentAdjustment(effect.Categories, stat => expert[stat] + ironGrip[stat])
                 .Should().Be(20, effect.Name + " is a debuff but is not ability disruption");
     }
 
@@ -388,9 +388,9 @@ public class PerkCombinationBehaviorTests
         hard.ExtendDurationTicks(30);
         hard.SetDurationTicks(30);
         hard.GetRemainingDurationSeconds(nearExpiry).Should().Be(1.5f);
-        StatusEffect.ClampConvertedControlDurationTicks(6, 1f, hard.GetRemainingDurationSeconds(nearExpiry))
+        StatusEffectRules.ClampConvertedControlDurationTicks(6, 1f, hard.GetRemainingDurationSeconds(nearExpiry))
             .Should().Be(1, "late Daze-to-Knockdown conversion must not start a fresh six-second timer");
-        StatusEffect.ClampConvertedControlDurationTicks(30, 1f, hard.GetRemainingDurationSeconds(started.AddSeconds(30)))
+        StatusEffectRules.ClampConvertedControlDurationTicks(30, 1f, hard.GetRemainingDurationSeconds(started.AddSeconds(30)))
             .Should().Be(0, "expired control cannot be revived by conversion");
 
         var soft = new DurationProbe(StatusEffectCategory.Debuff);
@@ -406,7 +406,7 @@ public class PerkCombinationBehaviorTests
     [TestCase(6, 1f, .5f, 0)]
     [TestCase(10, 3f, 5.9f, 1)]
     public void ControlConversion_PreservesTheEarlierExpiration(int requested, float frequency, float remaining, int expected) =>
-        StatusEffect.ClampConvertedControlDurationTicks(requested, frequency, remaining).Should().Be(expected);
+        StatusEffectRules.ClampConvertedControlDurationTicks(requested, frequency, remaining).Should().Be(expected);
 
     private sealed class DurationProbe(StatusEffectCategory categories) : StatusEffectBase
     {

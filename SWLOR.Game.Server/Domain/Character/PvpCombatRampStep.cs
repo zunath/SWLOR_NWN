@@ -1,4 +1,4 @@
-namespace SWLOR.Game.Server.Domain.Combat
+namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
     /// One step of a PvP combat ramp: from <see cref="AtSeconds"/> of continuous PvP combat on,

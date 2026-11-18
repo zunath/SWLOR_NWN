@@ -153,6 +153,8 @@ public class ConvertedServiceContainerTests
                 "IPlayerListRefresh", "IItemCacheInfo", "IPropertyIdLookup", "IDMActorResolver", "IDMWindowPresence", "IAIProfileDescription", "IDMSpawnPreparation" })
             // The inversions of P5-15b: the Espionage, recast, beast corpse reads a higher service implements, and the achievement window UI draws.
             .Concat(new[] { "IEspionageEnmityQuery", "IEspionageStealthQuery", "IRecastDelays", "IBeastCorpseInfo", "IAchievementNotification" })
+            // The status effect split (P5-5c): the resistance reads the status effects own, which Combat answers.
+            .Concat(new[] { "IStatusResistance" })
             .ToArray();
         var services = new ServiceCollection();
         CompositionRoot.RegisterServerServices(services);

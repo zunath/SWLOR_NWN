@@ -29,7 +29,7 @@ public class StanceStatusEffectTests
     {
         _facades = new FacadeContainer();
         _facadeScope = _facades.Install();
-        StatusEffect.CacheData();
+        StatusEffectCatalog.CacheData();
         ResetStatusEffects();
     }
 

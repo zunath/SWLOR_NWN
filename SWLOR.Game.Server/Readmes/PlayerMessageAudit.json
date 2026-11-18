@@ -8,14 +8,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/AbilityAuraService.cs",
-    "Line": 266,
+    "Line": 269,
     "Member": "ApplyAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Green($\"Aura '{effectName}' activated.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Abilities/AbilityAuraService.cs",
-    "Line": 330,
+    "Line": 333,
     "Member": "ToggleAura",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(activator, ColorToken.Red($\"Aura '{effectName}' deactivated.\"))"
@@ -211,84 +211,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 786,
+    "Line": 574,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 806,
+    "Line": 594,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 942,
+    "Line": 730,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 967,
+    "Line": 755,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 972,
+    "Line": 760,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 974,
+    "Line": 762,
     "Member": "ApplyStatusEffectInternal",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, BuildApplicationMessage(source))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1138,
+    "Line": 917,
     "Member": "RestartInPlace",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1284,
+    "Line": 987,
     "Member": "SendStatusEffectFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(recipient, message)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1661,
+    "Line": 1359,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1670,
+    "Line": 1368,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 2231,
+    "Line": 1893,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 2233,
+    "Line": 1895,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
@@ -596,21 +596,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs",
-    "Line": 275,
+    "Line": 256,
     "Member": "Update",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(healingStep < 0\n                        ? \"You are in PvP combat. Healing you receive starts dropping at 2:00 and damage players deal to you starts rising at 3:00. It ends after 30 seconds without PvP damage.\"\n                        : $\"PvP combat {FormatTime(PvpCombatRules.HealingReductionSteps[healingStep].AtSeconds)}: healing you receive is reduced by {PvpCombatRules.HealingReductionSteps[healingStep].Percent}%.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs",
-    "Line": 287,
+    "Line": 268,
     "Member": "Update",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\n                    $\"PvP combat {FormatTime(step.AtSeconds)}: damage players deal to you is increased by {step.Percent}%.\"))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PvpCombatService.cs",
-    "Line": 321,
+    "Line": 302,
     "Member": "End",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, ColorToken.Combat(\"PvP combat has ended. Healing and damage are back to normal.\"))"
@@ -638,7 +638,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/StealthService.cs",
-    "Line": 747,
+    "Line": 738,
     "Member": "ExitDetectedPlayerStealth",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(target, ColorToken.Red(\"You have been detected and are forced out of stealth.\"))"
@@ -2713,7 +2713,7 @@
     "Line": 24,
     "Member": "ToggleSelfStatus",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, $\"{StatusEffect.GetStatusEffectName(type)} deactivated.\")"
+    "Call": "SendMessageToPC(activator, $\"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/Leadership/RousingShoutAbilityDefinition.cs",
@@ -2804,7 +2804,7 @@
     "Line": 2178,
     "Member": "ToggleSelfStatus",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, $\"{StatusEffect.GetStatusEffectName(type)} deactivated.\")"
+    "Call": "SendMessageToPC(activator, $\"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/AppearanceEditing/AppearanceOutfitService.cs",
@@ -2878,35 +2878,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/BuffTimer.cs",
-    "Line": 60,
+    "Line": 61,
     "Member": "SendBuffInfo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Buffs/Debuffs:\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/BuffTimer.cs",
-    "Line": 61,
+    "Line": 62,
     "Member": "SendBuffInfo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, msg)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/BuffTimer.cs",
-    "Line": 69,
+    "Line": 70,
     "Member": "SendStatusInfo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, \"Status Effects:\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/BuffTimer.cs",
-    "Line": 82,
+    "Line": 83,
     "Member": "SendStatusInfo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"    {ColorToken.White(effectName)}: {durMessage}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/BuffTimer.cs",
-    "Line": 86,
+    "Line": 87,
     "Member": "SendStatusInfo",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(player, $\"    {ColorToken.White(effectName)}: Indefinite\")"
@@ -4103,35 +4103,35 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 549,
-    "Member": "OnClickResetEverything",
+    "Line": 416,
+    "Member": "ShowResetEverythingModal",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Character reset successfully!\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 769,
+    "Line": 771,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Red(\"Please distribute all ability points and skill points first. Resize the window if needed.\"), Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 776,
+    "Line": 778,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"One or more selected skills are unavailable to this character type.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 782,
+    "Line": 784,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\"This race cannot select that character type.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/CharacterFullRebuildViewModel.cs",
-    "Line": 825,
+    "Line": 827,
     "Member": "OnClickSave",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green(\"Character rebuild complete!\"), Player, false)"
@@ -4831,14 +4831,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/LightsaberWorkbenchViewModel.cs",
-    "Line": 663,
+    "Line": 549,
     "Member": "ConstructSaber",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, $\"You spend a Kyber Token constructing your {GetName(item)}. Total Kyber Tokens: {Currency.GetCurrency(Player, CurrencyType.KyberToken)}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/LightsaberWorkbenchViewModel.cs",
-    "Line": 667,
+    "Line": 553,
     "Member": "ConstructSaber",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"You have constructed your {GetName(item)}!\", Player, false)"
@@ -5041,22 +5041,22 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1217,
-    "Member": "OnClickBuyUpgrade",
+    "Line": 1204,
+    "Member": "ConfirmBuyUpgrade",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature($\"Perks cannot be purchased in this area.\", Player, false)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1275,
-    "Member": "OnClickBuyUpgrade",
+    "Line": 1244,
+    "Member": "ConfirmBuyUpgrade",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(Player, ColorToken.Red(canPurchase))"
   },
   {
     "File": "SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/PerksViewModel.cs",
-    "Line": 1305,
-    "Member": "OnClickBuyUpgrade",
+    "Line": 1274,
+    "Member": "ConfirmBuyUpgrade",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Green($\"You purchase '{detail.Name}' rank {newRank}.\"), Player, false)"
   },
@@ -5650,28 +5650,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/ConsumableItemDefinition.cs",
-    "Line": 264,
+    "Line": 271,
     "Member": "PetFood",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your beast likes this food a lot!\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/ConsumableItemDefinition.cs",
-    "Line": 269,
+    "Line": 276,
     "Member": "PetFood",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, \"Your beast doesn't like this food very much...\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/ConsumableItemDefinition.cs",
-    "Line": 295,
+    "Line": 302,
     "Member": "RebuildToken",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Total Rebuild Tokens: {Currency.GetCurrency(user, CurrencyType.RebuildToken)}\")"
   },
   {
     "File": "SWLOR.Game.Server/Feature/ItemDefinition/ConsumableItemDefinition.cs",
-    "Line": 316,
+    "Line": 323,
     "Member": "KyberToken",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(user, $\"Total Kyber Tokens: {Currency.GetCurrency(user, CurrencyType.KyberToken)}\")"

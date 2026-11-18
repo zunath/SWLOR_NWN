@@ -251,19 +251,19 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     [TestCase(ResistanceType.Mind, 10, 10)]
     public void TheResistanceMessageIsEmptyWhenThereIsNothingToSay(ResistanceType type, int original, int adjusted)
     {
-        Service.BuildDurationResistanceMessage(type, "Stun", original, adjusted, 1f).Should().BeEmpty();
+        StatusEffectRules.BuildDurationResistanceMessage(type, "Stun", original, adjusted, 1f).Should().BeEmpty();
     }
 
     [Test]
     public void TheResistanceMessageNamesTheDirectionAndFormatsTheSeconds()
     {
-        Service.BuildDurationResistanceMessage(ResistanceType.Mind, "Stun", 10, 4, 1f)
+        StatusEffectRules.BuildDurationResistanceMessage(ResistanceType.Mind, "Stun", 10, 4, 1f)
             .Should().Be("Mind Resistance reduced Stun duration from 10s to 4s.");
-        Service.BuildDurationResistanceMessage(ResistanceType.Mind, "Stun", 4, 10, 6f)
+        StatusEffectRules.BuildDurationResistanceMessage(ResistanceType.Mind, "Stun", 4, 10, 6f)
             .Should().Be("Mind Vulnerability increased Stun duration from 24s to 60s.");
-        Service.BuildDurationResistanceMessage(ResistanceType.Mind, " ", 4, 10, 1.5f)
+        StatusEffectRules.BuildDurationResistanceMessage(ResistanceType.Mind, " ", 4, 10, 1.5f)
             .Should().Be("Mind Vulnerability increased the effect duration from 6s to 15s.");
-        Service.BuildDurationResistanceMessage(ResistanceType.Mind, "Stun", 1, 3, 1.5f)
+        StatusEffectRules.BuildDurationResistanceMessage(ResistanceType.Mind, "Stun", 1, 3, 1.5f)
             .Should().Be("Mind Vulnerability increased Stun duration from 1.5s to 4.5s.");
     }
 
@@ -279,12 +279,12 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
             _ => 0
         };
 
-        Service.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.None, Stat).Should().Be(0);
-        Service.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.Debuff, Stat).Should().Be(1);
-        Service.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.Control, Stat).Should().Be(10);
-        Service.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.ForceDisruption, Stat).Should().Be(100);
-        Service.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.AbilityDisruption, Stat).Should().Be(1000);
-        Service.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.Debuff | StatusEffectCategory.AbilityDisruption, Stat).Should().Be(1001);
+        StatusEffectRules.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.None, Stat).Should().Be(0);
+        StatusEffectRules.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.Debuff, Stat).Should().Be(1);
+        StatusEffectRules.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.Control, Stat).Should().Be(10);
+        StatusEffectRules.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.ForceDisruption, Stat).Should().Be(100);
+        StatusEffectRules.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.AbilityDisruption, Stat).Should().Be(1000);
+        StatusEffectRules.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.Debuff | StatusEffectCategory.AbilityDisruption, Stat).Should().Be(1001);
         StatusEffectRules.GetOutgoingDurationPercentAdjustment(StatusEffectCategory.Control, Stat).Should().Be(10);
     }
 
@@ -293,7 +293,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     [TestCase(10f, 0, 10f)]
     public void TheAdjustedDurationNeverDropsBelowATenthOfASecond(float seconds, int percent, float expected)
     {
-        Service.CalculateAdjustedStatusDurationSeconds(seconds, percent).Should().Be(expected);
+        StatusEffectRules.CalculateAdjustedStatusDurationSeconds(seconds, percent).Should().Be(expected);
         StatusEffectRules.CalculateAdjustedStatusDurationSeconds(seconds, percent).Should().Be(expected);
     }
 
@@ -302,15 +302,15 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     {
         const StatusEffectCategory Hard = StatusEffectCategory.HardCrowdControl;
 
-        Service.ClampHardCrowdControlDurationTicks(StatusEffectCategory.Debuff, 100, 1f).Should().Be(100);
-        Service.ClampHardCrowdControlDurationTicks(Hard, 0, 1f).Should().Be(0);
-        Service.ClampHardCrowdControlDurationTicks(Hard, -1, 1f).Should().Be(-1);
-        Service.ClampHardCrowdControlDurationTicks(Hard, 100, 1f, isSelfApplied: true).Should().Be(100);
-        Service.ClampHardCrowdControlDurationTicks(Hard, 100, 1f).Should().Be(30);
-        Service.ClampHardCrowdControlDurationTicks(Hard, 100, 6f).Should().Be(5);
-        Service.ClampHardCrowdControlDurationTicks(Hard, 100, 0.5f).Should().Be(30);
-        Service.ClampHardCrowdControlDurationTicks(Hard, 100, 1f, isPlayerAgainstPlayer: true).Should().Be(15);
-        Service.ClampHardCrowdControlDurationTicks(Hard, 10, 1f).Should().Be(10);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(StatusEffectCategory.Debuff, 100, 1f).Should().Be(100);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(Hard, 0, 1f).Should().Be(0);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(Hard, -1, 1f).Should().Be(-1);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(Hard, 100, 1f, isSelfApplied: true).Should().Be(100);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(Hard, 100, 1f).Should().Be(30);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(Hard, 100, 6f).Should().Be(5);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(Hard, 100, 0.5f).Should().Be(30);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(Hard, 100, 1f, isPlayerAgainstPlayer: true).Should().Be(15);
+        StatusEffectRules.ClampHardCrowdControlDurationTicks(Hard, 10, 1f).Should().Be(10);
     }
 
     [TestCase(10, 1f, -1f, 10)]
@@ -320,7 +320,7 @@ public class StatusEffectServiceDurationTests : StatusEffectServiceTestBase
     [TestCase(3, 0.5f, 10f, 3)]
     public void AConversionKeepsTheOriginalExpiry(int requested, float frequency, float remaining, int expected)
     {
-        Service.ClampConvertedControlDurationTicks(requested, frequency, remaining).Should().Be(expected);
+        StatusEffectRules.ClampConvertedControlDurationTicks(requested, frequency, remaining).Should().Be(expected);
     }
 
     [Test]

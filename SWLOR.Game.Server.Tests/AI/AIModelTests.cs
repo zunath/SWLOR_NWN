@@ -347,7 +347,7 @@ public class AIModelTests
     {
         const uint self = 100;
         const uint target = 200;
-        StatusEffect.CacheData();
+        StatusEffectCatalog.CacheData();
         AbilityCatalog.CacheData();
         var ability = AbilityCatalog.GetAbilityDetail(feat);
         var score = ability.GetAIScore() ?? AIScore.Ability(ability);
@@ -391,7 +391,7 @@ public class AIModelTests
     {
         const uint self = 100;
         const uint target = 200;
-        StatusEffect.CacheData();
+        StatusEffectCatalog.CacheData();
         AbilityCatalog.CacheData();
         var ability = AbilityCatalog.GetAbilityDetail(feat);
         var score = AIScore.Ability(ability);

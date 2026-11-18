@@ -739,3 +739,11 @@ resistance, recorder, stat and active-impact parameters and the `Lazy<IStatServi
   `ItemService`, `MimicryService`, `ResistanceService` down), `ServicesPerType.txt` (the four holder counts and `WeaponActiveAbilityDefinitionBase`), `LargeTypes.txt`
   (`StatusEffectService` out of the list) and `DebtReport.md` regenerated. `CrossDomainEdges.txt` and `EdgesIntoCoreAndPlatform.txt` changed only in member counts and were
   reverted. `PlayerMessageAudit.json`: rows re-keyed to the duration part and moved lines of the application part.
+- **Readings and runs:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs, Markdown and JSON) and its ability table are
+  byte-identical to the base's (`43bd39ee8`). `SWLOR.Game.Server.Tests` (no exclusions) fails the same 121 tests with the same messages on the base and the branch (the ones that
+  read `SWLOR_Haks` content the sparse checkout lacks): 19,016 passed on the base, 19,022 on the branch (six more cases, from the two new part files in the source reader's lists).
+  `SWLOR.Architecture.Tests` (297), `SWLOR.Game.Server.CharacterizationTests` (148), `SWLOR.CombatSim.Tests` (895) and `SWLOR.CraftSim.Tests` (1,097) pass. The engine run
+  filtered with `StatusEffect` (host entry, server-only haks) passes 26 of 27; the one failure is the Piercing Toss bleed test (7 ticks, expected 6) that P5-5e and P5-5f recorded
+  failing alike on their bases. The hot-reload check (`--engine-filter HotReloadPlayers --reloads 2`, run because `OnDealtDamage` moves) passes: 251 cache digests and 86 adopted
+  digests match at both reloads. A plain cycle through a factory registration deadlocks the container build instead of throwing, so a hung `dotnet test` or CombatSim run after a
+  constructor change means a new cycle: dump the process (`dotnet-dump collect`) and read `clrstack -all`.

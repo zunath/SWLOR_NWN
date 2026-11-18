@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.PropertyService;
+using SWLOR.NWN.Formats.TwoDA;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -61,6 +64,68 @@ public class FurnitureSetPlaceableTests
         stands.ToDictionary(type => type, ResrefOf).Should().BeEquivalentTo(TrophyStandResrefs,
             "each stand has its own Meshy model for its set's theme, checked in the client");
     }
+
+    [Test]
+    public void FieldCots_EachHaveTheirOwnPlaceable()
+    {
+        var cots = Enum.GetValues<StructureType>().Where(t => t.ToString().EndsWith("FieldCot")).ToList();
+        var otherStructureResrefs = Enum.GetValues<StructureType>().Except(cots).Select(ResrefOf).ToHashSet();
+
+        cots.Should().HaveCount(10);
+        cots.Select(ResrefOf).Should().OnlyHaveUniqueItems("each set's Field Cot has its own look");
+        cots.Select(ResrefOf).Should().NotContain(ResrefOf(StructureType.Cot),
+            "the cots used to share the plain Cot's look");
+        cots.Select(ResrefOf).Should().NotIntersectWith(otherStructureResrefs,
+            "no Field Cot may look like any other craftable structure");
+        cots.ToDictionary(type => type, ResrefOf).Should().BeEquivalentTo(FieldCotResrefs,
+            "each cot was chosen for its set's theme, checked in the client");
+    }
+
+    [Test]
+    public void FieldCots_ShowModelsNoOtherStructureShows()
+    {
+        var root = FindRoot();
+        var placeables = TwoDAReader.Read(Path.Combine(root, "SWLOR_Haks", "sw_2da", "placeables.2da"));
+        string? ModelOf(StructureType type)
+        {
+            var path = Path.Combine(root, "Module", "utp", ResrefOf(type) + ".utp.json");
+            if (!File.Exists(path))
+                return null; // A base-game blueprint, such as the plain Cot's plc_cot.
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(path));
+            var appearance = blueprint.RootElement.GetProperty("Appearance").GetProperty("value").GetInt32();
+            return placeables.GetValue(appearance, "ModelName").ToLowerInvariant();
+        }
+
+        var cots = FieldCotResrefs.Keys.ToList();
+        var cotModels = cots.Select(ModelOf).ToList();
+        var otherModels = Enum.GetValues<StructureType>().Except(cots).Select(ModelOf).Where(model => model != null).ToHashSet();
+
+        cotModels.Should().NotContainNulls("every Field Cot uses a module blueprint");
+        cotModels.Should().OnlyHaveUniqueItems("two blueprints can show one model");
+        cotModels.Should().NotIntersectWith(otherModels, "a different blueprint can still show another structure's model");
+    }
+
+    private static string FindRoot()
+    {
+        var root = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (root != null && !File.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server.sln"))) root = root.Parent;
+        return root?.FullName ?? throw new DirectoryNotFoundException("Repository root not found.");
+    }
+
+    // Each set's Field Cot blueprint: a Meshy model (swc_cot_*, resref = model) or an existing bed no other structure uses.
+    private static readonly Dictionary<StructureType, string> FieldCotResrefs = new()
+    {
+        [StructureType.AshmarkFieldCot] = "swc_cot_ash",
+        [StructureType.GuttermarkFieldCot] = "swc_cot_gutter",
+        [StructureType.TrailmarkFieldCot] = "_mdrn_pl_cotsimp",
+        [StructureType.StonewakeFieldCot] = "swc_cot_stone",
+        [StructureType.AegislineFieldCot] = "_mdrn_pl_bedsgrd",
+        [StructureType.VeilcarvedFieldCot] = "swc_cot_veil",
+        [StructureType.SurgewakeFieldCot] = "_mdrn_pl_bedmtl2",
+        [StructureType.ResonantFieldCot] = "swc_cot_reson",
+        [StructureType.FieldlineFieldCot] = "_mdrn_pl_bedenli",
+        [StructureType.CommandlineFieldCot] = "swlor_0622",
+    };
 
     // Each set's Trophy Stand blueprint; the blueprint resref is also its model and placeables.2da model name.
     private static readonly Dictionary<StructureType, string> TrophyStandResrefs = new()

@@ -30,7 +30,6 @@ DEFAULT_RULES = ROOT / "SWLOR.Game.Server" / "Service" / "CraftService" / "Minig
 SHEET = "Engineering"
 FIRST_PERK_ROW = 14
 TEMPLATE_ROW = 9
-DESCRIPTION_MARKER = "Two perk lines"
 
 
 def read_constants(directory: Path) -> dict[str, int]:
@@ -133,11 +132,6 @@ def rows(k: dict[str, int]) -> list[dict]:
     ]
 
 
-def description_suffix(total: int) -> str:
-    return (
-        f" {DESCRIPTION_MARKER} of {total // 2} SP each (Overclocker and Technician) change the Circuit minigame: ten purchases at Engineering"
-        " 5/10/15/20/25/30/35/40/45/50 priced 1/1/2/2/3/3/3/3/3/4 SP, a style at rank 20 and an automatic capstone at rank 50. Both styles can"
-        " be owned and the craft window toggles between them, one at a time.")
 
 
 def update_sheet(sheet: Bible.Sheet, k: dict[str, int]) -> int:
@@ -177,11 +171,6 @@ def update_sheet(sheet: Bible.Sheet, k: dict[str, int]) -> int:
     sheet.write_row(total_row, total_cells)
 
     Bible.set_formula(sheet, "D4", f"SUM(B{total_row})", total)
-    description = sheet.row_cells(3)["B"]
-    text = sheet.text_of(description)
-    if DESCRIPTION_MARKER in text:
-        text = text[:text.index(DESCRIPTION_MARKER)].rstrip()
-    sheet.set_cell(3, "B", Bible.text_cell("B3", Bible.cell_style(description), text + description_suffix(total)))
     return total
 
 

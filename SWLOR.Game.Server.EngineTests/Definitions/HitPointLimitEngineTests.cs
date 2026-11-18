@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             const string key = TemporaryHitPointEffectKey.GuardiansResolve;
             var shield = TemporaryHitPointEffects.ApplyFlat(npc, key, Limit - 25000, 60f);
             ctx.AssertEqual(Limit - 25000, shield, "Guardian's Resolve pool");
-            StatusEffect.ApplyStatusEffect(npc, npc,
+            StatusEffectApplication.ApplyStatusEffect(npc, npc,
                 new GuardiansResolveStatusEffect(shield, TemporaryHitPointEffects.GetGrantGeneration(npc, key)), 60f);
 
             CreatureStat.SetNPCMaxHitPoints(npc, MaximumNPCHitPoints);
@@ -364,7 +364,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var arena = await QuietArena.CreateAsync(ctx);
             var npc = await SpawnNPCAsync(ctx, arena, "nw_bandit001", MaximumNPCHitPoints, immortal: false);
 
-            StatusEffect.ApplyStatusEffect(npc, npc, typeof(DiseaseVitalityPenaltyStatusEffect), 60f);
+            StatusEffectApplication.ApplyStatusEffect(npc, npc, typeof(DiseaseVitalityPenaltyStatusEffect), 60f);
             await ctx.WaitUntilAsync(() => GetMaxHitPoints(npc) < MaximumNPCHitPoints, 3f, "the Vitality penalty to lower maximum HP");
             ctx.Log($"Vitality penalty lowered maximum HP by {MaximumNPCHitPoints - GetMaxHitPoints(npc)}.");
 

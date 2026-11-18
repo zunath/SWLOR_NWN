@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                         areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Shake,
                         maxTargets: 12,
                         afterSuccessfulHit: hitTarget =>
-                            StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, hitTarget, 30f, CombatDamageType.Physical),
+                            StatusEffectApplication.ApplyStatusEffect<SunderStatusEffect>(activator, hitTarget, 30f, CombatDamageType.Physical),
                         useNPCStatScaling: InnateAbility.ShouldUseNPCStatScaling(activator));
                 })
                 .SkillType(SkillType.Mimicry)

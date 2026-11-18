@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void OnDamageDealt(uint attacker, uint defender, int damage, CombatDamageType damageType)
         {
             if (Random.D100(1) <= 10)
-                StatusEffect.ApplyStatusEffect(attacker, defender, typeof(PoisonStatusEffect), 30f);
+                StatusEffectApplication.ApplyStatusEffect(attacker, defender, typeof(PoisonStatusEffect), 30f);
         }
         public CobraStanceStatusEffect()
         {

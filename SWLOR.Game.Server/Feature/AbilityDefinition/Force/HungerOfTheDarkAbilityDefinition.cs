@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void HungerOfTheDark1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            if (StatusEffect.ApplyStatusEffect(activator, activator, typeof(HungerOfTheDark1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
+            if (StatusEffectApplication.ApplyStatusEffect(activator, activator, typeof(HungerOfTheDark1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Aura_Negative_Energy), activator);
         }

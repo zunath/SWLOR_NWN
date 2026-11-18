@@ -465,7 +465,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .RequirementStamina(stamina)
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration);
+                    StatusEffectApplication.ApplyStatusEffect(activator, activator, statusEffect, duration);
 
                     if (targetVisualEffect != VisualEffect.None)
                     {

@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the party to include the ally");
             ctx.Assert(!AbilityTargeting.GetFriendlyTargetsNearLocation(caster, GetLocation(caster), 10f, false).Contains(caster),
                 "explicit source exclusion must override party membership");
-            StatusEffect.ApplyStatusEffect(caster, caster, new WardenWallStanceStatusEffect(), 60f);
+            StatusEffectApplication.ApplyStatusEffect(caster, caster, new WardenWallStanceStatusEffect(), 60f);
             await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect)), 10f, "the wall to reach the nearby ally");
             // The stance grants a shared Physical and Force defense aura stat of 10 (it stopped writing the two separate
             // stats in the 2026-10-05 Mimicry balance); the aura gives each nearby ally the same 10.
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Stat.ReduceFP(caster, 50);
             // Spinning Deflection III + Tempest Stance + Saber Cyclone; Force Gyre refunds once.
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityUsedAttackDeflection, 7, 45f);
-            StatusEffect.ApplyStatusEffect(caster, caster, new TempestStanceStatusEffect(), 45f);
+            StatusEffectApplication.ApplyStatusEffect(caster, caster, new TempestStanceStatusEffect(), 45f);
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityUsedAttackDeflection, 8, 45f);
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityUsedAttackDeflectionDurationSeconds, 30, 45f);
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityUsedFPRestore, 4, 45f);
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.MaxStamina, 100 - Stat.GetMaxStamina(caster), 45f);
             TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonus, 7, 45f, "third-resource-source");
             TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80, 45f, "third-resource-source");
-            StatusEffect.ApplyStatusEffect(caster, caster, new InfiniteConduitStatusEffect(), 45f);
+            StatusEffectApplication.ApplyStatusEffect(caster, caster, new InfiniteConduitStatusEffect(), 45f);
             AbilityImpactLifecycle.BeginAbilityImpact(caster, new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true });
             // The impact state store reads the sources it has not cached through the caller's stat service (P5-3b).
             var stat = Stat;
@@ -506,7 +506,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetNPCResources(beast, 0, 100);
             Stat.ReduceStamina(beast, 50);
             var startingStamina = Stat.GetCurrentStamina(beast);
-            StatusEffect.ApplyStatusEffect(beast, beast, new EvasiveChallenge1SelfStatusEffect(), 30f);
+            StatusEffectApplication.ApplyStatusEffect(beast, beast, new EvasiveChallenge1SelfStatusEffect(), 30f);
             var effect = StatusEffect.GetStatusEffect(beast, typeof(EvasiveChallenge1SelfStatusEffect));
             var duration = effect.DurationTicks;
             GameServices.CombatDamageTaken.TrackAvoidedAttack(beast, attacker);
@@ -532,11 +532,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 SetAILevel(target, AILevel.VeryLow);
                 ctx.MakeHostile(target);
             }
-            StatusEffect.ApplyStatusEffect(beast, beast, new UnbreakableBeast1StatusEffect(), 30f);
+            StatusEffectApplication.ApplyStatusEffect(beast, beast, new UnbreakableBeast1StatusEffect(), 30f);
             TemporaryStatModifier.Add(beast, StatType.MobilityResistance, -20, 30f);
             TemporaryStatModifier.Add(beast, StatType.MindResistance, -20, 30f);
-            ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, beast, new KnockdownStatusEffect(), 6f), "explicit immunity survives a Mobility vulnerability");
-            ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, beast, new DazedStatusEffect(), 15f), "explicit immunity survives a Mind vulnerability");
+            ctx.Assert(!StatusEffectApplication.ApplyStatusEffect(caster, beast, new KnockdownStatusEffect(), 6f), "explicit immunity survives a Mobility vulnerability");
+            ctx.Assert(!StatusEffectApplication.ApplyStatusEffect(caster, beast, new DazedStatusEffect(), 15f), "explicit immunity survives a Mind vulnerability");
             // A native knockdown exercises pulling an incapacitated creature.
             ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), ordinary, 3f);
             var maul = AbilityCatalog.GetAbilityDetail(FeatType.WardenMaulTechnique);
@@ -771,7 +771,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     foreach (var enemy in new[] { target, immune, unaffected })
                         ctx.MakeHostile(enemy);
                     foreach (var dazed in new[] { target, immune })
-                        ctx.Assert(StatusEffect.ApplyStatusEffect(caster, dazed, new DazedStatusEffect(), 30f), "setup Dazed applies");
+                        ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, dazed, new DazedStatusEffect(), 30f), "setup Dazed applies");
                     TemporaryStatModifier.Add(immune, StatType.KnockdownImmunity, 1, 30f);
                     var originalDaze = StatusEffect.GetStatusEffect(immune, typeof(DazedStatusEffect));
                     var ability = AbilityCatalog.GetAbilityDetail(feat);
@@ -807,11 +807,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 (typeof(BolsterAttack1StatusEffect), typeof(BolsterAttack3StatusEffect), StatType.DamageDealtPercentAdjustment, 12)
             })
             {
-                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, caster, lower, 180f), "lower-rank buff applies");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, caster, higher, 180f), "higher-rank buff upgrades the lower rank");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, caster, lower, 180f), "lower-rank buff applies");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, caster, higher, 180f), "higher-rank buff upgrades the lower rank");
                 ctx.Assert(!StatusEffect.HasStatusEffect(caster, lower), "the lower rank is removed");
                 ctx.AssertEqual(expected, Stat.GetStatAdjustment(caster, stat), "ranks do not stack their payloads");
-                ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, caster, lower, 180f), "a weaker rank cannot replace the stronger buff");
+                ctx.Assert(!StatusEffectApplication.ApplyStatusEffect(caster, caster, lower, 180f), "a weaker rank cannot replace the stronger buff");
             }
         }
 

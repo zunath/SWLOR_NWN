@@ -39,7 +39,7 @@ public static class CapstoneProofEngineTests
         // A sibling line's adept counts once the player made it bleed.
         var proven = SpawnTierAdept(ctx);
         await ctx.ExecuteInCreatureContextAsync(player,
-            () => ctx.Assert(StatusEffect.ApplyStatusEffect<BleedStatusEffect>(player, proven, 30f), "The player makes the adept bleed."));
+            () => ctx.Assert(StatusEffectApplication.ApplyStatusEffect<BleedStatusEffect>(player, proven, 30f), "The player makes the adept bleed."));
         ctx.Assert(CapstoneProof.HasProof(player, proven, "perfect_flurry"), "Bleed proves Perfect Flurry on that adept.");
         ctx.Assert(!CapstoneProof.HasProof(player, proven, "kill_box"), "Bleed does not prove another line's mechanic.");
         await KillAsync(ctx, player, proven);
@@ -83,13 +83,13 @@ public static class CapstoneProofEngineTests
         ctx.MakeHostile(enemy);
         await ctx.ExecuteInCreatureContextAsync(player, () =>
         {
-            ctx.Assert(StatusEffect.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Unattributed Venom applies.");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Unattributed Venom applies.");
             ctx.Assert(!CapstoneProof.HasProof(player, enemy, "viral_cascade"), "Item Venom alone does not prove the skill.");
             var ability = AbilityCatalog.GetAbilityDetail(FeatType.VirulentBlade1);
             AbilityImpactLifecycle.BeginAbilityImpact(player, ability);
             try
             {
-                ctx.Assert(StatusEffect.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Vibroknife Venom applies.");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect<VenomStatusEffect>(player, enemy, 30f), "Vibroknife Venom applies.");
             }
             finally { AbilityImpactLifecycle.EndAbilityImpact(player); }
         });

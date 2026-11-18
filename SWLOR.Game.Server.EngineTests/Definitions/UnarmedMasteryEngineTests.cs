@@ -93,7 +93,7 @@ public static class UnarmedMasteryEngineTests
             ObjectPlugin.SetCurrentHitPoints(owner.Creature, GetMaxHitPoints(owner.Creature));
             var counterHitPoints = GetCurrentHitPoints(owner.Creature);
             context.Assert(counterHitPoints > 5, "The player has enough real HP to survive the counter setup hit.");
-            StatusEffect.ApplyStatusEffect(owner.Creature, owner.Creature, new BruiserStanceStatusEffect(), -1);
+            StatusEffectApplication.ApplyStatusEffect(owner.Creature, owner.Creature, new BruiserStanceStatusEffect(), -1);
             await context.EquipItemAsync(owner.Creature, "b_pistol", InventorySlot.RightHand);
             context.AssertEqual(SkillType.Pistol, Skill.GetSkillTypeByBaseItem(GetBaseItemType(GetItemInSlot(InventorySlot.RightHand, owner.Creature))),
                 "A different weapon skill is equipped when the player earns the counter.");

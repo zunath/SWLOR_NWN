@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void UntouchableInstinct1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            StatusEffect.ApplyStatusEffect(activator, activator, typeof(UntouchableInstinct1StatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(activator, activator, typeof(UntouchableInstinct1StatusEffect), 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Haste), activator);
         }
 

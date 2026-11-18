@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
                     friendly,
                     AbilityEffectScaling.ScaleHealBySourceSocial(activator, new HealAmount(81, 4.5f), new HealAmount(99, 5.5f)),
                     CapstoneAbility.ActiveDurationSeconds);
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(HoldTheLine1StatusEffect), CapstoneAbility.ActiveDurationSeconds))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);
                 affected.Add(friendly);

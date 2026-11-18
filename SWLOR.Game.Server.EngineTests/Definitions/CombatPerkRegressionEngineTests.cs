@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Queued accuracy starts without a bonus or idle snapshot");
                 var accuracy = Stat.GetStatAdjustment(attacker, StatType.AccuracyPercentAdjustment);
-                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, effect, 120f), "Focus Stim applies");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker, attacker, effect, 120f), "Focus Stim applies");
                 ctx.AssertEqual(bonus, GameServices.CombatAbilityBonus.GetQueuedWeaponAbilityActivationHitChanceAdjustment(attacker, SkillType.Vibroblade),
                     "Focus Stim affects the queued weapon roll without an idle snapshot");
                 ctx.AssertEqual(76 + bonus, CombatRules.CalculateHitRate(2, 0,
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Prepare(ctx, beast);
             Prepare(ctx, target);
             ctx.MakeHostile(target);
-            ctx.Assert(StatusEffect.ApplyStatusEffect(beast, target, new BleedStatusEffect(), 120f), "Bleed applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(beast, target, new BleedStatusEffect(), 120f), "Bleed applies");
             foreach (var rank in new[] { 1, 2 })
             {
                 ctx.SetNPCPerkLevel(beast, PerkType.BeastBloodFrenzy, rank);
@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Enmity.ModifyEnmity(ally, allyAttacker, 1);
             Enmity.ModifyEnmity(caster, casterAttacker, 100);
             Enmity.ModifyEnmity(ally, challengedTarget, 1);
-            StatusEffect.ApplyStatusEffect(caster, challengedTarget, new ChallengeEnmityStatusEffect(25), 60f);
+            StatusEffectApplication.ApplyStatusEffect(caster, challengedTarget, new ChallengeEnmityStatusEffect(25), 60f);
 
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
             try
@@ -536,7 +536,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(100 + entry.Item2, GameServices.CombatDamageTaken.ApplyDamageTakenModifiers(beast, 100), "Reduction of a 100-point hit");
                 StatusEffect.RemoveAllStatusEffects(beast);
             }
-            StatusEffect.ApplyStatusEffect(beast, beast, new ForceSuppressionStatusEffect(), 30f);
+            StatusEffectApplication.ApplyStatusEffect(beast, beast, new ForceSuppressionStatusEffect(), 30f);
             ctx.AssertEqual(-10, CombatRating.GetAttackPercentAdjustment(beast, SkillType.Vibroblade), "Physical Attack penalty");
             ctx.AssertEqual(-25, CombatRating.GetAttackPercentAdjustment(beast, SkillType.Force), "Combined Force Attack penalty");
         }

@@ -82,8 +82,8 @@ public static class MeleeTechniqueLifecycleEngineTests
         });
         await context.EquipItemAsync(killer.Creature, "t_pglove", InventorySlot.RightHand);
         await context.EquipItemAsync(counterOwner, "t_pglove", InventorySlot.RightHand);
-        StatusEffect.ApplyStatusEffect(killer.Creature, killer.Creature, new FlowStanceStatusEffect(), -1);
-        StatusEffect.ApplyStatusEffect(counterOwner, counterOwner, new BruiserStanceStatusEffect(), -1);
+        StatusEffectApplication.ApplyStatusEffect(killer.Creature, killer.Creature, new FlowStanceStatusEffect(), -1);
+        StatusEffectApplication.ApplyStatusEffect(counterOwner, counterOwner, new BruiserStanceStatusEffect(), -1);
         GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(true);
         GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
         try

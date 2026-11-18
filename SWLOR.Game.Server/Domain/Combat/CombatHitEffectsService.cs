@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatAbilityHitService _abilityHit;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IAbilityImpactState _impactState;
         private readonly IPairedRangedTraitsService _pairedRangedTraits;
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatAbilityHitService abilityHit,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState impactState,
             IPairedRangedTraitsService pairedRangedTraits,
@@ -76,6 +78,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _abilityHit = abilityHit;
             _stat = stat;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _temporaryStatModifier = temporaryStatModifier;
             _impactState = impactState;
             _pairedRangedTraits = pairedRangedTraits;
@@ -241,7 +244,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType) || duration <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 defender,
                 typeof(HamstringStatusEffect),
@@ -569,7 +572,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (damageTakenFromBeastPercent <= 0 || durationSeconds <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 defender,
                 new PredatorsMark1StatusEffect(damageTakenFromBeastPercent),
@@ -716,7 +719,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             var fpLossPerTick = _stat.GetStatAdjustment(attacker, StatType.DamageDealtForceErosionFPLossPerTick);
             var staminaLossPerTick = _stat.GetStatAdjustment(attacker, StatType.DamageDealtForceErosionStaminaLossPerTick);
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 defender,
                 new ForceErosionStatusEffect(fpLossPerTick, staminaLossPerTick),
@@ -747,7 +750,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
             }
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 defender,
                 typeof(HamstringStatusEffect),
@@ -789,7 +792,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     : _stat.GetStatAdjustment(attacker, proc.DurationOverride);
                 var duration = durationOverride > 0 ? durationOverride : proc.Duration;
 
-                _statusEffect.ApplyStatusEffect(
+                _statusEffectApplication.ApplyStatusEffect(
                     attacker,
                     defender,
                     proc.Effect,
@@ -975,7 +978,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
             if (targetDefensePercent != 0 && targetDefenseDuration > 0)
             {
-                _statusEffect.ApplyStatusEffect(
+                _statusEffectApplication.ApplyStatusEffect(
                     attacker,
                     defender,
                     new ExposedStatusEffect(targetDefensePercent),
@@ -1081,7 +1084,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                     false);
                 if (trackerIcon != EffectIconType.Invalid)
                 {
-                    _statusEffect.ApplyStatusEffect(
+                    _statusEffectApplication.ApplyStatusEffect(
                         activator,
                         activator,
                         new CriticalRateStackTrackerStatusEffect(
@@ -1219,7 +1222,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 return;
             }
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 attacker,
                 new LimitedHasteStatusEffect(
@@ -1272,7 +1275,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (targetDefensePercent == 0 || targetDefenseDuration <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 defender,
                 new ExposedStatusEffect(targetDefensePercent),
@@ -1381,7 +1384,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (marker <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(creature, creature, typeof(SoulAscensionStatusEffect), 30f);
+            _statusEffectApplication.ApplyStatusEffect(creature, creature, typeof(SoulAscensionStatusEffect), 30f);
         }
 
         public void ApplyRecentDamagerDefeatedEnemyEffects(uint defeated)
@@ -1419,7 +1422,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             }
 
             _resources.RestoreFPFromStat(creature, StatType.CruelMomentum, 2);
-            _statusEffect.ApplyStatusEffect(creature, creature, typeof(CruelMomentumStatusEffect), 30f);
+            _statusEffectApplication.ApplyStatusEffect(creature, creature, typeof(CruelMomentumStatusEffect), 30f);
         }
 
         private void ApplyDefeatedEnemyNearbyAllyDefense(
@@ -1466,7 +1469,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                 if (!GetIsObjectValid(target))
                     continue;
 
-                _statusEffect.ApplyStatusEffect(source, target, typeof(PoisonStatusEffect), duration, CombatDamageType.Physical);
+                _statusEffectApplication.ApplyStatusEffect(source, target, typeof(PoisonStatusEffect), duration, CombatDamageType.Physical);
                 return;
             }
         }
@@ -1491,7 +1494,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                          3,
                          defeated))
             {
-                _statusEffect.ApplyStatusEffect(creature, nearby, typeof(BleedStatusEffect), duration, CombatDamageType.Physical);
+                _statusEffectApplication.ApplyStatusEffect(creature, nearby, typeof(BleedStatusEffect), duration, CombatDamageType.Physical);
             }
         }
 
@@ -1507,7 +1510,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (duration <= 0)
                 return;
 
-            _statusEffect.ApplyStatusEffect(attacker, defender, typeof(BleedStatusEffect), duration, damageType);
+            _statusEffectApplication.ApplyStatusEffect(attacker, defender, typeof(BleedStatusEffect), duration, damageType);
         }
 
         public void ApplySourceStatusStackEffects(uint attacker, uint defender)
@@ -1548,7 +1551,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var existing = _statusEffect.GetStatusEffect(defender, typeof(InfectionStatusEffect), attacker) as InfectionStatusEffect;
             if (existing == null)
             {
-                _statusEffect.ApplyStatusEffect(
+                _statusEffectApplication.ApplyStatusEffect(
                     attacker,
                     defender,
                     new InfectionStatusEffect(1),
@@ -1601,7 +1604,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             var currentStacks = _statusEffect.GetStatusEffect<ToxicRushStatusEffect>(attacker)?.Stacks ?? 0;
             var stacks = Math.Min(maxStacks, currentStacks + 1);
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 attacker,
                 new ToxicRushStatusEffect(stacks, haste, attack),
@@ -1622,7 +1625,7 @@ namespace SWLOR.Game.Server.Domain.Combat
 
             foreach (var nearby in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), radius, 0, target))
             {
-                _statusEffect.ApplyStatusEffect(activator, nearby, typeof(PoisonStatusEffect), duration, CombatDamageType.Poison);
+                _statusEffectApplication.ApplyStatusEffect(activator, nearby, typeof(PoisonStatusEffect), duration, CombatDamageType.Poison);
             }
         }
 

@@ -38,11 +38,13 @@ namespace SWLOR.Game.Server.Domain.Combat
 
         private readonly Type[] _allStatusEffects;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ICombatRecorderService _combatRecorder;
 
-        public PvpCombatService(IStatusEffectService statusEffect, ICombatRecorderService combatRecorder)
+        public PvpCombatService(IStatusEffectService statusEffect, IStatusEffectApplicationService statusEffectApplication, ICombatRecorderService combatRecorder)
         {
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _combatRecorder = combatRecorder;
             _allStatusEffects = new[] { typeof(PvpCombatStatusEffect) }.Concat(_healingStepStatusEffects).ToArray();
         }
@@ -324,6 +326,6 @@ namespace SWLOR.Game.Server.Domain.Combat
             _statusEffect.RemoveStatusEffect(creature, statusEffectClass, sendsWornOffMessage);
 
         protected virtual void ApplyStatusEffect(uint source, uint creature, Type statusEffectClass, float durationSeconds) =>
-            _statusEffect.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
+            _statusEffectApplication.ApplyStatusEffect(source, creature, statusEffectClass, durationSeconds);
     }
 }

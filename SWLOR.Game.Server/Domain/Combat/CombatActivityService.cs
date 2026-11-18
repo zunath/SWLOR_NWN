@@ -73,6 +73,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatSuppressionService _suppression;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ITemporaryStatModifierService _temporaryStatModifier;
         private readonly IPlayerFeedbackService _playerFeedback;
         private readonly IAbilityImpactState _impactState;
@@ -84,6 +85,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatSuppressionService suppression,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             ITemporaryStatModifierService temporaryStatModifier,
             IPlayerFeedbackService playerFeedback,
             IAbilityImpactState impactState,
@@ -94,6 +96,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _suppression = suppression;
             _stat = stat;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _temporaryStatModifier = temporaryStatModifier;
             _playerFeedback = playerFeedback;
             _impactState = impactState;
@@ -672,7 +675,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (openingSeconds > 0 && elapsed >= openingSeconds &&
                 !_statusEffect.HasStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect)))
             {
-                _statusEffect.ApplyStatusEffect(creature, creature, new OpeningAttackReadyStatusEffect(), -1);
+                _statusEffectApplication.ApplyStatusEffect(creature, creature, new OpeningAttackReadyStatusEffect(), -1);
                 if (GetIsPC(creature))
                     FloatingTextStringOnCreature(ColorToken.Combat("Opening Attack Ready"), creature, false);
             }
@@ -686,7 +689,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (hasReadyIdleSkillChannel &&
                 !_statusEffect.HasStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect)))
             {
-                _statusEffect.ApplyStatusEffect(creature, creature, new IdleSkillAbilityReadyStatusEffect(), -1);
+                _statusEffectApplication.ApplyStatusEffect(creature, creature, new IdleSkillAbilityReadyStatusEffect(), -1);
                 if (GetIsPC(creature))
                     FloatingTextStringOnCreature(ColorToken.Combat("Idle Skill Ability Ready"), creature, false);
             }

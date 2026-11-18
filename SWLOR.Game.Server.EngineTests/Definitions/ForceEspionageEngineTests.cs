@@ -66,7 +66,7 @@ public static class ForceEspionageEngineTests
             "without Cloud Mind the observer spots a player with no Stealth rating");
 
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            StatusEffect.ApplyStatusEffect<CloudedMindStatusEffect>(player.Creature, observer, 30f));
+            StatusEffectApplication.ApplyStatusEffect<CloudedMindStatusEffect>(player.Creature, observer, 30f));
         ctx.Assert(StatusEffect.HasStatusEffect<CloudedMindStatusEffect>(observer), "the observer is clouded");
         ctx.AssertEqual(0, CountDetections(observer, player.Creature, 40),
             "a clouded NPC never spots anyone in stealth");
@@ -141,7 +141,7 @@ public static class ForceEspionageEngineTests
         }
 
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            StatusEffect.ApplyStatusEffect<CloudedMindStatusEffect>(player.Creature, clouded, 30f));
+            StatusEffectApplication.ApplyStatusEffect<CloudedMindStatusEffect>(player.Creature, clouded, 30f));
         await ctx.DelaySecondsAsync(2f);
         ctx.Assert(!Enmity.GetEnmityTable(clouded).ContainsKey(player.Creature), "the clouded enemy ignores the hidden player");
         ctx.Assert(!Enmity.GetEnmityTable(unclouded).ContainsKey(player.Creature), "the other enemy has not found the hidden player");
@@ -163,7 +163,7 @@ public static class ForceEspionageEngineTests
         var bug = ctx.SpawnCreature("vdathswampland", 3f);
 
         await ctx.ExecuteInCreatureContextAsync(player.Creature, () =>
-            StatusEffect.ApplyStatusEffect(player.Creature, bug, new DecoyStatusEffect(8), 30f));
+            StatusEffectApplication.ApplyStatusEffect(player.Creature, bug, new DecoyStatusEffect(8), 30f));
 
         ctx.AssertEqual(184, GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(bug, player.Creature, 200), "8% off a rating of 200");
         ctx.AssertEqual(200, GameServices.CombatDamageModifiers.ApplyStatusSourceAccuracyModifiers(bug, other.Creature, 200), "no penalty against anyone else");

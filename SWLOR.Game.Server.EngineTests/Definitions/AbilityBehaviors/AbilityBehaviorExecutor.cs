@@ -281,12 +281,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     // factory-created instance has none until it is assigned.
                     var setupEffect = behaviorCase.TargetSetupStatusEffectFactory();
                     setupEffect.ReassignSource(caster);
-                    StatusEffect.ApplyStatusEffect(caster, target, setupEffect, 60f);
+                    StatusEffectApplication.ApplyStatusEffect(caster, target, setupEffect, 60f);
                 }
 
                 foreach (var setupEffectType in behaviorCase.TargetSetupStatusEffects)
                 {
-                    StatusEffect.ApplyStatusEffect(caster, target, setupEffectType, 60f);
+                    StatusEffectApplication.ApplyStatusEffect(caster, target, setupEffectType, 60f);
                 }
 
                 // Let spawn initialization scripts run before configuring resources - they

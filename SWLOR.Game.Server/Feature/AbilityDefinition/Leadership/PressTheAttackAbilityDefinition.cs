@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack1StatusEffect), duration))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack1StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 affected.Add(friendly);
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack2StatusEffect), duration))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack2StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 affected.Add(friendly);
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
-                if (StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack3StatusEffect), duration))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(PressTheAttack3StatusEffect), duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, friendly);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Holy_Aid), friendly);
                 affected.Add(friendly);

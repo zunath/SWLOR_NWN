@@ -236,12 +236,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test deferred", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(guarded, guarded, new GuardiansResolveStatusEffect(1000,
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(guarded, guarded, new GuardiansResolveStatusEffect(1000,
                         TemporaryHitPointEffects.GetGrantGeneration(guarded, TemporaryHitPointEffectKey.GuardiansResolve)), 60f),
                     "Guardian's Resolve applies to the guarded creature");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, burned, new BurnStatusEffect(1), 30f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker, burned, new BurnStatusEffect(1), 30f),
                     "Burn applies to the burned creature");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(arsonist, smoldering, new BurnStatusEffect(1), 30f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(arsonist, smoldering, new BurnStatusEffect(1), 30f),
                     "Burn applies to the smoldering creature");
                 DestroyObject(arsonist);
 
@@ -385,9 +385,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test weapon", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(brawler, dummy, typeof(BleedStatusEffect), 30f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(brawler, dummy, typeof(BleedStatusEffect), 30f),
                     "Bleed applies to the dummy");
-                ctx.Assert(StatusEffect.ApplyStatusEffect(pyro, dummy, typeof(BlazingSpikesStatusEffect), 60f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(pyro, dummy, typeof(BlazingSpikesStatusEffect), 60f),
                     "the pyro's Blazing Spikes applies to the dummy");
                 var startingHitPoints = GetCurrentHitPoints(dummy);
                 AssignCommand(brawler, () => ActionAttack(dummy));
@@ -565,7 +565,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test reactions", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(attacker, attacker, typeof(SoulDevourerStanceStatusEffect), 60f),
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(attacker, attacker, typeof(SoulDevourerStanceStatusEffect), 60f),
                     "Soul Devourer Stance applies to the attacker");
                 var attackerHitPoints = GetCurrentHitPoints(attacker);
                 await UseAbilityAsync(ctx, attacker, defender, FeatType.ForceLightning1);
@@ -1023,10 +1023,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(CombatRecorder.Start(arena.Area, "engine test refresh", out var startMessage), startMessage);
                 writer = CombatRecorder.LastWriter;
 
-                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), "the zone buff applies");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, ally, type, 3.2f), "the zone buff applies");
                 var applied = StatusEffect.GetStatusEffect(ally, type);
                 await ctx.DelaySecondsAsync(1f);
-                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), "the next pulse re-applies the zone buff");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, ally, type, 3.2f), "the next pulse re-applies the zone buff");
                 ctx.Assert(ReferenceEquals(applied, StatusEffect.GetStatusEffect(ally, type)), "the pulse restarts the active buff in place");
                 await ctx.DelaySecondsAsync(0.5f);
             }

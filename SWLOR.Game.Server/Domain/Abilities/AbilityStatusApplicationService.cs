@@ -15,17 +15,20 @@ namespace SWLOR.Game.Server.Domain.Abilities
     public class AbilityStatusApplicationService : IAbilityStatusApplicationService
     {
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly IResistanceService _resistance;
         private readonly IAbilityImpactState _impactState;
         private readonly ICombatAbilityBonusService _abilityBonus;
 
         public AbilityStatusApplicationService(
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             IResistanceService resistance,
             IAbilityImpactState impactState,
             ICombatAbilityBonusService abilityBonus)
         {
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _resistance = resistance;
             _impactState = impactState;
             _abilityBonus = abilityBonus;
@@ -167,8 +170,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
             out StatusEffectCategory appliedCategories)
         {
             var applied = _resistance.IsValidResistanceType(statusResistanceType)
-                ? _statusEffect.ApplyStatusEffect(activator, target, type, duration, statusResistanceType)
-                : _statusEffect.ApplyStatusEffect(activator, target, type, duration, sourceDamageType);
+                ? _statusEffectApplication.ApplyStatusEffect(activator, target, type, duration, statusResistanceType)
+                : _statusEffectApplication.ApplyStatusEffect(activator, target, type, duration, sourceDamageType);
             appliedCategories = applied
                 ? _statusEffect.GetStatusEffect(target, type, activator)?.Categories ?? StatusEffectCategory.None
                 : StatusEffectCategory.None;
@@ -192,8 +195,8 @@ namespace SWLOR.Game.Server.Domain.Abilities
             }
 
             var applied = _resistance.IsValidResistanceType(statusResistanceType)
-                ? _statusEffect.ApplyStatusEffect(activator, target, statusEffect, duration, statusResistanceType)
-                : _statusEffect.ApplyStatusEffect(activator, target, statusEffect, duration, sourceDamageType);
+                ? _statusEffectApplication.ApplyStatusEffect(activator, target, statusEffect, duration, statusResistanceType)
+                : _statusEffectApplication.ApplyStatusEffect(activator, target, statusEffect, duration, sourceDamageType);
             appliedCategories = applied ? statusEffect.Categories : StatusEffectCategory.None;
             return applied;
         }

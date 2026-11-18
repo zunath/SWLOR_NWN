@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             foreach (var ally in AbilityTargeting.GetFriendlyTargetsNearLocation(
                          creature, GetLocation(creature), AuraRadius, includeActivator: false))
             {
-                StatusEffect.ApplyStatusEffect(creature, ally, new WardenWallStanceAuraStatusEffect
+                StatusEffectApplication.ApplyStatusEffect(creature, ally, new WardenWallStanceAuraStatusEffect
                 {
                     OriginatingAbility = OriginatingAbility,
                     AnnouncesApplication = !StatusEffect.HasStatusEffect(ally, typeof(WardenWallStanceAuraStatusEffect), creature)

@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Espionage
             }
 
             // Mind Resistance can shorten or negate the cloud; the status service reports that.
-            if (!StatusEffect.ApplyStatusEffect<CloudedMindStatusEffect>(activator, target, duration))
+            if (!StatusEffectApplication.ApplyStatusEffect<CloudedMindStatusEffect>(activator, target, duration))
                 return false;
 
             // From a hidden caster, the puff on the target would point at someone unseen nearby.

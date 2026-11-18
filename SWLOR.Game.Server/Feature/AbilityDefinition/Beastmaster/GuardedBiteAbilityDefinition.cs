@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             foreach (var friendly in new[] { activator })
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(GuardedBite1SelfStatusEffect), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(GuardedBite1SelfStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
             }
         }
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             foreach (var friendly in new[] { activator })
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(GuardedBite2SelfStatusEffect), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(GuardedBite2SelfStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
             }
         }
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
             foreach (var friendly in new[] { activator })
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(GuardedBite3SelfStatusEffect), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(GuardedBite3SelfStatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), friendly);
             }
         }

@@ -22,17 +22,20 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatQueriesService _queries;
         private readonly IStatService _stat;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly IPlayerFeedbackService _playerFeedback;
 
         public CombatSuppressionService(
             ICombatQueriesService queries,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             IPlayerFeedbackService playerFeedback)
         {
             _queries = queries;
             _stat = stat;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _playerFeedback = playerFeedback;
         }
 
@@ -137,7 +140,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (adjustedEvasionPenaltyPercent <= 0)
                 return false;
 
-            var applied = _statusEffect.ApplyStatusEffect(
+            var applied = _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 defender,
                 new SuppressionStatusEffect(adjustedEvasionPenaltyPercent),
@@ -246,7 +249,7 @@ namespace SWLOR.Game.Server.Domain.Combat
                         continue;
                     }
 
-                    _statusEffect.ApplyStatusEffect(
+                    _statusEffectApplication.ApplyStatusEffect(
                         desired.Key,
                         target,
                         new ContainmentNetStatusEffect(desired.Value),
@@ -389,7 +392,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             var durationSeconds = latestExpiration == DateTime.MaxValue
                 ? -1
                 : Math.Max(1, (int)Math.Ceiling((latestExpiration - now).TotalSeconds));
-            _statusEffect.ApplyStatusEffect(
+            _statusEffectApplication.ApplyStatusEffect(
                 attacker,
                 attacker,
                 new OverwatchStatusEffect(),

@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryHitPointEffects.ApplyFlat(target, "TRIM_VITALITY", 500, 60f);
             ctx.AssertEqual(500, TemporaryHitPointEffects.GetRemaining(target), "the pool fills the cap");
 
-            StatusEffect.ApplyStatusEffect(target, target, typeof(DiseaseVitalityPenaltyStatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(target, target, typeof(DiseaseVitalityPenaltyStatusEffect), 30f);
             ctx.Assert(GetMaxHitPoints(target) < 1000, $"the penalty lowers max HP (now {GetMaxHitPoints(target)})");
             await ctx.WaitUntilAsync(
                 () => TemporaryHitPointEffects.GetRemaining(target) == TemporaryHitPointEffects.GetMaximumTotal(target),
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
 
             // Food with Vitality and no flat HP: its own Remove does nothing, so the trim has to come from the status removal.
-            StatusEffect.ApplyStatusEffect(target, target, new FoodStatusEffect(new FoodEffectData { Vitality = 10 }), 3f);
+            StatusEffectApplication.ApplyStatusEffect(target, target, new FoodStatusEffect(new FoodEffectData { Vitality = 10 }), 3f);
             await ctx.WaitUntilAsync(() => GetMaxHitPoints(target) > 1000, 2f, "the Vitality food to raise max HP");
             var raisedMaximum = GetMaxHitPoints(target);
             var raisedCap = TemporaryHitPointEffects.GetMaximumTotal(target);
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             CreatureStat.SetNPCMaxHitPoints(target, 1000, true);
             TemporaryHitPointEffects.ApplyFlat(target, "TRIM_OTHER", 200, 60f);
             TemporaryHitPointEffects.ApplyFlat(target, TemporaryHitPointEffectKey.GuardiansResolve, 300, 20f);
-            StatusEffect.ApplyStatusEffect(target, target, new GuardiansResolveStatusEffect(300,
+            StatusEffectApplication.ApplyStatusEffect(target, target, new GuardiansResolveStatusEffect(300,
                 TemporaryHitPointEffects.GetGrantGeneration(target, TemporaryHitPointEffectKey.GuardiansResolve)), 20f);
             await ctx.WaitUntilAsync(() => StatusEffect.HasStatusEffect<GuardiansResolveStatusEffect>(target),
                 5f, "Guardian's Resolve to apply");

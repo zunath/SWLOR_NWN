@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Domain.Combat
         private readonly ICombatImpactGeometryService _geometry;
         private readonly ICombatRecorderService _combatRecorder;
         private readonly IStatusEffectService _statusEffect;
+        private readonly IStatusEffectApplicationService _statusEffectApplication;
         private readonly ICombatActivityService _combatActivity;
         private readonly ICombatResourcesService _resources;
 
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             ICombatImpactGeometryService geometry,
             ICombatRecorderService combatRecorder,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusEffectApplication,
             ICombatActivityService combatActivity,
             ICombatResourcesService resources)
         {
@@ -44,6 +46,7 @@ namespace SWLOR.Game.Server.Domain.Combat
             _geometry = geometry;
             _combatRecorder = combatRecorder;
             _statusEffect = statusEffect;
+            _statusEffectApplication = statusEffectApplication;
             _combatActivity = combatActivity;
             _resources = resources;
         }
@@ -740,10 +743,10 @@ namespace SWLOR.Game.Server.Domain.Combat
             _combatRecorder.BeginStatTriggerAttribution(creature, stat);
 
         protected virtual bool ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds) =>
-            _statusEffect.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
+            _statusEffectApplication.ApplyStatusEffect(source, creature, statusEffect, durationSeconds);
 
         protected virtual bool ApplyStatusEffect(uint source, uint creature, IStatusEffect statusEffect, float durationSeconds, CombatDamageType sourceDamageType) =>
-            _statusEffect.ApplyStatusEffect(source, creature, statusEffect, durationSeconds, sourceDamageType);
+            _statusEffectApplication.ApplyStatusEffect(source, creature, statusEffect, durationSeconds, sourceDamageType);
 
         protected virtual void RemoveStatusEffect(uint creature, Type statusEffectClass, uint source, bool sendsWornOffMessage) =>
             _statusEffect.RemoveStatusEffect(creature, statusEffectClass, source, sendsWornOffMessage);

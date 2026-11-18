@@ -27,13 +27,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // Zone pulses re-apply these with 3.2 s every 3 s.
             foreach (var type in new[] { typeof(ForceSanctuary1StatusEffect), typeof(EmergencyBunker1StatusEffect), typeof(KoltoMistHealingStatusEffect) })
             {
-                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), $"{type.Name} applies");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, ally, type, 3.2f), $"{type.Name} applies");
                 var applied = StatusEffect.GetStatusEffect(ally, type);
                 var stats = applied.StatGroup.Stats.Where(stat => stat.Value != 0)
                     .ToDictionary(stat => stat.Key, stat => StatusEffect.GetStatAdjustment(ally, stat.Key));
 
                 await ctx.DelaySecondsAsync(1f);
-                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, ally, type, 3.2f), $"{type.Name} re-applies");
+                ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, ally, type, 3.2f), $"{type.Name} re-applies");
                 ctx.Assert(ReferenceEquals(applied, StatusEffect.GetStatusEffect(ally, type)), $"the next pulse keeps the active {type.Name}");
                 ctx.Assert(applied.GetRemainingDurationSeconds(DateTime.UtcNow) > 3f, $"the pulse restarts {type.Name}'s duration");
                 foreach (var (stat, value) in stats)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.StatusAppliedTargetStaminaDrainCooldownSeconds, 1, 60f);
 
             var staminaBefore = Stat.GetCurrentStamina(target);
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 3f), "Hobble applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 3f), "Hobble applies");
             var applied = StatusEffect.GetStatusEffect<HobbleStatusEffect>(target);
             ctx.Assert(applied != null, "the target has Hobble");
             ctx.AssertEqual(staminaBefore - 3, Stat.GetCurrentStamina(target), "the first application drains stamina");
@@ -77,9 +77,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             // Past the stamina drain cooldown, so the refresh must trigger it again.
             await ctx.DelaySecondsAsync(1.5f);
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 3f), "Hobble re-applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 3f), "Hobble re-applies");
             var refreshedAt = DateTime.UtcNow;
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, control, typeof(HobbleStatusEffect), 3f), "a fresh Hobble applies to the control");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, control, typeof(HobbleStatusEffect), 3f), "a fresh Hobble applies to the control");
             var refreshed = StatusEffect.GetStatusEffect<HobbleStatusEffect>(target);
             ctx.Assert(ReferenceEquals(applied, refreshed), "the same source keeps the active Hobble");
             ctx.AssertEqual(slow, StatusEffect.GetStatAdjustment(target, StatType.MovementSpeedPercentAdjustment),
@@ -100,10 +100,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                                            !StatusEffect.HasStatusEffect<HobbleStatusEffect>(control), 0.6f,
                 "the refreshed Hobble to expire together with the fresh one");
 
-            ctx.Assert(StatusEffect.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 3f), "Hobble applies again");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(caster, target, typeof(HobbleStatusEffect), 3f), "Hobble applies again");
             var fromCaster = StatusEffect.GetStatusEffect<HobbleStatusEffect>(target);
             await ctx.DelaySecondsAsync(1f);
-            ctx.Assert(StatusEffect.ApplyStatusEffect(otherCaster, target, typeof(HobbleStatusEffect), 3f), "another source applies Hobble");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(otherCaster, target, typeof(HobbleStatusEffect), 3f), "another source applies Hobble");
             var fromOther = StatusEffect.GetStatusEffect<HobbleStatusEffect>(target);
             ctx.Assert(ReferenceEquals(fromCaster, fromOther), "another source takes over the active Hobble");
             ctx.AssertEqual(otherCaster, fromOther.Source, "the Hobble now belongs to the new source, as a replacement would");

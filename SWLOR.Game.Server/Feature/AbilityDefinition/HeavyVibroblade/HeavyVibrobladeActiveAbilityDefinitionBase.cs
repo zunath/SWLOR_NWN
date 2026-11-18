@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         protected static void ApplySelfStatus(uint activator, Type type)
         {
             StatusEffect.RemoveOtherStanceStatuses(activator, type);
-            if (StatusEffect.ApplyStatusEffect(activator, activator, type, 0f))
+            if (StatusEffectApplication.ApplyStatusEffect(activator, activator, type, 0f))
                 Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
         }
 
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 return;
             }
 
-            StatusEffect.ApplyStatusEffect(activator, target, typeof(EssenceDrainStatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(activator, target, typeof(EssenceDrainStatusEffect), 30f);
         }
 
         protected static void HealFromDamage(uint target, int damage, int healingPercent)
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
         {
             if (includeSelf)
             {
-                if (StatusEffect.ApplyStatusEffect(activator, activator, type, duration))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, activator, type, duration))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, activator);
                 ApplyVisualEffect(activator, visualEffect);
             }
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
                 if (creature != activator && Party.IsInParty(activator, creature))
                 {
-                    if (StatusEffect.ApplyStatusEffect(activator, creature, type, duration))
+                    if (StatusEffectApplication.ApplyStatusEffect(activator, creature, type, duration))
                         Ability.PlaySuccessfulImpactVisualEffect(activator, creature);
                     ApplyVisualEffect(creature, visualEffect);
                 }

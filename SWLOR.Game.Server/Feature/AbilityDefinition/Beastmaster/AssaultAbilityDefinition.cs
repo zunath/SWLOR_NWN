@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void ApplySelfStatus(uint activator, Type statusEffect)
         {
-            StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, 30f);
+            StatusEffectApplication.ApplyStatusEffect(activator, activator, statusEffect, 30f);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), activator);
         }
 

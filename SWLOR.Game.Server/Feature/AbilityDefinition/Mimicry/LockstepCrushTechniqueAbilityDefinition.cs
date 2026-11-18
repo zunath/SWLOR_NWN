@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Shake,
                 afterSuccessfulHit: (activator, target) =>
-                    StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f, CombatDamageType.Physical),
+                    StatusEffectApplication.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f, CombatDamageType.Physical),
                 maxTargets: 5)
                 .DisplaysVisualEffectOnSuccessfulImpact(VisualEffect.Vfx_Ability_LockstepCrushTechnique)
                 .SkillType(SkillType.Mimicry)

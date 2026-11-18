@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         {
             foreach (var friendly in GetBeastAndMasterTargets(activator))
             {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(ForceBondedBeast1StatusEffect), 30f);
+                StatusEffectApplication.ApplyStatusEffect(activator, friendly, typeof(ForceBondedBeast1StatusEffect), 30f);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Restoration), friendly);
             }
         }

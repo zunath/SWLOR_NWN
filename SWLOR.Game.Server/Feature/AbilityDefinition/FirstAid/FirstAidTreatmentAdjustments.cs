@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (coagulantRank <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(
+            StatusEffectApplication.ApplyStatusEffect(
                 source,
                 target,
                 coagulantRank >= 2 ? typeof(Coagulant2StatusEffect) : typeof(Coagulant1StatusEffect),
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             if (!removedAilment)
                 return;
 
-            StatusEffect.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(source, target, typeof(EmergencySealant1StatusEffect), 30f);
         }
     }
 }

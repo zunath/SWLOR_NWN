@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (stacks <= 0 || icon == EffectIconType.Invalid)
                 return;
 
-            StatusEffect.ApplyStatusEffect(
+            StatusEffectApplication.ApplyStatusEffect(
                 attacker,
                 attacker,
                 new MeleeRepeatedTargetDamageStatusEffect(stacks, icon),

@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 return;
 
             AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(amount, DamageType.Acid), creature));
-            StatusEffect.ApplyStatusEffect(source, creature, typeof(PoisonDefensePenaltyStatusEffect), 30f);
+            StatusEffectApplication.ApplyStatusEffect(source, creature, typeof(PoisonDefensePenaltyStatusEffect), 30f);
         }
 
         protected override void Remove(uint creature)

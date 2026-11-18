@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .BreaksStealth()
                 .HasImpactAction((activator, target, level, location) =>
                 {
-                    if (StatusEffect.ApplyStatusEffect(activator, activator, new SoulAscensionBurstStatusEffect(),
+                    if (StatusEffectApplication.ApplyStatusEffect(activator, activator, new SoulAscensionBurstStatusEffect(),
                             CapstoneAbility.ActiveDurationSeconds))
                         SacrificeHitPoints(activator, HitPointCostPercent);
                 });

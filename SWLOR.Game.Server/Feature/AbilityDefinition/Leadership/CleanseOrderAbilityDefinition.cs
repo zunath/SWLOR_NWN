@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             HealAmount shield,
             float durationSeconds)
         {
-            if (!StatusEffect.ApplyStatusEffect(source, target, commandMarker, durationSeconds))
+            if (!StatusEffectApplication.ApplyStatusEffect(source, target, commandMarker, durationSeconds))
                 return;
 
             Ability.PlaySuccessfulImpactVisualEffect(source, target);

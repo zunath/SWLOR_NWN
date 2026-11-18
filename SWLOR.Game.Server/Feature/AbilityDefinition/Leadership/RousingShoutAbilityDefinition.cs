@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
 
             if (targetWasInDanger)
             {
-                if (StatusEffect.ApplyStatusEffect(activator, target, lowHPStatusEffect, durationSeconds))
+                if (StatusEffectApplication.ApplyStatusEffect(activator, target, lowHPStatusEffect, durationSeconds))
                     Ability.PlaySuccessfulImpactVisualEffect(activator, target);
             }
 

@@ -649,7 +649,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.MakeHostile(other);
             ctx.SetNPCPerkLevel(caster, PerkType.Uppercut, 1);
             ctx.SetNPCPerkLevel(caster, PerkType.Payback, 1);
-            StatusEffect.ApplyStatusEffect(caster, caster, new BruiserStanceStatusEffect(), -1);
+            StatusEffectApplication.ApplyStatusEffect(caster, caster, new BruiserStanceStatusEffect(), -1);
             GameServices.CombatAbilityHit.SetAbilityHitResolutionOverride(false);
             GameServices.CombatAbilityHit.SetAutoAttackHitResolutionOverride(false);
             try

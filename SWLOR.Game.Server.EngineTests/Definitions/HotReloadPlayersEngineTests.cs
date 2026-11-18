@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var statusEffects = StatusEffect;
             ApplyEffectToObject(DurationType.Instant, EffectDamage(17), creature);
             ApplyEffectToObject(DurationType.Permanent, TagEffect(SupernaturalEffect(EffectACIncrease(2)), EffectTag), creature);
-            ctx.Assert(statusEffects.ApplyStatusEffect(creature, creature, typeof(HobbleStatusEffect), StatusSeconds), "Hobble applies");
+            ctx.Assert(StatusEffectApplication.ApplyStatusEffect(creature, creature, typeof(HobbleStatusEffect), StatusSeconds), "Hobble applies");
             Recast.ApplyRecastDelay(creature, Cooldown, CooldownSeconds);
             HoldLoggedOutPlayer(module, statusEffects);
             SetLocalBool(creature, "IS_BUSY", true);

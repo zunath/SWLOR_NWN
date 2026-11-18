@@ -1,5 +1,8 @@
+using System.Collections;
+using System.Reflection;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.Domain.Abilities;
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -28,6 +31,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     {
         private const string Prefix = "SWLOR_HRP_";
         private const string EffectTag = Prefix + "EFFECT";
+        private const string LoggedOutKey = Prefix + "LOGGED_OUT_PLAYER";
         private const int ReloadsToVerify = 2;
         private const float StatusSeconds = 3600f;
         private const float CooldownSeconds = 3600f;
@@ -75,15 +79,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             fixture.KeepAcrossReloads();
             SetLocalInt(module, EngineTest.KeepArenaVariable, 1);
 
+            var statusEffects = StatusEffect;
             ApplyEffectToObject(DurationType.Instant, EffectDamage(17), creature);
             ApplyEffectToObject(DurationType.Permanent, TagEffect(SupernaturalEffect(EffectACIncrease(2)), EffectTag), creature);
-            ctx.Assert(StatusEffect.ApplyStatusEffect(creature, creature, typeof(HobbleStatusEffect), StatusSeconds), "Hobble applies");
+            ctx.Assert(statusEffects.ApplyStatusEffect(creature, creature, typeof(HobbleStatusEffect), StatusSeconds), "Hobble applies");
             Recast.ApplyRecastDelay(creature, Cooldown, CooldownSeconds);
+            HoldLoggedOutPlayer(module, statusEffects);
             SetLocalBool(creature, "IS_BUSY", true);
             SetLocalInt(creature, "STEALTH_GRANTED_WINDOW", 1);
             await ctx.WaitFrameAsync();
 
-            var status = StatusEffect.GetCreatureStatusEffects(creature).GetEffect<HobbleStatusEffect>();
+            var status = statusEffects.GetCreatureStatusEffects(creature).GetEffect<HobbleStatusEffect>();
             ctx.Assert(status != null, "the status effect is tracked");
             ctx.Assert(Recast.IsOnRecastDelay(creature, Cooldown).Item1, "the cooldown runs");
             var position = GetPosition(creature);
@@ -112,12 +118,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(GetLocalInt(module, Prefix + "HP"), GetCurrentHitPoints(creature), "current HP");
             ctx.Assert(HasTaggedEffect(creature), "the native effect stays on the player");
 
-            var status = StatusEffect.GetCreatureStatusEffects(creature).GetEffect<HobbleStatusEffect>();
+            var statusEffects = StatusEffect;
+            var status = statusEffects.GetCreatureStatusEffects(creature).GetEffect<HobbleStatusEffect>();
             ctx.Assert(status != null, "the status effect is carried into the new build");
             ctx.AssertEqual(GetLocalString(module, Prefix + "STATUS_ID"), status!.Id, "status effect id (its native effect's tag)");
             ctx.Assert(status.GetRemainingDurationSeconds(DateTime.UtcNow) > 0f, "the status effect has time left");
 
             ctx.Assert(Recast.IsOnRecastDelay(creature, Cooldown).Item1, "the cooldown saved in Redis still runs");
+            VerifyLoggedOutPlayer(ctx, module, statusEffects);
 
             var expected = new System.Numerics.Vector3(GetLocalFloat(module, Prefix + "X"), GetLocalFloat(module, Prefix + "Y"), GetLocalFloat(module, Prefix + "Z"));
             ctx.Assert(System.Numerics.Vector3.Distance(expected, GetPosition(creature)) < 0.05f, $"the player stays at {expected}, is at {GetPosition(creature)}");
@@ -142,6 +150,39 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             return false;
         }
 
+        // The table of the effects logged-out players hold: StatusEffectSessionService's since P5-5e (found through the holders the status
+        // effect tracker registered), StatusEffectService's before.
+        private static IDictionary LoggedOutTable(object statusEffects)
+        {
+            const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
+            var owner = statusEffects.GetType().GetField("_loggedOutSources", Private)?.GetValue(statusEffects) is IEnumerable sources
+                ? System.Linq.Enumerable.Single(System.Linq.Enumerable.Cast<object>(sources))
+                : statusEffects;
+            return (IDictionary)owner.GetType().GetField("_loggedOutPlayerEffects", Private)!.GetValue(owner)!;
+        }
+
+        /// <summary>Puts a logged-out player's held effect in the table, as OnPlayerExit would, so the reload has one to carry.</summary>
+        private static void HoldLoggedOutPlayer(uint module, object statusEffects)
+        {
+            var held = new HobbleStatusEffect();
+            held.RestartDuration(5);
+            var effects = new CreatureStatusEffect();
+            effects.Add(held);
+            var table = LoggedOutTable(statusEffects);
+            table[LoggedOutKey] = Activator.CreateInstance(table.GetType().GenericTypeArguments[1], 4242u, effects, DateTime.UtcNow);
+            SetLocalString(module, Prefix + "LOGGED_OUT_ID", held.Id);
+        }
+
+        private static void VerifyLoggedOutPlayer(EngineTestContext ctx, uint module, object statusEffects)
+        {
+            var table = LoggedOutTable(statusEffects);
+            ctx.Assert(table.Contains(LoggedOutKey), "the logged-out player's held effects are carried into the new build");
+            var entry = table[LoggedOutKey]!;
+            var effects = (CreatureStatusEffect)entry.GetType().GetProperty("Effects")!.GetValue(entry)!;
+            ctx.AssertEqual(GetLocalString(module, Prefix + "LOGGED_OUT_ID"), System.Linq.Enumerable.Single(effects.GetAllEffects()).Id, "the held effect is the same instance id");
+            ctx.AssertEqual(4242u, (uint)entry.GetType().GetProperty("Creature")!.GetValue(entry)!, "the creature the held effects belong to");
+        }
+
         /// <summary>The last phase: takes the player offline and lets the runner destroy the arena again.</summary>
         private static void Release(EngineTestContext ctx)
         {
@@ -152,6 +193,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             ctx.Track(creature);
+            LoggedOutTable(StatusEffect).Remove(LoggedOutKey);
+            DeleteLocalString(module, Prefix + "LOGGED_OUT_ID");
             foreach (var name in new[] { "CREATURE" })
                 DeleteLocalObject(module, Prefix + name);
             foreach (var name in new[] { "CLIENT", "WAS_PLAYER", "HP", "VERIFIED", "PREPARED" })

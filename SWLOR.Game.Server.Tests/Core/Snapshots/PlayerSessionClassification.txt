@@ -62,7 +62,7 @@ mod_enter (57)
               Takes a pilot out of space at login; the players in space and the ship clones are carried.
   LoginOnly   SWLOR.Game.Server.Domain.Character.CreatureStatService.ApplyPlayerStats
               The movement rate and walk setting stay in the engine.
-  LoginOnly   SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerEnter
+  LoginOnly   SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerEnter
               Moves the effects held since logout back to the player; a reload carries the status effects themselves, and a rerun would take the food bonus off max HP.
   LoginOnly   SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnEnter
               Clears a granted-stealth window left by a crash at login; it would end a live one.
@@ -172,7 +172,7 @@ mod_exit (45)
               Leaves the ship clone at logout; the players in space and the clones are carried.
   LogoutOnly  SWLOR.Game.Server.Domain.Character.CreatureStatService.ForgetOutOfCombatMovementState
               Forgets a value the next movement refresh recomputes.
-  LogoutOnly  SWLOR.Game.Server.Domain.Character.StatusEffectService.OnPlayerExit
+  LogoutOnly  SWLOR.Game.Server.Domain.Character.StatusEffectSessionService.OnPlayerExit
               Holds the effects for the player's return and takes them off the creature; a reload carries the status effects of every creature instead.
   LogoutOnly  SWLOR.Game.Server.Domain.Combat.StealthService.ClearGrantedStealthOnExit
               Clears granted-stealth locals at logout; for a player who stays online a reload ends only a timed window, through StealthService.QuiesceForReload.

@@ -17,7 +17,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Domain.Character
 {
     /// <summary>
-    /// Status effects: the per-creature trackers, what a logged-out player keeps, the definition catalog, the native
+    /// Status effects: the per-creature trackers, the native
     /// effect that carries each status and the effects granted while a native attack cycle resolves. The logic that used
     /// to be static in the facade <c>StatusEffect</c> is moved here unchanged; the event handlers run on the container's
     /// instance, and static callers reach it through <c>GameServices.StatusEffect</c>. Calls into <c>Stat</c>, <c>Ability</c> and
@@ -25,15 +25,15 @@ namespace SWLOR.Game.Server.Domain.Character
     /// <c>protected virtual</c> methods whose bodies are the original calls. The pure duration rules live in
     /// <see cref="StatusEffectRules"/>, for code that has no container.
     /// </summary>
-    public class StatusEffectService : IStatusEffectService, IReloadStateAdopter
+    public class StatusEffectService : IStatusEffectService
     {
         private const string StatusEffectTag = "STATUS_EFFECT";
         private const float Interval = 1f;
 
         [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
-        [ReloadState(ReloadStateKind.Carried)]
-        private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
+        [ReloadState(ReloadStateKind.Runtime)]
+        private readonly List<ILoggedOutStatusEffectSource> _loggedOutSources = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly HashSet<string> _suppressedStatusEffectRemovalIds = new();
         [ReloadState(ReloadStateKind.Runtime)]
@@ -52,9 +52,7 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IMessagingService _messaging;
         private readonly IPlayerNameService _playerName;
         private readonly IGuiRefreshPublisher _gui;
-        private readonly IDBService _db;
         private readonly Lazy<IStatService> _stat;
-        private readonly IAbilityCatalog _catalog;
         private readonly IActiveAbilityImpact _activeImpact;
 
         public StatusEffectService(
@@ -64,9 +62,7 @@ namespace SWLOR.Game.Server.Domain.Character
             IMessagingService messaging,
             IPlayerNameService playerName,
             IGuiRefreshPublisher gui,
-            IDBService db,
             Lazy<IStatService> stat,
-            IAbilityCatalog catalog,
             IActiveAbilityImpact activeImpact)
         {
             _resistance = resistance;
@@ -75,9 +71,7 @@ namespace SWLOR.Game.Server.Domain.Character
             _messaging = messaging;
             _playerName = playerName;
             _gui = gui;
-            _db = db;
             _stat = stat;
-            _catalog = catalog;
             _activeImpact = activeImpact;
         }
 
@@ -110,182 +104,6 @@ namespace SWLOR.Game.Server.Domain.Character
         {
             if (!_appliedListeners.Contains(listener))
                 _appliedListeners.Add(listener);
-        }
-
-        /// <summary>
-        /// When a player enters the server, apply the NWN effect system
-        /// </summary>
-        [PlayerSession(PlayerReload.LoginOnly,
-            "Moves the effects held since logout back to the player; a reload carries the status effects themselves, and a rerun would take the food bonus off max HP.")]
-        [NWNEventHandler(ScriptName.OnModuleEnter)]
-        public void OnPlayerEnter()
-        {
-            var player = GetEnteringObject();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            var playerId = GetObjectUUID(player);
-            if (_loggedOutPlayerEffects.TryGetValue(playerId, out var loggedOutEffects))
-            {
-                _loggedOutPlayerEffects.Remove(playerId);
-                ReassignSelfSourcedEffects(player, loggedOutEffects);
-                ReconcileLoggedOutEffects(player, loggedOutEffects);
-
-                var effects = loggedOutEffects.Effects;
-                if (effects.GetAllEffects().Count > 0)
-                {
-                    _creatureEffects[player] = effects;
-                    ReapplyNWNEffects(player, effects);
-                    NotifyStatusEffectsRestored(player, effects);
-                }
-            }
-
-            ReapplyFoodHP(player);
-            DelayCommand(1f, () => RestoreSavedToggles(player));
-        }
-
-        /// <summary>
-        /// After a hot reload has carried the status effects into this build (<see cref="IReloadStateAdopter"/>), for every creature
-        /// still in the world: a status whose native effect is gone is settled now, as the old build's settle closure (dropped by the
-        /// reload) would have settled it; every other status restarts what it keeps going through its own closures
-        /// (<see cref="StatusEffectBase.ResumeAfterReload"/>, the rest movement check); and the movement rate is recomputed, as the
-        /// closure after a removed stat change would have done (online players too, whose last status may have just ended).
-        /// </summary>
-        public void OnCarriedStateAdopted()
-        {
-            var creatures = new HashSet<uint>(_creatureEffects.Keys);
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-                creatures.Add(player);
-
-            foreach (var creature in creatures)
-            {
-                if (!GetIsObjectValid(creature))
-                    continue;
-
-                if (_creatureEffects.TryGetValue(creature, out var effects))
-                {
-                    foreach (var effect in effects.GetAllEffects())
-                    {
-                        if (!MayHaveEffectTag(creature, effect.Id) || !HasEffectByTag(creature, effect.Id))
-                            RemoveStatusEffectById(creature, effect.Id, true, false);
-                        else
-                            (effect as StatusEffectBase)?.ResumeAfterReload(creature);
-                    }
-                }
-
-                ApplyCreatureMovementRate(creature);
-            }
-        }
-
-        /// <summary>
-        /// Saves the stances and toggles of everyone online or holding effects from an earlier logout. Those effects are only kept in
-        /// memory, so without this a server restart loses them.
-        /// </summary>
-        public void SaveTogglesForRestart()
-        {
-            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-            {
-                if (!GetIsDM(player) && _creatureEffects.TryGetValue(player, out var effects))
-                    SaveToggles(GetObjectUUID(player), effects);
-            }
-
-            foreach (var (playerId, loggedOut) in _loggedOutPlayerEffects)
-            {
-                SaveToggles(playerId, loggedOut.Effects);
-            }
-        }
-
-        private void SaveToggles(string playerId, CreatureStatusEffect effects)
-        {
-            var toggles = effects.GetAllEffects()
-                .Where(effect => effect.RestoresAfterServerRestart && effect.DurationTicks < 0)
-                .Select(effect => effect.GetType().Name)
-                .Distinct()
-                .ToList();
-            if (toggles.Count == 0)
-                return;
-
-            var dbPlayer = _db.Get<Player>(playerId);
-            if (dbPlayer == null)
-                return;
-
-            dbPlayer.TogglesToRestore = toggles;
-            _db.Set(dbPlayer);
-        }
-
-        private void RestoreSavedToggles(uint player)
-        {
-            if (!GetIsObjectValid(player))
-                return;
-
-            var dbPlayer = _db.Get<Player>(GetObjectUUID(player));
-            if (dbPlayer?.TogglesToRestore == null)
-                return;
-
-            var toggles = dbPlayer.TogglesToRestore;
-            dbPlayer.TogglesToRestore = null;
-            _db.Set(dbPlayer);
-
-            if (GetCurrentHitPoints(player) <= 0)
-                return;
-
-            foreach (var toggle in toggles)
-            {
-                var type = _statusCatalog.FindDefinitionByName(toggle);
-                var ability = type == null ? null : FindKnownToggleAbility(player, type);
-                if (ability == null || HasStatusEffect(player, type) || !_statusCatalog.TryCreateStatusEffect(type, out var statusEffect))
-                    continue;
-
-                statusEffect.OriginatingAbility = ability;
-                RemoveOtherStanceStatuses(player, type);
-                ApplyStatusEffect(player, player, statusEffect, 0f);
-            }
-        }
-
-        // A deploy can change perks while the server is down, so a toggle only returns if the player still knows its ability.
-        private AbilityDetail FindKnownToggleAbility(uint player, Type statusEffectType)
-        {
-            foreach (var (feat, ability) in GetAllAbilityDetails())
-            {
-                if (ability.StatusEffectTypesRemovedOnPerkRefund.Contains(statusEffectType) && QuickCastFeatMap.KnowsFeat(player, feat))
-                    return ability;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// When a player exits the server, hold their status effects until they return.
-        /// </summary>
-        [PlayerSession(PlayerReload.LogoutOnly,
-            "Holds the effects for the player's return and takes them off the creature; a reload carries the status effects of every creature instead.")]
-        [NWNEventHandler(ScriptName.OnModuleExit)]
-        public void OnPlayerExit()
-        {
-            var player = GetExitingObject();
-            if (!GetIsPC(player) || GetIsDM(player))
-                return;
-
-            RemoveStatusEffectsFromAllTargetsWhenSourceExits(player);
-
-            var playerId = GetObjectUUID(player);
-            if (_creatureEffects.TryGetValue(player, out var effects) &&
-                effects.GetAllEffects().Count > 0)
-            {
-                RemoveNonPersistentStatusEffects(player, effects);
-
-                if (effects.GetAllEffects().Count > 0)
-                {
-                    _loggedOutPlayerEffects[playerId] = new LoggedOutStatusEffects(player, effects, Clock.UtcNow);
-                    RemoveTrackedNWNEffects(player, effects);
-                }
-                else
-                {
-                    RemoveEffectByTag(player, StatusEffectTag);
-                }
-            }
-
-            RemoveCreature(player);
         }
 
         public void ClearStatusEffectsOnDeath(uint player)
@@ -323,6 +141,38 @@ namespace SWLOR.Game.Server.Domain.Character
         public void OnStatusEffectInterval()
         {
             OnNWNStatusEffectInterval(OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// Registers who holds the effects of players who logged out, so a source-wide removal reaches them too. The list holds service
+        /// instances, so a reload rebuilds it through the boot handler that registers the holder (it reruns before the carried status
+        /// effects are adopted). Registering the same holder twice keeps one entry.
+        /// </summary>
+        public void RegisterLoggedOutSource(ILoggedOutStatusEffectSource source)
+        {
+            if (!_loggedOutSources.Contains(source))
+                _loggedOutSources.Add(source);
+        }
+
+        private IEnumerable<CreatureStatusEffect> GetLoggedOutEffects()
+        {
+            RequireLoggedOutSources();
+            return _loggedOutSources.SelectMany(source => source.GetLoggedOutEffects());
+        }
+
+        public bool TryGetCreatureStatusEffects(uint creature, out CreatureStatusEffect effects)
+        {
+            return _creatureEffects.TryGetValue(creature, out effects);
+        }
+
+        public IReadOnlyCollection<uint> GetTrackedCreatures()
+        {
+            return _creatureEffects.Keys;
+        }
+
+        public void TrackCreatureStatusEffects(uint creature, CreatureStatusEffect effects)
+        {
+            _creatureEffects[creature] = effects;
         }
 
         private CreatureStatusEffect EnsureCreatureStatusEffectTracker(uint creature)
@@ -1000,7 +850,7 @@ namespace SWLOR.Game.Server.Domain.Character
             SendMessageToPC(recipient, message);
         }
 
-        private void ReapplyNWNEffects(uint creature, CreatureStatusEffect effects)
+        public void ReapplyNWNEffects(uint creature, CreatureStatusEffect effects)
         {
             var shouldReapplyMovementRate = false;
 
@@ -1021,40 +871,7 @@ namespace SWLOR.Game.Server.Domain.Character
             }
         }
 
-        private void ReassignSelfSourcedEffects(uint creature, LoggedOutStatusEffects loggedOutEffects)
-        {
-            foreach (var statusEffect in loggedOutEffects.Effects.GetAllEffects()
-                         .Where(effect => effect.Source == loggedOutEffects.Creature))
-            {
-                statusEffect.ReassignSource(creature);
-            }
-        }
-
-        private void ReconcileLoggedOutEffects(uint creature, LoggedOutStatusEffects loggedOutEffects)
-        {
-            var currentTime = Clock.UtcNow;
-            if (currentTime < loggedOutEffects.LoggedOutAt)
-            {
-                currentTime = loggedOutEffects.LoggedOutAt;
-            }
-
-            var effects = loggedOutEffects.Effects;
-
-            foreach (var statusEffect in effects.GetAllEffects())
-            {
-                statusEffect.ReconcileElapsedTime(currentTime);
-
-                if (!statusEffect.IsFlaggedForRemoval)
-                    continue;
-
-                statusEffect.RemoveEffect(creature);
-                effects.Remove(statusEffect);
-                NotifyStatusEffectRemoved(creature, statusEffect);
-                RemoveEffectByTag(creature, statusEffect.Id);
-            }
-        }
-
-        private void RemoveNonPersistentStatusEffects(uint creature, CreatureStatusEffect effects)
+        public void RemoveNonPersistentStatusEffects(uint creature, CreatureStatusEffect effects)
         {
             foreach (var statusEffect in effects.GetAllEffects().Where(effect => !effect.PersistsOnLogout))
             {
@@ -1062,7 +879,7 @@ namespace SWLOR.Game.Server.Domain.Character
             }
         }
 
-        private void RemoveTrackedNWNEffects(uint creature, CreatureStatusEffect effects)
+        public void RemoveTrackedNWNEffects(uint creature, CreatureStatusEffect effects)
         {
             foreach (var statusEffect in effects.GetAllEffects())
             {
@@ -1606,12 +1423,12 @@ namespace SWLOR.Game.Server.Domain.Character
                     RemoveStatusEffectById(entry.Target, effectId, sendsWornOffMessage, true);
             }
 
-            foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)
+            foreach (var loggedOutEffects in GetLoggedOutEffects())
             {
                 var sourceOwnedEffects = GetSourceOwnedStatusEffects(
-                    loggedOutEffects.Effects.GetAllEffects(), statusEffectType, source, originatingAbility);
+                    loggedOutEffects.GetAllEffects(), statusEffectType, source, originatingAbility);
                 foreach (var effect in sourceOwnedEffects)
-                    loggedOutEffects.Effects.Remove(effect);
+                    loggedOutEffects.Remove(effect);
             }
         }
 
@@ -1628,7 +1445,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 .ToArray();
         }
 
-        private void RemoveStatusEffectsFromAllTargetsWhenSourceExits(uint source)
+        public void RemoveStatusEffectsFromAllTargetsWhenSourceExits(uint source)
         {
             if (!GetIsObjectValid(source))
                 return;
@@ -1652,13 +1469,13 @@ namespace SWLOR.Game.Server.Domain.Character
                     RemoveStatusEffect(entry.Target, effectType, source, false);
             }
 
-            foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)
+            foreach (var loggedOutEffects in GetLoggedOutEffects())
             {
-                var sourceOwnedEffects = loggedOutEffects.Effects.GetAllEffects()
+                var sourceOwnedEffects = loggedOutEffects.GetAllEffects()
                     .Where(effect => effect.Source == source && effect is IRemoveWhenSourceExits)
                     .ToList();
                 foreach (var effect in sourceOwnedEffects)
-                    loggedOutEffects.Effects.Remove(effect);
+                    loggedOutEffects.Remove(effect);
             }
         }
 
@@ -1841,7 +1658,7 @@ namespace SWLOR.Game.Server.Domain.Character
             RemoveCreatureIfEmpty(creature, creatureEffects, removeNativeEffect);
         }
 
-        private void RemoveStatusEffectById(
+        public void RemoveStatusEffectById(
             uint creature,
             string statusEffectId,
             bool sendsWornOffMessage = true,
@@ -1946,20 +1763,12 @@ namespace SWLOR.Game.Server.Domain.Character
             return creatureEffects.GetAllEffects().Count(effect => effect.GetType() == type) <= 1;
         }
 
-        private void NotifyStatusEffectRemoved(uint creature, IStatusEffect statusEffect)
+        public void NotifyStatusEffectRemoved(uint creature, IStatusEffect statusEffect)
         {
             if (statusEffect.SourceType == StatusEffectSourceType.Stance)
                 NotifyStanceChanged(creature);
             if (statusEffect is IStatusEffectRemovedHandler handler)
                 handler.AfterRemoved(creature);
-        }
-
-        private void NotifyStatusEffectsRestored(uint creature, CreatureStatusEffect effects)
-        {
-            foreach (var handler in effects.GetAllEffects().OfType<IStatusEffectRestoredHandler>().ToList())
-            {
-                handler.AfterRestored(creature);
-            }
         }
 
         private bool HasStatAdjustment(IStatusEffect statusEffect)
@@ -2350,16 +2159,14 @@ namespace SWLOR.Game.Server.Domain.Character
             }
         }
 
-        protected virtual void ReapplyFoodHP(uint player)
+        public virtual void ReapplyFoodHP(uint player)
         {
             RequireStatEffectListeners();
             foreach (var listener in _statEffectListeners)
                 listener.OnStatusEffectsRestored(player);
         }
 
-        protected virtual IReadOnlyDictionary<FeatType, AbilityDetail> GetAllAbilityDetails() => _catalog.GetAllAbilityDetails();
-
-        protected virtual void ApplyCreatureMovementRate(uint creature)
+        public virtual void ApplyCreatureMovementRate(uint creature)
         {
             RequireStatEffectListeners();
             foreach (var listener in _statEffectListeners)
@@ -2410,6 +2217,12 @@ namespace SWLOR.Game.Server.Domain.Character
                 listener.OnApplicationCompleted(source, creature, statusEffectType, ability);
         }
 
+        private void RequireLoggedOutSources()
+        {
+            if (_loggedOutSources.Count == 0)
+                throw new InvalidOperationException("No logged-out holder is registered with the status effects.");
+        }
+
         private void RequireMeleeListeners()
         {
             if (_meleeListeners.Count == 0)
@@ -2428,19 +2241,5 @@ namespace SWLOR.Game.Server.Domain.Character
 
         // A native read of the object's applied effects.
         protected virtual bool MayHaveEffectTag(uint creature, string tag) => AppliedEffects.MayHaveTag(creature, tag);
-
-        private sealed class LoggedOutStatusEffects
-        {
-            public uint Creature { get; }
-            public CreatureStatusEffect Effects { get; }
-            public DateTime LoggedOutAt { get; }
-
-            public LoggedOutStatusEffects(uint creature, CreatureStatusEffect effects, DateTime loggedOutAt)
-            {
-                Creature = creature;
-                Effects = effects;
-                LoggedOutAt = loggedOutAt;
-            }
-        }
     }
 }

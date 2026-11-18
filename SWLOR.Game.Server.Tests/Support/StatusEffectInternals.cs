@@ -29,7 +29,7 @@ public static class StatusEffectInternals
     public static readonly Type CombatEventsType = typeof(StatusEffectService);
 
     /// <summary>Part 7, the session: <c>_loggedOutPlayerEffects</c> and its private nested <c>LoggedOutStatusEffects</c>.</summary>
-    public static readonly Type SessionType = typeof(StatusEffectService);
+    public static readonly Type SessionType = typeof(StatusEffectSessionService);
 
     /// <summary>The static class that declares the leadership damage reduction members.</summary>
     public static readonly Type LeadershipType = typeof(LeadershipDamageReductionRules);

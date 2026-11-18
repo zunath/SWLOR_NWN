@@ -92,4 +92,16 @@ public class StatusEffectListenerTests : StatusEffectServiceTestBase
 
         notify.Should().Throw<InvalidOperationException>().WithMessage("*melee listener*");
     }
+
+    [Test]
+    public void ARemovalBySourceWithNoLoggedOutHolderRegisteredThrows()
+    {
+        var bare = Bench.CreateServiceWithoutListeners();
+
+        var bySource = () => bare.RemoveStatusEffectsFromAllTargetsBySource(Caster, typeof(ProbeEffect), false);
+        var whenExits = () => bare.RemoveStatusEffectsFromAllTargetsWhenSourceExits(Caster);
+
+        bySource.Should().Throw<InvalidOperationException>().WithMessage("*logged-out holder*");
+        whenExits.Should().Throw<InvalidOperationException>().WithMessage("*logged-out holder*");
+    }
 }

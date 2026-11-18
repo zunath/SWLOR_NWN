@@ -611,3 +611,44 @@ parameters, so the Character -> Combat and Character -> Quests references of the
   handler order, so the existing log lines and `AHostileDebuff_RunsEveryStepInTheOriginalOrder` keep pinning the order against the surrounding code.
   `StatusEffectListenerTests` proves the order across listeners (stand-in first, a later listener after it, once per notice even when registered twice) for the applied
   and melee notices.
+
+### P5-5e (session part)
+
+`StatusEffectService` 2,446 -> 2,238 lines, 10 -> 8 services (`IDBService` and `IAbilityCatalog` left; it is no longer an `IReloadStateAdopter`).
+
+- **Part 7** `StatusEffectSessionService` behind `IStatusEffectSessionService` (Character, `GameServices.StatusEffectSession`; 296 lines, 4 services:
+  `IStatusEffectService`, `IStatusEffectCatalogService`, `IDBService`, `IAbilityCatalog`) holds `OnPlayerEnter`, `OnPlayerExit`, `SaveTogglesForRestart`,
+  `OnCarriedStateAdopted`, the toggle save and restore, the two logged-out reconciliation steps, `NotifyStatusEffectsRestored` and the nested
+  `LoggedOutStatusEffects`; bodies are verbatim except that the trackers and removal are reached through `IStatusEffectService`. `MayHaveEffectTag` and
+  `GetAllAbilityDetails` are its two `protected virtual` seams. `ServerRestart` calls `StatusEffectSession.SaveTogglesForRestart()` (`RemovedFacades.json`
+  lists the three names under owner `StatusEffectSession`).
+- **Carried state:** `_loggedOutPlayerEffects` is `[ReloadState(Carried)]` and `[ReloadCarriedFrom("SWLOR.Game.Server.Domain.Character.StatusEffectService")]`;
+  its key becomes `...StatusEffectSessionService._loggedOutPlayerEffects` (`ReloadCarryHistory.txt` gains the line, the old one stays; `ReloadAdoption.txt`
+  renames it). `_creatureEffects` stays in part 1 under the same key. The adoption order is as the guide says: the names sort `StatusEffectService` then
+  `StatusEffectSessionService` with no carried class between them.
+- **Departure from the map: the session part registers as a holder.** `RemoveStatusEffectsFromAllTargetsBySource` (public, used by `PerkService` and
+  `MimicryService`) and `RemoveStatusEffectsFromAllTargetsWhenSourceExits` (part 1) also remove effects held by logged-out players, so part 1 still needs to see
+  the table that moved. A constructor parameter would make a cycle (part 7 depends on part 1), and splitting the loops would give every caller two calls, so part 1
+  holds a `[ReloadState(Runtime)]` list of `ILoggedOutStatusEffectSource` (`RegisterLoggedOutSource`, one entry per holder; a removal by source with no holder throws
+  `InvalidOperationException` (`RequireLoggedOutSources`), as the listener lists do: an empty list means the registration was missed) and the session part registers itself from a `Rerun` boot handler `RegisterLoggedOutSource` in `OnModuleCacheBefore`, after the three
+  listener registrations (`ScriptHandlerOrder.txt`, `BootHandlerClassification.txt`, `HandlerRenames.txt` line 320 with a fifth branch name). A reload reruns it before it
+  adopts the carried state, as for the listeners. The two loops read `GetLoggedOutEffects()`; their bodies are otherwise unchanged. The map listed no new handler for
+  this PR; the reload reruns went from 84 to 85.
+- **Promoted on part 1** (public, on `IStatusEffectService`): `TryGetCreatureStatusEffects`, `GetTrackedCreatures`, `TrackCreatureStatusEffects`,
+  `ReapplyNWNEffects`, `ReapplyFoodHP` and `ApplyCreatureMovementRate` (the two stat notices, still `virtual` seams), `RemoveStatusEffectsFromAllTargetsWhenSourceExits`,
+  `RemoveNonPersistentStatusEffects`, `RemoveTrackedNWNEffects`, `RemoveStatusEffectById` and `NotifyStatusEffectRemoved`; the next PRs move them where their owner lands.
+  The three removals are added to `CraftingStyleStatusEffectTests.RemovalsThatNameTheirTarget` (the rule asks every new public removal to be listed).
+- **Handlers:** `OnPlayerEnter` (`ScriptHandlerOrder.txt` line 767, `LoginOnly`) and `OnPlayerExit` (line 837, `LogoutOnly`) renamed in place
+  (`HandlerRenames.txt` lines 323, 324; `PlayerSessionClassification.txt` 65 and 175).
+- **Tests:** `TestStatusEffectSessionService` is the part 7 double (`Bench.Session`; the bench registers it with the tracker double); `StatusEffectSource.PartFiles`
+  gains the session file and `InterfaceFiles` its interface; `ClockSeamFiles.txt` lists it. `ReloadCarrySamples.Owner` builds the session over a tracker service with an
+  empty table, as the container does. New in `ReloadStateCarrierTests`: a logged-out entry round trip, a reload from the parent build (one text under
+  `StatusEffectService` feeding both classes, taken once), and the adoption-order test (the session part follows the tracker part in the adoption order, and its
+  adoption recomputes the movement rate of a creature the tracker part carried in the same pass). The needles that read the loops now read `GetLoggedOutEffects()`.
+  `HotReloadPlayersEngineTests` also holds one logged-out player's effect (a reflection write into the table, found on whichever service owns it) and checks it in
+  each generation.
+- **Reload check** (`run-hot-reload-check.sh --reloads 2 --engine-filter HotReloadPlayers`): passes on the base (`5eb8eecc8`, with the same engine-test edit) and on the
+  branch, three generations each, 251 cache digests and 86 adopted digests match at every reload; the logged-out table digests as `count=1` and keeps its hash
+  through both reloads on both sides. With `HotReloadPlayers|StatusEffect` the base and the branch fail alike: the Piercing Toss bleed test (7 ticks, expected 6)
+  in every generation and the `_creatureEffects` digest (34 and 67 entries, whose effects the status engine tests leave running) after each reload; the logged-out
+  table matches in both.

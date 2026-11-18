@@ -91,8 +91,10 @@ public sealed partial class StatusEffectBench : IDisposable
         });
 
         Catalog = new TestStatusEffectCatalogService(this);
-        _createService = () => new TestStatusEffectService(this, resistance, Catalog, recorder, messaging, playerName, gui, Db);
+        _createService = () => new TestStatusEffectService(this, resistance, Catalog, recorder, messaging, playerName, gui);
         Service = _createService();
+        Session = new TestStatusEffectSessionService(this, Service, Catalog, Db);
+        Service.RegisterLoggedOutSource(Session);
         Service.RegisterMeleeListener(new StatusEffectListenerStandIns.Melee(Log));
         Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Impact(Log));
         Service.RegisterAppliedListener(new StatusEffectListenerStandIns.Capstone(Log));
@@ -136,7 +138,7 @@ public sealed partial class StatusEffectBench : IDisposable
     public TestStatusEffectService CombatEvents => Service;
 
     /// <summary>Part 7, <c>StatusEffectSessionService</c>: login, logout, restart and reload.</summary>
-    public TestStatusEffectService Session => Service;
+    public TestStatusEffectSessionService Session { get; }
 
     /// <summary>Everything the service did outside itself, in order.</summary>
     public List<string> Log { get; } = new();

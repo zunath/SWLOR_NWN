@@ -38,7 +38,7 @@ public abstract class StatusEffectServiceTestBase
 
     protected TestStatusEffectService CombatEvents => Bench.CombatEvents;
 
-    protected TestStatusEffectService Session => Bench.Session;
+    protected TestStatusEffectSessionService Session => Bench.Session;
 
     protected List<string> Log => Bench.Log;
 

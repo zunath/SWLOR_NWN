@@ -28,8 +28,8 @@ public class ResourceRestoredEffectsServiceTests
         _stats = new();
         _statReader = ScriptedProxy.Create<IStatService>(out _statCalls);
         _statCalls.On(nameof(IStatService.GetStatAdjustment), args => _stats.GetValueOrDefault(((uint)args[0]!, (StatType)args[1]!)));
-        var statusEffect = ScriptedProxy.Create<IStatusEffectService>(out _statusCalls);
-        _statusCalls.On(nameof(IStatusEffectService.ApplyStatusEffect), _ => true);
+        var statusEffect = ScriptedProxy.Create<IStatusEffectApplicationService>(out _statusCalls);
+        _statusCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), _ => true);
         _service = new ResourceRestoredEffectsService(statusEffect);
     }
 

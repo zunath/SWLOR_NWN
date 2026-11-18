@@ -715,7 +715,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "statusEffect is ILimitedAttackNoDelayStatusEffect");
         statusEffectSource.Should().Contain("_nativeAttackSwingDepth.Remove(attacker);");
         statusEffectSource.Should().Contain(
-            "deferredEffects.Add(() => ApplyAndProfileStatusEffect(",
+            "DeferNativeAttackStatusEffect(creature, () => ApplyAndProfileStatusEffect(",
             "a speed effect granted by a precomputed roll must become active only after the swing ends");
     }
 
@@ -749,7 +749,7 @@ public class GeneratedWeaponPerkBehaviorTests
         try
         {
             StatusEffect.BeginNativeAttackSwing(creature);
-            StatusEffect.ApplyStatusEffect(creature, creature, statusEffect, 30f)
+            StatusEffectApplication.ApplyStatusEffect(creature, creature, statusEffect, 30f)
                 .Should()
                 .BeTrue();
 
@@ -798,7 +798,7 @@ public class GeneratedWeaponPerkBehaviorTests
         applyStart.Should().BeGreaterThanOrEqualTo(0);
         applyEnd.Should().BeGreaterThan(applyStart);
         var applyRangedDeflection = combat[applyStart..applyEnd];
-        applyRangedDeflection.Should().Contain("if (_statusEffect.ApplyStatusEffect(");
+        applyRangedDeflection.Should().Contain("if (_statusEffectApplication.ApplyStatusEffect(");
         applyRangedDeflection.Should().Contain(
             "_stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)");
         applyRangedDeflection.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");

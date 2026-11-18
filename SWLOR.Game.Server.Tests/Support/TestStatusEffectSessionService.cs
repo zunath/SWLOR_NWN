@@ -16,9 +16,10 @@ public sealed class TestStatusEffectSessionService : StatusEffectSessionService
     public TestStatusEffectSessionService(
         StatusEffectBench bench,
         IStatusEffectService statusEffect,
+        IStatusEffectApplicationService application,
         IStatusEffectCatalogService statusCatalog,
         IDBService db)
-        : base(statusEffect, statusCatalog, db, FacadeForwarder.For<IAbilityCatalog>())
+        : base(statusEffect, application, statusCatalog, db, FacadeForwarder.For<IAbilityCatalog>())
     {
         _bench = bench;
     }

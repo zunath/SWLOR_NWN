@@ -88,6 +88,7 @@ public class CombatHitEffectsServiceTests
             ICombatAbilityHitService abilityHit,
             IStatService stat,
             IStatusEffectService statusEffect,
+            IStatusEffectApplicationService statusApplication,
             ITemporaryStatModifierService temporaryStatModifier,
             IAbilityImpactState ability,
             IPairedRangedTraitsService pairedRangedTraits,
@@ -95,7 +96,7 @@ public class CombatHitEffectsServiceTests
             ICapstoneProofService capstoneProof,
             IResistanceService resistance,
             IPartyService party)
-            : base(queries, resources, attackTiming, suppression, combatActivity, damageModifiers, abilityHit, stat, statusEffect,
+            : base(queries, resources, attackTiming, suppression, combatActivity, damageModifiers, abilityHit, stat, statusEffect, statusApplication,
                 temporaryStatModifier, ability, pairedRangedTraits, combatRecorder, capstoneProof, resistance, party, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
         {
             _log = log;
@@ -243,23 +244,6 @@ public class CombatHitEffectsServiceTests
                 ? _sourceStatuses.Contains(((uint)args[0]!, (Type)args[1]!, source))
                 : _statuses.Contains(((uint)args[0]!, (Type)args[1]!)))
             .On(nameof(IStatusEffectService.HasStatusEffectCategory), args => _categories.Contains(((uint)args[0]!, (StatusEffectCategory)args[1]!)))
-            .On(nameof(IStatusEffectService.ApplyStatusEffect), args =>
-            {
-                var type = args[2] as Type ?? args[2]!.GetType();
-                var detail = args[2] switch
-                {
-                    PredatorsMark1StatusEffect => " mark",
-                    ForceErosionStatusEffect => " erosion",
-                    ExposedStatusEffect => " exposed",
-                    InfectionStatusEffect infection => $" stacks {infection.Stacks}",
-                    ToxicRushStatusEffect rush => $" stacks {rush.Stacks}",
-                    CriticalRateStackTrackerStatusEffect => " tracker",
-                    LimitedHasteStatusEffect => " haste",
-                    _ => string.Empty
-                };
-                _log.Add($"Apply {args[0]}>{args[1]} {type.Name}{detail} {args[3]}" + (args.Length > 4 && args[4] is not (null or ResistanceType.Invalid) ? $" {args[4]}" : string.Empty));
-                return true;
-            })
             .On(nameof(IStatusEffectService.RemoveStatusEffect), args => Log($"Remove {args[0]} {((Type)args[1]!).Name} {args[2]}"))
             .On(nameof(IStatusEffectService.ExtendStatusEffectDuration), args =>
             {
@@ -277,6 +261,24 @@ public class CombatHitEffectsServiceTests
             .On(nameof(IStatusEffectService.GetCreatureStatusEffects), args =>
                 _creatureEffects.TryGetValue((uint)args[0]!, out var effects) ? effects : new CreatureStatusEffect { StatGroup = new StatGroup() })
             .On(nameof(IStatusEffectService.NotifyDamageStatusEffects), args => Log($"Notify {string.Join(" ", args)}"));
+        var statusApplication = ScriptedProxy.Create<IStatusEffectApplicationService>(out var statusApplicationCalls);
+        statusApplicationCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), args =>
+            {
+                var type = args[2] as Type ?? args[2]!.GetType();
+                var detail = args[2] switch
+                {
+                    PredatorsMark1StatusEffect => " mark",
+                    ForceErosionStatusEffect => " erosion",
+                    ExposedStatusEffect => " exposed",
+                    InfectionStatusEffect infection => $" stacks {infection.Stacks}",
+                    ToxicRushStatusEffect rush => $" stacks {rush.Stacks}",
+                    CriticalRateStackTrackerStatusEffect => " tracker",
+                    LimitedHasteStatusEffect => " haste",
+                    _ => string.Empty
+                };
+                _log.Add($"Apply {args[0]}>{args[1]} {type.Name}{detail} {args[3]}" + (args.Length > 4 && args[4] is not (null or ResistanceType.Invalid) ? $" {args[4]}" : string.Empty));
+                return true;
+            });
         var temporary = ScriptedProxy.Create<ITemporaryStatModifierService>(out var temporaryCalls);
         temporaryCalls
             .On(nameof(ITemporaryStatModifierService.Consume), args =>
@@ -335,7 +337,7 @@ public class CombatHitEffectsServiceTests
         });
 
         return new TestHitEffects(_log, () => _taken, queries, resources, timing, suppression, activity, modifiers, abilityHit, stat,
-            statusEffect, temporary, ability, traits, recorder, capstone, resistance, party);
+            statusEffect, statusApplication, temporary, ability, traits, recorder, capstone, resistance, party);
     }
 
     [TearDown]

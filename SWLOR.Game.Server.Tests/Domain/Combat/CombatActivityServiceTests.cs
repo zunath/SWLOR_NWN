@@ -112,8 +112,9 @@ public class CombatActivityServiceTests
                 _activeStatuses.Remove(((uint)args[0]!, (Type)args[1]!));
                 return null;
             })
-            .On(nameof(IStatusEffectService.HasStatusEffect), args => _activeStatuses.Contains(((uint)args[0]!, (Type)args[1]!)))
-            .On(nameof(IStatusEffectService.ApplyStatusEffect), args =>
+            .On(nameof(IStatusEffectService.HasStatusEffect), args => _activeStatuses.Contains(((uint)args[0]!, (Type)args[1]!)));
+        var statusApplication = ScriptedProxy.Create<IStatusEffectApplicationService>(out var statusApplicationCalls);
+        statusApplicationCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), args =>
             {
                 var type = args[2]!.GetType();
                 _statusCalls.Add($"Apply {args[0]} {args[1]} {type.Name} {args[3]}");
@@ -143,7 +144,7 @@ public class CombatActivityServiceTests
         var activity = ScriptedProxy.Create<IActivityService>(out var activityCalls);
         activityCalls.On(nameof(IActivityService.GetBusyType), _ => _busy);
 
-        _service = new CombatActivityService(queries, resources, suppression, stat, statusEffect, temporary, feedback, ability, activity);
+        _service = new CombatActivityService(queries, resources, suppression, stat, statusEffect, statusApplication, temporary, feedback, ability, activity);
     }
 
     [TearDown]

@@ -805,7 +805,7 @@ public class MeleeTechniqueServiceTests
     private sealed class TestMelee : MeleeTechniqueService
     {
         public TestMelee()
-            : base(FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatImpactGeometryService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatResourcesService>())
+            : base(FacadeForwarder.For<IStatService>(), FacadeForwarder.For<ICombatImpactGeometryService>(), FacadeForwarder.For<ICombatRecorderService>(), FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatActivityService>(), FacadeForwarder.For<ICombatResourcesService>())
         {
         }
 

@@ -162,7 +162,7 @@ public sealed partial class StatBench : IDisposable
         Record = new TestStatRecordService(db, Service);
         CombatRating = new TestCombatRatingService(this, db, item, twinPistol, Service);
         DeflectionReaction = new TestCombatDeflectionReactionService(this, recorder, recast, Service);
-        Healing = new TestCombatResourcesService(this, Service, statusEffect, recorder, pvp, beastMastery);
+        Healing = new TestCombatResourcesService(this, Service, FacadeForwarder.For<IStatusEffectApplicationService>(), recorder, pvp, beastMastery);
     }
 
     public StatEngine Engine { get; }

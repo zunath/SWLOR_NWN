@@ -510,7 +510,7 @@ public class DeathServiceTests
             IPlayerNameService names,
             ICityUpgradeLookup property,
             IAreaLookup areas)
-            : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<ICombatRecorderService>(),
+            : base(db, animation, messaging, names, property, areas, FacadeForwarder.For<IStatusEffectService>(), FacadeForwarder.For<IStatusEffectApplicationService>(), FacadeForwarder.For<ICombatRecorderService>(),
                 Array.Empty<ICreatureRevivedListener>(), FacadeForwarder.For<ICombatDamageTakenService>())
         {
         }
@@ -578,7 +578,7 @@ public class DeathServiceTests
     private sealed class ReviveProbe : DeathService
     {
         public ReviveProbe(IEnumerable<ICreatureRevivedListener> listeners)
-            : base(null!, null!, null!, null!, null!, null!, null!, null!, listeners, null!)
+            : base(null!, null!, null!, null!, null!, null!, null!, null!, null!, listeners, null!)
         {
         }
 

@@ -75,27 +75,42 @@ public class StatusEffectDeliveryTests
     [Test]
     public void ControlResistanceFeedback_IsBuiltAfterBothRuntimeDurationConstraints()
     {
-        var method = StatusEffectSource.Nodes<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == "ApplyStatusEffectInternal");
-        var feedback = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
+        // The application runs in named steps (P5-5f): the timing step clamps the hard control duration, the replaced-effects step
+        // clamps a converted control, and the announce step formats the feedback. The method that runs them keeps that order.
+        MethodDeclarationSyntax Step(string name) => StatusEffectSource.Nodes<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == name);
+        var timing = Step("ResolveApplicationTiming");
+        var replaced = Step("ResolveReplacedEffects");
+        var announce = Step("AnnounceApplication");
+        var feedback = announce.DescendantNodes().OfType<InvocationExpressionSyntax>()
             .Single(node => node.Expression.ToString() == "StatusEffectRules.BuildDurationResistanceMessage");
-        foreach (var constraint in new[] { "StatusEffectRules.ClampHardCrowdControlDurationTicks", "StatusEffectRules.ClampConvertedControlDurationTicks" })
+        foreach (var (constraint, step) in new[]
+                 {
+                     ("StatusEffectRules.ClampHardCrowdControlDurationTicks", timing),
+                     ("StatusEffectRules.ClampConvertedControlDurationTicks", replaced),
+                 })
         {
-            var assignments = method.DescendantNodes().OfType<AssignmentExpressionSyntax>()
+            var assignments = step.DescendantNodes().OfType<AssignmentExpressionSyntax>()
                 .Where(node => node.Right is InvocationExpressionSyntax call && call.Expression.ToString() == constraint)
                 .ToArray();
             assignments.Select(node => node.Left.ToString()).Should().BeEquivalentTo(
                 "durationTicks", "durationTicksWithoutResistance");
-            assignments.Should().OnlyContain(node => node.Span.End < feedback.Span.Start,
-                "the runtime must clamp both durations before formatting feedback");
         }
+
+        var order = Step("ApplyStatusEffectInternal").DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Select(node => node.Expression.ToString())
+            .Where(name => name is "ResolveApplicationTiming" or "ResolveReplacedEffects" or "AnnounceApplication")
+            .ToArray();
+        order.Should().Equal(
+            new[] { "ResolveApplicationTiming", "ResolveReplacedEffects", "AnnounceApplication" },
+            "the runtime must clamp both durations before formatting feedback");
     }
 
     [Test]
     public void ChildStatusApplication_PreservesItsInheritedAbilityOrigin()
     {
         var method = StatusEffectSource.Nodes<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == "ApplyStatusEffectInternal");
+            .Single(node => node.Identifier.ValueText == "ActivateEffect");
         var origin = method.DescendantNodes().OfType<AssignmentExpressionSyntax>()
             .Single(node => node.Left.ToString() == "statusEffect.OriginatingAbility");
         origin.Kind().Should().Be(SyntaxKind.CoalesceAssignmentExpression,

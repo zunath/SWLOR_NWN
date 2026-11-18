@@ -243,8 +243,8 @@ public class TintMapReviewTests
         applyCustomTintColor.ToString().Should().Contain("synchronizeComponents");
         applyCustomTintColor.ToString().Should().NotContain("GetClosestColorId",
             "RGB edits must persist the actual color instead of a native palette approximation");
-        applyCustomTintColor.ToString().Should().Contain("_applyingTintColor = true");
-        applyCustomTintColor.ToString().Should().Contain("_applyingTintColor = false");
+        applyCustomTintColor.ToString().Should().Contain("_session.ApplyingTintColor = true");
+        applyCustomTintColor.ToString().Should().Contain("_session.ApplyingTintColor = false");
         var applySelectedPaletteColor = FindMethod(viewModel, "ApplySelectedPaletteColor");
         applySelectedPaletteColor.ToString().Should().Contain("if (reloadEditor)");
         var setSelectedTintColor = FindMethod(viewModel, "SetSelectedTintColor");
@@ -252,7 +252,7 @@ public class TintMapReviewTests
         var synchronizeBindings = FindMethod(viewModel, "SynchronizeTintControlBindings");
         var setBindingsWatched = FindMethod(viewModel, "SetTintControlBindingsWatched");
         var clientUpdated = FindMethod(viewModel, "OnClientPropertyUpdated");
-        clientUpdated.ToString().Should().Contain("_tintComponentCorrection == propertyName",
+        clientUpdated.ToString().Should().Contain("_session.TintComponentCorrection == propertyName",
             "only normalized invalid input needs a corrective write after its setter finishes");
         clientUpdated.ToString().Should().Contain("SynchronizeTintControlBindings");
         setSelectedTintColor.ToString().Should().Contain("SynchronizeTintControlBindings",
@@ -271,7 +271,7 @@ public class TintMapReviewTests
         {
             setBindingsWatched.ToString().Should().Contain($"nameof({propertyName})");
         }
-        viewModel.Should().Contain("_tintControlBindingsWatched = true;",
+        viewModel.Should().Contain("_session.TintControlBindingsWatched = true;",
             "the four bindings become suppressible after their initial watches are registered");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedTintColor)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintRed)");
@@ -394,7 +394,7 @@ public class TintMapReviewTests
             .ToDictionary(method => method.Identifier.ValueText);
 
         methods["TryGetSelectedTintLayer"].ToString().Should().Contain("SelectedColorCategoryIndex switch");
-        methods["TryGetSelectedTintLayer"].ToString().Should().Contain("_selectedColorChannel switch");
+        methods["TryGetSelectedTintLayer"].ToString().Should().Contain("_session.SelectedColorChannel switch");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "selection.GetPaletteSource(selectedLayerType) == paletteSource");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
@@ -402,7 +402,7 @@ public class TintMapReviewTests
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "selection.Material.Layers.Contains(selectedLayerType)");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
-            "_colorTarget != ColorTarget.Global",
+            "_session.ColorTarget != AppearanceColorTarget.Global",
             "material selection must remain scoped to the selected armor part");
         methods["TryGetEditableTintSelections"].ToString().Should().NotContain(
             "selections.Count == 0",
@@ -420,13 +420,13 @@ public class TintMapReviewTests
         synchronizeControls.Should().Contain("SetSelectedTintColor(new GuiColor",
             "preset selection must update the color picker and its bound RGB fields");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
-        methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(_target");
+        methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(_session.Target");
         methods["ApplyArmorPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["OnClickColorTarget"].ToString().Should().Contain("LoadTintMapEditor");
         methods["ResetCurrentCustomTintOverrides"].ToString().Should()
             .Contain("TryGetSelectedTintLayer(out var selectedLayerType)");
         methods["ResetCurrentCustomTintOverrides"].ToString().Should()
-            .Contain("ResetCreatureCustomColor(_target, selectedLayerType)",
+            .Contain("ResetCreatureCustomColor(_session.Target, selectedLayerType)",
                 "selecting a preset must clear an inactive creature channel's persisted RGB tint");
     }
 
@@ -730,10 +730,10 @@ public class TintMapReviewTests
         var service = ReadTintMapSource();
         var editor = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "AppearanceEditorViewModel.cs");
         var palette = FindMethod(editor, "ApplySelectedPaletteColor").ToString();
-        palette.IndexOf("TintMapApply.RefreshAfterColorChange(_target)", StringComparison.Ordinal)
-            .Should().BeGreaterThan(palette.LastIndexOf("SetColor(_target", StringComparison.Ordinal),
+        palette.IndexOf("TintMapApply.RefreshAfterColorChange(_session.Target)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(palette.LastIndexOf("SetColor(_session.Target", StringComparison.Ordinal),
                 "the palette must be stored before tint state is refreshed");
-        palette.Should().NotContain("TintMapApply.ApplyCurrentColors(_target)");
+        palette.Should().NotContain("TintMapApply.ApplyCurrentColors(_session.Target)");
 
         var refresh = FindMethod(service, nameof(ITintMapApplyService.RefreshAfterColorChange));
         refresh.ParameterList.Parameters.Should().HaveCount(1,
@@ -1221,7 +1221,7 @@ public class TintMapReviewTests
             "the old material keys must be read before the model fields change");
         modifyCalls.Should().Contain("QueueItemCustomColorCarry",
             "custom colors must follow the new model materials");
-        modifyMethod.ToString().Should().Contain("_target, item, item, Player, slot, armorPart, tintCarry, applyImmediately: true",
+        modifyMethod.ToString().Should().Contain("_session.Target, item, item, Player, slot, armorPart, tintCarry, applyImmediately: true",
             "in-place edits carry their colors immediately on the same equipped item");
         modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
             "one modular armor part must not overwrite another part's custom dyes");
@@ -1230,7 +1230,7 @@ public class TintMapReviewTests
         setColorInPlace.ToString().Should().Contain("EquippedItemAppearance.Set(",
             "color-only edits must mutate the equipped item instead of creating a replacement");
         setColorInPlace.ToString().Should().Contain(
-            "EquippedItemAppearance.Refresh(_target, item, resetShaderOverrides: false)",
+            "EquippedItemAppearance.Refresh(_session.Target, item, resetShaderOverrides: false)",
             "a color-only refresh must preserve unrelated material shader overrides");
         var equippedSource = ReadSource("SWLOR.Game.Server", "Feature", "AppearanceDefinition",
             "ItemAppearance", "EquippedItemAppearance.cs");

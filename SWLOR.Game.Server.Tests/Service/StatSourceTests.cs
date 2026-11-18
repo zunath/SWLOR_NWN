@@ -131,7 +131,7 @@ public class StatSourceTests
         paths.Should().OnlyContain(path => File.Exists(path));
         paths[0].Replace('\\', '/').Should().EndWith("SWLOR.Game.Server/Domain/Character/StatService.cs");
         StatSource.IsStatFile(paths[0]).Should().BeTrue();
-        StatSource.IsStatFile(Path.Combine(Path.GetDirectoryName(paths[0])!, "StatusEffectService.cs")).Should().BeFalse();
+        StatusEffectSource.Paths().Should().OnlyContain(path => !StatSource.IsStatFile(path));
     }
 
     [Test]

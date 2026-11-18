@@ -49,10 +49,7 @@ public class WeaponOriginalPartsTests
     public void OnlyTheRareWeaponTypesKeepTheirOwnParts()
     {
         // Other types, such as the training sabers, refuse a weapon whose part is missing from their lists.
-        var editor = typeof(AppearanceEditorViewModel);
-        editor.GetMethod("LoadWeaponAppearances", BindingFlags.NonPublic | BindingFlags.Static)!.Invoke(null, null);
-        var loaded = (IDictionary)editor.GetField("_weaponAppearances", BindingFlags.NonPublic | BindingFlags.Static)!.GetValue(null)!;
-        loaded.Keys.Cast<BaseItem>().Where(type => ((WeaponAppearanceBaseDefinition)loaded[type]!).KeepsOwnParts)
+        WeaponAppearanceCatalog.Definitions.Keys.Where(type => WeaponAppearanceCatalog.Definitions[type].KeepsOwnParts)
             .Should().BeEquivalentTo(new[]
             {
                 BaseItem.Longsword, BaseItem.GreatSword, BaseItem.Dagger,

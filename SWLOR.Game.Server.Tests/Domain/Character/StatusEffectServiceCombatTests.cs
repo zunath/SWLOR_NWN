@@ -51,7 +51,7 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
         var taken = Applied<OtherProbeEffect>(Target, Target, probe => probe.NameValue = "Taken");
         DamageEvent(Caster, Target, "12", ((int)CombatDamageType.Fire).ToString());
 
-        Service.OnDealtDamage();
+        CombatEvents.OnDealtDamage();
 
         Log.Should().Equal(
             $"OnDamageDealt:Hit:{Caster}:{Target}:12:{CombatDamageType.Fire}",
@@ -67,7 +67,7 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
         Applied<OtherProbeEffect>(Target, Target, probe => probe.NameValue = "Taken");
         DamageEvent(Caster, Target, "3", "not a number");
 
-        Service.OnDealtDamage();
+        CombatEvents.OnDealtDamage();
 
         Log.Should().Equal($"OnDamageTaken:Taken:{Target}:{Caster}:3:{CombatDamageType.Physical}");
     }
@@ -80,8 +80,8 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
         Applied<ProbeEffect>(Caster, Caster);
         Applied<OtherProbeEffect>(Target, Target);
 
-        Service.NotifyDamageStatusEffects(attacker, defender, (int)damage, CombatDamageType.Fire);
-        Service.NotifyPreDamageStatusEffects(attacker, defender, (int)damage, CombatDamageType.Fire);
+        CombatEvents.NotifyDamageStatusEffects(attacker, defender, (int)damage, CombatDamageType.Fire);
+        CombatEvents.NotifyPreDamageStatusEffects(attacker, defender, (int)damage, CombatDamageType.Fire);
 
         Log.Should().BeEmpty();
     }
@@ -91,10 +91,10 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
     {
         Applied<ProbeEffect>(Caster, Caster);
 
-        Service.NotifyDamageStatusEffects(Caster, Target, 5, CombatDamageType.Fire, CombatDamageDeliveryType.Triggered);
+        CombatEvents.NotifyDamageStatusEffects(Caster, Target, 5, CombatDamageType.Fire, CombatDamageDeliveryType.Triggered);
         Log.Should().BeEmpty();
 
-        Service.NotifyDamageStatusEffects(Caster, Target, 5, CombatDamageType.Fire);
+        CombatEvents.NotifyDamageStatusEffects(Caster, Target, 5, CombatDamageType.Fire);
         Log.Should().ContainSingle();
     }
 
@@ -104,7 +104,7 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
         Applied<PreDamageProbeEffect>(Target, Target, probe => probe.NameValue = "Pre");
         Applied<ProbeEffect>(Target, Target);
 
-        Service.NotifyPreDamageStatusEffects(Caster, Target, 7, CombatDamageType.Fire, CombatDamageDeliveryType.Triggered);
+        CombatEvents.NotifyPreDamageStatusEffects(Caster, Target, 7, CombatDamageType.Fire, CombatDamageDeliveryType.Triggered);
 
         Log.Should().Equal(
             $"OnBeforeDamageTaken:Pre:{Target}:{Caster}:7:{CombatDamageType.Fire}:{CombatDamageDeliveryType.Triggered}",
@@ -118,7 +118,7 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
         var left = Applied<ChargedAttackAttemptProbeEffect>(Caster, Caster, probe => probe.NameValue = "Left");
         var impact = new AbilityImpactSummary { CriticalHitCount = 2 };
 
-        Service.NotifyAttackAttemptStatusEffects(Caster, SkillType.Rifle, impact);
+        CombatEvents.NotifyAttackAttemptStatusEffects(Caster, SkillType.Rifle, impact);
 
         Log.Should().Contain($"OnAttackAttempted:Spent:{Caster}:{SkillType.Rifle}:2");
         Log.Should().Contain($"OnAttackAttempted:Left:{Caster}:{SkillType.Rifle}:2");
@@ -138,7 +138,7 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
         Applied<AttackAttemptProbeEffect>(Caster, Caster);
         Bench.Invalid.Add(Caster);
 
-        Service.NotifyAttackAttemptStatusEffects(Caster, SkillType.Rifle);
+        CombatEvents.NotifyAttackAttemptStatusEffects(Caster, SkillType.Rifle);
 
         Log.Should().BeEmpty();
     }
@@ -158,11 +158,11 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
         });
         Applied<ChargelessDelayProbeEffect>(Caster, Caster);
 
-        Service.TryGetLimitedAttackDelayReduction(Caster, SkillType.Rifle, out var reduction, out var remaining).Should().BeTrue();
+        CombatEvents.TryGetLimitedAttackDelayReduction(Caster, SkillType.Rifle, out var reduction, out var remaining).Should().BeTrue();
         reduction.Should().Be(35);
         remaining.Should().Be(1);
 
-        Service.TryGetLimitedAttackDelayReduction(Caster, SkillType.Force, out reduction, out remaining).Should().BeFalse();
+        CombatEvents.TryGetLimitedAttackDelayReduction(Caster, SkillType.Force, out reduction, out remaining).Should().BeFalse();
         reduction.Should().Be(0);
         remaining.Should().Be(0);
     }
@@ -186,7 +186,7 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
     {
         Applied<ZeroPercentDelayProbeEffect>(Caster, Caster);
 
-        Service.TryGetLimitedAttackDelayReduction(Caster, SkillType.Rifle, out var reduction, out var remaining).Should().BeFalse();
+        CombatEvents.TryGetLimitedAttackDelayReduction(Caster, SkillType.Rifle, out var reduction, out var remaining).Should().BeFalse();
 
         reduction.Should().Be(0);
         remaining.Should().Be(3);
@@ -197,10 +197,10 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
     {
         Applied<LimitedNoDelayProbeEffect>(Caster, Caster, probe => probe.RemainingAttacks = 2);
 
-        Service.TryGetLimitedAttackNoDelay(Caster, SkillType.Rifle, out var remaining).Should().BeTrue();
+        CombatEvents.TryGetLimitedAttackNoDelay(Caster, SkillType.Rifle, out var remaining).Should().BeTrue();
         remaining.Should().Be(2);
 
-        Service.TryGetLimitedAttackNoDelay(Caster, SkillType.Force, out remaining).Should().BeFalse();
+        CombatEvents.TryGetLimitedAttackNoDelay(Caster, SkillType.Force, out remaining).Should().BeFalse();
         remaining.Should().Be(0);
     }
 
@@ -209,10 +209,10 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
     {
         Applied<LimitedDelayProbeEffect>(Caster, Caster);
         Applied<LimitedNoDelayProbeEffect>(Caster, Caster);
-        Service.AttackDelaySuppressed.Add(Caster);
+        Bench.AttackDelaySuppressed.Add(Caster);
 
-        Service.TryGetLimitedAttackDelayReduction(Caster, SkillType.Rifle, out var reduction, out var delayRemaining).Should().BeFalse();
-        Service.TryGetLimitedAttackNoDelay(Caster, SkillType.Rifle, out var noDelayRemaining).Should().BeFalse();
+        CombatEvents.TryGetLimitedAttackDelayReduction(Caster, SkillType.Rifle, out var reduction, out var delayRemaining).Should().BeFalse();
+        CombatEvents.TryGetLimitedAttackNoDelay(Caster, SkillType.Rifle, out var noDelayRemaining).Should().BeFalse();
 
         reduction.Should().Be(0);
         delayRemaining.Should().Be(0);
@@ -222,13 +222,13 @@ public class StatusEffectServiceCombatTests : StatusEffectServiceTestBase
     [Test]
     public void AGuardedHit_ReachesOnlyTheDefendersGuardEffects()
     {
-        Service.OnGuardedHit(Target, Caster, 5);
+        CombatEvents.OnGuardedHit(Target, Caster, 5);
         Log.Should().BeEmpty();
 
         Applied<GuardedHitProbeEffect>(Target, Target, probe => probe.NameValue = "Guard");
         Applied<ProbeEffect>(Target, Target);
 
-        Service.OnGuardedHit(Target, Caster, 5);
+        CombatEvents.OnGuardedHit(Target, Caster, 5);
 
         Log.Should().Equal($"OnGuardedHit:Guard:{Target}:{Caster}:5");
     }

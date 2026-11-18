@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float QuickSearchButtonHeight = 40f;
         private const float MeterLabelHeight = 20f;
         private const float MeterBarHeight = 18f;
+        private const float FindsLabelWidth = 120f;
         /// <summary>Three wrapped lines: the Careful Hands description beside its Select button.</summary>
         private const float StyleRowHeight = 66f;
         /// <summary>Three wrapped lines: the Quick Search summary beside its wide button.</summary>
@@ -161,8 +162,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindText(model => model.SearchesText)
                     .SetHeight(MeterLabelHeight)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                // A width of its own: without one the searches line takes the row and this label is cut down to its first letter.
                 row.AddLabel()
                     .BindText(model => model.FindsText)
+                    .SetWidth(FindsLabelWidth)
                     .SetHeight(MeterLabelHeight)
                     .SetHorizontalAlign(NuiHorizontalAlign.Right);
             });

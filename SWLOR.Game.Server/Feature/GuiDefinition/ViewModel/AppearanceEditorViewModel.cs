@@ -3,27 +3,19 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.AppearanceEditing;
 using SWLOR.Game.Server.Core.Beamdog;
-using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Species;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
-using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.UI;
-using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Domain.UI.Component;
 using SWLOR.Game.Server.Domain.Character;
-using SWLOR.Game.Server.Domain.Companions;
 using SWLOR.NWN.API.NWNX;
-using SWLOR.NWN.API.NWScript.Enum;
-using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using SWLOR.Game.Server.Domain.Administration;
-using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public partial class AppearanceEditorViewModel :
+    public class AppearanceEditorViewModel :
         GuiViewModelBase<AppearanceEditorViewModel, AppearanceEditorPayload>,
         IGuiRefreshable<EquipItemRefreshEvent>,
         IGuiRefreshable<UnequipItemRefreshEvent>,
@@ -32,26 +24,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IAppearanceEditorHost
     {
         private AppearanceColorService AppearanceColorService { get; }
+        private AppearanceOutfitService AppearanceOutfitService { get; }
+        private AppearancePartBrowserService AppearancePartBrowserService { get; }
         private AppearancePartEditService AppearancePartEditService { get; }
+        private AppearancePartListService AppearancePartListService { get; }
+        private AppearanceSettingsService AppearanceSettingsService { get; }
+        private AppearanceSwatchService AppearanceSwatchService { get; }
         private AppearanceTintEditorService AppearanceTintEditorService { get; }
-        private IDBService DB { get; }
-        private IDMPresenceService DMPresence { get; }
         private IGuiService Gui { get; }
-        private IPowerGloveEquipmentService PowerGloveEquipment { get; }
-        private ITintMapCreatureColorService TintMapCreatureColor { get; }
-        private ITwinPistolEquipmentService TwinPistolEquipment { get; }
 
-        public AppearanceEditorViewModel(AppearanceColorService appearanceColorService, AppearancePartEditService appearancePartEditService, AppearanceTintEditorService appearanceTintEditorService, IDBService db, IDMPresenceService dmPresence, IGuiService gui, IPowerGloveEquipmentService powerGloveEquipment, ITintMapCreatureColorService tintMapCreatureColor, ITwinPistolEquipmentService twinPistolEquipment)
+        public AppearanceEditorViewModel(AppearanceColorService appearanceColorService, AppearanceOutfitService appearanceOutfitService, AppearancePartBrowserService appearancePartBrowserService, AppearancePartEditService appearancePartEditService, AppearancePartListService appearancePartListService, AppearanceSettingsService appearanceSettingsService, AppearanceSwatchService appearanceSwatchService, AppearanceTintEditorService appearanceTintEditorService, IGuiService gui)
         {
             AppearanceColorService = appearanceColorService;
+            AppearanceOutfitService = appearanceOutfitService;
+            AppearancePartBrowserService = appearancePartBrowserService;
             AppearancePartEditService = appearancePartEditService;
+            AppearancePartListService = appearancePartListService;
+            AppearanceSettingsService = appearanceSettingsService;
+            AppearanceSwatchService = appearanceSwatchService;
             AppearanceTintEditorService = appearanceTintEditorService;
-            DB = db;
-            DMPresence = dmPresence;
             Gui = gui;
-            PowerGloveEquipment = powerGloveEquipment;
-            TintMapCreatureColor = tintMapCreatureColor;
-            TwinPistolEquipment = twinPistolEquipment;
         }
 
         public const string MainPartialElement = "MAIN_PARTIAL_VIEW";
@@ -62,11 +54,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string SettingsPartial = "SETTINGS_PARTIAL";
 
         private readonly AppearanceEditorSession _session = new();
-        private static readonly IReadOnlyDictionary<AppearanceType, BaseArmorAppearanceDefinition> _armorAppearances =
-            ArmorAppearanceCatalog.Definitions;
-
-
-
         private const int AppearanceTabId = 0;
         private const int EquipmentTabId = 1;
         private const int SettingsTabId = 2;
@@ -104,13 +91,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SettingsToggles.HandleClientChange(value, SelectEditorTab);
             }
         }
-
         [BootPhase(BootReload.Rerun)]
         [NWNEventHandler(ScriptName.OnModuleLoad)]
         public static void LoadAppearances()
         {
             RacialAppearanceRegistry.EnsureLoaded();
-            WeaponAppearanceCatalog.EnsureLoaded();
         }
 
         public bool IsAppearanceSelected
@@ -260,9 +245,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-
-
-
         public GuiBindingList<string> ColorCategoryOptions
         {
             get => Get<GuiBindingList<string>>();
@@ -287,7 +269,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-
         public bool IsCopyEnabled
         {
             get => Get<bool>();
@@ -306,8 +287,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.LeftShoulder, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftShoulder, value);
             }
         }
 
@@ -317,8 +297,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.LeftBicep, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftBicep, value);
             }
         }
         public int LeftForearmSelection
@@ -327,8 +306,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.LeftForearm, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftForearm, value);
             }
         }
         public int LeftHandSelection
@@ -337,8 +315,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.LeftHand, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftHand, value);
             }
         }
         public int LeftThighSelection
@@ -347,8 +324,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.LeftThigh, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftThigh, value);
             }
         }
         public int LeftShinSelection
@@ -357,8 +333,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.LeftShin, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftShin, value);
             }
         }
         public int LeftFootSelection
@@ -367,8 +342,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.LeftFoot, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.LeftFoot, value);
             }
         }
         public int RightShoulderSelection
@@ -377,8 +351,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.RightShoulder, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightShoulder, value);
             }
         }
         public int RightBicepSelection
@@ -387,8 +360,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.RightBicep, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightBicep, value);
             }
         }
         public int RightForearmSelection
@@ -397,8 +369,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.RightForearm, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightForearm, value);
             }
         }
         public int RightHandSelection
@@ -407,8 +378,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.RightHand, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightHand, value);
             }
         }
         public int RightThighSelection
@@ -417,8 +387,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.RightThigh, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightThigh, value);
             }
         }
         public int RightShinSelection
@@ -427,8 +396,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.RightShin, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightShin, value);
             }
         }
         public int RightFootSelection
@@ -437,8 +405,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.RightFoot, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.RightFoot, value);
             }
         }
         public int NeckSelection
@@ -447,8 +414,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.Neck, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Neck, value);
             }
         }
         public int ChestSelection
@@ -457,8 +423,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.Torso, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Torso, value);
             }
         }
         public int BeltSelection
@@ -467,8 +432,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.Belt, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Belt, value);
             }
         }
         public int PelvisSelection
@@ -477,8 +441,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.Pelvis, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Pelvis, value);
             }
         }
         public int RobeSelection
@@ -487,8 +450,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_session.ArmorClientBindingsWatched && !_session.SkipAdjustArmorPart && value != GetItemAppearance(GetItem(), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe))
-                    AppearancePartEditService.AdjustArmorPart(this, AppearanceArmor.Robe, 0);
+                AppearancePartEditService.ArmorSelectionChanged(this, AppearanceArmor.Robe, value);
             }
         }
 
@@ -612,52 +574,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Set(value);
 
-                if (IsAppearanceSelected)
-                {
-                    if (value == 0) // 0 = Skin Color
-                    {
-                        ColorSheetResref = "gui_pal_skin";
-                    }
-                    else if (value == 1) // 1 = Hair Color
-                    {
-                        ColorSheetResref = "gui_pal_hair01";
-                    }
-                    else if (value == 2) // 2 = Tattoo Color 1
-                    {
-                        ColorSheetResref = "gui_pal_tattoo";
-                    }
-                    else if (value == 3) // 3 = Tattoo Color 2
-                    {
-                        ColorSheetResref = "gui_pal_tattoo";
-                    }
-                }
-                else if (IsEquipmentSelected)
-                {
-                    if (value == 0) // 0 = Leather 1
-                    {
-                        ColorSheetResref = "gui_pal_tattoo";
-                    }
-                    else if (value == 1) // 1 = Leather 2
-                    {
-                        ColorSheetResref = "gui_pal_tattoo";
-                    }
-                    else if (value == 2) // 2 = Cloth 1
-                    {
-                        ColorSheetResref = "gui_pal_tattoo";
-                    }
-                    else if (value == 3) // 3 = Cloth 2
-                    {
-                        ColorSheetResref = "gui_pal_tattoo";
-                    }
-                    else if (value == 4) // 4 = Metal 1
-                    {
-                        ColorSheetResref = "gui_pal_armor01";
-                    }
-                    else if (value == 5) // 5 = Metal 2
-                    {
-                        ColorSheetResref = "gui_pal_armor01";
-                    }
-                }
+                AppearanceSwatchService.UpdateColorSheet(this, value);
             }
         }
 
@@ -709,7 +626,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
                 Set(value);
-                SetIfChanged(nameof(EquipmentTypeValue), ToEquipmentTypeValue(value));
+                this.SetIfChanged(nameof(EquipmentTypeValue), ToEquipmentTypeValue(value));
                 // Client hydration updates the binding before calling its property setter.
                 // Track the loaded page separately so an echo cannot reset a selected armor part.
                 if (value == _session.LoadedItemTypeIndex)
@@ -725,14 +642,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ToggleItemEquippedFlags();
                 // Helmets, cloaks and weapons have no armor parts to colour.
                 if (value != 0)
-                    SetIfChanged(nameof(IsPartColorsVisible), false);
-                LoadColorCategoryOptions();
-                LoadPartCategoryOptions();
+                    this.SetIfChanged(nameof(IsPartColorsVisible), false);
+                AppearancePartListService.LoadColorCategoryOptions(this);
+                AppearancePartListService.LoadPartCategoryOptions(this);
                 LoadItemParts();
                 if (IsEquipmentSelected && value == 0)
-                    UpdateTargetedColor();
+                    AppearanceSwatchService.UpdateTargetedColor(this);
                 else if (IsEquipmentSelected && value is 1 or 2)
-                    UpdateColorSelection();
+                    AppearanceSwatchService.UpdateColorSelection(this);
                 LoadItemTypeEditor();
                 AppearanceTintEditorService.LoadTintMapEditor(this);
             }
@@ -761,15 +678,181 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<int>();
             set => Set(value);
         }
+        // Palette cell geometry shared with the definition; the outline overlay is drawn in these units.
+        public const float PaletteHeaderWidth = 20f;
+        public const float PaletteHeaderHeight = 16f;
+        public const float PaletteCellWidth = 20f;
+        public const float PaletteCellHeight = 16f;
 
-        private void LoadTintMapEditor() => AppearanceTintEditorService.LoadTintMapEditor(this);
+        // ---------------- selected part bindings ----------------
+        public string PartPreviewImage { get => Get<string>(); set => Set(value); }
+        public string PartPreviewLabel { get => Get<string>(); set => Set(value); }
+        /// <summary>The worn part's number, drawn in the corner of its picture.</summary>
+        public string PartPreviewNumber { get => Get<string>(); set => Set(value); }
+        public bool IsPartPreviewEnabled { get => Get<bool>(); set => Set(value); }
+        public string PreviewViewText { get => Get<string>(); set => Set(value); }
 
-        private void AdjustArmorPart(AppearanceArmor partType, int adjustBy) => AppearancePartEditService.AdjustArmorPart(this, partType, adjustBy);
+        /// <summary>Weapon and shield parts ship only a front picture, so they cannot turn.</summary>
+        public bool IsPreviewViewChoiceVisible { get => Get<bool>(); set => Set(value); }
 
-        private bool IsValidItem() =>
-            // Treated as a valid item if we're not in the item customization page.
-            IsAppearanceSelected || AppearanceItemEligibility.IsValid(_session.Target, GetItem(), SelectedItemTypeIndex);
+        // ---------------- body map bindings ----------------
+        public string MapHeadImage { get => Get<string>(); set => Set(value); }
+        public string MapNeckImage { get => Get<string>(); set => Set(value); }
+        public string MapChestImage { get => Get<string>(); set => Set(value); }
+        public string MapBeltImage { get => Get<string>(); set => Set(value); }
+        public string MapPelvisImage { get => Get<string>(); set => Set(value); }
+        public string MapRobeImage { get => Get<string>(); set => Set(value); }
+        public string MapCloakImage { get => Get<string>(); set => Set(value); }
+        public string MapRightShoulderImage { get => Get<string>(); set => Set(value); }
+        public string MapLeftShoulderImage { get => Get<string>(); set => Set(value); }
+        public string MapRightBicepImage { get => Get<string>(); set => Set(value); }
+        public string MapLeftBicepImage { get => Get<string>(); set => Set(value); }
+        public string MapRightForearmImage { get => Get<string>(); set => Set(value); }
+        public string MapLeftForearmImage { get => Get<string>(); set => Set(value); }
+        public string MapRightHandImage { get => Get<string>(); set => Set(value); }
+        public string MapLeftHandImage { get => Get<string>(); set => Set(value); }
+        public string MapRightThighImage { get => Get<string>(); set => Set(value); }
+        public string MapLeftThighImage { get => Get<string>(); set => Set(value); }
+        public string MapRightShinImage { get => Get<string>(); set => Set(value); }
+        public string MapLeftShinImage { get => Get<string>(); set => Set(value); }
+        public string MapRightFootImage { get => Get<string>(); set => Set(value); }
+        public string MapLeftFootImage { get => Get<string>(); set => Set(value); }
+        public bool MapHeadSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapNeckSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapChestSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapBeltSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapPelvisSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapRobeSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapCloakSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapRightShoulderSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapLeftShoulderSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapRightBicepSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapLeftBicepSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapRightForearmSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapLeftForearmSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapRightHandSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapLeftHandSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapRightThighSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapLeftThighSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapRightShinSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapLeftShinSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapRightFootSelected { get => Get<bool>(); set => Set(value); }
+        public bool MapLeftFootSelected { get => Get<bool>(); set => Set(value); }
 
+        // ---------------- colour indicator bindings ----------------
+
+        public GuiRectangle SelectedPartLeather1Region { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiRectangle SelectedPartLeather2Region { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiRectangle SelectedPartCloth1Region { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiRectangle SelectedPartCloth2Region { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiRectangle SelectedPartMetal1Region { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiRectangle SelectedPartMetal2Region { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiColor SelectedPartLeather1Tint { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor SelectedPartLeather2Tint { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor SelectedPartCloth1Tint { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor SelectedPartCloth2Tint { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor SelectedPartMetal1Tint { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor SelectedPartMetal2Tint { get => Get<GuiColor>(); set => Set(value); }
+        public bool SelectedPartLeather1Custom { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartLeather2Custom { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartCloth1Custom { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartCloth2Custom { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartMetal1Custom { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartMetal2Custom { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartLeather1Selected { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartLeather2Selected { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartCloth1Selected { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartCloth2Selected { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartMetal1Selected { get => Get<bool>(); set => Set(value); }
+        public bool SelectedPartMetal2Selected { get => Get<bool>(); set => Set(value); }
+
+        // Palette code ("P4") or "RGB" over each part swatch.
+        public string SelectedPartLeather1Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartLeather2Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartCloth1Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartCloth2Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartMetal1Code { get => Get<string>(); set => Set(value); }
+        public string SelectedPartMetal2Code { get => Get<string>(); set => Set(value); }
+        public bool IsPartColorsVisible { get => Get<bool>(); set => Set(value); }
+
+        public GuiRectangle BodySkinRegion { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiRectangle BodyHairRegion { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiRectangle BodyTattoo1Region { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiRectangle BodyTattoo2Region { get => Get<GuiRectangle>(); set => Set(value); }
+        public GuiColor BodySkinTint { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor BodyHairTint { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor BodyTattoo1Tint { get => Get<GuiColor>(); set => Set(value); }
+        public GuiColor BodyTattoo2Tint { get => Get<GuiColor>(); set => Set(value); }
+        public bool BodySkinCustom { get => Get<bool>(); set => Set(value); }
+        public bool BodyHairCustom { get => Get<bool>(); set => Set(value); }
+        public bool BodyTattoo1Custom { get => Get<bool>(); set => Set(value); }
+        public bool BodyTattoo2Custom { get => Get<bool>(); set => Set(value); }
+        public bool BodySkinSelected { get => Get<bool>(); set => Set(value); }
+        public bool BodyHairSelected { get => Get<bool>(); set => Set(value); }
+        public bool BodyTattoo1Selected { get => Get<bool>(); set => Set(value); }
+        public bool BodyTattoo2Selected { get => Get<bool>(); set => Set(value); }
+
+        public GuiBindingList<float> PaletteSelectionPoints { get => Get<GuiBindingList<float>>(); set => Set(value); }
+        public bool IsPaletteSelectionVisible { get => Get<bool>(); set => Set(value); }
+
+        public const string OutfitsPartial = "OUTFITS_PARTIAL";
+
+        public int OutfitsTabToggleValue
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                OutfitsToggles.HandleClientChange(value, SelectEditorTab);
+            }
+        }
+
+        public bool IsOutfitsSelected { get => Get<bool>(); set => Set(value); }
+
+        /// <summary>Outfits belong to the player, so they appear only while players edit themselves.</summary>
+        public bool IsOutfitsVisible { get => Get<bool>(); set => Set(value); }
+
+        public GuiBindingList<string> OutfitSlotNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> OutfitSlotToggles
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public string WardrobeCapacityText { get => Get<string>(); set => Set(value); }
+        public bool IsOutfitSelected { get => Get<bool>(); set => Set(value); }
+        public string OutfitDetails { get => Get<string>(); set => Set(value); }
+        public bool IsOutfitRenameEnabled { get => Get<bool>(); set => Set(value); }
+        public bool IsOutfitWearEnabled { get => Get<bool>(); set => Set(value); }
+        public bool IsUndoOutfitEnabled { get => Get<bool>(); set => Set(value); }
+
+        public string OutfitName
+        {
+            get => Get<string>();
+            set
+            {
+                Set(value);
+                IsOutfitRenameEnabled = _session.SelectedOutfitIndex > -1;
+            }
+        }
+
+        public GuiBindingList<GuiComboEntry> QuickOutfitOptions
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int QuickOutfitValue { get => Get<int>(); set => Set(value); }
+        public bool IsQuickWearEnabled { get => Get<bool>(); set => Set(value); }
+
+        private bool IsPartEditorHidden => IsSettingsSelected || IsOutfitsSelected;
+
+        private bool IsValidItem() => AppearancePartListService.IsValidItem(this);
         private void ToggleItemEquippedFlags()
         {
             var hasItemEquipped = IsValidItem();
@@ -778,12 +861,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsNoEditableItemVisible = !hasItemEquipped && IsEquipmentSelected;
             // An empty slot has no parts: the browser must not keep showing the last item's.
             if (!hasItemEquipped)
-                ClearBrowser();
+                AppearancePartBrowserService.ClearBrowser(this);
         }
 
         /// <summary>The slot tabs' "Nothing to edit" note: on the Equipment tab with no editable item.</summary>
         public bool IsNoEditableItemVisible { get => Get<bool>(); set => Set(value); }
-
         protected override void Initialize(AppearanceEditorPayload initialPayload)
         {
             AppearanceTintEditorService.CancelTintPickerGesture(this);
@@ -805,14 +887,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (!RacialAppearanceRegistry.TryGet(GetAppearanceType(_session.Target), out _))
             {
-                CloseForUnsupportedAppearance();
+                AppearanceSettingsService.CloseForUnsupportedAppearance(this);
                 return;
             }
 
             _session.ColorTarget = AppearanceColorTarget.Global;
             _session.SelectedColorChannel = AppearanceArmorColor.Leather1;
             _session.SelectedTabId = AppearanceTabId;
-            FitWindowToPlayerScreen();
+            AppearancePartBrowserService.FitWindowToPlayerScreen(this);
             Set(0, nameof(EditorTabToggleValue));
             Set(-1, nameof(SettingsTabToggleValue));
             Set(0, nameof(SelectedItemTypeIndex));
@@ -820,8 +902,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _session.LoadedItemTypeIndex = 0;
             RegisterColorMappings();
             _session.SelectedSlot = AppearanceEditorSlot.Head;
-            InitializePartBrowser();
-            InitializeColorSelection();
+            AppearancePartBrowserService.InitializePartBrowser(this);
+            AppearanceSwatchService.InitializeColorSelection(this);
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
             IsSettingsSelected = false;
@@ -829,8 +911,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsCopyEnabled = true;
             IsCustomTintAvailable = false;
             ToggleItemEquippedFlags();
-            LoadColorCategoryOptions();
-            LoadPartCategoryOptions();
+            AppearancePartListService.LoadColorCategoryOptions(this);
+            AppearancePartListService.LoadPartCategoryOptions(this);
             SelectedColorCategoryIndex = 0;
             SelectedPartCategoryIndex = 0;
             SelectedPartIndex = 0;
@@ -840,7 +922,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AppearanceTintEditorService.RefreshTintMapAvailability(this);
             AppearanceTintEditorService.LoadTintMapEditor(this);
             InitializeSettings();
-            InitializeOutfits();
+            AppearanceOutfitService.InitializeOutfits(this);
             ColorTargetText = string.Empty;
             LoadItemTypeEditor();
 
@@ -859,17 +941,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CustomTintBlue);
             _session.TintControlBindingsWatched = true;
         }
-
         private void InitializeSettings()
         {
-            IsPlayerSettingsVisible = GetIsPC(_session.Target) && !GetIsDM(_session.Target) && !GetIsDMPossessed(_session.Target);
-            IsSettingsVisible = IsPlayerSettingsVisible || GetIsDM(Player) || GetIsDMPossessed(Player);
-            // A DM shows or hides their avatar's or possessed creature's helmet and cloak at once, with no Save.
-            _session.IsDMArmorDisplay = GetIsDM(_session.Target) || GetIsDMPossessed(_session.Target);
-            IsArmorDisplayVisible = IsPlayerSettingsVisible || _session.IsDMArmorDisplay;
-            ShowHelmet = true;
-            ShowCloak = true;
-            LoadSettings();
+            AppearanceSettingsService.InitializeSettings(this);
 
             if (IsArmorDisplayVisible)
             {
@@ -877,15 +951,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 WatchOnClient(model => model.ShowCloak);
             }
         }
-
-
-
-
-
-
-
-
-
 
         public Action OnMouseDownTintPicker() => () =>
         {
@@ -895,28 +960,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 (NuiMouseButton)button == NuiMouseButton.Left ? AppearanceTintEditorService.CaptureTintColorEdit(this) : null);
         };
 
-
-
-
         public Action OnMouseUpTintPicker() => () =>
         {
             var payload = NuiGetEventPayload();
             var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
             AppearanceTintEditorService.ReleaseTintPickerGesture(this, (NuiMouseButton)button);
         };
-
-
-
-
-
-
-
-
-
         protected override void OnClientPropertyUpdated(string propertyName)
         {
             if (_session.IsDMArmorDisplay && propertyName is nameof(ShowHelmet) or nameof(ShowCloak))
-                ApplyDMArmorDisplay();
+                AppearanceSettingsService.ApplyDMArmorDisplay(this);
 
             if (_session.TintComponentCorrection == propertyName)
             {
@@ -926,12 +979,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 AppearanceTintEditorService.SynchronizeTintControlBindings(this, () => OnPropertyChanged(propertyName));
             }
         }
-
-
-
-
-
-
         private void LoadItemTypeEditor()
         {
             AppearanceTintEditorService.SuspendArmorClientWatches(this);
@@ -955,13 +1002,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (isArmorEditor)
                 {
                     IsCopyEnabled = true;
-                    UpdatePaletteSheetForChannel();
+                    AppearanceSwatchService.UpdatePaletteSheetForChannel(this);
                 }
                 // Tab replacement still needs current bindings after its nested palette.
                 // Resizing does not replace controls or pause their watches.
                 RepublishBindings();
             });
-            RepublishOutfitInputs();
+            AppearanceOutfitService.RepublishOutfitInputs(this);
             if (isArmorEditor)
                 AppearanceTintEditorService.ResumeArmorClientWatches(this);
         }
@@ -995,18 +1042,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 IsNoEditableItemVisible = false;
                 // Wardrobe and Settings edit no parts: drop the part list and close its browser.
-                ClearBrowser();
+                AppearancePartBrowserService.ClearBrowser(this);
                 if (IsSettingsSelected)
-                    LoadSettings();
+                    AppearanceSettingsService.LoadSettings(this);
                 else
-                    LoadOutfits();
+                    AppearanceOutfitService.LoadOutfits(this);
                 LoadItemTypeEditor();
                 return;
             }
 
             ToggleItemEquippedFlags();
-            LoadColorCategoryOptions();
-            LoadPartCategoryOptions();
+            AppearancePartListService.LoadColorCategoryOptions(this);
+            AppearancePartListService.LoadPartCategoryOptions(this);
             if (IsAppearanceSelected)
                 LoadBodyParts();
             else
@@ -1014,480 +1061,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _session.ColorTarget = AppearanceColorTarget.Global;
                 _session.SelectedColorChannel = AppearanceArmorColor.Leather1;
                 LoadItemParts();
-                UpdateTargetedColor();
+                AppearanceSwatchService.UpdateTargetedColor(this);
             }
             LoadItemTypeEditor();
             AppearanceTintEditorService.LoadTintMapEditor(this);
         }
+        private uint GetItem() => AppearancePartListService.GetItem(this);
 
-        private void LoadColorCategoryOptions()
+        private uint GetOffHandAppearanceOwner(uint offHand) => AppearancePartListService.GetOffHandAppearanceOwner(this, offHand);
+
+        private void LoadBodyParts() => AppearancePartListService.LoadBodyParts(this);
+
+        private void LoadItemParts() => AppearancePartListService.LoadItemParts(this);
+
+        private void LoadPart() => AppearancePartListService.LoadPart(this);
+
+        private void UpdateEditedColorSwatches() => AppearanceSwatchService.UpdateEditedColorSwatches(this);
+
+        private void RefreshBodySwatches() => AppearanceSwatchService.RefreshBodySwatches(this);
+
+        private void RefreshItemBaseSwatches() => AppearanceSwatchService.RefreshItemBaseSwatches(this);
+
+        private void ChangeColor(AppearanceColorTarget target, AppearanceArmorColor channel, int colorId) => AppearanceSwatchService.ChangeColor(this, target, channel, colorId);
+
+        private void RegisterColorMappings()
         {
-            if (DoesNotHaveItemEquipped)
-                return;
-
-            var colorCategoryOptions = new GuiBindingList<string>();
-
-            if (IsAppearanceSelected)
-            {
-                colorCategoryOptions.Add("Skin Color");
-                colorCategoryOptions.Add("Hair Color");
-                colorCategoryOptions.Add("Tattoo 1 Color");
-                colorCategoryOptions.Add("Tattoo 2 Color");
-
-                IsColorPickerVisible = true;
-            }
-            else if (IsEquipmentSelected)
-            {
-                if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 & 4 = Weapon (Main or Off Hand)
-                {
-                    colorCategoryOptions.Add("Weapon");
-                    IsColorPickerVisible = false;
-                }
-                else
-                {
-                    colorCategoryOptions.Add("Leather 1");
-                    colorCategoryOptions.Add("Leather 2");
-                    colorCategoryOptions.Add("Cloth 1");
-                    colorCategoryOptions.Add("Cloth 2");
-                    colorCategoryOptions.Add("Metal 1");
-                    colorCategoryOptions.Add("Metal 2");
-
-                    IsColorPickerVisible = true;
-                }
-            }
-
-            var colorCategorySelected = new GuiBindingList<bool>();
-
-            foreach (var unused in colorCategoryOptions)
-            {
-                colorCategorySelected.Add(false);
-            }
-
-            ColorCategoryOptions = colorCategoryOptions;
-            ColorCategorySelected = colorCategorySelected;
-
-            SelectedColorCategoryIndex = 0;
-            ColorCategorySelected[SelectedColorCategoryIndex] = true;
-        }
-
-        private void LoadPartCategoryOptions()
-        {
-            if (DoesNotHaveItemEquipped)
-                return;
-
-            var partCategoryOptions = new GuiBindingList<string>();
-
-            if (IsAppearanceSelected)
-            {
-                partCategoryOptions.Add("Head");
-                partCategoryOptions.Add("Torso");
-                partCategoryOptions.Add("Pelvis");
-                partCategoryOptions.Add("Right Bicep");
-                partCategoryOptions.Add("Right Forearm");
-                partCategoryOptions.Add("Right Hand");
-                partCategoryOptions.Add("Right Thigh");
-                partCategoryOptions.Add("Right Shin");
-                partCategoryOptions.Add("Right Foot");
-                partCategoryOptions.Add("Left Bicep");
-                partCategoryOptions.Add("Left Forearm");
-                partCategoryOptions.Add("Left Hand");
-                partCategoryOptions.Add("Left Thigh");
-                partCategoryOptions.Add("Left Shin");
-                partCategoryOptions.Add("Left Foot");
-            }
-            else if (IsEquipmentSelected)
-            {
-                if (SelectedItemTypeIndex == 0) // 0 = Armor
-                {
-                    return;
-                }
-                else if (SelectedItemTypeIndex == 1) // 1 = Helmet
-                {
-                    partCategoryOptions.Add("Helmet");
-                }
-                else if (SelectedItemTypeIndex == 2) // 2 = Cloak
-                {
-                    partCategoryOptions.Add("Cloak");
-                }
-                else if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
-                {
-                    var item = GetItem();
-                    var type = GetBaseItemType(item);
-                    var partAppearance = WeaponAppearanceCatalog.Definitions[type];
-
-                    if (partAppearance.IsSimple)
-                    {
-                        partCategoryOptions.Add("Simple");
-                    }
-                    else
-                    {
-                        partCategoryOptions.Add("Top");
-                        partCategoryOptions.Add("Middle");
-                        partCategoryOptions.Add("Bottom");
-                    }
-                }
-            }
-
-            var partCategorySelected = new GuiBindingList<bool>();
-
-            foreach (var unused in partCategoryOptions)
-            {
-                partCategorySelected.Add(false);
-            }
-
-            PartCategoryOptions = partCategoryOptions;
-            PartCategorySelected = partCategorySelected;
-
-            SelectedPartCategoryIndex = 0;
-            PartCategorySelected[SelectedPartCategoryIndex] = true;
-        }
-
-        private (GuiBindingList<string>, GuiBindingList<bool>) GetPartLists(int[] partIds, Func<int, string> getPartName = null)
-        {
-            var partNames = new GuiBindingList<string>();
-            var partSelected = new GuiBindingList<bool>();
-            var partIdToIndex = new Dictionary<int, int>();
-            var index = 0;
-
-            foreach (var partId in partIds)
-            {
-                var partIndex = partId;
-
-                partNames.Add(getPartName?.Invoke(partId) ?? $"Part #{partId}");
-                partSelected.Add(false);
-                partIdToIndex[partIndex] = index;
-                index++;
-            }
-
-            _session.PartIdToIndex = partIdToIndex;
-            _session.PartIds = partIds.ToList();
-            return (partNames, partSelected);
-        }
-
-        private uint GetItem()
-        {
-            if (SelectedItemTypeIndex == 0) // 0 = Armor
-            {
-                return GetItemInSlot(InventorySlot.Chest, _session.Target);
-            }
-            else if (SelectedItemTypeIndex == 1) // 1 = Helmet
-            {
-                return GetItemInSlot(InventorySlot.Head, _session.Target);
-            }
-            else if (SelectedItemTypeIndex == 2) // 2 = Cloak
-            {
-                return GetItemInSlot(InventorySlot.Cloak, _session.Target);
-            }
-            else if (SelectedItemTypeIndex == 3) // 3 = Weapon (Main Hand)
-            {
-                return GetItemInSlot(InventorySlot.RightHand, _session.Target);
-            }
-            else if (SelectedItemTypeIndex == 4) // 4 = Weapon (Off Hand)
-            {
-                return GetOffHandAppearanceOwner(GetItemInSlot(InventorySlot.LeftHand, _session.Target));
-            }
-
-            return OBJECT_INVALID;
-        }
-
-        // A generated off hand mirrors its owned main-hand item, so its edits apply to that item.
-        private uint GetOffHandAppearanceOwner(uint offHand) =>
-            TwinPistolEquipment.ResolveAppearanceOwner(_session.Target,
-                PowerGloveEquipment.ResolveAppearanceOwner(_session.Target, offHand));
-
-        private void CloseForUnsupportedAppearance()
-        {
-            // Bind uses the possessed creature as Player, but the DM owns the window cache.
-            var owner = GetIsDMPossessed(Player) ? GetMaster(Player) : Player;
-            SendMessageToPC(owner, "This creature's appearance cannot be customized.");
-            Gui.ClosePlayerWindow(owner, GuiWindowType.AppearanceEditor, Player);
-        }
-
-        private void LoadBodyParts()
-        {
-            var appearanceType = GetAppearanceType(_session.Target);
-            var gender = GetGender(_session.Target);
-
-            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
-            {
-                CloseForUnsupportedAppearance();
-                return;
-            }
-
-            int[] partIds;
-            int selectedPartId;
-
-            switch (SelectedPartCategoryIndex)
-            {
-                case 0: // Head
-                    switch (gender)
-                    {
-                        case Gender.Male:
-                            partIds = appearance.MaleHeads;
-                            break;
-                        default:
-                            partIds = appearance.FemaleHeads;
-                            break;
-                    }
-
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.Head, _session.Target);
-                    break;
-                case 1: // Torso
-                    partIds = appearance.Torsos;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.Torso, _session.Target);
-                    break;
-                case 2: // Pelvis
-                    partIds = appearance.Pelvis;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.Pelvis, _session.Target);
-                    break;
-                case 3: // Right Bicep
-                    partIds = appearance.RightBicep;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightBicep, _session.Target);
-                    break;
-                case 4: // Right Forearm
-                    partIds = appearance.RightForearm;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightForearm, _session.Target);
-                    break;
-                case 5: // Right Hand
-                    partIds = appearance.RightHand;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightHand, _session.Target);
-                    break;
-                case 6: // Right Thigh
-                    partIds = appearance.RightThigh;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightThigh, _session.Target);
-                    break;
-                case 7: // Right Shin
-                    partIds = appearance.RightShin;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightShin, _session.Target);
-                    break;
-                case 8: // Right Foot
-                    partIds = appearance.RightFoot;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightFoot, _session.Target);
-                    break;
-                case 9: // Left Bicep
-                    partIds = appearance.LeftBicep;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftBicep, _session.Target);
-                    break;
-                case 10: // Left Forearm
-                    partIds = appearance.LeftForearm;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftForearm, _session.Target);
-                    break;
-                case 11: // Left Hand
-                    partIds = appearance.LeftHand;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftHand, _session.Target);
-                    break;
-                case 12: // Left Thigh
-                    partIds = appearance.LeftThigh;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftThigh, _session.Target);
-                    break;
-                case 13: // Left Shin
-                    partIds = appearance.LeftShin;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftShin, _session.Target);
-                    break;
-                case 14: // Left Foot
-                    partIds = appearance.LeftFoot;
-                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftFoot, _session.Target);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
-            }
-
-            var (partNames, partSelected) = GetPartLists(partIds);
-
-            PartOptions = partNames;
-            PartSelected = partSelected;
-            SelectedPartIndex = _session.PartIdToIndex.TryGetValue(selectedPartId, out var selectedIndex) ? selectedIndex : -1;
-            if (SelectedPartIndex >= 0)
-                PartSelected[SelectedPartIndex] = true;
-            RefreshPartBrowser();
-        }
-
-        private void LoadSettings()
-        {
-            if (_session.IsDMArmorDisplay)
-            {
-                LoadDMArmorDisplay();
-                return;
-            }
-
-            if (!GetIsPC(_session.Target) || GetIsDM(_session.Target) || GetIsDMPossessed(_session.Target))
-                return;
-
-            var playerId = GetObjectUUID(_session.Target);
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (dbPlayer == null)
-                return;
-
-            ShowHelmet = dbPlayer.Settings.ShowHelmet;
-            ShowCloak = dbPlayer.Settings.ShowCloak;
-        }
-
-        private void LoadDMArmorDisplay()
-        {
-            var (showHelmet, showCloak) = ArmorDisplay.GetDMArmorDisplay(_session.Target);
-            ShowHelmet = showHelmet;
-            ShowCloak = showCloak;
-        }
-
-        private void ApplyDMArmorDisplay()
-        {
-            if (!ArmorDisplay.SetDMArmorDisplay(_session.Target, ShowHelmet, ShowCloak))
-                DMPresence.SendMessage(Player, ColorToken.Red("Your helmet and cloak setting could not be saved."));
-        }
-
-        private void LoadItemParts()
-        {
-            if (!IsEquipmentSelected)
-                return;
-            AppearanceTintEditorService.SuspendArmorClientWatches(this);
-            var wasSkipping = _session.SkipAdjustArmorPart;
-            _session.SkipAdjustArmorPart = true;
-            try
-            {
-                PopulateItemParts();
-            }
-            finally
-            {
-                _session.SkipAdjustArmorPart = wasSkipping;
-            }
-            if (SelectedItemTypeIndex == 0 && HasItemEquipped)
-                AppearanceTintEditorService.ResumeArmorClientWatches(this);
-        }
-
-        private void PopulateItemParts()
-        {
-            if (DoesNotHaveItemEquipped)
-                return;
-
-            var item = GetItem();
-            int[] partIds;
-            int selectedPartId;
-            var appearanceType = GetAppearanceType(_session.Target);
-            var type = GetBaseItemType(item);
-
-            if (SelectedItemTypeIndex == 0) // 0 = Armor
-            {
-                GuiBindingList<GuiComboEntry> Available(AppearanceArmor part, IEnumerable<GuiComboEntry> options) =>
-                    ArmorPartAppearance.GetAvailableOptions(_session.Target, part, options);
-                var neckOptions = new GuiBindingList<GuiComboEntry>();
-                foreach (var style in NeckAppearance.GetAvailableStyles(_session.Target, _armorAppearances[appearanceType].Neck.Prepend(0)))
-                    neckOptions.Add(new GuiComboEntry(style.ToString(), style));
-                NeckOptions = neckOptions;
-                ChestOptions = Available(AppearanceArmor.Torso, _armorAppearances[appearanceType].TorsoOptions);
-                BeltOptions = Available(AppearanceArmor.Belt, _armorAppearances[appearanceType].BeltOptions);
-                PelvisOptions = Available(AppearanceArmor.Pelvis, _armorAppearances[appearanceType].PelvisOptions);
-                var robeOptions = new GuiBindingList<GuiComboEntry>();
-                foreach (var style in RobeAppearance.GetAvailableStyles(_session.Target, _armorAppearances[appearanceType].Robe))
-                    robeOptions.Add(new GuiComboEntry(style.ToString(), style));
-                RobeOptions = robeOptions;
-                var repairedNeck = NeckAppearance.RemoveUnavailableNeck(_session.Target, item);
-                var repairedParts = ArmorPartAppearance.RemoveUnavailableParts(_session.Target, item);
-                if (RobeAppearance.RemoveUnavailableRobe(_session.Target, item) || repairedNeck || repairedParts)
-                    EquippedItemAppearance.Refresh(_session.Target, item);
-
-                LeftShoulderOptions = Available(AppearanceArmor.LeftShoulder, _armorAppearances[appearanceType].ShoulderOptions);
-                LeftBicepOptions = Available(AppearanceArmor.LeftBicep, _armorAppearances[appearanceType].BicepOptions);
-                LeftForearmOptions = Available(AppearanceArmor.LeftForearm, _armorAppearances[appearanceType].ForearmOptions);
-                LeftHandOptions = Available(AppearanceArmor.LeftHand, _armorAppearances[appearanceType].HandOptions);
-                LeftThighOptions = Available(AppearanceArmor.LeftThigh, _armorAppearances[appearanceType].ThighOptions);
-                LeftShinOptions = Available(AppearanceArmor.LeftShin, _armorAppearances[appearanceType].ShinOptions);
-                LeftFootOptions = Available(AppearanceArmor.LeftFoot, _armorAppearances[appearanceType].FootOptions);
-
-                RightShoulderOptions = Available(AppearanceArmor.RightShoulder, _armorAppearances[appearanceType].ShoulderOptions);
-                RightBicepOptions = Available(AppearanceArmor.RightBicep, _armorAppearances[appearanceType].BicepOptions);
-                RightForearmOptions = Available(AppearanceArmor.RightForearm, _armorAppearances[appearanceType].ForearmOptions);
-                RightHandOptions = Available(AppearanceArmor.RightHand, _armorAppearances[appearanceType].HandOptions);
-                RightThighOptions = Available(AppearanceArmor.RightThigh, _armorAppearances[appearanceType].ThighOptions);
-                RightShinOptions = Available(AppearanceArmor.RightShin, _armorAppearances[appearanceType].ShinOptions);
-                RightFootOptions = Available(AppearanceArmor.RightFoot, _armorAppearances[appearanceType].FootOptions);
-
-                NeckSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck);
-                ChestSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso);
-                BeltSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt);
-                PelvisSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis);
-                RobeSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe);
-
-                LeftShoulderSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder);
-                LeftBicepSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep);
-                LeftForearmSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm);
-                LeftHandSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand);
-                LeftThighSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh);
-                LeftShinSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin);
-                LeftFootSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot);
-
-                RightShoulderSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
-                RightBicepSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep);
-                RightForearmSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm);
-                RightHandSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand);
-                RightThighSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh);
-                RightShinSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin);
-                RightFootSelection = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot);
-
-                UpdateAllColors();
-                SyncSelectedPartSwatches();
-                RefreshPartBrowser();
-
-                return;
-            }
-            else if (SelectedItemTypeIndex == 1) // 1 = Helmet
-            {
-                partIds = _armorAppearances[appearanceType].Helmet;
-                selectedPartId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
-            }
-            else if (SelectedItemTypeIndex == 2) // 2 = Cloak
-            {
-                partIds = _armorAppearances[appearanceType].Cloak;
-                selectedPartId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
-            }
-            else if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
-            {
-                if (WeaponAppearanceCatalog.Definitions[type].IsSimple)
-                {
-                    partIds = WeaponAppearanceCatalog.Definitions[type].SimpleParts;
-                    selectedPartId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, -1);
-                }
-                else
-                {
-                    var weaponPart = SelectedPartCategoryIndex switch
-                    {
-                        0 => AppearanceWeapon.Top,
-                        1 => AppearanceWeapon.Middle,
-                        2 => AppearanceWeapon.Bottom,
-                        _ => throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex))
-                    };
-                    partIds = AppearanceItemEligibility.GetWeaponPartOptions(item, WeaponAppearanceCatalog.Definitions[type], weaponPart);
-                    selectedPartId = AppearanceItemEligibility.GetWeaponPartId(item, weaponPart);
-                }
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException(nameof(SelectedItemTypeIndex));
-            }
-
-            if (selectedPartId <= -1)
-                return;
-
-            Func<int, string> getPartName = null;
-            if (SelectedItemTypeIndex is 3 or 4)
-            {
-                var part = SelectedPartCategoryIndex switch
-                {
-                    0 => AppearanceWeapon.Top,
-                    1 => AppearanceWeapon.Middle,
-                    2 => AppearanceWeapon.Bottom,
-                    _ => AppearanceWeapon.Invalid
-                };
-                getPartName = partId => WeaponAppearanceCatalog.Definitions[type].GetPartName(part, partId);
-            }
-            var (partNames, partSelected) = GetPartLists(partIds, getPartName);
-
-            PartOptions = partNames;
-            PartSelected = partSelected;
-            SelectedPartIndex = _session.PartIdToIndex.TryGetValue(selectedPartId, out var selectedIndex) ? selectedIndex : -1;
-            if (SelectedPartIndex >= 0)
-                PartSelected[SelectedPartIndex] = true;
-            RefreshItemBaseSwatches();
-            RefreshPartBrowser();
+            foreach (var swatch in ArmorColorRegionCatalog.Entries)
+                Set(ArmorColorRegionCatalog.NeutralRegion(), swatch.RegionName);
+            _session.ColorMappingsRegistered = true;
         }
 
         AppearanceEditorSession IAppearanceEditorHost.Session => _session;
@@ -1499,22 +1100,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         (GuiBindingList<GuiComboEntry> Options, int Selection, Action<int> Select) IAppearanceEditorHost.GetArmorPartBinding(AppearanceArmor partType) => GetArmorPartBinding(partType);
         void IAppearanceEditorHost.WatchArmorSelections() => WatchArmorSelections();
         bool IAppearanceEditorHost.IsWindowOpen() => Gui.IsWindowOpen(Player, WindowType);
-        string IAppearanceEditorHost.CustomTintBlue { get => CustomTintBlue; set => CustomTintBlue = value; }
-        string IAppearanceEditorHost.CustomTintGreen { get => CustomTintGreen; set => CustomTintGreen = value; }
-        string IAppearanceEditorHost.CustomTintRed { get => CustomTintRed; set => CustomTintRed = value; }
-        string IAppearanceEditorHost.CustomTintTooltip { get => CustomTintTooltip; set => CustomTintTooltip = value; }
-        bool IAppearanceEditorHost.DoesNotHaveItemEquipped { get => DoesNotHaveItemEquipped; set => DoesNotHaveItemEquipped = value; }
-        bool IAppearanceEditorHost.HasItemEquipped { get => HasItemEquipped; set => HasItemEquipped = value; }
-        bool IAppearanceEditorHost.IsAppearanceSelected { get => IsAppearanceSelected; set => IsAppearanceSelected = value; }
-        bool IAppearanceEditorHost.IsCopyEnabled { get => IsCopyEnabled; set => IsCopyEnabled = value; }
-        bool IAppearanceEditorHost.IsCustomTintAvailable { get => IsCustomTintAvailable; set => IsCustomTintAvailable = value; }
-        bool IAppearanceEditorHost.IsCustomTintEditable { get => IsCustomTintEditable; set => IsCustomTintEditable = value; }
-        bool IAppearanceEditorHost.IsEquipmentSelected { get => IsEquipmentSelected; set => IsEquipmentSelected = value; }
-        bool IAppearanceEditorHost.IsTintMapAvailable { get => IsTintMapAvailable; set => IsTintMapAvailable = value; }
-        int IAppearanceEditorHost.RobeSelection { get => RobeSelection; set => RobeSelection = value; }
-        int IAppearanceEditorHost.SelectedColorCategoryIndex { get => SelectedColorCategoryIndex; set => SelectedColorCategoryIndex = value; }
-        int IAppearanceEditorHost.SelectedItemTypeIndex { get => SelectedItemTypeIndex; set => SelectedItemTypeIndex = value; }
-        GuiColor IAppearanceEditorHost.SelectedTintColor { get => SelectedTintColor; set => SelectedTintColor = value; }
+        bool IAppearanceEditorHost.IsPartEditorHidden => IsPartEditorHidden;
+        void IAppearanceEditorHost.LoadBodyParts() => LoadBodyParts();
+        void IAppearanceEditorHost.LoadPart() => LoadPart();
+        void IAppearanceEditorHost.RefreshTintMapEditorAfterAppearanceChange(bool refreshItemParts) => RefreshTintMapEditorAfterAppearanceChange(refreshItemParts);
+        void IAppearanceEditorHost.ShowModal(string prompt, Action confirmAction) => ShowModal(prompt, confirmAction);
         void IAppearanceEditorHost.ChangeColor(AppearanceColorTarget target, AppearanceArmorColor channel, int colorId) => ChangeColor(target, channel, colorId);
         uint IAppearanceEditorHost.GetItem() => GetItem();
         uint IAppearanceEditorHost.GetOffHandAppearanceOwner(uint offHand) => GetOffHandAppearanceOwner(offHand);
@@ -1524,7 +1114,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         void IAppearanceEditorHost.RefreshItemBaseSwatches() => RefreshItemBaseSwatches();
         void IAppearanceEditorHost.ToggleItemEquippedFlags() => ToggleItemEquippedFlags();
         void IAppearanceEditorHost.UpdateEditedColorSwatches() => UpdateEditedColorSwatches();
-
         /// <summary>
         /// The current value of a binding by name. The colour swatch bindings (<c>ArmorColorRegionCatalog</c>) have no declared
         /// property.
@@ -1536,291 +1125,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnSelectEquipment() => () => SelectEditorTab(EquipmentTabId);
 
         public Action OnSelectSettings() => () => SelectEditorTab(SettingsTabId);
+        public Action OnDecreaseAppearanceScale() => () => AppearanceSettingsService.DecreaseAppearanceScale(this);
+        public Action OnIncreaseAppearanceScale() => () => AppearanceSettingsService.IncreaseAppearanceScale(this);
+        public Action OnDecreaseHeadScale() => () => AppearanceSettingsService.DecreaseHeadScale(this);
+        public Action OnIncreaseHeadScale() => () => AppearanceSettingsService.IncreaseHeadScale(this);
 
-        public Action OnDecreaseAppearanceScale() => () =>
-        {
-            var appearanceType = GetAppearanceType(_session.Target);
-            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
-            {
-                CloseForUnsupportedAppearance();
-                return;
-            }
-
-            var scale = GetObjectVisualTransform(_session.Target, ObjectVisualTransform.Scale);
-            const float Increment = 0.01f;
-
-            if (scale - Increment < appearance.MinimumScale)
-            {
-                SendScaleMessage("You cannot decrease your height any further.");
-            }
-            else
-            {
-                SetObjectVisualTransform(_session.Target, ObjectVisualTransform.Scale, scale - Increment);
-                SendScaleMessage($"Height: {GetObjectVisualTransform(_session.Target, ObjectVisualTransform.Scale)}");
-            }
-        };
-        public Action OnIncreaseAppearanceScale() => () =>
-        {
-            var appearanceType = GetAppearanceType(_session.Target);
-            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
-            {
-                CloseForUnsupportedAppearance();
-                return;
-            }
-
-            var scale = GetObjectVisualTransform(_session.Target, ObjectVisualTransform.Scale);
-            const float Increment = 0.01f;
-
-            if (scale + Increment > appearance.MaximumScale)
-            {
-                SendScaleMessage("You cannot increase your height any further.");
-            }
-            else
-            {
-                SetObjectVisualTransform(_session.Target, ObjectVisualTransform.Scale, scale + Increment);
-                SendScaleMessage($"Height: {GetObjectVisualTransform(_session.Target, ObjectVisualTransform.Scale)}");
-            }
-        };
-
-        public Action OnDecreaseHeadScale() => () =>
-        {
-            var appearanceType = GetAppearanceType(_session.Target);
-            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
-            {
-                CloseForUnsupportedAppearance();
-                return;
-            }
-
-            var scale = HelmetModelRenderer.GetHeadScale(_session.Target);
-            if (scale <= 0f)
-                scale = 1.0f;
-
-            const float Increment = 0.01f;
-
-            if (scale - Increment < appearance.MinimumHeadScale)
-            {
-                SendScaleMessage("You cannot decrease your head size any further.");
-            }
-            else
-            {
-                HelmetModelRenderer.SetHeadScale(_session.Target, scale - Increment);
-                SendScaleMessage($"Head Size: {HelmetModelRenderer.GetHeadScale(_session.Target)}");
-            }
-        };
-
-        public Action OnIncreaseHeadScale() => () =>
-        {
-            var appearanceType = GetAppearanceType(_session.Target);
-            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
-            {
-                CloseForUnsupportedAppearance();
-                return;
-            }
-
-            var scale = HelmetModelRenderer.GetHeadScale(_session.Target);
-            if (scale <= 0f)
-                scale = 1.0f;
-
-            const float Increment = 0.01f;
-
-            if (scale + Increment > appearance.MaximumHeadScale)
-            {
-                SendScaleMessage("You cannot increase your head size any further.");
-            }
-            else
-            {
-                HelmetModelRenderer.SetHeadScale(_session.Target, scale + Increment);
-                SendScaleMessage($"Head Size: {HelmetModelRenderer.GetHeadScale(_session.Target)}");
-            }
-        };
-
-        private void SendScaleMessage(string message)
-        {
-            // Messages to a possessing DM's avatar are dropped, so they go to the creature the DM controls.
-            DMPresence.SendMessage(Player, message);
-        }
-
-
-        public Action OnSelectPartCategory() => () =>
-        {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
-
-            var index = NuiGetEventArrayIndex();
-            PartCategorySelected[SelectedPartCategoryIndex] = false;
-
-            SelectedPartCategoryIndex = index;
-            PartCategorySelected[index] = true;
-
-            if (IsAppearanceSelected)
-            {
-                LoadBodyParts();
-            }
-            else if (IsEquipmentSelected)
-            {
-                LoadItemParts();
-            }
-        };
-
-
-
-
-
-
-
-
-
-
-        private void LoadBodyPart()
-        {
-            var appearanceType = GetAppearanceType(_session.Target);
-            var gender = GetGender(_session.Target);
-            if (!RacialAppearanceRegistry.TryGet(appearanceType, out var appearance))
-                return;
-
-            switch (SelectedPartCategoryIndex)
-            {
-                case 0: // Head
-                    switch (gender)
-                    {
-                        case Gender.Male:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[SelectedPartIndex], _session.Target);
-                            break;
-                        default:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[SelectedPartIndex], _session.Target);
-                            break;
-                    }
-                    break;
-                case 1: // Torso
-                    SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[SelectedPartIndex], _session.Target);
-                    break;
-                case 2: // Pelvis
-                    SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], _session.Target);
-                    break;
-                case 3: // Right Bicep
-                    BodyPartAppearance.Set(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], _session.Target);
-                    break;
-                case 4: // Right Forearm
-                    SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], _session.Target);
-                    break;
-                case 5: // Right Hand
-                    BodyPartAppearance.Set(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], _session.Target);
-                    break;
-                case 6: // Right Thigh
-                    SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], _session.Target);
-                    break;
-                case 7: // Right Shin
-                    SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], _session.Target);
-                    break;
-                case 8: // Right Foot
-                    SetCreatureBodyPart(CreaturePart.RightFoot, appearance.RightFoot[SelectedPartIndex], _session.Target);
-                    break;
-                case 9: // Left Bicep
-                    BodyPartAppearance.Set(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], _session.Target);
-                    break;
-                case 10: // Left Forearm
-                    SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], _session.Target);
-                    break;
-                case 11: // Left Hand
-                    BodyPartAppearance.Set(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], _session.Target);
-                    break;
-                case 12: // Left Thigh
-                    SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], _session.Target);
-                    break;
-                case 13: // Left Shin
-                    SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], _session.Target);
-                    break;
-                case 14: // Left Foot
-                    SetCreatureBodyPart(CreaturePart.LeftFoot, appearance.LeftFoot[SelectedPartIndex], _session.Target);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
-            }
-
-            TintMapCreatureColor.CarryStoredCreatureCustomColors(_session.Target);
-            ExecuteScript(ScriptName.OnAppearanceEdit, _session.Target);
-            AppearanceTintEditorService.LoadTintMapEditor(this);
-        }
-
-        private void LoadArmorPart()
-        {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
-            var item = GetItem();
-            var itemType = GetBaseItemType(item);
-            var appearanceType = GetAppearanceType(_session.Target);
-
-            if (SelectedItemTypeIndex == 1) // 1 = Helmet
-            {
-                AppearancePartEditService.ModifyItemPart(this, (int)AppearanceArmor.Invalid, _armorAppearances[appearanceType].Helmet[SelectedPartIndex]);
-            }
-            else if (SelectedItemTypeIndex == 2) // 2 = Cloak
-            {
-                AppearancePartEditService.ModifyItemPart(this, (int)AppearanceArmor.Invalid, _armorAppearances[appearanceType].Cloak[SelectedPartIndex]);
-            }
-            else if (SelectedItemTypeIndex == 3 || SelectedItemTypeIndex == 4) // 3 = Weapon (Main Hand), 4 = Weapon (Off Hand)
-            {
-                if (WeaponAppearanceCatalog.Definitions[itemType].IsSimple)
-                {
-                    AppearancePartEditService.ModifyItemPart(this, (int)ItemAppearanceType.SimpleModel, WeaponAppearanceCatalog.Definitions[itemType].SimpleParts[SelectedPartIndex]);
-                }
-                else
-                {
-                    var weaponPart = SelectedPartCategoryIndex switch
-                    {
-                        0 => AppearanceWeapon.Top,
-                        1 => AppearanceWeapon.Middle,
-                        2 => AppearanceWeapon.Bottom,
-                        _ => throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex))
-                    };
-                    var selected = AppearanceItemEligibility.GetWeaponPartOptions(item, WeaponAppearanceCatalog.Definitions[itemType], weaponPart)[SelectedPartIndex];
-                    AppearancePartEditService.ModifyItemPart(this, (int)weaponPart, selected % 100, selected / 100);
-                }
-            }
-        }
-
-        private void LoadPart()
-        {
-            if (SelectedPartIndex <= -1)
-                return;
-
-            if (IsAppearanceSelected)
-            {
-                LoadBodyPart();
-            }
-            else if (IsEquipmentSelected)
-            {
-                LoadArmorPart();
-            }
-        }
-
-
-        public Action OnPreviousPart() => () =>
-        {
-            var newPartIndex = SelectedPartIndex - 1;
-            if (newPartIndex < 0)
-                newPartIndex = 0;
-
-            PartSelected[SelectedPartIndex] = false;
-            SelectedPartIndex = newPartIndex;
-            PartSelected[SelectedPartIndex] = true;
-            LoadPart();
-        };
-
-        public Action OnNextPart() => () =>
-        {
-            var newPartIndex = SelectedPartIndex + 1;
-            if (newPartIndex > _session.PartIdToIndex.Count - 1)
-                newPartIndex = _session.PartIdToIndex.Count - 1;
-
-            PartSelected[SelectedPartIndex] = false;
-            SelectedPartIndex = newPartIndex;
-            PartSelected[SelectedPartIndex] = true;
-            LoadPart();
-        };
-
+        public Action OnSelectPartCategory() => () => AppearancePartListService.SelectPartCategory(this);
+        public Action OnPreviousPart() => () => AppearancePartListService.PreviousPart(this);
+        public Action OnNextPart() => () => AppearancePartListService.NextPart(this);
 
         internal static bool TryParsePartNumber(string text, out int partId)
         {
@@ -1830,57 +1142,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             return int.TryParse(text, out partId);
         }
-
         public Action OnCloseWindow() => () =>
         {
-            ClosePartBrowser();
+            AppearancePartBrowserService.ClosePartBrowser(this);
             AppearanceTintEditorService.FlushPendingPickerColor(this);
             AppearanceTintEditorService.CancelTintPickerGesture(this);
             AppearanceTintEditorService.CommitCustomTintComponents(this);
             _session.TintEditGeneration++;
-            if (GetIsDM(_session.Target) || GetIsDMPossessed(_session.Target) || !GetIsPC(_session.Target))
-                return;
-
-            var playerId = GetObjectUUID(_session.Target);
-            var dbPlayer = DB.Get<Player>(playerId);
-            var headScale = dbPlayer.HeadAppearanceScale <= 0f ? 1.0f : dbPlayer.HeadAppearanceScale;
-
-            SetObjectVisualTransform(_session.Target, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
-            HelmetModelRenderer.SetHeadScale(_session.Target, headScale);
+            AppearanceSettingsService.RestoreSavedScales(this);
         };
 
-        public Action OnClickSaveSettings() => () =>
-        {
-            if (!GetIsPC(_session.Target) || GetIsDM(_session.Target) || GetIsDMPossessed(_session.Target))
-                return;
-
-            var playerId = GetObjectUUID(_session.Target);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            dbPlayer.Settings.ShowCloak = ShowCloak;
-            dbPlayer.Settings.ShowHelmet = ShowHelmet;
-
-            var newHeight = GetObjectVisualTransform(_session.Target, ObjectVisualTransform.Scale);
-            dbPlayer.AppearanceScale = newHeight;
-
-            var newHeadScale = HelmetModelRenderer.GetHeadScale(_session.Target);
-            if (newHeadScale <= 0f)
-                newHeadScale = 1.0f;
-            dbPlayer.HeadAppearanceScale = newHeadScale;
-
-            DB.Set(dbPlayer);
-            SendMessageToPC(_session.Target, ColorToken.Green("Appearance settings saved successfully."));
-
-            UpdateArmorDisplay();
-        };
+        public Action OnClickSaveSettings() => () => AppearanceSettingsService.SaveSettings(this);
 
         public Action OnClickColorPalette(int colorId) => () =>
         {
             if (AppearanceColorService.ApplySelectedPaletteColor(this, colorId))
                 AppearanceColorService.SynchronizeCustomTintControlsToPaletteColor(this, colorId);
         };
-
-
 
         public Action OnClickClearColor(AppearanceColorTarget colorTarget, AppearanceArmorColor colorChannel) => () =>
         {
@@ -1899,176 +1177,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             AppearanceColorService.ResetArmorColorToInheritance(this, colorTarget, colorChannel);
         };
-
-
-
-
-
-
-
-
-
-        public Action OnClickColorTarget(AppearanceColorTarget target, AppearanceArmorColor channel) => () =>
-        {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
-
-            _session.ColorTarget = target;
-            _session.SelectedColorChannel = channel;
-
-            UpdateTargetedColor();
-            UpdatePaletteSheetForChannel();
-            AppearanceTintEditorService.LoadTintMapEditor(this);
-        };
-
-        private GuiRectangle BuildColorRegion(AppearanceColorTarget target, AppearanceArmorColor colorChannel)
-        {
-            var item = GetItem();
-            int colorId;
-
-            if (target == AppearanceColorTarget.Global)
-            {
-                colorId = GetItemAppearance(item, ItemAppearanceType.ArmorColor, (int)colorChannel);
-            }
-            else
-            {
-                var armorModel = AppearancePartEditService.GetArmorModelType(this, target);
-                colorId = AppearanceColorService.GetArmorSwatchColor(this, item, armorModel, colorChannel);
-            }
-            return ArmorColorRegionCatalog.BuildPaletteRegion(colorId);
-        }
-
-        private void UpdateAllColors()
-        {
-            AppearanceTintEditorService.RefreshTintMapAvailability(this);
-            foreach (var swatch in ArmorColorRegionCatalog.Entries)
-            {
-                Set(BuildColorRegion(swatch.Target, swatch.Channel), swatch.RegionName);
-                UpdateColorSwatch(swatch.Target, swatch.Channel, swatch.RegionName);
-            }
-        }
-
-        private void UpdateEditedColorSwatches()
-        {
-            // Only this material channel changed. Inherited parts remain empty;
-            // legacy global overrides may have been normalized by the service.
-            foreach (var target in ArmorColorRegionCatalog.Targets)
-            {
-                if (_session.ColorTarget != AppearanceColorTarget.Global && target != _session.ColorTarget)
-                    continue;
-                var swatch = ArmorColorRegionCatalog.Get(target, _session.SelectedColorChannel);
-                var region = BuildColorRegion(target, _session.SelectedColorChannel);
-                var previous = Get<GuiRectangle>(swatch.RegionName);
-                if (previous == null || previous.X != region.X || previous.Y != region.Y ||
-                    previous.Width != region.Width || previous.Height != region.Height)
-                    Set(region, swatch.RegionName);
-                UpdateColorSwatch(target, _session.SelectedColorChannel, swatch.RegionName);
-            }
-        }
-
-        private void UpdateTargetedColor()
-        {
-            UpdateColorSelection();
-            string targetName;
-            string channelName;
-
-            switch (_session.ColorTarget)
-            {
-                case AppearanceColorTarget.Global:
-                    targetName = "Global";
-                    break;
-                case AppearanceColorTarget.LeftShoulder:
-                    targetName = "Left Shoulder";
-                    break;
-                case AppearanceColorTarget.LeftBicep:
-                    targetName = "Left Bicep";
-                    break;
-                case AppearanceColorTarget.LeftForearm:
-                    targetName = "Left Forearm";
-                    break;
-                case AppearanceColorTarget.LeftHand:
-                    targetName = "Left Hand";
-                    break;
-                case AppearanceColorTarget.LeftThigh:
-                    targetName = "Left Thigh";
-                    break;
-                case AppearanceColorTarget.LeftShin:
-                    targetName = "Left Shin";
-                    break;
-                case AppearanceColorTarget.LeftFoot:
-                    targetName = "Left Foot";
-                    break;
-                case AppearanceColorTarget.RightShoulder:
-                    targetName = "Right Shoulder";
-                    break;
-                case AppearanceColorTarget.RightBicep:
-                    targetName = "Right Bicep";
-                    break;
-                case AppearanceColorTarget.RightForearm:
-                    targetName = "Right Forearm";
-                    break;
-                case AppearanceColorTarget.RightHand:
-                    targetName = "Right Hand";
-                    break;
-                case AppearanceColorTarget.RightThigh:
-                    targetName = "Right Thigh";
-                    break;
-                case AppearanceColorTarget.RightShin:
-                    targetName = "Right Shin";
-                    break;
-                case AppearanceColorTarget.RightFoot:
-                    targetName = "Right Foot";
-                    break;
-                case AppearanceColorTarget.Neck:
-                    targetName = "Neck";
-                    break;
-                case AppearanceColorTarget.Chest:
-                    targetName = "Chest";
-                    break;
-                case AppearanceColorTarget.Belt:
-                    targetName = "Belt";
-                    break;
-                case AppearanceColorTarget.Pelvis:
-                    targetName = "Pelvis";
-                    break;
-                case AppearanceColorTarget.Robe:
-                    targetName = "Robe";
-                    break;
-                default:
-                    targetName = "Unknown";
-                    break;
-            }
-
-            switch (_session.SelectedColorChannel)
-            {
-                case AppearanceArmorColor.Leather1:
-                    channelName = "Leather 1";
-                    break;
-                case AppearanceArmorColor.Leather2:
-                    channelName = "Leather 2";
-                    break;
-                case AppearanceArmorColor.Cloth1:
-                    channelName = "Cloth 1";
-                    break;
-                case AppearanceArmorColor.Cloth2:
-                    channelName = "Cloth 2";
-                    break;
-                case AppearanceArmorColor.Metal1:
-                    channelName = "Metal 1";
-                    break;
-                case AppearanceArmorColor.Metal2:
-                    channelName = "Metal 2";
-                    break;
-                default:
-                    channelName = "Unknown";
-                    break;
-            }
-
-            ColorTargetText = $"{targetName} / {channelName}";
-        }
-
-
+        public Action OnClickColorTarget(AppearanceColorTarget target, AppearanceArmorColor channel) => () => AppearanceSwatchService.ClickColorTarget(this, target, channel);
 
         public Action OnClickAdjustArmorPart(AppearanceArmor partType, int adjustBy) => () =>
         {
@@ -2081,7 +1190,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             AppearancePartEditService.AdjustArmorPart(this, partType, adjustBy);
         };
-
 
         private (GuiBindingList<GuiComboEntry> Options, int Selection, Action<int> Select) GetArmorPartBinding(AppearanceArmor partType)
         {
@@ -2135,18 +1243,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.RobeSelection);
         }
 
-
-
-
         public Action OnClickCopyToRight() => () => AppearanceColorService.CopyArmorSide(this, copyToRight: true);
 
         public Action OnClickCopyToLeft() => () => AppearanceColorService.CopyArmorSide(this, copyToRight: false);
-
-
-        private void UpdateArmorDisplay()
-        {
-            ArmorDisplay.Apply(_session.Target, ShowHelmet, ShowCloak);
-        }
 
         public void Refresh(EquipItemRefreshEvent payload)
         {
@@ -2188,9 +1287,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 AppearanceTintEditorService.RefreshTintMapAvailability(this);
             if (IsEquipmentSelected && SelectedItemTypeIndex == 0 && HasItemEquipped)
             {
-                UpdateAllColors();
-                UpdateTargetedColor();
+                AppearanceSwatchService.UpdateAllColors(this);
+                AppearanceSwatchService.UpdateTargetedColor(this);
             }
         }
+
+        public Action OnClickPreviewView() => () => AppearancePartBrowserService.ClickPreviewView(this);
+
+        public Action OnClickPartPreview() => () => AppearancePartBrowserService.ClickPartPreview(this);
+
+        public Action OnClickPreviousPart() => () => AppearancePartBrowserService.StepPart(this, -1);
+
+        public Action OnClickNextPart() => () => AppearancePartBrowserService.StepPart(this, 1);
+
+        /// <summary>Wears a part picked in the editor or the part browser window.</summary>
+        internal void ApplyBrowserPart(int partId) => AppearancePartBrowserService.ApplyBrowserPart(this, partId);
+
+        /// <summary>Shows every picture from one side: the editor's part and the browser's pages.</summary>
+        internal void SelectPreviewView(AppearancePreviewView view) => AppearancePartBrowserService.SelectPreviewView(this, view);
+
+        public Action OnClickMapSlot(AppearanceEditorSlot slot) => () => AppearancePartBrowserService.ClickMapSlot(this, slot);
+
+        public Action OnClickBaseSwatch(AppearanceArmorColor channel) => () => AppearanceSwatchService.ClickBaseSwatch(this, channel);
+
+        public Action OnClickPartSwatch(AppearanceArmorColor channel) => () =>
+            OnClickColorTarget(AppearanceSwatchService.ToColorTarget(_session.SelectedSlot), channel)();
+
+        public Action OnMouseDownPartSwatch(AppearanceArmorColor channel) => () =>
+            OnClickClearColor(AppearanceSwatchService.ToColorTarget(_session.SelectedSlot), channel)();
+
+        public Action OnClickBodySwatch(int index) => () => AppearanceSwatchService.ClickBodySwatch(this, index);
+
+        public Action OnClickOutfitSlot() => () => AppearanceOutfitService.ClickOutfitSlot(this);
+
+        public Action OnClickNewOutfit() => () => AppearanceOutfitService.ClickNewOutfit(this);
+
+        public Action OnClickDeleteOutfit() => () => AppearanceOutfitService.ClickDeleteOutfit(this);
+
+        public Action OnClickRenameOutfit() => () => AppearanceOutfitService.ClickRenameOutfit(this);
+
+        public Action OnClickStoreOutfit() => () => AppearanceOutfitService.ClickStoreOutfit(this);
+
+        public Action OnClickWearOutfit() => () => AppearanceOutfitService.ClickWearOutfit(this);
+
+        public Action OnClickQuickWear() => () => AppearanceOutfitService.ClickQuickWear(this);
+
+        public Action OnClickUndoOutfit() => () => AppearanceOutfitService.ClickUndoOutfit(this);
     }
 }

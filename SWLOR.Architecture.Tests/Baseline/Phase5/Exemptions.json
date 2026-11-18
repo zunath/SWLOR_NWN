@@ -162,6 +162,12 @@
       "measures": ["typeSize"],
       "category": "fluent builder",
       "reason": "Many short builder methods; its methods are still measured."
+    },
+    {
+      "match": "type", "value": "SWLOR.Game.Server.Feature.GuiDefinition.ViewModel.AppearanceEditorViewModel",
+      "measures": ["typeSize"],
+      "category": "owner exception",
+      "reason": "owner decision 2026-11-18: real moves exhausted; the rest is declared bindings (P5-16e PR 3). Its services and methods are still measured."
     }
   ],
   "approvedStaticEntryPoints": [

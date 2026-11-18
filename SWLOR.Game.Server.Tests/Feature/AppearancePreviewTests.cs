@@ -3,6 +3,7 @@ using FluentAssertions;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.Preview;
+using SWLOR.Game.Server.Feature.AppearanceEditing;
 using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Domain.UI.Component;
@@ -278,23 +279,17 @@ public class AppearancePreviewTests
     }
 
     private static string SwatchCode(GuiRectangle region, bool custom) =>
-        (string)typeof(AppearanceEditorViewModel)
-            .GetMethod("SwatchCode", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { region, custom })!;
+        AppearanceSwatchService.SwatchCode(region, custom);
 
     private static GuiRectangle BuildPaletteRegion(int colorId) =>
         ArmorColorRegionCatalog.BuildPaletteRegion(colorId);
 
     private static GuiRectangle PlaceBeside(GuiRectangle editor, float width, float height,
         float screenWidth, float screenHeight, float scale) =>
-        (GuiRectangle)typeof(AppearanceEditorViewModel)
-            .GetMethod("PlaceBeside", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { editor, width, height, screenWidth, screenHeight, scale });
+        AppearancePartBrowserService.PlaceBeside(editor, width, height, screenWidth, screenHeight, scale);
 
     private static GuiRectangle FitWindowToScreen(GuiRectangle geometry, float screenWidth, float screenHeight, float scale) =>
-        (GuiRectangle)typeof(AppearanceEditorViewModel)
-            .GetMethod("FitWindowToScreen", BindingFlags.NonPublic | BindingFlags.Static)!
-            .Invoke(null, new object[] { geometry, screenWidth, screenHeight, scale })!;
+        AppearancePartBrowserService.FitWindowToScreen(geometry, screenWidth, screenHeight, scale);
 
     [TestCase("pme0_chest148", "pmh0_chest148")]
     [TestCase("pfd0_clk012", "pfh0_clk012")]

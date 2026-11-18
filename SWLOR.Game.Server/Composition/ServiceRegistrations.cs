@@ -53,6 +53,8 @@ namespace SWLOR.Game.Server.Composition
             // Content: the factory of made content, and the content singletons (written by tools/Refactor/SWLOR.ContentInjection).
             services.AddSingleton<IContentFactory, ContentFactory>();
             ContentRegistrations.Register(services);
+            // The weapon appearance definitions the appearance editor reads, built once with the container (P5-16e).
+            services.AddSingleton<SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.IWeaponAppearanceCatalog, SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance.WeaponAppearanceCatalog>();
 
             // Core
             // The Redis connection DBService takes; a host that keeps it across hot reloads registers its own (P4-10).

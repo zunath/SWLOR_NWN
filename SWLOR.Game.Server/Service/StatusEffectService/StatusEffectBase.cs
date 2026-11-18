@@ -137,6 +137,24 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             _durationAdjustmentSeconds = 0f;
         }
 
+        /// <summary>
+        /// Adds time to the duration from the effect's own tick schedule. Unlike reading the remaining time and
+        /// setting it again, it never consults the clock, so an extension by an exact multiple of the frequency
+        /// adds exactly that many ticks instead of one more.
+        /// </summary>
+        public void ExtendDurationSeconds(float seconds)
+        {
+            if (_isPermanent || IsFlaggedForRemoval || seconds <= 0f ||
+                (Categories & StatusEffectCategory.HardCrowdControl) != 0)
+                return;
+
+            var frequency = (double)Math.Max(1f, Frequency);
+            var elapsed = Math.Max(0d, (DateTime.UtcNow - _lastRun).TotalSeconds);
+            var total = Math.Max(_durationTicks * frequency + _durationAdjustmentSeconds, elapsed) + seconds;
+            _durationTicks = Math.Max(1, (int)Math.Ceiling(total / frequency));
+            _durationAdjustmentSeconds = (float)(total - _durationTicks * frequency);
+        }
+
         public void SetDurationSeconds(float seconds)
         {
             if (_isPermanent || IsFlaggedForRemoval || seconds <= 0f)

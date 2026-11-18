@@ -211,84 +211,84 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 436,
+    "Line": 443,
     "Member": "AnnounceApplication",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 461,
-    "Member": "AnnounceApplication",
-    "Delivery": "Retained",
-    "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 466,
-    "Member": "AnnounceApplication",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
     "Line": 468,
     "Member": "AnnounceApplication",
     "Delivery": "Retained",
+    "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+    "Line": 473,
+    "Member": "AnnounceApplication",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(creature, BuildApplicationMessage(creature))"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
+    "Line": 475,
+    "Member": "AnnounceApplication",
+    "Delivery": "Retained",
     "Call": "SendMessageToPC(source, BuildApplicationMessage(source))"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectApplicationService.cs",
-    "Line": 479,
+    "Line": 486,
     "Member": "SendStatusEffectFailure",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(recipient, message)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 378,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 71,
     "Member": "ResolveApplicationTiming",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 398,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 91,
     "Member": "ResolveApplicationTiming",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 560,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 253,
     "Member": "RestartInPlace",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, durationResistanceMessage)"
   },
   {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 866,
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 386,
+    "Member": "RefreshStatusEffectDuration",
+    "Delivery": "Retained",
+    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
+  },
+  {
+    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectDurationService.cs",
+    "Line": 395,
     "Member": "RefreshStatusEffectDuration",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 875,
-    "Member": "RefreshStatusEffectDuration",
-    "Delivery": "Retained",
-    "Call": "SendMessageToPC(source, \"Your ability was resisted.\")"
-  },
-  {
-    "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1405,
+    "Line": 1017,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Character/StatusEffectService.cs",
-    "Line": 1407,
+    "Line": 1019,
     "Member": "RemoveStatusEffectInstance",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(creature, BuildWornOffMessage(creature))"
@@ -302,7 +302,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAbilityImpactService.cs",
-    "Line": 1454,
+    "Line": 1457,
     "Member": "ApplyStatusAppliedTargetStaminaDrain",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                ColorToken.Combat($\"-{staminaDrained} STM\"),\n                target,\n                false)"
@@ -358,14 +358,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAttackTimingService.cs",
-    "Line": 454,
+    "Line": 457,
     "Member": "ShowReadyCue",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(text), creature, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatAttackTimingService.cs",
-    "Line": 797,
+    "Line": 800,
     "Member": "HandleParalyze",
     "Delivery": "Rate limited in Production",
     "Call": "_playerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{_playerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
@@ -414,28 +414,28 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 800,
+    "Line": 803,
     "Member": "ApplyLowHPGuardEffect",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Guardian Reflexes\"), guardRecipient, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1137,
+    "Line": 1140,
     "Member": "ApplyGuardedHitRetaliationPulse",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Retaliation Pulse\"), defender, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1320,
+    "Line": 1323,
     "Member": "ApplyGuardedHitNextSkillAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Counter Ready: +{selected.DamageBonus} DMG{criticalText}\"),\n                    creature,\n                    false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatDamageTakenService.cs",
-    "Line": 1553,
+    "Line": 1556,
     "Member": "ApplyRangedDeflectionReflection",
     "Delivery": "Retained",
     "Call": "_messaging.SendMessageNearbyToPlayers(\n                defender,\n                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),\n                60f)"
@@ -498,14 +498,14 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 890,
+    "Line": 896,
     "Member": "ApplyCriticalHitEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(ColorToken.Combat(\"Weak Points\"), attacker, false)"
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/CombatHitEffectsService.cs",
-    "Line": 1095,
+    "Line": 1101,
     "Member": "ApplyNonCriticalAbilityEffects",
     "Delivery": "Retained",
     "Call": "FloatingTextStringOnCreature(\n                    ColorToken.Combat($\"Next ranged ability +{currentTotal}% Critical Rate\"),\n                    activator,\n                    false)"
@@ -568,7 +568,7 @@
   },
   {
     "File": "SWLOR.Game.Server/Domain/Combat/PoisonsService.cs",
-    "Line": 86,
+    "Line": 88,
     "Member": "ConsumePoisonCoating",
     "Delivery": "Retained",
     "Call": "SendMessageToPC(attacker, $\"The venom coating on {GetName(weapon)} has worn off.\")"

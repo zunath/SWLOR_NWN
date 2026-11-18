@@ -941,7 +941,7 @@ public class CombatAttackDelayTests
             }).Should().Be(20);
 
             tracker.Add(new DeadMansHandStatusEffect());
-            StatusEffect.TryGetLimitedAttackNoDelay(
+            StatusEffectCombatEvent.TryGetLimitedAttackNoDelay(
                     creature,
                     SkillType.Pistol,
                     out var noDelayRemainingAttacks)
@@ -963,7 +963,7 @@ public class CombatAttackDelayTests
             Stat.GetStatTypeAggregation(StatType.AttackDelayReductionSuppressed)
                 .Should().Be(StatTypeAggregation.Maximum);
 
-            StatusEffect.TryGetLimitedAttackDelayReduction(
+            StatusEffectCombatEvent.TryGetLimitedAttackDelayReduction(
                     creature,
                     SkillType.Pistol,
                     out var reductionPercent,
@@ -972,7 +972,7 @@ public class CombatAttackDelayTests
                 .BeFalse();
             reductionPercent.Should().Be(0);
             remainingAttacks.Should().Be(0);
-            StatusEffect.TryGetLimitedAttackNoDelay(
+            StatusEffectCombatEvent.TryGetLimitedAttackNoDelay(
                     creature,
                     SkillType.Pistol,
                     out noDelayRemainingAttacks)

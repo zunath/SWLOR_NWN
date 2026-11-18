@@ -505,7 +505,7 @@ public class ResistanceServiceTests
         private readonly CreatureStatusEffect _statusEffects = new() { StatGroup = new StatGroup() };
 
         public TestResistance(IDBService db)
-            : base(db, CreateMimicry(out var script), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.LazyFor<IStatusEffectService>())
+            : base(db, CreateMimicry(out var script), FacadeForwarder.LazyFor<IStatService>(), FacadeForwarder.For<IStatusEffectService>())
         {
             // `this.` names the property below: tools/Refactor/SWLOR.FacadeRemoval writes a bare Mimicry.X as GameServices.Mimicry.X.
             script.On("GetResistanceBonus", args => this.Mimicry.TryGetValue((ResistanceType)args[1]!, out var value) ? value : 0);

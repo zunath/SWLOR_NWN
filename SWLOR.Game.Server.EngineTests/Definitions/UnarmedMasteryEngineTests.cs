@@ -99,7 +99,7 @@ public static class UnarmedMasteryEngineTests
                 "A different weapon skill is equipped when the player earns the counter.");
             await context.ExecuteInCreatureContextAsync(target, () =>
             {
-                StatusEffect.NotifyPreDamageStatusEffects(target, owner.Creature, 5, CombatDamageType.Physical);
+                StatusEffectCombatEvent.NotifyPreDamageStatusEffects(target, owner.Creature, 5, CombatDamageType.Physical);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(5), owner.Creature);
             });
             context.Assert(GetCurrentHitPoints(owner.Creature) < counterHitPoints && !GetIsDead(owner.Creature),

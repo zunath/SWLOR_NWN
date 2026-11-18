@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Domain.Combat
             if (mainNoDelay != offNoDelay)
                 return offNoDelay ? offSkill : mainSkill;
 
-            StatusEffect.TryGetLimitedAttackDelayReduction(attacker, mainSkill, out var mainReduction, out _);
-            StatusEffect.TryGetLimitedAttackDelayReduction(attacker, offSkill, out var offReduction, out _);
+            StatusEffectCombatEvent.TryGetLimitedAttackDelayReduction(attacker, mainSkill, out var mainReduction, out _);
+            StatusEffectCombatEvent.TryGetLimitedAttackDelayReduction(attacker, offSkill, out var offReduction, out _);
             return offReduction > mainReduction ? offSkill : mainSkill;
         }
 

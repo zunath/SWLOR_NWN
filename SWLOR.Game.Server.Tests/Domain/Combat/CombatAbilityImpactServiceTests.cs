@@ -283,11 +283,6 @@ public class CombatAbilityImpactServiceTests
                 ? _sourceStatuses.Contains(((uint)args[0]!, (Type)args[1]!, source))
                 : _statuses.Contains(((uint)args[0]!, (Type)args[1]!)))
             .On(nameof(IStatusEffectService.HasStatusEffectCategory), args => _categories.Contains(((uint)args[0]!, (StatusEffectCategory)args[1]!)))
-            .On(nameof(IStatusEffectService.ExtendStatusEffectDuration), args =>
-            {
-                _log.Add($"Extend {args[0]} {((Type)args[1]!).Name} {args[2]} {args[3]}");
-                return true;
-            })
             .On(nameof(IStatusEffectService.RemoveStatusEffect), args => Log($"Remove {args[0]} {((Type)args[1]!).Name} {args[2]} {args[3]}"))
             .On(nameof(IStatusEffectService.RemoveFirstBeneficialCombatStatusEffect), args =>
             {
@@ -296,6 +291,12 @@ public class CombatAbilityImpactServiceTests
             })
             .On(nameof(IStatusEffectService.GetCreatureStatusEffects), args =>
                 _creatureEffects.TryGetValue((uint)args[0]!, out var effects) ? effects : new CreatureStatusEffect { StatGroup = new StatGroup() });
+        var statusDuration = ScriptedProxy.Create<IStatusEffectDurationService>(out var statusDurationCalls);
+        statusDurationCalls.On(nameof(IStatusEffectDurationService.ExtendStatusEffectDuration), args =>
+        {
+            _log.Add($"Extend {args[0]} {((Type)args[1]!).Name} {args[2]} {args[3]}");
+            return true;
+        });
         var statusApplication = ScriptedProxy.Create<IStatusEffectApplicationService>(out var statusApplicationCalls);
         statusApplicationCalls.On(nameof(IStatusEffectApplicationService.ApplyStatusEffect), args =>
             {
@@ -360,7 +361,7 @@ public class CombatAbilityImpactServiceTests
         });
 
         return new CombatAbilityImpactService(queries, resources, timing, activity, hitEffects, damageTaken, stat, statusEffect,
-            statusApplication, temporary, ability, enmity, _partyProxy, recorder, pairedRangedTraits);
+            statusApplication, statusDuration, temporary, ability, enmity, _partyProxy, recorder, pairedRangedTraits);
     }
 
     [TearDown]

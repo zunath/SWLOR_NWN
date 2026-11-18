@@ -52,7 +52,7 @@ public class ClockSeamScriptTests
         var insideCore = Write("Service/Folder/InsideCore.cs", Utf8WithoutBom,
             "namespace SWLOR.Game.Server.Core\n{\n    public static class D { public static long Read() => Environment.TickCount64; }\n}\n");
         var noReads = Write("Service/Folder/NoReads.cs", Utf8WithoutBom,
-            "using System;\r\nnamespace X\n{\n    public static class E { public static object Read() => DateTimeOffset.UtcNow; }\n}");
+            "using System;\r\nnamespace X\n{\n    public static class E { public static object Read() => DateTime.Now; }\n}");
         var outsideTheManifest = Write("Service/Other.cs", Utf8WithoutBom,
             "namespace X { public static class F { public static object Read() => DateTime.UtcNow; } }\n");
         var unchanged = new Dictionary<string, byte[]>
@@ -64,7 +64,7 @@ public class ClockSeamScriptTests
         var first = RunScript();
 
         first.ExitCode.Should().Be(0, first.Output);
-        first.Output.Should().Contain("Changed 4 of 5 files: 12 DateTime.UtcNow and 5 Environment.TickCount64 rewritten, 2 using lines added.");
+        first.Output.Should().Contain("Changed 4 of 5 files: 14 DateTime.UtcNow and 5 Environment.TickCount64 rewritten, 2 using lines added.");
         File.ReadAllBytes(withUsings).Should().Equal(Utf8WithoutBom.GetBytes(Sample("\r\n", rewritten: true, coreUsing: true)));
         File.ReadAllBytes(withoutUsings).Should().Equal(Utf8WithBom.GetPreamble().Concat(Utf8WithoutBom.GetBytes(
             "using SWLOR.Game.Server.Core;\n\nnamespace SWLOR.Game.Server.Service.Folder;\n\npublic static class B { public static long Read() => Clock.TickCount64 + \"caf" + EAcute + "\".Length; }\n")).ToArray());
@@ -169,7 +169,7 @@ public class ClockSeamScriptTests
             public static class A
             {
                 // DateTime.UtcNow in a comment
-                public static object Read() => new object[] { DateTime.UtcNow, System.DateTime.UtcNow, Environment.TickCount64, DateTimeOffset.UtcNow, Other.DateTime.UtcNow };
+                public static object Read() => new object[] { DateTime.UtcNow, System.DateTime.UtcNow, Environment.TickCount64, DateTimeOffset.UtcNow, System.DateTimeOffset.UtcNow, Other.DateTime.UtcNow, Other.DateTimeOffset.UtcNow };
                 public static string Text = "DateTime.UtcNow and Environment.TickCount64 stay in strings"; // DateTime.UtcNow
                 public static string Verbatim = @"DateTime.UtcNow ""quoted"" Environment.TickCount64";
                 public static string Interpolated(int n) => $"DateTime.UtcNow {{Environment.TickCount64}} {Environment.TickCount64} {n}";
@@ -190,7 +190,7 @@ public class ClockSeamScriptTests
             public static class A
             {
                 // DateTime.UtcNow in a comment
-                public static object Read() => new object[] { Clock.UtcNow, Clock.UtcNow, Clock.TickCount64, DateTimeOffset.UtcNow, Other.DateTime.UtcNow };
+                public static object Read() => new object[] { Clock.UtcNow, Clock.UtcNow, Clock.TickCount64, new DateTimeOffset(Clock.UtcNow), new DateTimeOffset(Clock.UtcNow), Other.DateTime.UtcNow, Other.DateTimeOffset.UtcNow };
                 public static string Text = "DateTime.UtcNow and Environment.TickCount64 stay in strings"; // DateTime.UtcNow
                 public static string Verbatim = @"DateTime.UtcNow ""quoted"" Environment.TickCount64";
                 public static string Interpolated(int n) => $"DateTime.UtcNow {{Environment.TickCount64}} {Clock.TickCount64} {n}";

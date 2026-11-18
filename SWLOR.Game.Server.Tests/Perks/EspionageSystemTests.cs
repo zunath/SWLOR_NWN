@@ -169,7 +169,7 @@ public class EspionageSystemTests
     {
         var root = FindRepositoryRoot();
         var stealthSource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "StealthService.cs"));
-        var enmitySource = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Domain", "Combat", "EnmityService.cs"));
+        var enmitySource = EnmitySource.Read();
 
         var hiddenStart = stealthSource.IndexOf("public bool IsHiddenFrom(uint observer, uint target)", StringComparison.Ordinal);
         var hiddenEnd = stealthSource.IndexOf("public bool IsInvisible(uint creature)", StringComparison.Ordinal);

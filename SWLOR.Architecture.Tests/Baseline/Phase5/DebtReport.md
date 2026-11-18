@@ -7,7 +7,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 | Measure | Baseline | Entries | Total | Target |
 |---|---|---:|---:|---|
-| 1. Static service lookup | `StaticLookups.txt` | 1,092 | 13,354 uses | none: GameServices and FacadeAccessor deleted |
+| 1. Static service lookup | `StaticLookups.txt` | 1,093 | 13,367 uses | none: GameServices and FacadeAccessor deleted |
 | 2. Large types | `LargeTypes.txt` | 25 | 37,681 lines | none over 1,000 lines |
 | 3. Long methods | `LongMethods.txt` | 10 | 2,906 lines | none over 150 lines (400 for layout) |
 | 4. Services per type | `ServicesPerType.txt` | 17 | 276 services | none over 10 services |
@@ -20,9 +20,9 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 
 ## 1. Static service lookup
 
-- 1,092 files, 13,354 uses: 829 using directives and 12,525 uses in code (7,505 in a static context).
+- 1,093 files, 13,367 uses: 829 using directives and 12,538 uses in code (7,518 in a static context).
 - SWLOR.Game.Server: 645 file(s), 5,819 use(s) (Feature/ 535, Domain/ 86, Native/ 16, NativeSinks/ 6, Composition/ 1, Core/ 1).
-- SWLOR.Game.Server.EngineTests: 240 file(s), 5,340 use(s).
+- SWLOR.Game.Server.EngineTests: 241 file(s), 5,353 use(s).
 - SWLOR.Game.Server.Tests: 178 file(s), 2,037 use(s).
 - SWLOR.Game.Server.CharacterizationTests: 10 file(s), 107 use(s).
 - SWLOR.CraftSim.Tests: 5 file(s), 15 use(s).
@@ -36,7 +36,7 @@ server, together with the baselines beside it. Do not edit it by hand. Regenerat
 - Content (Feature/) uses in code: 4,533 (1,681 in a static context).
 - Content (Feature/) types that use it: 533. Static classes: 75. Instance classes that use it from a static member: 202 (156 only from static members).
 
-Largest 15 of 1,092 (all in `StaticLookups.txt`):
+Largest 15 of 1,093 (all in `StaticLookups.txt`):
 
 | Entry | Uses | Detail |
 |---|---:|---|

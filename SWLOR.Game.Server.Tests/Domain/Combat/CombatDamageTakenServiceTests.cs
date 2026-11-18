@@ -88,57 +88,6 @@ public class CombatDamageTakenServiceTests
     private Func<int, int> _triggered = null!;
     private BuildMessageDelegate? _message;
 
-    private sealed class TestDamageTaken : CombatDamageTakenService
-    {
-        private readonly List<string> _log;
-        private readonly Func<int> _calculated;
-
-        public TestDamageTaken(
-            List<string> log,
-            Func<int> calculated,
-            ICombatFeedbackService feedback,
-            ICombatQueriesService queries,
-            ICombatResourcesService resources,
-            ICombatAttackTimingService attackTiming,
-            ICombatActivityService combatActivity,
-            ICombatDamageModifiersService damageModifiers,
-            ICombatAbilityHitService abilityHit,
-            ICombatHitEffectsService hitEffects,
-            IStatService stat,
-            ICombatRatingService combatRating,
-            IStatusEffectService statusEffect,
-            IStatusEffectApplicationService statusApplication,
-            IStatusEffectCombatEventService statusCombat,
-            ITemporaryStatModifierService temporaryStatModifier,
-            ICombatRecorderService combatRecorder,
-            IPvpCombatService pvpCombat,
-            IEnmityService enmity,
-            IMessagingService messaging,
-            IPlayerNameService playerName)
-            : base(feedback, queries, resources, attackTiming, combatActivity, damageModifiers, abilityHit, hitEffects, stat, combatRating,
-                statusEffect, statusApplication, statusCombat, temporaryStatModifier, combatRecorder, pvpCombat, enmity, messaging, playerName, FacadeForwarder.LazyFor<ICombatService>())
-        {
-            _log = log;
-            _calculated = calculated;
-        }
-
-        protected override int CalculateDamage(
-            int attackerAttack,
-            int attackerDMG,
-            int attackerStat,
-            int defenderDefense,
-            int defenderStat,
-            int critical,
-            int deltaCap = 0)
-        {
-            _log.Add($"Calculate {attackerAttack} {attackerDMG} {attackerStat} {defenderDefense} {defenderStat} {critical} {deltaCap}");
-            return _calculated();
-        }
-
-        public int BaseCalculateDamage(int attack, int dmg, int attackStat, int defense, int defenseStat, int critical) =>
-            base.CalculateDamage(attack, dmg, attackStat, defense, defenseStat, critical);
-    }
-
     // The ally search of the deflection guard asks the party roster (GameServices.PartyRoster, P5-3c) whether a nearby creature
     // is in the creature's party.
     [OneTimeSetUp]

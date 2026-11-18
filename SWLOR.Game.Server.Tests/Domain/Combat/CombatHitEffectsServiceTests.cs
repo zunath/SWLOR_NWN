@@ -71,57 +71,6 @@ public class CombatHitEffectsServiceTests
     private int _resisted;
     private Func<int, int> _taken = null!;
 
-    private sealed class TestHitEffects : CombatHitEffectsService
-    {
-        private readonly List<string> _log;
-        private readonly Func<Func<int, int>> _taken;
-
-        public TestHitEffects(
-            List<string> log,
-            Func<Func<int, int>> taken,
-            ICombatQueriesService queries,
-            ICombatResourcesService resources,
-            ICombatAttackTimingService attackTiming,
-            ICombatSuppressionService suppression,
-            ICombatActivityService combatActivity,
-            ICombatDamageModifiersService damageModifiers,
-            ICombatAbilityHitService abilityHit,
-            IStatService stat,
-            IStatusEffectService statusEffect,
-            IStatusEffectApplicationService statusApplication,
-            IStatusEffectCombatEventService statusCombat,
-            IStatusEffectDurationService statusDuration,
-            ITemporaryStatModifierService temporaryStatModifier,
-            IAbilityImpactState ability,
-            IPairedRangedTraitsService pairedRangedTraits,
-            ICombatRecorderService combatRecorder,
-            ICapstoneProofService capstoneProof,
-            IResistanceService resistance,
-            IPartyService party)
-            : base(queries, resources, attackTiming, suppression, combatActivity, damageModifiers, abilityHit, stat, statusEffect, statusApplication,
-                statusCombat, statusDuration, temporaryStatModifier, ability, pairedRangedTraits, combatRecorder, capstoneProof, resistance, party, FacadeForwarder.LazyFor<ICombatDamageTakenService>())
-        {
-            _log = log;
-            _taken = taken;
-        }
-
-        protected override int ApplyDamageTakenModifiers(
-            uint defender,
-            int damage,
-            uint attacker = NWScript.OBJECT_INVALID,
-            CombatDamageType damageType = CombatDamageType.Physical,
-            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct,
-            int targetStatusDamagePercentAdjustment = 0,
-            bool isLandedAttack = true,
-            bool typedLeadershipReductionAlreadyApplied = false)
-        {
-            _log.Add($"Taken {defender} {damage} {attacker} {damageType} {deliveryType} {targetStatusDamagePercentAdjustment} {isLandedAttack} {typedLeadershipReductionAlreadyApplied}");
-            return _taken()(damage);
-        }
-
-        public int BaseApplyDamageTakenModifiers(uint defender, int damage) => base.ApplyDamageTakenModifiers(defender, damage);
-    }
-
     [OneTimeSetUp]
     public void BuildFacades() => _facades = new FacadeContainer();
 

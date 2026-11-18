@@ -14,14 +14,17 @@ namespace SWLOR.Game.Server.EngineTests.Framework
         /// <summary>
         /// Services of the Combat domain whose names start with <c>Combat</c> but that are not parts of <c>Combat</c>:
         /// they were converted on their own, or came from another service (<c>CombatRatingService</c>, part 5 of the stat
-        /// split, P5-4c, and <c>CombatDeflectionReactionService</c>, part 6, P5-4d).
+        /// split, and <c>CombatDeflectionReactionService</c>, part 6), or are layers of the recorder.
         /// </summary>
         public static readonly IReadOnlySet<string> OtherServices = new HashSet<string>(StringComparer.Ordinal)
         {
             "CombatDeflectionReactionService",
             "CombatPointService",
             "CombatRatingService",
-            "CombatRecorderService"
+            "CombatRecorderService",
+            // The recorder layers of the combat services split; the session core is not named Combat*Service.
+            "CombatRecordAbilityService",
+            "CombatRecordDamageService"
         };
 
         /// <summary>The static class the pure formulas move to.</summary>

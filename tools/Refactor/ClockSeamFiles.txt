@@ -11,6 +11,7 @@ Domain/Combat/CombatResourcesService.cs
 Domain/Combat/CombatSuppressionService.cs
 Domain/Combat/CombatActivityService.cs
 Domain/Combat/CombatAbilityBonusService.cs
+Domain/Combat/CombatRecordWriter.cs
 Domain/Combat/CombatAbilityImpactService.cs
 Domain/Combat/CombatDamageModifiersService.cs
 Domain/Combat/CombatHitEffectsService.cs
@@ -165,3 +166,4 @@ Domain/Crafting/Minigame/NwnCraftSessionWorld.cs
 Entity/EntityBase.cs
 Feature/GuiDefinition/ViewModel/IncubatorViewModel.cs
 Feature/GuiDefinition/ViewModel/PerksViewModel.cs
+Feature/AbilityDefinition/TemporaryHitPointEffects.cs

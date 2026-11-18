@@ -1,0 +1,433 @@
+registered HPBonus,FP,FPRegen,Stamina,STMRegen,CombatReadiness,Attack,Accuracy,ForceAttack,Defense,Resistance,Evasion,Control,Craftsmanship,CPBonus,Stealth,Detection,TrapBonus,Disarm,PoisonBonus,Lockpicking
+== step 1 player wears the chest
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 CPBonus.Smithery=4
+record 100 Control.Smithery=2
+record 100 Craftsmanship.Smithery=3
+record 100 Defenses.Force=3
+record 100 Defenses.Physical=5
+record 100 Evasion=2
+record 100 MaxFP=10
+record 100 MaxStamina=10
+record 100 Resistances.Fire=4
+== step 2 player wears the helmet
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+refresh PlayerStatusRefreshEvent:{"Type":1}
+record 100 Detection=4
+record 100 FPRegen=1
+record 100 MaxFP=30
+record 100 MaxHP=80
+record 100 MaxStamina=25
+record 100 STMRegen=1
+record 100 Stealth=3
+== step 3 player wears the boots
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Lockpicking=5
+record 100 PoisonBonus=4
+record 100 TrapBonus=2
+record 100 TrapDisarm=3
+== step 4 player wields the rifle
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Attack=6
+record 100 ForceAttack=7
+== step 5 player wears the readiness item
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Accuracy=3
+record 100 Attack=10
+record 100 CombatReadiness=5
+record 100 ForceAttack=9
+== step 6 player wears the craft gloves
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 CPBonus.Agriculture=4
+record 100 CPBonus.Engineering=2
+record 100 CPBonus.Fabrication=3
+record 100 CPBonus.Smithery=5
+record 100 Control.Agriculture=4
+record 100 Control.Engineering=2
+record 100 Control.Fabrication=3
+record 100 Control.Smithery=3
+record 100 Craftsmanship.Agriculture=4
+record 100 Craftsmanship.Engineering=2
+record 100 Craftsmanship.Fabrication=3
+record 100 Craftsmanship.Smithery=4
+== step 7 player wears the creature item with accuracy
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 8 player wears the bad subtype item
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Resistances.Ice=6
+== step 9 player swaps the chest
+call SetLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS,4211)
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 CPBonus.Smithery=1
+record 100 Control.Smithery=1
+record 100 Craftsmanship.Smithery=1
+record 100 Defenses.Force=0
+record 100 Defenses.Physical=7
+record 100 Evasion=6
+record 100 MaxFP=39
+record 100 Resistances.Fire=0
+== step 10 player removes the swapped chest
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Defenses.Physical=0
+record 100 Evasion=0
+record 100 MaxFP=30
+== step 11 player removes the helmet
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Detection=0
+record 100 FPRegen=0
+record 100 MaxFP=10
+record 100 MaxHP=70
+record 100 MaxStamina=10
+record 100 STMRegen=0
+record 100 Stealth=0
+== step 12 player removes the boots
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Lockpicking=0
+record 100 PoisonBonus=0
+record 100 TrapBonus=0
+record 100 TrapDisarm=0
+== step 13 player removes the rifle
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Attack=4
+record 100 ForceAttack=2
+== step 14 player removes the readiness item
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Accuracy=0
+record 100 Attack=0
+record 100 CombatReadiness=0
+record 100 ForceAttack=0
+== step 15 player removes the craft gloves
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 CPBonus.Agriculture=0
+record 100 CPBonus.Engineering=0
+record 100 CPBonus.Fabrication=0
+record 100 CPBonus.Smithery=0
+record 100 Control.Agriculture=0
+record 100 Control.Engineering=0
+record 100 Control.Fabrication=0
+record 100 Control.Smithery=0
+record 100 Craftsmanship.Agriculture=0
+record 100 Craftsmanship.Engineering=0
+record 100 Craftsmanship.Fabrication=0
+record 100 Craftsmanship.Smithery=0
+== step 16 player removes the creature item
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 17 player removes the bad subtype item
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Resistances.Ice=0
+== step 18 player wears the power glove
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Attack=10
+record 100 MaxHP=78
+== step 19 player removes the power glove
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Attack=0
+record 100 MaxHP=70
+== step 20 player wears the companion pistol
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+refresh PlayerStatusRefreshEvent:{"Type":1}
+record 100 MaxHP=120
+== step 21 player removes the companion pistol
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+refresh PlayerStatusRefreshEvent:{"Type":1}
+record 100 MaxHP=70
+== step 22 an unworn item is unequipped
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 23 player wears an unknown Control subtype
+exception Exception Unable to determine skill type for ApplyControl
+== step 24 player removes an unknown Control subtype
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 25 player wears an unknown Craftsmanship subtype
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Craftsmanship.Invalid=2
+== step 26 player removes an unknown Craftsmanship subtype
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 Craftsmanship.Invalid=0
+== step 27 player wears an unknown CPBonus subtype
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 CPBonus.Invalid=2
+== step 28 player removes an unknown CPBonus subtype
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+record 100 CPBonus.Invalid=0
+== step 29 a DM wears the gear
+call DeleteLocalInt(103,EQUIPMENT_DISPLACED_RECORD_STATS)
+call DeleteLocalInt(103,EQUIPMENT_DISPLACED_RECORD_STATS)
+call DeleteLocalInt(103,EQUIPMENT_DISPLACED_RECORD_STATS)
+call DeleteLocalInt(103,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 30 a possessed creature wears the gear
+call DeleteLocalInt(104,EQUIPMENT_DISPLACED_RECORD_STATS)
+call DeleteLocalInt(104,EQUIPMENT_DISPLACED_RECORD_STATS)
+call DeleteLocalInt(104,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 31 a DM has every item's stats applied directly
+== step 32 a possessed creature has every item's stats applied directly
+== step 33 a stale fp and stamina record is corrected and refreshed
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+refresh PlayerStatusRefreshEvent:{"Type":2}
+refresh PlayerStatusRefreshEvent:{"Type":3}
+== step 34 a stale hit point record is corrected and refreshed
+call DeleteLocalInt(100,EQUIPMENT_DISPLACED_RECORD_STATS)
+refresh PlayerStatusRefreshEvent:{"Type":1}
+== step 35 npc wears the chest
+call ItemPropertyCustom(Defense,1,7,-1)
+call RemoveItemProperty(111,ip#64)
+call AddItemProperty(Permanent,ip#72,111,0)
+call ItemPropertyCustom(Defense,2,93,-1)
+call RemoveItemProperty(111,ip#65)
+call AddItemProperty(Permanent,ip#73,111,0)
+call ItemPropertyCustom(Resistance,1,8,-1)
+call RemoveItemProperty(111,ip#66)
+call AddItemProperty(Permanent,ip#74,111,0)
+call ItemPropertyCustom(Evasion,-1,4,-1)
+call RemoveItemProperty(111,ip#57)
+call AddItemProperty(Permanent,ip#75,111,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 36 npc removes the chest
+call RemoveItemProperty(111,ip#64)
+call ItemPropertyCustom(Defense,2,87,-1)
+call RemoveItemProperty(111,ip#65)
+call AddItemProperty(Permanent,ip#76,111,0)
+call RemoveItemProperty(111,ip#66)
+call RemoveItemProperty(111,ip#57)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 37 npc wears the helmet
+call ItemPropertyCustom(NPCHP,-1,110,-1)
+call RemoveItemProperty(111,ip#68)
+call AddItemProperty(Permanent,ip#77,111,0)
+call ItemPropertyCustom(FP,-1,22,-1)
+call RemoveItemProperty(111,ip#49)
+call AddItemProperty(Permanent,ip#78,111,0)
+call ItemPropertyCustom(FPRegen,-1,3,-1)
+call RemoveItemProperty(111,ip#50)
+call AddItemProperty(Permanent,ip#79,111,0)
+call ItemPropertyCustom(Stamina,-1,17,-1)
+call RemoveItemProperty(111,ip#51)
+call AddItemProperty(Permanent,ip#80,111,0)
+call ItemPropertyCustom(STMRegen,-1,3,-1)
+call RemoveItemProperty(111,ip#52)
+call AddItemProperty(Permanent,ip#81,111,0)
+call ItemPropertyCustom(Stealth,-1,5,-1)
+call RemoveItemProperty(111,ip#58)
+call AddItemProperty(Permanent,ip#82,111,0)
+call ItemPropertyCustom(Detection,-1,6,-1)
+call RemoveItemProperty(111,ip#59)
+call AddItemProperty(Permanent,ip#83,111,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+call SetMaxHitPoints(110,110)
+call SetCurrentHitPoints(110,0)
+== step 38 npc removes the helmet
+call ItemPropertyCustom(NPCHP,-1,90,-1)
+call RemoveItemProperty(111,ip#68)
+call AddItemProperty(Permanent,ip#84,111,0)
+call RemoveItemProperty(111,ip#49)
+call ItemPropertyCustom(FPRegen,-1,1,-1)
+call RemoveItemProperty(111,ip#50)
+call AddItemProperty(Permanent,ip#85,111,0)
+call RemoveItemProperty(111,ip#51)
+call ItemPropertyCustom(STMRegen,-1,1,-1)
+call RemoveItemProperty(111,ip#52)
+call AddItemProperty(Permanent,ip#86,111,0)
+call RemoveItemProperty(111,ip#58)
+call RemoveItemProperty(111,ip#59)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+call SetMaxHitPoints(110,90)
+call SetCurrentHitPoints(110,0)
+== step 39 npc wears the boots
+call ItemPropertyCustom(TrapBonus,-1,4,-1)
+call RemoveItemProperty(111,ip#60)
+call AddItemProperty(Permanent,ip#87,111,0)
+call ItemPropertyCustom(Disarm,-1,5,-1)
+call RemoveItemProperty(111,ip#61)
+call AddItemProperty(Permanent,ip#88,111,0)
+call ItemPropertyCustom(PoisonBonus,-1,6,-1)
+call RemoveItemProperty(111,ip#62)
+call AddItemProperty(Permanent,ip#89,111,0)
+call ItemPropertyCustom(Lockpicking,-1,7,-1)
+call RemoveItemProperty(111,ip#63)
+call AddItemProperty(Permanent,ip#90,111,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 40 npc removes the boots
+call RemoveItemProperty(111,ip#60)
+call RemoveItemProperty(111,ip#61)
+call RemoveItemProperty(111,ip#62)
+call RemoveItemProperty(111,ip#63)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 41 npc wears the rifle
+call ItemPropertyCustom(Attack,-1,8,-1)
+call RemoveItemProperty(111,ip#54)
+call AddItemProperty(Permanent,ip#91,111,0)
+call ItemPropertyCustom(ForceAttack,-1,9,-1)
+call RemoveItemProperty(111,ip#56)
+call AddItemProperty(Permanent,ip#92,111,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 42 npc removes the rifle
+call RemoveItemProperty(111,ip#54)
+call RemoveItemProperty(111,ip#56)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 43 npc wears the readiness item
+call ItemPropertyCustom(CombatReadiness,-1,7,-1)
+call RemoveItemProperty(111,ip#53)
+call AddItemProperty(Permanent,ip#93,111,0)
+call ItemPropertyCustom(Accuracy,-1,5,-1)
+call RemoveItemProperty(111,ip#55)
+call AddItemProperty(Permanent,ip#94,111,0)
+call ItemPropertyCustom(ForceAttack,-1,4,-1)
+call RemoveItemProperty(111,ip#56)
+call AddItemProperty(Permanent,ip#95,111,0)
+call ItemPropertyCustom(Attack,-1,6,-1)
+call RemoveItemProperty(111,ip#54)
+call AddItemProperty(Permanent,ip#96,111,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 44 npc removes the readiness item
+call RemoveItemProperty(111,ip#53)
+call RemoveItemProperty(111,ip#55)
+call RemoveItemProperty(111,ip#56)
+call RemoveItemProperty(111,ip#54)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 45 npc wears the craft gloves
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 46 npc removes the craft gloves
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 47 npc wears the creature item
+call RemoveItemProperty(111,ip#49)
+call SetLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS,524175)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 48 npc removes the creature item
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 49 npc wears the bad subtype item
+call ItemPropertyCustom(Resistance,4,6,-1)
+call AddItemProperty(Permanent,ip#97,2130706432,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 50 npc removes the bad subtype item
+call ItemPropertyCustom(Resistance,4,106,-1)
+call AddItemProperty(Permanent,ip#98,2130706432,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 51 npc wears the power glove
+call ItemPropertyCustom(Attack,-1,5,-1)
+call AddItemProperty(Permanent,ip#99,2130706432,0)
+call ItemPropertyCustom(Attack,-1,5,-1)
+call AddItemProperty(Permanent,ip#100,2130706432,0)
+call ItemPropertyCustom(NPCHP,-1,4,-1)
+call AddItemProperty(Permanent,ip#101,2130706432,0)
+call ItemPropertyCustom(NPCHP,-1,4,-1)
+call AddItemProperty(Permanent,ip#102,2130706432,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+call SetMaxHitPoints(110,4)
+call SetCurrentHitPoints(110,0)
+call SetMaxHitPoints(110,4)
+call SetCurrentHitPoints(110,0)
+== step 52 npc removes the power glove
+call ItemPropertyCustom(NPCHP,-1,-4,-1)
+call AddItemProperty(Permanent,ip#103,2130706432,0)
+call ItemPropertyCustom(NPCHP,-1,-4,-1)
+call AddItemProperty(Permanent,ip#104,2130706432,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 53 npc wears the companion pistol
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 54 npc removes the companion pistol
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 55 npc removes more defense, hit points and fp than it holds and exactly its resistance
+call ItemPropertyCustom(Resistance,1,104,-1)
+call AddItemProperty(Permanent,ip#109,2130706432,0)
+call ItemPropertyCustom(NPCHP,-1,-150,-1)
+call AddItemProperty(Permanent,ip#110,2130706432,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 56 npc adds hit points above its maximum
+call ItemPropertyCustom(NPCHP,-1,10,-1)
+call AddItemProperty(Permanent,ip#111,2130706432,0)
+call SetCurrentHitPoints(110,10)
+call ItemPropertyCustom(FP,-1,20,-1)
+call AddItemProperty(Permanent,ip#112,2130706432,0)
+call ItemPropertyCustom(FPRegen,-1,1,-1)
+call AddItemProperty(Permanent,ip#113,2130706432,0)
+call ItemPropertyCustom(Stamina,-1,15,-1)
+call AddItemProperty(Permanent,ip#114,2130706432,0)
+call ItemPropertyCustom(STMRegen,-1,1,-1)
+call AddItemProperty(Permanent,ip#115,2130706432,0)
+call ItemPropertyCustom(Stealth,-1,3,-1)
+call AddItemProperty(Permanent,ip#116,2130706432,0)
+call ItemPropertyCustom(Detection,-1,4,-1)
+call AddItemProperty(Permanent,ip#117,2130706432,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+call SetMaxHitPoints(110,10)
+call SetCurrentHitPoints(110,10)
+== step 57 npc adds hit points below its maximum
+call ItemPropertyCustom(NPCHP,-1,-10,-1)
+call AddItemProperty(Permanent,ip#118,2130706432,0)
+call SetLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS,24972)
+call ItemPropertyCustom(NPCHP,-1,10,-1)
+call AddItemProperty(Permanent,ip#119,2130706432,0)
+call ItemPropertyCustom(FP,-1,20,-1)
+call AddItemProperty(Permanent,ip#120,2130706432,0)
+call ItemPropertyCustom(FPRegen,-1,1,-1)
+call AddItemProperty(Permanent,ip#121,2130706432,0)
+call ItemPropertyCustom(Stamina,-1,15,-1)
+call AddItemProperty(Permanent,ip#122,2130706432,0)
+call ItemPropertyCustom(STMRegen,-1,1,-1)
+call AddItemProperty(Permanent,ip#123,2130706432,0)
+call ItemPropertyCustom(Stealth,-1,3,-1)
+call AddItemProperty(Permanent,ip#124,2130706432,0)
+call ItemPropertyCustom(Detection,-1,4,-1)
+call AddItemProperty(Permanent,ip#125,2130706432,0)
+call DeleteLocalInt(110,EQUIPMENT_DISPLACED_RECORD_STATS)
+call SetMaxHitPoints(110,10)
+call SetCurrentHitPoints(110,1)
+== step 58 bare npc wears the chest
+call ItemPropertyCustom(Defense,1,5,-1)
+call AddItemProperty(Permanent,ip#126,113,0)
+call ItemPropertyCustom(Defense,2,3,-1)
+call AddItemProperty(Permanent,ip#127,113,0)
+call ItemPropertyCustom(Resistance,1,4,-1)
+call AddItemProperty(Permanent,ip#128,113,0)
+call ItemPropertyCustom(Evasion,-1,2,-1)
+call AddItemProperty(Permanent,ip#129,113,0)
+call DeleteLocalInt(112,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 59 bare npc wears the helmet
+call ItemPropertyCustom(NPCHP,-1,10,-1)
+call AddItemProperty(Permanent,ip#130,113,0)
+call ItemPropertyCustom(FP,-1,20,-1)
+call AddItemProperty(Permanent,ip#131,113,0)
+call ItemPropertyCustom(FPRegen,-1,1,-1)
+call AddItemProperty(Permanent,ip#132,113,0)
+call ItemPropertyCustom(Stamina,-1,15,-1)
+call AddItemProperty(Permanent,ip#133,113,0)
+call ItemPropertyCustom(STMRegen,-1,1,-1)
+call AddItemProperty(Permanent,ip#134,113,0)
+call ItemPropertyCustom(Stealth,-1,3,-1)
+call AddItemProperty(Permanent,ip#135,113,0)
+call ItemPropertyCustom(Detection,-1,4,-1)
+call AddItemProperty(Permanent,ip#136,113,0)
+call DeleteLocalInt(112,EQUIPMENT_DISPLACED_RECORD_STATS)
+call SetMaxHitPoints(112,10)
+call SetCurrentHitPoints(112,1)
+== step 60 bare npc removes the helmet
+call ItemPropertyCustom(NPCHP,-1,-10,-1)
+call AddItemProperty(Permanent,ip#137,113,0)
+call DeleteLocalInt(112,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 61 bare npc wears the rifle
+call ItemPropertyCustom(Attack,-1,6,-1)
+call AddItemProperty(Permanent,ip#138,113,0)
+call ItemPropertyCustom(ForceAttack,-1,7,-1)
+call AddItemProperty(Permanent,ip#139,113,0)
+call DeleteLocalInt(112,EQUIPMENT_DISPLACED_RECORD_STATS)
+== step 62 amount zero
+== step 63 amount negative
+== step 64 amount for an unregistered type
+== step 65 amount added
+call ItemPropertyCustom(Evasion,-1,4,-1)
+record 100 Evasion=4
+== step 66 amount removed
+call ItemPropertyCustom(Evasion,-1,4,-1)
+record 100 Evasion=0
+== step 67 amount on a weapon skips accuracy
+call ItemPropertyCustom(Accuracy,-1,4,-1)
+== step 68 amount on a companion pistol
+== step 69 amount on a power glove counts twice
+call ItemPropertyCustom(Attack,-1,4,-1)
+call ItemPropertyCustom(Attack,-1,4,-1)
+record 100 Attack=8
+== step 70 amount for a defense type
+call ItemPropertyCustom(Defense,1,4,-1)
+record 100 Defenses.Physical=4
+== step 71 amount for a craft subtype
+call ItemPropertyCustom(Control,2,4,-1)
+record 100 Control.Engineering=4

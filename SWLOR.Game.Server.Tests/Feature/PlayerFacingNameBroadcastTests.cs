@@ -214,13 +214,7 @@ public class PlayerFacingNameBroadcastTests
         playerOverviewSource.Should().NotContain("Holonet Enabled");
         playerOverviewSource.Should().NotContain("IsHolonetEnabled");
 
-        var playerGuideSource = File.ReadAllText(Path.Combine(
-            root.FullName,
-            "SWLOR.Game.Server",
-            "Feature",
-            "GuiDefinition",
-            "ViewModel",
-            "PlayerGuideViewModel.cs"));
+        var playerGuideSource = PlayerGuideSource.Read();
         playerGuideSource.Should().Contain("\"Disabled Shout Channel\"");
         playerGuideSource.Should().Contain("The Shout chat channel is disabled for players.");
         playerGuideSource.Should().Contain("\"HoloNet Broadcast Window\"");

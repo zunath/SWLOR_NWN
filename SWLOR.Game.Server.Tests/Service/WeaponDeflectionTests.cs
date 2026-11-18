@@ -198,8 +198,7 @@ public class WeaponDeflectionTests
     {
         var sheet = ReadSource(
             "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "CharacterSheetViewModel.cs");
-        var guide = ReadSource(
-            "SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "PlayerGuideViewModel.cs");
+        var guide = PlayerGuideSource.Read();
 
         sheet.Should().Contain("AddStat(\"Melee Deflection\"");
         sheet.Should().Contain("AddStat(\"Ranged Deflection\"");

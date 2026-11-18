@@ -148,6 +148,23 @@ public sealed class ItemWorld
         _byHandle[row.Handle] = row;
     }
 
+    /// <summary>Puts a property the code created onto an item, as <c>AddItemProperty</c> does; the item then walks it last.</summary>
+    public void AttachProperty(uint item, ItemProperty property)
+    {
+        if (!_byHandle.TryGetValue(property.Handle, out var row))
+            return;
+        if (!_properties.TryGetValue(item, out var rows))
+            _properties[item] = rows = new List<ItemPropertyRow>();
+        rows.Add(row);
+    }
+
+    /// <summary>Takes a property off an item, as <c>RemoveItemProperty</c> does.</summary>
+    public void DetachProperty(uint item, ItemProperty property)
+    {
+        if (_properties.TryGetValue(item, out var rows))
+            rows.RemoveAll(row => row.Handle == property.Handle);
+    }
+
     /// <summary>Makes <c>Get2DAString</c> answer for one cell.</summary>
     public void TwoDA(string file, string column, int row, string value) => _twoDA[(file, column, row)] = value;
 

@@ -16,6 +16,7 @@ using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.Game.Server.Domain.Items;
 using SWLOR.Game.Server.Domain.UI;
 using SWLOR.Game.Server.Entity;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.NWN.API.NWScript;
@@ -249,10 +250,11 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                     return convertible.ToString(System.Globalization.CultureInfo.InvariantCulture);
             }
 
-            // An engine JSON value is not read here: the engine owns it once a call has it, and reading it again can crash the server. The
-            // values a window publishes are recorded from the view model's own cache (property lines).
-            if (argument.GetType().Name == "Json")
-                return "<json>";
+            // The JSON a call publishes to the client is written as the engine holds it, read BEFORE the call (the arguments are described
+            // ahead of the engine call, so the value is still the one the code built). The property lines stay a separate record of the
+            // view model's cache.
+            if (argument is Json json)
+                return DescribeJson(json);
             try
             {
                 return Compress(JsonConvert.SerializeObject(argument));
@@ -260,6 +262,18 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             catch (Exception)
             {
                 return argument.GetType().Name;
+            }
+        }
+
+        private static string DescribeJson(Json json)
+        {
+            try
+            {
+                return Compress(JToken.Parse(JsonDump(json)).ToString(Formatting.None));
+            }
+            catch (Exception exception)
+            {
+                return "<json unreadable " + exception.GetType().Name + ">";
             }
         }
 
@@ -451,24 +465,19 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             protected override object Invoke(MethodInfo targetMethod, object[] args)
             {
                 // The arguments are described before the call: an engine call can consume a JSON value or destroy an object.
+                // The call is written before it runs, so an effect it causes (a handler an event signal runs, say) follows it.
                 var transcript = Current;
-                var described = transcript != null && Include(targetMethod.Name)
-                    ? string.Join(", ", (args ?? Array.Empty<object>()).Select(transcript.Describe))
-                    : null;
-                object result;
+                if (transcript != null && Include(targetMethod.Name))
+                    transcript.Line("engine " + targetMethod.Name, string.Join(", ", (args ?? Array.Empty<object>()).Select(transcript.Describe)));
                 try
                 {
-                    result = targetMethod.Invoke(Target, args);
+                    return targetMethod.Invoke(Target, args);
                 }
                 catch (TargetInvocationException exception)
                 {
                     ExceptionDispatchInfo.Capture(exception.InnerException!).Throw();
                     throw;
                 }
-
-                if (described != null)
-                    transcript.Line("engine " + targetMethod.Name, described);
-                return result;
             }
         }
 
@@ -493,21 +502,20 @@ namespace SWLOR.Game.Server.EngineTests.Framework
                 }
 
                 var record = !IsRead(name) && (Interface != nameof(IGuiService) || name == nameof(IGuiService.PublishRefreshEvent));
-                var described = record ? string.Join(", ", args.Select(Owner.Describe)) : null;
-                object result;
+                // The entry is written before the service runs, so what it publishes while it runs follows it; a failure is a line of its own.
+                if (record)
+                    Owner.Line("service " + Interface + "." + name, string.Join(", ", args.Select(Owner.Describe)));
                 try
                 {
-                    result = targetMethod.Invoke(Target, args);
+                    return targetMethod.Invoke(Target, args);
                 }
                 catch (TargetInvocationException exception)
                 {
+                    if (record)
+                        Owner.Line("service-failed " + Interface + "." + name, exception.InnerException!.GetType().Name);
                     ExceptionDispatchInfo.Capture(exception.InnerException!).Throw();
                     throw;
                 }
-
-                if (described != null)
-                    Owner.Line("service " + Interface + "." + name, described);
-                return result;
             }
 
             private static bool IsRead(string name) =>

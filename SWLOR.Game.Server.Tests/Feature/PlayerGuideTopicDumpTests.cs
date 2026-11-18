@@ -45,9 +45,12 @@ public class PlayerGuideTopicDumpTests : SkillFacadeFixture
         }
 
         File.Exists(path).Should().BeTrue("the dump is committed beside the tests");
-        var expected = new UTF8Encoding(false).GetString(File.ReadAllBytes(path)).Replace("\r\n", "\n");
-        if (expected != actual)
+        // Byte for byte: git does not convert the fixture (.gitattributes), so a CR LF inside a guide body is part of the contract.
+        var expectedBytes = File.ReadAllBytes(path);
+        var actualBytes = new UTF8Encoding(false).GetBytes(actual);
+        if (!expectedBytes.AsSpan().SequenceEqual(actualBytes))
         {
+            var expected = new UTF8Encoding(false).GetString(expectedBytes);
             var expectedLines = expected.Split('\n');
             var actualLines = actual.Split('\n');
             var index = 0;

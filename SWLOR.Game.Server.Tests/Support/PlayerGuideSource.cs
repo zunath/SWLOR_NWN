@@ -24,7 +24,7 @@ public static class PlayerGuideSource
     {
         var root = FindRepositoryRoot();
         var folder = Path.Combine(root, "SWLOR.Game.Server", "Feature", "GuiDefinition");
-        return Directory.EnumerateFiles(folder, "*.cs", SearchOption.AllDirectories)
+        var files = Directory.EnumerateFiles(folder, "*.cs", SearchOption.AllDirectories)
             .Where(path =>
             {
                 var name = Path.GetFileName(path);
@@ -34,6 +34,10 @@ public static class PlayerGuideSource
             })
             .OrderBy(path => path, StringComparer.Ordinal)
             .ToArray();
+        // A guide that moved out of the discovery rules would read as an empty text, and every NotContain check on it would pass.
+        if (files.Length == 0)
+            throw new InvalidOperationException($"No player guide file matched the discovery rules under '{folder}'; update PlayerGuideSource.Find to the guide's new files.");
+        return files;
     }
 
     private static string FindRepositoryRoot()

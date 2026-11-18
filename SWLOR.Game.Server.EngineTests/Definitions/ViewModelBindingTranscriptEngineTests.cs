@@ -26,7 +26,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     /// incubator, disguises and droid assembly. Each script opens the window with the recorder attached before it is bound, drives the
     /// window's main interactions on a real saved player record with the clock fixed, and compares the transcript
     /// (<see cref="ViewModelTranscript"/>) with the one captured on the code before any view model code moved. A run without an embedded
-    /// fixture writes the transcript to /nwn/home and fails, which is how a fixture is captured.
+    /// fixture writes the transcript to /nwn/home and fails, which is how a fixture is captured. The fixtures hold hak data that only the
+    /// full engine hak set carries, so these tests are opt-in like the combat load tests: they run only when SWLOR_ENGINE_TEST_FILTER
+    /// names the ViewModelTranscript category, and a default sweep skips them.
     /// </summary>
     public static class ViewModelBindingTranscriptEngineTests
     {
@@ -65,9 +67,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 await Context.ExecuteInCreatureContextAsync(Player, () =>
                 {
                     using var frozen = Clock.Freeze();
-                    Transcript.Install();
                     try
                     {
+                        // Inside the try: an Install that fails halfway still restores the decorators it had put in.
+                        Transcript.Install();
                         action();
                     }
                     finally
@@ -82,6 +85,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         private static async Task RunAsync(EngineTestContext ctx, string name, Action<PlayerAbilityFixture> seed,
             Func<Run, Task> script)
         {
+            if (ApplicationSettings.Get().EngineTestFilter?.Contains(Category, StringComparison.OrdinalIgnoreCase) != true)
+                ctx.Skip($"The binding transcripts compare against the full engine hak set and run only when SWLOR_ENGINE_TEST_FILTER names {Category}.");
+
             using var clock = new TranscriptClock();
             using var fixture = await PlayerAbilityFixture.CreateAsync(ctx);
             fixture.Update(record =>
@@ -252,14 +258,33 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 t.Step("sort", () => perks.SelectedSortOrderId = 1);
                 t.Step("category-all", () => perks.SelectedPerkCategoryId = 0);
                 t.Step("beast-mode", () => perks.OnClickBeastPerks()());
-                t.Step("beast-select", () => Select(0));
+                // The first perk of the list can need a beast role the seeded Viper lacks; the step picks one it can buy.
+                var beastId = DB.Get<Player>(run.Fixture.Id).ActiveBeastId;
+                var beastBefore = DB.Get<Beast>(beastId);
+                var beastSkillPoints = beastBefore.UnallocatedSP;
+                var beastPerkRanks = beastBefore.Perks.Values.Sum();
+                t.Step("beast-select", () => Select(IndexWhere(perk => CanBuyFirstRankForBeast(run.Player, perk, beastSkillPoints))));
                 t.Step("beast-buy", Buy);
+                var beastAfter = DB.Get<Beast>(beastId);
+                run.Context.Assert(beastAfter.UnallocatedSP < beastSkillPoints && beastAfter.Perks.Values.Sum() > beastPerkRanks,
+                    "The beast bought a perk rank and spent skill points.");
                 t.Step("my-perks", () => perks.OnClickMyPerks()());
                 t.Step("refresh-skill-xp", () => perks.Refresh(new SkillXPRefreshEvent(new List<SkillType> { SkillType.Force })));
                 t.Step("refresh-reset", () => perks.Refresh(new PerkResetAcquiredRefreshEvent()));
                 t.Step("refresh-cooldown", () => perks.Refresh(new PerkRefundCooldownResetRefreshEvent()));
                 t.Step("close-and-reopen", () => perks = t.Reopen<PerksViewModel>(GuiWindowType.Perks, null));
             });
+        }
+
+        /// <summary>True when the perk's first rank passes the checks a purchase makes for the player and costs no more than the points held.</summary>
+        private static bool CanBuyFirstRankForBeast(uint player, PerkType perk, int skillPoints)
+        {
+            var detail = Perk.GetPerkDetails(perk);
+            if (!detail.PerkLevels.TryGetValue(1, out var level) || level.Price > skillPoints)
+                return false;
+            if (detail.PurchaseRequirement != null && !string.IsNullOrWhiteSpace(detail.PurchaseRequirement(player)))
+                return false;
+            return level.Requirements.All(requirement => string.IsNullOrWhiteSpace(requirement.CheckRequirements(player)));
         }
 
         // ------------------------------------------------------------------ character sheet
@@ -376,9 +401,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
         private static async Task IncubatorScriptAsync(Run run)
         {
+            var payload = new IncubatorPayload("engine-transcript-incubator/" + run.Fixture.Id, string.Empty);
+            // The incubator reads the server day from the real clock unless the player has an override: a Wednesday in every run.
+            BeastMastery.SetIncubationDayOverride(run.Fixture.Id, DayOfWeek.Wednesday);
+            try
+            {
+                await IncubatorPhasesAsync(run, payload);
+            }
+            finally
+            {
+                BeastMastery.ClearIncubationDayOverride(run.Fixture.Id);
+            }
+        }
+
+        private static async Task IncubatorPhasesAsync(Run run, IncubatorPayload payload)
+        {
             var t = run.Transcript;
             IncubatorViewModel incubator = null;
-            var payload = new IncubatorPayload("engine-transcript-incubator/" + run.Fixture.Id, string.Empty);
             await run.PhaseAsync(() =>
             {
                 t.Track("jobs", () =>
@@ -511,15 +550,36 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     incubator.OnClickCompleteJob()();
                     incubator.OnModalConfirmClick()();
                 });
+                // The job reached its last stage, so completing it hands out the egg and closes the job.
+                run.Context.AssertEqual(1, FullInventoryFixture.CountCarried(run.Player, "beast_egg"), "Completing the last stage creates the egg.");
+                run.Context.AssertEqual(0, DB.Search(new DBQuery<IncubationJob>()
+                    .AddFieldSearch(nameof(IncubationJob.ParentPropertyId), payload.PropertyId, false)).Count(), "Completing the job closes it.");
+            });
+
+            // The inventory is full while the window closes, so the DNA cannot go back to the player and stays held.
+            await run.PhaseAsync(() =>
+            {
                 var dna3 = MakeDna(run.Player, 900);
                 t.Step("hold-items-prompt", () => incubator.OnClickDNA()());
                 t.Step("hold-items", () => t.Target(dna3));
+            });
+            List<uint> fillers = null;
+            await run.Context.ExecuteInCreatureContextAsync(run.Player, () => fillers = FullInventoryFixture.Fill(run.Context, run.Player));
+            await run.PhaseAsync(() =>
+            {
                 t.Step("close-with-held-items", () =>
                 {
                     incubator.OnWindowClosed()();
                     Gui.ClosePlayerWindow(run.Player, GuiWindowType.Incubator);
                 });
+                run.Context.Assert(!string.IsNullOrWhiteSpace((string)Get(incubator, "_dnaItem")), "The DNA stays held when the inventory is full.");
+            });
+            await run.Context.ExecuteInCreatureContextAsync(run.Player, () => FullInventoryFixture.Free(fillers));
+            await run.Context.WaitFrameAsync();
+            await run.PhaseAsync(() =>
+            {
                 t.Step("reopen-with-held-items", () => incubator = t.Open<IncubatorViewModel>(GuiWindowType.Incubator, payload));
+                run.Context.Assert(!string.IsNullOrWhiteSpace((string)Get(incubator, "_dnaItem")), "The held DNA is in the slot after the window opens again.");
             });
         }
 
@@ -645,6 +705,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     () => droid.OnClickCPU(), () => droid.OnClickHead(), () => droid.OnClickBody(), () => droid.OnClickArms(),
                     () => droid.OnClickLegs()
                 };
+                // The reset left the window without a build in progress; a second droid starts the way a player starts one.
+                t.Step("new-droid-before-assembly", () => droid.OnClickNewDroid()());
                 for (var index = 0; index < parts.Length; index++)
                 {
                     var slot = index;
@@ -653,12 +715,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     t.Step("assemble-" + parts[index], () => t.Target(item));
                 }
 
+                t.Step("personality-before-construct", () => droid.PersonalityIndex = 1);
                 t.Step("construct", () =>
                 {
                     droid.Name = "Transcript Droid";
                     droid.OnClickConstruct()();
                     droid.OnModalConfirmClick()();
                 });
+                run.Context.AssertEqual(1, FullInventoryFixture.CountCarried(run.Player, DroidService.DroidControlItemResref),
+                    "Constructing creates the droid controller.");
                 t.Step("new-droid", () => droid.OnClickNewDroid()());
                 t.Step("close-and-reopen", () => droid = t.Reopen<DroidAssemblyViewModel>(GuiWindowType.DroidAssembly, null));
             });
@@ -674,26 +739,39 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var resource = "ViewModelTranscript/" + name + ".txt";
             using var stream = typeof(ViewModelBindingTranscriptEngineTests).Assembly.GetManifestResourceStream(resource);
             var capture = "/nwn/home/viewmodel-transcript-" + name + ".txt";
+            // The capture goes to the server home when it exists; the message says where it went, or that it went nowhere.
+            string Capture()
+            {
+                if (!Directory.Exists("/nwn/home"))
+                    return $"/nwn/home does not exist, so the {actual.Length} chars of the transcript were not written anywhere";
+                try
+                {
+                    File.WriteAllText(capture, actual, new UTF8Encoding(false));
+                    return $"the transcript ({actual.Length} chars) was written to {capture}";
+                }
+                catch (Exception exception)
+                {
+                    return $"writing the transcript to {capture} failed ({exception.GetType().Name}: {exception.Message})";
+                }
+            }
+
             if (stream == null)
             {
-                if (Directory.Exists("/nwn/home"))
-                    File.WriteAllText(capture, actual);
-                ctx.Assert(false, $"No fixture is embedded; the transcript ({actual.Length} chars) was written to {capture}.");
+                ctx.Assert(false, $"No fixture is embedded; {Capture()}.");
                 return;
             }
 
-            var expected = new StreamReader(stream, Encoding.UTF8).ReadToEnd().Replace("\r\n", "\n");
+            var expected = new StreamReader(stream, Encoding.UTF8).ReadToEnd();
             if (expected != actual)
             {
-                if (Directory.Exists("/nwn/home"))
-                    File.WriteAllText(capture, actual);
+                var captured = Capture();
                 var expectedLines = expected.Split('\n');
                 var actualLines = actual.Split('\n');
                 var index = 0;
                 while (index < expectedLines.Length && index < actualLines.Length && expectedLines[index] == actualLines[index])
                     index++;
                 ctx.Assert(false, $"{name} transcript differs at line {index + 1}: expected '{Shorten(index < expectedLines.Length ? expectedLines[index] : "<end>")}' " +
-                                  $"but got '{Shorten(index < actualLines.Length ? actualLines[index] : "<end>")}'.");
+                                  $"but got '{Shorten(index < actualLines.Length ? actualLines[index] : "<end>")}'; {captured}.");
                 return;
             }
 

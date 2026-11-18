@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,7 +66,10 @@ public class EquipmentStatsWornGearTranscriptTests
     private FakeEventsPlugin _events = null!;
     private ItemWorld _items = null!;
     private List<IDisposable> _scopes = null!;
-    private List<string> _refreshes = null!;
+    // Every effect the code under test causes, in the order it happens, across the engine, the object plugin, the saves and the refreshes.
+    private List<string> _effects = null!;
+    private readonly Dictionary<uint, Dictionary<string, string>> _saved = new();
+    private readonly Dictionary<uint, int> _maxHitPoints = new();
     private readonly Dictionary<uint, Player> _records = new();
     private readonly HashSet<uint> _players = new();
     private readonly HashSet<uint> _dms = new();
@@ -78,11 +83,11 @@ public class EquipmentStatsWornGearTranscriptTests
     public void SetUp()
     {
         _db = new InMemoryDBService();
-        _refreshes = new List<string>();
+        _effects = new List<string>();
         var gui = ScriptedProxy.Create<IGuiService>(out var guiProxy);
         guiProxy.On("PublishRefreshEvent", args =>
         {
-            _refreshes.Add(args[1]!.GetType().Name + ":" + JsonConvert.SerializeObject(args[1]));
+            _effects.Add("refresh " + args[1]!.GetType().Name + ":" + JsonConvert.SerializeObject(args[1]));
             return null;
         });
         _facades = new FacadeContainer(services =>
@@ -99,8 +104,8 @@ public class EquipmentStatsWornGearTranscriptTests
         _ = new LocalVariables(_engine);
         _scopes = new List<IDisposable>
         {
-            NWScriptRuntime.Override(_engine),
-            ObjectPluginRuntime.Override(_object),
+            NWScriptRuntime.Override(Ordered<INWScript>(_engine)),
+            ObjectPluginRuntime.Override(Ordered<IObjectPlugin>(_object)),
             EventsPluginRuntime.Override(_events),
             CreaturePluginRuntime.Override(new FakeCreaturePlugin())
         };
@@ -116,7 +121,8 @@ public class EquipmentStatsWornGearTranscriptTests
             _items.AddProperty(Made, (ItemPropertyType)args[0]!, (int)args[1]!, (int)args[2]!);
             return _items.Property(Made, _made++);
         });
-        _engine.SetReturnHandler("GetMaxHitPoints", _ => (int)(_object.CallsTo("SetMaxHitPoints").LastOrDefault()?.Arguments[1] ?? 100));
+        // The maximum hit points a wearer holds: what SetMaxHitPoints last stored for that wearer, else 100.
+        _engine.SetReturnHandler("GetMaxHitPoints", args => _maxHitPoints.GetValueOrDefault((uint)args[0]!, 100));
 
         _items.Add(Made);
         foreach (var wearer in new[] { Player1, DmWearer, PossessedWearer, Npc, BareNpc })
@@ -131,7 +137,22 @@ public class EquipmentStatsWornGearTranscriptTests
             _players.Add(player);
             _records[player] = new Player("uuid-" + player);
             _db.With(_records[player]);
+            _saved[player] = Flatten(JObject.FromObject(_records[player]));
         }
+
+        // A save is recorded with the record as it was written, apart from the in-memory record each step ends with.
+        _db.OnSet = entity =>
+        {
+            foreach (var (creature, record) in _records)
+            {
+                if (!ReferenceEquals(record, entity))
+                    continue;
+                var current = Flatten(JObject.FromObject(record));
+                var changes = DescribeChanges(_saved[creature], current);
+                _saved[creature] = current;
+                _effects.Add("save " + creature + (changes.Count == 0 ? " (no change)" : " " + string.Join("; ", changes)));
+            }
+        };
 
         _dms.Add(DmWearer);
         _possessed.Add(PossessedWearer);
@@ -211,9 +232,7 @@ public class EquipmentStatsWornGearTranscriptTests
 
         void Step(string name, Action action)
         {
-            _engine.ClearCalls();
-            _object.ClearCalls();
-            _refreshes.Clear();
+            _effects.Clear();
             text.Append("== step ").Append(++step).Append(' ').Append(name).Append('\n');
             try
             {
@@ -221,19 +240,17 @@ public class EquipmentStatsWornGearTranscriptTests
             }
             catch (Exception exception)
             {
-                text.Append("exception ").Append(exception.GetType().Name).Append(' ').Append(FirstLine(exception.Message)).Append('\n');
+                _effects.Add("exception " + exception.GetType().Name + " " + FirstLine(exception.Message));
             }
 
-            foreach (var call in _engine.Calls.Concat(_object.Calls).Where(IsWrite))
-                text.Append("call ").Append(call.Member).Append('(').Append(string.Join(",", call.Arguments.Select(Format))).Append(")\n");
-            foreach (var refresh in _refreshes)
-                text.Append("refresh ").Append(refresh).Append('\n');
+            // Calls, saves, refreshes and exceptions in the order they happened, then what each record holds in memory after the step.
+            for (var index = 0; index < _effects.Count; index++)
+                text.Append('#').Append(index + 1).Append(' ').Append(_effects[index]).Append('\n');
             foreach (var (creature, record) in _records)
             {
                 var current = Flatten(JObject.FromObject(record));
-                foreach (var (path, value) in current.OrderBy(pair => pair.Key, StringComparer.Ordinal))
-                    if (!previous[creature].TryGetValue(path, out var original) || original != value)
-                        text.Append("record ").Append(creature).Append(' ').Append(path).Append('=').Append(value).Append('\n');
+                foreach (var change in DescribeChanges(previous[creature], current))
+                    text.Append("record ").Append(creature).Append(' ').Append(change).Append('\n');
                 previous[creature] = current;
             }
         }
@@ -246,7 +263,6 @@ public class EquipmentStatsWornGearTranscriptTests
             EquipmentStats.RefreshCombatReadinessAfterEquipmentChange();
             EquipmentStats.RefreshMaxHPAfterEquipmentChange();
             EquipmentStats.RefreshEquipmentRecordsAfterEquipmentChange();
-            _facades.Get<IStatRecordService>().RefreshPlayerEquipmentStats(creature);
         }
 
         void Equip(uint creature, uint item, InventorySlot slot)
@@ -357,6 +373,9 @@ public class EquipmentStatsWornGearTranscriptTests
         {
             Step("npc wears the " + name, () => Equip(Npc, item, slot));
             Step("npc removes the " + name, () => Unequip(Npc, item, slot));
+            // A creature item takes the skin's slot and leaves it empty; the NPC gets its skin back for the cases after it.
+            if (slot == InventorySlot.CreatureArmor)
+                _items.Equip(Npc, InventorySlot.CreatureArmor, NpcSkin);
         }
 
         // The removal rules: Defense at or below zero, Resistance at exactly zero, HP below zero, and the maximum.
@@ -387,7 +406,7 @@ public class EquipmentStatsWornGearTranscriptTests
         Step("amount for a defense type", () => EquipmentStats.ApplyStatAmount(Player1, Chest, ItemPropertyType.Defense, (int)CombatDamageType.Physical, 4, true));
         Step("amount for a craft subtype", () => EquipmentStats.ApplyStatAmount(Player1, Chest, ItemPropertyType.Control, 2, 4, true));
 
-        var actual = text.ToString().Replace("\r\n", "\n");
+        var actual = text.ToString();
         var path = Path.Combine(FindRepositoryRoot(), FixturePath.Replace('/', Path.DirectorySeparatorChar));
         if (Environment.GetEnvironmentVariable("SWLOR_UPDATE_SNAPSHOTS") == "1")
         {
@@ -396,9 +415,11 @@ public class EquipmentStatsWornGearTranscriptTests
         }
 
         File.Exists(path).Should().BeTrue("the transcript is committed beside the tests");
-        var expected = new UTF8Encoding(false).GetString(File.ReadAllBytes(path)).Replace("\r\n", "\n");
-        if (expected != actual)
+        var expectedBytes = File.ReadAllBytes(path);
+        var actualBytes = new UTF8Encoding(false).GetBytes(actual);
+        if (!expectedBytes.AsSpan().SequenceEqual(actualBytes))
         {
+            var expected = new UTF8Encoding(false).GetString(expectedBytes);
             var expectedLines = expected.Split('\n');
             var actualLines = actual.Split('\n');
             var index = 0;
@@ -409,9 +430,74 @@ public class EquipmentStatsWornGearTranscriptTests
         }
     }
 
-    private static bool IsWrite(RecordedCall call) =>
-        !call.Member.StartsWith("Get", StringComparison.Ordinal) && !call.Member.StartsWith("Is", StringComparison.Ordinal) &&
-        call.Member is not ("OBJECT_SELF" or "StringToObject" or "StringToInt" or "ResManGetAliasFor");
+    private static bool IsWrite(string member) =>
+        !member.StartsWith("Get", StringComparison.Ordinal) && !member.StartsWith("get_", StringComparison.Ordinal) && !member.StartsWith("Is", StringComparison.Ordinal) &&
+        member is not ("OBJECT_SELF" or "StringToObject" or "StringToInt" or "ResManGetAliasFor");
+
+    /// <summary>A decorator that records every write the fake receives into the one ordered effect list, then lets the fake answer.</summary>
+    private T Ordered<T>(T target)
+        where T : class
+    {
+        var proxy = DispatchProxy.Create<T, OrderingProxy>();
+        var ordering = (OrderingProxy)(object)proxy;
+        ordering.Target = target;
+        ordering.Observe = Observe;
+        return proxy;
+    }
+
+    private void Observe(string member, object?[] arguments)
+    {
+        if (!IsWrite(member))
+            return;
+        _effects.Add("call " + member + "(" + string.Join(",", arguments.Select(Format)) + ")");
+        // The fake world keeps what the code wrote, so the next operation reads the state this one left.
+        switch (member)
+        {
+            case "AddItemProperty":
+                _items.AttachProperty((uint)arguments[2]!, (ItemProperty)arguments[1]!);
+                break;
+            case "RemoveItemProperty":
+                _items.DetachProperty((uint)arguments[0]!, (ItemProperty)arguments[1]!);
+                break;
+            case "SetMaxHitPoints":
+                _maxHitPoints[(uint)arguments[0]!] = (int)arguments[1]!;
+                break;
+        }
+    }
+
+    public class OrderingProxy : DispatchProxy
+    {
+        public object Target { get; set; } = null!;
+
+        public Action<string, object?[]> Observe { get; set; } = null!;
+
+        protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
+        {
+            var arguments = args ?? Array.Empty<object?>();
+            Observe(targetMethod!.Name, arguments);
+            try
+            {
+                return targetMethod.Invoke(Target, arguments);
+            }
+            catch (TargetInvocationException exception)
+            {
+                ExceptionDispatchInfo.Capture(exception.InnerException!).Throw();
+                throw;
+            }
+        }
+    }
+
+    /// <summary>The paths whose value changed, were added, or were removed, in path order.</summary>
+    private static List<string> DescribeChanges(Dictionary<string, string> before, Dictionary<string, string> current)
+    {
+        var changes = new List<string>();
+        foreach (var (path, value) in current.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+            if (!before.TryGetValue(path, out var original) || original != value)
+                changes.Add(path + "=" + value);
+        foreach (var path in before.Keys.Where(key => !current.ContainsKey(key)).OrderBy(key => key, StringComparer.Ordinal))
+            changes.Add(path + "=<removed>");
+        return changes;
+    }
 
     private static string Format(object? argument) => argument switch
     {

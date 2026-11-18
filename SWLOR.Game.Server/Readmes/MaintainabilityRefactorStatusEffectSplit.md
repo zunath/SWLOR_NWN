@@ -689,3 +689,8 @@ parameters, so the Character -> Combat and Character -> Quests references of the
   scripted proxy for `IStatusEffectApplicationService`; tests that scripted `ApplyStatusEffect` on the status proxy script it on an application proxy that shares their log.
   Two `StatusEffectDeliveryTests` read the steps by name (`ResolveApplicationTiming`, `ResolveReplacedEffects`, `AnnounceApplication`, `ActivateEffect`) and the order in which
   `ApplyStatusEffectInternal` calls them. `PlayerMessageAudit.json`: 7 rows re-keyed (`ResolveApplicationTiming`, `AnnounceApplication`, `SendStatusEffectFailure`).
+- **Readings and runs:** CombatSim's team-fight, twin-pistol-barrage, twin-pistol-crossfire and solo-boss reports (seed 1, 50 runs, Markdown and JSON) and its ability table are
+  byte-identical to the base's (`fd7ea7054`). `SWLOR.Game.Server.Tests` (no exclusions) fails the same 121 tests with the same messages on the base and the branch (the
+  ones that read `SWLOR_Haks` content the sparse checkout lacks): 19,013 passed on the base, 19,016 on the branch (3 new tests of the application double). The engine run
+  filtered with `StatusEffect|HotReloadPlayers` (host entry, server-only haks) passes 26 of 28 with 1 skipped (hot reload off); the one failure is the Piercing Toss bleed test
+  (7 ticks, expected 6) that P5-5e recorded failing alike on its base. No hot-reload check ran: this part holds no state, handlers or carried fields.

@@ -656,6 +656,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var caster = ctx.SpawnCreature("nw_bandit001");
             await ctx.WaitFrameAsync();
             PrepareStationaryCreature(ctx, caster);
+            // The spawn handler refills the caster's stamina; if it ran after the first cost was spent, the
+            // refill would read as a refund.
+            await ctx.WaitForSpawnInitializationAsync(caster);
             ctx.SetNPCResources(caster, 100, 100);
             var ability = Ability.GetAbilityDetail(FeatType.BladeVortex2);
             Combat.SetAbilityHitResolutionOverride(true);

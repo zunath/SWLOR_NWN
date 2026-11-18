@@ -139,6 +139,18 @@ namespace SWLOR.Game.Server.Service.HostedEventService
         }
 
         /// <summary>
+        /// The start to save: the stored one while the DM left the start text as shown, otherwise the one they typed.
+        /// Re-reading unchanged text would move an event in the repeated hour when clocks go back to the first one.
+        /// </summary>
+        public static DateTime GetStartToSave(DateTime? storedUtc, string startText, PlayerTimeZone zone, DateTime typedUtc)
+        {
+            zone ??= PlayerTimeZones.Utc;
+            return storedUtc.HasValue && FormatStartTime(storedUtc.Value, zone) == (startText ?? string.Empty).Trim()
+                ? storedUtc.Value
+                : typedUtc;
+        }
+
+        /// <summary>
         /// Reads a wall-clock time typed as yyyy-MM-dd HH:mm.
         /// </summary>
         public static bool TryParseLocalTime(string text, out DateTime local)

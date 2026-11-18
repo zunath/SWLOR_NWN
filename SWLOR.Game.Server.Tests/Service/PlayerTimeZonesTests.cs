@@ -60,6 +60,16 @@ public class PlayerTimeZonesTests
     }
 
     [Test]
+    public void Abbreviation_IsUtcForAZoneThisHostCannotResolve()
+    {
+        var unresolved = new PlayerTimeZone("Mars/Olympus_Mons", "UTC-5 Mars", "EST", "EDT");
+        var time = new DateTime(2026, 1, 15, 12, 0, 0, DateTimeKind.Utc);
+
+        PlayerTimeZones.GetInfo(unresolved).Should().Be(TimeZoneInfo.Utc);
+        PlayerTimeZones.GetAbbreviation(time, unresolved).Should().Be("UTC");
+    }
+
+    [Test]
     public void RepeatedHour_IsReadAsTheFirstOne()
     {
         // US clocks fall back from 02:00 EDT to 01:00 EST on 2026-11-01, so 01:30 happens twice.

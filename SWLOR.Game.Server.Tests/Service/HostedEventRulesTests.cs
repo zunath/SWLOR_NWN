@@ -112,6 +112,20 @@ public class HostedEventRulesTests
     }
 
     [Test]
+    public void StartToSave_KeepsAStartInTheRepeatedHourWhenTheTextIsUnchanged()
+    {
+        // US clocks fall back on 2026-11-01, so 01:30 is both 05:30 and 06:30 UTC. The event is at the second one.
+        var second = new DateTime(2026, 11, 1, 6, 30, 0, DateTimeKind.Utc);
+        var shown = HostedEventRules.FormatStartTime(second, Eastern);
+        HostedEventRules.ValidateDetails("Cantina Night", "Host", "", shown, Eastern, out var reread).Should().BeEmpty();
+        reread.Should().Be(second.AddHours(-1));
+
+        HostedEventRules.GetStartToSave(second, shown, Eastern, reread).Should().Be(second);
+        HostedEventRules.GetStartToSave(second, "2026-11-01 03:00", Eastern, Now).Should().Be(Now);
+        HostedEventRules.GetStartToSave(null, shown, Eastern, reread).Should().Be(reread);
+    }
+
+    [Test]
     public void StartTime_RefusesAnHourDaylightSavingSkips()
     {
         // US clocks jump from 02:00 to 03:00 on 2026-03-08.

@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(false, $"No fixture is embedded; the transcript ({actual.Length} chars) was written to {CapturePath}.");
                 return;
             }
-            var expected = new StreamReader(stream, Encoding.UTF8).ReadToEnd();
+            var expected = new StreamReader(stream, Encoding.UTF8).ReadToEnd().Replace("\r\n", "\n");
             if (expected != actual)
             {
                 if (Directory.Exists("/nwn/home"))

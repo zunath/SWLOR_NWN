@@ -519,40 +519,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ConstructSaber()
         {
-            // "Match Blade" resolves to the blade's catalog color now; the crafted item stores the concrete color.
-            var resolvedLightColor = LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor);
-            if (!Enum.IsDefined(typeof(LightColor), resolvedLightColor))
-            {
-                StatusText = "Select a valid light color.";
-                StatusColor = GuiColor.Red;
+            if (!TryResolveLight(out var lightColor, out var lightBrightness))
                 return;
-            }
 
-            if (SelectedLightBrightnessIndex != 0 &&
-                SelectedLightBrightnessIndex != 1)
-            {
-                StatusText = "Select Dim (5m) or Low (10m) lighting.";
-                StatusColor = GuiColor.Red;
+            if (!HasConstructionInputs())
                 return;
-            }
-
-            var lightColor = (LightColor)resolvedLightColor;
-            var lightBrightness = SelectedLightBrightnessIndex == 0
-                ? LightBrightness.Dim
-                : LightBrightness.Low;
-            if (!ValidateSelectedInputs())
-            {
-                StatusText = "A selected input is no longer available. Reselect your inputs and try again.";
-                StatusColor = GuiColor.Red;
-                return;
-            }
-
-            if (Currency.GetCurrency(Player, CurrencyType.KyberToken) < 1)
-            {
-                StatusText = "You need a Kyber Token to construct this weapon.";
-                StatusColor = GuiColor.Red;
-                return;
-            }
 
             var bottom = SelectedBottom;
             var top = SelectedTop;
@@ -564,6 +535,88 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            if (!TryAssembleWeapon(bottom, topValue, out var item))
+                return;
+
+            ApplyEnhancementsAndSubmission(item);
+
+            ApplyBladeLight(item, lightColor, lightBrightness);
+            var lightRange = lightBrightness == LightBrightness.Dim ? "Dim (5m)" : "Low (10m)";
+            var description = GetDescription(item);
+            SetDescription(item, $"{description}\n\nLight Color: {lightColor}\nLight Range: {lightRange}");
+
+            Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
+            SendMessageToPC(Player, $"You spend a Kyber Token constructing your {GetName(item)}. Total Kyber Tokens: {Currency.GetCurrency(Player, CurrencyType.KyberToken)}");
+
+            var playerId = GetObjectUUID(Player);
+            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({playerId}) constructed '{GetName(item)}' (bottom: {bottom.Name}, top: {top.Name}) at a lightsaber workbench.");
+            FloatingTextStringOnCreature($"You have constructed your {GetName(item)}!", Player, false);
+
+            Gui.TogglePlayerWindow(Player, GuiWindowType.LightsaberWorkbench);
+        }
+
+        /// <summary>
+        /// Reads the selected light color and brightness. False, with the reason in the status text, when either is not valid.
+        /// </summary>
+        private bool TryResolveLight(out LightColor lightColor, out LightBrightness lightBrightness)
+        {
+            lightColor = default;
+            lightBrightness = default;
+
+            // "Match Blade" resolves to the blade's catalog color now; the crafted item stores the concrete color.
+            var resolvedLightColor = LightsaberWorkbench.ResolveLightColor(SelectedTop, SelectedLightColor);
+            if (!Enum.IsDefined(typeof(LightColor), resolvedLightColor))
+            {
+                StatusText = "Select a valid light color.";
+                StatusColor = GuiColor.Red;
+                return false;
+            }
+
+            if (SelectedLightBrightnessIndex != 0 &&
+                SelectedLightBrightnessIndex != 1)
+            {
+                StatusText = "Select Dim (5m) or Low (10m) lighting.";
+                StatusColor = GuiColor.Red;
+                return false;
+            }
+
+            lightColor = (LightColor)resolvedLightColor;
+            lightBrightness = SelectedLightBrightnessIndex == 0
+                ? LightBrightness.Dim
+                : LightBrightness.Low;
+            return true;
+        }
+
+        /// <summary>
+        /// Checks the selected inputs and the Kyber Token are still there. False, with the reason in the status text, when not.
+        /// </summary>
+        private bool HasConstructionInputs()
+        {
+            if (!ValidateSelectedInputs())
+            {
+                StatusText = "A selected input is no longer available. Reselect your inputs and try again.";
+                StatusColor = GuiColor.Red;
+                return false;
+            }
+
+            if (Currency.GetCurrency(Player, CurrencyType.KyberToken) < 1)
+            {
+                StatusText = "You need a Kyber Token to construct this weapon.";
+                StatusColor = GuiColor.Red;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Builds the weapon in the temporary storage, checks its appearance and hands it to the player. False, with the reason
+        /// in the status text, when any step fails.
+        /// </summary>
+        private bool TryAssembleWeapon(SaberHiltPart bottom, int topValue, out uint item)
+        {
+            item = OBJECT_INVALID;
+
             var resref = _weaponType == BaseItem.Saberstaff
                 ? LightsaberWorkbenchService.SaberstaffResref
                 : LightsaberWorkbenchService.LightsaberResref;
@@ -574,10 +627,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 StatusText = "The workbench is missing its assembly module. Please notify staff.";
                 StatusColor = GuiColor.Red;
-                return;
+                return false;
             }
 
-            var item = CreateItemOnObject(resref, storage);
+            item = CreateItemOnObject(resref, storage);
             item = ModifyWeaponPart(item, AppearanceWeapon.Bottom, bottom.PartValue);
             item = ModifyWeaponPart(item, AppearanceWeapon.Middle, LightsaberWorkbenchService.MiddlePartValue);
             item = ModifyWeaponPart(item, AppearanceWeapon.Top, topValue);
@@ -586,7 +639,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 StatusText = "Something went wrong constructing that weapon. Your Kyber Token was not consumed.";
                 StatusColor = GuiColor.Red;
-                return;
+                return false;
             }
 
             SetLocalBool(item, ItemService.PlayerProducedItemVariable, true);
@@ -611,9 +664,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     DestroyObject(item);
                 StatusText = "Your inventory cannot receive the weapon. Your inputs and Kyber Token were not consumed.";
                 StatusColor = GuiColor.Red;
-                return;
+                return false;
             }
 
+            return true;
+        }
+
+        /// <summary>
+        /// Puts the socketed enhancements and the Weapon Submission Token's crafted stats on the weapon and uses them up.
+        /// </summary>
+        private void ApplyEnhancementsAndSubmission(uint item)
+        {
             foreach (var property in _enhancementProperties.SelectMany(x => x))
             {
                 CraftEnhancementProperty.ApplyCraftedItemProperty(item, property);
@@ -653,20 +714,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Item.ReduceItemStack(_enhancementItems[slot], 1);
                 ReturnEnhancement(slot);
             }
-
-            ApplyBladeLight(item, lightColor, lightBrightness);
-            var lightRange = lightBrightness == LightBrightness.Dim ? "Dim (5m)" : "Low (10m)";
-            var description = GetDescription(item);
-            SetDescription(item, $"{description}\n\nLight Color: {lightColor}\nLight Range: {lightRange}");
-
-            Currency.TakeCurrency(Player, CurrencyType.KyberToken, 1);
-            SendMessageToPC(Player, $"You spend a Kyber Token constructing your {GetName(item)}. Total Kyber Tokens: {Currency.GetCurrency(Player, CurrencyType.KyberToken)}");
-
-            var playerId = GetObjectUUID(Player);
-            Log.Write(LogGroup.Crafting, $"{GetName(Player)} ({playerId}) constructed '{GetName(item)}' (bottom: {bottom.Name}, top: {top.Name}) at a lightsaber workbench.");
-            FloatingTextStringOnCreature($"You have constructed your {GetName(item)}!", Player, false);
-
-            Gui.TogglePlayerWindow(Player, GuiWindowType.LightsaberWorkbench);
         }
 
         private static void ApplyBladeLight(uint item, LightColor lightColor, LightBrightness lightBrightness)

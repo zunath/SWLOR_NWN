@@ -1,11 +1,25 @@
 # Maintainability Refactor: Remaining View Models and EquipmentStats Split (P5-16h)
 
-Part map for owner review; no code is changed by this document. Base: `origin/feature/maintainability-refactor` at `343f6b31b`.
-Limits come from [MaintainabilityRefactorPhase5.md](MaintainabilityRefactorPhase5.md): 1,000 lines and 10 services per type, 150
-lines per method, no partial-class or numbered-chunk tricks. It follows the model of
-[MaintainabilityRefactorAppearanceEditorSplit.md](MaintainabilityRefactorAppearanceEditorSplit.md) (P5-16e). Line counts are
-measured from the code with a brace outline of each file; service counts are the distinct `GameServices` members a line range
-reaches, so each is re-measured at build and may move by one or two.
+Part map for owner review, revised after the code review; it changes no code. Base: `origin/feature/maintainability-refactor` at
+`343f6b31b`. Limits come from [MaintainabilityRefactorPhase5.md](MaintainabilityRefactorPhase5.md): 1,000 lines and 10 services
+per type, 150 lines per method, no partial-class or numbered-chunk tricks. It follows
+[MaintainabilityRefactorAppearanceEditorSplit.md](MaintainabilityRefactorAppearanceEditorSplit.md) (P5-16e): PR 1 of that item
+(static types) for `EquipmentStats`, and PR 2 (a typed per-window host) for the view models. Line counts are measured from the
+code with a brace outline of each file. Service counts are the distinct `GameServices` members a line range reaches, plus, in
+brackets, the static helpers that become injected services after P5-12 and C8 (`WeaponDamage`, `EquipmentPredicates`,
+`DeviceAbilityEffects`, `WeaponAttackTiming`, `TemporaryHitPointEffects`). Each is re-measured at build.
+
+## Owner decisions applied (coordinator, after the review)
+
+1. `EquipmentStats` is split now into static types by stat family, as P5-16e PR 1 did. It is not made a singleton here (the
+   content tool would refuse the static caller `LootStatRevisionMigration.cs:25`, the static engine test
+   `TwinPistolEquipmentEngineTests.cs:21` and the 21 method groups in `RegisterStatActions`). The registrations become lambdas
+   written by hand; the `HandledPropertyTypes` order and the `Rerun` boot line do not change. C8 and C2 convert the statics.
+2. No shared binding sink. Each window gets one typed host interface (the shape of `IAppearanceEditorHost` on P5-16e PR 2),
+   implemented explicitly by the view model, so a property setter keeps its logic and a moved body changes only its receiver.
+3. `CharacterSheetViewModel` is listed in `ContentInjection.json` like the other view models. Its six statics reach no service,
+   so the tool accepts it; they keep their `StaticState.txt` line for C3.
+4. `PlayerGuide`: one static data type per topic category, composed in today's order (not the eight P5-16c runs).
 
 ## 1. Scope
 
@@ -19,335 +33,352 @@ reaches, so each is re-measured at build and may move by one or two.
 | `DroidAssemblyViewModel` | 1,023 | 3 | 9 handlers |
 | `Feature/EquipmentStats` (static) | 1,131 | 8 (120 lookups) | 5 event handlers, 1 boot handler |
 
-Out of scope, as named: `ShipManagementViewModel` and `ShipManagementDefinition` (the space revamp rewrites them).
+Out of scope, as named: `ShipManagementViewModel` and `ShipManagementDefinition`.
 
-**What the list misses.** No other view model is over 1,000 lines or over 10 services in the Phase 5 baselines.
-`AppearanceEditorViewModel` is P5-16e. Every long method in a view model (`PerksViewModel.OnClickBuyUpgrade` 162,
-`CharacterFullRebuildViewModel.OnClickResetEverything` 158, `LightsaberWorkbenchViewModel.ConstructSaber` 151,
-`StablesDefinition.BuildWindow` 741) is in the P5-16g branch, which also exempts `CombatStyleGuideTopics.Create` (224) as a data
-catalog member; this map assumes P5-16g merges first. Two view models are near the line limit and will cross it with
-any growth: `DMToolsViewModel` 924 and `ExtraHotbarViewModel` 910. They are reported, not planned.
+**What the list misses.** No other view model is over 1,000 lines or 10 services in the Phase 5 baselines; `AppearanceEditorViewModel`
+is P5-16e. Every long method in a view model is in the P5-16g branch (`OnClickBuyUpgrade` 162, `OnClickResetEverything` 158,
+`ConstructSaber` 151, `StablesDefinition.BuildWindow` 741), which also exempts `CombatStyleGuideTopics.Create` (224) as a data
+catalog member. This map assumes P5-16g merges first. `DMToolsViewModel` (924 lines) and `ExtraHotbarViewModel` (910) are close to
+the line limit; they are reported, not planned.
 
 ## 2. Rules shared by every type
 
-- **The view model keeps** its bindings, `Initialize`, one-line forwarders for the click handlers, the `Refresh` events (they are
-  interface members of the view model) and any property whose setter has logic. Everything else moves.
-- **Constructor injection** (Phase 5 owner decision 8). Each extracted type takes only the services it uses, through its
-  constructor, with no `GameServices` use. The view model's constructor takes its parts and the services it still uses. The
-  base class keeps its lookup until C3, as `ConversationViewModel` does (`MaintainabilityRefactorContentInjection.md`, Pilot).
-  New parts are listed in `tools/Refactor/ContentInjection.json`, so the content tool registers them.
-- **Domain and place.** The parts use Combat, Companions, Items, Economy and Abilities services, which UI may not reference
-  (`MaintainabilityRefactorDomainOrder.md`: content is a band above all logic). So every part is content under `Feature/`, in
-  its own folder per window: `Feature/GuiDefinition/<Window>Window/` (namespace follows the folder). None goes into `Domain/`.
-- **Three shapes, chosen by what the part holds:**
-  - *Stateless singleton service* with per-window state in a plain `<Window>Session` class the view model creates in
-    `Initialize` (P5-16e's pattern). Used by Incubator, Droid.
-  - *Private collaborator* the view model creates in `Initialize` and passes its services (content design, decision 1). Used
-    where one small piece owns its own state, Disguise's sound-set picker.
-  - *Result records.* A part that fills a table or a block of text returns a record and the view model assigns it, in the old
-    order, so the binding order does not change. Used by the character sheet tabs and the perk list.
-- **Writing bindings.** Where a part must publish many bindings, it calls `IGuiBindingSink` (`Publish<T>(string name, T value)`,
-  `Read<T>(string name)`), which the view model implements with `Set(value, name)` and `Get<T>(name)` (the same code path as a
-  declared property, confirmed in P5-16e). **Proposal:** one shared interface in `Domain/UI`, and P5-16e PR 2 uses it instead of
-  `IAppearanceBindingSink`. Question 2.
-- **A moved method is moved whole.** `Player`, the view model property, becomes a `player` parameter, and nothing else in the body
-  changes. Source-reading tests that quote call text with `Player` are rewritten for the parameter name in the same PR.
-- **Hot reload** (`HotReload.md`, `GuiServiceReloadTests`): a view model without a payload (Perks, PlayerGuide, Disguise, Droid)
-  is reopened after a reload; one with a payload (CharacterSheet, Incubator) is closed. No window state is carried, so sessions
-  and collaborators need no carrier. The parts are stateless singletons that a reload rebuilds.
-- **No cycles.** Every dependency below goes one way (leaf parts first). If a build shows a part at 11 services, split it by
-  the sub-responsibility named in its row, never by line count.
+- **The view model keeps** its bindings, `Initialize`, the click handlers (as forwarders), the `Refresh` events, every property
+  whose setter has logic (`SelectedTabId` `CharacterSheetViewModel.cs:145-161`, `SelectedSoundSetIndex` and
+  `SelectedSoundSetPageIndex` `DisguiseViewModel.cs:105-142`, `SelectedPage` `PerksViewModel.cs:62-71`, the filter and sort setters),
+  and the members the host exposes. Everything else moves.
+- **The host.** One interface per window (`IPerksHost`, `ICharacterSheetHost`, `IIncubatorHost`, `IDisguiseHost`,
+  `IDroidAssemblyHost`), in the parts' folder. It lists what the moved code reads or writes on the view model: `Player`, the
+  window's session, the bindings it sets (by property, so setters run), and callbacks the view model owns (`ShowModal`,
+  `ChangePartialView`, `SelectPerkAt`, `SwitchViews`, `RefreshAllStats`, `LoadData`). The view model implements it explicitly
+  by delegating to the members it already has. A part method takes the host as its first argument. Moved bodies change only
+  their receiver (`Player` to `host.Player`, `Total = x` to `host.Total = x`), so "verbatim" below means receiver-only.
+  Fakes implement the host in unit tests. P5-16e's files are not touched.
+- **Constructor injection** (Phase 5 owner decision 8). Each part takes only the services it uses through its constructor, with no
+  `GameServices` use, and is listed in `tools/Refactor/ContentInjection.json`, so the tool registers it as singleton content.
+  Each view model is listed too (the base class keeps its lookup until C3, as `ConversationViewModel` does), so the tool writes
+  its constructor and maintains every `new XViewModel()` in tests and `GuiFakes.FakeCharacterSheet`. A static member that reaches a
+  service loses `static` as it moves, or stays on the view model and loses it there (the two Disguise portrait helpers).
+- **Where.** The parts use Combat, Companions, Items and Abilities services, which UI may not reference, so they are Feature
+  content in `Feature/GuiDefinition/<Window>Window/` (first folder `GuiDefinition`, which is already in `DomainMap.json`; no new
+  entry). `Feature/EquipmentStatActions/` is a new first-level folder and gets a `DomainMap.json` entry (recommended domain:
+  Character; `DomainMapTests` confirms).
+- **Layers.** Every part table names the parts a part uses and its layer (0 uses none). A part never uses a part of its own or a
+  higher layer. The host is not a part: a part reaches the view model's own callbacks through it.
+- **Per-window state** lives in a plain `<Window>Session` class that the view model creates in `Initialize` (Incubator, Droid), or
+  inside a private collaborator the view model creates (Disguise). Parts are stateless singletons.
+- **Hot reload** (`HotReload.md`, `GuiServiceReloadTests`): a view model without a payload (Perks, PlayerGuide, Disguise, Droid) is
+  reopened after a reload; one with a payload (CharacterSheet, Incubator) is closed. No window state is carried.
+- **If a build reaches 11 services,** split by the sub-responsibility named in the part's row, never by line count.
 
 ## 3. Types
 
 ### 3.1 PlayerGuideViewModel (1,367 lines, data)
 
 **What it is.** About 290 lines of logic (search, topic list, related topics, 4 handlers, `MatchesSearch`) and about 1,030 lines
-of topic text: `BuildTopics` (17) over eight section builders of 98 to 137 lines (P5-16c) plus `StatusEffectGuideTopics` and
-`CombatStyleGuideTopics`, then the three nested data classes `PlayerGuideTopic`, `ArticleBlock`, `QuestionAnswer` (about 55
-lines). It reaches no service. Static state: `Topics` (a `StaticState.txt` entry). Largest methods: the section builders.
+of topic text: `BuildTopics` over eight run builders (`PlayerGuideViewModel.cs:303-1215`), plus `StatusEffectGuideTopics` and
+`CombatStyleGuideTopics`, and the nested data classes `PlayerGuideTopic`, `ArticleBlock`, `QuestionAnswer` (about 55 lines). The
+eight builders are consecutive runs of today's list, not content groups: their 30 topics belong to seven categories that
+interleave (Core, Social, Core, Core, Progression, Combat, Progression, Core, Combat, ...). No service. Static state: `Topics`.
 
-**Tests.** `PlayerGuideContentTests` reads `Topics` and `MatchesSearch` by reflection. Three tests read the source text of
-`PlayerGuideViewModel.cs`: `PlayerFacingNameBroadcastTests` (line 223), `RoleplayXPOOCPenaltyTests` (456) and
-`WeaponDeflectionTests` (202). Their `NotContain` assertions would pass for the wrong reason once the text leaves the file, so
-they must read every guide file (the view model, the section types, the two existing topic types), not one.
+**Tests.** `PlayerGuideContentTests` reads `Topics` and `MatchesSearch` by reflection. `PlayerFacingNameBroadcastTests` (223),
+`RoleplayXPOOCPenaltyTests` (456) and `WeaponDeflectionTests` (202) read the source text of `PlayerGuideViewModel.cs`; their
+`NotContain` assertions would pass for the wrong reason once the text leaves the file, so they read every guide file.
+`CombatStyleGuideTopics.cs:240-284` and `StatusEffectGuideTopics.cs:10-55` name the nested types and are edited.
 
-| Part | Kind, folder | Responsibility | Moves | Lines | Services |
-|---|---|---|---|---:|---|
-| `PlayerGuideTopicCatalog` | singleton, `Feature/GuiDefinition/PlayerGuideWindow/` | owns the topic list, built once from the sections | `Topics`, `BuildTopics` | ~40 | 0 |
-| `PlayerGuideBasicsTopics`, `PlayerGuideProgressionTopics`, `PlayerGuidePerkAndRebuildTopics`, `PlayerGuideCombatTopics`, `PlayerGuideEspionageAndCraftingTopics`, `PlayerGuideGatheringAndCompanionTopics`, `PlayerGuideQuestAndSocialTopics`, `PlayerGuideTravelAndWindowTopics` | static data types, same folder | one guide section each, named for its content (the eight P5-16c methods, one for one) | the eight `Build*Topics` methods | 110 to 150 each | 0 |
-| `PlayerGuideTopic`, `ArticleBlock`, `QuestionAnswer` | data, same folder | one type per file | the nested classes | ~20 each | 0 |
-| `PlayerGuideViewModel` (stays) | view model | bindings, search, selection, handlers | the rest | ~290 | catalog (1) |
+| Part | Layer | Uses | Moves (topics, in today's order) | Lines | Services | Kind |
+|---|---|---|---|---:|---|---|
+| `PlayerGuideCoreTopics` | 0 | - | Common Questions, Skills, Skill Decay, XP Debt, Death & Recovery | ~185 | 0 | verbatim |
+| `PlayerGuideSocialTopics` | 0 | - | Communication, Disguises | ~105 | 0 | verbatim |
+| `PlayerGuideProgressionTopics` | 0 | - | Perks, Perk Refunds, Training Store | ~105 | 0 | verbatim |
+| `PlayerGuideCombatTopics` | 0 | - | Force Affinity, Abilities, Mimicry & Techniques, PvP Combat, Combat Basics, Stat Caps | ~195 | 0 | verbatim |
+| `PlayerGuideCharacterTopics` | 0 | - | Attributes, Rebuilds | ~75 | 0 | verbatim |
+| `PlayerGuideActivitiesTopics` | 0 | - | Espionage, Crafting, Gathering & Fishing, Beasts & Stables, Droids, Quests & Key Items, Quest Contracts, Guilds & Citizenship, Housing & Markets, Travel & Navigation, Ships & Space | ~370 | 0 | verbatim |
+| `PlayerGuideInterfaceTopics` | 0 | - | Useful Windows | ~50 | 0 | verbatim |
+| `PlayerGuideTopic`, `ArticleBlock`, `QuestionAnswer` | 0 | - | the nested classes, one file each | ~20 each | 0 | verbatim |
+| `PlayerGuideTopicCatalog` (static) | 1 | the seven category types, `StatusEffectGuideTopics`, `CombatStyleGuideTopics` | `Topics`, `BuildTopics`: lists the 30 topic methods in today's order, then the two existing types | ~70 | 0 | rewrite |
+| `PlayerGuideViewModel` (stays) | - | the catalog | the rest | ~290 | 0 | - |
 
-Each section builder stays under 150 lines, so no exemption is needed. `MatchesSearch` stays on the view model (tests reach it).
-`Topics` leaves `StaticState.txt` because the catalog is a singleton that holds data.
+Each category type has one static method per topic (24 to 50 lines each), so no method nears 150 and no type nears 1,000 (the
+largest, Activities, is about 370; the fallback of one data type with a `typeSize` exemption is not needed). A catalog with no
+service cannot be a registered content singleton, so `Topics` stays a static field, now on `PlayerGuideTopicCatalog`; its
+`StaticState.txt` line is renamed to the new type and kept for classification. `MatchesSearch` stays on the view model.
 
 ### 3.2 PerksViewModel (1,544 lines)
 
-**What it is.** 37 bindings (202 lines), 11 click handlers (336), 3 refresh events and about 1,000 lines of methods, using
-8 services by lookup (`Perk` 20 calls, `DB` 17, `QuickCast` 10, `AbilityCatalog` 5, `Currency` 4, `Recast` 2, `Gui` 2, `Skill` 1).
-No static state, no boot handlers. Carried state: `_pages`, `_selectedPerkIndex`, `_filteredPerks`, `_initialLoadDone`.
-Largest methods: `OnClickBuyUpgrade` 162 (P5-16g splits it into three), `LoadPerks` 124, `OnClickRefund` 102, `SelectPerkAt` 74.
+**What it is.** 37 bindings (202 lines), 11 click handlers (336), 3 refresh events, about 1,000 lines of methods. Services by lookup:
+`Perk` 20 calls, `DB` 17, `QuickCast` 10, `AbilityCatalog` 5, `Currency` 4, `Recast` 2, `Gui` 2, `Skill` 1. No static state, no handlers.
+Carried state: `_pages`, `_selectedPerkIndex` (a private property with logic, 158-170), `_filteredPerks`, `_initialLoadDone`. Largest methods:
+`LoadPerks` 124, `OnClickRefund` 102, `ConfirmBuyUpgrade` 86 and `SelectPerkAt` 74 (P5-16g splits `OnClickBuyUpgrade` into
+`OnClickBuyUpgrade`, `ConfirmBuyUpgrade`, `TryGetPerkRank` and `RefreshAfterUpgrade`). `.Where(CanAddFeatToHotBar)`
+(`:997`, `:1002`) is a method group over a static; it moves with the hot bar service and stays a static in that type, or becomes a lambda.
 
-**Tests.** `PerksWindowTests` (five source reads and reflection on rank, requirement and detail-text methods),
+**Tests and tools.** `PerksWindowTests` (five source reads and reflection on rank, requirement and detail-text methods),
 `ForceLightConsularTests` (invokes the detail text method on `new PerksViewModel()`), `ForceLightGuardianTests` (536),
-`PlayerSkillPointAccountingTests` (126), `PerkRefundStatusEffectCleanupTests` (185), `DMChatCommandTests` (136). Also the Bible
-tool `tools/UpdateCraftingMinigamesBible.py` reads the refund hours and text from `PerksViewModel.cs` (lines 597 and 598); it is
-pointed at the refund part.
+`PlayerSkillPointAccountingTests` (126), `PerkRefundStatusEffectCleanupTests` (185), `DMChatCommandTests` (136). `tools/UpdateCraftingMinigamesBible.py`
+(597-598) reads the refund hours, `DateTime.UtcNow.AddHours(n)`, and the refund text from `PerksViewModel.cs`: PR 0 changes its
+pattern to `Clock.UtcNow.AddHours(n)` (the clock seam, section 4.1), PR 6 points its path at `PerkPurchaseService.cs`.
 
-| Part | Kind | Responsibility | Moves | Lines | Services |
-|---|---|---|---|---:|---|
-| `PerkListBuilder` | singleton | which perks show, their rows, order and requirements | `LoadCategories`, `LoadDetails`, `LoadForceAffinityDetails`, `LoadPerks`, `SortPerks`, `GetPerkRowStatus`, rank and sort helpers, `BuildRequirements` | ~380 | `Perk`, `DB`, `Skill`, `Currency` |
-| `PerkDetailText` | singleton | the text of the selected perk | `BuildSelectedPerkDetailText`, `BuildAbilityCostText`, `BuildStatusEffectPerkDetailText`, `BuildForceAffinityPerkDetailText`, `BuildRecastGroupText`, `FormatForceAffinity` | ~170 | `AbilityCatalog`, `Perk`, `Recast` |
-| `PerkHotBarService` | singleton | feats and mode toggles on the player's hot bar after a purchase or refund | `GrantFeats`, `SyncHotBarActiveAbilityFeats`, the add, remove and is-on-bar helpers | ~210 | `AbilityCatalog`, `Perk`, `QuickCast` (hot bar calls are NWScript) |
-| `PerkPurchaseService` | singleton | buying and refunding a perk, with its rules and triggers | the buy and refund bodies (after P5-16g: `ConfirmBuyUpgrade`, `TryGetPerkRank`), `ApplyPurchasePerkTriggers`, `GetCurrentPerkRank` | ~330 | `DB`, `Perk`, `Currency`, `QuickCast`, `Gui`, `PerkHotBarService` |
-| `PerksViewModel` (stays) | view model | bindings, page and filter setters, `SelectPerkAt`, handler forwarders, refresh events | the rest | ~620 | 4 parts + `DB`, `Perk`, `Currency` = 7 |
+| Part | Layer | Uses | Moves | Lines | Services | Kind |
+|---|---|---|---|---:|---|---|
+| `PerkListBuilder` | 0 | - | `LoadCategories`, `LoadDetails`, `LoadForceAffinityDetails`, `LoadPerks` (calls `host.SelectPerkAt(0)`), `SortPerks`, `GetPerkRowStatus`, `GetCurrentPerkRank`, `GetDisplayPerkRank`, the required-level helpers, `BuildRequirements` | ~390 | `Perk`, `DB`, `Skill`, `Currency` (4) | verbatim |
+| `PerkDetailText` | 0 | - | `BuildSelectedPerkDetailText`, `BuildAbilityCostText`, `BuildStatusEffectPerkDetailText`, `BuildForceAffinityPerkDetailText`, `BuildRecastGroupText`, `FormatForceAffinity`, `IsForcePerkCategory` | ~175 | `AbilityCatalog`, `Perk`, `Recast` (3) | verbatim |
+| `PerkHotBarService` | 0 | - | `GrantFeats`, `SyncHotBarActiveAbilityFeats`, `CanAddFeatToHotBar`, the add, remove and is-on-bar helpers | ~215 | `AbilityCatalog`, `Perk`, `QuickCast` (3) | verbatim |
+| `PerkPurchaseService` | 1 | `PerkListBuilder`, `PerkDetailText`, `PerkHotBarService` | `ConfirmBuyUpgrade`, `TryGetPerkRank`, `RefreshAfterUpgrade`, the refund body (it ends in `LoadDetails` and `LoadPerks`), `ApplyPurchasePerkTriggers` | ~310 | `DB`, `Perk`, `Currency`, `QuickCast`, `Gui` + 3 parts (8) | verbatim |
+| `PerksViewModel` (stays) | - | all four | bindings, setters, `SelectPerkAt`, `OnClickBuyUpgrade` (its `ShowModal` call), handler forwarders, refresh events, `Initialize`, the host | ~620 | the four parts + `DB`, `Perk`, `Currency` (7) | - |
 
-Dependencies: purchase uses the hot bar service and the list builder is used by the view model only. The view model keeps
-`SelectPerkAt` (it sets many bindings from `Perk`, `Currency`, `DB`); the three setters with logic (`SelectedPage`,
-`SearchText`, the combo setters) stay as they are.
+The refresh after a purchase moves with the purchase (it uses the builder and the detail text, which Purchase declares), so there
+is no cycle. `OnClickBuyUpgrade` stays as the 17-line view model handler that opens the modal.
 
 ### 3.3 CharacterSheetViewModel (1,516 lines, 21 services)
 
-**What it is.** 59 bindings (315 lines) over four tabs (attributes, stats, resistances, crafting) and a header. 22 handlers
-(15 open another window, 6 upgrade an attribute), 13 refresh events, a live hit-point loop on `Scheduler`, three nested row
-classes (41 lines), and 6 static members (`Tabs`, `TopToggles`, `BottomToggles`, `StatsTable`, `ResistancesTable`,
-`CraftingTable`; `StaticState.txt` 6). Services by range: weapon summary `BeastMastery`, `CombatDamageModifiers`,
-`CombatQueries`, `CombatRating`, `DB`, `Item`, `PairedRangedTraits`, `Skill`, `Stat` (9); attack delay `CombatAttackTiming`,
-`CombatQueries`, `Item`, `StatusEffect`, `TwinPistolEquipment` (5); stat rows 10; stat numbers `CombatAbilityHit`,
-`CombatDamageModifiers`, `DB`, `Stat`. Largest methods: `RefreshEquipmentStats` 140 (under the limit, so no method is over 150),
-`UpgradeAttribute` 64, `RefreshCharacterStatsList` 59, `RefreshStats` 52. Carried state: `_target`, `_hitPointRefreshGeneration`.
-Public statics other code uses: `AttackDescription`, `FormatOffHandTooltip`, `FormatPairedDelay`, `IsViewingTarget`. It
-is used for DM and beast targets as well as the player.
+**What it is.** 59 bindings (315 lines) over four tabs and a header, 22 handlers (15 open another window, 6 upgrade an attribute),
+13 refresh events, a live hit-point loop on `Scheduler` (`:1395-1404`), three nested row classes (41 lines), and 6 static members
+(`Tabs`, `TopToggles`, `BottomToggles`, `StatsTable`, `ResistancesTable`, `CraftingTable`). `RefreshEquipmentStats` is 140 lines
+(`:781-920`) with a local function. The public statics `FormatOffHandTooltip`, `FormatPairedDelay` and the const
+`AttackDescription` are used by tests; `IsViewingTarget` (`:140`) is used by `GuiService.cs:573` (an existing logic-to-content
+reference, `LogicToContent.txt`) and stays. The static `GetEquipmentDamageAbility` (`:959`) reaches `CombatQueries`.
+It is also the DM and beast target view.
 
-**Tests, the heaviest of the seven.** `CharacterSheetCombatUpgradeTests` (about ten source reads of `RefreshEquipmentStats` and
-others, reflection on four methods, and `new CharacterSheetViewModel()`), `CharacterSheetStatCoverageTests` (154),
-`PlayerNameRecognitionTests` (743), `PlayerSkillPointAccountingTests` (113), `DevicesFieldSupportAndAssaultGadgetsTests` (381),
-`PlayerAttributeRestorationTests` (90), `WeaponDeflectionTests` (200), `GuiFakes.FakeCharacterSheet` (subclass, reads `_target` by
-reflection) and `DualWieldEngineTests` (987 to 989: `new` plus reflection on the delay method). The constructor change touches
-every `new CharacterSheetViewModel()` and the fake's base call.
+**Tests (heaviest).** `CharacterSheetCombatUpgradeTests` (about ten source reads of `RefreshEquipmentStats` and others, reflection on
+four methods, `new CharacterSheetViewModel()`), `CharacterSheetStatCoverageTests` (154), `PlayerNameRecognitionTests` (743),
+`PlayerSkillPointAccountingTests` (113), `DevicesFieldSupportAndAssaultGadgetsTests` (381), `PlayerAttributeRestorationTests` (90),
+`WeaponDeflectionTests` (200), `GuiFakes.FakeCharacterSheet` (subclass, reads `_target`), `DualWieldEngineTests` (987-989).
 
-| Part | Kind | Responsibility | Moves | Lines | Services |
-|---|---|---|---|---:|---|
-| `CharacterSheetAttackDelay` | singleton, leaf | which weapon is off hand, delay text, damage ability | `GetOffhandAttackWeapon`, `FormatOffHandTooltip`, `FormatPairedDelay`, `SelectForceAccuracyWeapon`, `GetEquipmentDamageAbility`, `GetAttackDelayInfo` | ~110 | `CombatAttackTiming`, `CombatQueries`, `Item`, `StatusEffect`, `TwinPistolEquipment` |
-| `CharacterSheetWeaponSummary` | singleton | damage estimate per hand shown with the sheet | the body of `RefreshEquipmentStats`, `GetPrimaryCombatProfile`; returns a record | ~190 | the nine above + `CharacterSheetAttackDelay` = 10 |
-| `CharacterSheetOffenseValues` | singleton, leaf | numbers for offense rows: crit rates, haste, ability bonuses, high-resource damage | `GetCriticalRate`, `GetAssaultGadgetCriticalRate`, `GetSkillRank`, `AddHighResourceAbilityDamageStats`, small readers for the haste and bonus rows | ~150 | `Stat`, `DB`, `CombatAbilityHit`, `CombatDamageModifiers`, `CombatAbilityBonus`, `CombatAttackTiming`, `CombatResources` |
-| `CharacterSheetDefenseValues` | singleton, leaf | numbers for defense rows: regen, damage taken, evasion, status durations | `GetHPRegenValue`, `GetFPRegenValue`, `GetStaminaRegenValue`, `GetDamageTakenPercent`, `ApplyDamageTakenPercentAdjustment`, `GetForceEvasion`, `GetEffectStateLabel`, `GetStatusDurationLabel`, formatters, guard, movement and affinity readers | ~150 | `Stat`, `CombatDamageTaken`, `CreatureStat`, `Perk` |
-| `CharacterSheetTableTabs` | singleton | the row lists of the stats, resistances and crafting tabs | `RefreshCharacterStatsList`, `RefreshResistances`, `RefreshCraftingStats`; returns `List<StatEntry>` and the others; the view model calls `StatsTable.Refresh(this, rows)` | ~240 | `Stat`, `CombatRating`, `Resistance`, `Skill`, `BeastMastery`, + the delay and two value parts = 8 |
-| `CharacterSheetAttributesTab` | singleton | name, HP, FP, STM, ability scores, portrait, AP and SP labels, attribute upgrade rules (not the modal) | `RefreshStats`, `RefreshAttributes`, `RefreshPortrait`, `GetPurchasedAttributeScore`, `IsAttributeUpgradeAvailable`, the validation and write inside `UpgradeAttribute`, `RefreshHitPoints`, `RefreshLiveHitPoints` | ~260 | `DB`, `Gui`, `PlayerName`, `Stat`, `BeastMastery`, `CreatureStat`, `Skill` |
-| `StatEntry`, `ResistanceEntry`, `CraftEntry` | data, own files | table rows | the nested classes | ~15 each | 0 |
-| `CharacterSheetViewModel` (stays) | view model | bindings, tabs, `ShowModal` prompt, window-opening handlers, refresh events, `Initialize`, `LoadData` | the rest | ~780 | 4 parts + `Gui`, `Perk`, `BeastMastery`, `Skill`, `DB` = 9 |
+Rows are cut into four builders by real reach, in the order of today's list; `RefreshCharacterStatsList` becomes a short orchestrator.
+The code that calls `GetPrimaryCombatProfile` (`:1018`) is the orchestrator, so the profile moves with it.
 
-The prompt and `ShowModal` stay on the view model (the base class owns the modal); the attribute part validates and applies
-once the player confirms. The 6 static members stay with the view model (Question 3).
+| Part | Layer | Uses | Moves | Lines | Services now (later) | Kind |
+|---|---|---|---|---:|---|---|
+| `CharacterSheetFormat` (static, no service) | 0 | - | `FormatPercent`, `FormatMultiplier`, `GetStatusDurationLabel`, `FormatOffHandTooltip`, `FormatPairedDelay` | ~55 | 0 | verbatim |
+| `CharacterSheetWeaponTiming` | 0 | - | `GetOffhandAttackWeapon`, `SelectForceAccuracyWeapon`, `GetAttackDelayInfo` | ~90 | `CombatAttackTiming`, `Item`, `StatusEffect`, `TwinPistolEquipment` (4) (+ `EquipmentPredicates`, `WeaponAttackTiming` = 6) | verbatim |
+| `CharacterSheetDamageEstimate` | 0 | - | `GetEquipmentDamageAbility` (loses `static`), the local function `GetCombatInfo` lifted to a method with a `target` parameter | ~80 | `CombatDamageModifiers`, `CombatQueries`, `CombatRating`, `DB`, `Item`, `PairedRangedTraits`, `Skill`, `Stat` (8) (+ `WeaponDamage` = 9) | rewrite (local function to method) |
+| `CharacterSheetWeaponRatings` | 1 | `WeaponTiming`, `DamageEstimate` | `RefreshEquipmentStats` without the local function and without its last three calls | ~110 | `BeastMastery`, `CombatRating`, `Item`, `PairedRangedTraits`, `Skill` + 2 parts (7) | verbatim |
+| `CharacterSheetAttributesTab` | 0 | - | `RefreshStats` (calls `host.RefreshHitPoints()`), `RefreshAttributes`, `GetPurchasedAttributeScore`, `IsAttributeUpgradeAvailable`, `UpgradeAttribute` (uses `host.ShowModal` and `host.LoadData`) | ~200 | `BeastMastery`, `CreatureStat`, `DB`, `PlayerName`, `Skill`, `Stat` (6) | verbatim |
+| `CharacterSheetSurvivalRows` | 0 | - | the rows `HP Regen` to `Force DEF %` (`:1020-1032`), `IsPlayerCharacterTarget`, `GetPlayerEntity`, the three regen readers, `GetDamageTakenPercent`, `ApplyDamageTakenPercentAdjustment` | ~105 | `CombatDamageTaken`, `CombatRating`, `DB`, `Stat` (4) (the `NaturalRegeneration` constant is a Gameplay content edge) | verbatim |
+| `CharacterSheetAccuracyRows` | 1 | `WeaponTiming` | the rows `Ability Accuracy` to `Critical Damage` (`:1033-1045`), `GetCriticalRate`, `GetAssaultGadgetCriticalRate`, `GetSkillRank`, its own `IsPlayerCharacterTarget` and `GetPlayerEntity` | ~85 | `BeastMastery`, `CombatAbilityBonus`, `CombatAbilityHit`, `CombatDamageModifiers`, `CombatRating`, `DB`, `Skill`, `Stat` (8) (+ `DeviceAbilityEffects` = 9, + the timing part = 10) | verbatim |
+| `CharacterSheetDamageRows` | 0 | - | the rows `Damage Dealt` to `Single Weapon DMG` (`:1046-1056`), `AddHighResourceAbilityDamageStats` | ~60 | `CombatAttackTiming`, `CombatResources`, `Stat` (3) (+ `EquipmentPredicates`, `WeaponDamage` = 5) | verbatim |
+| `CharacterSheetUtilityRows` | 0 | - | the rows `Ranged Evasion` to `Experience` (`:1057-1065`), `GetEffectStateLabel`, `GetForceEvasion` | ~55 | `CreatureStat`, `Perk`, `Stat` (3) | verbatim |
+| `CharacterSheetTableTabs` | 2 | the four row parts, `DamageEstimate` | `RefreshCharacterStatsList` as the orchestrator (list, `AddStat`, calls the four builders in order, `GetPrimaryCombatProfile`), `RefreshResistances`, `RefreshCraftingStats` | ~110 | `BeastMastery`, `Resistance`, `Skill`, `Stat` + 5 parts (9) | rewrite (orchestrator) |
+| `StatEntry`, `ResistanceEntry`, `CraftEntry` | 0 | - | the nested classes | ~15 each | 0 | verbatim |
+| `CharacterSheetViewModel` (stays) | - | `WeaponRatings`, `AttributesTab`, `TableTabs` | bindings, tabs, nav handlers, upgrade handlers (forwarders), refresh events, `Initialize`, `LoadData`, `RefreshHitPoints` and the live loop (stay), `RefreshEquipmentStats` as a 5-line method (the part, then the three table refreshes), the host | ~880 | 3 parts + `Gui`, `Perk`, `BeastMastery`, `Skill`, `DB` (8) (+ `TemporaryHitPointEffects` = 9) | rewrite (`RefreshEquipmentStats`) |
+
+`UpwardEdges.txt:57-58` has two rows today (UI content to Abilities content 2, to Gameplay content 1). They become three rows in three
+files: the view model (`TemporaryHitPointEffects`), the accuracy rows (`DeviceAbilityEffects`) and the survival rows (`NaturalRegeneration`).
+Each part is at 10 or fewer even after P5-12 and C8; `CharacterSheetAccuracyRows` is at 10. Its fallback is to split the critical
+rows (`Critical Rate`, `GetCriticalRate`, `GetSkillRank`, `GetAssaultGadgetCriticalRate`) from the accuracy rows.
 
 ### 3.4 IncubatorViewModel (1,190 lines)
 
-**What it is.** 54 one-line bindings (54 lines), 13 handlers (227), and about 780 lines of methods. Services by lookup: `Item`
-17, `BeastMastery` 10, `DB` 5, `Perk` 4, `Gui` 4, `Targeting` 2, `IncubationFieldNote` 2, `KeyItem` 2. Carried state: 12 fields
-(four item serials, three enzyme colors, `_dnaType`, `_incubatorPropertyId`, `_showResistances`, `_baseStats`, `_stageStats`).
-No static state or boot handler; it has a payload and two refresh events. Largest methods: `RefreshRecipes` 63, `StartJob` 58,
-`OnClickEnzyme` 57, `RefreshStageTracker` 54, `RemoveDNA` 53.
+**What it is.** 54 one-line bindings, 13 handlers (227 lines), about 780 lines of methods. Services: `Item` 17, `BeastMastery` 10, `DB` 5,
+`Perk` 4, `Gui` 4, `Targeting` 2, `IncubationFieldNote` 2, `KeyItem` 2. Carried state: 12 fields. It has a payload, no static state or
+handlers. It reads the clock at `:129`, `:254`, `:1038` (and 888, 1017, 1158). Largest methods: `RefreshRecipes` 63, `StartJob` 58, `OnClickEnzyme` 57,
+`RefreshStageTracker` 54, `RemoveDNA` 53.
 
-**Tests.** `IncubationPerkRegressionTests` (four source reads of `CalculateIncubationSeconds`, `GetErraticGeniusBonus`, `StartJob`,
-`GetProjectedMutationChance`, `ValidateCreateJob`), `BeastMutationRecipeTests` (reflects the static `NumberOfStages`),
-`IncubatorCompleteJobEngineTests` and `StationReturnInventorySpaceEngineTests` (open, reopen and drive it).
+**Tests.** `IncubationPerkRegressionTests` (source reads of `CalculateIncubationSeconds`, `GetErraticGeniusBonus`, `StartJob`,
+`GetProjectedMutationChance`, `ValidateCreateJob`), `BeastMutationRecipeTests` (reflects `NumberOfStages`, which moves to the calculator),
+`IncubatorCompleteJobEngineTests` and `StationReturnInventorySpaceEngineTests`.
 
-| Part | Kind | Responsibility | Moves | Lines | Services |
-|---|---|---|---|---:|---|
-| `IncubatorSession` | per-window data, `Feature/GuiDefinition/IncubatorWindow/` | the 12 state fields | fields | ~70 | 0 |
-| `IncubatorPanelService` | singleton | what the screen shows for a job: header, stage tracker, enzyme totals, purities, mutation chance, recipes, outcomes | the `Refresh*` panels, projected percent and mutation helpers, `DescribeServerDay`, `DescribeColorCounts`, `GetErraticGeniusBonus` | ~380 | `BeastMastery`, `IncubationFieldNote`, `KeyItem`, `Perk` |
-| `IncubatorItemService` | singleton | items placed in the DNA and enzyme slots, held and returned items, their stats | `RemoveDNA`, `ReturnItemsHeldElsewhere`, `RestoreHeldItems`, `LoadDNAStats`, `LoadJobStats`, `Add`, `Subtract` and `ApplyItemStats`, `DescribeEnzyme`, `EnzymeTitle`, `ClearStats`, `ResetPendingEnzymes`, the DNA and enzyme click bodies | ~400 | `Item`, `Targeting` |
-| `IncubatorJobService` | singleton | the job: validate, start, continue, cancel, complete | `GetJob`, `IsJobComplete`, `ValidateCreateJob`, `StartJob`, `GetStageTotal`, `CalculateIncubationSeconds`, the job click bodies | ~230 | `BeastMastery`, `DB`, `Gui`, `Perk` |
-| `IncubatorViewModel` (stays) | view model | bindings, `SwitchViews`, `Initialize`, forwarders, refresh events | the rest | ~330 | 3 parts + `Gui` = 4 |
+| Part | Layer | Uses | Moves | Lines | Services | Kind |
+|---|---|---|---|---:|---|---|
+| `IncubatorSession` | 0 | - | the 12 state fields | ~70 | 0 | verbatim |
+| `IncubatorJobCalculator` | 0 | - | `GetJob`, `IsJobComplete`, `CalculateIncubationSeconds`, `GetErraticGeniusBonus`, `GetProjectedMutationChance`, `GetStageTotal`, `NumberOfStages` | ~85 | `DB`, `Perk` (2) | verbatim |
+| `IncubatorPanelService` | 1 | calculator | `RefreshHeader`, `DescribeServerDay`, `RefreshStageTracker`, `RefreshEnzymeTotals`, `DescribeColorCounts`, `RefreshPurities`, `GetProjectedPercent`, `RefreshMutation`, `RefreshRecipes`, `RefreshOutcomes`, `RefreshIncubationTime` | ~330 | `BeastMastery`, `IncubationFieldNote`, `KeyItem` + calculator (4) | verbatim |
+| `IncubatorItemService` | 1 | calculator | `RemoveDNA`, `ReturnItemsHeldElsewhere`, `RestoreHeldItems`, `ClearStats`, `ResetPendingEnzymes`, `LoadJobStats`, the DNA click body, `LoadDNAStats`, the item-stat helpers, `DescribeEnzyme`, `EnzymeTitle`, `OnClickEnzyme` | ~370 | `Item`, `Targeting` + calculator (3) | verbatim |
+| `IncubatorJobService` | 1 | calculator | `ValidateCreateJob`, `StartJob`, the start, continue, cancel and complete click bodies | ~190 | `BeastMastery`, `DB`, `Gui`, `Perk` + calculator (5) | verbatim |
+| `IncubatorViewModel` (stays) | - | all four | bindings, `SwitchViews`, `RefreshAllStats` (stay, reached through the host), the enzyme forwarders, toggles, `Initialize`, refresh events, the host | ~410 | the four parts + `Gui` (5) | - |
+
+The click bodies call `host.ShowModal`, `host.SwitchViews` and `host.RefreshAllStats`; the refresh tails stay in the view model
+and no part uses the panel service except through the host.
 
 ### 3.5 DisguiseViewModel (1,029 lines)
 
-**What it is.** 35 bindings (215 lines), 15 handlers (218), 2 refresh events, about 450 lines of methods. Services: `Disguise`
-10, `Cache` 4, `DB` 4. Carried state: ten fields (disguise ids, sound set ids, indexes, option pages, page index, selection,
-suppress flag, active portrait). No static state or handlers. It is 29 lines over the limit, and one responsibility is clearly
-separable: the sound-set picker, about 220 lines (`LoadSoundSetOptions` through `RefreshSoundSetBindings`, the previous, next
-and preview handlers, and the portrait resref helper), which owns six of the ten fields.
+**What it is.** 35 bindings (215 lines), 15 handlers (218), 2 refresh events, about 450 lines of methods. Services: `Disguise` 10, `Cache` 4,
+`DB` 4. Carried state: ten fields. No static state or handlers. It is 29 lines over the limit. One responsibility is separable:
+the sound-set picker, `LoadSoundSetOptions` to `RefreshSoundSetBindings` (`:847-1010`, 164 lines), the preview body (14) and the
+paging fields; it owns six of the ten fields. The portrait helpers (`:1012-1027`) are not part of it and stay.
 
-**Tests.** `EspionageDisguisePerkTests` (two source reads: activation-delay text and perk refresh methods, neither in the picker),
-`PlayerNameRecognitionTests` (718, 976 to 1049: constants on the view model and the definition's source), `GameTextEncodingTests`
-(50), `DisguiseKnownNameEngineTests`.
+**Tests.** `EspionageDisguisePerkTests` (source reads of the activation-delay text and perk refresh methods, neither in the picker),
+`PlayerNameRecognitionTests` (718, 976-1049), `GameTextEncodingTests` (50), `DisguiseKnownNameEngineTests`.
 
-| Part | Kind | Responsibility | Moves | Lines | Services |
-|---|---|---|---|---:|---|
-| `DisguiseSoundSetPicker` | private collaborator, `Feature/GuiDefinition/DisguiseWindow/` | the sound-set combo, its paging and preview, and the portrait resref | the nine sound-set methods, the paging fields, `ResolvePortraitResref`, `GetMaxPortraitCount` | ~250 | `Cache` (passed by the view model) |
-| `DisguiseViewModel` (stays) | view model | bindings, list, selection, edit and activate handlers, layout partials | the rest | ~830 | `Disguise`, `DB`, `Cache` = 3 |
+| Part | Layer | Uses | Moves | Lines | Services | Kind |
+|---|---|---|---|---:|---|---|
+| `DisguiseSoundSetPicker` (private collaborator the view model creates in `Initialize`) | 0 | - | `LoadSoundSetOptions`, `SelectSoundSet`, `GetDefaultSoundSetId`, `SanitizeSoundSetIndex`, `SanitizeSoundSetPageIndex`, `GetCurrentSoundSetPageSize`, `GetSoundSetPageCount`, `LoadSoundSetPageNumbers`, both `LoadSoundSetPageOptions`, `GetSelectedSoundSetIndexOnCurrentPage`, `SetSelectedSoundSetFromPageIndex`, `RefreshSoundSetBindings`, the preview body; the six paging fields | ~215 | `Cache` (1, passed by the view model) | verbatim |
+| `DisguiseViewModel` (stays) | - | the picker | bindings and the two setters (they call the picker), list, selection, edit and activate handlers, layout partials, the portrait helpers (`GetMaxPortraitCount` and `ResolvePortraitResref`, which lose `static` because they reach `Cache`), the host | ~890 | `Disguise`, `DB`, `Cache` (3) | rewrite (the two setter bodies call the picker) |
 
-The view model has about 170 lines of room under the limit. Moving the activate, retire and save flows too is not needed and is
-not proposed.
+About 110 lines of room remain under the limit. Moving the activate, retire and save flows too is not proposed.
 
 ### 3.6 DroidAssemblyViewModel (1,023 lines)
 
-**What it is.** 43 bindings (215 lines), 9 handlers (370), about 310 lines of methods. Services: `Droid` 13, `Item` 12,
-`Targeting` 5. Carried state: five part serials and 32 integer tallies (tier, level, AI slots, HP, stamina, 6 abilities,
-12 weapon skills, armor, 8 resistances). Largest methods: `OnClickConstruct` 123, `AddPart` 87, `Reset` 60, `RemovePart` 55.
-Handlers `OnClickHead`, `Body`, `Arms` and `Legs` are 43 lines each and differ only by slot; they move as they are.
+**What it is.** 43 bindings (215 lines), 9 handlers (370), about 310 lines of methods. Services: `Droid` 13, `Item` 12, `Targeting` 5. Carried
+state: five part serials and 32 integer tallies. Largest methods: `OnClickConstruct` 123, `AddPart` 87, `Reset` 60, `RemovePart` 55. The four
+slot handlers (43 lines each) differ by slot and move as they are. Tests: only `StationReturnInventorySpaceEngineTests`. `DroidService` is
+split last (owner decision 5); the `Droid` calls in the new parts are re-pointed then.
 
-**Tests.** Only `StationReturnInventorySpaceEngineTests` (opens it, reads the view model).
-
-| Part | Kind | Responsibility | Moves | Lines | Services |
-|---|---|---|---|---:|---|
-| `DroidAssemblySession` | per-window data, `Feature/GuiDefinition/DroidAssemblyWindow/` | part serials and tallies | the 37 fields | ~60 | 0 |
-| `DroidAssemblyStatsService` | singleton | the tally and its display | `RefreshStats`, `AdjustResistances`, `AddPart`, `RemovePart` | ~240 | `Item` |
-| `DroidAssemblyActionService` | singleton | installing, returning, resetting and constructing | the five part-click bodies, `Reset`, `ReturnParts`, `ReturnPart`, `OnClickConstruct`, new droid | ~480 | `Droid`, `Item`, `Targeting`, `DroidAssemblyStatsService` |
-| `DroidAssemblyViewModel` (stays) | view model | bindings, `Initialize`, forwarders | the rest | ~380 | 2 parts |
-
-`DroidService` is split last (owner decision 5), so the `Droid.` calls in the new parts are re-pointed then.
+| Part | Layer | Uses | Moves | Lines | Services | Kind |
+|---|---|---|---|---:|---|---|
+| `DroidAssemblySession` | 0 | - | the 37 fields | ~60 | 0 | verbatim |
+| `DroidAssemblyStatsService` | 0 | - | `RefreshStats`, `AdjustResistances`, `AddPart`, `RemovePart` | ~240 | `Item` (1) | verbatim |
+| `DroidAssemblyActionService` | 1 | stats service | the five part-click bodies, `Reset`, `ReturnParts`, `ReturnPart`, `ShowError`, `ClearError`, new droid, `OnClickConstruct` | ~480 | `Droid`, `Item`, `Targeting` + stats (4) | verbatim |
+| `DroidAssemblyViewModel` (stays) | - | both | bindings, `Initialize`, forwarders, `OnWindowClosed`, the host | ~420 | 2 parts | - |
 
 ### 3.7 EquipmentStats (1,131 lines, static)
 
-**What it is.** A static class with 120 `GameServices` lookups and 8 services (`DB` 40, `StatRecord` 38, `Stat` 24,
-`Resistance` 6, `CreatureStat` 4, `Gui` 3, `PowerGloveEquipment` 2, `Item` 2). It has one boot handler
-(`RegisterStatActions`, `Rerun`) that registers 21 item property actions with `Stat`, five event handlers
-(`ApplyStats`, `RemoveStats` and three refresh handlers that run after an equipment change), the public `ApplyItemStats`,
-`ApplyStatAmount` and `HandledPropertyTypes`, and 21 private `Apply*` actions of 10 to 66 lines each. The 21 actions differ
-by stat family: each has a player branch (adjust the record, `DB.Set`) and an NPC branch (rewrite a skin item property, through
-`ReapplyNPCStat` for 15 of them). No method is over 150 lines. Callers outside the class: `LootStatRevisionMigration`
-(`ApplyStatAmount`) and doc references in `Stat` and `SavedCharacter`. The gear-fed rule (`CodingStandards.md`) applies: a
-record that sums worn gear is rebuilt from the slots by `Stat.RefreshPlayerEquipmentStats`, which this item does not touch.
+**What it is.** A static class with 120 `GameServices` lookups and 8 services (`DB` 40, `StatRecord` 38, `Stat` 24, `Resistance` 6, `CreatureStat` 4, `Gui` 3,
+`PowerGloveEquipment` 2, `Item` 2). It has one boot handler (`RegisterStatActions`, `Rerun`, `:30-53`: 21 method groups), five event handlers
+(`ApplyStats`, `RemoveStats` and three refresh handlers after an equipment change), `ApplyItemStats`, `ApplyStatAmount`,
+`HandledPropertyTypes`, and 21 private actions of 10 to 66 lines. Each action has a player branch (adjust the record, `DB.Set`); 15 also have an
+NPC branch through `ReapplyNPCStat`, Defense and Resistance their own; the three craft actions have a player branch only. No method is over
+150 lines. The gear-fed rule (`CodingStandards.md`) applies: records summed from worn gear are rebuilt by `StatRecord.RefreshPlayerEquipmentStats`,
+which this item does not touch. The displaced-record constant `EQUIPMENT_DISPLACED_RECORD_STATS` is written in `ApplyStats` (`:125`) and
+read in the refresh handler (`:224`); the three refresh handlers sit in `ScriptHandlerOrder.txt:624-626` and `647-649`.
 
-**Tests.** `EquipmentStatActionTests` (36 tests with the fake world), `EquipmentStatsTests` (10), `StatRulesTests` (103 to 108: the
-registration order of `HandledPropertyTypes`), `EquipmentRecordReconciliationTests`, `MaxHitPointsReconciliationTests`,
-`CombatReadinessEquipmentTests` and `AccuracyItemPropertyTests` (the last three parse `EquipmentStats.cs` with Roslyn or read it,
-and read handler attributes by reflection), `TwinPistolEquipmentEngineTests`, `EquipmentRecordReconciliationEngineTests`,
-the Power Glove engine tests. `BootHandlerClassification.txt` has the `RegisterStatActions` line.
+**Callers and tests.** `LootStatRevisionMigration.cs:25` calls `ApplyStatAmount`, which stays public static, so it is not edited.
+`EquipmentStatActionTests` (36), `EquipmentStatsTests` (10), `StatRulesTests` (103-108, registration order), `EquipmentRecordReconciliationTests`,
+`MaxHitPointsReconciliationTests`, `CombatReadinessEquipmentTests` and `AccuracyItemPropertyTests` (the last three parse `EquipmentStats.cs`;
+the stay-type keeps the handlers they parse), `TwinPistolEquipmentEngineTests`, the reconciliation and Power Glove engine tests.
+`SWLOR.CraftSim/Legacy/LegacySource.cs:84-87` (`GearStats`) cites `EquipmentStats` lines 930-1126 and four anchors for Control, Craftsmanship and
+CP Bonus; PR 1 re-cites it to `EquipmentCraftStatActions.cs` with new lines, checked by `LegacySourceTests.cs:27-45`.
 
-| Part | Kind, folder | Responsibility | Moves | Lines | Services |
-|---|---|---|---|---:|---|
-| `EquipmentVitalStatActions` | singleton, `Feature/EquipmentStatActions/` | HP, FP, FP regen, STM, STM regen, Combat Readiness | six `Apply*` | ~255 | `StatRecord`, `DB`, `CreatureStat` |
-| `EquipmentRatingStatActions` | singleton | Attack, Accuracy, Force Attack, Defense, Resistance, Evasion | six `Apply*` | ~320 | `StatRecord`, `DB`, `Item`, `Resistance` |
-| `EquipmentFieldStatActions` | singleton | Stealth, Detection, trap bonus, disarm, poison, lockpicking | six `Apply*` | ~240 | `StatRecord`, `DB` |
-| `EquipmentCraftStatActions` | singleton | Control, Craftsmanship, CP Bonus | three `Apply*` | ~180 | `StatRecord`, `DB` |
-| `NpcSkinStatWriter` | static helper, no service | rewrite one skin property for an NPC | `ReapplyNPCStat` | ~45 | 0 (NWScript only) |
-| `EquipmentStats` (stays) | singleton (see below) | registration, equip and unequip handlers, the three after-change refreshes, `ApplyItemStats`, `ApplyStatAmount`, `HandledPropertyTypes` | the rest | ~270 | `Stat`, `Item`, `PowerGloveEquipment`, `StatRecord`, `CreatureStat`, `Gui` + 4 parts = 10 |
+| Part | Layer | Uses | Moves | Lines | Services | Kind |
+|---|---|---|---|---:|---|---|
+| `NpcSkinStatWriter` (static) | 0 | - | `ReapplyNPCStat` | ~45 | 0 (NWScript only) | verbatim |
+| `EquipmentVitalStatActions` (static) | 1 | writer | HP, FP, FP regen, STM, STM regen, Combat Readiness | ~255 | `StatRecord`, `DB`, `CreatureStat` (3) | verbatim |
+| `EquipmentRatingStatActions` (static) | 1 | writer | Attack, Accuracy, Force Attack, Defense, Resistance, Evasion | ~320 | `StatRecord`, `DB`, `Item`, `Resistance` (4) | verbatim |
+| `EquipmentFieldStatActions` (static) | 1 | writer | Stealth, Detection, trap bonus, disarm, poison, lockpicking | ~240 | `StatRecord`, `DB` (2) | verbatim |
+| `EquipmentCraftStatActions` (static) | 0 | - | Control, Craftsmanship, CP Bonus | ~180 | `StatRecord`, `DB` (2) | verbatim |
+| `EquipmentStats` (stays, static) | - | the four action types | registration, equip and unequip handlers, the three refreshes with their constant, `ApplyItemStats`, `ApplyStatAmount`, `HandledPropertyTypes` | ~270 | `Stat`, `Item`, `PowerGloveEquipment`, `StatRecord`, `CreatureStat`, `Gui` (6) | rewrite (`RegisterStatActions` lambdas) |
 
-`RegisterStatActions` stays on `EquipmentStats`, with the same name and `Rerun` phase, and registers the parts' methods in the
-same order, so `HandledPropertyTypes` order and the boot line do not change. A static class cannot take parts through a
-constructor, so `EquipmentStats` becomes a singleton in PR 1 (the content tool converts it with its test call sites; wave C8
-loses this file). Fallback if the build counts 11: move the three after-change refresh handlers into their own singleton.
-Question 1.
+`RegisterStatActions` keeps its name, phase and order and registers a lambda per action, for example
+`(creature, item, ip, adding) => EquipmentVitalStatActions.ApplyHPBonus(creature, item, ip, adding)`, so `HandledPropertyTypes` and the boot line do
+not change. The new static types still use the lookup, so the total of `StaticLookups.txt` is unchanged (the count moves from one file to five;
+C8 converts them). If a later item splits the refresh handlers, the writer and the reader of the displaced-record constant stay in one type and the
+three handlers keep their names.
 
 ## 4. Proof that nothing changes
 
 ### 4.1 View models (all but PlayerGuide)
 
-1. **Transcript groundwork (PR 0, tests only).** A reusable recorder, copied from `AppearanceEditorBindingIdentityEngineTests`
-   (the appearance test is not touched, because P5-16e still edits it): it records every `PropertyChanged` binding name, its
-   order and its JSON from `GuiPropertyConverter`, plus the opening state. It adds, per step, the saved record JSON
-   (`Player`, `Beast`, `Disguise` and the like, dates masked) and every message sent to the player, because moved code
-   mostly writes data and messages, not bindings. Transcripts are captured on `343f6b31b` before any move and committed as
-   embedded fixtures.
-2. **Scripts per window** (each a fixed run of the window's interactions):
-   - Perks: open; select an unowned, an owned and a maxed perk; buy; refund; next and previous page; the four filters; search;
-     category and sort change; beast mode; a perk that adds a hot bar feat.
-   - Character sheet: open on self, on an NPC target (DM mode) and on a beast; the four tabs; an attribute upgrade through the
-     modal; equip and unequip refresh; dual wield (the engine test setup); skill XP and stat adjustment refresh.
-   - Incubator: new job; place DNA and three enzymes; toggles; start; in progress; stage complete; continue; cancel; complete;
-     reopen with items held elsewhere.
-   - Disguise: open; new; save; edit; activate; deactivate; retire; unretire; portrait steps; sound-set paging and preview; empty
-     state.
-   - Droid assembly: open; install CPU, head, body, arms, legs; remove each; error text; construct; reset; new.
-3. **PlayerGuide** is static data, so the proof is a unit test: a text dump of every topic (name, category, summary, rail
-   summary, blocks, questions, related topics), captured before the move and compared byte for byte after it; plus the
-   existing `PlayerGuideContentTests`.
-4. **Moved bodies.** A normalized-body comparison of old and new text per moved method, run as a script and attached to the
-   PR (the P5-16e approach), allowing only the `Player` to `player` parameter change and the call prefixes.
-5. **Tests** (build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`, then filters): the classes named in each
-   section, `Phase5DebtTests`, `ConvertedServicesTests`, `BootHandlerClassification`, `GuiServiceReloadTests`; the engine
-   classes above, with identical pass sets before and after.
-6. **Client evidence** (`InEngineVisualVerification.md`), captured before the first PR and after each PR for that window, on
-   one character (and one DM possession for the sheet): Perks (my perks list, a selected perk, beast tab, after buy, after
-   refund); sheet (the four tabs, the upgrade prompt, an NPC target, a dual-wield character); guide (first topic, search
-   results, a topic with questions and related topics); incubator (new job, items placed, in progress, stage complete);
-   disguise (list, edit form with a sound-set page, retired, empty); droid (empty, all five parts, error). The captures are
-   compared and shown in each PR.
+1. **Groundwork (PR 0).** A recorder, copied from `AppearanceEditorBindingIdentityEngineTests` (that test is not touched), that is attached to the
+   view model before `Bind`, so the opening order is recorded: every `PropertyChanged` name, order and JSON from `GuiPropertyConverter`. It also records
+   every partial-view swap (`SwitchViews`, `RefreshLayoutPartials`, `Tabs.Select`), `WatchOnClient` registration, `Gui.PublishRefreshEvent`,
+   `EventsPlugin.SignalEvent`, `ExportSingleCharacter`, feats and quick-bar slots, items created, destroyed and returned, key items and field notes,
+   `CreatureStat.ApplyPlayerStat`, sounds played and targeting entry. Service calls are recorded by spy decorators over the real services
+   (`IGuiService`, `ITargetingService`, `IKeyItemService`, `IIncubationFieldNoteService`, `ICreatureStatService`); engine state is dumped after every step.
+2. **A real player record.** The scripts run on the `Player` entity that the engine fixture really saves, filled to production shape (skills at ranks,
+   perks, SP and AP, a beast, disguises, held incubator items), not a stub.
+3. **A fixed clock.** The time-dependent files read time through the existing clock seam: PR 0 adds `IncubatorViewModel.cs` and `PerksViewModel.cs` to
+   `tools/Refactor/ClockSeamFiles.txt` and rewrites `DateTime.UtcNow` to `Clock.UtcNow` mechanically (`IncubatorViewModel.cs:129, 254, 888, 1017, 1038, 1158`;
+   `PerksViewModel.cs:432, 962, 1360-1362, 1412`), with `FrozenClock` in the scripts. No text is masked. This is the one production edit in PR 0.
+4. **Scripts per window.** Perks: open; select an unowned, an owned and a maxed perk; buy; refund; pages; four filters; search; category and sort; beast
+   mode; a perk that adds a hot bar feat. Sheet: open on self, an NPC target (DM mode) and a beast; the four tabs; an attribute upgrade through the modal;
+   equip, unequip and refresh events; dual wield; skill XP and stat adjustment. Incubator: new job; DNA and three enzymes; toggles; start; in progress;
+   stage complete; continue; cancel; complete; reopen with held items. Disguise: open; new; save; edit; activate; deactivate; retire; unretire; portrait;
+   sound-set paging and preview; empty state. Droid: open; install the five parts; remove each; error; construct; reset; new.
+5. **Rewrites get their own proof.** `RefreshEquipmentStats` and the stat row orchestrator (sheet), the picker's setter calls (Disguise): a dump of every binding
+   `RefreshEquipmentStats` writes and every row of the stats table (name, value, tooltip, order) for six fixtures (player with a one-hand weapon, dual wield,
+   Twin Pistol, a beast, an NPC target, high-resource stats), captured on the base commit and compared after the PR. The catalog composition (PlayerGuide)
+   and the `RegisterStatActions` lambdas (EquipmentStats) have their own checks below.
+6. **PlayerGuide** is static data: a text dump of every topic (name, category, summary, rail summary, blocks, questions, related topics) in list order,
+   captured before the move and compared byte for byte afterwards, plus `PlayerGuideContentTests`.
+7. **Moved bodies.** A normalized-body comparison of old and new text per moved member, run as a script and attached to the PR, allowing only the receiver
+   changes of the host and the `static` removal.
+8. **Tests.** Build once with `-p:RunPostBuildEvent=Never -v q -clp:ErrorsOnly`, then filters for the classes named per type, `Phase5DebtTests`,
+   `ConvertedServicesTests`, `BootHandlerClassification`, `GuiServiceReloadTests`, `PlayerMessageAuditTests`, `DomainMapTests`, `ClockSeamSourceGuardTests`;
+   the engine classes with identical pass sets.
+9. **Client evidence** (`InEngineVisualVerification.md`), before the first PR and after each PR for that window, one character (and one DM possession for the
+   sheet): Perks (my perks, a selected perk, beast tab, after buy, after refund); sheet (the four tabs, upgrade prompt, an NPC target, dual wield); guide (first
+   topic, search results, a topic with questions and related topics); incubator (new job, items placed, in progress, stage complete); disguise (list, edit form
+   with a sound-set page, retired, empty); droid (empty, five parts, error).
 
 ### 4.2 EquipmentStats
 
-1. **Gear-fed results transcript (PR 0).** A unit test on the fake world of `EquipmentStatActionTests` that wears a fixed set of
-   gear and writes the saved player record and the NPC skin properties after each step:
-   a chest with Defense (physical and Force), Resistance, Evasion, Control, Craftsmanship and CP Bonus; a helmet with HP, FP,
-   FP regen, STM, STM regen, Stealth and Detection; boots with trap, disarm, poison and lockpicking; a rifle with Accuracy and
-   Attack; a Combat Readiness item; a Power Glove pair (two copies per hand); a companion pistol (skipped); a DM and a
-   DM-possessed wearer (skipped); an NPC skin that already has values, to hit the remove-at-zero branch. Each is worn,
-   removed, swapped through `ApplyStats` and `RemoveStats`, and followed by the three after-change handlers and
-   `Stat.RefreshPlayerEquipmentStats`. The text is captured on the base commit and compared after each PR. The list of
-   registered types and their order is part of it.
-2. The existing classes above run before and after with identical results, including the Roslyn-based source tests, re-pointed to
-   the files that now hold the moved text, and the engine reconciliation and Twin Pistol tests.
-3. **Client evidence.** One character wears a fixed outfit; the character sheet stats, resistances and crafting tabs and the
-   status bars are captured before and after each PR, and again after unequipping one piece.
-4. `git diff --stat` shows no change to `Stat`, `StatRecord`, `EquipmentStatTotals`, `Module/`, 2DA or `SWLOR_Haks`.
+1. **Gear-fed results transcript (PR 0),** a unit test on the fake world of `EquipmentStatActionTests` that writes the saved player record and the NPC skin
+   properties after each step of a fixed gear set: a chest (Defense physical and Force, Resistance, Evasion, Control, Craftsmanship, CP Bonus), a helmet
+   (HP, FP, FP regen, STM, STM regen, Stealth, Detection), boots (trap, disarm, poison, lockpicking), a rifle (Accuracy, Attack), a Combat Readiness item,
+   a Power Glove pair, a companion pistol, DM and DM-possessed wearers, and an NPC skin that already holds values. Each is worn, removed and swapped through
+   `ApplyStats` and `RemoveStats`, followed by the three refresh handlers and `StatRecord.RefreshPlayerEquipmentStats`. The registered types in order are in it.
+2. **Coverage proves reach.** The transcript test must cover every line of every stat action, both sides of each branch, measured by the coverage run on
+   the five new files and on `EquipmentStats` (no uncovered line without a listed reason). It must therefore include: Force Attack, the weapon early return in
+   `ApplyAccuracy` and the `CreatureItem` case, all four craft subtypes and the unknown-subtype throw in Control, Craftsmanship and CP Bonus, a Defense
+   subtype that is not a defense type, an invalid Resistance type, the NPC removal rules (Defense value `<= 0`, Resistance value `== 0`), the HP NPC branch,
+   `ApplyStatAmount` (including zero and negative amounts and the weapon skip), and both the add and remove side of every player and NPC branch.
+3. The existing classes run before and after with identical results, with the Roslyn-based source tests re-pointed to the files that now hold their text.
+4. **Client evidence:** one character in a fixed outfit; the sheet stats, resistances and crafting tabs and the status bars before and after each PR, and
+   after unequipping one piece.
+5. `git diff --stat` shows no change to `Stat`, `StatRecord`, `EquipmentStatTotals`, `LootStatRevisionMigration`, `Module/`, 2DA or `SWLOR_Haks`.
 
-## 5. PR plan and baseline changes
+## 5. PR plan, baselines and shared files
 
-Each PR starts from up-to-date `origin/feature/maintainability-refactor`, moves at most about 1,000 lines, gets a Codex review
-of its head, and runs the gate with coverage. "Moved" counts the lines taken out of the stay-type.
+Each PR starts from up-to-date `origin/feature/maintainability-refactor`, moves at most about 1,000 lines, gets a Codex review of its head, and runs the
+gate with coverage. "Moved" counts the lines taken out of the stay-type.
 
 | PR | Content | Moved | Stay-type after |
 |---|---|---:|---|
-| 0 | Test groundwork: recorder, the five transcripts, the guide dump, the gear transcript; no production code | 0 | unchanged |
-| 1 | `EquipmentStats` to a singleton (tool run, `LootStatRevisionMigration` and the four test files updated); vitals and craft parts, `NpcSkinStatWriter` | ~600 | ~560 lines |
-| 2 | Rating and field parts | ~530 | ~270 lines, 10 services |
-| 3 | `PlayerGuide`: catalog, eight section types, three data types | ~1,085 | ~290 lines |
-| 4 | `Incubator`: session and three parts | ~1,000 | ~330 lines |
-| 5 | `Disguise` (sound-set picker) and `DroidAssembly` (session and two parts) | ~220 + ~600 | ~830 and ~380 lines |
-| 6 | `Perks`: four parts (after P5-16g merges) | ~1,000 | ~620 lines |
-| 7 | `CharacterSheet`: delay, weapon summary, two value parts, table tabs, row records | ~590 | ~960 lines, still 14 lookups |
-| 8 | `CharacterSheet`: attributes tab | ~220 | ~780 lines, 9 services |
+| 0 | Groundwork: recorder, the transcripts, guide dump, gear transcript, clock seam for Incubator and Perks, the Bible tool pattern | 0 | unchanged |
+| 1 | `EquipmentStats`: writer, vitals and craft types; `RegisterStatActions` lambdas for them; `LegacySource` re-cited; `DomainMap.json` entry | ~600 | ~560 lines |
+| 2 | `EquipmentStats`: rating and field types | ~530 | ~270 lines, 6 services |
+| 3 | PlayerGuide: seven category types, three data types, catalog; edits to the two existing topic types | ~1,085 | ~290 lines |
+| 4 | Incubator: host, session, calculator and three parts | ~850 | ~410 lines |
+| 5 | Disguise (picker) and DroidAssembly (host, session, two parts) | ~180 + ~670 | ~890 and ~420 lines |
+| 6 | Perks: host and four parts (after P5-16g merges); Bible tool path | ~990 | ~620 lines |
+| 7 | CharacterSheet: host, format statics, timing, damage estimate, ratings, attributes tab, entry records | ~455 | ~1,100 lines |
+| 8 | CharacterSheet: four row builders and the table tabs | ~270 | ~880 lines, 8 services |
 
-After PR 7 the sheet is under the line limit but not the service limit; PR 8 finishes it.
+**Baseline and record changes** (each PR regenerates the Phase 5 snapshots with `SWLOR_UPDATE_SNAPSHOTS=1` and reviews the diff):
+- `LargeTypes.txt`: `EquipmentStats` goes in PR 2; the view models in PRs 3, 4, 5 (two), 6 and 8. `ServicesPerType.txt`: the sheet line goes in PR 8.
+- `StaticLookups.txt`: counts drop on every moved line and the new static types get lines (`EquipmentStats` 120 to about 25, then four new files). View models
+  listed in `ContentInjection.json` drop to the base class lookups only.
+- `StaticState.txt`: the `Topics` line moves from `PlayerGuideViewModel` to `PlayerGuideTopicCatalog` (kept); the sheet keeps its 6.
+- `UpwardEdges.txt`: the two sheet rows become three (section 3.3). `LongMethods.txt`: none. `DebtReport.md` is regenerated.
+- `PlayerMessageAudit.json`: 36 rows are re-keyed to the new files and lines (Incubator 11, Disguise 10, Perks 8, sheet 6, Droid 1).
+- `DomainMap.json`: `EquipmentStatActions`. `ContentInjection.json` and `ContentRegistrations.cs`: the new parts and the six view models.
+- `ClockSeamFiles.txt`: the two files (PR 0). `LegacySource.cs`: the `GearStats` reference (PR 1). `BootHandlerClassification.txt`, `HandlerRenames.txt`,
+  `ScriptHandlerOrder.txt`: no change expected, since no handler is renamed or moved; the guard tests confirm it.
+- Source-reading tests in section 3 are re-pointed in the PR that moves their text.
 
-**Baseline changes** (each PR regenerates the Phase 5 snapshots with `SWLOR_UPDATE_SNAPSHOTS=1` and reviews the diff):
-- `LargeTypes.txt`: the seven lines go (`EquipmentStats` in PR 2; the view models in PRs 3, 4, 5 (two), 6 and 7).
-- `ServicesPerType.txt`: the `CharacterSheetViewModel` line goes in PR 8.
-- `StaticLookups.txt`: each file's count drops as its lookups become constructor services (`EquipmentStats` 120 to 0 in PR 1);
-  new files have none.
-- `StaticState.txt`: the `PlayerGuideViewModel` line goes in PR 3. `CharacterSheetViewModel` stays at 6 (Question 3).
-- `UpwardEdges.txt`: the three `CharacterSheetViewModel` rows move to the new files that hold the calls; counts do not change.
-- `LongMethods.txt`: none (P5-16g). `DebtReport.md` is regenerated.
-- `ContentInjection.json` and `ContentRegistrations.cs`: new parts, `EquipmentStats` and each view model that is not the sheet.
-- `BootHandlerClassification.txt`, `HandlerRenames.txt`, `ScriptHandlerOrder.txt`: no change expected (names, phases and order of
-  the handlers are kept); the guard tests confirm it.
-- Source-reading tests listed in section 3 are re-pointed in the PR that moves their text.
+**Shared files edited by other branches:** `ContentInjection.json`, `ContentRegistrations.cs` (generated: rerun the tool, never merge by hand),
+`DomainMap.json`, `PlayerMessageAudit.json`, `ClockSeamFiles.txt` and the Phase 5 baselines (`LargeTypes`, `ServicesPerType`, `StaticLookups`, `StaticState`,
+`UpwardEdges`, `LongMethods`, `DebtReport.md`). After merging the base, regenerate them rather than merging text.
+
+**Master edits and the sync.** Since 2026-10-01 master changed `PlayerGuideViewModel.cs` 21 times, `CharacterSheetViewModel.cs` 17, `EquipmentStats.cs` 16,
+`IncubatorViewModel.cs` 6, `DroidAssemblyViewModel.cs` 6, `PerksViewModel.cs` 5 and `DisguiseViewModel.cs` 0; the freeze ends with P5-5h.
+- **Port table.** Section 3's "Moves" column is the member-to-part table. A master edit to a member that has moved is ported into the part that
+  now holds it (for PlayerGuide, into the category type named for the topic's category in the table); the daily sync's conflict on the old file is resolved
+  by hand that way, with the receiver rule of section 2.
+- **Fixtures after a sync.** When a sync changes text a fixture covers, a transcript or dump is not edited by hand. Recapture it on a temporary branch made
+  from the pre-split base plus master's same commit applied to the old file, with the same script; the diff to the old fixture must be explained by
+  master's change alone. Commit the regenerated fixture in the PR with that explanation, then rerun the PR's comparison.
 
 ## 6. Conflicts and order
 
+Rule 4 (Phase 5): no PR of this item is open on a file while a P5-5, P5-7, P5-10, P5-16e or P5-16g PR is open on it.
+
 | With | Files in common | What to do |
 |---|---|---|
-| P5-16g | `PerksViewModel` (it splits `OnClickBuyUpgrade`), `CombatStyleGuideTopics` (exempt) | PR 6 starts after P5-16g merges. PRs 3 to 5 do not touch its files. |
-| P5-5c to P5-5h (master frozen) | `CharacterSheetViewModel` has one call, `StatusEffect.TryGetLimitedAttackDelayReduction`, that P5-5g's part 6 moves; no other file in this map | PR 7 starts after P5-5g merges, so the call is rewritten once. Everything else runs beside P5-5. |
-| P5-7 (Combat services) | `CharacterSheetViewModel` reaches `CombatAbilityBonus`, `CombatAbilityHit`, `CombatAttackTiming`, `CombatDamageModifiers`, `CombatDamageTaken`, `CombatResources` | PRs 7 and 8 merge before P5-7 starts, so P5-7 edits the small new files. |
-| P5-10 (`PerkService`, `SkillService`, `PlayerNameService`, `BeastMasteryService`, `DroidService`) | Perk 20 calls in Perks, `BeastMastery` in Incubator and the sheet, `Droid` in Droid | PRs 4 to 8 merge before P5-10 starts. It then rewrites receivers in the new parts, which already name their services in one place each. |
-| P5-9 (`ItemService`, last) | `Item` in Incubator (17), Droid (12), the sheet, `EquipmentStats` | Same as P5-10: P5-16h goes first. |
-| P5-16e | `Domain/UI` (the sink), the engine test recorder | Question 2. The appearance binding test is not touched. |
-| P5-14 C3, C4, C8 | view model constructors, `EquipmentStats` conversion | P5-14 starts after P5-16 by plan. C8 loses `EquipmentStats` and C3 and C4 find six view models already constructor-injected (the sheet's statics remain). |
+| P5-16g | `PerksViewModel.cs` (it splits `OnClickBuyUpgrade`) | PR 6 opens after P5-16g merges. |
+| P5-5c to P5-5h (master frozen) | `CharacterSheetViewModel.cs` has one call, `StatusEffect.TryGetLimitedAttackDelayReduction`, that P5-5g's part 6 moves; `PlayerMessageAudit.json` (P5-5c edits it) | PRs 7 and 8 do not open while P5-5g is open. The audit file is regenerated after the other merges. |
+| P5-7 (Combat services, after P5-5 in the serial chain) | `CharacterSheetViewModel.cs` reaches `CombatAbilityBonus`, `CombatAbilityHit`, `CombatAttackTiming`, `CombatDamageModifiers`, `CombatDamageTaken`, `CombatResources` | PRs 7 and 8 must be merged before P5-7 starts, so it edits the small new files. |
+| P5-10 (`PerkService`, `SkillService`, `PlayerNameService`, `BeastMasteryService`, `DroidService`) | `Perk` 20 calls in Perks, `BeastMastery` in Incubator and the sheet, `Droid` in Droid | PRs 4 to 8 merge before P5-10 starts; it then rewrites receivers in the new parts, which name each service once. |
+| P5-9 (`ItemService`, last) | `Item` in Incubator, Droid, the sheet, `EquipmentStats` | P5-16h goes first. |
+| P5-16e | none of its files; shared `DomainMap.json`, `ContentInjection.json`, baselines | regenerate after the other merges. The host pattern is its own; `Feature/AppearanceEditing` is not touched. |
+| P5-14 C2, C3, C4, C8 | `EquipmentStats` statics, `LootStatRevisionMigration`, six view models | P5-14 starts after P5-16 by plan. C8 and C2 convert the statics; C3 and C4 find six view models already injected. |
 
-Test files shared between PRs: `PlayerNameRecognitionTests` (Disguise, sheet), `PlayerSkillPointAccountingTests` (Perks, sheet),
-`WeaponDeflectionTests` (guide, sheet), `StationReturnInventorySpaceEngineTests` (Droid, Incubator). Two PRs that share one never
-run at the same time. **Recommended order**, at most three lanes (the coordinator counts P5-5 and P5-16e/f/g agents too):
+Test files shared between PRs: `PlayerNameRecognitionTests` (Disguise, sheet), `PlayerSkillPointAccountingTests` (Perks, sheet), `WeaponDeflectionTests`
+(guide, sheet), `StationReturnInventorySpaceEngineTests` (Droid, Incubator). Two PRs that share one are never open together.
+
+**Order**, at most three lanes (the coordinator counts the P5-5, P5-16e and P5-16g agents too):
 
 1. PR 0.
-2. Lane A: PR 1, PR 2, then PR 3. Lane B: PR 4, then PR 5. Lane C: PR 6 once P5-16g has merged.
-3. PRs 7 and 8 last, after PRs 3, 5 and 6 and after P5-5g, and before P5-7 and P5-10.
+2. Lane A: PR 1, PR 2, then PR 3. Lane B: PR 4, then PR 5. Lane C: PR 6, once P5-16g has merged.
+3. PRs 7 and 8 last: after PRs 3, 5 and 6 and after P5-5g has merged, and both merged before P5-7 starts.
 
 ## 7. Open questions
 
-1. **Convert `EquipmentStats` to a singleton now?** Splitting needs it: a static class cannot take parts. The cost is a
-   mechanical edit of `LootStatRevisionMigration` (migrations are never edited otherwise) and about 60 test call sites, which the
-   content tool writes. **Recommended: yes**, since wave C8 would do it anyway. The alternative (parts register themselves from
-   their own boot handlers) changes the handler list and the registration order that `StatRulesTests` pins.
-2. **One shared `IGuiBindingSink` in `Domain/UI`**, adopted by P5-16e PR 2 in place of `IAppearanceBindingSink` (not written
-   yet). **Recommended: yes**; it costs one rename in a branch with no code for it, and six windows share one seam.
-3. **The sheet's six static members** (`Tabs`, `TopToggles`, `BottomToggles`, three `GuiTableSource` fields) are in
-   `StaticState.txt`, and the content tool refuses to convert a made type with static state. **Recommended:** leave them on the
-   view model, do not list the sheet in `ContentInjection.json`, give it its parts through a hand-written constructor (as P5-16e
-   PR 2 will for the editor), and let C3 classify the six with the owner.
-4. **PlayerGuide in eight section types, one PR of about 1,085 moved lines** (the guide data is a verbatim move, proved by a byte
-   dump). **Recommended: yes, one PR**; the other choice, grouping to four types of about 250 lines, loses the one-to-one match
-   with the P5-16c methods. Say if you want two PRs of about 540.
+None needs the owner now. Three choices are recorded so they are not lost:
+1. **`EquipmentStatActions` in `DomainMap.json`** goes under Character (the rules write Character records); `DomainMapTests` and the upward-edge guard confirm it.
+   Recommended: Character; Gameplay only if the guard flags an edge.
+2. **`CharacterSheetAccuracyRows` sits at 10 services after P5-12.** Recommended: accept; the fallback in section 3.3 splits the critical rows if the build
+   or a later item adds an eleventh.
+3. **Disguise keeps about 110 lines of room.** Recommended: accept; if master grows it past 1,000 before PR 5 merges, the next responsibility to move is the
+   list and slot capacity code (`LoadList`, `RefreshSlotCapacity`), not a numbered piece.

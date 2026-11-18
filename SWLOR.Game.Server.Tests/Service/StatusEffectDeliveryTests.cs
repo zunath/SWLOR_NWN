@@ -44,13 +44,13 @@ public class StatusEffectDeliveryTests
     [Test]
     public void DurationResistanceFeedback_ReportsTheEffectiveDuration()
     {
-        StatusEffect.BuildDurationResistanceMessage(ResistanceType.Mobility, "Immobilized", 10, 9, 3f)
+        StatusEffectRules.BuildDurationResistanceMessage(ResistanceType.Mobility, "Immobilized", 10, 9, 3f)
             .Should().Be("Mobility Resistance reduced Immobilized duration from 30s to 27s.");
-        StatusEffect.BuildDurationResistanceMessage(ResistanceType.Mind, "Confusion", 5, 6, 1f)
+        StatusEffectRules.BuildDurationResistanceMessage(ResistanceType.Mind, "Confusion", 5, 6, 1f)
             .Should().Be("Mind Vulnerability increased Confusion duration from 5s to 6s.");
-        StatusEffect.BuildDurationResistanceMessage(ResistanceType.Mind, "Dazed", 15, 17, 1f)
+        StatusEffectRules.BuildDurationResistanceMessage(ResistanceType.Mind, "Dazed", 15, 17, 1f)
             .Should().Be("Mind Vulnerability increased Dazed duration from 15s to 17s.");
-        StatusEffect.BuildDurationResistanceMessage(ResistanceType.Trauma, "Venom", 5, 5, 6f)
+        StatusEffectRules.BuildDurationResistanceMessage(ResistanceType.Trauma, "Venom", 5, 5, 6f)
             .Should().BeEmpty();
     }
 
@@ -63,11 +63,11 @@ public class StatusEffectDeliveryTests
     public void ControlResistanceFeedback_UsesBothConstrainedDurations(
         int baselineTicks, int resistedTicks, float remainingSeconds, string expected)
     {
-        int Constrain(int ticks) => StatusEffect.ClampConvertedControlDurationTicks(
-            StatusEffect.ClampHardCrowdControlDurationTicks(StatusEffectCategory.HardCrowdControl, ticks, 1f),
+        int Constrain(int ticks) => StatusEffectRules.ClampConvertedControlDurationTicks(
+            StatusEffectRules.ClampHardCrowdControlDurationTicks(StatusEffectCategory.HardCrowdControl, ticks, 1f),
             1f, remainingSeconds);
 
-        StatusEffect.BuildDurationResistanceMessage(ResistanceType.Mind, "Dazed",
+        StatusEffectRules.BuildDurationResistanceMessage(ResistanceType.Mind, "Dazed",
             Constrain(baselineTicks), Constrain(resistedTicks), 1f).Should().Be(expected,
             "feedback must report the remaining control time without crediting the control budget to resistance");
     }
@@ -78,8 +78,8 @@ public class StatusEffectDeliveryTests
         var method = StatusEffectSource.Nodes<MethodDeclarationSyntax>()
             .Single(node => node.Identifier.ValueText == "ApplyStatusEffectInternal");
         var feedback = method.DescendantNodes().OfType<InvocationExpressionSyntax>()
-            .Single(node => node.Expression.ToString() == "BuildDurationResistanceMessage");
-        foreach (var constraint in new[] { "ClampHardCrowdControlDurationTicks", "ClampConvertedControlDurationTicks" })
+            .Single(node => node.Expression.ToString() == "StatusEffectRules.BuildDurationResistanceMessage");
+        foreach (var constraint in new[] { "StatusEffectRules.ClampHardCrowdControlDurationTicks", "StatusEffectRules.ClampConvertedControlDurationTicks" })
         {
             var assignments = method.DescendantNodes().OfType<AssignmentExpressionSyntax>()
                 .Where(node => node.Right is InvocationExpressionSyntax call && call.Expression.ToString() == constraint)
@@ -133,7 +133,7 @@ public class StatusEffectDeliveryTests
     {
         var root = FindRepositoryRoot();
         var calls = StatusEffectSource.Nodes<InvocationExpressionSyntax>()
-            .Where(call => call.Expression.ToString() == "ClampHardCrowdControlDurationTicks").ToArray();
+            .Where(call => call.Expression.ToString() == "StatusEffectRules.ClampHardCrowdControlDurationTicks").ToArray();
         calls.Should().HaveCount(2);
         calls.Should().OnlyContain(call => call.ArgumentList.Arguments.Any(arg =>
             arg.NameColon != null && arg.NameColon.Name.Identifier.ValueText == "isSelfApplied" &&

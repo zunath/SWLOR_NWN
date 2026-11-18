@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 return true;
 
             StatusEffect.RemoveStatusEffect(activator, type, false);
-            SendMessageToPC(activator, $"{StatusEffect.GetStatusEffectName(type)} deactivated.");
+            SendMessageToPC(activator, $"{StatusEffectCatalog.GetStatusEffectName(type)} deactivated.");
             if (CombatRecorder.IsRecording)
                 CombatRecorder.NoteToggleDeactivated(activator);
             return false;

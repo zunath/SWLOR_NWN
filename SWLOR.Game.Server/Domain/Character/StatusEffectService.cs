@@ -36,7 +36,6 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
         [ReloadState(ReloadStateKind.Carried)]
         private readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
-        private readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly HashSet<string> _suppressedStatusEffectRemovalIds = new();
         [ReloadState(ReloadStateKind.Runtime)]
@@ -45,158 +44,8 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly Dictionary<uint, int> _nativeAttackSwingDepth = new();
         [ReloadState(ReloadStateKind.Runtime)]
         private readonly Dictionary<uint, List<Action>> _deferredNativeAttackStatusEffects = new();
-        private static readonly FrozenDictionary<EffectIconType, AbilityType> _abilityIncreaseIconType = new Dictionary<EffectIconType, AbilityType>
-        {
-            { EffectIconType.AbilityIncreaseSTR, AbilityType.Might },
-            { EffectIconType.AbilityDecreaseSTR, AbilityType.Might },
-            { EffectIconType.AbilityIncreaseDEX, AbilityType.Perception },
-            { EffectIconType.AbilityDecreaseDEX, AbilityType.Perception },
-            { EffectIconType.AbilityIncreaseCON, AbilityType.Vitality },
-            { EffectIconType.AbilityDecreaseCON, AbilityType.Vitality },
-            { EffectIconType.AbilityIncreaseINT, AbilityType.Agility },
-            { EffectIconType.AbilityDecreaseINT, AbilityType.Agility },
-            { EffectIconType.AbilityIncreaseWIS, AbilityType.Willpower },
-            { EffectIconType.AbilityDecreaseWIS, AbilityType.Willpower },
-            { EffectIconType.AbilityIncreaseCHA, AbilityType.Social },
-            { EffectIconType.AbilityDecreaseCHA, AbilityType.Social },
-        }.ToFrozenDictionary();
-
-        private static readonly FrozenDictionary<EffectIconType, EffectTypeScript> _effectIconToEffectType = new Dictionary<EffectIconType, EffectTypeScript>
-        {
-            { EffectIconType.Invalid, EffectTypeScript.Invalideffect },
-            { EffectIconType.DamageResistance, EffectTypeScript.DamageResistance },
-            { EffectIconType.Regenerate, EffectTypeScript.Regenerate },
-            { EffectIconType.DamageReduction, EffectTypeScript.DamageReduction },
-            { EffectIconType.TemporaryHitpoints, EffectTypeScript.TemporaryHitpoints },
-            { EffectIconType.Entangle, EffectTypeScript.Entangle },
-            { EffectIconType.Invulnerable, EffectTypeScript.Invulnerable },
-            { EffectIconType.Fatigue, EffectTypeScript.Invalideffect },
-            { EffectIconType.Deaf, EffectTypeScript.Deaf },
-            { EffectIconType.Immunity, EffectTypeScript.Immunity },
-            { EffectIconType.EnemyAttackBonus, EffectTypeScript.EnemyAttackBonus },
-            { EffectIconType.Charmed, EffectTypeScript.Charmed },
-            { EffectIconType.Confused, EffectTypeScript.Confused },
-            { EffectIconType.Frightened, EffectTypeScript.Frightened },
-            { EffectIconType.Dominated, EffectTypeScript.Dominated },
-            { EffectIconType.Paralyze, EffectTypeScript.Paralyze },
-            { EffectIconType.Dazed, EffectTypeScript.Dazed },
-            { EffectIconType.Stunned, EffectTypeScript.Stunned },
-            { EffectIconType.Sleep, EffectTypeScript.Sleep },
-            { EffectIconType.Poison, EffectTypeScript.Poison },
-            { EffectIconType.Disease, EffectTypeScript.Disease },
-            { EffectIconType.Curse, EffectTypeScript.Curse },
-            { EffectIconType.Silence, EffectTypeScript.Silence },
-            { EffectIconType.Turned, EffectTypeScript.Turned },
-            { EffectIconType.Haste, EffectTypeScript.Haste },
-            { EffectIconType.Slow, EffectTypeScript.Slow },
-            { EffectIconType.AbilityIncreaseSTR, EffectTypeScript.AbilityIncrease },
-            { EffectIconType.AbilityDecreaseSTR, EffectTypeScript.AbilityDecrease },
-            { EffectIconType.AttackIncrease, EffectTypeScript.AttackIncrease },
-            { EffectIconType.AttackDecrease, EffectTypeScript.AttackDecrease },
-            { EffectIconType.DamageIncrease, EffectTypeScript.DamageIncrease },
-            { EffectIconType.DamageDecrease, EffectTypeScript.DamageDecrease },
-            { EffectIconType.DamageImmunityIncrease, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunityDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.ACIncrease, EffectTypeScript.ACIncrease },
-            { EffectIconType.ACDecrease, EffectTypeScript.ACDecrease },
-            { EffectIconType.MovementSpeedIncrease, EffectTypeScript.MovementSpeedIncrease },
-            { EffectIconType.MovementSpeedDecrease, EffectTypeScript.MovementSpeedDecrease },
-            { EffectIconType.SpellResistanceIncrease, EffectTypeScript.SpellResistanceIncrease },
-            { EffectIconType.SpellResistanceDecrease, EffectTypeScript.SpellResistanceDecrease },
-            { EffectIconType.SkillIncrease, EffectTypeScript.SkillIncrease },
-            { EffectIconType.SkillDecrease, EffectTypeScript.SkillDecrease },
-            { EffectIconType.Invisibility, EffectTypeScript.Invisibility },
-            { EffectIconType.ImprovedInvisibility, EffectTypeScript.ImprovedInvisibility },
-            { EffectIconType.Darkness, EffectTypeScript.Darkness },
-            { EffectIconType.DispelMagicAll, EffectTypeScript.DispelMagicAll },
-            { EffectIconType.ElementalShield, EffectTypeScript.ElementalShield },
-            { EffectIconType.LevelDrain, EffectTypeScript.NegativeLevel },
-            { EffectIconType.Polymorph, EffectTypeScript.Polymorph },
-            { EffectIconType.Sanctuary, EffectTypeScript.Sanctuary },
-            { EffectIconType.TrueSeeing, EffectTypeScript.TrueSeeing },
-            { EffectIconType.SeeInvisibility, EffectTypeScript.SeeInvisible },
-            { EffectIconType.Timestop, EffectTypeScript.Timestop },
-            { EffectIconType.Blindness, EffectTypeScript.Blindness },
-            { EffectIconType.SpellLevelAbsorption, EffectTypeScript.SpellLevelAbsorption },
-            { EffectIconType.DispelMagicBest, EffectTypeScript.DispelMagicBest },
-            { EffectIconType.AbilityIncreaseDEX, EffectTypeScript.AbilityIncrease },
-            { EffectIconType.AbilityDecreaseDEX, EffectTypeScript.AbilityDecrease },
-            { EffectIconType.AbilityIncreaseCON, EffectTypeScript.AbilityIncrease },
-            { EffectIconType.AbilityDecreaseCON, EffectTypeScript.AbilityDecrease },
-            { EffectIconType.AbilityIncreaseINT, EffectTypeScript.AbilityIncrease },
-            { EffectIconType.AbilityDecreaseINT, EffectTypeScript.AbilityDecrease },
-            { EffectIconType.AbilityIncreaseWIS, EffectTypeScript.AbilityIncrease },
-            { EffectIconType.AbilityDecreaseWIS, EffectTypeScript.AbilityDecrease },
-            { EffectIconType.AbilityIncreaseCHA, EffectTypeScript.AbilityIncrease },
-            { EffectIconType.AbilityDecreaseCHA, EffectTypeScript.AbilityDecrease },
-            { EffectIconType.ImmunityAll, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityMind, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityPoison, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityDisease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityFear, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityTrap, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityParalysis, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityBlindness, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityDeafness, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunitySlow, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityEntangle, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunitySilence, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityStun, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunitySleep, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityCharm, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityDominate, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityConfuse, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityCurse, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityDazed, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityAbilityDecrease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityAttackDecrease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityDamageDecrease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityDamageImmunityDecrease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityACDecrease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityMovementSpeedDecrease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunitySpellResistanceDecrease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunitySkillDecrease, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityKnockdown, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityNegativeLevel, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunitySneakAttack, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityCriticalHit, EffectTypeScript.Immunity },
-            { EffectIconType.ImmunityDeathMagic, EffectTypeScript.Immunity },
-            { EffectIconType.Taunted, EffectTypeScript.Invalideffect },
-            { EffectIconType.SpellImmunity, EffectTypeScript.SpellImmunity },
-            { EffectIconType.Etherealness, EffectTypeScript.Ethereal },
-            { EffectIconType.Concealment, EffectTypeScript.Concealment },
-            { EffectIconType.Petrified, EffectTypeScript.Petrify },
-            { EffectIconType.EffectSpellFailure, EffectTypeScript.SpellFailure },
-            { EffectIconType.DamageImmunityMagic, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunityAcid, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunityCold, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunityDivine, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunityElectrical, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunityFire, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunityNegative, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunityPositive, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunitySonic, EffectTypeScript.DamageImmunityIncrease },
-            { EffectIconType.DamageImmunityMagicDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.DamageImmunityAcidDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.DamageImmunityColdDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.DamageImmunityDivineDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.DamageImmunityElectricalDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.DamageImmunityFireDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.DamageImmunityNegativeDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.DamageImmunityPositiveDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.DamageImmunitySonicDecrease, EffectTypeScript.DamageImmunityDecrease },
-            { EffectIconType.Charge, EffectTypeScript.MovementSpeedIncrease },
-            { EffectIconType.Dedication, EffectTypeScript.Invalideffect },
-            { EffectIconType.FrenziedShout, EffectTypeScript.Invalideffect },
-            { EffectIconType.Rejuvenation, EffectTypeScript.Regenerate },
-            { EffectIconType.SoldiersPrecision, EffectTypeScript.AttackIncrease },
-            { EffectIconType.SoldiersSpeed, EffectTypeScript.MovementSpeedIncrease },
-            { EffectIconType.SoldiersStrike, EffectTypeScript.DamageIncrease },
-        }.ToFrozenDictionary();
-
-        private readonly IResistanceService _resistance;
-        private readonly IPvpCombatService _pvpCombat;
-        private readonly IStealthService _stealth;
+        private readonly IStatusResistance _resistance;
+        private readonly IStatusEffectCatalogService _statusCatalog;
         private readonly IMeleeTechniqueService _meleeTechnique;
         private readonly ICharacterRecording _combatRecorder;
         private readonly IMessagingService _messaging;
@@ -204,17 +53,14 @@ namespace SWLOR.Game.Server.Domain.Character
         private readonly IGuiRefreshPublisher _gui;
         private readonly ICapstoneProofService _capstoneProof;
         private readonly IDBService _db;
-        private readonly IQuickCastService _quickCast;
         private readonly Lazy<IStatService> _stat;
         private readonly IAbilityCatalog _catalog;
         private readonly IActiveAbilityImpact _activeImpact;
         private readonly Lazy<ICombatAbilityImpactService> _abilityImpact;
-        private readonly Lazy<ICombatAttackTimingService> _attackTiming;
 
         public StatusEffectService(
-            IResistanceService resistance,
-            IPvpCombatService pvpCombat,
-            IStealthService stealth,
+            IStatusResistance resistance,
+            IStatusEffectCatalogService statusCatalog,
             IMeleeTechniqueService meleeTechnique,
             ICharacterRecording combatRecorder,
             IMessagingService messaging,
@@ -222,16 +68,13 @@ namespace SWLOR.Game.Server.Domain.Character
             IGuiRefreshPublisher gui,
             ICapstoneProofService capstoneProof,
             IDBService db,
-            IQuickCastService quickCast,
             Lazy<IStatService> stat,
             IAbilityCatalog catalog,
             IActiveAbilityImpact activeImpact,
-            Lazy<ICombatAbilityImpactService> abilityImpact,
-            Lazy<ICombatAttackTimingService> attackTiming)
+            Lazy<ICombatAbilityImpactService> abilityImpact)
         {
             _resistance = resistance;
-            _pvpCombat = pvpCombat;
-            _stealth = stealth;
+            _statusCatalog = statusCatalog;
             _meleeTechnique = meleeTechnique;
             _combatRecorder = combatRecorder;
             _messaging = messaging;
@@ -239,22 +82,10 @@ namespace SWLOR.Game.Server.Domain.Character
             _gui = gui;
             _capstoneProof = capstoneProof;
             _db = db;
-            _quickCast = quickCast;
             _stat = stat;
             _catalog = catalog;
             _activeImpact = activeImpact;
             _abilityImpact = abilityImpact;
-            _attackTiming = attackTiming;
-        }
-
-        /// <summary>
-        /// When the module caches, status effects will be discovered and cached.
-        /// </summary>
-        [BootPhase(BootReload.Rerun)]
-        [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
-        public void CacheData()
-        {
-            CacheStatusEffects();
         }
 
         /// <summary>
@@ -266,49 +97,6 @@ namespace SWLOR.Game.Server.Domain.Character
         {
             if (!_statEffectListeners.Contains(listener))
                 _statEffectListeners.Add(listener);
-        }
-
-        private void CacheStatusEffects()
-        {
-            _statusEffects.Clear();
-
-            foreach (var type in GetStatusEffectTypes())
-            {
-                var effect = (StatusEffectBase)Activator.CreateInstance(type);
-
-                _statusEffects[type] = new StatusEffectMetadata(
-                    () => (IStatusEffect)Activator.CreateInstance(type),
-                    effect.Name,
-                    effect.Frequency,
-                    effect.SourceType,
-                    effect.Categories);
-            }
-
-            Console.WriteLine($"Loaded {_statusEffects.Count} status effects.");
-        }
-
-        /// <summary>
-        /// Creates a fresh instance of a registered status effect so a caller can set per-application options before applying it.
-        /// </summary>
-        public IStatusEffect CreateStatusEffect(Type statusEffectClass)
-        {
-            if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
-                throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
-
-            return statusEffect;
-        }
-
-        private bool TryCreateStatusEffect(Type statusEffectClass, out IStatusEffect statusEffect)
-        {
-            if (statusEffectClass != null &&
-                _statusEffects.TryGetValue(statusEffectClass, out var metadata))
-            {
-                statusEffect = metadata.Create();
-                return true;
-            }
-
-            statusEffect = null;
-            return false;
         }
 
         /// <summary>
@@ -430,9 +218,9 @@ namespace SWLOR.Game.Server.Domain.Character
 
             foreach (var toggle in toggles)
             {
-                var type = _statusEffects.Keys.FirstOrDefault(key => key.Name == toggle);
+                var type = _statusCatalog.FindDefinitionByName(toggle);
                 var ability = type == null ? null : FindKnownToggleAbility(player, type);
-                if (ability == null || HasStatusEffect(player, type) || !TryCreateStatusEffect(type, out var statusEffect))
+                if (ability == null || HasStatusEffect(player, type) || !_statusCatalog.TryCreateStatusEffect(type, out var statusEffect))
                     continue;
 
                 statusEffect.OriginatingAbility = ability;
@@ -446,7 +234,7 @@ namespace SWLOR.Game.Server.Domain.Character
         {
             foreach (var (feat, ability) in GetAllAbilityDetails())
             {
-                if (ability.StatusEffectTypesRemovedOnPerkRefund.Contains(statusEffectType) && _quickCast.KnowsFeat(player, feat))
+                if (ability.StatusEffectTypesRemovedOnPerkRefund.Contains(statusEffectType) && QuickCastFeatMap.KnowsFeat(player, feat))
                     return ability;
             }
 
@@ -793,10 +581,10 @@ namespace SWLOR.Game.Server.Domain.Character
 
             if (!isPermanent)
             {
-                var isPlayerAgainstPlayer = _pvpCombat.IsPlayerAgainstPlayer(source, creature);
-                durationTicks = ClampHardCrowdControlDurationTicks(statusEffect.Categories, durationTicks, statusEffect.Frequency,
+                var isPlayerAgainstPlayer = PlayerControlRules.IsPlayerAgainstPlayer(source, creature);
+                durationTicks = StatusEffectRules.ClampHardCrowdControlDurationTicks(statusEffect.Categories, durationTicks, statusEffect.Frequency,
                     isSelfApplied: source == creature, isPlayerAgainstPlayer: isPlayerAgainstPlayer);
-                durationTicksWithoutResistance = ClampHardCrowdControlDurationTicks(
+                durationTicksWithoutResistance = StatusEffectRules.ClampHardCrowdControlDurationTicks(
                     statusEffect.Categories, durationTicksWithoutResistance, statusEffect.Frequency,
                     isSelfApplied: source == creature, isPlayerAgainstPlayer: isPlayerAgainstPlayer);
             }
@@ -826,8 +614,8 @@ namespace SWLOR.Game.Server.Domain.Character
                              (effect.Categories & StatusEffectCategory.HardCrowdControl) != 0))
                 {
                     var remainingSeconds = replaced.GetRemainingDurationSeconds(now);
-                    durationTicks = ClampConvertedControlDurationTicks(durationTicks, statusEffect.Frequency, remainingSeconds);
-                    durationTicksWithoutResistance = ClampConvertedControlDurationTicks(
+                    durationTicks = StatusEffectRules.ClampConvertedControlDurationTicks(durationTicks, statusEffect.Frequency, remainingSeconds);
+                    durationTicksWithoutResistance = StatusEffectRules.ClampConvertedControlDurationTicks(
                         durationTicksWithoutResistance, statusEffect.Frequency, remainingSeconds);
                 }
                 if (durationTicks <= 0)
@@ -874,7 +662,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             var creatureEffects = EnsureCreatureStatusEffectTracker(creature);
 
-            var tickAnchor = GetRefreshTickAnchor(statusEffect, creatureEffects.GetAllEffects(), source);
+            var tickAnchor = StatusEffectRules.GetRefreshTickAnchor(statusEffect, creatureEffects.GetAllEffects(), source);
 
             RemoveOtherCommandStatuses(creature, statusEffect.GetType(), source);
 
@@ -915,7 +703,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             if (statusEffect is ILeadershipDamageReductionStatusEffect)
             {
-                ReconcileLeadershipDamageReduction(creatureEffects);
+                LeadershipDamageReductionRules.ReconcileLeadershipDamageReduction(creatureEffects);
             }
 
             if (HasStatAdjustment(statusEffect))
@@ -934,7 +722,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             // Compare effective durations so the control budget is not mislabeled as resistance,
             // and vulnerability never claims to extend control beyond its actual expiration.
-            var durationResistanceMessage = BuildDurationResistanceMessage(
+            var durationResistanceMessage = StatusEffectRules.BuildDurationResistanceMessage(
                 resistanceType, statusEffect.Name, durationTicksWithoutResistance, durationTicks, statusEffect.Frequency);
             if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
                 (GetIsPC(source) || GetIsDM(source)))
@@ -962,7 +750,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 }
 
                 var sourceIsOther = GetIsObjectValid(source) && source != creature;
-                if (ShouldAnnounceNearby(_stealth.IsConcealed(creature), sourceIsOther && _stealth.IsConcealed(source)))
+                if (StatusEffectRules.ShouldAnnounceNearby(ConcealmentRules.IsConcealed(creature), sourceIsOther && ConcealmentRules.IsConcealed(source)))
                 {
                     _messaging.SendMessageNearbyToPlayers(creature, BuildApplicationMessage);
                 }
@@ -976,15 +764,6 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Application and worn-off messages go to every nearby player only while neither the bearer
-        /// nor the applying creature is hidden; otherwise they would reveal who is there.
-        /// </summary>
-        public bool ShouldAnnounceNearby(bool bearerHidden, bool sourceHidden)
-        {
-            return !bearerHidden && !sourceHidden;
         }
 
         /// <summary>
@@ -1041,7 +820,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 RemoveStatusEffect(lessPowerful, creature, OBJECT_INVALID, false, true, true);
             }
 
-            var tickAnchor = GetRefreshTickAnchor(statusEffect, creatureEffects.GetAllEffects(), source);
+            var tickAnchor = StatusEffectRules.GetRefreshTickAnchor(statusEffect, creatureEffects.GetAllEffects(), source);
             if (active.Source != source)
                 active.ReassignSource(source);
             RestartInPlace(creature, active, source, durationTicks, durationTicksWithoutResistance, durationSeconds,
@@ -1102,7 +881,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             adjustedSeconds = Math.Max(0.1f, Math.Min(adjustedSeconds + Math.Max(0, ticks - ticksWithoutResistance) * frequency,
                 ticks * frequency));
-            var tickAnchor = GetRefreshTickAnchor(active, creatureEffects.GetAllEffects(), source);
+            var tickAnchor = StatusEffectRules.GetRefreshTickAnchor(active, creatureEffects.GetAllEffects(), source);
             RestartInPlace(creature, active, source, ticks, ticksWithoutResistance, adjustedSeconds, tickAnchor, resistanceType);
             return true;
         }
@@ -1130,74 +909,13 @@ namespace SWLOR.Game.Server.Domain.Character
             }
             PublishStatusEffectReceivedRefresh(creature);
 
-            var durationResistanceMessage = BuildDurationResistanceMessage(
+            var durationResistanceMessage = StatusEffectRules.BuildDurationResistanceMessage(
                 resistanceType, active.Name, durationTicksWithoutResistance, durationTicks, active.Frequency);
             if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
                 (GetIsPC(source) || GetIsDM(source)))
             {
                 SendMessageToPC(source, durationResistanceMessage);
             }
-        }
-
-        public string BuildDurationResistanceMessage(
-            ResistanceType resistanceType,
-            string effectName,
-            int originalDurationTicks,
-            int adjustedDurationTicks,
-            float frequency)
-        {
-            if (resistanceType == ResistanceType.Invalid ||
-                originalDurationTicks <= 0 ||
-                adjustedDurationTicks <= 0 ||
-                originalDurationTicks == adjustedDurationTicks)
-            {
-                return string.Empty;
-            }
-
-            var direction = adjustedDurationTicks < originalDurationTicks
-                ? "reduced"
-                : "increased";
-            var resistanceLabel = adjustedDurationTicks < originalDurationTicks
-                ? "Resistance"
-                : "Vulnerability";
-            var secondsPerTick = Math.Max(1f, frequency);
-            var originalSeconds = FormatDurationSeconds(originalDurationTicks * secondsPerTick);
-            var adjustedSeconds = FormatDurationSeconds(adjustedDurationTicks * secondsPerTick);
-            var displayedEffectName = string.IsNullOrWhiteSpace(effectName) ? "the effect" : effectName;
-
-            return $"{resistanceType} {resistanceLabel} {direction} {displayedEffectName} duration from {originalSeconds} to {adjustedSeconds}.";
-        }
-
-        private string FormatDurationSeconds(float seconds)
-        {
-            var roundedSeconds = Math.Round(seconds);
-            return Math.Abs(seconds - roundedSeconds) < 0.01f
-                ? $"{(int)roundedSeconds}s"
-                : $"{seconds:0.#}s";
-        }
-
-        public int GetOutgoingDurationPercentAdjustment(StatusEffectCategory categories, Func<StatType, int> getStat)
-        {
-            return StatusEffectRules.GetOutgoingDurationPercentAdjustment(categories, getStat);
-        }
-
-        /// <summary>A conversion must not move the original control expiration or its immunity window.</summary>
-        public int ClampConvertedControlDurationTicks(int requestedTicks, float frequency, float remainingSeconds)
-        {
-            if (remainingSeconds < 0f)
-                return requestedTicks;
-            return Math.Min(requestedTicks, (int)Math.Floor(Math.Max(0f, remainingSeconds) / Math.Max(1f, frequency)));
-        }
-
-        /// <summary>
-        /// Apply the final control budget after outgoing duration bonuses and resistance.
-        /// Self-applied system penalties, soft debuffs and permanent effects are unaffected.
-        /// </summary>
-        /// <param name="isPlayerAgainstPlayer">A player or a player's pet applied it to another player, so it lasts half as long.</param>
-        public int ClampHardCrowdControlDurationTicks(
-            StatusEffectCategory categories, int ticks, float frequency, bool isSelfApplied = false, bool isPlayerAgainstPlayer = false)
-        {
-            return StatusEffectRules.ClampHardCrowdControlDurationTicks(categories, ticks, frequency, isSelfApplied, isPlayerAgainstPlayer);
         }
 
         private float ApplyOutgoingStatusDurationAdjustments(
@@ -1209,9 +927,9 @@ namespace SWLOR.Game.Server.Domain.Character
             if (isPermanent || durationSeconds <= 0 || !GetIsObjectValid(source))
                 return durationSeconds;
 
-            var percentAdjustment = GetOutgoingDurationPercentAdjustment(statusEffect.Categories, stat => GetCreatureStatAdjustment(source, stat));
+            var percentAdjustment = StatusEffectRules.GetOutgoingDurationPercentAdjustment(statusEffect.Categories, stat => GetCreatureStatAdjustment(source, stat));
 
-            durationSeconds = CalculateAdjustedStatusDurationSeconds(durationSeconds, percentAdjustment);
+            durationSeconds = StatusEffectRules.CalculateAdjustedStatusDurationSeconds(durationSeconds, percentAdjustment);
 
             if ((statusEffect.Categories & StatusEffectCategory.Bleeding) == StatusEffectCategory.Bleeding)
             {
@@ -1223,21 +941,6 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             return durationSeconds;
-        }
-
-        public float CalculateAdjustedStatusDurationSeconds(float seconds, int percentAdjustment)
-        {
-            return StatusEffectRules.CalculateAdjustedStatusDurationSeconds(seconds, percentAdjustment);
-        }
-
-        public DateTime? GetRefreshTickAnchor(IStatusEffect incoming, IEnumerable<IStatusEffect> active, uint source)
-        {
-            if (!incoming.PreservesTickScheduleOnRefresh || incoming.StackingType == StatusEffectStackType.UnlimitedStacking)
-                return null;
-
-            return active.Where(effect => !effect.IsFlaggedForRemoval && effect.GetType() == incoming.GetType() &&
-                    (incoming.StackingType != StatusEffectStackType.StackFromMultipleSources || effect.Source == source))
-                .Select(effect => (DateTime?)effect.LastTickTime).Min();
         }
 
         private void ApplyOutgoingStatusStatAdjustments(IStatusEffect statusEffect, uint source)
@@ -1417,7 +1120,7 @@ namespace SWLOR.Game.Server.Domain.Character
             float durationSeconds,
             ResistanceType resistanceOverride = ResistanceType.Invalid)
         {
-            if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
+            if (!_statusCatalog.TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
 
             return ApplyAndProfileStatusEffect(
@@ -1437,7 +1140,7 @@ namespace SWLOR.Game.Server.Domain.Character
             CombatDamageType sourceDamageType,
             Type replacedStatusEffectType = null)
         {
-            if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
+            if (!_statusCatalog.TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
 
             return ApplyAndProfileStatusEffect(
@@ -1560,11 +1263,6 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             return linkedEffect;
-        }
-
-        public bool HasStatusEffectDefinition(Type statusEffectClass)
-        {
-            return statusEffectClass != null && _statusEffects.ContainsKey(statusEffectClass);
         }
 
         public bool HasStatusEffect(uint creature, Type statusEffectClass)
@@ -1714,8 +1412,8 @@ namespace SWLOR.Game.Server.Domain.Character
             if (statusEffectClass == null || category == StatusEffectCategory.None)
                 return false;
 
-            return _statusEffects.TryGetValue(statusEffectClass, out var statusEffect) &&
-                   (statusEffect.Categories & category) == category;
+            return _statusCatalog.TryGetCategories(statusEffectClass, out var categories) &&
+                   (categories & category) == category;
         }
 
         public bool HasCleanseableStatusEffect(uint creature, StatusEffectCleanseType cleanseType)
@@ -2004,27 +1702,13 @@ namespace SWLOR.Game.Server.Domain.Character
             RemoveStatusEffect(statusEffectClass, creature, source, sendsWornOffMessage, removeNativeEffect);
         }
 
-        public string GetStatusEffectName(Type statusEffectClass)
-        {
-            return statusEffectClass != null && _statusEffects.TryGetValue(statusEffectClass, out var statusEffect)
-                ? statusEffect.Name
-                : statusEffectClass?.Name ?? "Unknown";
-        }
-
-        public StatusEffectSourceType GetStatusEffectSourceType(Type statusEffectClass)
-        {
-            return statusEffectClass != null && _statusEffects.TryGetValue(statusEffectClass, out var statusEffect)
-                ? statusEffect.SourceType
-                : StatusEffectSourceType.Invalid;
-        }
-
         public void RemoveOtherStanceStatuses(
             uint creature,
             Type statusEffectType,
             bool sendsWornOffMessage = false,
             bool removeNativeEffect = true)
         {
-            if (GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Stance)
+            if (_statusCatalog.GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Stance)
                 return;
 
             _meleeTechnique.OnStanceChanged(creature);
@@ -2051,7 +1735,7 @@ namespace SWLOR.Game.Server.Domain.Character
             bool sendsWornOffMessage = false,
             bool removeNativeEffect = true)
         {
-            if (GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Command)
+            if (_statusCatalog.GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Command)
                 return;
 
             RemoveStatusEffectBySourceType(
@@ -2064,14 +1748,6 @@ namespace SWLOR.Game.Server.Domain.Character
                 isReplacement: true);
         }
 
-        public List<Type> GetStatusEffectsFromIcon(EffectIconType effectIcon)
-        {
-            return _statusEffects
-                .Where(x => x.Value.Create().Icon == effectIcon)
-                .Select(x => x.Key)
-                .ToList();
-        }
-
         public List<Type> GetStatusEffectsFromIcon(uint creature, EffectIconType effectIcon)
         {
             var activeStatusTypes = GetCreatureStatusEffects(creature)
@@ -2082,7 +1758,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             return activeStatusTypes.Count > 0
                 ? activeStatusTypes
-                : GetStatusEffectsFromIcon(effectIcon);
+                : _statusCatalog.GetStatusEffectsFromIcon(effectIcon);
         }
 
         public int GetEffectDuration(uint creature, params Type[] effectTypes)
@@ -2116,20 +1792,6 @@ namespace SWLOR.Game.Server.Domain.Character
             }
 
             return remaining;
-        }
-
-        public EffectTypeScript GetEffectTypeFromIcon(EffectIconType effectIcon)
-        {
-            return _effectIconToEffectType.TryGetValue(effectIcon, out var effectType)
-                ? effectType
-                : EffectTypeScript.Invalideffect;
-        }
-
-        public AbilityType GetAbilityTypeBuffed(EffectIconType effectIcon)
-        {
-            return _abilityIncreaseIconType.TryGetValue(effectIcon, out var abilityType)
-                ? abilityType
-                : AbilityType.Invalid;
         }
 
         private void RemoveStatusEffect(
@@ -2227,7 +1889,7 @@ namespace SWLOR.Game.Server.Domain.Character
                 var effectName = statusEffect.Name;
                 string BuildWornOffMessage(uint receiver) =>
                     $"{_playerName.GetDisplayName(receiver, creature)}'s {effectName} effect has worn off.";
-                if (ShouldAnnounceNearby(_stealth.IsConcealed(creature), false))
+                if (StatusEffectRules.ShouldAnnounceNearby(ConcealmentRules.IsConcealed(creature), false))
                     _messaging.SendMessageNearbyToPlayers(creature, BuildWornOffMessage);
                 else
                     SendMessageToPC(creature, BuildWornOffMessage(creature));
@@ -2242,7 +1904,7 @@ namespace SWLOR.Game.Server.Domain.Character
 
             if (statusEffect is ILeadershipDamageReductionStatusEffect)
             {
-                ReconcileLeadershipDamageReduction(creatureEffects);
+                LeadershipDamageReductionRules.ReconcileLeadershipDamageReduction(creatureEffects);
             }
 
             if (HasStatAdjustment(statusEffect))
@@ -2285,73 +1947,6 @@ namespace SWLOR.Game.Server.Domain.Character
             {
                 handler.AfterRestored(creature);
             }
-        }
-
-        /// <summary>
-        /// Enforces take-the-max behavior across the Leadership damage-reduction family
-        /// independently for each damage channel. A physical/Force-only effect can supersede
-        /// Hold the Line in those channels without disabling Hold the Line's protection against
-        /// elemental and other damage. Weaker members remain applied so their unrelated stats
-        /// continue to function, and every channel is recomputed after application or removal.
-        /// </summary>
-        private void ReconcileLeadershipDamageReduction(CreatureStatusEffect creatureEffects)
-        {
-            var family = creatureEffects.GetAllEffects()
-                .Where(effect => effect is ILeadershipDamageReductionStatusEffect)
-                .ToList();
-
-            if (family.Count == 0)
-                return;
-
-            var winnerByStat = family
-                .SelectMany(effect =>
-                    ((ILeadershipDamageReductionStatusEffect)effect).LeadershipDamageReductionStats.Keys)
-                .Distinct()
-                .ToDictionary(
-                    statType => statType,
-                    statType => family
-                        .Where(effect =>
-                            ((ILeadershipDamageReductionStatusEffect)effect)
-                            .LeadershipDamageReductionStats.ContainsKey(statType))
-                        .OrderBy(effect =>
-                            ((ILeadershipDamageReductionStatusEffect)effect)
-                            .LeadershipDamageReductionStats[statType])
-                        .First());
-
-            foreach (var effect in family)
-            {
-                var leadershipDamageReductionEffect = (ILeadershipDamageReductionStatusEffect)effect;
-                ApplyLeadershipDamageReductionContribution(
-                    creatureEffects,
-                    effect,
-                    leadershipDamageReductionEffect,
-                    winnerByStat);
-            }
-        }
-
-        private void ApplyLeadershipDamageReductionContribution(
-            CreatureStatusEffect creatureEffects,
-            IStatusEffect effect,
-            ILeadershipDamageReductionStatusEffect leadershipDamageReductionEffect,
-            IReadOnlyDictionary<StatType, IStatusEffect> winnerByStat)
-        {
-            var isAlreadyCorrect = leadershipDamageReductionEffect.LeadershipDamageReductionStats.All(pair =>
-                effect.StatGroup.Stats.TryGetValue(pair.Key, out var current) &&
-                current == (ReferenceEquals(winnerByStat[pair.Key], effect) ? pair.Value : 0));
-
-            if (isAlreadyCorrect)
-                return;
-
-            creatureEffects.Remove(effect);
-
-            foreach (var (statType, nominalValue) in leadershipDamageReductionEffect.LeadershipDamageReductionStats)
-            {
-                effect.StatGroup.Stats[statType] = ReferenceEquals(winnerByStat[statType], effect)
-                    ? nominalValue
-                    : 0;
-            }
-
-            creatureEffects.Add(effect);
         }
 
         private bool HasStatAdjustment(IStatusEffect statusEffect)
@@ -2742,14 +2337,6 @@ namespace SWLOR.Game.Server.Domain.Character
             }
         }
 
-        // The search over every loaded assembly finds the definitions the module cache registers.
-        protected virtual IEnumerable<Type> GetStatusEffectTypes()
-        {
-            return GameAssemblies.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(StatusEffectBase).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
-        }
-
         protected virtual void ReapplyFoodHP(uint player)
         {
             RequireStatEffectListeners();
@@ -2786,35 +2373,12 @@ namespace SWLOR.Game.Server.Domain.Character
             _abilityImpact.Value.ApplyHostileAbilityPartyBuff(activator, ability, damage, statusApplied);
         }
 
-        protected virtual bool IsAttackDelayReductionSuppressed(uint creature) => _attackTiming.Value.IsAttackDelayReductionSuppressed(creature);
+        protected virtual bool IsAttackDelayReductionSuppressed(uint creature) => GetCreatureStatAdjustment(creature, StatType.AttackDelayReductionSuppressed) > 0;
 
         protected virtual void ScheduleTemporaryHitPointLimitCheck(uint target) => TemporaryHitPointEffects.ScheduleLimitCheck(target);
 
         // A native read of the object's applied effects.
         protected virtual bool MayHaveEffectTag(uint creature, string tag) => AppliedEffects.MayHaveTag(creature, tag);
-
-        private readonly struct StatusEffectMetadata
-        {
-            public Func<IStatusEffect> Create { get; }
-            public string Name { get; }
-            public float Frequency { get; }
-            public StatusEffectSourceType SourceType { get; }
-            public StatusEffectCategory Categories { get; }
-
-            public StatusEffectMetadata(
-                Func<IStatusEffect> create,
-                string name,
-                float frequency,
-                StatusEffectSourceType sourceType,
-                StatusEffectCategory categories)
-            {
-                Create = create;
-                Name = name;
-                Frequency = frequency;
-                SourceType = sourceType;
-                Categories = categories;
-            }
-        }
 
         private sealed class LoggedOutStatusEffects
         {

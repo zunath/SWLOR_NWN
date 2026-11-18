@@ -87,7 +87,7 @@ public class DamageOverTimeStatusEffectTests
         typeof(StatusEffectBase).GetField("_lastRun", BindingFlags.Instance | BindingFlags.NonPublic)!
             .SetValue(existing, lastRun);
         var incoming = new CountingStatusEffect();
-        var anchor = StatusEffect.GetRefreshTickAnchor(incoming, new[] { existing }, 3);
+        var anchor = StatusEffectRules.GetRefreshTickAnchor(incoming, new[] { existing }, 3);
         anchor.Should().Be(lastRun, "a new source must not postpone a non-stacking DoT either");
 
         incoming.ApplyEffect(3, 2, 2, 6f, anchor);
@@ -102,7 +102,7 @@ public class DamageOverTimeStatusEffectTests
     [TestCase(12f, 20, 14.4f)]
     public void DurationBonuses_UseAuthoredSecondsBeforeSchedulingTicks(float authored, int bonus, float expected)
     {
-        var seconds = StatusEffect.CalculateAdjustedStatusDurationSeconds(authored, bonus);
+        var seconds = StatusEffectRules.CalculateAdjustedStatusDurationSeconds(authored, bonus);
         seconds.Should().BeApproximately(expected, 0.001f);
         var effect = new CountingStatusEffect();
         effect.ApplyEffect(1, 2, (int)Math.Ceiling(seconds / effect.Frequency), seconds);

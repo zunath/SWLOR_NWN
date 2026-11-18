@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Domain.Combat;
 using SWLOR.Game.Server.Tests.Support;
+using SWLOR.Game.Server.Domain.Foundation;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.Testing;

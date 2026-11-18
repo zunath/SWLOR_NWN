@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Domain.Abilities;
 using SWLOR.Game.Server.Domain.Combat;
+using SWLOR.Game.Server.Domain.Character;
 
 namespace SWLOR.CombatSim.Rules
 {

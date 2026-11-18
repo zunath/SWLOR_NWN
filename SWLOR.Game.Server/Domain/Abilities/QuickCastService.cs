@@ -69,12 +69,7 @@ namespace SWLOR.Game.Server.Domain.Abilities
                 ? alias : original;
         }
 
-        public bool KnowsFeat(uint creature, FeatType feat)
-        {
-            var original = GetOriginalFeat(feat);
-            return CreaturePlugin.GetKnowsFeat(creature, original) ||
-                   QuickCastFeatMap.TryGetAlias(original, out var alias) && CreaturePlugin.GetKnowsFeat(creature, alias);
-        }
+        public bool KnowsFeat(uint creature, FeatType feat) => QuickCastFeatMap.KnowsFeat(creature, feat);
 
         public void RemoveFeat(uint creature, FeatType feat)
         {

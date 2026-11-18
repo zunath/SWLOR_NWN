@@ -14,21 +14,11 @@ namespace SWLOR.Game.Server.Domain.Character
     public interface IStatusEffectService
     {
         /// <summary>
-        /// When the module caches, status effects will be discovered and cached.
-        /// </summary>
-        void CacheData();
-
-        /// <summary>
         /// Registers who is told when a player's status effects are restored and when a stat-adjusting effect changes
         /// (<see cref="IStatEffectListener"/>). <c>CreatureStatService</c> registers itself at boot; notifying with no listener
         /// registered throws, so a missing registration fails at once.
         /// </summary>
         void RegisterStatEffectListener(IStatEffectListener listener);
-
-        /// <summary>
-        /// Creates a fresh instance of a registered status effect so a caller can set per-application options before applying it.
-        /// </summary>
-        IStatusEffect CreateStatusEffect(Type statusEffectClass);
 
         /// <summary>
         /// When a player enters the server, apply the NWN effect system
@@ -85,12 +75,6 @@ namespace SWLOR.Game.Server.Domain.Character
         void ApplyPermanentStatusEffect(Type type, uint source, uint creature);
 
         /// <summary>
-        /// Application and worn-off messages go to every nearby player only while neither the bearer
-        /// nor the applying creature is hidden; otherwise they would reveal who is there.
-        /// </summary>
-        bool ShouldAnnounceNearby(bool bearerHidden, bool sourceHidden);
-
-        /// <summary>
         /// Restarts an active effect's duration exactly as re-applying the same effect from the same
         /// source would, without replacing it or repeating its application message. For effects whose
         /// re-application changes nothing else, such as Embattled with unchanged stacks.
@@ -100,30 +84,6 @@ namespace SWLOR.Game.Server.Domain.Character
             Type statusEffectClass,
             uint source,
             float durationSeconds);
-
-        string BuildDurationResistanceMessage(
-            ResistanceType resistanceType,
-            string effectName,
-            int originalDurationTicks,
-            int adjustedDurationTicks,
-            float frequency);
-
-        int GetOutgoingDurationPercentAdjustment(StatusEffectCategory categories, Func<StatType, int> getStat);
-
-        /// <summary>A conversion must not move the original control expiration or its immunity window.</summary>
-        int ClampConvertedControlDurationTicks(int requestedTicks, float frequency, float remainingSeconds);
-
-        /// <summary>
-        /// Apply the final control budget after outgoing duration bonuses and resistance.
-        /// Self-applied system penalties, soft debuffs and permanent effects are unaffected.
-        /// </summary>
-        /// <param name="isPlayerAgainstPlayer">A player or a player's pet applied it to another player, so it lasts half as long.</param>
-        int ClampHardCrowdControlDurationTicks(
-            StatusEffectCategory categories, int ticks, float frequency, bool isSelfApplied = false, bool isPlayerAgainstPlayer = false);
-
-        float CalculateAdjustedStatusDurationSeconds(float seconds, int percentAdjustment);
-
-        DateTime? GetRefreshTickAnchor(IStatusEffect incoming, IEnumerable<IStatusEffect> active, uint source);
 
         bool ApplyStatusEffect<T>(
             uint source,
@@ -167,8 +127,6 @@ namespace SWLOR.Game.Server.Domain.Character
             float durationSeconds,
             CombatDamageType sourceDamageType,
             Type replacedStatusEffectType = null);
-
-        bool HasStatusEffectDefinition(Type statusEffectClass);
 
         bool HasStatusEffect(uint creature, Type statusEffectClass);
 
@@ -289,10 +247,6 @@ namespace SWLOR.Game.Server.Domain.Character
             bool sendsWornOffMessage = true,
             bool removeNativeEffect = true);
 
-        string GetStatusEffectName(Type statusEffectClass);
-
-        StatusEffectSourceType GetStatusEffectSourceType(Type statusEffectClass);
-
         void RemoveOtherStanceStatuses(
             uint creature,
             Type statusEffectType,
@@ -313,15 +267,9 @@ namespace SWLOR.Game.Server.Domain.Character
             bool sendsWornOffMessage = false,
             bool removeNativeEffect = true);
 
-        List<Type> GetStatusEffectsFromIcon(EffectIconType effectIcon);
-
         List<Type> GetStatusEffectsFromIcon(uint creature, EffectIconType effectIcon);
 
         int GetEffectDuration(uint creature, params Type[] effectTypes);
-
-        EffectTypeScript GetEffectTypeFromIcon(EffectIconType effectIcon);
-
-        AbilityType GetAbilityTypeBuffed(EffectIconType effectIcon);
 
         void RemoveStatusEffect<T>(uint creature)
             where T: IStatusEffect;

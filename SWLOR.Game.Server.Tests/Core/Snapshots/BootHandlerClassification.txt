@@ -54,7 +54,7 @@ mod_cache_bef (45)
   BootOnly    SWLOR.Game.Server.Domain.Creatures.SpawnRegistryService.StoreSpawns
   Rerun       SWLOR.Game.Server.Domain.Character.StatService.CacheData
   Rerun       SWLOR.Game.Server.Domain.Character.CreatureStatService.RegisterStatEffectListener
-  Rerun       SWLOR.Game.Server.Domain.Character.StatusEffectService.CacheData
+  Rerun       SWLOR.Game.Server.Domain.Character.StatusEffectCatalogService.CacheData
   Rerun       SWLOR.Game.Server.Domain.World.TaxiService.LoadTaxiDestinations
   Rerun       SWLOR.Game.Server.Domain.World.WeatherService.LoadData
   Rerun       SWLOR.Game.Server.Feature.KatarAnimationRemap.RegisterEquipmentAnimationRestoration

@@ -140,6 +140,7 @@ namespace SWLOR.Game.Server.Composition
             services.AddSingleton<ICreatureStatService, CreatureStatService>();
             services.AddSingleton<IStatService, StatService>();
             services.AddSingleton<IStatRecordService, StatRecordService>();
+            services.AddSingleton<IStatusEffectCatalogService, StatusEffectCatalogService>();
             services.AddSingleton<IStatusEffectService, StatusEffectService>();
             services.AddSingleton<ITemporaryStatModifierService, TemporaryStatModifierService>();
             services.AddSingleton<ITintMapStateService, TintMapStateService>();
@@ -194,6 +195,8 @@ namespace SWLOR.Game.Server.Composition
             // The same instance, seen through the recast delays the player introduction owns (P5-15b).
             services.AddSingleton<IRecastDelays>(provider => provider.GetRequiredService<IRecastService>());
             services.AddSingleton<IResistanceService, ResistanceService>();
+            // The same instance, seen through the resistance reads the status effects own (P5-5c).
+            services.AddSingleton<IStatusResistance>(provider => provider.GetRequiredService<IResistanceService>());
             services.AddSingleton<IResourceRestoredEffectsService, ResourceRestoredEffectsService>();
             // The same instance, seen through the listener the pools in Character own (P5-4d).
             services.AddSingleton<IResourceRestoredListener>(provider => provider.GetRequiredService<IResourceRestoredEffectsService>());

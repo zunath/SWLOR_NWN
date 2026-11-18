@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Domain.Character;
 using SWLOR.Game.Server.Domain.Combat;
 
 namespace SWLOR.Game.Server.Domain.Combat

@@ -123,14 +123,14 @@ public class StatusEffectServiceCatalogTests : StatusEffectServiceTestBase
     [TestCase(EffectIconType.SoldiersStrike, EffectTypeScript.DamageIncrease)]
     public void TheIconTableAnswersKnownIcons(EffectIconType icon, EffectTypeScript expected)
     {
-        Service.GetEffectTypeFromIcon(icon).Should().Be(expected);
+        StatusEffectIconMap.GetEffectTypeFromIcon(icon).Should().Be(expected);
     }
 
     [Test]
     public void AnIconOutsideTheTablesIsInvalid()
     {
-        Service.GetEffectTypeFromIcon((EffectIconType)int.MaxValue).Should().Be(EffectTypeScript.Invalideffect);
-        Service.GetAbilityTypeBuffed(EffectIconType.Stunned).Should().Be(AbilityType.Invalid);
+        StatusEffectIconMap.GetEffectTypeFromIcon((EffectIconType)int.MaxValue).Should().Be(EffectTypeScript.Invalideffect);
+        StatusEffectIconMap.GetAbilityTypeBuffed(EffectIconType.Stunned).Should().Be(AbilityType.Invalid);
     }
 
     [TestCase(EffectIconType.AbilityIncreaseSTR, AbilityType.Might)]
@@ -141,6 +141,6 @@ public class StatusEffectServiceCatalogTests : StatusEffectServiceTestBase
     [TestCase(EffectIconType.AbilityDecreaseCHA, AbilityType.Social)]
     public void TheAbilityTableAnswersEveryAbilityIcon(EffectIconType icon, AbilityType expected)
     {
-        Service.GetAbilityTypeBuffed(icon).Should().Be(expected);
+        StatusEffectIconMap.GetAbilityTypeBuffed(icon).Should().Be(expected);
     }
 }

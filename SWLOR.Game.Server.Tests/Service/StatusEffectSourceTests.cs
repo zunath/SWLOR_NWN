@@ -28,7 +28,11 @@ public class StatusEffectSourceTests
         var text = StatusEffectSource.ReadInterfaces();
 
         text.Should().Contain("interface IStatusEffectService");
-        StatusEffectSource.InterfaceFiles.Should().HaveCount(StatusEffectSource.PartFiles.Count);
+        // Each part service has its interface in the same position; the statics that follow the parts have none.
+        StatusEffectSource.InterfaceFiles.Should().HaveCountLessThanOrEqualTo(StatusEffectSource.PartFiles.Count)
+            .And.OnlyContain(file => file.Contains("/I", StringComparison.Ordinal));
+        StatusEffectSource.InterfaceFiles.Select(Path.GetFileNameWithoutExtension)
+            .Should().Equal(StatusEffectSource.PartFiles.Take(StatusEffectSource.InterfaceFiles.Count).Select(file => "I" + Path.GetFileNameWithoutExtension(file)));
         StatusEffectSource.PartInterfaces.Should().Contain("IStatusEffectService");
     }
 

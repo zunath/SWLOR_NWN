@@ -54,6 +54,9 @@ Domain/Combat/PairedRangedTraitsService.cs
 Domain/Character/TemporaryStatModifierService.cs
 Service/StatusEffect.cs  # master-only (P2-ZD)
 Domain/Character/StatusEffectService.cs
+Domain/Character/StatusEffectCatalogService.cs
+Domain/Character/StatusEffectIconMap.cs
+Domain/Character/LeadershipDamageReductionRules.cs
 Domain/Character/CraftSkillBonusType.cs
 Domain/Character/CreatureStatusEffect.cs
 Domain/Character/FoodEffectData.cs
@@ -110,7 +113,7 @@ Domain/Character/MeleeTechniqueStage.cs
 Domain/Abilities/PerCastResourceBudget.cs
 Domain/Abilities/PlayerAura.cs
 Domain/Abilities/PlayerAuraDetail.cs
-Domain/Abilities/QuickCastFeatMap.cs
+Domain/Foundation/QuickCastFeatMap.cs
 Domain/Abilities/QuickCastPolicy.cs
 Domain/Abilities/QuickCastTargetType.cs
 Domain/Foundation/RecastGroup.cs
